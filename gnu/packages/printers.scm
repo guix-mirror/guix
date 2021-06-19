@@ -57,11 +57,11 @@
                         #t))))))
     (inputs
      `(("libusb" ,libusb)
-       ("qt" ,qtbase)
+       ("qt" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qmake" ,qtbase)))
+       ("qmake" ,qtbase-5)))
     (synopsis "Graphical program to drive plotting cutters")
     (description
      "Robocut is a simple graphical program that allows you to cut graphics

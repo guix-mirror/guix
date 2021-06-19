@@ -358,14 +358,14 @@ output without any plausibility checks.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gptfdisk/gptfdisk/"
                           version "/gptfdisk-" version ".tar.gz"))
       (sha256
-       (base32 "1h1871gwlq05gdc2wym98ghfmq6pn5lh8g5cqy3r49svz2vh8h3m"))))
+       (base32 "1py6klp1b7rni1qjj110snyyxafhx092carlii5vrnh4y1b9ilcm"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)

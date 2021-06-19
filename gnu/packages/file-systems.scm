@@ -345,8 +345,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "7942d5cab4f02bd4db12ee26a792a6012b4d7b07")
-        (revision "7"))
+  (let ((commit "fe1bb39aa52d9140981ba1e96f3c95ddf14006ce")
+        (revision "8"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -358,7 +358,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0k8cnkjm0v9xs7w02sj5151y6h8bj0gxmc3fq8js1wzx6wip9w96"))))
+          (base32 "1ks6w2v76pfpp70cv1d6znxaw1g5alz1v6hf8z9gvj15r94vgpwz"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -576,6 +576,7 @@ single file can be mounted.")
        (sha256
         (base32 "0kbsy2sk1jv4m82rxyl25gwrlkzvl3hzdga9gshkxkhm83v1aji4"))
        (patches (search-patches "jfsutils-add-sysmacros.patch"
+                                "jfsutils-gcc-compat.patch"
                                 "jfsutils-include-systypes.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -860,7 +861,7 @@ A simple @command{eatmydata} script is included that does this for you.")
 (define-public libnfs
   (package
     (name "libnfs")
-    (version "3.0.0")
+    (version "4.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -869,7 +870,7 @@ A simple @command{eatmydata} script is included that does this for you.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "115p55y2cbs92z5lmcnjx1v29lwinpgq4sha9v1kq1vd8674h404"))))
+                "0i27wd4zvhjz7620q043p4d4mkx8zv2yz9adm1byin47dynahyda"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/sahlberg/libnfs")
     (native-inputs

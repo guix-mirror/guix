@@ -1,0 +1,45 @@
+Disable systemd-run if the command is not found.
+
+diff -ru xpra-4.2~/xpra/scripts/main.py xpra-4.2/xpra/scripts/main.py
+--- xpra-4.2~/xpra/scripts/main.py	2021-06-06 08:51:13.756815842 -0700
++++ xpra-4.2/xpra/scripts/main.py	2021-06-06 16:07:13.371024486 -0700
+@@ -331,23 +331,26 @@
+     if not is_systemd_pid1():
+         return False    # pragma: no cover
+     #test it:
+-    cmd = ["systemd-run", "--quiet", "--user", "--scope", "--", "true"]
+-    proc = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=False)
+     try:
+-        proc.communicate(timeout=2)
+-        r = proc.returncode
+-    except TimeoutExpired:  # pragma: no cover
+-        r = None
+-    if r is None:
++        cmd = ["systemd-run", "--quiet", "--user", "--scope", "--", "true"]
++        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=False)
+         try:
+-            proc.terminate()
+-        except Exception:
+-            pass
+-        try:
+-            proc.communicate(timeout=1)
++            proc.communicate(timeout=2)
++            r = proc.returncode
+         except TimeoutExpired:  # pragma: no cover
+             r = None
+-    return r==0
++        if r is None:
++            try:
++                proc.terminate()
++            except Exception:
++                pass
++            try:
++                proc.communicate(timeout=1)
++            except TimeoutExpired:  # pragma: no cover
++                r = None
++        return r==0
++    except FileNotFoundError:
++        return False
+ 
+ 
+ def run_mode(script_file, error_cb, options, args, mode, defaults):

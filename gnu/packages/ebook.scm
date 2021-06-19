@@ -55,6 +55,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages music)
+  #:use-module (gnu packages pantheon)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -146,7 +147,7 @@ with Microsoft Compiled HTML (CHM) files")
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qtbase" ,qtbase) ; for qmake
+       ("qtbase" ,qtbase-5) ; for qmake
        ("python-flake8" ,python-flake8)
        ("python-pyqt-builder" ,python-pyqt-builder)
        ("xdg-utils" ,xdg-utils)))
@@ -474,7 +475,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.9.4")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -483,7 +484,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "182y6mkr39qgwk1n33nhfngqjyadrijiyfkzxydx9hfch302i8wz"))))
+        (base32 "0m0xiqpb87pwr3fhy0a4qxg67yjhwchcxj3x2anyy0li4inryxag"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -530,12 +531,14 @@ following formats:
        ("python" ,python-wrapper)))
     (inputs
      `(("file" ,file)
+       ("granite" ,granite)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gst-libav" ,gst-libav)
        ("gst-plugins-bad" ,gst-plugins-bad)
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("gtk+" ,gtk+)
+       ("libgee" ,libgee)
        ("libhandy" ,libhandy)
        ("python-distro" ,python-distro)
        ("python-gst" ,python-gst)

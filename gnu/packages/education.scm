@@ -191,7 +191,7 @@ of categories with some of the activities available in that category.
     (inputs
      `(("openssl" ,openssl)
        ("python" ,python-wrapper)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
@@ -260,7 +260,7 @@ Currently available boards include:
                ;; Recreate Makefile
                (invoke "qmake")))))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)))
     (home-page "https://www.tipp10.com/")
     (synopsis "Touch typing tutor")
@@ -638,7 +638,7 @@ Portuguese, Spanish and Italian.")
          (replace 'configure
            (lambda _ (invoke "qmake" "fet.pro"))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "https://www.lalescu.ro/liviu/fet/")
     (synopsis "Timetabling software")
     (description
@@ -654,14 +654,14 @@ hours.")
 (define-public klavaro
   (package
     (name "klavaro")
-    (version "3.12")
+    (version "3.13")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://sourceforge/klavaro/klavaro-"
                             version ".tar.bz2"))
         (sha256
-         (base32 "0ymrmgllyjk9wp1f1ayw51xc3myar8ld9a5531wdbrym0xzy4l64"))))
+         (base32 "0z6c3lqikk50mkz3ipm93l48qj7b98lxyip8y6ndg9y9k0z0n878"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -712,7 +712,7 @@ language and very flexible regarding to new or unknown keyboard layouts.")
        ("kxmlgui" ,kxmlgui)
        ("libxcb" ,libxcb)
        ("libxkbfile" ,libxkbfile)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtquickcontrols2" ,qtquickcontrols2)

@@ -253,8 +253,7 @@ ncursesw library provides wide character support.")
     (description "Dialog is a script-interpreter which provides a set of
 curses widgets, such as dialog boxes.")
     (home-page "https://invisible-island.net/dialog/dialog.html")
-    ;; Includes the gpl3 file "config.sub" from Automake.
-    (license (list lgpl2.1 gpl3))))
+    (license lgpl2.1)))
 
 (define-public perl-curses
   (package

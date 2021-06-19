@@ -5,8 +5,7 @@ set -e -x
 
 # Generate stubs for translations.
 langs=`find po/doc -type f -name 'guix-manual*.po' \
-        | sed -e 's,guix-manual\.,,' \
-        | xargs -n 1 -I{} basename {} .po`
+        | sed -e 's,.*/guix-manual\.,,;s,\.po$,,'`
 for lang in ${langs}; do
     if [ ! -e "doc/guix.${lang}.texi" ]; then
 	echo "@setfilename guix.${lang}.info" > "doc/guix.${lang}.texi"
@@ -16,8 +15,7 @@ for lang in ${langs}; do
     fi
 done
 langs=`find po/doc -type f -name 'guix-cookbook*.po' \
-        | sed -e 's,guix-cookbook\.,,' \
-        | xargs -n 1 -I{} basename {} .po`
+        | sed -e 's,.*/guix-cookbook\.,,;s,\.po$,,'`
 for lang in ${langs}; do
     if [ ! -e "doc/guix-cookbook.${lang}.texi" ]; then
 	echo "@setfilename guix-cookbook.${lang}.info" > "doc/guix-cookbook.${lang}.texi"

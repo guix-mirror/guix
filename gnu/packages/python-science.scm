@@ -583,6 +583,37 @@ by numpy using the highly efficient @code{msgpack} format.  Serialization of
 Python's native complex data types is also supported.")
     (license license:bsd-3)))
 
+(define-public python-ruffus
+  (package
+    (name "python-ruffus")
+    (version "2.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ruffus" version))
+       (sha256
+        (base32
+         "1ai673k1s94s8b6pyxai8mk17p6zvvyi87rl236fs6ls8mpdklvc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "ruffus/test"
+                 (invoke "bash" "run_all_unit_tests3.cmd"))))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://www.ruffus.org.uk")
+    (synopsis "Light-weight computational pipeline management")
+    (description
+     "Ruffus is designed to allow scientific and other analyses to be
+automated with the minimum of fuss and the least effort.")
+    (license license:expat)))
+
 (define-public python-statannot
   (package
     (name "python-statannot")

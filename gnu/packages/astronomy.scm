@@ -412,7 +412,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
         (base32 "04vg2asj9gygwnrs32scqc8192ln2lyqa9v7cjqk8zd4frkwszwp"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtlocation" ,qtlocation)
        ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
@@ -421,7 +421,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; xgettext is used at compile time
        ("perl" ,perl)                   ; for pod2man
-       ("qtbase" ,qtbase)               ; Qt MOC is needed at compile time
+       ("qtbase" ,qtbase-5)               ; Qt MOC is needed at compile time
        ("qttools" ,qttools)))
     (arguments
      `(#:test-target "test"

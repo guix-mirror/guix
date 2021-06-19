@@ -115,7 +115,7 @@ restrictions that stem from limitations of the standard RCX firmware.")
      `(("qttools" ,qttools)))           ; for lrelease
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (arguments
      '(#:tests? #f

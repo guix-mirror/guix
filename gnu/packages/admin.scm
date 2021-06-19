@@ -690,13 +690,13 @@ memory, disks, network and processes.")
 (define-public bpytop
   (package
     (name "bpytop")
-    (version "1.0.65")
+    (version "1.0.67")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpytop" version))
        (sha256
-        (base32 "1vq51vg2ygk2p738zi21v5chn908d4bd5zkb8s4fbgf4zqp425ny"))))
+        (base32 "1fwmiwvs8ax9az3hbp1p79x6m3wq73pn3vkbhcg9jvps4wv8wcwb"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)))
@@ -711,7 +711,7 @@ memory, disks, network and processes.")
                                             (package-version python))
                                           "/site-packages/bpytop-themes")))
                (mkdir-p themes)
-               (copy-recursively "bpytop-themes" themes)))))))
+               (copy-recursively "themes" themes)))))))
     (home-page
      "https://github.com/aristocratos/bpytop")
     (synopsis "Resource monitor")
@@ -1167,6 +1167,7 @@ connection alive.")
                 (method url-fetch)
                 (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
+                (patches (search-patches "isc-dhcp-gcc-compat.patch"))
                 (sha256
                  (base32
                   "06jsr0cg5rsmyibshrpcb9za0qgwvqccashdma7mlm1rflrh8pmh"))))
@@ -1601,7 +1602,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.7")
+    (version "1.9.7p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1611,7 +1612,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0jg5vf6hc0j2bh4vqwsb4jybhryrsh4kz97r1salvf4rcqnprgib"))
+                "1kyqj45nmykwj38sc5kx7mi0vf6x637hzvbd1jv22lg5aks3251r"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1878,7 +1879,7 @@ command.")
   (package
     (inherit wpa-supplicant)
     (name "wpa-supplicant-gui")
-    (inputs `(("qtbase" ,qtbase)
+    (inputs `(("qtbase" ,qtbase-5)
               ("qtsvg" ,qtsvg)
               ,@(package-inputs wpa-supplicant)))
     (native-inputs
@@ -3645,7 +3646,7 @@ hard-coded.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4.5")
+    (version "2.4.6")
     (source
      (origin
       (method git-fetch)
@@ -3654,7 +3655,7 @@ hard-coded.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1y8s0cpjm01bz4isp3ksvnrbhpp3phivdhsb0w2kxhv09sfxkc5g"))))
+       (base32 "1lgaky8cmxbi17zpymy2v9wgknx1g92bq50j6kfpsm8qgb7djjb6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

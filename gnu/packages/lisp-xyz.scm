@@ -3451,10 +3451,10 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "891bcd2c76a61121af930f986abb1f24814913c5"))
+  (let ((commit "cfc4f01ee806169d824750b4014653a93af9353d"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "15" commit))
+      (version (git-version "2.4" "16" commit))
       (source
        (origin
          (method git-fetch)
@@ -3464,7 +3464,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "00qfbzpw3biqna6fh8ga9dmxckids46vxy4sxma1r3cxq2yig739"))))
+           "18n90m33bi6arnjmwr3q3m0arwzr0kdnydlv4if82crvaagd6m89"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -4439,7 +4439,7 @@ addition, removal, and random selection.")
 (define-public sbcl-quri
   (package
     (name "sbcl-quri")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -4448,7 +4448,7 @@ addition, removal, and random selection.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pkvpiwwhx2fcknr7x47h7036ypkg8xzsskqbl5z315ipfmi8s2m"))))
+        (base32 "0ka5haq3g72hvaz4hdv7y1d6df9ncmx029wwixn4r413gll5yxy7"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      ;; Test system must be loaded before, otherwise tests fail with:
@@ -5858,59 +5858,56 @@ formats.")
   (sbcl-package->ecl-package sbcl-swap-bytes))
 
 (define-public sbcl-iolib
-  ;; Latest release is from June 2017.
-  (let ((commit "7f5ea3a8457a29d224b24653c2b3657fb1898021")
-        (revision "2"))
-    (package
-      (name "sbcl-iolib")
-      (version (git-version "0.8.3" revision commit))
-      (home-page "https://github.com/sionescu/iolib")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url home-page)
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1bg5w7lm61hqk4b0svmri8a590q36z76jfa0sdgzb39r98c04w12"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("bordeaux-threads" ,sbcl-bordeaux-threads)
-         ("cffi" ,sbcl-cffi)
-         ("idna" ,sbcl-idna)
-         ("libfixposix" ,libfixposix)
-         ("split-sequence" ,sbcl-split-sequence)
-         ("swap-bytes" ,sbcl-swap-bytes)))
-      (arguments
-       '(#:asd-files '("iolib.asdf.asd"
-                       "iolib.conf.asd"
-                       "iolib.common-lisp.asd"
-                       "iolib.base.asd"
-                       "iolib.asd")
-         #:asd-systems '("iolib"
-                         "iolib/os")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/syscalls/ffi-functions-unix.lisp"
-                 (("\\(:default \"libfixposix\"\\)")
-                  (string-append
-                   "(:default \""
-                   (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
-               ;; Socket tests need Internet access, disable them.
-               (substitute* "iolib.asd"
-                 (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
-                  "")))))))
-      (synopsis "Common Lisp I/O library")
-      (description "IOlib is to be a better and more modern I/O library than
+  (package
+    (name "sbcl-iolib")
+    (version "0.8.4")
+    (home-page "https://github.com/sionescu/iolib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1f43jqqqwp9n7xksqxw91myapsdbc2dxck6nd6flakbnp9haylyq"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cffi" ,sbcl-cffi)
+       ("idna" ,sbcl-idna)
+       ("libfixposix" ,libfixposix)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("swap-bytes" ,sbcl-swap-bytes)))
+    (arguments
+     '(#:asd-files '("iolib.asdf.asd"
+                     "iolib.conf.asd"
+                     "iolib.common-lisp.asd"
+                     "iolib.base.asd"
+                     "iolib.asd")
+       #:asd-systems '("iolib"
+                       "iolib/os")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/syscalls/ffi-functions-unix.lisp"
+               (("\\(:default \"libfixposix\"\\)")
+                (string-append
+                 "(:default \""
+                 (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
+             ;; Socket tests need Internet access, disable them.
+             (substitute* "iolib.asd"
+               (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
+                "")))))))
+    (synopsis "Common Lisp I/O library")
+    (description "IOlib is to be a better and more modern I/O library than
 the standard Common Lisp library.  It contains a socket library, a DNS
 resolver, an I/O multiplexer(which supports @code{select(2)}, @code{epoll(4)}
 and @code{kqueue(2)}), a pathname library and file-system utilities.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-iolib
   (let ((parent (sbcl-package->cl-source-package sbcl-iolib)))
@@ -9857,20 +9854,20 @@ correctly.")
   (sbcl-package->ecl-package sbcl-trivialib-type-unify))
 
 (define-public sbcl-specialized-function
-  (let ((commit "dee56d2d2b6ecd10500ad291c56217698604ec35")
-        (revision "2"))
+  (let ((commit "5e2b04432bdf728496e6ff7227f210f845af7247")
+        (revision "3"))
     (package
       (name "sbcl-specialized-function")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/numcl/specialized-function")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "specialized-function" version))
          (sha256
-          (base32 "1mcc7mmpbnmgnr1cl2jl5r1ai54gn7fbisv2c14sh9za5w4sib82"))))
+          (base32 "19hfgc83b7as630r1w9r8yl0v6xq3dn01vcrl0bd4pza5hgjn4la"))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Julia-like dispatch for Common Lisp")
       (description
@@ -9881,21 +9878,17 @@ code.  The main target of this macro is speed.")
       (home-page "https://github.com/numcl/specialized-function")
       (license license:lgpl3+)
       (inputs
-       `(("trivia" ,sbcl-trivia)
-         ("alexandria" ,sbcl-alexandria)
+       `(("alexandria" ,sbcl-alexandria)
          ("iterate" ,sbcl-iterate)
          ("lisp-namespace" ,sbcl-lisp-namespace)
-         ("type-r" ,sbcl-type-r)
-         ("trivial-cltl2" ,sbcl-trivial-cltl2)))
+         ("trivia" ,sbcl-trivia)
+         ("trivial-cltl2" ,sbcl-trivial-cltl2)
+         ("type-r" ,sbcl-type-r)))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-files '("specialized-function.asd")
-         #:test-asd-file "specialized-function.test.asd"
-         ;; Tests fail because they try to use an internal symbol of SBCL
-         ;; that does not exists in recent versions:
-         ;;   "The variable SB-VM:COMPLEX-VECTOR-NIL-WIDETAG is unbound."
-         #:tests? #f)))))
+         #:test-asd-file "specialized-function.test.asd")))))
 
 (define-public cl-specialized-function
   (sbcl-package->cl-source-package sbcl-specialized-function))
@@ -15548,7 +15541,7 @@ return the CPU count of the current system.")
 (define-public sbcl-fof
   (package
     (name "sbcl-fof")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method git-fetch)
@@ -15557,7 +15550,7 @@ return the CPU count of the current system.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xdnlqrjfmgdgw58avkci881iwarv4am2vq09b14pfifmpxpzv10"))))
+        (base32 "0j64b7p40h8bq33hqkpgakm3vs1607vyx6n48d7qg3287v1akk6m"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      `(#:phases
@@ -17247,3 +17240,234 @@ needed.  The low-level command API is fully mapped however.")
 
 (define-public cl-legit
   (sbcl-package->cl-source-package sbcl-legit))
+
+(define-public sbcl-flow
+  (let ((commit "6d925af009cdfe033650d7048197a5e6ee937d15")
+        (revision "1"))
+    (package
+      (name "sbcl-flow")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/flow")
+               (commit commit)))
+         (file-name (git-file-name "flow" version))
+         (sha256
+          (base32 "0ysw1kwiqlf8kzllhnz8v3q40dmvwf83fzq8bfkbmwy5hfjh3pxp"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: (Sharlatan-20210527T203118+0100): FLOW-VISUALIZER requires
+       ;; COMMONQT which is not packed yet and required tweaks with QT. Remove
+       ;; this when it's ready.
+       `(#:asd-files '("flow.asd")))
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/flow/")
+      (synopsis "Tools for the representation of graphs and flowcharts")
+      (description
+       "FLOW is a flowchart graph library.  Unlike other graphing libraries,
+this one focuses on nodes in a graph having distinct @code{ports} through which
+connections to other nodes are formed.  This helps in many concrete scenarios
+where it is important to distinguish not only which nodes are connected, but
+also how they are connected to each other.
+
+Particularly, a lot of data flow and exchange problems can be reduced to such
+a @code{flowchart}.  For example, an audio processing library may present its
+pipeline as a flowchart of segments that communicate with each other through
+audio sample buffers.  Flow gives a convenient view onto this kind of problem,
+and even allows the generic visualisation of graphs in this format.")
+      (license license:zlib))))
+
+(define-public ecl-flow
+  (sbcl-package->ecl-package sbcl-flow))
+
+(define-public cl-flow
+  (sbcl-package->cl-source-package sbcl-flow))
+
+(define-public sbcl-cl-glfw3
+  (let ((commit "32c3f34d592d55ee7ce932ed85804c1a9c4158c6")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-glfw3")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AlexCharlton/cl-glfw3")
+               (commit commit)))
+         (file-name (git-file-name "cl-glfw3" version))
+         (sha256
+          (base32 "1wzr43nckdx4rlgxzhm1r4kfc264q969mc43y0js9ramh7l8gba5"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-glfw-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "glfw-bindings.lisp"
+                 (("libglfw.so.3" all)
+                  (string-append (assoc-ref inputs "glfw") "/lib/" all))))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-opengl" ,sbcl-cl-opengl)
+         ("glfw" ,glfw)
+         ("trivial-main-thread" ,sbcl-trivial-main-thread)))
+      (home-page "https://github.com/AlexCharlton/cl-glfw3")
+      (synopsis "Common Lisp bindings to GLFW version 3.x")
+      (description
+       "This package provides a Common Lisp bindings to @code{glfw}, an OpenGL
+application development library.")
+      (license license:bsd-2))))
+
+(define-public ecl-cl-glfw3
+  (sbcl-package->ecl-package sbcl-cl-glfw3))
+
+(define-public cl-glfw3
+  (sbcl-package->cl-source-package sbcl-cl-glfw3))
+
+(define-public sbcl-chirp
+  (let ((commit "01c79fa41939688216d1f86d0766a687becb0654")
+        (revision "1"))
+    (package
+      (name "sbcl-chirp")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/chirp")
+               (commit commit)))
+         (file-name (git-file-name "chirp" version))
+         (sha256
+          (base32 "10xlz1vwdv3jv48kmpndpnrg6672m0r5vsjgm2pksfl8bc05j2m0"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("chirp-core" "chirp-dexador" "chirp-drakma" "chirp")))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("dexador" ,sbcl-dexador)
+         ("drakma" ,sbcl-drakma)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("ironclad" ,sbcl-ironclad)
+         ("local-time" ,sbcl-local-time)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("uuid" ,sbcl-uuid)
+         ("yason" ,sbcl-yason)))
+      (home-page "https://shinmera.github.io/chirp/")
+      (synopsis "Twitter client library for Common Lisp")
+      (description
+       "This package provides a Common Lisp Twitter client featuring full API
+coverage.")
+      (license license:zlib))))
+
+(define-public ecl-chirp
+  (sbcl-package->ecl-package sbcl-chirp))
+
+(define-public cl-chirp
+  (sbcl-package->cl-source-package sbcl-chirp))
+
+(define-public sbcl-cepl
+  (let ((commit "d1a10b6c8f4cedc07493bf06aef3a56c7b6f8d5b")
+        (revision "1"))
+    (package
+     (name "sbcl-cepl")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cbaggers/cepl")
+             (commit commit)))
+       (file-name (git-file-name "cepl" version))
+       (sha256
+        (base32 "0izbw2advqm3wailj3dpq6zqfrfirwn14pw5qmqh8i71r51xwmm2"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      `(#:asd-files '("cepl.asd" "cepl.build.asd")))
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+        ("cffi" ,sbcl-cffi)
+        ("cl-opengl" ,sbcl-cl-opengl)
+        ("cl-ppcre" ,sbcl-cl-ppcre)
+        ("documentation-utils" ,sbcl-documentation-utils)
+        ("float-features" ,sbcl-float-features)
+        ("ieee-floats" ,sbcl-ieee-floats)
+        ("split-sequence" ,sbcl-split-sequence)
+        ("varjo" ,sbcl-varjo)))
+     (propagated-inputs
+      `(("quickproject" ,sbcl-quickproject)))
+     (home-page "https://github.com/cbaggers/cepl")
+     (synopsis "Development playground to work with OpenGL")
+     (description
+      "CEPL (Code Evaluate Play Loop ) is a lispy and REPL-friendly Common Lisp
+library for working with OpenGL.
+
+Its definition of success is making the user feel that GPU programming has
+always been part of the languages standard.
+
+The usual approach to using CEPL is to start it at the beginning of your Lisp
+session and leave it open for the duration of your work.  You can then treat the
+window it creates as just another output for your graphics, analogous to how
+@code{*standard-output*} is treated for text.")
+     (license license:bsd-2))))
+
+(define-public ecl-cepl
+  (sbcl-package->ecl-package sbcl-cepl))
+
+(define-public cl-cepl
+  (sbcl-package->cl-source-package sbcl-cepl))
+
+(define-public sbcl-stmx
+  ;; No release for years and recent commits contain fixes for revent SBCL versions.
+  (let ((commit "a7bb44082cd53ee968965adff03d4351750711a1")
+        (revision "1"))
+    (package
+     (name "sbcl-stmx")
+     (version (git-version "2.0.5" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cosmos72/stmx/")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hfmh4vj271jdilir97qs6nqbi5nmn5alyls0w3d3xxqwi6ffqjs"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+        ("log4cl" ,sbcl-log4cl)
+        ("closer-mop" ,sbcl-closer-mop)
+        ("trivial-garbage" ,sbcl-trivial-garbage)))
+     (home-page "https://stmx.org/")
+     (synopsis "High performance Transactional Memory for Common Lisp")
+     (description
+      "STMX is a high-performance implementation of composable Transactional
+Memory, which is a concurrency control mechanism aimed at making concurrent
+programming easier to write and understand.  Instead of traditional lock-based
+programming, one programs with atomic memory transactions, which can be
+composed together to make larger atomic memory transactions.
+
+A memory transaction gets committed if it returns normally, while it gets
+rolled back if it signals an error (and the error is propagated to the
+caller).
+
+Finally, memory transactions can safely run in parallel in different threads,
+are re-executed from the beginning in case of conflicts or if consistent reads
+cannot be guaranteed, and their effects are not visible from other threads
+until they commit.
+
+Memory transactions give freedom from deadlocks, are immune to thread-safety
+bugs and race conditions, provide automatic roll-back on failure, and aim at
+resolving the tension between granularity and concurrency.")
+     (license license:llgpl))))

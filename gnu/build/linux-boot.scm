@@ -585,6 +585,16 @@ upon error."
           (unless (configure-qemu-networking)
             (display "network interface is DOWN\n")))
 
+        ;; A big ugly hammer, to be used only for debugging and in desperate
+        ;; situations where no proper device synchonisation is possible.
+        (let ((root-delay (and=> (find-long-option "rootdelay" args)
+                                 string->number)))
+          (when root-delay
+            (format #t
+                    "Pausing for rootdelay=~a seconds before mounting the root file system...\n"
+                    root-delay)
+            (sleep root-delay)))
+
         ;; Prepare the real root file system under /root.
         (unless (file-exists? "/root")
           (mkdir "/root"))

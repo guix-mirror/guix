@@ -160,6 +160,13 @@
                              (description "This is a 'quoted' thing."))))
      (check-description-style pkg))))
 
+(test-equal "description: trailing whitespace"
+  "description contains trailing whitespace"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                              (description "Whitespace. "))))
+     (check-description-style pkg))))
+
 (test-equal "synopsis: not a string"
   "invalid synopsis: #f"
   (single-lint-warning-message
@@ -270,6 +277,13 @@
                             (synopsis "UUCP implementation")
                             (description "Imagine this is Taylor UUCP."))))
     (check-synopsis-style pkg)))
+
+(test-equal "synopsis: contains trailing whitespace"
+  "synopsis contains trailing whitespace"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis "Whitespace "))))
+     (check-synopsis-style pkg))))
 
 (test-equal "name: use underscore in package name"
   "name should use hyphens instead of underscores"

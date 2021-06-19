@@ -1,0 +1,13 @@
+From https://github.com/Hummer12007/brightnessctl/issues/67
+
+--- a/Makefile
++++ b/Makefile
+@@ -18,6 +18,8 @@ MODE = ${MODE_${INSTALL_UDEV_RULES}}
+ ifdef ENABLE_SYSTEMD
+ 	CFLAGS += ${shell pkg-config --cflags libsystemd}
+ 	LDLIBS += ${shell pkg-config --libs libsystemd}
++	CFLAGS += ${shell pkg-config --cflags libelogind}
++	LDLIBS += ${shell pkg-config --libs libelogind}
+ 	CPPFLAGS += -DENABLE_SYSTEMD
+ 	INSTALL_UDEV_RULES=0
+ 	MODE = 0755

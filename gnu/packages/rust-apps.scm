@@ -32,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
@@ -379,7 +380,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "12.1.1")
+    (version "13.0.0")
     (source
      (origin
        (method url-fetch)
@@ -388,14 +389,10 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1grfi0j9zczzipipc21lkdbqmd2lvy2wlqy65fy4sckqvix5amdr"))))
+         "1gv4imhjgxmyxaa996yshcjlakmrjw9pf4rycp90pq675cn9sz7k"))))
     (build-system cargo-build-system)
     (arguments
-     ;; XXX: Upgrading rust-bstr-0.2 from 0.2.12 to 0.2.15 introduced 11 test
-     ;; failures. Skip tests for now. Check again at next bstr or ripgrep
-     ;; upgrade.
-     `(#:tests? #false
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
         ("rust-clap" ,rust-clap-2)
         ("rust-grep" ,rust-grep-0.2)
@@ -409,7 +406,8 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
         ("rust-termcolor" ,rust-termcolor-1))
        #:cargo-development-inputs
        (("rust-serde" ,rust-serde-1)
-        ("rust-serde-derive" ,rust-serde-derive-1))
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-walkdir" ,rust-walkdir-2))
        #:modules ((ice-9 match)
                   (guix build cargo-build-system)
                   (guix build utils))
@@ -422,8 +420,8 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
              (match (find-files "target" "^rg\\.1$")
                ((manpage)
                 (install-file manpage (string-append
-                                        (assoc-ref outputs "out")
-                                        "/share/man/man1"))))
+                                       (assoc-ref outputs "out")
+                                       "/share/man/man1"))))
              #t)))
        #:features '("pcre2")))
     (native-inputs
@@ -589,42 +587,49 @@ gitignore rules.")
 (define-public tectonic
   (package
     (name "tectonic")
-    (version "0.4.1")
+    (version "0.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16fm2bfvfizrydmirzf0bhr1fidb5slcbvr6150and8yqr8jc4lf"))))
+        (base32 "1h6m0mxqd8580c82dknja7qqhkg1pbvwmw4rlzfr1ndfjrcbk3al"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-app-dirs2" ,rust-app-dirs2-2)
-        ("rust-atty" ,rust-atty-0.2)
+     `(#:rust ,rust-1.52
+       #:cargo-build-flags '("--release" "--features" "external-harfbuzz")
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
         ("rust-byte-unit" ,rust-byte-unit-4)
-        ("rust-cbindgen" ,rust-cbindgen-0.16)
-        ("rust-cc" ,rust-cc-1)
         ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-error-chain" ,rust-error-chain-0.12)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-fs2" ,rust-fs2-0.4)
-        ("rust-headers" ,rust-headers-0.2)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-md-5" ,rust-md-5-0.9)
-        ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-regex" ,rust-regex-1)
-        ("rust-reqwest" ,rust-reqwest-0.9)
+        ("rust-open" ,rust-open-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-structopt" ,rust-structopt-0.3)
-        ("rust-tectonic-cfg-support" ,rust-tectonic-cfg-support-0.1)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.2)
+        ("rust-tectonic-bundles" ,rust-tectonic-bundles-0.1)
+        ("rust-tectonic-docmodel" ,rust-tectonic-docmodel-0.1)
+        ("rust-tectonic-engine-bibtex" ,rust-tectonic-engine-bibtex-0.1)
+        ("rust-tectonic-engine-xdvipdfmx" ,rust-tectonic-engine-xdvipdfmx-0.1)
+        ("rust-tectonic-engine-xetex" ,rust-tectonic-engine-xetex-0.1)
+        ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
+        ("rust-tectonic-geturl" ,rust-tectonic-geturl-0.2)
+        ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.3)
+        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.2)
         ("rust-tectonic-xdv" ,rust-tectonic-xdv-0.1)
+        ("rust-tectonic-xetex-layout" ,rust-tectonic-xetex-layout-0.1)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-termcolor" ,rust-termcolor-1)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-vcpkg" ,rust-vcpkg-0.2)
+        ("rust-url" ,rust-url-2)
+        ("rust-watchexec" ,rust-watchexec-1)
         ("rust-zip" ,rust-zip-0.5))
        #:cargo-development-inputs
        (("rust-filetime" ,rust-filetime-0.2)
@@ -639,8 +644,7 @@ gitignore rules.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (copy-recursively "docs/src" doc)
-               #t))))))
+               (copy-recursively "docs/src" doc)))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -715,15 +719,14 @@ blanks grouped by language.")
 (define-public watchexec
   (package
     (name "watchexec")
-    (version "1.14.1")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "watchexec" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (uri (crate-uri "watchexec-cli" version))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vqaa462sjpzi0crh12ixqc2wa5bblirc129pnj8jr8iz3xw3gvd"))))
+        (base32 "1wp424gzw1zmax5yy5gya15knl24rjx8gi9c7palvq807q3cnj65"))))
     (build-system cargo-build-system)
     (arguments
      `(#:phases
@@ -734,45 +737,156 @@ blanks grouped by language.")
                     (zsh (string-append out "/share/zsh/site-functions/_watchexec"))
                     (doc (string-append out "/share/doc/watchexec-" ,version)))
                (mkdir-p (dirname zsh))
-               (copy-file "completions/zsh" zsh)
-               (install-file "README.md" doc)
-               #t))))
+               ;; FIXME: The crates.io source does not provide zsh
+               ;; completions.  But the GitHub source does not compile.
+               ;;
+               ;; (copy-file "completions/zsh" zsh)
+               (install-file "README.md" doc)))))
        #:cargo-inputs
-       (("rust-embed-resource" ,rust-embed-resource-1)
-        ("rust-derive-builder" ,rust-derive-builder-0.9)
-        ("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-glob" ,rust-glob-0.3)
-        ("rust-globset" ,rust-globset-0.4)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-clap" ,rust-clap-2)
+        ("rust-embed-resource" ,rust-embed-resource-1)
+        ("rust-env-logger" ,rust-env-logger-0.8)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nix" ,rust-nix-0.17)
-        ("rust-notify" ,rust-notify-4)
-        ("rust-walkdir" ,rust-walkdir-2))))
+        ("rust-watchexec" ,rust-watchexec-1))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-insta" ,rust-insta-1))))
     (home-page "https://github.com/watchexec/watchexec")
     (synopsis "Executes commands in response to file modifications")
     (description
-     "@command{watchexec} is a simple, standalone tool that watches a path and runs
-a command whenever it detects modifications.
-
-Example use cases:
-@itemize @bullet
-@item Automatically run unit tests
-@item Run linters/syntax checkers
-@end itemize
-
-Features:
-@itemize @bullet
-@item Coalesces multiple file system events into one, for editors that
-use swap/backup files during saving
-@item By default, uses @code{.gitignore} and @code{.ignore} to determine which
-files to ignore notifications for
-@item Supports watching files with a specific extension
-@item Supports filtering/ignoring events based on glob patterns
-@item Launches child processes in a new process group
-@item Sets environment variables that allow the executed program to learn
-the details of how it was triggered.
-@end itemize")
+     "@command{watchexec} is a simple, standalone tool that watches a path and
+runs a command whenever it detects modifications.")
     (license license:asl2.0)))
+
+(define-public rust-analyzer
+  (package
+    (name "rust-analyzer")
+    (version "2021-06-07")
+    (source
+     (origin
+       ;; The crate at "crates.io" is empty.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rust-analyzer/rust-analyzer")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "06bc3s5kjwpyr2cq79p0306a9bqp3xp928d750ybby9npq2dvj3z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52
+       #:install-source? #f             ; virtual manifest
+       #:cargo-test-flags
+       '("--release" "--"
+         "--skip=tests::test_version_check"         ;; It need rustc's version
+         ;; FIXME: Guix's rust not install source in %out/lib/rustlib/src/rust
+         ;; so "can't load standard library from sysroot"
+         "--skip=tests::test_loading_rust_analyzer"
+         "--skip=tidy::cargo_files_are_tidy"        ;; Not need
+         "--skip=tidy::check_licenses"              ;; It run cargo metadata.
+         "--skip=tidy::check_merge_commits"         ;; It run git rev-list.
+         "--skip=tidy::check_code_formatting"       ;; Need rustfmt as cargo fmt
+         "--skip=tidy::generate_grammar"            ;; Same
+         "--skip=tidy::generate_assists_tests")     ;; Same
+       #:cargo-inputs
+       (("rust-always-assert" ,rust-always-assert-0.1)
+        ("rust-anyhow" ,rust-anyhow-1)
+        ("rust-anymap" ,rust-anymap-0.12)
+        ("rust-arrayvec" ,rust-arrayvec-0.7)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-cargo-metadata" ,rust-cargo-metadata-0.13)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-chalk-ir" ,rust-chalk-ir-0.68)
+        ("rust-chalk-recursive" ,rust-chalk-recursive-0.68)
+        ("rust-chalk-solve" ,rust-chalk-solve-0.68)
+        ("rust-countme" ,rust-countme-2)
+        ("rust-cov-mark" ,rust-cov-mark-1)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
+        ("rust-dashmap" ,rust-dashmap-4)
+        ("rust-dissimilar" ,rust-dissimilar-1)
+        ("rust-dot" ,rust-dot-0.1)
+        ("rust-drop-bomb" ,rust-drop-bomb-0.1)
+        ("rust-either" ,rust-either-1)
+        ("rust-ena" ,rust-ena-0.14)
+        ("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-expect-test" ,rust-expect-test-1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-fst" ,rust-fst-0.4)
+        ("rust-home" ,rust-home-0.5)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-jod-thread" ,rust-jod-thread-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libloading" ,rust-libloading-0.7)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-lsp-server" ,rust-lsp-server-0.5)
+        ("rust-lsp-types" ,rust-lsp-types-0.89)
+        ("rust-memmap2" ,rust-memmap2-0.2)
+        ("rust-mimalloc" ,rust-mimalloc-0.1)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-notify" ,rust-notify-5)
+        ("rust-object" ,rust-object-0.24)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-oorandom" ,rust-oorandom-11.1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-perf-event" ,rust-perf-event-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-pulldown-cmark" ,rust-pulldown-cmark-0.8)
+        ("rust-pulldown-cmark-to-cmark" ,rust-pulldown-cmark-to-cmark-6)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rowan" ,rust-rowan-0.13)
+        ("rust-rustc-ap-rustc-lexer" ,rust-rustc-ap-rustc-lexer-721)
+        ("rust-rustc-hash" ,rust-rustc-hash-1)
+        ("rust-salsa" ,rust-salsa-0.17)
+        ("rust-scoped-tls" ,rust-scoped-tls-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-path-to-error" ,rust-serde-path-to-error-0.1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-smol-str" ,rust-smol-str-0.1)
+        ("rust-snap" ,rust-snap-1)
+        ("rust-text-size" ,rust-text-size-1)
+        ("rust-threadpool" ,rust-threadpool-1)
+        ("rust-tikv-jemalloc-ctl" ,rust-tikv-jemalloc-ctl-0.4)
+        ("rust-tikv-jemallocator" ,rust-tikv-jemallocator-0.4)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-subscriber" ,rust-tracing-subscriber-0.2)
+        ("rust-tracing-tree" ,rust-tracing-tree-0.1)
+        ("rust-ungrammar" ,rust-ungrammar-1)
+        ("rust-url" ,rust-url-2)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-write-json" ,rust-write-json-0.1)
+        ("rust-xflags" ,rust-xflags-0.2)
+        ("rust-xshell" ,rust-xshell-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-build-failures
+           (lambda _
+             (chmod ".cargo/config" 420)
+             #t))
+         (add-before 'check 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (string-append "#!" (which "bash"))))
+               (with-directory-excursion "crates/syntax/test_data/lexer/ok"
+                 (substitute* "0010_single_line_comments.txt"
+                   (("SHEBANG 19")
+                    (string-append "SHEBANG "
+                                   (number->string (string-length bash))))
+                   (("#!/usr/bin/env bash") bash))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "target/release/rust-analyzer"
+                           (string-append (assoc-ref outputs "out")
+                                          "/bin")))))))
+    (home-page "https://rust-analyzer.github.io/")
+    (synopsis "Experimental Rust compiler front-end for IDEs")
+    (description "Rust-analyzer is a modular compiler frontend for the Rust
+language.  It is a part of a larger rls-2.0 effort to create excellent IDE
+support for Rust.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-cargo-c
   (package

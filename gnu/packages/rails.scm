@@ -142,8 +142,8 @@ API.")
        (modify-phases %standard-phases
          (add-after 'extract-gemspec 'remove-unnecessary-dependencies
            (lambda _
-             ;; Remove the testing of compass, as it's use is deprecated, and
-             ;; it's unpackaged for Guix
+             ;; Remove the testing of compass, as its use is deprecated, and
+             ;; it's unpackaged for Guix.
              (substitute* "autoprefixer-rails.gemspec"
                ((".*%q<compass>.*") "\n")
                (("\"spec/compass_spec\\.rb\"\\.freeze, ") ""))

@@ -25,10 +25,10 @@
   #:use-module ((guix utils) #:select (%current-system))
   #:use-module (guix sets)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:export (graft?
@@ -173,10 +173,20 @@ references."
                  items))))
     (remove (cut member <> self) refs)))
 
+(define %graft-cache
+  ;; Cache that maps derivation/outputs/grafts tuples to lists of grafts.
+  (allocate-store-connection-cache 'grafts))
+
+(define record-cache-lookup!
+  (cache-lookup-recorder "derivation-graft-cache"
+                         "Derivation graft cache"))
+
 (define-syntax-rule (with-cache key exp ...)
   "Cache the value of monadic expression EXP under KEY."
-  (mlet %state-monad ((cache (current-state)))
-    (match (vhash-assoc key cache)
+  (mlet* %state-monad ((cache (current-state))
+                       (result -> (vhash-assoc key cache)))
+    (record-cache-lookup! result cache)
+    (match result
       ((_ . result)                               ;cache hit
        (return result))
       (#f                                         ;cache miss
@@ -218,10 +228,10 @@ have no corresponding element in the resulting list."
              ((set-contains? visited drv)
               (loop rest items result visited))
              (else
-              (let*-values (((inputs)
-                             (map derivation-input-derivation
-                                  (derivation-inputs drv)))
-                            ((result items)
+              (let* ((inputs
+                      (map derivation-input-derivation
+                           (derivation-inputs drv)))
+                     (result items
                              (fold2 lookup-derivers
                                     result items inputs)))
                 (loop (append rest inputs)
@@ -266,7 +276,7 @@ derivations to the corresponding set of grafts."
                                       #:system system)))))
           (reference-origins drv items)))
 
-  (with-cache (cons (derivation-file-name drv) outputs)
+  (with-cache (list (derivation-file-name drv) outputs grafts)
     (match (non-self-references store drv outputs)
       (()                                         ;no dependencies
        (return grafts))
@@ -304,17 +314,25 @@ derivations to the corresponding set of grafts."
   "Apply GRAFTS to the OUTPUTS of DRV and all their dependencies, recursively.
 That is, if GRAFTS apply only indirectly to DRV, graft the dependencies of
 DRV, and graft DRV itself to refer to those grafted dependencies."
-  (match (run-with-state
-             (cumulative-grafts store drv grafts
-                                #:outputs outputs
-                                #:guile guile #:system system)
-           vlist-null)                            ;the initial cache
-    ((first . rest)
-     ;; If FIRST is not a graft for DRV, it means that GRAFTS are not
-     ;; applicable to DRV and nothing needs to be done.
-     (if (equal? drv (graft-origin first))
-         (graft-replacement first)
-         drv))))
+  (let ((grafts cache
+                (run-with-state
+                    (cumulative-grafts store drv grafts
+                                       #:outputs outputs
+                                       #:guile guile #:system system)
+                  (store-connection-cache store %graft-cache))))
+
+    ;; Save CACHE in STORE to benefit from it on the next call.
+    ;; XXX: Ideally we'd use %STORE-MONAD and 'mcached' and avoid mutating
+    ;; STORE.
+    (set-store-connection-cache! store %graft-cache cache)
+
+    (match grafts
+      ((first . rest)
+       ;; If FIRST is not a graft for DRV, it means that GRAFTS are not
+       ;; applicable to DRV and nothing needs to be done.
+       (if (equal? drv (graft-origin first))
+           (graft-replacement first)
+           drv)))))
 
 
 ;; The following might feel more at home in (guix packages) but since (guix

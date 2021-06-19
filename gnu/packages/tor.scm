@@ -54,14 +54,15 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.5.8")
+    (version "0.4.6.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "09z22gc01yh5zms7i31md6qpr0ir8i5fzrrz06qfpp5wx28x1pjp"))))
+               "1yacd7h7wg8n6wwrjmx2g9xjj24kj08j5sai9g7fm4cp1m73avbv"))
+             (patches (search-patches "tor-fix-build-with-gcc-7.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

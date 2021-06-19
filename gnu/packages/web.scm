@@ -238,7 +238,7 @@
              #t)))))
     (inputs
      `(("http-parser" ,http-parser)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://github.com/azadkuh/qhttp/")
     (synopsis "Qt-based HTTP Library")
     (description
@@ -318,7 +318,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -327,7 +327,7 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s6jyhz51d39ccz0ghr7hy1fww84b0pzsyb8s63qgxbndp2c42l0"))))
+        (base32 "0rz0b1fvyn94s4izzzrxyijwzc0np80qgmbwvg983nnzpzfr33ai"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -336,6 +336,7 @@ Interface} specification.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-cssparser" ,rust-cssparser-0.28)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-html5ever" ,rust-html5ever-0.24)
         ("rust-regex" ,rust-regex-1)
         ("rust-reqwest" ,rust-reqwest-0.11)
@@ -400,6 +401,10 @@ the same, being completely separated from the Internet.")
                                   "--with-http_ssl_module"
                                   "--with-http_v2_module"
                                   "--with-http_xslt_module"
+                                  "--with-http_gzip_static_module"
+                                  "--with-http_gunzip_module"
+                                  "--with-http_addition_module"
+                                  "--with-http_sub_module"
                                   "--with-pcre-jit"
                                   "--with-debug"
                                   "--with-stream"
@@ -1121,7 +1126,7 @@ project)
          (add-before 'check 'render-offscreen
            (lambda _ (setenv "QT_QPA_PLATFORM" "offscreen") #t)))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (home-page "http://qjson.sourceforge.net")
     (synopsis "Library that maps JSON data to QVariant objects")
     (description "QJson is a Qt-based library that maps JSON data to
@@ -1146,7 +1151,7 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
     (build-system gnu-build-system)
     (inputs
      `(("qca" ,qca)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      '(#:tests? #f                      ;FIXME: some tests are failing
        #:phases
@@ -5823,14 +5828,14 @@ config files---you only have to specify the www root.")
 (define-public goaccess
   (package
     (name "goaccess")
-    (version "1.0.2")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://tar.goaccess.io/goaccess-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w84y61f3ldg2f28q6qlyr1scn3mcx0bsbq3i5xi5w193wh3xa2q"))
+                "0qf1mbri1ypfnsi7cz4yll229zpfnkhig70h6hz2h0wpz1fns8ln"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "src/error.h"
@@ -8142,7 +8147,7 @@ It contains the code shared by all Kiwix ports.")
        ("libmicrohttpd" ,libmicrohttpd)
        ("libzim" ,libzim)
        ("pugixml" ,pugixml)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebchannel" ,qtwebchannel)
        ("qtwebengine" ,qtwebengine)
@@ -8151,7 +8156,7 @@ It contains the code shared by all Kiwix ports.")
        ("zstd" ,zstd "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qmake" ,qtbase)))
+       ("qmake" ,qtbase-5)))
     (home-page "https://wiki.kiwix.org/wiki/Software")
     (synopsis "Viewer and manager of ZIM files")
     (description "Kiwix Desktop allows you to enjoy a lot of different content

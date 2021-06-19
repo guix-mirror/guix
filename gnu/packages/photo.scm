@@ -617,7 +617,7 @@ and enhance them.")
     (inputs
      `(("graphicsmagick" ,graphicsmagick)
        ("libomp" ,libomp)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://photoflare.io")
     (synopsis "Quick, simple but powerful image editor")
     (description "Photoflare is a cross-platform image editor with an aim

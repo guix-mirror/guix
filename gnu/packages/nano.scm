@@ -30,13 +30,13 @@
 (define-public nano
   (package
     (name "nano")
-    (version "5.7")
+    (version "5.8")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/nano/nano-" version ".tar.xz"))
       (sha256
-       (base32 "1ynarilx0ca0a5h6hl5bf276cymyy8s9wr5l24vyy7f15v683cfl"))))
+       (base32 "133nhxg4xfxisjzi85rn2l575hdbvcax1s13l4m6wcvq5zdn6fz4"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)

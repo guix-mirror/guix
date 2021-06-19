@@ -709,6 +709,13 @@ by pressing the Exit button.~%~%")))
                        (run-error-page
                         (G_ "No root mount point found.")
                         (G_ "Missing mount point"))
+                       #f)
+                      ((cannot-read-uuid? c)
+                       (run-error-page
+                        (format #f (G_ "Cannot read the ~a partition UUID.\
+ You may need to format it.")
+                                (cannot-read-uuid-partition c))
+                        (G_ "Wrong partition format"))
                        #f))
                  (check-user-partitions user-partitions))))
           (if user-partitions-ok?
@@ -789,6 +796,7 @@ by pressing the Exit button.~%~%")))
     (format-user-partitions user-partitions-with-pass)
     (syslog "formatted ~a user partitions~%"
             (length user-partitions-with-pass))
+    (syslog "user-partitions: ~a~%" user-partitions)
 
     (destroy-form-and-pop form)
     user-partitions))

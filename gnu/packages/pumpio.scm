@@ -62,7 +62,7 @@
              #t)))))
     (inputs
      `(("aspell" ,aspell)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("tidy" ,tidy)))
     (synopsis "Qt-based pump.io client")
     (description "Pumpa is a simple pump.io client written in C++ and Qt.")

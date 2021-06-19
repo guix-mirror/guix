@@ -115,7 +115,11 @@ lives in, or the empty list if this is not applicable."
     "Return manifest entries corresponding to extra channels--i.e., not the
 'guix' channel."
     (remove (lambda (entry)
-              (string=? (manifest-entry-name entry) "guix"))
+              (or (string=? (manifest-entry-name entry) "guix")
+
+                  ;; If ENTRY lacks the 'source' property, it's not an entry
+                  ;; from 'guix pull'.  See <https://bugs.gnu.org/48778>.
+                  (not (assq 'source (manifest-entry-properties entry)))))
             (current-profile-entries))))
 
 (define current-channels

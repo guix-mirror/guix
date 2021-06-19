@@ -301,7 +301,7 @@ video and audio streams from a DVD.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rac70p6rpvdx9v0bdd8nphgr7imdxb7nz0x77n3p7h3180zz9x0"))))
+        (base32 "1cv6vcf5yxcwdvj5yqcckbixqrvvdxk7ibincnnv80pz6wh527sv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; Test script is stand-alone
@@ -563,7 +563,7 @@ applications by providing high-level classes for commonly required tasks.")
     (inputs
      `(;; XXX: Build fails with libvideogfx.
        ;; ("libvideogfx" ,libvideogfx)
-       ("qt" ,qtbase)
+       ("qt" ,qtbase-5)
        ("sdl" ,sdl)))
     (synopsis "H.265 video codec implementation")
     (description "Libde265 is an implementation of the h.265 video codec.  It is
@@ -768,16 +768,16 @@ mpv's powerful playback capabilities.")
                    (replace 'bootstrap
                      (lambda _ (invoke "sh" "bootstrap"))))))
     (home-page "http://liba52.sourceforge.net/")
-    (synopsis "ATSC A/52 stream decoder")
-    (description "liba52 is a library for decoding ATSC A/52 streams.  The
-A/52 standard is used in a variety of applications, including digital
+    (synopsis "ATSC A/52 audio stream decoder")
+    (description "liba52 is a library for decoding ATSC A/52 audio streams.
+The A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license license:gpl2+)))
 
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.1.0")
+    (version "3.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -786,21 +786,28 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v3i34jmbz1p3x8msj3vx46nl6jdzxbkr2lfbh06vard8adb16il"))))
+                "11fy2xw35ladkjcz71samhcpqlqr3y0n1n17nk90i13aydrll66f"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python))) ; to detect the version
     (arguments
-     `(#:tests? #f  ;no check target
+     `(#:tests? #f                      ; downloads many video clips
        #:configure-flags
-         ;; build dynamic library
        (list "-DBUILD_SHARED_LIBS=YES"
              "-DENABLE_PIC=TRUE"
              "-DAOM_TARGET_CPU=generic"
              (string-append "-DCMAKE_INSTALL_PREFIX="
-                              (assoc-ref %outputs "out")))))
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file
+                         (find-files lib "\\.a$"))))))))
     (home-page "https://aomedia.googlesource.com/aom/")
     (synopsis "AV1 video codec")
     (description "Libaom is the reference implementation of AV1.  It includes a
@@ -930,7 +937,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("lzo" ,lzo)
        ("pcre2" ,pcre2)
        ("pugixml" ,pugixml)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("utfcpp" ,utfcpp)
        ("zlib" ,zlib)))
@@ -1469,8 +1476,7 @@ operate properly.")
        ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
-       ;; FFmpeg is not yet compatible with SRT > 1.4.1.
-       ("srt" ,srt-1.4.1)
+       ("srt" ,srt)
        ("twolame" ,twolame)
        ("vidstab" ,vidstab)
        ("x265" ,x265)
@@ -1843,7 +1849,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("pulseaudio" ,pulseaudio)
        ("protobuf" ,protobuf)
        ("python" ,python-wrapper)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("samba" ,samba)
@@ -2195,14 +2201,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.05.16")
+    (version "2021.06.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1z8sdzvkxhscnzy7cnjag308glif0k8jylr11biqwzypm1f2l0fl"))
+                "1hqan9h55x9gfdakw554vic68w9gpvhblchwxlw265zxp56hxjrw"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -2735,7 +2741,7 @@ for use with HTML5 video.")
        ("libvpx" ,libvpx)
        ("libxv" ,libxv)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (arguments
@@ -3025,7 +3031,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        ("rubberband" ,rubberband)
        ("libsamplerate" ,libsamplerate)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("sdl" ,sdl)
        ("sox" ,sox)))
@@ -3095,7 +3101,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
        ("glu" ,glu)
        ("libjpeg" ,libjpeg-turbo)
        ("libx11" ,libx11)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("eudev" ,eudev)))
     (synopsis "Realtime video capture utilities for Linux")
     (description "The v4l-utils provide a series of libraries and utilities to
@@ -3159,7 +3165,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("mbedtls" ,mbedtls-apache)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("speexdsp" ,speexdsp)
@@ -3234,7 +3240,7 @@ OBS audio sources.")
              #t)))))
     (inputs
      `(("obs" ,obs)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://github.com/Palakis/obs-websocket")
     (synopsis "OBS plugin for remote control via WebSockets")
     (description "This OBS plugin allows you to establish a WebSocket channel
@@ -3426,7 +3432,7 @@ making @dfn{screencasts}.")
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -3854,14 +3860,17 @@ practically any type of media.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("zlib" ,zlib)
        ("tinyxml2" ,tinyxml2)
-       ("curl" ,curl)
+       ("curl" ,curl) ; In Requires.private of libmediainfo.pc.
        ("libzen" ,libzen)))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; see above TODO
+       #:configure-flags
+       (list "--with-libcurl" "--with-libtinyxml2")
        #:phases
        ;; build scripts not in root of archive
        (modify-phases %standard-phases
@@ -3914,10 +3923,9 @@ MPEG-2, MPEG-4, DVD (VOB)...
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)
-       ("libmediainfo" ,libmediainfo)
-       ("libzen" ,libzen)))
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmediainfo" ,libmediainfo)))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; lacks tests
@@ -4504,7 +4512,7 @@ create smoother and stable videos.")
        ("imagemagick" ,imagemagick)
        ("jsoncpp" ,jsoncpp)
        ("libopenshot-audio" ,libopenshot-audio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("zeromq" ,zeromq)))
     (arguments

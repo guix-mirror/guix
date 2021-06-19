@@ -117,19 +117,20 @@ apart is its use of Scalable Vector Graphics (SVG), an XML-based W3C standard,
 as the native format.")
     (license license:gpl2+)))
 
-(define-public inkscape-1.0
+(define-public inkscape-1.1
   (package
     (name "inkscape")
-    (version "1.0.2")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.inkscape.org/dl/"
                            "resources/file/"
                            "inkscape-" version ".tar.xz"))
+       (patches (search-patches "inkscape-1.1-fix-build-witch-gcc7.5.patch"))
        (sha256
         (base32
-         "12krl97a00gdcxxibsb7g2lgx5458mhx2437x0hvz350242j6gns"))
+         "1rlm2wqg8bgdxkdvnadh49wfp0mrbrk7d8n4vdcjyw6z7z7firki"))
        (modules '((guix build utils)
                   (ice-9 format)))
        (snippet
@@ -188,7 +189,7 @@ endif()~%~%"
                          (string-append "#include " quote
                                         (basename source-dir)))
                         ...))))))
-             (unbundle ("2geom" "src/2geom" #t)
+             (unbundle ("2geom" "src/3rdparty/2geom" #t)
                        ;; libcroco cannot be unbundled as it is heavily
                        ;; modified (see:
                        ;; https://gitlab.com/inkscape/inkscape/issues/876#note_276114904).

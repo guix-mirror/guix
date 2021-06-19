@@ -50,8 +50,9 @@
         (method url-fetch)
         (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             "connman-" version ".tar.xz"))
-    (sha256
-     (base32 "1wqs307vjphhh73qbqk25zxhhqwn1mdk6bpzl5qcd4blkcbafqlz"))))
+        (patches (search-patches "connman-CVE-2021-33833.patch"))
+        (sha256
+         (base32 "1wqs307vjphhh73qbqk25zxhhqwn1mdk6bpzl5qcd4blkcbafqlz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -148,7 +149,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
        (sha256
         (base32 "0jn12wxwjznady6aniwmvahg1dj25p902sdwj0070biv6vx5c7dq"))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (native-inputs
      `(("qttools" ,qttools)))
     (build-system gnu-build-system)

@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018, 2020 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2018, 2020, 2021 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -2090,7 +2090,7 @@ script files.")
     (name "octave")
     (inputs
      `(("qscintilla" ,qscintilla)
-       ("qt" ,qtbase)
+       ("qt" ,qtbase-5)
        ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
@@ -2363,7 +2363,7 @@ ASCII text files using Gmsh's own scripting language.")
        ("python-dbus" ,python-dbus)
        ("python-h5py" ,python-h5py) ;optional, for HDF5 data
        ("python-pyqt" ,python-pyqt)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
@@ -3558,7 +3558,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.44.0")
+    (version "5.45.0")
     (source
      (origin
        (method url-fetch)
@@ -3566,7 +3566,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1v6jr5s6hhj6r18gfk6hgxk2qd6z1dxkrjq9ss2z1y6sqi45wgyr"))
+         "1n6hc2d07d93hgc4yf3yqb9aqjqw6fskmvxggfxww1a8chr1yqy7"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -3673,7 +3673,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "21.04.0")
+    (version "21.05.2")
     (source
      (origin
        (method git-fetch)
@@ -3682,7 +3682,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xj95zk16x8kac8qhzd5kvf3b00x7hgdw85da9ww63xyndvhh2lw"))))
+        (base32 "0h7ryykh2dapcyvpp4f1j1b3vrrz80x9k8nkci2yxifgdb29vyhw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -4587,7 +4587,7 @@ evaluates expressions using the standard order of operations.")
                 "0maw5am6rrkyjrprfg113zjq37mqj0iaznkg4h2927ff7wrprc94"))))
     (build-system gnu-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
-                     ("qtbase" ,qtbase)
+                     ("qtbase" ,qtbase-5)
                      ("qttools" ,qttools)))
     (inputs `(("libx11" ,libx11)
               ("zlib" ,zlib)
@@ -5192,7 +5192,7 @@ reduction.")
      `(("boost" ,boost)
        ("glu" ,glu)
        ("mesa" ,mesa)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (build-system cmake-build-system)
     (synopsis "Toolset for the mCRL2 formal specification language")
     (description
@@ -6123,7 +6123,7 @@ functions.")
        (base32
         "0vh7cd1915bjqzkdp3sk25ngy8cq624mkh8c53c5bnzk357kb0fk"))))
     (build-system cmake-build-system)
-    (inputs `(("qtbase" ,qtbase)))
+    (inputs `(("qtbase" ,qtbase-5)))
     (native-inputs `(("qttools" ,qttools)))
     (arguments
      `(#:phases
@@ -6183,7 +6183,7 @@ researchers and developers alike to get started on SAT.")
 (define-public libqalculate
   (package
     (name "libqalculate")
-    (version "3.8.0")
+    (version "3.19.0")
     (source
      (origin
        (method git-fetch)
@@ -6192,7 +6192,7 @@ researchers and developers alike to get started on SAT.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))
+        (base32 "1w44407wb552q21dz4m2nwwdi8b9hzjb2w1l3ffsikzqckc7wbyj"))
        (patches
         (search-patches "libqalculate-3.8.0-libcurl-ssl-fix.patch"))))
     (build-system gnu-build-system)
@@ -6237,7 +6237,7 @@ cli.")
 (define-public qalculate-gtk
   (package
     (name "qalculate-gtk")
-    (version "3.8.0")
+    (version "3.19.0")
     (source
      (origin
        (method git-fetch)
@@ -6246,7 +6246,7 @@ cli.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nsg6dzg5r7rzqr671nvrf1c50rjwpz7bxv5f20i4s7agizgv840"))))
+        (base32 "1nrx7gp6f1yalbdda1gb97azhbr4xclq2xf08vvbvsk8jfd6fd2v"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -6270,15 +6270,6 @@ cli.")
            ;; script, which has not yet been patched to replace /bin/sh.
            (lambda _
              (setenv "NOCONFIGURE" "TRUE")
-             #t))
-         (add-before 'check 'add-pot-file
-           ;; the file contains translations and are currently not in use
-           ;; left out on purpose so add it to POTFILES.skip
-           (lambda _
-             (with-output-to-file "po/POTFILES.skip"
-               (lambda _
-                 (format #t "data/shortcuts.ui~%")
-                 #t))
              #t)))))
     (home-page "https://qalculate.github.io/")
     (synopsis "Multi-purpose graphical desktop calculator")

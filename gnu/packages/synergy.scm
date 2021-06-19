@@ -82,7 +82,7 @@
        ("libxi"   ,libxi)
        ("libx11"  ,libx11)
        ("libxtst" ,libxtst)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://symless.com/synergy")
     (synopsis "Mouse and keyboard sharing utility")
     (description

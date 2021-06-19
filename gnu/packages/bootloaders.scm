@@ -3,10 +3,10 @@
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -88,18 +88,24 @@
 (define-public grub
   (package
     (name "grub")
-    (version "2.04")
+    (version "2.06")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/grub/grub-" version ".tar.xz"))
              (sha256
               (base32
-               "0zgp5m3hmc9jh8wpjx6czzkh5id2y8n1k823x2mjvm2sk6b28ag5"))
+               "1qbycnxkx07arj9f2nlsi9kp0dyldspbv07ysdyd34qvz55a97mp"))
              (patches (search-patches
                        "grub-efi-fat-serial-number.patch"
-                       "grub-setup-root.patch"
-                       "grub-verifiers-Blocklist-fallout-cleanup.patch"
-                       "grub-cross-system-i686.patch"))))
+                       "grub-setup-root.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Adjust QEMU invocation to not use a deprecated device
+                 ;; name that was removed in QEMU 6.0.  Remove for >2.06.
+                 (substitute* "tests/ahci_test.in"
+                   (("ide-drive")
+                    "ide-hd"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -296,7 +302,9 @@ menu to select one of the installed operating systems.")
        ,@(substitute-keyword-arguments (package-arguments grub)
            ((#:tests? _ #f) #f)
            ((#:configure-flags flags ''())
-            `(cons "--with-platform=efi" ,flags))
+            `(cons* "--with-platform=efi"
+                    "--enable-stack-protector" ; EFI-only for now
+                    ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
                (add-after 'patch-stuff 'use-absolute-efibootmgr-path
@@ -426,7 +434,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -434,7 +442,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "0bf8801z6fpd1gz9mxd5pqqj8nq101x393cyw8rpkc712w13nl0h"))))
+                "0wrl43rvd8nnm1v1wyfdr17vk8q7ymib62vli6da8n9ni4lwbkk5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -516,17 +524,17 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-2021.07
   (package
    (inherit u-boot)
-   (version "2021.07-rc1")
+   (version "2021.07-rc4")
    (source (origin
-	    (patches
-             (list %u-boot-rockchip-inno-usb-patch))
+             (patches
+               (list %u-boot-rockchip-inno-usb-patch))
             (method url-fetch)
             (uri (string-append
                   "https://ftp.denx.de/pub/u-boot/"
                   "u-boot-" version ".tar.bz2"))
             (sha256
              (base32
-              "12krpy85iwy40xlhqb61d0d4bzj0sbn9sdf8brn57m4cjh1svaya"))))))
+              "0bnsywgy2b0jxim5h9dc807lqk5kq8hvgf4lcsmffnc0hf4isv8p"))))))
 
 (define-public u-boot-tools
   (package
@@ -865,6 +873,13 @@ to Novena upstream, does not load u-boot.img from the first partition.")
 
 (define-public u-boot-sifive-fu540
   (make-u-boot-package "sifive_fu540" "riscv64-linux-gnu"))
+
+(define-public u-boot-sifive-unmatched
+  (let ((base (make-u-boot-package "sifive_unmatched" "riscv64-linux-gnu")))
+    (package
+      (inherit base)
+      (version (package-version u-boot-2021.07))
+      (source (package-source u-boot-2021.07)))))
 
 (define-public u-boot-rock64-rk3328
   (let ((base (make-u-boot-package "rock64-rk3328" "aarch64-linux-gnu")))

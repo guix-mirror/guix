@@ -300,6 +300,15 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
                                infractions)
                          #:field 'description)))))
 
+  (define (check-no-trailing-whitespace description)
+    "Check that DESCRIPTION doesn't have trailing whitespace."
+    (if (string-suffix? " " description)
+        (list
+         (make-warning package
+                       (G_ "description contains trailing whitespace")
+                       #:field 'description))
+        '()))
+
   (let ((description (package-description package)))
     (if (string? description)
         (append
@@ -309,6 +318,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
          ;; Use raw description for this because Texinfo rendering
          ;; automatically fixes end of sentence space.
          (check-end-of-sentence-space description)
+         (check-no-trailing-whitespace description)
          (match (check-texinfo-markup description)
            ((and warning (? lint-warning?)) (list warning))
            (plain-description
@@ -478,13 +488,23 @@ markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
                        (G_ "Texinfo markup in synopsis is invalid")
                        #:field 'synopsis)))))
 
+  (define (check-no-trailing-whitespace synopsis)
+    "Check that SYNOPSIS doesn't have trailing whitespace."
+    (if (string-suffix? " " synopsis)
+        (list
+         (make-warning package
+                       (G_ "synopsis contains trailing whitespace")
+                       #:field 'synopsis))
+        '()))
+
   (define checks
     (list check-proper-start
           check-final-period
           check-start-article
           check-start-with-package-name
           check-synopsis-length
-          check-texinfo-markup))
+          check-texinfo-markup
+          check-no-trailing-whitespace))
 
   (match (package-synopsis package)
     (""
@@ -781,7 +801,8 @@ warnings."
                   ((blank? line)
                    (loop))
                   ((or (string-prefix? "--- " line)
-                       (string-prefix? "+++ " line))
+                       (string-prefix? "+++ " line)
+                       (string-prefix? "diff --git " line))
                    (list (make-warning package
                                        (G_ "~a: patch lacks comment and \
 upstream status")

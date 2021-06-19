@@ -1512,7 +1512,7 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (propagated-inputs
      `(("julia-jllwrappers" ,julia-jllwrappers)
        ("julia-libglvnd-jll" ,julia-libglvnd-jll)

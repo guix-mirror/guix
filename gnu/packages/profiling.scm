@@ -207,7 +207,7 @@ with calls to the POMP2 measurement interface.")
     (inputs `(("dbus" ,dbus)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
-                     ("qtbase" ,qtbase)           ; native because of qmake
+                     ("qtbase" ,qtbase-5)           ; native because of qmake
                      ("which" ,which)))
 
     ;; FIXME: The doc is 14MB, but adding a doc output results in a cycle.

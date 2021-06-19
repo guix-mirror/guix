@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Robin Green <greenrd@greenrd.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,79 +143,76 @@ It is developed using Objective Caml and Camlp5.")
     (license (list license:lgpl2.1 license:opl1.0+))))
 
 (define-public proof-general
-  (package
-    (name "proof-general")
-    (version "4.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url (string-append
-                          "https://github.com/ProofGeneral/PG"))
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0bdfk91wf71z80mdfnl8hpinripndcjgdkz854zil6521r84nqk8"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("which" ,which)
-       ("emacs" ,emacs-minimal)
-       ("texinfo" ,texinfo)))
-    (inputs
-     `(("host-emacs" ,emacs)
-       ("perl" ,perl)
-       ("coq" ,coq)))
-    (arguments
-     `(#:tests? #f  ; no check target
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "DEST_PREFIX=" %output))
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'disable-byte-compile-error-on-warn
-                    (lambda _
-                      (substitute* "Makefile"
-                        (("\\(setq byte-compile-error-on-warn t\\)")
-                         "(setq byte-compile-error-on-warn nil)"))
-                      #t))
-         (add-after 'unpack 'patch-hardcoded-paths
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out   (assoc-ref outputs "out"))
-                            (coq   (assoc-ref inputs "coq"))
-                            (emacs (assoc-ref inputs "host-emacs")))
-                        (define (coq-prog name)
-                          (string-append coq "/bin/" name))
-                        (substitute* "Makefile"
-                          (("/sbin/install-info") "install-info"))
-                        (substitute* "bin/proofgeneral"
-                          (("^PGHOMEDEFAULT=.*" all)
-                           (string-append all
-                                          "PGHOME=$PGHOMEDEFAULT\n"
-                                          "EMACS=" emacs "/bin/emacs")))
-                        #t)))
-         (add-after 'unpack 'clean
-           (lambda _
-             ;; Delete the pre-compiled elc files for Emacs 23.
-             (invoke "make" "clean")))
-         (add-after 'install 'install-doc
-           (lambda* (#:key make-flags #:allow-other-keys)
-             ;; XXX FIXME avoid building/installing pdf files,
-             ;; due to unresolved errors building them.
-             (substitute* "Makefile"
-               ((" [^ ]*\\.pdf") ""))
-             (apply invoke "make" "install-doc" make-flags))))))
-    (home-page "https://proofgeneral.github.io/ ")
-    (synopsis "Generic front-end for proof assistants based on Emacs")
-    (description
-     "Proof General is a major mode to turn Emacs into an interactive proof
+  ;; The latest release is from 2016 and there has been more than 450 commits
+  ;; since then.
+  ;; Commit from 2021-06-07.
+  (let ((commit "bc86736abb728ec0d28abc90ef0adae21d29a66a")
+        (revision "0"))
+    (package
+      (name "proof-general")
+      (version (git-version "4.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ProofGeneral/PG")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "00cga3n9nj2xa3ivb0fdkkdx3k11fp4879y188738631yd1x2lsa"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("which" ,which)
+         ("emacs" ,emacs-minimal)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("host-emacs" ,emacs)
+         ("perl" ,perl)
+         ("coq" ,coq)))
+      (arguments
+       `(#:tests? #f                   ; no check target
+         #:make-flags (list (string-append "PREFIX=" %output)
+                            (string-append "DEST_PREFIX=" %output)
+                            (string-append "ELISP_START=" %output
+                                           "/share/emacs/site-lisp/ProofGeneral"))
+         #:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'disable-byte-compile-error-on-warn
+             (lambda _
+               (substitute* "Makefile"
+                 (("\\(setq byte-compile-error-on-warn t\\)")
+                  "(setq byte-compile-error-on-warn nil)"))))
+           (add-after 'unpack 'patch-hardcoded-paths
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out   (assoc-ref outputs "out"))
+                     (coq   (assoc-ref inputs "coq"))
+                     (emacs (assoc-ref inputs "host-emacs")))
+                 (substitute* "Makefile"
+                   (("/sbin/install-info") "install-info")))))
+           (add-after 'unpack 'clean
+             (lambda _
+               ;; Delete the pre-compiled elc files for Emacs 23.
+               (invoke "make" "clean")))
+           (add-after 'install 'install-doc
+             (lambda* (#:key make-flags #:allow-other-keys)
+               ;; XXX FIXME avoid building/installing pdf files,
+               ;; due to unresolved errors building them.
+               (substitute* "Makefile"
+                 ((" [^ ]*\\.pdf") ""))
+               (apply invoke "make" "install-doc" make-flags))))))
+      (home-page "https://proofgeneral.github.io/")
+      (synopsis "Generic front-end for proof assistants based on Emacs")
+      (description
+       "Proof General is a major mode to turn Emacs into an interactive proof
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public coq-flocq
   (package

@@ -20,6 +20,8 @@
   #:use-module (guix build union)
   #:use-module (guix build utils)
   #:use-module (guix search-paths)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
@@ -143,45 +145,71 @@ instead make DIRECTORY a \"real\" directory containing symlinks."
                         directory))))
             (apply throw args))))))
 
-(define* (build-profile output inputs
-                        #:key manifest search-paths
-                        (symlink symlink))
-  "Build a user profile from INPUTS in directory OUTPUT, using SYMLINK to
-create symlinks.  Write MANIFEST, an sexp, to OUTPUT/manifest.  Create
-OUTPUT/etc/profile with Bash definitions for -all the variables listed in
-SEARCH-PATHS."
+(define (manifest-sexp->inputs+search-paths manifest)
+  "Parse MANIFEST, an sexp as produced by 'manifest->gexp', and return two
+values: the list of store items of its manifest entries, and the list of
+search path specifications."
+  (match manifest                            ;this must match 'manifest->gexp'
+    (('manifest ('version 3)
+                ('packages (entries ...)))
+     (let loop ((entries entries)
+                (inputs '())
+                (search-paths '()))
+       (match entries
+         (((name version output item
+                 ('propagated-inputs deps)
+                 ('search-paths paths) _ ...) . rest)
+          (loop (append deps rest)
+                (cons item inputs)
+                (append paths search-paths)))
+         (()
+          (values inputs
+                  (delete-duplicates
+                   (cons $PATH
+                         (map sexp->search-path-specification
+                              search-paths))))))))))
+
+(define* (build-profile output manifest
+                        #:key (extra-inputs '()) (symlink symlink))
+  "Build a user profile from MANIFEST, an sexp, and EXTRA-INPUTS, a list of
+store items, in directory OUTPUT, using SYMLINK to create symlinks.  Create
+OUTPUT/etc/profile with Bash definitions for all the variables listed in the
+search paths of MANIFEST's entries."
   (define manifest-file
     (string-append output "/manifest"))
 
-  ;; Make the symlinks.
-  (union-build output inputs
-               #:symlink symlink
-               #:log-port (%make-void-port "w"))
+  (let-values (((inputs search-paths)
+                (manifest-sexp->inputs+search-paths manifest)))
 
-  ;; If one of the INPUTS provides a '/manifest' file, delete it.  That can
-  ;; happen if MANIFEST contains something such as a Guix instance, which is
-  ;; ultimately built as a profile.
-  (when (file-exists? manifest-file)
-    (delete-file manifest-file))
+    ;; Make the symlinks.
+    (union-build output (append extra-inputs inputs)
+                 #:symlink symlink
+                 #:log-port (%make-void-port "w"))
 
-  ;; Store meta-data.
-  (call-with-output-file manifest-file
-    (lambda (p)
-      (display "\
+    ;; If one of the INPUTS provides a '/manifest' file, delete it.  That can
+    ;; happen if MANIFEST contains something such as a Guix instance, which is
+    ;; ultimately built as a profile.
+    (when (file-exists? manifest-file)
+      (delete-file manifest-file))
+
+    ;; Store meta-data.
+    (call-with-output-file manifest-file
+      (lambda (p)
+        (display "\
 ;; This file was automatically generated and is for internal use only.
 ;; It cannot be passed to the '--manifest' option.
 ;; Run 'guix package --export-manifest' if you want to export a file
 ;; suitable for '--manifest'.\n\n"
-               p)
-      (pretty-print manifest p)))
+                 p)
+        (pretty-print manifest p)))
 
-  ;; Make sure we can write to 'OUTPUT/etc'.  'union-build' above could have
-  ;; made 'etc' a symlink to a read-only sub-directory in the store so we need
-  ;; to work around that.
-  (ensure-writable-directory (string-append output "/etc")
-                             #:symlink symlink)
+    ;; Make sure we can write to 'OUTPUT/etc'.  'union-build' above could have
+    ;; made 'etc' a symlink to a read-only sub-directory in the store so we
+    ;; need to work around that.
+    (ensure-writable-directory (string-append output "/etc")
+                               #:symlink symlink)
 
-  ;; Write 'OUTPUT/etc/profile'.
-  (build-etc/profile output search-paths))
+    ;; Write 'OUTPUT/etc/profile'.
+    (build-etc/profile output search-paths)))
 
 ;;; profile.scm ends here

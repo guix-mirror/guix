@@ -587,7 +587,8 @@ check-system: $(GOBJECTS)
 dist_pkgdata_DATA =				\
   etc/substitutes/berlin.guix.gnu.org.pub	\
   etc/substitutes/ci.guix.gnu.org.pub		\
-  etc/substitutes/ci.guix.info.pub
+  etc/substitutes/ci.guix.info.pub		\
+  etc/substitutes/bordeaux.guix.gnu.org.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix	\

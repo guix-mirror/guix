@@ -72,8 +72,7 @@
 
 (define (output-translation source-path
                             object-output)
-  "Return a translation for the system's source path
-to it's binary output."
+  "Return a translation for the system's source path to its binary output."
   `((,source-path
      :**/ :*.*.*)
     (,(library-directory object-output)

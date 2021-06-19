@@ -47,6 +47,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -471,7 +472,7 @@ access.")
          ("font-google-noto" ,font-google-noto)
          ("font-openmoji" ,font-openmoji)
          ("openssl" ,openssl)
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("qtmultimedia" ,qtmultimedia)
          ("qtsvg" ,qtsvg)))
       (home-page "https://kristall.random-projects.net")
@@ -722,7 +723,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.5.0")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
@@ -730,7 +731,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "0ziidk1qv7gaj2pvbla09vznjgslgqwr9ljfd9hskrv6nc68wafs"))))
+        (base32 "0gqaipgs16kw711ijhshmbhhvlyjvh37wxdz059p4vvjhfrxbr1v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false))                ;no tests
@@ -834,7 +835,7 @@ http, and https via third-party applications.")
 (define-public tinmop
   (package
     (name "tinmop")
-    (version "0.6.2")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -843,7 +844,7 @@ http, and https via third-party applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fz52agvxnavz375apb1pjalf3myjllr4pc096b6qvc6vzhadg4c"))))
+        (base32 "1lv1nckvzyhpn8cs6m40f2np15b3a8071kh7sy1216q2345s2ckc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("curl" ,curl)
@@ -904,3 +905,30 @@ http, and https via third-party applications.")
 interface.")
     (home-page "https://www.autistici.org/interzona/tinmop.html")
     (license license:gpl3+)))
+
+(define-public telescope
+  (package
+    (name "telescope")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.omarpolo.com/telescope/snapshot/"
+                           "telescope-" version ".tar.gz"))
+       (sha256
+        (base32 "1j7cj7fmvl11dvyhb23jx20k4r7m310qnyq0pwz3ijdpm5s88rf1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libevent"  ,libevent)
+       ("libressl"  ,libressl)
+       ("ncurses"   ,ncurses)))
+    (home-page "https://git.omarpolo.com/telescope/about/")
+    (synopsis "Gemini client with a terminal interface")
+    (description "Telescope is a w3m-like browser for Gemini.")
+    (license license:x11)))

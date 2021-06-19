@@ -44,6 +44,7 @@
   (package
     (name "polkit")
     (version "0.116")
+    (replacement polkit/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -135,6 +136,13 @@ making process with respect to granting access to privileged operations
 for unprivileged applications.")
     (license lgpl2.0+)))
 
+(define polkit/fixed
+  (package
+    (inherit polkit)
+    (source (origin
+              (inherit (package-source polkit))
+              (patches (search-patches "polkit-CVE-2021-3560.patch"))))))
+
 (define-public polkit-qt
   (package
     (name "polkit-qt")
@@ -151,7 +159,7 @@ for unprivileged applications.")
     (inputs
      `(("polkit" ,polkit)))
     (propagated-inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments

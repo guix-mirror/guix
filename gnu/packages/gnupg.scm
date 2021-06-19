@@ -410,7 +410,7 @@ and every application benefits from this.")
        ,@(package-native-inputs gpgme)))
     (inputs
      `(("gpgme" ,gpgme)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ,@(package-inputs gpgme)))
     (synopsis "Qt API bindings for gpgme")
     (description "QGpgme provides a very high level Qt API around GpgMEpp.
@@ -863,7 +863,7 @@ software.")))
     (arguments
      `(#:configure-flags '("--enable-fallback-curses")))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ,@(package-inputs pinentry-tty)))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a

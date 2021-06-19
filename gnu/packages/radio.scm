@@ -136,12 +136,15 @@ useful in modems implemented with @dfn{digital signal processing} (DSP).")
               (base32 "1n6dbg13q8ga5qhg1yiszwly4jj0rxqr6f1xwm9waaly5z493xsd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (inputs
      `(("fftwf" ,fftwf)
        ("libfec" ,libfec)))
     (arguments
-     `(#:phases
+     `(;; For reproducibility, disable use of SSE3, SSE4.1, etc.
+       #:configure-flags '("--enable-simdoverride")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
@@ -313,29 +316,33 @@ SoapySDR library.")
     (license license:expat)))
 
 (define-public soapyhackrf
-  (package
-    (name "soapyhackrf")
-    (version "0.3.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pothosware/SoapyHackRF")
-             (commit (string-append "soapy-hackrf-" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1awn89z462500gb3fjb7x61b1znkjri9n1d39bqfip1qk4s11pxc"))))
-    (build-system cmake-build-system)
-    (inputs
-     `(("hackrf" ,hackrf)
-       ("soapysdr" ,soapysdr)))
-    (arguments
-     `(#:tests? #f))  ; No test suite
-    (home-page "https://github.com/pothosware/SoapyHackRF/wiki")
-    (synopsis "SoapySDR HackRF module")
-    (description
-     "This package provides HackRF devices support to the SoapySDR library.")
-    (license license:expat)))
+  ;; Use commit because some fixes are not in a release yet
+  ;; (last release was in 2018).
+  (let ((commit "8d2e7beebb4c451609cb0cee236fa4d20a0e28b1")
+        (revision "2"))
+    (package
+      (name "soapyhackrf")
+      (version (git-version "0.3.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pothosware/SoapyHackRF")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l5890a240i1fan88jjdxaqswk3as410nlrv12a698fy9npqh4w4"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("hackrf" ,hackrf)
+         ("soapysdr" ,soapysdr)))
+      (arguments
+       `(#:tests? #f))  ; No test suite
+      (home-page "https://github.com/pothosware/SoapyHackRF/wiki")
+      (synopsis "SoapySDR HackRF module")
+      (description
+       "This package provides HackRF devices support to the SoapySDR library.")
+      (license license:expat))))
 
 (define-public soapyrtlsdr
   (package
@@ -520,7 +527,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("python-pygobject" ,python-pygobject)
        ("python-pyqt" ,python-pyqt)
        ("python-pyyaml" ,python-pyyaml)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qwt" ,qwt)
        ("sdl" ,sdl)
        ("volk" ,volk)
@@ -790,7 +797,7 @@ to the fix block above.
        ("log4cpp" ,log4cpp)
        ("portaudio" ,portaudio)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("volk" ,volk)))
     (arguments
@@ -1084,7 +1091,7 @@ users.")
        ("fftwf" ,fftwf)
        ("hamlib" ,wsjtx-hamlib)
        ("libusb" ,libusb)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtserialport" ,qtserialport)))
     (arguments
@@ -1143,7 +1150,7 @@ weak-signal conditions.")
        ("fftwf" ,fftwf)
        ("hamlib" ,wsjtx-hamlib)
        ("libusb" ,libusb)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtserialport" ,qtserialport)))
     (arguments
@@ -1396,12 +1403,17 @@ NanoVNA vector network analyzers.")
        ("hamlib" ,hamlib)
        ("openjpeg" ,openjpeg)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("v4l-utils" ,v4l-utils)))
     (arguments
      `(#:tests? #f  ; No test suite.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-newer-hamlib-support
+           (lambda _
+             (substitute* "qsstv/rig/rigcontrol.cpp"
+               (("FILPATHLEN")
+                "HAMLIB_FILPATHLEN"))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "qmake"
@@ -1500,7 +1512,7 @@ methods:
      `(("alsa-lib" ,alsa-lib)
        ("ncurses" ,ncurses)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:configure-flags '("--disable-static")
        #:phases
@@ -1629,7 +1641,7 @@ Compatible hardware/software:
        ("libpcap" ,libpcap)
        ("opus" ,opus)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtwebkit" ,qtwebkit)
        ("qwt" ,qwt)
@@ -1701,7 +1713,7 @@ receiver.")
        ("libusb" ,libusb)
        ("mpg123" ,mpg123)
        ("rtl-sdr" ,rtl-sdr)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtcharts" ,qtcharts)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
@@ -1937,7 +1949,7 @@ voice formats.")
        ("opencv" ,opencv)
        ("opus" ,opus)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtcharts" ,qtcharts)
        ("qtdeclarative" ,qtdeclarative)
        ("qtlocation" ,qtlocation)
@@ -1993,7 +2005,7 @@ various hardware.")
     (inputs
      `(("fftwf" ,fftwf)
        ("liquid-dsp" ,liquid-dsp)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://github.com/miek/inspectrum")
     (synopsis "Radio signal analyser")
     (description
@@ -2017,7 +2029,7 @@ software-defined radio receivers.")
     (build-system qt-build-system)
     (inputs
      `(("qcustomplot" ,qcustomplot)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtserialport" ,qtserialport)))
     (arguments

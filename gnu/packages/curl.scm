@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
-;;; Copyright © 2015, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -61,7 +61,8 @@
              (sha256
               (base32
                "0jsrc97vbghvljic997r9nypc9qqddcil2lzvv032br8ahn5hr0g"))
-             (patches (search-patches "curl-use-ssl-cert-env.patch"))))
+             (patches (search-patches "curl-use-ssl-cert-env.patch"
+                                      "curl-7.77-tls-priority-string.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages

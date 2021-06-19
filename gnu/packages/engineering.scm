@@ -201,7 +201,7 @@
      `(("boost" ,boost)
        ("muparser" ,muparser)
        ("freetype" ,freetype)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -701,7 +701,7 @@ multipole-accelerated algorithm.")
                        (string-append "PREFIX=" out)
                        "phoenix.pro")))))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtserialport" ,qtserialport)
        ("qtsvg" ,qtsvg)
        ("libgit2" ,libgit2)
@@ -834,7 +834,7 @@ fonts to gEDA.")
       (inputs
        `(("boost" ,boost)
          ("libpng" ,libpng)
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("eigen" ,eigen)
          ("guile" ,guile-3.0)))
       (home-page "https://libfive.com")
@@ -1683,31 +1683,18 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
   ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#236>.
   (package
     (name "libngspice")
-    (version "28")
-    (source (origin
-              (method url-fetch)
-              (uri (list
-                     (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                                    version "/ngspice-" version ".tar.gz")
-                     (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                                    "old-releases/" version
-                                    "/ngspice-" version ".tar.gz")))
-              (sha256
-               (base32
-                "0rnz2rdgyav16w7wfn3sfrk2lwvvgz1fh0l9107zkcldijklz04l"))
-              (modules '((guix build utils)))
-              ;; We remove the non-free cider and build without it.
-              (snippet
-               '(begin
-                  (delete-file-recursively "src/ciderlib")
-                  (delete-file "src/ciderinit")
-                  (substitute* "configure"
-                    (("src/ciderlib/Makefile") "")
-                    (("src/ciderlib/input/Makefile") "")
-                    (("src/ciderlib/support/Makefile") "")
-                    (("src/ciderlib/oned/Makefile") "")
-                    (("src/ciderlib/twod/Makefile") ""))
-                  #t))))
+    (version "34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                            version "/ngspice-" version ".tar.gz")
+             (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                            "old-releases/" version
+                            "/ngspice-" version ".tar.gz")))
+       (sha256
+        (base32 "1dfpkgkwmgwhq8dnbb8dh28cfap6rw0yywkhmxr4jxclcvygyqr2"))))
     (build-system gnu-build-system)
     (arguments
      `(;; No tests for libngspice exist.
@@ -1718,14 +1705,12 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
          (add-after 'unpack 'patch-timestamps
            (lambda _
              (substitute* "configure"
-               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))
-             #t))
+               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))))
          (add-after 'unpack 'delete-program-manuals
            (lambda _
              (substitute* "man/man1/Makefile.in"
                (("^man_MANS = ngspice\\.1 ngnutmeg\\.1 ngsconvert\\.1 ngmultidec\\.1")
-                "man_MANS = "))
-             #t))
+                "man_MANS = "))))
          (add-after 'install 'delete-script-files
            (lambda* (#:key outputs #:allow-other-keys)
              (delete-file-recursively
@@ -1733,6 +1718,7 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
                              "/share/ngspice/scripts")))))
        #:configure-flags
        (list "--enable-openmp"
+             "--enable-ciderlib"
              "--enable-xspice"
              "--with-ngshared"
              "--with-readline=yes")))
@@ -1752,6 +1738,7 @@ provides code modeling support and simulation of digital components through
 an embedded event driven algorithm.")
     (license (list license:lgpl2.0+ ; code in frontend/numparam
                    (license:non-copyleft "file:///COPYING") ; spice3 bsd-style
+                   license:bsd-3 ; ciderlib
                    license:public-domain)))) ; xspice
 
 (define-public ngspice
@@ -1768,16 +1755,7 @@ an embedded event driven algorithm.")
              (lambda _
                (substitute* "src/Makefile.in"
                  (("^SUBDIRS = misc maths frontend spicelib include/ngspice")
-                  "SUBDIRS = misc maths frontend spicelib"))
-               #t))
-           (add-after 'install 'delete-cmpp-dlmain
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each (lambda (file)
-                           (delete-file
-                            (string-append (assoc-ref outputs "out")
-                                           file)))
-                         '("/bin/cmpp" "/share/ngspice/dlmain.c"))
-               #t))
+                  "SUBDIRS = misc maths frontend spicelib"))))
            (delete 'delete-program-manuals)
            (delete 'delete-script-files)))))
     (inputs
@@ -2047,7 +2025,7 @@ parallel computing platforms.  It also supports serial execution.")
         (base32 "1b5dkanz3q0y5ag80w0l85hn7axrachb5m9zvyv4zvzrfy09wa88"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (native-inputs
@@ -2209,7 +2187,7 @@ simulation.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("openssl" ,openssl)
        ;; Depends on radare2 4.5.1 officially, builds and works fine with
@@ -2288,7 +2266,7 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
        ("mpfr" ,mpfr)
        ("opencsg" ,opencsg)
        ("qscintilla" ,qscintilla)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)))
     (native-inputs
      `(("bison" ,bison)
@@ -2420,7 +2398,7 @@ comments.")))
        ("python-pyyaml" ,python-pyyaml)
        ("python-shiboken-2" ,python-shiboken-2)
        ("python-wrapper" ,python-wrapper)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtwebkit" ,qtwebkit)
        ("qtx11extras" ,qtx11extras)
@@ -2700,7 +2678,7 @@ export filters.")
                (base32 "1cgx24wxh2ah5pff51rcrk6x8qcdjpkxcdak7s4cfzmxvjlshydd"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtscript" ,qtscript)
        ("qtxmlpatterns" ,qtxmlpatterns)
        ("mesa" ,mesa)

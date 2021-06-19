@@ -52,7 +52,6 @@
 
             bitlbee-configuration
             bitlbee-configuration?
-            bitlbee-service
             bitlbee-service-type
 
             quassel-configuration
@@ -888,26 +887,6 @@ string, you could instantiate a prosody service like this:
                 (description
                  "Run @url{http://bitlbee.org,BitlBee}, a daemon that acts as
 a gateway between IRC and chat networks.")))
-
-(define-deprecated (bitlbee-service #:key (bitlbee bitlbee)
-                                    (interface "127.0.0.1") (port 6667)
-                                    (extra-settings ""))
-  bitlbee-service-type
-  "Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
-acts as a gateway between IRC and chat networks.
-
-The daemon will listen to the interface corresponding to the IP address
-specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
-local clients can connect, whereas @code{0.0.0.0} means that connections can
-come from any networking interface.
-
-In addition, @var{extra-settings} specifies a string to append to the
-configuration file."
-  (service bitlbee-service-type
-           (bitlbee-configuration
-            (bitlbee bitlbee)
-            (interface interface) (port port)
-            (extra-settings extra-settings))))
 
 
 ;;;

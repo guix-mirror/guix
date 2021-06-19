@@ -1044,7 +1044,10 @@ processed, #f otherwise."
 
       (warn-about-old-distro)
 
-      (when (and (null? files) (manifest-transaction-null? trans))
+      (when (and (null? files) (manifest-transaction-null? trans)
+                 (not (any (match-lambda
+                             ((key . _) (assoc-ref %actions key)))
+                           opts)))
         ;; We can reach this point because the user did not specify any action
         ;; (as in "guix package"), did not specify any package (as in "guix
         ;; install"), or because there's nothing to upgrade (as when running

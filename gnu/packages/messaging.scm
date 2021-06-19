@@ -180,7 +180,7 @@
        ("hunspell" ,hunspell)
        ("libidn" ,libidn)
        ("qca" ,qca)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)
        ("qtwebkit" ,qtwebkit)
@@ -677,6 +677,7 @@ used by Pidgin and Bitlbee, among others, to access
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
+              (patches (search-patches "hexchat-add-libera-chat.patch"))
               (sha256
                (base32
                 "10p829jm1r6kidkgf5lhqhyqc5mxdcq96q3zhadsckasvc9rs6lh"))))
@@ -790,7 +791,7 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.14.4")
+    (version "2.14.5")
     (source
      (origin
        (method url-fetch)
@@ -798,7 +799,7 @@ authentication.")
         (string-append "mirror://sourceforge/pidgin/Pidgin/"
                        version "/pidgin-" version ".tar.gz"))
        (sha256
-        (base32 "1h952bh2jdm9jymzpj4dgmh530yh7pag2janfz6d5m1r4mljwraq"))
+        (base32 "12llip3r8126gph82r638xjv2v2rg34qgggn1nbwfmc3s7halimr"))
        (patches
         (search-patches "pidgin-add-search-path.patch"))
        (modules '((guix build utils)))
@@ -1219,7 +1220,7 @@ Encryption to Gajim.")
 (define-public dino
   (package
     (name "dino")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1227,7 +1228,7 @@ Encryption to Gajim.")
         (string-append "https://github.com/dino/dino/releases/download/v"
                        version "/dino-" version ".tar.gz"))
        (sha256
-        (base32 "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
+        (base32 "13rk8b0sj35az32c0ii173g9ww231awmyb4jlk56jy38hpyp7x1g"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -1275,14 +1276,14 @@ default.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.11.3")
+    (version "0.11.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "11xz4milv2962qf75vrdwsvd8sy2332nf69202rmvz5989pvvnng"))))
+                "02gzvsaq0l5lx608sfh7hfz14s6yfsr4sr4kzcsqd1cxljp35h6c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;tests require "busted"
@@ -1606,7 +1607,7 @@ instant messenger with audio and video chat capabilities.")
        ("sqlite" ,sqlite)
        ("openal" ,openal)
        ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("sqlcipher" ,sqlcipher)))
     (native-inputs
@@ -2227,7 +2228,7 @@ notifications, and Python scripting support.")
         (base32 "0gkwr3yw6k2m0j8cc085b5p2q788rf5nhp1p5hc5d55pc7mci2qs"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)))
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
@@ -2331,7 +2332,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
        ("lmdbxx" ,lmdbxx)
        ("mtxclient" ,mtxclient)
        ("openssl" ,openssl)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
@@ -2384,7 +2385,7 @@ There is support for:
     (build-system qt-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
@@ -2724,7 +2725,7 @@ as phones, embedded computers or microcontrollers.")
                   "\"../build"))
                #t)))))
       (inputs
-       `(("qtbase" ,qtbase)
+       `(("qtbase" ,qtbase-5)
          ("qtdeclarative" ,qtdeclarative)
          ("qtwebchannel" ,qtwebchannel)))
       (propagated-inputs
@@ -2853,7 +2854,7 @@ social and chat platform.")
        ("qca" ,qca)
        ("qhttp" ,qhttp)
        ("qite" ,qite)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtkeychain" ,qtkeychain)
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)

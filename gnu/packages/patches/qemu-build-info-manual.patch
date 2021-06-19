@@ -13,17 +13,11 @@ configuring the directory under which the info manuals are installed.
 * docs/meson.build (texi, info): New targets.
 
 Signed-off-by: Maxim Cournoyer <maxim.cournoyer@gmail.com>
----
- configure        |  7 ++++++-
- docs/meson.build | 21 +++++++++++++++++++++
- meson.build      |  2 ++
- 3 files changed, 29 insertions(+), 1 deletion(-)
 
 diff --git a/configure b/configure
-index 18c26e0389..d1ab2c19d1 100755
 --- a/configure
 +++ b/configure
-@@ -948,6 +948,8 @@ for opt do
+@@ -951,6 +951,8 @@ for opt do
      static="yes"
      QEMU_PKG_CONFIG_FLAGS="--static $QEMU_PKG_CONFIG_FLAGS"
    ;;
@@ -32,7 +26,7 @@ index 18c26e0389..d1ab2c19d1 100755
    --mandir=*) mandir="$optarg"
    ;;
    --bindir=*) bindir="$optarg"
-@@ -975,7 +977,7 @@ for opt do
+@@ -978,7 +980,7 @@ for opt do
    --host=*|--build=*|\
    --disable-dependency-tracking|\
    --sbindir=*|--sharedstatedir=*|\
@@ -41,35 +35,26 @@ index 18c26e0389..d1ab2c19d1 100755
    --htmldir=*|--dvidir=*|--pdfdir=*|--psdir=*)
      # These switches are silently ignored, for compatibility with
      # autoconf-generated configure scripts. This allows QEMU's
-@@ -1540,6 +1542,7 @@ includedir="${includedir:-$prefix/include}"
- if test "$mingw32" = "yes" ; then
-     mandir="$prefix"
-     datadir="$prefix"
-+    infodir="$prefix"
-     docdir="$prefix"
-     bindir="$prefix"
-     sysconfdir="$prefix"
-@@ -1547,6 +1550,7 @@ if test "$mingw32" = "yes" ; then
- else
-     mandir="${mandir:-$prefix/share/man}"
-     datadir="${datadir:-$prefix/share}"
-+    infodir="${infodir:-$datadir/info}"
-     docdir="${docdir:-$prefix/share/doc}"
-     bindir="${bindir:-$prefix/bin}"
-     sysconfdir="${sysconfdir:-$prefix/etc}"
-@@ -1683,6 +1687,7 @@ Advanced options (experts only):
-   --smbd=SMBD              use specified smbd [$smbd]
-   --with-git=GIT           use specified git [$git]
+@@ -1599,6 +1601,7 @@ else
+ fi
+ mandir="${mandir:-$prefix/share/man}"
+ datadir="${datadir:-$prefix/share}"
++infodir="${infodir:-$datadir/info}"
+ docdir="${docdir:-$prefix/share/doc}"
+ sysconfdir="${sysconfdir:-$prefix/etc}"
+ local_statedir="${local_statedir:-$prefix/var}"
+@@ -1736,6 +1739,7 @@ Advanced options (experts only):
+   --with-git-submodules=validate fail if git submodules are not up to date
+   --with-git-submodules=ignore   do not update or check git submodules (default if no .git dir)
    --static                 enable static build [$static]
 +  --infodir=PATH           install info manual in PATH
    --mandir=PATH            install man pages in PATH
    --datadir=PATH           install firmware in PATH/$qemu_suffix
    --localedir=PATH         install translation in PATH/$qemu_suffix
 diff --git a/docs/meson.build b/docs/meson.build
-index ebd85d59f9..1243839461 100644
 --- a/docs/meson.build
 +++ b/docs/meson.build
-@@ -114,4 +114,25 @@ if build_docs
+@@ -104,4 +104,25 @@ if build_docs
    alias_target('sphinxdocs', sphinxdocs)
    alias_target('html', sphinxdocs)
    alias_target('man', sphinxmans)
@@ -96,10 +81,9 @@ index ebd85d59f9..1243839461 100644
 +  endif
  endif
 diff --git a/meson.build b/meson.build
-index e3386196ba..d64a125ad9 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -32,6 +32,7 @@ endif
+@@ -35,6 +35,7 @@ endif
  qemu_confdir = get_option('sysconfdir') / get_option('qemu_suffix')
  qemu_datadir = get_option('datadir') / get_option('qemu_suffix')
  qemu_docdir = get_option('docdir') / get_option('qemu_suffix')
@@ -107,14 +91,11 @@ index e3386196ba..d64a125ad9 100644
  qemu_moddir = get_option('libdir') / get_option('qemu_suffix')
  
  qemu_desktopdir = get_option('datadir') / 'applications'
-@@ -1995,6 +1996,7 @@ else
+@@ -2433,6 +2434,7 @@ else
    summary_info += {'local state directory': 'queried at runtime'}
  endif
  summary_info += {'Doc directory':     get_option('docdir')}
 +summary_info += {'Info directory':    get_option('infodir')}
  summary_info += {'Build directory':   meson.current_build_dir()}
  summary_info += {'Source path':       meson.current_source_dir()}
- summary_info += {'GIT binary':        config_host['GIT']}
--- 
-2.30.1
-
+ summary_info += {'GIT submodules':    config_host['GIT_SUBMODULES']}

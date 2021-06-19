@@ -276,7 +276,7 @@ SuperCPU.")
          ("openal" ,openal)
          ("pugixml" ,pugixml)
          ("pulseaudio" ,pulseaudio)
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("sdl2" ,sdl2)
          ("sfml" ,sfml)
          ("soil" ,soil)
@@ -376,7 +376,7 @@ older games.")
        #:tests? #f))    ; test suite wants mips toolchain
     (inputs
      `(("elfutils" ,elfutils)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://github.com/cvut/QtMips")
     (synopsis "MIPS CPU emulator")
     (description "This package contains a MIPS CPU emulator.  The simulator
@@ -620,7 +620,7 @@ The following systems are supported:
               ("mesa" ,mesa)
               ("minizip" ,minizip)
               ("ncurses" ,ncurses)
-              ("qtbase" ,qtbase)
+              ("qtbase" ,qtbase-5)
               ("qtmultimedia" ,qtmultimedia)
               ("sdl2" ,sdl2)
               ("sqlite" ,sqlite)
@@ -1379,7 +1379,7 @@ as RetroArch.")
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("sdl" ,sdl2)
        ("udev" ,eudev)
        ("vulkan-loader" ,vulkan-loader)
@@ -1799,7 +1799,7 @@ This is a part of the TiLP project.")
        ("pugixml" ,pugixml)
        ("pulseaudio" ,pulseaudio)
        ("python-wrapper" ,python-wrapper)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("rapidjson" ,rapidjson)
        ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))
        ("sqlite" ,sqlite)
@@ -1998,6 +1998,8 @@ from various forks of Gens, and improved platform portability.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "-C" "bsnes"
+                          ;; Remove march=native
+                          "local=false"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; No tests.
        #:phases (modify-phases %standard-phases

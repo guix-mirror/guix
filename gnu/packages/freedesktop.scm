@@ -2297,7 +2297,7 @@ fallback to generic Systray support if none of those are available.")
 (define-public xdg-desktop-portal
   (package
     (name "xdg-desktop-portal")
-    (version "1.7.2")
+    (version "1.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2306,7 +2306,7 @@ fallback to generic Systray support if none of those are available.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rkwpsmbn3d3spkzc2zsd50l2r8pp4la390zcpsawaav8w7ql7xm"))))
+                "0pq0kmvzk56my396vh97pzw4wizwmlmzvv2kr2xv047x3044mr5n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2326,6 +2326,21 @@ fallback to generic Systray support if none of those are available.")
        ("geoclue" ,geoclue)
        ("pipewire" ,pipewire-0.3)
        ("fuse" ,fuse)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'po-chmod
+           (lambda _
+             ;; Make sure 'msgmerge' can modify the PO files.
+             (for-each (lambda (po)
+                         (chmod po #o666))
+                       (find-files "po" "\\.po$"))
+             #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DESKTOP_PORTAL_DIR")
+            (separator #f)
+            (files '("share/xdg-desktop-portal/portals")))))
     (home-page "https://github.com/flatpak/xdg-desktop-portal")
     (synopsis "Desktop integration portal for sandboxed apps")
     (description
@@ -2394,7 +2409,7 @@ interfaces.")
 (define-public xdg-desktop-portal-wlr
   (package
     (name "xdg-desktop-portal-wlr")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2403,8 +2418,12 @@ interfaces.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18nlkqqxgxh7k0r2nk867wnp2nmaiinl6z67lrfv7rmiym0x82p8"))))
+                "13fbzh8bjnhk4xs8j9bpc01q3hy27zpbf0gkk1fnh3hm5pnyfyiv"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-Dsystemd=disabled"
+         "-Dsd-bus-provider=libelogind")))
     (native-inputs
      `(("cmake" ,cmake)
        ("pkg-config" ,pkg-config)))
@@ -2412,6 +2431,7 @@ interfaces.")
      `(("elogind" ,elogind)
        ("iniparser" ,iniparser)
        ("pipewire" ,pipewire-0.3)
+       ("inih" ,libinih)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/emersion/xdg-desktop-portal-wlr")

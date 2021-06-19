@@ -52,49 +52,8 @@
   #:export (assert-container-features
             guix-environment))
 
-;; Protect some env vars from purification.  Borrowed from nix-shell.
-(define %precious-variables
-  '("HOME" "USER" "LOGNAME" "DISPLAY" "TERM" "TZ" "PAGER"))
-
 (define %default-shell
   (or (getenv "SHELL") "/bin/sh"))
-
-(define (purify-environment white-list)
-  "Unset all environment variables except those that match the regexps in
-WHITE-LIST and those listed in %PRECIOUS-VARIABLES.  A small number of
-variables such as 'HOME' and 'USER' are left untouched."
-  (for-each unsetenv
-            (remove (lambda (variable)
-                      (or (member variable %precious-variables)
-                          (find (cut regexp-exec <> variable)
-                                white-list)))
-                    (match (get-environment-variables)
-                      (((names . _) ...)
-                       names)))))
-
-(define* (create-environment profile manifest
-                             #:key pure? (white-list '()))
-  "Set the environment variables specified by MANIFEST for PROFILE.  When
-PURE?  is #t, unset the variables in the current environment except those that
-match the regexps in WHITE-LIST.  Otherwise, augment existing environment
-variables with additional search paths."
-  (when pure?
-    (purify-environment white-list))
-  (for-each (match-lambda
-              ((($ <search-path-specification> variable _ separator) . value)
-               (let ((current (getenv variable)))
-                 (setenv variable
-                         (if (and current (not pure?))
-                             (if separator
-                                 (string-append value separator current)
-                                 value)
-                             value)))))
-            (profile-search-paths profile manifest))
-
-  ;; Give users a way to know that they're in 'guix environment', so they can
-  ;; adjust 'PS1' accordingly, for instance.  Set it to PROFILE so users can
-  ;; conveniently access its contents.
-  (setenv "GUIX_ENVIRONMENT" profile))
 
 (define* (show-search-paths profile manifest #:key pure?)
   "Display the search paths of MANIFEST applied to PROFILE.  When PURE? is #t,
@@ -425,8 +384,14 @@ regexps in WHITE-LIST."
   ;; Properly handle SIGINT, so pressing C-c in an interactive terminal
   ;; application works.
   (sigaction SIGINT SIG_DFL)
-  (create-environment profile manifest
-                      #:pure? pure? #:white-list white-list)
+  (load-profile profile manifest
+                #:pure? pure? #:white-list-regexps white-list)
+
+  ;; Give users a way to know that they're in 'guix environment', so they can
+  ;; adjust 'PS1' accordingly, for instance.  Set it to PROFILE so users can
+  ;; conveniently access its contents.
+  (setenv "GUIX_ENVIRONMENT" profile)
+
   (match command
     ((program . args)
      (apply execlp program program args))))

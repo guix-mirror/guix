@@ -75,7 +75,7 @@
        ("kwindowsystem" ,kwindowsystem)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ("phonon" ,phonon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("solid" ,solid)))
     (arguments
      `(#:tests? #f)) ;; TODO: 4/15 tests fail even with offscreen
@@ -116,7 +116,7 @@ The main features of Dolphin are:
        ("ktexteditor" ,ktexteditor)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "http://www.kde.org/")
     (synopsis "VCS-Plugins for Dolphin")
     (description "This package contains plugins that offer integration in
@@ -156,7 +156,7 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
        ("kwindowsystem" ,kwindowsystem)
        ("libxml2" ,libxml2)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("xapian" ,xapian)))
     (arguments
      `(#:tests? #f)) ;; 1/1 test fails
@@ -213,7 +213,7 @@ document meta data file.")
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtscript" ,qtscript)))
     (arguments
      `(#:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
@@ -262,7 +262,7 @@ This package is part of the KDE base applications module.")
        ("libxtst" ,libxtst)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ("pipewire" ,pipewire)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("xcb-util-image" ,xcb-util-image)
        ("zlib" ,zlib)))
@@ -309,7 +309,7 @@ This package is part of the KDE networking module.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://kde.org/applications/system/org.kde.ksystemlog")
     (synopsis "System log viewer")
     (description "This program is developed for being used by beginner users,
@@ -353,7 +353,7 @@ This package is part of the KDE administration module.")
        ("kwayland" ,kwayland)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://www.kde.org/applications/system/yakuake/")

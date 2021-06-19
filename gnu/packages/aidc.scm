@@ -211,7 +211,7 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
      ;; These are in 'requires' field of .pc files.
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (synopsis "Bar code reader")
     (description
      "ZBar can read barcodes from various sources, such as video streams,

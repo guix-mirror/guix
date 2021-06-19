@@ -74,7 +74,7 @@
        ("kpackage" ,kpackage)
        ("kwayland" ,kwayland) ; optional
        ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative) ; optional
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://invent.kde.org/plasma/breeze")
@@ -99,7 +99,7 @@ the Plasma Desktop.  Breeze is the default theme for the KDE Plasma desktop.")
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("ki18n" ,ki18n)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://invent.kde.org/plasma/kdecoration")
     (synopsis "Plugin based library to create window decorations")
     (description "KDecoration is a library to create window decorations.
@@ -127,7 +127,7 @@ manager which re-parents a Client window to a window decoration frame.")
        ("ki18n" ,ki18n)
        ("kwallet" ,kwallet)
        ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (home-page "https://invent.kde.org/plasma/ksshaskpass")
     (synopsis "Front-end for ssh-add using kwallet")
     (description "Ksshaskpass is a front-end for @code{ssh-add} which stores the
@@ -190,7 +190,7 @@ call it if it is not associated to a terminal.")
        ("libxi" ,libxi)           ;XInput, required for grabbing XInput2 devices
        ("linux-pam" ,linux-pam)
        ("logind" ,elogind)        ;optional loginctl support
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtx11extras" ,qtx11extras)
        ("solid" ,solid)
@@ -221,7 +221,7 @@ call it if it is not associated to a terminal.")
     (inputs
      `(("kwayland" ,kwayland)
        ("libxrandr" ,libxrandr)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)))
     (arguments
      '(#:tests? #f)) ; FIXME: 55% tests passed, 5 tests failed out of 11
@@ -261,7 +261,7 @@ basic needs and easy to configure for those who want special setups.")
        ("knewstuff" ,knewstuff)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kservice" ,kservice)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)
        ("qtwebkit" ,qtwebkit)

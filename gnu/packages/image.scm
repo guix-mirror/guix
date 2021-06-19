@@ -1834,7 +1834,7 @@ parsing, viewing, modifying, and saving this metadata.")
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -2177,7 +2177,7 @@ by AOM, including with alpha.")
 (define-public libheif
   (package
     (name "libheif")
-    (version "1.11.0")
+    (version "1.12.0")
     (source
      (origin
        (method git-fetch)
@@ -2186,7 +2186,7 @@ by AOM, including with alpha.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "036n63vlk4sk7y25q2kzyvvw4r5vv323ysbmbrcaprg9hdyjqgf5"))))
+        (base32 "0cp2d216hp7gw3n56x3g5q5n8jb9ganyanrlibxw8fw16il8nca6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ;no test target although there is a tests folder

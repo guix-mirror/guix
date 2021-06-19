@@ -85,7 +85,7 @@
     (inputs
      `(("expat" ,expat)
        ("libusb" ,libusb)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (native-inputs
      `(("which" ,which)
@@ -207,7 +207,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
                      (string-append "PREFIX="
                                     (assoc-ref outputs "out"))))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (native-inputs
      `(("qttools" ,qttools)))
     (home-page "https://www.gpxsee.org")
@@ -246,7 +246,7 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
        ("python-pygobject" ,python-pygobject)
        ("python-pyserial" ,python-pyserial)
        ("python-wrapper" ,python-wrapper)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:scons-flags
        (list (string-append "prefix=" %output)

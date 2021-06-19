@@ -19,7 +19,7 @@
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
@@ -138,7 +138,7 @@
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (arguments
      `(#:configure-flags
        (list
@@ -268,14 +268,14 @@ Accounting.")
 (define-public homebank
   (package
     (name "homebank")
-    (version "5.4.3")
+    (version "5.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://homebank.free.fr/public/homebank-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02wd569viwy6ncy0144z9nxr3zmpl4shkqhz7zzwyky4gknxf8lj"))))
+                "1lhyql94zx51vcw9hlc9r26wkm2bn6jdd4xvc95j7y69wiwg77lq"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -773,7 +773,7 @@ the Monero command line client and daemon.")
      `(,@(package-inputs monero)
        ("libgcrypt" ,libgcrypt)
        ("monero" ,monero)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtquickcontrols" ,qtquickcontrols)
@@ -1309,7 +1309,7 @@ Trezor wallet.")
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)
        ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zeromq" ,zeromq)
        ("zlib" ,zlib)))
     (arguments
@@ -1422,7 +1422,7 @@ following three utilities are included with the library:
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)
        ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("zeromq" ,zeromq)
        ("zlib" ,zlib)))
     (arguments
@@ -1496,7 +1496,7 @@ a Qt GUI.")
      `(("qttools" ,qttools)))
     (inputs
      `(("python" ,python)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("rocksdb" ,rocksdb)
        ("zlib" ,zlib)))
     (home-page "https://gitlab.com/FloweeTheHub/fulcrum/")
@@ -1561,7 +1561,7 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase-5)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)

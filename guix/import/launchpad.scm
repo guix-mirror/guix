@@ -110,15 +110,14 @@ for example, 'linuxdcpp'. Return #f if there is no releases."
                                        char-set:digit)
                        (assoc-ref x "version"))))
 
-  (assoc-ref
-   (last (remove
-          pre-release?
-          (vector->list
-           (assoc-ref (json-fetch
-                       (string-append "https://api.launchpad.net/1.0/"
-                                      package-name "/releases"))
-                      "entries"))))
-   "version"))
+  (match (json-fetch
+          (string-append "https://api.launchpad.net/1.0/"
+                         package-name "/releases"))
+    (#f #f)                                       ;404 or similar
+    (json
+     (assoc-ref
+      (last (remove pre-release? (vector->list (assoc-ref json "entries"))))
+      "version"))))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."

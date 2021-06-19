@@ -87,7 +87,7 @@ client.")
 (define-public fcitx5
   (package
     (name "fcitx5")
-    (version "5.0.5")
+    (version "5.0.8")
     (source
      (origin
        (method url-fetch)
@@ -95,7 +95,7 @@ client.")
              "https://download.fcitx-im.org/fcitx5/fcitx5/fcitx5-"
              version "_dict.tar.xz"))
        (sha256
-        (base32 "16j716xawbszkb3fxzpdza1a4czh0fvkysikjc9bfyvbwp72p6an"))))
+        (base32 "0536sjpgjlg0bf8imz4jf9bdsp7fhm09bkssddji56cc9mgdxx82"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -133,7 +133,8 @@ client.")
        ("xcb-util-wm" ,xcb-util-wm)
        ("xkeyboard-config" ,xkeyboard-config)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
+     `(("gcc" ,gcc-9)                   ; for #include <charconv>
+       ("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
@@ -147,7 +148,7 @@ client.")
 (define-public fcitx5-lua
   (package
     (name "fcitx5-lua")
-    (version "5.0.2")
+    (version "5.0.5")
     (source
      (origin
        (method url-fetch)
@@ -155,7 +156,7 @@ client.")
              "https://download.fcitx-im.org/fcitx5/fcitx5-lua/fcitx5-lua-"
              version ".tar.xz"))
        (sha256
-        (base32 "0y5yc9102bz681f4wj6xqjxmfdmrshz3fhf39pa61718hkyy9lih"))))
+        (base32 "0f3raxzkq0nwdfpc9hxvg65vga09gznjjgy9dr6jlkamzx8zlyw9"))))
     (build-system cmake-build-system)
     (inputs
      `(("fcitx5" ,fcitx5)
@@ -172,14 +173,14 @@ client.")
 (define-public libime
   (package
     (name "libime")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.fcitx-im.org/fcitx5/libime/libime-"
                            version "_dict.tar.xz"))
        (sha256
-        (base32 "1s8gzpzyn16pg9gm7kw1nhl09drdndi6j4mjam14ymqsrfsdqr1r"))))
+        (base32 "06smx1kqq3qh0xra8070cjfhw79hcm0vksrswk05wq6jyhvrk5sd"))))
     (build-system cmake-build-system)
     (inputs
      `(("fcitx5" ,fcitx5)
@@ -189,15 +190,15 @@ client.")
        ("extra-cmake-modules" ,extra-cmake-modules)
        ("python" ,python)))             ;needed to run test
     (home-page "https://github.com/fcitx/libime")
-    (synopsis "Library for implementing generic input method")
-    (description "Libime is a library for implementing various input methods
+    (synopsis "Library for implementing generic input methods")
+    (description "Libime is a library for implementing various input method
 editors.")
     (license license:lgpl2.1+)))
 
 (define-public fcitx5-gtk
   (package
     (name "fcitx5-gtk")
-    (version "5.0.3")
+    (version "5.0.7")
     (source
      (origin
        (method url-fetch)
@@ -205,7 +206,7 @@ editors.")
                            "/fcitx5-gtk/fcitx5-gtk-"
                            version ".tar.xz"))
        (sha256
-        (base32 "18bwwj9a5v82c6ssc8560hd8vwykakvg6sfijwdb5jswk9mafvgj"))))
+        (base32 "0x9xwyb3hnb2xl47jkj8zs34fhyf7gshy3bv3jxd66sfkjrscr5v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;No test
@@ -228,6 +229,7 @@ editors.")
                   (string-append gtk2 "/lib")))))))))
     (inputs
      `(("fcitx5" ,fcitx5)
+       ("fmt" ,fmt)
        ("libxkbcommon" ,libxkbcommon)
        ("gobject-introspection" ,gobject-introspection)
        ("gtk2" ,gtk+-2)
@@ -250,7 +252,7 @@ for GTK+2/GTK+3 application.")
 (define-public fcitx5-qt
   (package
     (name "fcitx5-qt")
-    (version "5.0.5")
+    (version "5.0.6")
     (source
      (origin
        (method url-fetch)
@@ -258,7 +260,7 @@ for GTK+2/GTK+3 application.")
                            "/fcitx5-qt/fcitx5-qt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0vsvrfv0b21pfrz5n0v6p458vfr8k7km50h9bhjp1bnssampjfsb"))))
+        (base32 "0wp88cmy0gn15gkfzl5z4q4qd9j1ssdmgp1rfsbw0cp3qh5x4m69"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -269,7 +271,7 @@ for GTK+2/GTK+3 application.")
      `(("fcitx5" ,fcitx5)
        ("libxcb" ,libxcb)
        ("libxkbcommon" ,libxkbcommon)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -285,7 +287,7 @@ for Qt based application.")
 (define-public fcitx5-chinese-addons
   (package
     (name "fcitx5-chinese-addons")
-    (version "5.0.3")
+    (version "5.0.6")
     (source
      (origin
        (method url-fetch)
@@ -293,7 +295,7 @@ for Qt based application.")
                            "/fcitx5-chinese-addons/fcitx5-chinese-addons-"
                            version "_dict.tar.xz"))
        (sha256
-        (base32 "1kmzbllk0g86m2z3piwn9j84ihxixyxzv7rzj832xfvwqgk7gixk"))))
+        (base32 "11l76gpcfm0x1f6x5m9s37q7ffa7xcsdydlzjdz2s6kk45fvvq89"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -315,7 +317,7 @@ for Qt based application.")
        ("fmt" ,fmt)
        ("libpthread-stubs" ,libpthread-stubs)
        ("opencc" ,opencc)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("fcitx5-qt" ,fcitx5-qt)
        ("qtwebkit" ,qtwebkit)))
     (native-inputs
@@ -346,7 +348,7 @@ including input methods previous bundled inside Fcitx 4:
 (define-public fcitx5-configtool
   (package
     (name "fcitx5-configtool")
-    (version "5.0.2")
+    (version "5.0.5")
     (source
      (origin
        (method url-fetch)
@@ -354,7 +356,7 @@ including input methods previous bundled inside Fcitx 4:
              "https://download.fcitx-im.org/fcitx5"
              "/fcitx5-configtool/fcitx5-configtool-" version ".tar.xz"))
        (sha256
-        (base32 "0rpk3yn572pcr29jak63x84g0qgj8hj011aw8gmxjah9311nxhpb"))))
+        (base32 "1diwiniqvsvcdwzcx1dqxbvwsr6ajbxs67my0cpn8n22asd5mx8i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -363,7 +365,7 @@ including input methods previous bundled inside Fcitx 4:
     (inputs
      `(("fcitx5" ,fcitx5)
        ("fcitx5-qt" ,fcitx5-qt)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("kitemviews" ,kitemviews)
        ("kwidgetsaddons" ,kwidgetsaddons)

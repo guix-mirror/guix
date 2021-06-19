@@ -40,6 +40,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages linux)
@@ -239,7 +240,7 @@ efficiency through the use of a compact vector representation of n-grams.")
 (define-public speech-dispatcher
   (package
     (name "speech-dispatcher")
-    (version "0.9.1")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brailcom/speechd/releases"
@@ -247,17 +248,18 @@ efficiency through the use of a compact vector representation of n-grams.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16bg52hnkrsrs7kgbzanb34b9zb6fqxwj0a9bmsxmj1skkil1h1p"))))
+                "1p72x9vsqvmhz1ym2bcpiqscn063rxdsylv65735cpp107r1jqxh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static"
 
                            ;; Disable support for proprietary TTS engines.
-                           "--with-ibmtts=no"
+                           "--with-voxin=no" "--with-ibmtts=no"
                            "--with-kali=no" "--with-baratinoo=no")))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (inputs
      `(("dotconf" ,dotconf)
        ("espeak" ,espeak-ng)

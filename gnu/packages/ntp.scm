@@ -7,6 +7,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,11 +188,16 @@ computers over a network.")
                 "0ijsylc7a4jlpxsqa0jq1w1c7333id8pcakzl7a5749ria1xp0l5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags `( "--with-privsep-user=ntpd"
-                            "--localstatedir=/var"
-                            ,(string-append "--with-cacert="
-                                            (assoc-ref %build-inputs "libressl")
-                                            "/etc/ssl/cert.pem"))
+     `(#:configure-flags
+       (let* ((libressl (assoc-ref %build-inputs "libressl"))
+              (libressl-version ,(package-version
+                                  (car (assoc-ref (package-inputs this-package)
+                                                  "libressl")))))
+         (list "--with-privsep-user=ntpd"
+               "--localstatedir=/var"
+               (string-append "--with-cacert=" libressl
+                              "/share/libressl-" libressl-version
+                              "/cert.pem")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'modify-install-locations

@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
@@ -64,6 +64,13 @@
               (modules '((guix build utils)))
               (snippet
                `(begin
+                  ;; Patch for compatibility with ICU 68 and newer, which
+                  ;; removed the public TRUE and FALSE macros.
+                  (substitute* '("deps/v8/src/objects/intl-objects.cc"
+                                 "deps/v8/src/runtime/runtime-intl.cc")
+                    (("TRUE") "true")
+                    (("FALSE") "false"))
+
                   ;; Remove bundled software.
                   (for-each delete-file-recursively
                             '("deps/cares"

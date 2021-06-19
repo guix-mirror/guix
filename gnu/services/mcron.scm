@@ -31,8 +31,7 @@
             mcron-configuration-mcron
             mcron-configuration-jobs
 
-            mcron-service-type
-            mcron-service))
+            mcron-service-type))
 
 ;;; Commentary:
 ;;;
@@ -172,19 +171,5 @@ files."
                            (jobs (append (mcron-configuration-jobs config)
                                          jobs)))))
                 (default-value (mcron-configuration)))) ;empty job list
-
-(define-deprecated (mcron-service jobs #:optional (mcron mcron))
-  mcron-service-type
-  "Return an mcron service running @var{mcron} that schedules @var{jobs}, a
-list of gexps denoting mcron job specifications.
-
-This is a shorthand for:
-@example
-  (service mcron-service-type
-           (mcron-configuration (mcron mcron) (jobs jobs)))
-@end example
-"
-  (service mcron-service-type
-           (mcron-configuration (mcron mcron) (jobs jobs))))
 
 ;;; mcron.scm ends here

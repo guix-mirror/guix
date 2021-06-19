@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -69,6 +71,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages inkscape)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -3022,8 +3025,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "ad5540f6ecaec287c70259f0181e613561b716f6")
-        (revision "17"))
+  (let ((commit "31486f40f8e8f8923ca0799aea84b58799754564")
+        (revision "18"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -3032,11 +3035,11 @@ X server.")
          ;; there's no current tarball
          (method git-fetch)
          (uri (git-reference
-               (url "https://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel.git")
+               (url "https://gitlab.freedesktop.org/xorg/driver/xf86-video-intel.git")
                (commit commit)))
          (sha256
           (base32
-           "09jdg5wrq708wc83027337qvdjb96827h7sjwjfl5ffiynfpwl95"))
+           "0lv6vlx9gvp34pidmx4gxgb0qjf0km0gabbaxw141nnvj1azv94y"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -3517,7 +3520,7 @@ X server.")
 (define-public xf86-video-vesa
   (package
     (name "xf86-video-vesa")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
       (origin
         (method url-fetch)
@@ -3527,7 +3530,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1373vsxn6qh00na0s9c09kf09gj78rzi98zq93id8v5zsya3qi5z"))))
+            "0nf6ai74c60xk96kgr8q9mx6lrxm5id3765ws4d801irqzrj85hz"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -6098,7 +6101,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "367")
+    (version "368")
     (source
      (origin
        (method url-fetch)
@@ -6108,7 +6111,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
              (string-append "ftp://ftp.invisible-island.net/xterm/"
                             "xterm-" version ".tgz")))
        (sha256
-        (base32 "07y51l06n344pjyxdddq6sdvxw25nl10irl4avynkqjnqyqsiw97"))))
+        (base32 "04p7db3j3n5dk1vvlas4231rh6jgr4qi6ppvpbq9xd5n62cidx9g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6304,15 +6307,15 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.0.6")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
-                           version ".tar.xz"))
+                           version ".tar.gz"))
        (sha256
-        (base32 "1s49y2s75a8a70vj0micnmpic5zv1n32yjxy8fkxsqa6j5njyrww"))
-       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
+        (base32 "1yg9asi3i3wf73ibc006xv3g77axvbyp81lyinwq27syabh30i1a"))
+       (patches (search-patches "xpra-4.2-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(
@@ -6351,6 +6354,7 @@ basic eye-candy effects.")
               ("python-lz4" ,python-lz4) ; Faster compression than zlib.
               ("python-netifaces" ,python-netifaces)))
     (native-inputs `(("pkg-config" ,pkg-config)
+                     ("pandoc" ,pandoc)
                      ("python-cython" ,python-cython)))
     (arguments
      `(#:configure-flags '("--without-Xdummy"
@@ -6387,7 +6391,7 @@ basic eye-candy effects.")
                  (close-port file)))
              ;; Add Xorg module paths.
              (append-to-file
-              "etc/xpra/xorg.conf"
+              "fs/etc/xpra/xorg.conf"
               (string-append "\nSection \"Files\"\nModulePath \""
                              (assoc-ref inputs "xf86-video-dummy") "/lib/xorg/modules,"
                              (assoc-ref inputs "xf86-input-mouse") "/lib/xorg/modules,"
@@ -6395,8 +6399,8 @@ basic eye-candy effects.")
                              (assoc-ref inputs "xorg-server") "/lib/xorg/modules\"\n"
                              "EndSection\n\n"))
              (substitute* '("xpra/scripts/config.py"
-                            "etc/xpra/conf.d/60_server.conf.in"
-                            "unittests/unit/server/mixins/notification_test.py")
+                            "fs/etc/xpra/conf.d/60_server.conf.in"
+                            "tests/unittests/unit/server/mixins/notification_test.py")
                ;; The trailing -- is intentional, so we only replace it inside
                ;; a command line.
                (("dbus-launch --")
@@ -6518,7 +6522,7 @@ and embedded platforms.")
   (package/inherit uim
     (name "uim-qt")
     (inputs
-     `(("qt" ,qtbase)
+     `(("qt" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ,@(package-inputs uim)))
     (arguments

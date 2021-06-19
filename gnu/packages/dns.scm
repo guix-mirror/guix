@@ -101,7 +101,7 @@
         (base32 "0ac242n7996fswq1a3nlh1bbbhrsdwsq4mx7xq8ffq6aplb4rj4a"))
        (patches
         (search-patches
-         ;; To create make-flag vairables,
+         ;; To create make-flag variables,
          ;; for splitting installation of drill and examples.
          "ldns-drill-examples.patch"))))
     (build-system gnu-build-system)
@@ -769,16 +769,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.4.2")
+    (version "2.5.0")
     (source
-     (let ((build "9997"))
+     (let ((build "10188"))
        (origin
          (method url-fetch)
          (uri
           (string-append "https://www.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "0f1by2c7l39qpsar5nh98f3xypmn2ikv7wr557wmva6m0lwbl3q0")))))
+          (base32 "05ps6fif3sqn6yzkprnp1cm81f3ja4vqc0r6vh7nvzl73gv4rp2w")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -803,7 +803,8 @@ served by AS112.  Stub and forward zones are supported.")
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--enable-shared" "--disable-static"
-             "--disable-build-timestamp"))) ; build reproducibly
+             "--disable-build-timestamp"    ; build reproducibly
+             "--enable-tcp-manager")))
     (home-page "https://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain
@@ -1236,7 +1237,7 @@ known public suffixes.")
 (define-public maradns
   (package
     (name "maradns")
-    (version "3.5.0007")
+    (version "3.5.0020")
     (source
      (origin
        (method url-fetch)
@@ -1244,7 +1245,7 @@ known public suffixes.")
                            (version-major+minor version) "/"
                            version "/maradns-" version ".tar.xz"))
        (sha256
-        (base32 "0bc19xylg4whww9qaj5i4izwxcrh0c0ja7l1pfcn2la02hlvg1a6"))))
+        (base32 "1qgabw6y2bwy6y88dikis62k789i0xh7iwxan8jmqpzvksqwjfgw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; need to be root to run tests

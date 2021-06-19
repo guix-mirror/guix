@@ -334,7 +334,7 @@ local system.")
       (inputs
        `(("libarchive" ,libarchive)
          ("sqlite" ,sqlite)
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("qtdeclarative" ,qtdeclarative)
          ("qtwebchannel" ,qtwebchannel)
          ("qtwebengine" ,qtwebengine)

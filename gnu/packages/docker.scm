@@ -382,12 +382,12 @@ built-in registry server of Docker.")
                (("DefaultInitBinary = .*")
                 (string-append "DefaultInitBinary = \""
                                (assoc-ref inputs "tini")
-                               "/bin/tini\"\n")))
+                               "/bin/tini-static\"\n")))
              (substitute* "daemon/config/config_common_unix_test.go"
                (("expectedInitPath: \"docker-init\"")
                 (string-append "expectedInitPath: \""
                                (assoc-ref inputs "tini")
-                               "/bin/tini\"")))
+                               "/bin/tini-static\"")))
              (substitute* "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go"
                (("var defaultCommandCandidates = .*")
                 (string-append "var defaultCommandCandidates = []string{\""
@@ -716,7 +716,7 @@ defined in a per-project configuration file.")
 (define-public tini
   (package
     (name "tini")
-    (version "0.18.0")
+    (version "0.19.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -725,19 +725,14 @@ defined in a per-project configuration file.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h20i3wwlbd8x4jr2gz68hgklh0lb0jj7y5xk1wvr8y58fip1rdn"))))
+                "1hnnvjydg7gi5gx6nibjjdnfipblh84qcpajc08nvr44rkzswck4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                    ;tests require a Docker daemon
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'disable-static-build
-                    ;; Disable the static build as it fails to install, with
-                    ;; the error: "No valid ELF RPATH or RUNPATH entry exists
-                    ;; in the file".
-                    (lambda _
-                      (substitute* "CMakeLists.txt"
-                        ((".*tini-static.*") ""))
-                      #t)))))
+       ;; 'tini-static' is a static binary, which leads CMake to fail with
+       ;; ‘file RPATH_CHANGE could not write new RPATH: ...’.  Clear
+       ;; CMAKE_INSTALL_RPATH to avoid that problem.
+       #:configure-flags '("-DCMAKE_INSTALL_RPATH=")))
     (home-page "https://github.com/krallin/tini")
     (synopsis "Tiny but valid init for containers")
     (description "Tini is an init program specifically designed for use with

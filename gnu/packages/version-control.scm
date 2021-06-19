@@ -1322,7 +1322,7 @@ manipulate them in various ways.")
 (define-public vcsh
   (package
     (name "vcsh")
-    (version "1.20190621")
+    (version "1.20190621-4")
     (source
      (origin
        (method git-fetch)
@@ -1331,7 +1331,7 @@ manipulate them in various ways.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1s9l47wm9r7sndcgc778mq60wkzkhvfv7rkrwci5kjvw8vsddvcc"))))
+        (base32 "1gx5nbqyprgy6picns5hxky3lyzkqfq3xhm614f0wcdi58xrsdh0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -1520,7 +1520,7 @@ control to Git repositories.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.12.1")
+    (version "2.13.0")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -1530,7 +1530,7 @@ control to Git repositories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gwy5bnjnlj6yjcmghsibrcijvz9isxcygln7ihvi728p04rgymf"))))
+        (base32 "02lr8d6fkr32j4rpp2ac84a5gjwq16k1hb74j6js0kxg83qw6raf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1550,37 +1550,36 @@ control to Git repositories.")
              ;; Some tests will need a working git repository.
              (invoke "git" "init")
              (invoke "git" "config" "--global" "user.name" "Your Name")
-             (invoke "git" "config" "--global" "user.email" "you@example.com")
-             #t))
+             (invoke "git" "config" "--global" "user.email" "you@example.com")))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             ;; The file below contains about 30 tests that fail because they
-             ;; depend on tools from multiple languages (cargo, npm, cpan,
-             ;; Rscript, etc).  There are other tests that pass, but it's more
-             ;; convenient to skip the whole file than list 30 tests to skip.
-             (invoke "pytest" "--ignore=tests/repository_test.py"
-                     ;; Ruby and Node tests require node and gem.
-                     "--ignore=tests/languages/node_test.py"
-                     "--ignore=tests/languages/ruby_test.py"
-                     ;; FIXME: Python tests fail because of distlib version
-                     ;; mismatch.  Even with python-distlib/next it is
-                     ;; pulling version 0.3.0, while 0.3.1 is required.
-                     "--ignore=tests/languages/python_test.py" "-k"
-                     (string-append
-                      ;; TODO: these tests fail with AssertionError.  It may
-                      ;; be possible to fix them.
-                      "not test_install_existing_hooks_no_overwrite"
-                      " and not test_uninstall_restores_legacy_hooks"
-                      " and not test_installed_from_venv"))))
+             (when tests?
+               ;; The file below contains 30+ tests that fail because they
+               ;; depend on tools from multiple languages (cargo, npm, cpan,
+               ;; Rscript, etc).  Other tests are passing, but it's more
+               ;; convenient to skip the file than list 30 tests to skip.
+               (invoke "pytest" "--ignore=tests/repository_test.py"
+                       ;; Ruby and Node tests require node and gem.
+                       "--ignore=tests/languages/node_test.py"
+                       "--ignore=tests/languages/ruby_test.py"
+                       ;; FIXME: Python tests fail because of distlib version
+                       ;; mismatch.  Even with python-distlib/next it is
+                       ;; pulling version 0.3.0, while 0.3.1 is required.
+                       "--ignore=tests/languages/python_test.py" "-k"
+                       (string-append
+                        ;; TODO: these tests fail with AssertionError.  It may
+                        ;; be possible to fix them.
+                        "not test_install_existing_hooks_no_overwrite"
+                        " and not test_uninstall_restores_legacy_hooks"
+                        " and not test_installed_from_venv")))))
          (add-before 'reset-gzip-timestamps 'make-gz-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
              ;; 'reset-gzip-timestamps' phase can do its work.
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+                         (find-files out "\\.gz$"))))))))
     (native-inputs
      `(("git" ,git-minimal)
        ("python-covdefaults" ,python-covdefaults)
@@ -1599,7 +1598,7 @@ control to Git repositories.")
        ("python-toml" ,python-toml)
        ("python-virtualenv" ,python-virtualenv)))
     (home-page "https://pre-commit.com/")
-    (synopsis "Framework for managing and maintaining multi-language pre-commit hooks")
+    (synopsis "Framework for managing and maintaining pre-commit hooks")
     (description
      "Pre-commit is a multi-language package manager for pre-commit hooks.  You
 specify a list of hooks you want and pre-commit manages the installation and
@@ -1701,17 +1700,17 @@ interface.")
 (define-public python-hg-evolve
   (package
     (name "python-hg-evolve")
-    (version "10.3.1")
+    (version "10.3.2")
     (source
       (origin
         (method hg-fetch)
         (uri (hg-reference
                (url "https://www.mercurial-scm.org/repo/evolve")
                (changeset version)))
-        (file-name (string-append name "-" version "-checkout"))
+        (file-name (hg-file-name name version))
         (sha256
           (base32
-            "0msnp5fp8sz4q2r5xpcmm60h82kwkyg23y212v1xfp7ixkq9f4qa"))))
+            "0qgk39s5pwxbshfa6x1f1ccxahja3fs265dddxy6q99spy3b3x5h"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need mercurial source code.

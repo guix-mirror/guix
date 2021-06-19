@@ -643,7 +643,7 @@ address of one of the participants.")
        ("opus" ,opus) ; avoid bundled
        ("protobuf" ,protobuf)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("speech-dispatcher" ,speech-dispatcher)
        ("speex" ,speex) ; avoid bundled
@@ -705,7 +705,7 @@ Mumble consists of two applications for separate usage:
        ("libilbc" ,libilbc)
        ("libsndfile" ,libsndfile)
        ("libxml2" ,libxml2)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtquickcontrols" ,qtquickcontrols)
        ("readline" ,readline)

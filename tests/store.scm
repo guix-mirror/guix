@@ -308,42 +308,6 @@
          (null? (references %store t1))
          (null? (referrers %store t2)))))
 
-(test-assert "references/substitutes missing reference info"
-  (with-store s
-    (set-build-options s #:use-substitutes? #f)
-    (guard (c ((store-protocol-error? c) #t))
-      (let* ((b  (add-to-store s "bash" #t "sha256"
-                               (search-bootstrap-binary "bash"
-                                                        (%current-system))))
-             (d  (derivation s "the-thing" b '("--help")
-                             #:inputs `((,b)))))
-        (references/substitutes s (list (derivation->output-path d) b))
-        #f))))
-
-(test-assert "references/substitutes with substitute info"
-  (with-store s
-    (set-build-options s #:use-substitutes? #t)
-    (let* ((t1 (add-text-to-store s "random1" (random-text)))
-           (t2 (add-text-to-store s "random2" (random-text)
-                                  (list t1)))
-           (t3 (add-text-to-store s "build" "echo -n $t2 > $out"))
-           (b  (add-to-store s "bash" #t "sha256"
-                             (search-bootstrap-binary "bash"
-                                                      (%current-system))))
-           (d  (derivation s "the-thing" b `("-e" ,t3)
-                           #:inputs `((,b) (,t3) (,t2))
-                           #:env-vars `(("t2" . ,t2))))
-           (o  (derivation->output-path d)))
-      (with-derivation-narinfo d
-        (sha256 => (gcrypt:sha256 (string->utf8 t2)))
-        (references => (list t2))
-
-        (equal? (references/substitutes s (list o t3 t2 t1))
-                `((,t2)                           ;refs of O
-                  ()                              ;refs of T3
-                  (,t1)                           ;refs of T2
-                  ()))))))                        ;refs of T1
-
 (test-equal "substitutable-path-info when substitutes are turned off"
   '()
   (with-store s

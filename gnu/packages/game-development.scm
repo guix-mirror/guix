@@ -66,6 +66,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -460,7 +461,7 @@ support.")
                 "1prajkx1xpp3csa0xpkrn3c2cnzvmwzxgrqb9d3gqszp3sllr2dg"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
@@ -493,7 +494,7 @@ clone.")
 (define-public tsukundere
   (package
     (name "tsukundere")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -502,7 +503,7 @@ clone.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06jiaylbnx8khicsaq2gwnd8wspjhjymbb5z6x5445krklk0jx18"))))
+                "13p9inz7jj3hm2lmx4p0lhva4ng1m148pjzhq12ybc4kk139i75b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match)
@@ -546,6 +547,7 @@ clone.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
@@ -1106,7 +1108,7 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python2-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "7.4.4"))
+        (renpy-version "7.4.5"))
     (package
       (inherit python2-pygame)
       (name "python2-pygame-sdl2")
@@ -1116,7 +1118,7 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1lj5c3kfnl8s824j3hs47dg3g5rlabscmwrbb0lgpyy4633pv9ka"))
+         (sha256 (base32 "03jqg4lniazqrm40v2fy4z1a16qzs037r22qavzb6bh7kcmg1ydy"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1159,13 +1161,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.4")
+    (version "7.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1cbbvsk1snjrsh59blb8q2h86555gi23pylmwlnk9dx0jxckdi21"))
+       (sha256 (base32 "0a7lwijmj9l3sjdmxgwvvlx28byws3z9cq94l417bi6r7f6pcxam"))
        (modules '((guix build utils)))
        (patches
         (search-patches
@@ -1609,7 +1611,7 @@ of use.")
        ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
        ("openal" ,openal)
        ("openscenegraph" ,openmw-openscenegraph)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("sdl" ,sdl2)
        ("unshield" ,unshield)))
     (synopsis "Re-implementation of the RPG Morrowind engine")
@@ -2428,7 +2430,7 @@ utilities frequently used in roguelikes.")
          ("mesa" ,mesa)
          ("openal" ,openal)
          ("pulseaudio" ,pulseaudio)
-         ("qtbase" ,qtbase)
+         ("qtbase" ,qtbase-5)
          ("qtdeclarative" ,qtdeclarative)
          ("sdl2" ,sdl2)
          ("uuid.h" ,util-linux "lib")

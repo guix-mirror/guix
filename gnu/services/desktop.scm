@@ -82,7 +82,6 @@
             upower-configuration-time-action
             upower-configuration-critical-power-action
 
-            upower-service
             upower-service-type
 
             udisks-configuration
@@ -91,7 +90,6 @@
             udisks-service-type
 
             colord-service-type
-            colord-service
 
             geoclue-application
             geoclue-configuration
@@ -284,37 +282,6 @@ used by GNOME.")
                          (service-extension profile-service-type
                                             upower-package)))
                   (default-value (upower-configuration)))))
-
-(define-deprecated (upower-service #:key (upower upower)
-                                   (watts-up-pro? #f)
-                                   (poll-batteries? #t)
-                                   (ignore-lid? #f)
-                                   (use-percentage-for-policy? #f)
-                                   (percentage-low 10)
-                                   (percentage-critical 3)
-                                   (percentage-action 2)
-                                   (time-low 1200)
-                                   (time-critical 300)
-                                   (time-action 120)
-                                   (critical-power-action 'hybrid-sleep))
-  upower-service-type
-  "Return a service that runs @uref{http://upower.freedesktop.org/,
-@command{upowerd}}, a system-wide monitor for power consumption and battery
-levels, with the given configuration settings.  It implements the
-@code{org.freedesktop.UPower} D-Bus interface, and is notably used by GNOME."
-  (let ((config (upower-configuration
-                 (watts-up-pro? watts-up-pro?)
-                 (poll-batteries? poll-batteries?)
-                 (ignore-lid? ignore-lid?)
-                 (use-percentage-for-policy? use-percentage-for-policy?)
-                 (percentage-low percentage-low)
-                 (percentage-critical percentage-critical)
-                 (percentage-action percentage-action)
-                 (time-low time-low)
-                 (time-critical time-critical)
-                 (time-action time-action)
-                 (critical-power-action critical-power-action))))
-    (service upower-service-type config)))
 
 
 ;;;
@@ -539,15 +506,6 @@ Users need to be in the @code{lp} group to access the D-Bus service.
                  "Run @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.")))
-
-(define-deprecated (colord-service #:key (colord colord))
-  colord-service-type
-  "Return a service that runs @command{colord}, a system service with a D-Bus
-interface to manage the color profiles of input and output devices such as
-screens and scanners.  It is notably used by the GNOME Color Manager graphical
-tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
-site} for more information."
-  (service colord-service-type colord))
 
 
 ;;;

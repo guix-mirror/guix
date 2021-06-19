@@ -29,7 +29,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -1102,9 +1102,6 @@ which implements the SD (Scientific Dataset), VS (Vdata) and V (Vgroup) API’s.
 NetCDF files can also be read and modified.  Python-HDF4 is a fork of
 @url{http://hdfeos.org/software/pyhdf.php,pyhdf}.")
    (license license:expat)))
-
-(define-public python2-hdf4
-  (package-with-python2 python-hdf4))
 
 (define-public python-h5py
   (package
@@ -2284,28 +2281,6 @@ information created by most SVG editors.  Optimization options are typically
 lossless but can be tweaked for more aggressive cleaning.")
     (license license:asl2.0)))
 
-(define-public python-mappy
-  (package
-   (name "python-mappy")
-   (version "2.18")
-   (source (origin
-            (method url-fetch)
-            (uri (pypi-uri "mappy" version))
-            (sha256
-             (base32
-              "1a05p7rkmxa6qhm108na8flzj2v45jab06drk59kzk1ip2sgvzqq"))))
-   (build-system python-build-system)
-   (native-inputs
-    `(("python-cython" ,python-cython)))
-   (inputs
-    `(("zlib" ,zlib)))
-   (home-page "https://github.com/lh3/minimap2")
-   (synopsis "Python binding for minimap2")
-   (description "This package provides a convenient interface to minimap2,
-a fast and accurate C program to align genomic and transcribe nucleotide
-sequences.")
-   (license license:expat)))
-
 (define-public python-mechanize
   (package
     (name "python-mechanize")
@@ -2825,14 +2800,14 @@ matching them against a list of media-ranges.")
 (define-public python-miniboa
   (package
     (name "python-miniboa")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "miniboa" version))
        (sha256
         (base32
-         "09jh3pn4rh7kh7jayanf8jzy6gp03791b5a193w6148cf3i6k9m3"))))
+         "002c1aki9hsrwj5plrwdrf3sk8rn95fqylqyjx2arrjfpsih4dgs"))))
     (build-system python-build-system)
     (home-page "https://github.com/shmup/miniboa")
     (synopsis "Simple, single-threaded Telnet server")
@@ -5310,23 +5285,16 @@ color scales, and color space conversion easy.  It has support for:
     (description (package-description python-numpy))
     (license (package-license python-numpy))))
 
-(define-public python2-numpy-documentation
-  (let ((numpy-documentation (package-with-python2 python-numpy-documentation)))
-    (package
-      (inherit numpy-documentation)
-      (native-inputs `(("python2-functools32" ,python2-functools32)
-                       ,@(package-native-inputs numpy-documentation))))))
-
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32 "1j71iskvirkm8jzfmwdm79v69878m9iix8a8cn4xidgr3nmkisyb"))))
+        (base32 "0qjd5aqpmla64da4pb47vdnrmnqdbn7248a4fzs7f5q1ax7fmb3s"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))            ; tests don't run correctly in our environment
@@ -6236,13 +6204,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.12.1")
+    (version "2.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "1si1x4dc4i4ghyirjfws1zkgiwk8kypnpp4gf68haascrdy7znqw"))))
+        (base32 "1r68zh8whp8wg4brjf5vha8h1ly8pjqyb37pfw91hyxfn6cm9wsz"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
@@ -7053,9 +7021,6 @@ you to actually draw things with your favorite toolkit.")
 cluster directly from Python.  You can directly map Python functions onto the
 cluster without needing to write any wrapper code yourself.")
     (license license:gpl3+)))
-
-(define-public python2-gridmap
-  (package-with-python2 python-gridmap))
 
 (define-public python-honcho
   (package
@@ -8844,9 +8809,6 @@ more advanced mathematics.")
 multiprecision arithmetic.")
     (license license:lgpl3+)))
 
-(define-public python2-bigfloat
-  (package-with-python2 python-bigfloat))
-
 (define-public python-sympy
   (package
     (name "python-sympy")
@@ -9100,25 +9062,29 @@ applications.")
 (define-public python-pyzmq
   (package
     (name "python-pyzmq")
-    (version "22.0.3")
+    (version "22.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyzmq" version))
        (sha256
-        (base32 "0bgrn65cxfz1c1sjrgyq5dy1mkhppxxbizd5wvrl03cq4zhkrxpp"))))
+        (base32 "0pa1y97z75xqyca9xfp9zrzksydbgzsxf8yh0hwp0rgahpfxch3h"))))
     (build-system python-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "--zmq=" (assoc-ref %build-inputs "zeromq")))
-       ;; FIXME: You must build pyzmq with 'python setup.py build_ext
-       ;; --inplace' for 'python setup.py test' to work.
-       #:tests? #f))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'build-extensions
+           (lambda _
+             ;; Cython extensions have to be built before running the tests.
+             (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (inputs
      `(("zeromq" ,zeromq)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-nose" ,python-nose)))
+       ("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/zeromq/pyzmq")
     (synopsis "Python bindings for 0MQ")
     (description
@@ -13292,7 +13258,7 @@ ISO 8859, etc.).")
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-xdist" ,python-pytest-xdist)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase-5)))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-numpy" ,python-numpy)
@@ -13686,6 +13652,56 @@ is made as zipfile like as possible.")
 
 (define-public python2-rarfile
   (package-with-python2 python-rarfile))
+
+(define-public python-rich
+  (package
+    (name "python-rich")
+    (version "10.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rich" version))
+              (sha256
+               (base32
+                "1z5m5brcdf3vndpavcqj5nl35xby4x5rfj48klhwqycfqf3g9cqp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
+               (copy-recursively (string-append
+                                  (assoc-ref inputs "tests") "/tests")
+                                 "tests")
+               (invoke "python" "-m" "pytest" "-vv")))))))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-colorama" ,python-colorama)
+       ("python-commonmark" ,python-commonmark)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-pygments" ,python-pygments)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("tests"
+        ;; The release on pypi comes without tests.  We can't build from this
+        ;; checkout, though, because installation requires an invocation of
+        ;; poetry.
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/willmcgugan/rich")
+                 (commit (string-append "v" version))))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32
+             "19f4svb363sn5708qkpa6lakmiwzyb25h8kmh7bqrsbbrvi9hr70"))))))
+    (home-page "https://github.com/willmcgugan/rich")
+    (synopsis "Render rich text and more to the terminal")
+    (description
+     "This is a Python package for rendering rich text, tables, progress bars,
+syntax highlighting, markdown and more to the terminal.")
+    (license license:expat)))
 
 (define-public python-magic
   (package
@@ -14265,9 +14281,6 @@ graphviz.")
 @url{https://www.kernel.org/pub/software/scm/git/docs/git-fast-import.html,fastimport}
 format.")
     (license license:gpl2+)))
-
-(define-public python2-fastimport
-  (package-with-python2 python-fastimport))
 
 (define-public python-twisted
   (package
@@ -15147,13 +15160,13 @@ collections of data.")
 (define-public python-prompt-toolkit
   (package
     (name "python-prompt-toolkit")
-    (version "3.0.9")
+    (version "3.0.18")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "prompt_toolkit" version))
        (sha256
-        (base32 "0bvjp62cs6aj9lrh7njzxdjgg8pjfw3qgmr551243d9ivmcapvn5"))))
+        (base32 "1g1kq1aimhm23k2dmlmnznfzc83l6ly65g0h32hqz8injcdz3d71"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -15257,18 +15270,19 @@ well.")
 (define-public ptpython
   (package
     (name "ptpython")
-    (version "3.0.5")
+    (version "3.0.17")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ptpython" version))
               (sha256
                (base32
-                "0c2ry5gwi2v99slna62j8r2bwq0hpzmvgdryqg9m6x57vbjfg52h"))))
+                "1phk1grcvn456igjg8gwjjg8bf4kszddq5nd5sdlz3hslg62a7ci"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: No tests in pypi tarball.
+     `(#:tests? #f)) ;there are no tests
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
+       ("python-black" ,python-black)
        ("python-jedi" ,python-jedi)
        ("python-prompt-toolkit" ,python-prompt-toolkit)
        ("python-pygments" ,python-pygments)))
@@ -16867,8 +16881,9 @@ and bit flag values.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda _
-                      (invoke "pytest"))))))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-hypothesis" ,python-hypothesis)
@@ -21160,18 +21175,26 @@ library's @code{threading} module.")
 (define-public python-toolz
   (package
     (name "python-toolz")
-    (version "0.9.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "toolz" version))
        (sha256
         (base32
-         "1j9i7fdjnx9dz35fdj5gvgxx6585ja9sxgaiv65if77nlxz0m7wj"))))
+         "1grz3zvw5ixwqqlbv0n7j11mlcxb66cirh5i9x9zw8kqy0hpk967"))))
     (build-system python-build-system)
-    ;; FIXME: tests cannot be computed: "Can't perform this operation for
-    ;; unregistered loader type"
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--doctest-modules"
+                       "--pyargs" "toolz")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pytoolz/toolz/")
     (synopsis "List processing tools and functional utilities")
     (description
@@ -21385,9 +21408,6 @@ This Python package wraps the Blosc library.")
     (description "Partd stores key-value pairs.  Values are raw bytes.  We
 append on old values.  Partd excels at shuffling operations.")
     (license license:bsd-3)))
-
-(define-public python2-partd
-  (package-with-python2 python-partd))
 
 (define-public python-fsspec
   (package
@@ -25204,14 +25224,14 @@ disk files in asyncio applications.")
 (define-public python-dataclasses
   (package
     (name "python-dataclasses")
-    (version "0.7")
+    (version "0.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dataclasses" version))
         (sha256
           (base32
-            "1rh8111fbws2vxyf2qy2zw3x6p6cq1jfz8pf904gig5qwg56sjj9"))))
+            "15sc12nrc7gxwb30vfa6frzdnpmbap9ibi1fr1yrbkra6izhcyc4"))))
     (build-system python-build-system)
     (home-page
       "https://github.com/ericvsmith/dataclasses")
@@ -25499,7 +25519,7 @@ implementations.")
         ("swig" ,swig)))
     (inputs
       `(("python-wrapper" ,python-wrapper)
-        ("qtbase" ,qtbase)
+        ("qtbase" ,qtbase-5)
         ("libxi" ,libxi)
         ("libice" ,libice)
         ("soqt" ,soqt)

@@ -24,8 +24,13 @@
   #:use-module (gnu installer newt page)
   #:use-module (gnu system uuid)
   #:use-module ((gnu build file-systems)
-                #:select (read-partition-uuid
+                #:select (canonicalize-device-spec
+                          find-partition-by-label
+                          read-partition-uuid
                           read-luks-partition-uuid))
+  #:use-module ((gnu build linux-boot)
+                #:select (linux-command-line
+                          find-long-option))
   #:use-module ((gnu build linux-modules)
                 #:select (missing-modules))
   #:use-module ((gnu system linux-initrd)
@@ -107,6 +112,9 @@
 
             &no-root-mount-point
             no-root-mount-point?
+            &cannot-read-uuid
+            cannot-read-uuid?
+            cannot-read-uuid-partition
 
             check-user-partitions
             set-user-partitions-file-name
@@ -230,7 +238,7 @@ inferior to MAX-SIZE, #f otherwise."
   (case fs-type
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
-    ((fat16) "fat")
+    ((fat16) "vfat")
     ((fat32) "vfat")
     ((jfs)   "jfs")
     ((ntfs)  "ntfs")))
@@ -334,16 +342,35 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (with-null-output-ports
    (invoke "dmsetup" "remove_all")))
 
+(define (installation-device)
+  "Return the installation device path."
+  (let* ((cmdline (linux-command-line))
+         (root (find-long-option "--root" cmdline)))
+    (and root
+         (canonicalize-device-spec (uuid root)))))
+
 (define (non-install-devices)
-  "Return all the available devices, except the busy one, allegedly the
-install device. DEVICE-IS-BUSY? is a parted call, checking if the device is
-mounted."
-  ;; FIXME: The install image uses an overlayfs so the install device does not
-  ;; appear as mounted and won't be considered as busy.
-  (remove (lambda (device)
-            (let ((file-name (device-path device)))
-              (device-is-busy? device)))
-          (devices)))
+  "Return all the available devices, except the install device."
+  (define (read-only? device)
+    (dynamic-wind
+    (lambda ()
+      (device-open device))
+    (lambda ()
+      (device-read-only? device))
+    (lambda ()
+      (device-close device))))
+
+  ;; If parted reports that a device is read-only it is probably the
+  ;; installation device. However, as this detection does not always work,
+  ;; compare the device path to the installation device path read from the
+  ;; command line.
+  (let ((install-device (installation-device)))
+    (remove (lambda (device)
+              (let ((file-name (device-path device)))
+                (or (read-only? device)
+                    (and install-device
+                         (string=? file-name install-device)))))
+            (devices))))
 
 
 ;;
@@ -1006,15 +1033,48 @@ exists."
 (define-condition-type &no-root-mount-point &condition
   no-root-mount-point?)
 
+;; Cannot not read the partition UUID.
+(define-condition-type &cannot-read-uuid &condition
+  cannot-read-uuid?
+  (partition cannot-read-uuid-partition))
+
 (define (check-user-partitions user-partitions)
-  "Return #t if the USER-PARTITIONS lists contains one <user-partition> record
-with a mount-point set to '/', raise &no-root-mount-point condition
-otherwise."
-  (let ((mount-points
-         (map user-partition-mount-point user-partitions)))
-    (or (member "/" mount-points)
-        (raise
-         (condition (&no-root-mount-point))))))
+  "Check the following statements:
+
+The USER-PARTITIONS list contains one <user-partition> record with a
+mount-point set to '/'.  Raise &no-root-mount-point condition otherwise.
+
+All the USER-PARTITIONS with a mount point and that will not be formatted have
+a valid UUID.  Raise a &cannot-read-uuid condition specifying the faulty
+partition otherwise.
+
+Return #t if all the statements are valid."
+  (define (check-root)
+    (let ((mount-points
+           (map user-partition-mount-point user-partitions)))
+      (or (member "/" mount-points)
+          (raise
+           (condition (&no-root-mount-point))))))
+
+  (define (check-uuid)
+    (let ((mount-partitions
+           (filter user-partition-mount-point user-partitions)))
+      (every
+       (lambda (user-partition)
+         (let ((file-name (user-partition-file-name user-partition))
+               (need-formatting?
+                (user-partition-need-formatting? user-partition)))
+           (or need-formatting?
+               (read-partition-uuid file-name)
+               (raise
+                (condition
+                 (&cannot-read-uuid
+                  (partition file-name)))))))
+       mount-partitions)))
+
+  (and (check-root)
+       (check-uuid)
+       #t))
 
 (define (set-user-partitions-file-name user-partitions)
   "Set the partition file-name of <user-partition> records in USER-PARTITIONS

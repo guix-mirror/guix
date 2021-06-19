@@ -376,12 +376,12 @@ Once your package builds correctly, please send us a patch
 (@pxref{Submitting Patches}).  Well, if you need help, we will be happy to
 help you too.  Once the patch is committed in the Guix repository, the
 new package automatically gets built on the supported platforms by
-@url{@value{SUBSTITUTE-URL}, our continuous integration system}.
+@url{https://@value{SUBSTITUTE-SERVER-1}, our continuous integration system}.
 
 @cindex substituter
 Users can obtain the new package definition simply by running
 @command{guix pull} (@pxref{Invoking guix pull}).  When
-@code{@value{SUBSTITUTE-SERVER}} is done building the package, installing the
+@code{@value{SUBSTITUTE-SERVER-1}} is done building the package, installing the
 package automatically downloads binaries from there
 (@pxref{Substitutes}).  The only place where human intervention is
 needed is to review and apply the patch.
@@ -532,9 +532,11 @@ It is a good idea to strip commit identifiers in the @code{version}
 field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
 aesthetics have a role to play here) as well as problems related to OS
 limits such as the maximum shebang length (127 bytes for the Linux
-kernel).  It is best to use the full commit identifiers in
-@code{origin}s, though, to avoid ambiguities.  A typical package
-definition may look like this:
+kernel).  There are helper functions for doing this for packages using
+@code{git-fetch} or @code{hg-fetch} (see below).  It is best to use the
+full commit identifiers in @code{origin}s, though, to avoid ambiguities.
+A typical package definition may look like this:
+
 
 @lisp
 (define my-package
@@ -552,6 +554,20 @@ definition may look like this:
       ;; @dots{}
       )))
 @end lisp
+
+@deffn {Scheme Procedure} git-version @var{VERSION} @var{REVISION} @var{COMMIT}
+Return the version string for packages using @code{git-fetch}.
+
+@lisp
+(git-version "0.2.3" "0" "93818c936ee7e2f1ba1b315578bde363a7d43d05")
+@result{} "0.2.3-0.93818c9"
+@end lisp
+@end deffn
+
+@deffn {Scheme Procedure} hg-version @var{VERSION} @var{REVISION} @var{CHANGESET}
+Return the version string for packages using @code{hg-fetch}.  It works
+in the same way as @code{git-version}.
+@end deffn
 
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions
@@ -1091,7 +1107,7 @@ changes).  This branch is intended to be merged in @code{master} every
 until late in its development process.
 @end table
 
-All these branches are @uref{@value{SUBSTITUTE-URL},
+All these branches are @uref{https://@value{SUBSTITUTE-SERVER-1},
 tracked by our build farm} and merged into @code{master} once
 everything has been successfully built.  This allows us to fix issues
 before they hit users, and to reduce the window during which pre-built
@@ -1125,7 +1141,7 @@ as timestamps or randomly-generated output in the build result.
 
 Another option is to use @command{guix challenge} (@pxref{Invoking guix
 challenge}).  You may run it once the package has been committed and
-built by @code{@value{SUBSTITUTE-SERVER}} to check whether it obtains the same
+built by @code{@value{SUBSTITUTE-SERVER-1}} to check whether it obtains the same
 result as you did.  Better yet: Find another machine that can build it
 and run @command{guix publish}.  Since the remote build machine is
 likely different from yours, this can catch non-determinism issues
@@ -1259,8 +1275,19 @@ this nifty tool!
 @section Commit Access
 
 @cindex commit access, for developers
-For frequent contributors, having write access to the repository is
-convenient.  When you deem it necessary, consider applying for commit
+Everyone can contribute to Guix without having commit access
+(@pxref{Submitting Patches}).  However, for frequent contributors,
+having write access to the repository can be convenient.  Commit access
+should not be thought of as a ``badge of honor'' but rather as a
+responsibility a contributor is willing to take to help the project.
+
+The following sections explain how to get commit access, how to be ready
+to push commits, and the policies and community expectations for commits
+pushed upstream.
+
+@subsection Applying for Commit Access
+
+When you deem it necessary, consider applying for commit
 access by following these steps:
 
 @enumerate
@@ -1332,6 +1359,29 @@ review and merging system, which, as a consequence, may lead us to have
 fewer people with commit access to the main repository.  Stay tuned!
 @end quotation
 
+All commits that are pushed to the central repository on Savannah must
+be signed with an OpenPGP key, and the public key should be uploaded to
+your user account on Savannah and to public key servers, such as
+@code{keys.openpgp.org}.  To configure Git to automatically sign
+commits, run:
+
+@example
+git config commit.gpgsign true
+
+# Substitute the fingerprint of your public PGP key.
+git config user.signingkey CABBA6EA1DC0FF33
+@end example
+
+You can prevent yourself from accidentally pushing unsigned commits to
+Savannah by using the pre-push Git hook located at
+@file{etc/git/pre-push}:
+
+@example
+cp etc/git/pre-push .git/hooks/pre-push
+@end example
+
+@subsection Commit Policy
+
 If you get commit access, please make sure to follow
 the policy below (discussions of the policy can take place on
 @email{guix-devel@@gnu.org}).
@@ -1349,25 +1399,6 @@ a lot of rebuilds (for example, upgrading GnuTLS or GLib).  We have a
 mailing list for commit notifications (@email{guix-commits@@gnu.org}),
 so people can notice.  Before pushing your changes, make sure to run
 @code{git pull --rebase}.
-
-All commits that are pushed to the central repository on Savannah must
-be signed with an OpenPGP key, and the public key should be uploaded to
-your user account on Savannah and to public key servers, such as
-@code{keys.openpgp.org}.  To configure Git to automatically sign
-commits, run:
-
-@example
-git config commit.gpgsign true
-git config user.signingkey CABBA6EA1DC0FF33
-@end example
-
-You can prevent yourself from accidentally pushing unsigned commits to
-Savannah by using the pre-push Git hook called located at
-@file{etc/git/pre-push}:
-
-@example
-cp etc/git/pre-push .git/hooks/pre-push
-@end example
 
 When pushing a commit on behalf of somebody else, please add a
 @code{Signed-off-by} line at the end of the commit log message---e.g.,
@@ -1390,11 +1421,75 @@ you're confident, it's OK to commit.
 That last part is subject to being adjusted, allowing individuals to commit
 directly on non-controversial changes on parts they’re familiar with.
 
+@subsection Addressing Issues
+
+Peer review (@pxref{Submitting Patches}) and tools such as
+@command{guix lint} (@pxref{Invoking guix lint}) and the test suite
+(@pxref{Running the Test Suite}) should catch issues before they are
+pushed.  Yet, commits that ``break'' functionality might occasionally
+go through.  When that happens, there are two priorities: mitigating
+the impact, and understanding what happened to reduce the chance of
+similar incidents in the future.  The responsibility for both these
+things primarily lies with those involved, but like everything this is
+a group effort.
+
+Some issues can directly affect all users---for instance because they
+make @command{guix pull} fail or break core functionality, because they
+break major packages (at build time or run time), or because they
+introduce known security vulnerabilities.
+
+@cindex reverting commits
+The people involved in authoring, reviewing, and pushing such
+commit(s) should be at the forefront to mitigate their impact in a
+timely fashion: by pushing a followup commit to fix it (if possible),
+or by reverting it to leave time to come up with a proper fix, and by
+communicating with other developers about the problem.
+
+If these persons are unavailable to address the issue in time, other
+committers are entitled to revert the commit(s), explaining in the
+commit log and on the mailing list what the problem was, with the goal
+of leaving time to the original committer, reviewer(s), and author(s)
+to propose a way forward.
+
+Once the problem has been dealt with, it is the responsibility of
+those involved to make sure the situation is understood.  If you are
+working to understand what happened, focus on gathering information
+and avoid assigning any blame.  Do ask those involved to describe what
+happened, do not ask them to explain the situation---this would
+implicitly blame them, which is unhelpful.  Accountability comes from
+a consensus about the problem, learning from it and improving
+processes so that it's less likely to reoccur.
+
+@subsection Commit Revocation
+
 In order to reduce the possibility of mistakes, committers will have
 their Savannah account removed from the Guix Savannah project and their
 key removed from @file{.guix-authorizations} after 12 months of
 inactivity; they can ask to regain commit access by emailing the
 maintainers, without going through the vouching process.
+
+Maintainers@footnote{See @uref{https://guix.gnu.org/en/about} for the
+current list of maintainers.  You can email them privately at
+@email{guix-maintainers@@gnu.org}.} may also revoke an individual's
+commit rights, as a last resort, if cooperation with the rest of the
+community has caused too much friction---even within the bounds of the
+project's code of conduct (@pxref{Contributing}).  They would only do so
+after public or private discussion with the individual and a clear
+notice.  Examples of behavior that hinders cooperation and could lead to
+such a decision include:
+
+@itemize
+@item repeated violation of the commit policy stated above;
+@item repeated failure to take peer criticism into account;
+@item breaching trust through a series of grave incidents.
+@end itemize
+
+When maintainers resort to such a decision, they notify developers on
+@email{guix-devel@@gnu.org}; inquiries may be sent to
+@email{guix-maintainers@@gnu.org}.  Depending on the situation, the
+individual may still be welcome to contribute.
+
+@subsection Helping Out
 
 One last thing: the project keeps moving forward because committers not
 only push their own awesome changes, but also offer some of their time

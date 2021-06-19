@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2432,14 +2433,16 @@ new Date();"))
   (package
     (inherit openjdk12)
     (name "openjdk")
-    (version "13.0")
+    (version "13.0.7")
     (source (origin
-              (method url-fetch)
-              (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
-              (file-name (string-append name "-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk13u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
+                "0wrrr0d7lz1v8qqm752mn4gz5l2vpl2kmx4ac3ysvk4mljc924hp"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -2474,14 +2477,16 @@ new Date();"))
   (package
     (inherit openjdk13)
     (name "openjdk")
-    (version "14.0")
+    (version "14.0.2")
     (source (origin
-              (method url-fetch)
-              (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
-              (file-name (string-append name "-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk14u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
+                "07k9bsbxwyf2z2n50z96nvhsdai916mxdxcr5lm44jz7f6xrwfq6"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -2515,6 +2520,67 @@ new Date();"))
        ("which" ,which)
        ("zip" ,zip)))
     (home-page "https://openjdk.java.net/projects/jdk/14")))
+
+(define-public openjdk15
+  (package
+    (inherit openjdk14)
+    (name "openjdk")
+    (version "15.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk15u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "168cr08nywp0q3vyj8njkhsmmnyd8rz9r58hk4xhzdzc6bdfkl1i"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk14:jdk" ,openjdk14 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk/15")))
+
+(define-public openjdk16
+  (package
+    (inherit openjdk15)
+    (name "openjdk")
+    (version "16.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk16u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ggddsbsar4dj2fycfqqqagqil7prhb30afvq6933rz7pa9apm2f"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk15:jdk" ,openjdk15 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openjdk15)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'make-templates-writable
+             (lambda _
+               ;; The build system copies a few .template files from the
+               ;; source directory into the build directory and then modifies
+               ;; them in-place.  So these files have to be writable.
+               (for-each
+                (lambda (file)
+                  (invoke "chmod" "u+w" file))
+                (find-files "src/java.base/share/classes/jdk/internal/misc/"
+                            "\\.template$"))
+               #t))))))
+    (home-page "https://openjdk.java.net/projects/jdk/16")))
 
 (define-public icedtea icedtea-8)
 

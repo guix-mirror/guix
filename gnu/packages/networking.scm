@@ -108,7 +108,6 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
@@ -255,7 +254,7 @@ protocols.")
        ("gnutls" ,gnutls)
        ("libtiff" ,libtiff)
        ("openssl" ,openssl)
-       ("qt5" ,qtbase)
+       ("qt5" ,qtbase-5)
        ("udev" ,eudev)))
     (synopsis "Camera stack and framework")
     (description "LibCamera is a complex camera support library for GNU+Linux,
@@ -1495,7 +1494,7 @@ of the same name.")
        ("krb5" ,mit-krb5)
        ("nghttp2:lib" ,nghttp2 "lib")
        ("minizip" ,minizip)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)
        ("sbc" ,sbc)
@@ -2848,133 +2847,6 @@ It then continually measures the response time and packet loss at each hop, and
 displays the results in real time.")
     (license license:gpl2+)))
 
-(define-public strongswan
-  (package
-    (name "strongswan")
-    (version "5.8.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://download.strongswan.org/strongswan-"
-                           version ".tar.bz2"))
-       (sha256
-        (base32 "0g2m08gmgdi3qvvqz6zy7n16np53sp232xd0rdc2vdhk73img6id"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-command-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/libstrongswan/utils/process.c"
-               (("/bin/sh")
-                (string-append (assoc-ref inputs "bash") "/bin/sh")))
-
-             (substitute* "src/libstrongswan/tests/suites/test_process.c"
-               (("/bin/sh") (which "sh"))
-               (("/bin/echo") (which "echo"))
-               (("cat") (which "cat")))
-             #t))
-         (add-before 'check 'set-up-test-environment
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))
-       #:configure-flags
-       (list
-        "--disable-ldap"
-        "--disable-mysql"
-        "--disable-systemd"
-
-        ;; Disable BSD-4 licensed plugins.
-        "--disable-blowfish"
-        "--disable-des"
-
-        ;; Make it usable.  The default configuration is far too minimal to be
-        ;; used with most common VPN set-ups.
-        ;; See <https://wiki.strongswan.org/projects/strongswan/wiki/Autoconf>.
-        "--enable-aesni"
-        "--enable-attr-sql"
-        "--enable-chapoly"
-        "--enable-curl"
-        "--enable-dhcp"
-        "--enable-eap-aka"
-        "--enable-eap-aka-3gpp"
-        "--enable-eap-dynamic"
-        "--enable-eap-identity"
-        "--enable-eap-md5"
-        "--enable-eap-mschapv2"
-        "--enable-eap-peap"
-        "--enable-eap-radius"
-        "--enable-eap-sim"
-        "--enable-eap-sim-file"
-        "--enable-eap-simaka-pseudonym"
-        "--enable-eap-simaka-reauth"
-        "--enable-eap-simaka-sql"
-        "--enable-eap-tls"
-        "--enable-eap-tnc"
-        "--enable-eap-ttls"
-        "--enable-ext-auth"
-        "--enable-farp"
-        "--enable-ha"
-        "--enable-led"
-        "--enable-md4"
-        "--enable-mediation"
-        "--enable-openssl"
-        "--enable-soup"
-        "--enable-sql"
-        "--enable-sqlite"
-        "--enable-xauth-eap"
-        "--enable-xauth-noauth"
-        "--enable-xauth-pam"
-
-        ;; Use libcap by default.
-        "--with-capabilities=libcap")))
-    (inputs
-     `(("curl" ,curl)
-       ("gmp" ,gmp)
-       ("libcap" ,libcap)
-       ("libgcrypt" ,libgcrypt)
-       ("libsoup" ,libsoup)
-       ("linux-pam" ,linux-pam)
-       ("openssl" ,openssl)))
-    (native-inputs
-     `(("coreutils" ,coreutils)
-       ("pkg-config" ,pkg-config)
-       ("tzdata" ,tzdata-for-tests)))
-    (synopsis "IKEv1/v2 keying daemon")
-    (description "StrongSwan is an IPsec implementation originally based upon
-the FreeS/WAN project.  It contains support for IKEv1, IKEv2, MOBIKE, IPv6,
-NAT-T and more.")
-    (home-page "https://strongswan.org/")
-    (license
-     (list license:gpl2+
-           ;; src/aikgen/*
-           ;; src/libcharon/plugins/dnscert/*
-           ;; src/libcharon/plugins/ext_auth/*
-           ;; src/libcharon/plugins/vici/ruby/*
-           ;; src/libcharon/plugins/xauth_pam/xauth_pam_listener.[ch]
-           license:expat
-           ;; src/inclue/sys/*
-           license:bsd-3
-           ;; src/libstrongswan/plugins/sha3/sha3_keccak.c
-           license:public-domain
-           ;; src/libstrongswan/plugins/pkcs11/pkcs11.h
-           (license:non-copyleft
-            "file://src/libstrongswan/plugins/pkcs11/pkcs11.h"
-            "pkcs11 contains a unknown permissive license. View the specific
-file for more details.")
-           ;; These files are not included in the
-           ;; build, they are disabled through
-           ;; options to ./configure
-           ;;
-           ;; src/libstrongswan/plugins/blowfish/bf_enc.c
-           ;; src/libstrongswan/plugins/blowfish/bf_locl.h
-           ;; src/libstrongswan/plugins/blowfish/bf_pi.h
-           ;; src/libstrongswan/plugins/blowfish/bf_skey.c
-           ;; src/libstrongswan/plugins/blowfish/blowfish_crypter.c
-           ;; src/libstrongswan/plugins/des/des_crypter.c
-           license:bsd-4))))
-
 (define-public amule
   (package
     (name "amule")
@@ -3529,87 +3401,90 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (license license:bsd-3)))
 
 (define-public opendht
-  (package
-    (name "opendht")
-    (version "2.2.0rc7")                ;jami requires >= 2.2.0
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/savoirfairelinux/opendht")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0wkynjzwzl5q46hy1yb9npi5hvknnj17rjkax5v3acqjmd0y48h9"))))
-    ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
-    (outputs '("out" "tools" "debug"))
-    (build-system cmake-build-system)
-    (inputs
-     `(("argon2" ,argon2)
-       ("nettle" ,nettle)
-       ("readline" ,readline)
-       ("jsoncpp" ,jsoncpp)
-       ("openssl" ,openssl)             ;required for the DHT proxy
-       ("fmt" ,fmt)))
-    (propagated-inputs
-     `(("gnutls" ,gnutls)               ;included in opendht/crypto.h
-       ("msgpack" ,msgpack)             ;included in several installed headers
-       ("restinio" ,restinio)))         ;included in opendht/http.h
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("python-cython" ,python-cython)
-       ("libtool" ,libtool)
-       ("cppunit" ,cppunit)))
-    (arguments
-     `(#:imported-modules ((guix build python-build-system) ;for site-packages
-                           ,@%cmake-build-system-modules)
-       #:modules (((guix build python-build-system) #:prefix python:)
-                  (guix build cmake-build-system)
-                  (guix build utils))
-       #:tests? #f                      ; Tests require network connection.
-       #:configure-flags
-       '( ;;"-DOPENDHT_TESTS=on"
-         "-DOPENDHT_STATIC=off"
-         "-DOPENDHT_TOOLS=on"
-         "-DOPENDHT_PYTHON=on"
-         "-DOPENDHT_PROXY_SERVER=on"
-         "-DOPENDHT_PUSH_NOTIFICATIONS=on"
-         "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
-         "-DOPENDHT_PROXY_CLIENT=on")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-python-installation-prefix
-           ;; Specify the installation prefix for the compiled Python module
-           ;; that would otherwise attempt to installs itself to Python's own
-           ;; site-packages directory.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "python/CMakeLists.txt"
-               (("--root=\\\\\\$ENV\\{DESTDIR\\}")
-                (string-append "--root=/ --single-version-externally-managed "
-                               "--prefix=${CMAKE_INSTALL_PREFIX}")))))
-         (add-after 'unpack 'specify-runpath-for-python-module
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "python/setup.py.in"
-                 (("extra_link_args=\\[(.*)\\]" _ args)
-                  (string-append "extra_link_args=[" args
-                                 ", '-Wl,-rpath=" out "/lib']"))))))
-         (add-after 'install 'move-and-wrap-tools
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (tools (assoc-ref outputs "tools"))
-                   (site-packages (python:site-packages inputs outputs)))
-               (mkdir tools)
-               (rename-file (string-append out "/bin")
-                            (string-append tools "/bin"))
-               (wrap-program (string-append tools "/bin/dhtcluster")
-                 `("PYTHONPATH" prefix (,site-packages)))))))))
-    (home-page "https://github.com/savoirfairelinux/opendht/")
-    (synopsis "Lightweight Distributed Hash Table (DHT) library")
-    (description "OpenDHT provides an easy to use distributed in-memory data
+  ;; Jami requires unreleased features of OpenDHT.
+  (let ((commit "c8a0b443f3117e2fa1343d2cb3c091f502b1a24e")
+        (revision "1"))
+    (package
+      (name "opendht")
+      (version (git-version "2.2.0rc7" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/savoirfairelinux/opendht")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "062irb9yii66n2fzbpsjf7v2v53zzvakr1wjmi4l1jaz33fwx5by"))))
+      ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
+      (outputs '("out" "tools" "debug"))
+      (build-system cmake-build-system)
+      (inputs
+       `(("argon2" ,argon2)
+         ("nettle" ,nettle)
+         ("readline" ,readline)
+         ("jsoncpp" ,jsoncpp)
+         ("openssl" ,openssl)             ;required for the DHT proxy
+         ("fmt" ,fmt)))
+      (propagated-inputs
+       `(("gnutls" ,gnutls)               ;included in opendht/crypto.h
+         ("msgpack" ,msgpack)             ;included in several installed headers
+         ("restinio" ,restinio)))         ;included in opendht/http.h
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("python" ,python)
+         ("python-cython" ,python-cython)
+         ("libtool" ,libtool)
+         ("cppunit" ,cppunit)))
+      (arguments
+       `(#:imported-modules ((guix build python-build-system) ;for site-packages
+                             ,@%cmake-build-system-modules)
+         #:modules (((guix build python-build-system) #:prefix python:)
+                    (guix build cmake-build-system)
+                    (guix build utils))
+         #:tests? #f                      ; Tests require network connection.
+         #:configure-flags
+         '( ;;"-DOPENDHT_TESTS=on"
+           "-DOPENDHT_STATIC=off"
+           "-DOPENDHT_TOOLS=on"
+           "-DOPENDHT_PYTHON=on"
+           "-DOPENDHT_PROXY_SERVER=on"
+           "-DOPENDHT_PUSH_NOTIFICATIONS=on"
+           "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
+           "-DOPENDHT_PROXY_CLIENT=on")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-python-installation-prefix
+             ;; Specify the installation prefix for the compiled Python module
+             ;; that would otherwise attempt to installs itself to Python's own
+             ;; site-packages directory.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "python/CMakeLists.txt"
+                 (("--root=\\\\\\$ENV\\{DESTDIR\\}")
+                  (string-append "--root=/ --single-version-externally-managed "
+                                 "--prefix=${CMAKE_INSTALL_PREFIX}")))))
+           (add-after 'unpack 'specify-runpath-for-python-module
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "python/setup.py.in"
+                   (("extra_link_args=\\[(.*)\\]" _ args)
+                    (string-append "extra_link_args=[" args
+                                   ", '-Wl,-rpath=" out "/lib']"))))))
+           (add-after 'install 'move-and-wrap-tools
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (tools (assoc-ref outputs "tools"))
+                     (site-packages (python:site-packages inputs outputs)))
+                 (mkdir tools)
+                 (rename-file (string-append out "/bin")
+                              (string-append tools "/bin"))
+                 (wrap-program (string-append tools "/bin/dhtcluster")
+                   `("PYTHONPATH" prefix (,site-packages)))))))))
+      (home-page "https://github.com/savoirfairelinux/opendht/")
+      (synopsis "Lightweight Distributed Hash Table (DHT) library")
+      (description "OpenDHT provides an easy to use distributed in-memory data
 store.  Every node in the network can read and write values to the store.
 Values are distributed over the network, with redundancy.  It includes the
 following features:
@@ -3632,7 +3507,7 @@ library (get, put, etc.) with text values.
 @item dhtchat
 A very simple IM client working over the DHT.
 @end table")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public frrouting
   (package

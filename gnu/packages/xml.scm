@@ -32,6 +32,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -878,7 +879,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
     (home-page "https://metacpan.org/release/XML-SAX-Base")
     (synopsis "Base class for SAX Drivers and Filters")
     (description "This module has a very simple task - to be a base class for
-PerlSAX drivers and filters.  It's default behaviour is to pass the input
+PerlSAX drivers and filters.  Its default behaviour is to pass the input
 directly to the output unchanged.  It can be useful to use this module as a
 base class so you don't have to, for example, implement the characters()
 callback.")
@@ -1090,14 +1091,14 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.61")
+    (version "0.63")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "1zrslg7wz15sm1k28i3gp108cszh062ac24m3ydvr59pwfqs9br6"))))
+                "04frqhikmyq0i9ldraisbvppyjhqg6gz83l2rqpmp4f2h9n9k2lw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -2590,7 +2591,7 @@ for Python's ElementTree XML data structures, both for the standard
 ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
 
 For lxml.etree this package can be useful for providing XPath 2.0 selectors,
-because lxml.etree already has it's own implementation of XPath 1.0.")
+because lxml.etree already has its own implementation of XPath 1.0.")
     (license license:expat)))
 
 (define-public python-lxml

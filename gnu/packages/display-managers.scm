@@ -80,7 +80,7 @@
        ("libxcb" ,libxcb)
        ("libxkbcommon" ,libxkbcommon)
        ("linux-pam" ,linux-pam)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
 
        ;; Some user-defined themes use QtQuick components internally.  Adding
