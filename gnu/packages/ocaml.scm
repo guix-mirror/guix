@@ -4710,6 +4710,10 @@ the OCaml language.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'make-deterministic
+           (lambda _
+             (substitute* "Makefile.in"
+               (("`date`") "no date for reproducibility"))))
          (add-before 'configure 'configure-for-release
            (lambda _
              (substitute* "Makefile.in"
