@@ -163,6 +163,13 @@
                              (description "This is a 'quoted' thing."))))
      (check-description-style pkg))))
 
+(test-equal "description: leading whitespace"
+  "description contains leading whitespace"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                              (description " Whitespace."))))
+     (check-description-style pkg))))
+
 (test-equal "description: trailing whitespace"
   "description contains trailing whitespace"
   (single-lint-warning-message

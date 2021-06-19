@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -376,6 +377,15 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
                                infractions)
                          #:field 'description)))))
 
+  (define (check-no-leading-whitespace description)
+    "Check that DESCRIPTION doesn't have trailing whitespace."
+    (if (string-prefix? " " description)
+        (list
+         (make-warning package
+                       (G_ "description contains leading whitespace")
+                       #:field 'description))
+        '()))
+
   (define (check-no-trailing-whitespace description)
     "Check that DESCRIPTION doesn't have trailing whitespace."
     (if (string-suffix? " " description)
@@ -394,6 +404,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
          ;; Use raw description for this because Texinfo rendering
          ;; automatically fixes end of sentence space.
          (check-end-of-sentence-space description)
+         (check-no-leading-whitespace description)
          (check-no-trailing-whitespace description)
          (match (check-texinfo-markup description)
            ((and warning (? lint-warning?)) (list warning))
