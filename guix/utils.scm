@@ -342,38 +342,40 @@ a list of command-line arguments passed to the compression program."
 be a procedure that takes the original expression in string and returns a new
 one.  ENCODING will be used to interpret all port I/O, it default to UTF-8.
 This procedure returns #t on success."
+  (define file   (assq-ref source-properties 'filename))
+  (define line   (assq-ref source-properties 'line))
+  (define column (assq-ref source-properties 'column))
+
   (with-fluids ((%default-port-encoding encoding))
-    (let* ((file   (assq-ref source-properties 'filename))
-           (line   (assq-ref source-properties 'line))
-           (column (assq-ref source-properties 'column))
-           (in     (open-input-file file))
-           ;; The start byte position of the expression.
-           (start  (begin (while (not (and (= line (port-line in))
-                                           (= column (port-column in))))
-                            (when (eof-object? (read-char in))
-                              (error (format #f "~a: end of file~%" in))))
-                          (ftell in)))
-           ;; The end byte position of the expression.
-           (end    (begin (read in) (ftell in))))
-      (seek in 0 SEEK_SET) ; read from the beginning of the file.
-      (let* ((pre-bv  (get-bytevector-n in start))
-             ;; The expression in string form.
-             (str     (iconv:bytevector->string
-                       (get-bytevector-n in (- end start))
-                       (port-encoding in)))
-             (post-bv (get-bytevector-all in))
-             (str*    (proc str)))
-        ;; Verify the edited expression is still a scheme expression.
-        (call-with-input-string str* read)
-        ;; Update the file with edited expression.
-        (with-atomic-file-output file
-          (lambda (out)
-            (put-bytevector out pre-bv)
-            (display str* out)
-            ;; post-bv maybe the end-of-file object.
-            (when (not (eof-object? post-bv))
-              (put-bytevector out post-bv))
-            #t))))))
+    (call-with-input-file file
+      (lambda (in)
+        (let* ( ;; The start byte position of the expression.
+               (start  (begin (while (not (and (= line (port-line in))
+                                               (= column (port-column in))))
+                                (when (eof-object? (read-char in))
+                                  (error (format #f "~a: end of file~%" in))))
+                              (ftell in)))
+               ;; The end byte position of the expression.
+               (end    (begin (read in) (ftell in))))
+          (seek in 0 SEEK_SET)          ; read from the beginning of the file.
+          (let* ((pre-bv  (get-bytevector-n in start))
+                 ;; The expression in string form.
+                 (str     (iconv:bytevector->string
+                           (get-bytevector-n in (- end start))
+                           (port-encoding in)))
+                 (post-bv (get-bytevector-all in))
+                 (str*    (proc str)))
+            ;; Verify the edited expression is still a scheme expression.
+            (call-with-input-string str* read)
+            ;; Update the file with edited expression.
+            (with-atomic-file-output file
+              (lambda (out)
+                (put-bytevector out pre-bv)
+                (display str* out)
+                ;; post-bv maybe the end-of-file object.
+                (when (not (eof-object? post-bv))
+                  (put-bytevector out post-bv))
+                #t))))))))
 
 
 ;;;
