@@ -3086,6 +3086,38 @@ every compliant installation of OCaml and organize these libraries into a
 hierarchy of modules.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml-pcre
+  (package
+    (name "ocaml-pcre")
+    (version "7.4.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/mmottl/pcre-ocaml")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "11mck879p5zvkghps4ky8yslm0isgz52d84adl0dmcfxv2ibvcym"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("dune-configurator" ,dune-configurator)
+       ("pcre" ,pcre)))
+    (native-inputs
+     `(("pcre:bin" ,pcre "bin")))
+    (home-page "https://mmottl.github.io/pcre-ocaml")
+    (synopsis
+      "Bindings to the Perl Compatibility Regular Expressions library")
+    (description "Pcre-ocaml offers library functions for string
+pattern matching and substitution, similar to the functionality
+offered by the Perl language.")
+    ;; With static linking exception
+    (license license:lgpl2.1+)))
+
 (define-public ocaml4.07-pcre
   (package
     (name "ocaml4.07-pcre")
