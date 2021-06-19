@@ -5503,17 +5503,15 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libX11-"
-               version
-               ".tar.bz2"))
+        (uri (string-append "mirror://xorg/individual/lib/libX11-"
+                            version ".tar.bz2"))
         (sha256
           (base32
-            "0isxad59hvdwggbxqqjjjg3zmih9xiq4d9mdsnqbyb2nmbg46kp6"))))
+            "0v7aj8q3rlchdyfwdna7n7vgpyzyir391dlv5rwy9fxagbikbyhw"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
