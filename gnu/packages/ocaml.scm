@@ -4728,10 +4728,13 @@ the OCaml language.")
          (add-before 'configure 'fix-ocaml-num
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile.in"
+               (("nums.cma") "num.cma num_core.cma")
                (("= \\$\\(FUNCTORYLIB\\)")
                 (string-append "= -I "
                                (assoc-ref inputs "ocaml-num")
-                               "/lib/ocaml/site-lib"
+                               "/lib/ocaml/site-lib/num/core -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib/num"
                                " $(FUNCTORYLIB)")))
              #t)))))
     (home-page "http://cubicle.lri.fr/")
