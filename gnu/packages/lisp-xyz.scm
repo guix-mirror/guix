@@ -17425,3 +17425,49 @@ window it creates as just another output for your graphics, analogous to how
 
 (define-public cl-cepl
   (sbcl-package->cl-source-package sbcl-cepl))
+
+(define-public sbcl-stmx
+  ;; No release for years and recent commits contain fixes for revent SBCL versions.
+  (let ((commit "a7bb44082cd53ee968965adff03d4351750711a1")
+        (revision "1"))
+    (package
+     (name "sbcl-stmx")
+     (version (git-version "2.0.5" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cosmos72/stmx/")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hfmh4vj271jdilir97qs6nqbi5nmn5alyls0w3d3xxqwi6ffqjs"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+        ("log4cl" ,sbcl-log4cl)
+        ("closer-mop" ,sbcl-closer-mop)
+        ("trivial-garbage" ,sbcl-trivial-garbage)))
+     (home-page "https://stmx.org/")
+     (synopsis "High performance Transactional Memory for Common Lisp")
+     (description
+      "STMX is a high-performance implementation of composable Transactional
+Memory, which is a concurrency control mechanism aimed at making concurrent
+programming easier to write and understand.  Instead of traditional lock-based
+programming, one programs with atomic memory transactions, which can be
+composed together to make larger atomic memory transactions.
+
+A memory transaction gets committed if it returns normally, while it gets
+rolled back if it signals an error (and the error is propagated to the
+caller).
+
+Finally, memory transactions can safely run in parallel in different threads,
+are re-executed from the beginning in case of conflicts or if consistent reads
+cannot be guaranteed, and their effects are not visible from other threads
+until they commit.
+
+Memory transactions give freedom from deadlocks, are immune to thread-safety
+bugs and race conditions, provide automatic roll-back on failure, and aim at
+resolving the tension between granularity and concurrency.")
+     (license license:llgpl))))
