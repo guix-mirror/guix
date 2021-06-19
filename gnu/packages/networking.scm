@@ -108,7 +108,6 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
