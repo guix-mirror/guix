@@ -6799,6 +6799,34 @@ in the documentation always stays up-to-date.
 compatibility.")
     (license license:isc)))
 
+(define-public ocaml-mparser
+  (package
+    (name "ocaml-mparser")
+    (version "1.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/murmour/mparser")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "16j19v16r42gcsii6a337zrs5cxnf12ig0vaysxyr7sq5lplqhkx"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests.
+     '(#:package "mparser"
+       #:tests? #f))
+    (home-page "https://github.com/murmour/mparser")
+    (synopsis "Simple monadic parser combinator library")
+    (description
+      "This library implements a rather complete and efficient monadic parser
+combinator library similar to the Parsec library for Haskell by Daan Leijen and
+the FParsec library for FSharp by Stephan Tolksdorf.")
+    ;; With static linking exception.
+    (license license:lgpl2.1+)))
+
 (define-public lablgtk3
   (package
     (name "lablgtk")
