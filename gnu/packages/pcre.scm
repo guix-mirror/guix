@@ -35,18 +35,14 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.44")
+   (version "8.45")
    (source (origin
             (method url-fetch)
-            (uri (list
-                  (string-append "ftp://ftp.csx.cam.ac.uk"
-                                 "/pub/software/programming/pcre/"
-                                 "pcre-" version ".tar.bz2")
-                  (string-append "mirror://sourceforge/pcre/pcre/"
-                                 version "/pcre-" version ".tar.bz2")))
+            (uri (string-append "https://ftp.pcre.org/pub/pcre/pcre-"
+                                version ".tar.bz2"))
             (sha256
              (base32
-              "0v9nk51wh55pcbnf2jr36yarz8ayajn6d7ywiq2wagivn9c8c40r"))))
+              "1f7zichy6iimmkfrqdl575sdlm795cyc75szgg1vc2xvsbf6zbjd"))))
    (build-system gnu-build-system)
    (outputs '("out"           ;library & headers
               "bin"           ;depends on Readline (adds 20MiB to the closure)
@@ -75,8 +71,7 @@
                                    (link lib (string-append static "/"
                                                             (basename lib)))
                                    (delete-file lib))
-                                 (find-files source "\\.a$"))
-                       #t))))))
+                                 (find-files source "\\.a$"))))))))
    (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression
