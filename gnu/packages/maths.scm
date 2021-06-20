@@ -479,14 +479,14 @@ precision floating point numbers.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1a460zj9xmbgvcymkdhqh313c4l29mn9cffbi5vf33x3qygk70mp"))))
+                "0av04cpblphvvs3kl5rwphniarml503501vrpqw31rd0bmwg7fzg"))))
     (build-system gnu-build-system)
     (arguments
      (let ((system (%current-system)))
@@ -501,8 +501,7 @@ precision floating point numbers.")
                '((add-before 'check 'disable-failing-tests
                    (lambda _
                      (substitute* "spmatrix/test.c"
-                       ((".*test_complex.*") "\n"))
-                     #t))))
+                       ((".*test_complex.*") "\n"))))))
 
               ((string-prefix? "i686" system)
                ;; There are rounding issues with these tests on i686:
@@ -518,8 +517,7 @@ precision floating point numbers.")
                      (substitute* "spmatrix/test.c"
                        ((".*test_all.*") "\n")
                        ((".*test_float.*") "\n")
-                       ((".*test_complex.*") "\n"))
-                     #t))))
+                       ((".*test_complex.*") "\n"))))))
 
               (else '()))))))
     (home-page "https://www.gnu.org/software/gsl/")
