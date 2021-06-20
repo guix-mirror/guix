@@ -5025,7 +5025,7 @@ as part of the same ocaml-migrate-parsetree driver.")
 (define-public ocaml-ppxlib
   (package
     (name "ocaml-ppxlib")
-    (version "0.22.0")
+    (version "0.22.1")
     (home-page "https://github.com/ocaml-ppx/ppxlib")
     (source
      (origin
@@ -5036,7 +5036,7 @@ as part of the same ocaml-migrate-parsetree driver.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kf7lgcwygf6zlx7rwddqpqvasa6v7xiq0bqal8vxlib6lpg074q"))))
+         "0cpfg634if1py1b2rljk3cagq9gj68dl2gk1kdg76f9rapvl2i4g"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
