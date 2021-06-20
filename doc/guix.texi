@@ -17070,7 +17070,7 @@ shell daemon, @command{sshd}.  Its value must be an
 (service openssh-service-type
          (openssh-configuration
            (x11-forwarding? #t)
-           (permit-root-login 'without-password)
+           (permit-root-login 'prohibit-password)
            (authorized-keys
              `(("alice" ,(local-file "alice.pub"))
                ("bob" ,(local-file "bob.pub"))))))
@@ -17104,7 +17104,7 @@ TCP port on which @command{sshd} listens for incoming connections.
 @item @code{permit-root-login} (default: @code{#f})
 This field determines whether and when to allow logins as root.  If
 @code{#f}, root logins are disallowed; if @code{#t}, they are allowed.
-If it's the symbol @code{'without-password}, then root logins are
+If it's the symbol @code{'prohibit-password}, then root logins are
 permitted but not with password-based authentication.
 
 @item @code{allow-empty-passwords?} (default: @code{#f})
@@ -29333,7 +29333,7 @@ cluster node that supports multiple storage backends, and installs the
                  ;; Ganeti uses SSH to communicate between nodes.
                  (service openssh-service-type
                           (openssh-configuration
-                           (permit-root-login 'without-password)))
+                           (permit-root-login 'prohibit-password)))
 
                  (service ganeti-service-type
                           (ganeti-configuration

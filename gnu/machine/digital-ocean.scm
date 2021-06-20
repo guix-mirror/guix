@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -256,7 +257,7 @@ cat > /etc/bootstrap-config.scm << EOF
                  (service openssh-service-type
                           (openssh-configuration
                            (log-level 'debug)
-                           (permit-root-login 'without-password))))
+                           (permit-root-login 'prohibit-password))))
            %base-services)))
 EOF
 # guix pull
