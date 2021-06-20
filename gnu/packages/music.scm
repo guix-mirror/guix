@@ -848,7 +848,7 @@ MusePack, Monkey's Audio, and WavPack files.")
 (define-public extempore
   (package
     (name "extempore")
-    (version "0.8.6")
+    (version "0.8.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -856,7 +856,7 @@ MusePack, Monkey's Audio, and WavPack files.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "182jy23qv115dipny7kglwbn21z55dp253w1ykm0kh8n6vkgs7gp"))
+                "16i12zl3g1zpx6lhg5pg821xirdf9rxx5m11b68inf83wn6hknhb"))
               (file-name (git-file-name name version))
               (patches (search-patches
                         "extempore-unbundle-external-dependencies.patch"))
@@ -865,16 +865,12 @@ MusePack, Monkey's Audio, and WavPack files.")
                '(begin
                   ;; Remove bundled sources.
                   (map delete-file-recursively
-                       '("src/portaudio"
-                         "src/pcre"))
+                       '("src/pcre"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DJACK=ON"
                                "-DPACKAGE=ON"
-                               "-DEXTERNAL_SHLIBS_AUDIO=OFF"
-                               "-DEXTERNAL_SHLIBS_GRAPHICS=OFF"
-                               "-DCMAKE_BUILD_TYPE=Release"
                                (string-append "-DEXT_SHARE_DIR="
                                               (assoc-ref %outputs "out")
                                               "/share"))
@@ -959,7 +955,12 @@ MusePack, Monkey's Audio, and WavPack files.")
                (("COMMAND extempore" prefix)
                 (string-append prefix " --sharedir " (getcwd)
                                " --mcpu=generic --attr=none")))
-             #t)))))
+             #t))
+         (add-after 'unpack 'symlink-assets
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((assets (assoc-ref inputs "extempore-assets")))
+               (symlink assets "assets")
+               #t))))))
     (inputs
      `(("llvm"
         ,(package
@@ -973,6 +974,19 @@ MusePack, Monkey's Audio, and WavPack files.")
               (sha256
                (base32
                 "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))))
+       ("extempore-assets"
+        ,(let ((commit "0c9f32c18169b3fbc24bc1ad66283125b54a0c85")
+               (revision "0")
+               (version "0.0.0"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/extemporelang/extempore-assets")
+                   (commit commit)))
+             (file-name (git-file-name "extempore-assets"
+                                       (git-version version revision commit)))
+             (sha256
+              (base32 "1pxmcbngd9qx8m71d5rfsmf4h31jnsnd3wjh8vb0rwskif22xz8l")))))
        ("libffi" ,libffi)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
