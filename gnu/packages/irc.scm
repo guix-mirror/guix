@@ -378,7 +378,7 @@ for the IRCv3 protocol.")
 (define-public kirc
   (package
     (name "kirc")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -386,7 +386,7 @@ for the IRCv3 protocol.")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "11pwbil44q7sm3mp1khgw8wmwln2n03f1qawlgmg168jzyxqrs16"))))
+               (base32 "0phx00lr7ya8rx1hskv1wdwbq2vlihiqhnplqdvk1r3m23is7al9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
