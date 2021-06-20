@@ -19,7 +19,9 @@
                  (t "(string-append \\"https://\\" version \\".tar.gz\\")"))}$0)
  ${1:$(cond ((equal yas-text "git-fetch")
              "(file-name (git-file-name name version))")
-            ((member yas-text '("svn-fetch" "hg-fetch" "cvs-fetch" "bzr-fetch"))
+            ((equal yas-text "hg-fetch")
+             "(file-name (hg-file-name name version))")
+            ((member yas-text '("svn-fetch" "cvs-fetch" "bzr-fetch"))
              "(file-name (string-append name \\"-\\" version \\"-checkout\\"))")
             (t ""))}
  (sha256
