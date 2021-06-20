@@ -4566,21 +4566,16 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
 
 (define-public ocaml-merlin
   (package
+    (inherit ocaml-dot-merlin-reader)
     (name "ocaml-merlin")
-    (version "3.4.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ocaml/merlin")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0i2nwkdh6cfzmnsdsr8aw86vs8j1k5jkjzrs61b9384wnffdbbmj"))))
-    (build-system dune-build-system)
-    (arguments '(#:package "merlin"
-                 #:test-target "tests"))
+    (arguments
+     '(#:package "merlin"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dune" "runtest" "-p" "merlin,dot-merlin-reader")))))))
     (inputs
      `(("ocaml-yojson" ,ocaml-yojson)
        ("ocaml-csexp" ,ocaml-csexp)
@@ -4589,7 +4584,6 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
      `(("ocaml-dot-merlin-reader" ,ocaml-dot-merlin-reader) ; required for tests
        ("ocaml-mdx" ,ocaml-mdx)
        ("jq" ,jq)))
-    (home-page "https://ocaml.github.io/merlin/")
     (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
     (description "Merlin is an editor service that provides modern IDE
 features for OCaml.  Emacs and Vim support is provided out-of-the-box.
