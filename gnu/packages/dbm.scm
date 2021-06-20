@@ -147,7 +147,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (arguments `(#:configure-flags '("--enable-libgdbm-compat"
                                      "--disable-static")))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org.ua/software/gdbm")
+    (home-page "https://www.gnu.org.ua/software/gdbm")
     (synopsis
      "Hash library of database functions compatible with traditional dbm")
     (description
