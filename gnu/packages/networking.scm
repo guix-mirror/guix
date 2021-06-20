@@ -3033,14 +3033,14 @@ asynchronous model using a modern C++ approach.")
 (define-public asio
   (package
     (inherit asio-1.12)
-    (version "1.18.1")
+    (version "1.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
                            version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
-        (base32 "04wi69d72l1p5c7d63z1dz06zn8pdqsbgx1if98dszs9ymfqgyaa"))))))
+        (base32 "1wpr4ymv63a192fmymwyxd7v0bv575v022gz53y0mcflhr2mvh1s"))))))
 
 (define-public shadowsocks
   ;; There are some security fixes after the last release.
