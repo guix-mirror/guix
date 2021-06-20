@@ -6289,14 +6289,14 @@ numeric differences and differences in numeric formats.")
 (define-public why3
   (package
     (name "why3")
-    (version "1.3.1")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
-                                  "/38291/why3-" version ".tar.gz"))
+                                  "/38367/why3-" version ".tar.gz"))
               (sha256
                (base32
-                "16zcrc60zz2j3gd3ww93z2z9x2jkxb3kr57y8i5rcgmacy7mw3bv"))))
+                "1n0a2nn1gnk0zg339lh698g4wpk7m8m1vyi2yvifd5adqvk4milw"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("coq" ,coq)
@@ -6320,8 +6320,8 @@ numeric differences and differences in numeric formats.")
              (setenv "CONFIG_SHELL" (which "sh"))
              (substitute* "configure"
                ;; find ocaml-num in the correct directory
-               (("\\$DIR/nums.cma") "$DIR/../nums.cma")
-               (("\\$DIR/num.cmi") "$DIR/../num.cmi"))
+               (("\\$DIR/nums.cma") "$DIR/num.cma")
+               (("\\$DIR/num.cmi") "$DIR/core/num.cmi"))
              #t))
          (add-after 'configure 'fix-makefile
            (lambda _
