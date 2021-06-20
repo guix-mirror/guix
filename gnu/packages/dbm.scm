@@ -140,14 +140,14 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.19")
+    (version "1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1g342f0xhh8xbc8p9vrr34clhxz57589k50dibhp5f9284hi5v9p"))))
+                "14m22j0zndd42yc0ps0bcnnjj2iq7agnp66sl882lj5k91bc1sis"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat"
                                      "--disable-static")))
     (build-system gnu-build-system)
