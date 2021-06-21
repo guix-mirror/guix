@@ -17477,3 +17477,40 @@ resolving the tension between granularity and concurrency.")
 
 (define-public cl-stmx
   (sbcl-package->cl-source-package sbcl-stmx))
+
+(define-public sbcl-binding-arrows
+  ;; Fork of sbcl-arrows that does not have a new tag.
+  (let ((commit "d19364ec8850880ed6e42078ccaa2ed9114dc83a")
+        (revision "1"))
+    (package
+     (name "sbcl-binding-arrows")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phoe/binding-arrows")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hqikgzic7kjq2n1d924yldfm30qz67cmsk6gghi9cbmxkwdlwp8"))))
+     (build-system asdf-build-system/sbcl)
+     (native-inputs
+      `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+     (home-page "https://github.com/phoe/binding-arrows")
+     (synopsis "Threading macros based on binding anonymous variables")
+     (description
+      "This system implements binding threading macros -- a kind of threading
+macros with different semantics than classical, Clojure core threading macros
+or their extension, swiss-arrows.  Two Common Lisp implementations of those are
+@code{arrows} and @code{arrow-macros}.
+
+This system is a fork of @code{arrows} with changes in semantics that make it
+impossible to merge back upstream.")
+     (license license:expat))))
+
+(define-public ecl-binding-arrows
+  (sbcl-package->ecl-package sbcl-binding-arrows))
+
+(define-public cl-binding-arrows
+  (sbcl-package->cl-source-package sbcl-binding-arrows))
