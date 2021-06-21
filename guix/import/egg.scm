@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,10 +174,13 @@ return the package metadata in FILE."
 ;;;
 
 (define* (egg->guix-package name #:key (file #f) (source #f))
-  "Import CHICKEN egg NAME from and return a <package> record type for the
-egg, or #f on failure.  FILE is the filepath to the NAME.egg file.  SOURCE is
-the a ``file-like'' object containing the source code corresonding to the egg.
-If SOURCE is not specified, the tarball for the egg will be downloaded.
+  "Import a CHICKEN egg called NAME from either the given .egg FILE, or from
+the latest NAME metadata downloaded from the official repository if FILE is #f.
+Return a <package> record or #f on failure.
+
+SOURCE is a ``file-like'' object containing the source code corresponding to
+the egg.  If SOURCE is not specified, the latest tarball for egg NAME will be
+downloaded.
 
 Specifying the SOURCE argument is mainly useful for developing a CHICKEN egg
 locally.  Note that if FILE and SOURCE are specified, recursive import will
