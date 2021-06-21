@@ -23160,7 +23160,7 @@ requires non-const function calls to be computed.")
 (define-public rust-lazycell-1
   (package
     (name "rust-lazycell")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -23169,11 +23169,10 @@ requires non-const function calls to be computed.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0gvqycmpv7parc98i6y64ai7rvxrn1947z2a6maa02g4kvxdd55j"))))
+         "0m8gw7dn30i0zjjpjdyf6pc16c34nl71lpv461mix50x3p70h3c3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-clippy" ,rust-clippy-0.0))))
+     `(#:cargo-inputs (("rust-clippy" ,rust-clippy-0.0))))
     (home-page "https://github.com/indiv0/lazycell")
     (synopsis "Lazily filled Cell struct")
     (description
