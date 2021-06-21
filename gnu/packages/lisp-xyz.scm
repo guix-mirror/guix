@@ -17653,3 +17653,45 @@ Common Lisp based on the hash array-mapped trie data structure.")
 
 (define-public cl-hamt
   (sbcl-package->cl-source-package sbcl-cl-hamt))
+
+(define-public sbcl-cl-gserver
+  (package
+    (name "sbcl-cl-gserver")
+    (version "1.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mdbergmann/cl-gserver")
+             (commit version)))
+       (file-name (git-file-name "cl-gserver" version))
+       (sha256
+        (base32 "1vkxs6ybi1pkpji2crmhq8c71zg0dn2ji0lcwhs0rivphz5jxk24"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("lparallel" ,sbcl-lparallel)
+       ("cl-speedy-queue" ,sbcl-cl-speedy-queue)
+       ("log4cl" ,sbcl-log4cl)
+       ("str" ,sbcl-cl-str)
+       ("blackbird" ,sbcl-blackbird)
+       ("cl-hamt" ,sbcl-cl-hamt)
+       ("binding-arrows" ,sbcl-binding-arrows)
+       ("atomics" ,sbcl-atomics)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("mock" ,sbcl-cl-mock)))
+    (home-page "https://mdbergmann.github.io/cl-gserver/index.html")
+    (synopsis "Actor framework for easy access to state and async operations")
+    (description
+     "@code{cl-gserver} is a 'message passing' library / framework with actors
+similar to Erlang or Akka.  It supports creating reactive systems for parallel
+computing and event based message handling.")
+    (license license:agpl3)))
+
+(define-public ecl-cl-gserver
+  (sbcl-package->ecl-package sbcl-cl-gserver))
+
+(define-public cl-gserver
+  (sbcl-package->cl-source-package sbcl-cl-gserver))
