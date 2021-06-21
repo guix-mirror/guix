@@ -24874,17 +24874,17 @@ lexer.")
      "This package provides a collection of great and ubiqutitous macros.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-mach-0.2
+(define-public rust-mach-0.3
   (package
     (name "rust-mach")
-    (version "0.2.3")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "mach" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1qdhs16cl1j3w7kvy6ak7h8lbyqmr6i3i15qfzpnv9gyrn3j9pc6"))))
+        (base32 "0a895rhg3a1l3ws4qf83s5mx0g29v1fzgjmbag1h36v62hmg1vi8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -24896,6 +24896,19 @@ lexer.")
      "This package provides a Rust interface to the user-space API of the
 Mach 3.0 kernel that underlies OSX.")
     (license (list license:asl2.0 license:expat license:bsd-2))))
+
+(define-public rust-mach-0.2
+  (package
+    (inherit rust-mach-0.3)
+    (name "rust-mach")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mach" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qdhs16cl1j3w7kvy6ak7h8lbyqmr6i3i15qfzpnv9gyrn3j9pc6"))))))
 
 (define-public rust-mach-o-sys-0.1
   (package
