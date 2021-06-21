@@ -6371,6 +6371,40 @@ tasks on single cell expression data.  It is designed to work with RNA-Seq and
 qPCR data, but could be used with other types as well.")
     (license license:artistic2.0)))
 
+(define-public r-leidenbase
+  (let ((commit "430f22af6982cc7d2e6e77f6b0df47bc970dcbce")
+        (revision "1"))
+    (package
+      (name "r-leidenbase")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cole-trapnell-lab/leidenbase")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ylqsmdpv4xq6f6ldxvwkhk33a9i1jcgk60zvksk3iplykfzd6c0"))))
+      (properties `((upstream-name . "leidenbase")))
+      (build-system r-build-system)
+      (inputs
+       `(("zlib" ,zlib)))
+      (native-inputs
+       `(("gfortran" ,gfortran)))
+      (propagated-inputs
+       `(("r-igraph" ,r-igraph)))
+      (home-page "https://github.com/cole-trapnell-lab/leidenbase")
+      (synopsis "R and C wrappers to run the Leiden find_partition function")
+      (description
+       "This package provides an R to C interface that runs the Leiden
+community detection algorithm to find a basic partition.  It runs the
+equivalent of the @code{find_partition} function.  This package includes the
+required source code files from the official Leidenalg distribution and
+several functions from the R igraph package.")
+      (license license:gpl3+))))
+
 (define-public r-monocle3
   (package
     (name "r-monocle3")
