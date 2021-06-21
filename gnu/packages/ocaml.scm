@@ -6958,6 +6958,39 @@ provides support to program with time varying values: declarative events and
 client chooses the concrete timeline.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml-uucd
+  (package
+    (name "ocaml-uucd")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://erratique.ch/software/uucd/releases/"
+                           "uucd-" version ".tbz"))
+       (sha256
+        (base32
+         "1fg77hg4ibidkv1x8hhzl8z3rzmyymn8m4i35jrdibb8adigi8v2"))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:build-flags '("build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (propagated-inputs
+     `(("ocaml-xmlm" ,ocaml-xmlm)))
+    (native-inputs
+     `(("opam" ,opam)
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)))
+    (home-page "https://erratique.ch/software/uucd")
+    (synopsis "Unicode character database decoder for OCaml")
+    (description "Uucd is an OCaml module to decode the data of the Unicode
+character database from its XML representation.  It provides high-level (but
+not necessarily efficient) access to the data so that efficient
+representations can be extracted.")
+    (license license:isc)))
+
 (define-public ocaml-bigstringaf
   (package
     (name "ocaml-bigstringaf")
