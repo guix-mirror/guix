@@ -6991,6 +6991,38 @@ not necessarily efficient) access to the data so that efficient
 representations can be extracted.")
     (license license:isc)))
 
+(define-public ocaml-uucp
+  (package
+    (name "ocaml-uucp")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://erratique.ch/software/uucp/releases/"
+                           "uucp-" version ".tbz"))
+       (sha256
+        (base32
+         "19kf8ypxaakacgg1dwwfzkc2zicaj88cmw11fw2z7zl24dn4gyiq"))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:build-flags '("build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("opam" ,opam)
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)
+       ("ocaml-uucd" ,ocaml-uucd)
+       ("ocaml-uunf" ,ocaml-uunf)
+       ("ocaml-uutf" ,ocaml-uutf)))
+    (home-page "https://erratique.ch/software/uucp")
+    (synopsis "Unicode character properties for OCaml")
+    (description "Uucp is an OCaml library providing efficient access to a
+selection of character properties of the Unicode character database.")
+    (license license:isc)))
+
 (define-public ocaml-bigstringaf
   (package
     (name "ocaml-bigstringaf")
