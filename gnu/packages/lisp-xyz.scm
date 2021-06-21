@@ -17584,3 +17584,39 @@ of either regular or generic functions with mocks.")
 
 (define-public cl-mock
   (sbcl-package->cl-source-package sbcl-cl-mock))
+
+(define-public sbcl-cl-murmurhash
+  ;; No release.
+  (let ((commit "5433f5e95f1cce63a81259a471150834c6a59364")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-murmurhash")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/ruricolist/cl-murmurhash/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0251r0mpjm0y3qsm4lm7ncvrkxvgwc53spdm1p2mpayhvkkqqsws"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "32-bit version of Murmurhash3 for Common Lisp")
+      (description
+       "This Common Lisp package offers an implementation of the 32-bit
+variant of MurmurHash3 (@url{https://github.com/aappleby/smhasher}), a fast
+non-crytographic hashing algorithm.")
+      (license license:expat))))
+
+(define-public ecl-cl-murmurhash
+  (sbcl-package->ecl-package sbcl-cl-murmurhash))
+
+(define-public cl-murmurhash
+  (sbcl-package->cl-source-package sbcl-cl-murmurhash))
