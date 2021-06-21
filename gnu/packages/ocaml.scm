@@ -7023,6 +7023,45 @@ representations can be extracted.")
 selection of character properties of the Unicode character database.")
     (license license:isc)))
 
+(define-public ocaml-uuseg
+  (package
+    (name "ocaml-uuseg")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://erratique.ch/software/uuseg/releases/"
+                           "uuseg-" version ".tbz"))
+       (sha256
+        (base32
+         "1a635j8ra6p27g1ivfln3387lhwqmf6vq4r6bn7b6n1qsqyi1rls"))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:build-flags '("build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (propagated-inputs
+     `(("ocaml-uucp" ,ocaml-uucp)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (native-inputs
+     `(("opam" ,opam)
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)))
+    (home-page "https://erratique.ch/software/uuseg")
+    (synopsis "Unicode text segmentation for OCaml")
+    (description "Uuseg is an OCaml library for segmenting Unicode text.  It
+implements the locale independent Unicode text segmentation algorithms to
+detect grapheme cluster, word and sentence boundaries and the Unicode line
+breaking algorithm to detect line break opportunities.
+
+The library is independent from any IO mechanism or Unicode text data
+structure and it can process text without a complete in-memory
+representation.")
+    (license license:isc)))
+
 (define-public ocaml-bigstringaf
   (package
     (name "ocaml-bigstringaf")
