@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -643,13 +644,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.15.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0kgf1d3gl7dg1rz3q4093kf8g0p2d0m40c7qmn96ihz2224wa307"))))
+                "0mvqc8z30sxgr1m4p3yi3rm76sndnvl5khv4ybwx6zyq42403y51"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -697,7 +698,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1qcznszgqdgx1nhk4vdi896gknvx8rg4w8iw15lwqg6byhiyazyv"))))
+                "0z90pcndbks8f62f47m5nkqcmkabb8r526by29lp30x4gjc0xs04"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
