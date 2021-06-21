@@ -17620,3 +17620,36 @@ non-crytographic hashing algorithm.")
 
 (define-public cl-murmurhash
   (sbcl-package->cl-source-package sbcl-cl-murmurhash))
+
+(define-public sbcl-cl-hamt
+  ;; No release
+  (let ((commit "7a99eaaca1f952029def9ad5a2b80a612a712208"))
+    (package
+      (name "sbcl-cl-hamt")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/danshapero/cl-hamt/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ycbd73ykfj5j9sdhlzamyv18qbjj6xqf7fhm4fa0nsyr6sr3rf5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-murmurhash" ,sbcl-cl-murmurhash)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/danshapero/cl-hamt")
+      (synopsis "Dictionary & set data structure using hash array-mapped tries")
+      (description
+       "This library provides purely functional dictionaries and sets in
+Common Lisp based on the hash array-mapped trie data structure.")
+      (license license:bsd-3))))
+
+(define-public ecl-cl-hamt
+  (sbcl-package->ecl-package sbcl-cl-hamt))
+
+(define-public cl-hamt
+  (sbcl-package->cl-source-package sbcl-cl-hamt))
