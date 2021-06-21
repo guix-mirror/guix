@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51617,6 +51618,39 @@ untrusted inputs in Rust.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0byf88b7ca1kb5aap8f6npp6xncvg95dnma8ipmnmd4n9r5izkam"))))))
+
+(define-public rust-uom-0.31
+  (package
+    (name "rust-uom")
+    (version "0.31.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dwih0bclq18gfdf7if6kqip82w8yrf076l0ad1n3gr71bynpvmi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-rational" ,rust-num-rational-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-typenum" ,rust-typenum-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-static-assertions"
+         ,rust-static-assertions-1))))
+    (home-page "https://github.com/iliekturtles/uom")
+    (synopsis "Units of measurement")
+    (description "Units of measurement is a crate that does automatic
+type-safe zero-cost dimensional analysis.")
+    ;; Dual-licensed, either license applies.
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-url-2
   (package
