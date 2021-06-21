@@ -6205,6 +6205,37 @@ classification (assignment) methods.  It also contains a Shiny application for
 interactive exploration of results.")
     (license license:gpl2+)))
 
+(define-public r-residualmatrix
+  (package
+    (name "r-residualmatrix")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ResidualMatrix" version))
+       (sha256
+        (base32
+         "0p7va19aw0j6anx7ck879kbi5cn7dy712h5ia94adr38ssismv1v"))))
+    (properties
+     `((upstream-name . "ResidualMatrix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/LTLA/ResidualMatrix")
+    (synopsis "Create a DelayedMatrix of regression residuals")
+    (description
+     "This package implements tools for delayed computation of a matrix of
+residuals after fitting a linear model to each column of an input matrix.  It
+also supports partial computation of residuals where selected factors are to
+be preserved in the output matrix.  It implements a number of efficient
+methods for operating on the delayed matrix of residuals, most notably matrix
+multiplication and calculation of row/column sums or means.")
+    (license license:gpl3)))
+
 (define-public r-mast
   (package
     (name "r-mast")
