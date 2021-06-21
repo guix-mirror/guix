@@ -7086,6 +7086,24 @@ representation.")
 that involve memoization and recursion.")
     (license license:lgpl2.0)))
 
+(define-public ocaml-dune-build-info
+  (package
+    (inherit dune)
+    (name "ocaml-dune-build-info")
+    (build-system dune-build-system)
+    (arguments
+     '(#:package "dune-build-info"
+       ;; No separate test suite from dune.
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-odoc" ,ocaml-odoc)))
+    (synopsis "Embed build informations inside executable")
+    (description "This package allows one to access information about how the
+executable was built, such as the version of the project at which it was built
+or the list of statically linked libraries with their versions.  It supports
+reporting the version from the version control system during development to
+get an precise reference of when the executable was built.")))
+
 (define-public ocaml-bigstringaf
   (package
     (name "ocaml-bigstringaf")
