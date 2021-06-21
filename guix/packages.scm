@@ -514,12 +514,6 @@ object."
 (define (package-field-location package field)
   "Return the source code location of the definition of FIELD for PACKAGE, or
 #f if it could not be determined."
-  (define (goto port line column)
-    (unless (and (= (port-column port) (- column 1))
-                 (= (port-line port) (- line 1)))
-      (unless (eof-object? (read-char port))
-        (goto port line column))))
-
   (match (package-location package)
     (($ <location> file line column)
      (match (search-path %load-path file)
@@ -529,7 +523,7 @@ object."
             ;; In general we want to keep relative file names for modules.
             (call-with-input-file file-found
               (lambda (port)
-                (goto port line column)
+                (go-to-location port line column)
                 (match (read port)
                   (('package inits ...)
                    (let ((field (assoc field inits)))

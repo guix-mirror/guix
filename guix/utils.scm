@@ -49,6 +49,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:prefix iconv:)
+  #:use-module (ice-9 vlist)
   #:autoload   (zlib) (make-zlib-input-port make-zlib-output-port)
   #:use-module (system foreign)
   #:re-export (<location>                         ;for backwards compatibility
@@ -117,6 +118,7 @@
             cache-directory
 
             readlink*
+            go-to-location
             edit-expression
 
             filtered-port
@@ -337,6 +339,65 @@ a list of command-line arguments passed to the compression program."
         (unless (every (compose zero? cdr waitpid) pids)
           (error "compressed-output-port failure" pids))))))
 
+(define %source-location-map
+  ;; Maps inode/device tuples to "source location maps" used by
+  ;; 'go-to-location'.
+  (make-hash-table))
+
+(define (go-to-location port line column)
+  "Jump to LINE and COLUMN (both one-indexed) in PORT.  Maintain a source
+location map such that this can boil down to seek(2) and a few read(2) calls,
+which can drastically speed up repetitive operations on large files."
+  (let* ((stat       (stat port))
+         (key        (list (stat:ino stat) (stat:dev stat)))
+         (stamp      (list (stat:mtime stat) (stat:mtimensec stat)
+                           (stat:size stat)))
+
+         ;; Look for an up-to-date source map for KEY.  The map is a vlist
+         ;; where each entry gives the byte offset of the beginning of a line:
+         ;; element 0 is the offset of the first line, element 1 the offset of
+         ;; the second line, etc.  The map is filled lazily.
+         (source-map (match (hash-ref %source-location-map key)
+                       (#f
+                        (vlist-cons 0 vlist-null))
+                       ((cache-stamp ... map)
+                        (if (equal? cache-stamp stamp) ;invalidate?
+                            map
+                            (vlist-cons 0 vlist-null)))))
+         (last       (vlist-length source-map)))
+    ;; Jump to LINE, ideally via SOURCE-MAP.
+    (if (<= line last)
+        (seek port (vlist-ref source-map (- line 1)) SEEK_SET)
+        (let ((target line)
+              (offset (vlist-ref source-map (- last 1))))
+          (seek port offset SEEK_SET)
+          (let loop ((source-map (vlist-reverse source-map))
+                     (line last))
+            (if (< line target)
+                (match (read-char port)
+                  (#\newline
+                   (loop (vlist-cons (ftell port) source-map)
+                         (+ 1 line)))
+                  ((? eof-object?)
+                   (error "unexpected end of file" port line))
+                  (chr (loop source-map line)))
+                (hash-set! %source-location-map key
+                           `(,@stamp
+                             ,(vlist-reverse source-map)))))))
+
+    ;; Read up to COLUMN.
+    (let ((target column))
+      (let loop ((column 1))
+        (when (< column target)
+          (match (read-char port)
+            (#\newline (error "unexpected end of line" port))
+            (#\tab (loop (+ 8 column)))
+            (chr (loop (+ 1 column)))))))
+
+    ;; Update PORT's position info.
+    (set-port-line! port (- line 1))
+    (set-port-column! port (- column 1))))
+
 (define* (edit-expression source-properties proc #:key (encoding "UTF-8"))
   "Edit the expression specified by SOURCE-PROPERTIES using PROC, which should
 be a procedure that takes the original expression in string and returns a new
@@ -350,10 +411,7 @@ This procedure returns #t on success."
     (call-with-input-file file
       (lambda (in)
         (let* ( ;; The start byte position of the expression.
-               (start  (begin (while (not (and (= line (port-line in))
-                                               (= column (port-column in))))
-                                (when (eof-object? (read-char in))
-                                  (error (format #f "~a: end of file~%" in))))
+               (start  (begin (go-to-location in (+ 1 line) (+ 1 column))
                               (ftell in)))
                ;; The end byte position of the expression.
                (end    (begin (read in) (ftell in))))
