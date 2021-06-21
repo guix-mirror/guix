@@ -205,12 +205,14 @@ dependencies are registered."
          (not (equal? '(guix store deduplication) module))))
 
   (with-imported-modules (source-module-closure
-                          `((guix build utils)
+                          `((guix build pack)
+                            (guix build utils)
                             (guix build union)
                             (gnu build install))
                           #:select? import-module?)
     #~(begin
-        (use-modules (guix build utils)
+        (use-modules (guix build pack)
+                     (guix build utils)
                      ((guix build union) #:select (relative-file-name))
                      (gnu build install)
                      (srfi srfi-1)
@@ -240,19 +242,10 @@ dependencies are registered."
           ;; Fully-qualified symlinks.
           (append-map symlink->directives '#$symlinks))
 
-        ;; The --sort option was added to GNU tar in version 1.28, released
-        ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
-        ;; older and doesn't support it.
-        (define tar-supports-sort?
-          (zero? (system* (string-append #+archiver "/bin/tar")
-                          "cf" "/dev/null" "--files-from=/dev/null"
-                          "--sort=name")))
-
         ;; Make sure non-ASCII file names are properly handled.
         #+set-utf8-locale
 
-        ;; Add 'tar' to the search path.
-        (setenv "PATH" #+(file-append archiver "/bin"))
+        (define tar #+(file-append archiver "/bin/tar"))
 
         ;; Note: there is not much to gain here with deduplication and there
         ;; is the overhead of the '.links' directory, so turn it off.
@@ -269,45 +262,33 @@ dependencies are registered."
         (for-each (cut evaluate-populate-directive <> %root)
                   directives)
 
-        ;; Create the tarball.  Use GNU format so there's no file name
-        ;; length limitation.
+        ;; Create the tarball.
         (with-directory-excursion %root
-          (apply invoke "tar"
-                 #+@(if (compressor-command compressor)
-                        #~("-I"
-                           (string-join
-                            '#+(compressor-command compressor)))
-                        #~())
-                 "--format=gnu"
-                 ;; Avoid non-determinism in the archive.
-                 ;; Use mtime = 1, not zero, because that is what the daemon
-                 ;; does for files in the store (see the 'mtimeStore' constant
-                 ;; in local-store.cc.)
-                 (if tar-supports-sort? "--sort=name" "--mtime=@1")
-                 "--owner=root:0"
-                 "--group=root:0"
-                 "--check-links"
-                 "-cvf" #$output
-                 ;; Avoid adding / and /var to the tarball, so
-                 ;; that the ownership and permissions of those
-                 ;; directories will not be overwritten when
-                 ;; extracting the archive.  Do not include /root
-                 ;; because the root account might have a
-                 ;; different home directory.
-                 #$@(if localstatedir?
-                        '("./var/guix")
-                        '())
+          (apply invoke tar
+                 `(,@(tar-base-options
+                      #:tar tar
+                      #:compressor '#+(and=> compressor compressor-command))
+                   "-cvf" ,#$output
+                   ;; Avoid adding / and /var to the tarball, so
+                   ;; that the ownership and permissions of those
+                   ;; directories will not be overwritten when
+                   ;; extracting the archive.  Do not include /root
+                   ;; because the root account might have a
+                   ;; different home directory.
+                   ,#$@(if localstatedir?
+                           '("./var/guix")
+                           '())
 
-                 (string-append "." (%store-directory))
+                   ,(string-append "." (%store-directory))
 
-                 (delete-duplicates
-                  (filter-map (match-lambda
-                                (('directory directory)
-                                 (string-append "." directory))
-                                ((source '-> _)
-                                 (string-append "." source))
-                                (_ #f))
-                              directives)))))))
+                   ,@(delete-duplicates
+                      (filter-map (match-lambda
+                                    (('directory directory)
+                                     (string-append "." directory))
+                                    ((source '-> _)
+                                     (string-append "." source))
+                                    (_ #f))
+                                  directives))))))))
 
 (define* (self-contained-tarball name profile
                                  #:key target
