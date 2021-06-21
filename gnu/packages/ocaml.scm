@@ -7104,6 +7104,50 @@ or the list of statically linked libraries with their versions.  It supports
 reporting the version from the version control system during development to
 get an precise reference of when the executable was built.")))
 
+(define-public ocamlformat
+  (package
+    (name "ocamlformat")
+    (version "0.18.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-ppx/ocamlformat")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0n6363km8xr81pvyk453n6h2mb0256c5yxw3p1li4dn83f3lwxr1"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:package "ocamlformat"
+       ;; FIXME: The expected format is slightly different than what the
+       ;; produced format is for test/cli/stdin.t
+       #:tests? #f))
+    (propagated-inputs
+      `(("ocaml-version" ,ocaml-version)
+        ("ocaml-base" ,ocaml-base)
+        ("ocaml-cmdliner" ,ocaml-cmdliner)
+        ("ocaml-dune-build-info" ,ocaml-dune-build-info)
+        ("ocaml-fix" ,ocaml-fix)
+        ("ocaml-fpath" ,ocaml-fpath)
+        ("ocaml-menhir" ,ocaml-menhir)
+        ("ocaml-odoc" ,ocaml-odoc)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)
+        ("ocaml-re" ,ocaml-re)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-uuseg" ,ocaml-uuseg)
+        ("ocaml-uutf" ,ocaml-uutf)))
+    (native-inputs
+      `(("ocaml-alcotest" ,ocaml-alcotest)
+        ("ocaml-ocp-indent" ,ocaml-ocp-indent)
+        ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)))
+    (home-page "https://github.com/ocaml-ppx/ocamlformat")
+    (synopsis "Auto-formatter for OCaml code")
+    (description "OCamlFormat is a tool to automatically format OCaml code in
+a uniform style.")
+    (license license:expat)))
+
 (define-public ocaml-bigstringaf
   (package
     (name "ocaml-bigstringaf")
