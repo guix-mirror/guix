@@ -7062,6 +7062,30 @@ structure and it can process text without a complete in-memory
 representation.")
     (license license:isc)))
 
+(define-public ocaml-fix
+  (package
+    (name "ocaml-fix")
+    (version "20201120")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.inria.fr/fpottier/fix")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1j40mg1gy03c0djzx3nzmpvnl984s14n04zwcmp2xnlidq48kvs4"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://gitlab.inria.fr/fpottier/fix")
+    (synopsis "Facilities for memoization and fixed points")
+    (description "This package provides helpers with various constructions
+that involve memoization and recursion.")
+    (license license:lgpl2.0)))
+
 (define-public ocaml-bigstringaf
   (package
     (name "ocaml-bigstringaf")
