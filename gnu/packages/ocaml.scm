@@ -6536,7 +6536,7 @@ combinators.")
 (define-public ocaml-bisect-ppx
   (package
     (name "ocaml-bisect-ppx")
-    (version "1.4.2")
+    (version "2.6.1")
     (source
      (origin
        (method git-fetch)
@@ -6546,24 +6546,14 @@ combinators.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0900vli5kw7s5kdam0n4cqsfsfqb7mdb3azn3i55595gilg1vyn8"))))
+         "1knglw1b2kjr9jnd8cpfzmm581abxxdcx9l3cd2balg6gnac7qk1"))))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)
-       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
-       ("ocaml-ounit" ,ocaml-ounit)))
+     `(("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-deprecated
-           (lambda _
-             ;; Fixed upstream in 22dd1ad9a0c9629f60599c22d82c6488394d6d32, but
-             ;; not in a release yet.
-             (substitute* "src/ppx/instrument.ml"
-               (("module Ast = Ast_405")
-                "module Ast = Migrate_parsetree.Ast_405
-module Ast_405 = Ast"))
-             #t)))))
+     ;; Tests require ocamlformat which would lead to circular dependencies
+     '(#:tests? #f))
     (home-page "https://github.com/aantron/bisect_ppx")
     (synopsis "Code coverage for OCaml")
     (description "Bisect_ppx helps you test thoroughly.  It is a small
