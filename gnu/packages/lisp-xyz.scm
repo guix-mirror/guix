@@ -17514,3 +17514,38 @@ impossible to merge back upstream.")
 
 (define-public cl-binding-arrows
   (sbcl-package->cl-source-package sbcl-binding-arrows))
+
+(define-public sbcl-atomics
+  ;; No release in years.
+  (let ((commit "9ee0bdebcd2bb9b242671a75460db13fbf45454c")
+        (revision "1"))
+    (package
+      (name "sbcl-atomics")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/atomics")
+               (commit commit)))
+         (file-name (git-file-name "atomics" version))
+         (sha256
+          (base32 "0mp5jdqq0aamdhgnvw149cqqi3zg7dkkibp25qi4rafw1fnpd40z"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (home-page "https://shinmera.github.io/atomics/")
+      (synopsis "Common Lisp portability layer for atomic operations")
+      (description
+       "This is a library for access to atomic operation primitives such as
+compare-and-swap.  It aims to be a rather thin layer over what the
+implementations offer.")
+      (license license:zlib))))
+
+(define-public ecl-atomics
+  (sbcl-package->ecl-package sbcl-atomics))
+
+(define-public cl-atomics
+  (sbcl-package->cl-source-package sbcl-atomics))
