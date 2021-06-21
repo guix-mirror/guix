@@ -17471,3 +17471,9 @@ Memory transactions give freedom from deadlocks, are immune to thread-safety
 bugs and race conditions, provide automatic roll-back on failure, and aim at
 resolving the tension between granularity and concurrency.")
      (license license:llgpl))))
+
+(define-public ecl-stmx
+  (sbcl-package->ecl-package sbcl-stmx))
+
+(define-public cl-stmx
+  (sbcl-package->cl-source-package sbcl-stmx))
