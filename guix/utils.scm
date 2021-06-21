@@ -423,17 +423,19 @@ This procedure returns #t on success."
                            (port-encoding in)))
                  (post-bv (get-bytevector-all in))
                  (str*    (proc str)))
-            ;; Verify the edited expression is still a scheme expression.
-            (call-with-input-string str* read)
-            ;; Update the file with edited expression.
-            (with-atomic-file-output file
-              (lambda (out)
-                (put-bytevector out pre-bv)
-                (display str* out)
-                ;; post-bv maybe the end-of-file object.
-                (when (not (eof-object? post-bv))
-                  (put-bytevector out post-bv))
-                #t))))))))
+            ;; Modify FILE only if there are changes.
+            (unless (string=? str* str)
+              ;; Verify the edited expression is still a scheme expression.
+              (call-with-input-string str* read)
+              ;; Update the file with edited expression.
+              (with-atomic-file-output file
+                (lambda (out)
+                  (put-bytevector out pre-bv)
+                  (display str* out)
+                  ;; post-bv maybe the end-of-file object.
+                  (when (not (eof-object? post-bv))
+                    (put-bytevector out post-bv))
+                  #t)))))))))
 
 
 ;;;
