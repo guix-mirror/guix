@@ -2264,6 +2264,6 @@ half of the twentieth century.")
     (description
      "Overpass is a sans-serif typeface based on the U.S. interstate highway
 road signage typefaces, adapted for on-screen display and user interfaces.
-Overpass includes proprotional and monospace variants.")
+Overpass includes proportional and monospace variants.")
     (license (list license:silofl1.1
                    license:lgpl2.1))))
