@@ -2998,7 +2998,8 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags '("CC=gcc" "CXX=g++")
+       #:make-flags '(,(string-append "CC=" (cc-for-target))
+                      ,(string-append "CXX=" (cxx-for-target)))
        #:configure-flags
        (list "--enable-gpl3"
              "--enable-gpl")
