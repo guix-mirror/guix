@@ -6408,7 +6408,7 @@ several functions from the R igraph package.")
 (define-public r-monocle3
   (package
     (name "r-monocle3")
-    (version "0.1.2")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -6418,10 +6418,11 @@ several functions from the R igraph package.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1cjxqfw3qvy269hsf5v80d4kshl932wrl949iayas02saj6f70ls"))))
+         "16vpvlbms8fdvpfwzcig0rkg2mxnsq1h80d2l7q3953wm91qc9x4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
+       ("r-batchelor" ,r-batchelor)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-delayedmatrixstats" ,r-delayedmatrixstats)
@@ -6432,6 +6433,7 @@ several functions from the R igraph package.")
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-igraph" ,r-igraph)
        ("r-irlba" ,r-irlba)
+       ("r-leidenbase" ,r-leidenbase)
        ("r-limma" ,r-limma)
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
@@ -6451,6 +6453,7 @@ several functions from the R igraph package.")
        ("r-reshape2" ,r-reshape2)
        ("r-reticulate" ,r-reticulate)
        ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-rsample" ,r-rsample)
        ("r-rtsne" ,r-rtsne)
        ("r-shiny" ,r-shiny)
        ("r-slam" ,r-slam)
