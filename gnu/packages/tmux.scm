@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "3.2")
+    (version "3.2a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -51,7 +52,7 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "16d310gcpfnfh7rl5vy1lwqy54ai5awkkybzkm1bw761719k8kb6"))))
+               "0pyhmipg6vxvxjk7mr410007qk98rh5q0mljvkdaisibz2j565am"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
