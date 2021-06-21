@@ -11957,6 +11957,30 @@ options), bedgraph, links (represented as arcs), and Hi-C matrices.
 pyGenomeTracks can make plots with or without Hi-C data.")
     (license license:gpl3+)))
 
+(define-public python-iced
+  (package
+    (name "python-iced")
+    (version "0.5.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iced" version))
+       (sha256
+        (base32
+         "1avcjmpyyvhgbj5qca4l70ipiz7j3xmcw9p6rd9c06j99faa0r71"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #false)) ; there are none
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-scikit-learn" ,python-scikit-learn)))
+    (home-page "https://github.com/hiclib/iced")
+    (synopsis "ICE normalization")
+    (description "This is a package for normalizing Hi-C contact counts
+efficiently.")
+    (license license:bsd-3)))
+
 (define-public python-hic2cool
   (package
     (name "python-hic2cool")
