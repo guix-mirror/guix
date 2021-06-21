@@ -51652,6 +51652,19 @@ type-safe zero-cost dimensional analysis.")
     ;; Dual-licensed, either license applies.
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-uom-0.30
+  (package
+    (inherit rust-uom-0.31)
+    (name "rust-uom")
+    (version "0.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vg59hnb7hh0p8kjjhgmrsnn3597722lkfdkp481wksq6vk06rg7"))))))
+
 (define-public rust-url-2
   (package
     (name "rust-url")
