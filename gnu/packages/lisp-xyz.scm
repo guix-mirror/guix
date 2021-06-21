@@ -17549,3 +17549,38 @@ implementations offer.")
 
 (define-public cl-atomics
   (sbcl-package->cl-source-package sbcl-atomics))
+
+(define-public sbcl-cl-mock
+  ;; .asd version only got updated recently, despired the old GitHug "1.0.1" release.
+  (let ((commit "7988dca2093358911b67597a2cd1570c785dfe76"))
+    (package
+      (name "sbcl-cl-mock")
+      (version (git-version "1.0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ferada/cl-mock/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0f40wikcf783jx26ip0nnhwjjfjvjiw7njqsqrb6kaphc8bgw0i1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("trivia" ,sbcl-trivia)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/Ferada/cl-mock")
+      (synopsis "Mocking functions for Common Lisp testing")
+      (description
+       "This small library provides a way to replace the actual implementation
+of either regular or generic functions with mocks.")
+      (license license:agpl3))))
+
+(define-public ecl-cl-mock
+  (sbcl-package->ecl-package sbcl-cl-mock))
+
+(define-public cl-mock
+  (sbcl-package->cl-source-package sbcl-cl-mock))
