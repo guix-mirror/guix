@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Hui Lu <luhuins@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
+  #:use-module (gnu system keyboard)
   #:use-module (gnu system mapped-devices)
   #:use-module ((gnu system linux-initrd)
                 #:select (file-system-packages))
@@ -2267,7 +2269,9 @@ notably to select, copy, and paste text.  The default options use the
   (font-engine             kmscon-configuration-font-engine
                            (default "pango"))
   (font-size               kmscon-configuration-font-size
-                           (default 12)))
+                           (default 12))
+  (keyboard-layout         kmscon-configuration-keyboard-layout
+                           (default #f))) ; #f | <keyboard-layout>
 
 (define kmscon-service-type
   (shepherd-service-type
@@ -2280,7 +2284,8 @@ notably to select, copy, and paste text.  The default options use the
            (auto-login (kmscon-configuration-auto-login config))
            (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config))
            (font-engine (kmscon-configuration-font-engine config))
-           (font-size (kmscon-configuration-font-size config)))
+           (font-size (kmscon-configuration-font-size config))
+           (keyboard-layout (kmscon-configuration-keyboard-layout config)))
 
        (define kmscon-command
          #~(list
@@ -2289,6 +2294,18 @@ notably to select, copy, and paste text.  The default options use the
             "--no-switchvt" ;Prevent a switch to the virtual terminal.
             "--font-engine" #$font-engine
             "--font-size" #$(number->string font-size)
+            #$@(if keyboard-layout
+                   (let* ((layout (keyboard-layout-name keyboard-layout))
+                          (variant (keyboard-layout-variant keyboard-layout))
+                          (model (keyboard-layout-model keyboard-layout))
+                          (options (keyboard-layout-options keyboard-layout)))
+                     `("--xkb-layout" ,layout
+                       ,@(if variant `("--xkb-variant" ,variant) '())
+                       ,@(if model `("--xkb-model" ,model) '())
+                       ,@(if (null? options)
+                             '()
+                             `("--xkb-options" ,(string-join options ",")))))
+                   '())
             #$@(if hardware-acceleration? '("--hwaccel") '())
             "--login" "--"
             #$login-program #$@login-arguments
