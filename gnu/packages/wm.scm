@@ -82,6 +82,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools) ;for meson-0.55
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -906,6 +907,41 @@ drags, snap-to-border support, and virtual desktops.")
 and easy to handle yet full of features to make an easy and fast desktop
 experience.")
     (home-page "http://fluxbox.org/")
+    (license license:expat)))
+
+(define-public fnott
+  (package
+    (name "fnott")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://codeberg.org/dnkl/fnott")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13a0hb4wdbdlshzsj2r0d5zzvcy1jzs1hixm016n8bq7scjlvl2k"))))
+    (build-system meson-build-system)
+    (arguments
+     `( #:meson ,meson-0.55
+        #:build-type "release"))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)
+       ("tllist" ,tllist)
+       ("gcc" ,gcc-10)     ;TODO: Remove when the default compiler is > GCC 7.
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("wlroots" ,wlroots)
+       ("wayland" ,wayland)
+       ("fcft" ,fcft)
+       ("dbus" ,dbus)
+       ("libpng" ,libpng)))
+    (home-page "https://codeberg.org/dnkl/fnott")
+    (synopsis "Keyboard driven and lightweight Wayland notification daemon")
+    (description "Fnott is a keyboard driven and lightweight notification daemon
+for wlroots-based Wayland compositors.")
     (license license:expat)))
 
 (define-public awesome
