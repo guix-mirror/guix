@@ -34,6 +34,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 ftw)
   #:use-module (rnrs io ports)                    ;need 'port-position' etc.
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
@@ -344,14 +345,20 @@ a list of command-line arguments passed to the compression program."
   ;; 'go-to-location'.
   (make-hash-table))
 
-(define (go-to-location port line column)
+(define (source-location-key/stamp stat)
+  "Return two values: the key for STAT in %SOURCE-LOCATION-MAP, and a stamp
+used to invalidate corresponding entries."
+  (let ((key   (list (stat:ino stat) (stat:dev stat)))
+        (stamp (list (stat:mtime stat) (stat:mtimensec stat)
+                     (stat:size stat))))
+    (values key stamp)))
+
+(define* (go-to-location port line column)
   "Jump to LINE and COLUMN (both one-indexed) in PORT.  Maintain a source
 location map such that this can boil down to seek(2) and a few read(2) calls,
 which can drastically speed up repetitive operations on large files."
   (let* ((stat       (stat port))
-         (key        (list (stat:ino stat) (stat:dev stat)))
-         (stamp      (list (stat:mtime stat) (stat:mtimensec stat)
-                           (stat:size stat)))
+         (key stamp  (source-location-key/stamp stat))
 
          ;; Look for an up-to-date source map for KEY.  The map is a vlist
          ;; where each entry gives the byte offset of the beginning of a line:
@@ -398,6 +405,20 @@ which can drastically speed up repetitive operations on large files."
     (set-port-line! port (- line 1))
     (set-port-column! port (- column 1))))
 
+(define (move-source-location-map! source target line)
+  "Move the source location map from SOURCE up to LINE to TARGET.  SOURCE and
+TARGET must be stat buffers as returned by 'stat'."
+  (let* ((source-key (source-location-key/stamp source))
+         (target-key target-stamp (source-location-key/stamp target)))
+    (match (hash-ref %source-location-map source-key)
+      (#f #t)
+      ((_ ... source-map)
+       ;; Strip the source map and update the associated stamp.
+       (let ((source-map (vlist-take source-map (max line 1))))
+         (hash-remove! %source-location-map source-key)
+         (hash-set! %source-location-map target-key
+                    `(,@target-stamp ,source-map)))))))
+
 (define* (edit-expression source-properties proc #:key (encoding "UTF-8"))
   "Edit the expression specified by SOURCE-PROPERTIES using PROC, which should
 be a procedure that takes the original expression in string and returns a new
@@ -435,7 +456,13 @@ This procedure returns #t on success."
                   ;; post-bv maybe the end-of-file object.
                   (when (not (eof-object? post-bv))
                     (put-bytevector out post-bv))
-                  #t)))))))))
+                  #t))
+
+              ;; Due to 'with-atomic-file-output', IN and FILE no longer share
+              ;; the same inode, but we can reassign the source map up to LINE
+              ;; to the new file.
+              (move-source-location-map! (stat in) (stat file)
+                                         (+ 1 line)))))))))
 
 
 ;;;
