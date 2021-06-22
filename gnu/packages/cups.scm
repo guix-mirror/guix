@@ -287,6 +287,19 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 	     (substitute* "cgi-bin/admin.c"
 	       (("!cupsAdminGetServerSettings" match)
 		(string-append "0 && " match)))))
+         (add-after 'unpack 'remove-Web-UI-server-settings
+           ;; The /admin page's server configuration form is questionable for
+           ;; the same reason as cupsAdminGetServerSettings, and won't work at
+           ;; all on Guix Systems.  Remove it entirely.
+           (lambda _
+             ;; SUBSTITUTE* and a patch both have (dis)advantages.  This is
+             ;; shorter & should ensure that no translation is forgotten.
+             (substitute* (find-files "templates" "^admin\\.tmpl$")
+               ((" class=\"halves\"") "")
+               (("<FORM.* ACTION=\"/jobs.*</FORM>" match)
+                (string-append match "</P>{BROKEN? "))
+               (("</FORM>}" match)
+                (string-append match "}")))))
          (add-before 'configure 'patch-makedefs
            (lambda _
              (substitute* "Makedefs.in"
