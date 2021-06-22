@@ -5303,6 +5303,12 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                    license:silofl1.1       ;Widelands.ttf
                    license:cc-by-sa3.0)))) ;some music files
 
+(define-public widelands-21
+  (package
+    (inherit widelands)
+    (version "21")
+    (properties `((superseded . ,widelands)))))
+
 (define-public starfighter
   (package
     (name "starfighter")
