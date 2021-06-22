@@ -80,6 +80,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
@@ -1593,6 +1594,30 @@ write GNOME applications.")
     (description "Cairo provides Perl bindings for the vector graphics library
 cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
 produces identical output on all those targets.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-cairo-gobject
+  (package
+    (name "perl-cairo-gobject")
+    (version "1.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
+                           "Cairo-GObject-" version ".tar.gz"))
+       (sha256
+        (base32 "0l2wcz77ndmbgvxx34gdm919a3dxh9fixqr47p50n78ysx2692cd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (propagated-inputs
+     `(("perl-cairo" ,perl-cairo)
+       ("perl-glib" ,perl-glib)))
+    (home-page "https://metacpan.org/dist/Cairo-GObject")
+    (synopsis "Integrate Cairo into the Glib type system")
+    (description "Cairo::GObject registers Cairo's types with Glib's type systems,
+so that they can be used normally in signals and properties.")
     (license license:lgpl2.1+)))
 
 (define-public perl-gtk2
