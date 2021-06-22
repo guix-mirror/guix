@@ -275,6 +275,18 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'never-cupsAdminGetServerSettings
+           ;; Instead of querying the daemon directly, this part of CUPS assumes
+           ;; that (1) it has access to a cupsd.conf under CUPS_SERVERROOT, and
+           ;; (2) the file's contents apply to the running daemon.  (1) is false
+           ;; at least on Guix Systems resulting in extremely long delays when
+           ;; loading the Web interface's /admin page.  (2) isn't valid anywhere
+           ;; because it ignores, e.g., -c FILE.
+           ;; Upstream considers this code on ‘life support’ so just neuter it.
+	   (lambda _
+	     (substitute* "cgi-bin/admin.c"
+	       (("!cupsAdminGetServerSettings" match)
+		(string-append "0 && " match)))))
          (add-before 'configure 'patch-makedefs
            (lambda _
              (substitute* "Makedefs.in"
