@@ -10332,6 +10332,24 @@ algorism to indicate multiplication by 1000.")
     (description "Text::Table renders plaintext tables.")
     (license license:x11)))
 
+(define-public perl-text-tabs+wrap
+  (package
+    (name "perl-text-tabs+wrap")
+    (version "2013.0523")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MU/MUIR/modules/"
+                           "Text-Tabs+Wrap-" version ".tar.gz"))
+       (sha256
+        (base32 "0pv5dympvrba6lslklwzb4glpazl5farn2b2530vjdxpzxphbjxr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/dist/Text-Tabs+Wrap")
+    (synopsis "Text::Tabs and Text::Wrap Modules")
+    (description "Text::Tabs will add or remove tabs from a document.
+Text::Wrap will reformat lines into paragraphs.")
+    (license (package-license perl))))
+
 (define-public perl-text-template
   (package
     (name "perl-text-template")
