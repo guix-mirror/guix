@@ -6411,6 +6411,31 @@ follows LRU semantics, that is, the last n results, where n is specified as
 the argument to the CACHESIZE parameter, will be cached.")
     (license (package-license perl))))
 
+(define-public perl-mime-base64
+  (package
+    (name "perl-mime-base64")
+    (version "3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
+                           "MIME-Base64-" version ".tar.gz"))
+       (sha256
+        (base32 "05v04kjaz2ya0zaj4m64gzxpfv4vgxhw5n5h12z373gbg9pkvxvp"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-exporter" ,perl-exporter)
+       ("perl-xsloader" ,perl-xsloader)))
+    (home-page "https://metacpan.org/dist/MIME-Base64")
+    (synopsis "Encoding and decoding of base64 strings")
+    (description "MIME::Base64 module provides functions to encode and decode
+strings into and from the base64 encoding specified in RFC 2045 - MIME
+(Multipurpose Internet Mail Extensions).  The base64 encoding is designed to
+represent arbitrary sequences of octets in a form that need not be humanly
+readable.  A 65-character subset ([A-Za-z0-9+/=]) of US-ASCII is used, enabling
+6 bits to be represented per printable character.")
+    (license (package-license perl))))
+
 (define-public perl-mime-charset
   (package
     (name "perl-mime-charset")
