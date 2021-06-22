@@ -7519,7 +7519,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.9.0")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -7527,7 +7527,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
              "mirror://sourceforge/odamex/Odamex/" version "/"
              "odamex-src-" version ".tar.bz2"))
        (sha256
-        (base32 "0yfrvx8zb3chy47fyz4nik6gbh0y5608yvld4gz4y8l158qk71y1"))))
+        (base32 "0vmw9ijb6n4wrxjxixakn7l6a6carnvs9wbbzb4vcq1brbzyrb0p"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
     (native-inputs
