@@ -14374,6 +14374,7 @@ scripts for manipulating 3C/4C/5C/Hi-C data.")
          (uri (git-reference
                (url "https://github.com/Ensembl/ensembl-vep.git")
                (commit (string-append "release/" version))))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1iq7p72cv9b38jz2v8a4slzy2n8y0md487943180ym9xc8qvw09c"))))
