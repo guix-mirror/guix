@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4202,6 +4203,31 @@ command, which can be used as a minimal Perl read-eval-print loop (REPL).")
     (synopsis "Allows you to declare real exception classes in Perl")
     (description "Exception::Class allows you to declare exception hierarchies
 in your modules in a \"Java-esque\" manner.")
+    (license (package-license perl))))
+
+(define-public perl-exporter
+  (package
+    (name "perl-exporter")
+    (version "5.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/"
+                           "Exporter-" version ".tar.gz"))
+       (sha256
+        (base32 "1f25k5iaygiizlrkbbl6wxd647pwfmynykxalq6r9bbkysg8inza"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)))
+    (propagated-inputs
+     `(("perl-carp" ,perl-carp)))
+    (home-page "https://metacpan.org/dist/Exporter")
+    (synopsis "Default import method for modules")
+    (description "Exporter implements an import method which allows a module to
+export functions and variables to its users' namespaces.  Many modules use
+Exporter rather than implementing their own import method because Exporter
+provides a highly flexible interface, with an implementation optimised for the
+common case.")
     (license (package-license perl))))
 
 (define-public perl-exporter-lite
