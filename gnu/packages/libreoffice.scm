@@ -57,6 +57,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -1088,7 +1089,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.4.7.2")
+    (version "7.1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -1097,7 +1098,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          "https://download.documentfoundation.org/libreoffice/src/"
          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
        (sha256
-        (base32 "0i3654rmzs8aazj8j3dmxamilslfrki0y4sksg3n1zygc2ddfk83"))))
+        (base32 "1jsskhnlyra7q6d12kkc8dxq5fgrnd8grl32bdck7j9hkwv6d13m"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1110,6 +1111,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
     (inputs
      `(("bluez" ,bluez)
        ("boost" ,boost)
+       ("box2d" ,box2d)
        ("clucene" ,clucene)
        ("cups" ,cups)
        ("dbus-glib" ,dbus-glib)
@@ -1180,12 +1182,23 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("vigra" ,vigra)
        ("xdg-utils" ,xdg-utils)
        ("xmlsec" ,xmlsec-nss)
-       ("zip" ,zip)))
+       ("zip" ,zip)
+       ("dtoa"              ; needed after version 6.4.7.2.
+        ,(origin
+           (method url-fetch)
+           (uri "https://dev-www.libreoffice.org/src/dtoa-20180411.tgz")
+           (sha256
+            (base32 "1d0iwy0q5sjznv23d3nbwmy0r7m1mdzlnv5pc4izddkx9xld10h0"))))))
     (arguments
      `(#:tests? #f                     ; Building the tests already fails.
-       #:make-flags '("build-nocheck") ; Do not build unit tests, which fails.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'insert-external-tarballs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "external/tarballs")
+             (copy-file (assoc-ref inputs "dtoa")
+                        "external/tarballs/dtoa-20180411.tgz")
+             #t))
          (add-before 'configure 'prepare-src
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute*
@@ -1203,14 +1216,11 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                        (list "dirname" "grep" "uname"))
 
              ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
-             ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
-             ;; find them on the include path without a prefix.
-             (substitute* '("xmlsecurity/Library_xsec_xmlsec.mk"
-                            "comphelper/Library_comphelper.mk")
-               (("\\$\\$\\(INCLUDE\\)")
-                (string-append "$$(INCLUDE) -I"
-                               (assoc-ref inputs "gpgme")
-                               "/include/gpgme++")))
+             ;; configure is hardcoded to use FHS directories.
+             (substitute* "configure"
+               (("GPGMEPP_CFLAGS=-I/usr")
+                (string-append "GPGMEPP_CFLAGS=-I"
+                               (assoc-ref inputs "gpgme"))))
 
              ;; /usr/bin/xdg-open doesn't exist on Guix System.
              (substitute* '("shell/source/unix/exec/shellexec.cxx"
@@ -1261,10 +1271,6 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                                "/bin/soffice")
                (symlink-output "/lib/libreoffice/program/soffice"
                                "/bin/libreoffice")
-               (install "workdir/CustomTarget/sysui/share/libreoffice/openoffice.keys"
-                        "/share/mime-info/libreoffice.keys")
-               (install "workdir/CustomTarget/sysui/share/libreoffice/openoffice.mime"
-                        "/share/mime-info/libreoffice.mime")
                (install
                 "workdir/CustomTarget/sysui/share/libreoffice/openoffice.org.xml"
                 "/share/mime/packages/libreoffice.xml")
@@ -1298,6 +1304,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
         "--without-java"
         ;; FIXME: Enable once the corresponding inputs are packaged.
         "--disable-coinmp"
+        "--disable-skia"
         ;; This could (Debian does this) be a separate output containing only
         ;; program/libfirebird_sdbclo.so, if there's a way to point to it.
         "--enable-firebird-sdbc"
