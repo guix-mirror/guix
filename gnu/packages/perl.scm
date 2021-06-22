@@ -9837,6 +9837,30 @@ situations, where you may need to upgrade to the full feature set in the
 future, or if you want the retain the familiarity of TT-style templates.")
     (license license:perl-license)))
 
+(define-public perl-term-ansicolor
+  (package
+    (name "perl-term-ansicolor")
+    (version "5.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RR/RRA/"
+                           "Term-ANSIColor-" version ".tar.gz"))
+       (sha256
+        (base32 "0zgj329kfrwcyqn491v04x65yjydwfc4845a71f8hypdrj3vv0b2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warn" ,perl-test-warn)))
+    (home-page "https://metacpan.org/dist/Term-ANSIColor")
+    (synopsis "Interface to the ANSI terminal escape sequences for color")
+    (description "Term::ANSIColor provides constants and simple functions for
+setting ANSI text attributes, most notably colors.  It can be used to set the
+current text attributes or to apply a set of attributes to a string and reset
+the current text attributes at the end of that string.  Eight-color,
+sixteen-color, 256-color, and true color (24-bit color) escape sequences are all
+supported.")
+    (license (package-license perl))))
+
 (define-public perl-term-encoding
   (package
     (name "perl-term-encoding")
