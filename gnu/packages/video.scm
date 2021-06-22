@@ -52,6 +52,7 @@
 ;;; Copyright © 2021 David Wilson <david@daviwil.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,6 +180,7 @@
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
@@ -1020,6 +1022,113 @@ H.264 (MPEG-4 AVC) video streams.")
 (@command{mkvextract}), and creating Matroska files from other media files
 (@command{mkvmerge}).")
     (license license:gpl2)))
+
+(define-public pipe-viewer
+  (package
+    (name "pipe-viewer")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/trizen/pipe-viewer")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1d2gfkd3nc0c4ah67250lqskkd85wpljrikw8a378ni398ngaq14"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:imported-modules
+       ((guix build copy-build-system)
+        ,@%perl-build-system-modules)
+       #:modules
+       (((guix build copy-build-system)
+         #:prefix copy:)
+        (guix build perl-build-system)
+        (guix build utils)
+        (srfi srfi-26))
+       #:module-build-flags
+       (list
+        "--gtk3")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "." ".*-viewer$")
+               (("'ffmpeg'")
+                (format #f "'~a/bin/ffmpeg'"
+                        (assoc-ref inputs "ffmpeg")))
+               (("'wget'")
+                (format #f "'~a/bin/wget'"
+                        (assoc-ref inputs "wget")))
+               (("'xdg-open'")
+                (format #f "'~a/bin/xdg-open'"
+                        (assoc-ref inputs "xdg-utils")))
+               (("'youtube-dl'")
+                (format #f "'~a/bin/youtube-dl'"
+                        (assoc-ref inputs "youtube-dl"))))))
+         (add-after 'install 'install-xdg
+           (lambda args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("share/icons" "share/pixmaps")
+                      ("share" "share/applications"
+                       #:include-regexp ("\\.desktop$")))
+                    args)))
+         (add-after 'install-xdg 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin-dir (string-append out "/bin/"))
+                    (site-dir (string-append out "/lib/perl5/site_perl/"))
+                    (perl-lib (getenv "PERL5LIB"))
+                    (gi-typelib (getenv "GI_TYPELIB_PATH")))
+               (for-each
+                (cut wrap-program <>
+                     `("PERL5LIB" ":" prefix (,perl-lib ,site-dir))
+                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib)))
+                (find-files bin-dir))))))))
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-simple" ,perl-test-simple)))
+    (inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-digest-md5" ,perl-digest-md5)
+       ("perl-encode" ,perl-encode)
+       ("ffmpeg" ,ffmpeg)
+       ("perl-file-path" ,perl-file-path)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-getopt-long" ,perl-getopt-long)
+       ("perl-gtk3" ,perl-gtk3)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-json" ,perl-json)
+       ("perl-json-xs" ,perl-json-xs)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
+       ("perl-memoize" ,perl-memoize)
+       ("perl-mime-base64" ,perl-mime-base64)
+       ("perl-pathtools" ,perl-pathtools)
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
+       ("perl-storable" ,perl-storable)
+       ("perl-term-ansicolor" ,perl-term-ansicolor)
+       ("perl-term-readline-gnu" ,perl-term-readline-gnu)
+       ("perl-text-parsewords" ,perl-text-parsewords)
+       ("perl-text-tabs+wrap" ,perl-text-tabs+wrap)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("perl-uri-escape" ,perl-uri-escape)
+       ("wget" ,wget)
+       ("xdg-utils" ,xdg-utils)
+       ("youtube-dl" ,youtube-dl)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (home-page "https://github.com/trizen/pipe-viewer")
+    (synopsis "CLI+GUI YouTube Client")
+    (description "Pipe-Viewer is a lightweight application for searching and
+playing videos from YouTube.  It parses the YouTube website directly and relies
+on the Invidious instances only as a fallback method.")
+    (license license:artistic2.0)))
 
 (define-public straw-viewer
   (package
