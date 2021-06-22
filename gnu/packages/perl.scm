@@ -9206,6 +9206,27 @@ which it is called.")
 implementation of @dfn{Principal Component Analysis} (PCA).")
     (license license:perl-license)))
 
+(define-public perl-storable
+  (package
+    (name "perl-storable")
+    (version "3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+                           "Storable-" version ".tar.gz"))
+       (sha256
+        (base32 "1nkln4fm4962b5jk1dp6lf635nnrj5a5pg1a5xmchvrfrc3asggw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xsloader" ,perl-xsloader)))
+    (home-page "https://metacpan.org/dist/Storable")
+    (synopsis "Persistence for Perl data structures")
+    (description "Storable brings persistence to your Perl data structures
+containing SCALAR, ARRAY, HASH or REF objects, i.e. anything that can be
+conveniently stored to disk and retrieved at a later time.")
+    (license (package-license perl))))
+
 (define-public perl-stream-buffered
   (package
     (name "perl-stream-buffered")
