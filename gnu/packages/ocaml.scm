@@ -3453,6 +3453,7 @@ JSON.")
        (uri (git-reference
              (url home-page)
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "10bf28my1yhj8a2d7bkgbna9j20wq0ghp92k926y29bmjj2qh0l7"))))
