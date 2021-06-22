@@ -125,6 +125,8 @@ their dependencies automatically upon calculation.")
         (base32
          "14gbnqsv5n2fm4sxa17014f440clrzls6p2w2ixk9wipg4950v9s"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
