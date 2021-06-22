@@ -14404,17 +14404,40 @@ focus on event-based network programming and multiprotocol integration.")
 (define-public python-pika
   (package
     (name "python-pika")
-    (version "0.12.0")
+    (version "1.2.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (pypi-uri "pika" version))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/pika/pika")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0ld7akgm93s8pfa4dsx9qlzlhj76zspbr5m9ms0ns09yd2w4aq9h"))))
+          "0cm45xydk2jigydwszwik89qlbk6l3l18sxhzppzqmxw2rdkm22s"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-live-tests
+                    (lambda _
+                      ;; Disable tests that require RabbitMQ, which is not
+                      ;; yet available in Guix.
+                      (substitute* "setup.cfg"
+                        (("tests/unit,tests/acceptance")
+                         "tests/unit"))
+                      (with-directory-excursion "tests"
+                        (for-each delete-file
+                                '("unit/base_connection_tests.py"
+                                  "unit/threaded_test_wrapper_test.py")))))
+                  (replace 'check
+                    (lambda _
+                      (invoke "nosetests"))))))
     (native-inputs
-     `(("python-pyev" ,python-pyev)
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+
+       ;; These are optional at runtime, and provided here for tests.
+       ("python-gevent" ,python-gevent)
        ("python-tornado" ,python-tornado)
        ("python-twisted" ,python-twisted)))
     (home-page "https://pika.readthedocs.org")
@@ -14424,9 +14447,6 @@ focus on event-based network programming and multiprotocol integration.")
 Protocol) 0-9-1 protocol that tries to stay fairly independent of the underlying
 network support library.")
     (license license:bsd-3)))
-
-(define-public python2-pika
-  (package-with-python2 python-pika))
 
 (define-public python-ply
   (package
