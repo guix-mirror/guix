@@ -16713,14 +16713,14 @@ can even create animations with the cursor controls.")
 (define-public python-ddt
   (package
     (name "python-ddt")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ddt" version))
        (sha256
         (base32
-         "1niqpzc26sxdbyi46r07n4pma5fjx6crww2539vpfmsf0w6yg585"))))
+         "0y2k756qjz1rhpivi60hy29b4bf0bh3wck39i1mn6pkil9k779k4"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
