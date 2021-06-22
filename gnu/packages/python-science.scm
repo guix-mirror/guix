@@ -73,8 +73,7 @@
        ("python-matplotlib" ,python-matplotlib)
        ("python-pyparsing" ,python-pyparsing)))
     (inputs
-     `(("lapack" ,lapack)
-       ("openblas" ,openblas)
+     `(("openblas" ,openblas)
        ("pybind11" ,pybind11)))
     (native-inputs
      `(("python-cython" ,python-cython)
