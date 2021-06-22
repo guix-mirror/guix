@@ -523,14 +523,14 @@ V2.")
 (define-public mednafen
   (package
     (name "mednafen")
-    (version "1.26.1")
+    (version "1.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mednafen.github.io/releases/files/"
                            "mednafen-" version ".tar.xz"))
        (sha256
-        (base32 "1x7xhxjhwsdbak8l0iyb497f043xkhibk73w96xck4j2bk10fac4"))))
+        (base32 "1ysmb56wzr17ki6f1b486r2dzjr11igd021qb4r3437l68prpa7k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -541,6 +541,7 @@ V2.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa" ,alsa-lib)
+       ("flac" ,flac)
        ;; ("libmpcdec" ,libmpcdec) FIXME: not recognized.
        ("libsndfile" ,libsndfile)
        ("lzo" ,lzo)
