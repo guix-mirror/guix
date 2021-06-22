@@ -27817,6 +27817,7 @@ Features:
               (uri (git-reference
                     (url "https://git.sr.ht/~zge/bang")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32 "1micvz6smhjma7qbka8h3w0crb3sgrxf9lz2548iqfgww50gb0lj"))))
     (build-system emacs-build-system)
