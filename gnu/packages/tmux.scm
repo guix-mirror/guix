@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
@@ -57,7 +57,7 @@
     (inputs
      `(("libevent" ,libevent)
        ("ncurses" ,ncurses)))
-    (home-page "https://tmux.github.io/")
+    (home-page "https://github.com/tmux/tmux/wiki")
     (synopsis "Terminal multiplexer")
     (description
      "tmux is a terminal multiplexer: it enables a number of terminals (or
