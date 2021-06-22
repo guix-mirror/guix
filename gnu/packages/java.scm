@@ -11681,7 +11681,9 @@ protocol-independent framework to build mail and messaging applications.")
          "**/ClientUtilsTest.java"
          ;; End with errors that seem related to our powermock
          "**/KafkaProducerTest.java"
-         "**/BufferPoolTest.java")))
+         "**/BufferPoolTest.java"
+         ;; Undeterministic failure, seems to affect mostly ci
+         "**/GarbageCollectedMemoryPoolTest.java")))
     (inputs
      `(("java-slf4j-api" ,java-slf4j-api)
        ("java-lz4" ,java-lz4)))
