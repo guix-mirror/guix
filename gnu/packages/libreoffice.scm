@@ -115,7 +115,7 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.15.3")
+    (version "0.16.1")
     (source
      (origin
        (method url-fetch)
@@ -123,7 +123,7 @@ their dependencies automatically upon calculation.")
                            "orcus-" version ".tar.xz"))
        (sha256
         (base32
-         "14gbnqsv5n2fm4sxa17014f440clrzls6p2w2ixk9wipg4950v9s"))))
+         "1bps34sqz7wlrl01ssywjd5fbmssplifs0rskivgrg801lr6pcm4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
