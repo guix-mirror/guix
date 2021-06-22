@@ -3987,6 +3987,28 @@ very platform-dependent, so correct use of these functions requires
 the programmer to be mindfulof the space of platform variations.")
     (license license:perl-license)))
 
+(define-public perl-encode
+  (package
+    (name "perl-encode")
+    (version "3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DANKOGAI/"
+                           "Encode-" version ".tar.gz"))
+       (sha256
+        (base32 "1a8rwcrxxhq81jcdvdwns05c65jwr5r6bxvby6vdcr3ny5m91my2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-exporter" ,perl-exporter)
+       ("perl-storable" ,perl-storable)
+       ("perl-parent" ,perl-parent)))
+    (home-page "https://metacpan.org/dist/Encode")
+    (synopsis "Character encodings in Perl")
+    (description "Encode module provides the interface between Perl strings and
+the rest of the system.  Perl strings are sequences of characters.")
+    (license (package-license perl))))
+
 (define-public perl-encode-detect
   (package
     (name "perl-encode-detect")
