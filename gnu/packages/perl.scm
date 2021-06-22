@@ -10251,6 +10251,24 @@ template engine, for when you need speed rather than complex features,
 yet need more features than simple variable substitution.")
     (license (package-license perl))))
 
+(define-public perl-text-parsewords
+  (package
+    (name "perl-text-parsewords")
+    (version "3.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+                           "Text-ParseWords-" version ".tar.gz"))
+       (sha256
+        (base32 "1s7mmznk4chdvfi2jl2h6gawfaqq24bdasy6b1z9jhyxg60j7q45"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/dist/Text-ParseWords")
+    (synopsis "Parse text into an array of tokens or array of arrays")
+    (description "Text::ParseWords module is used to parse text into an array of
+tokens or array of arrays.")
+    (license (package-license perl))))
+
 (define-public perl-text-patch
   (package
     (name "perl-text-patch")
