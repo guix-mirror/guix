@@ -5284,8 +5284,8 @@ nothing but your headquarters, where all your resources are stored.
 In the course of the game, you will build an ever growing settlement.  Every
 member of your clan will do his or her part to produce more resources---wood,
 food, iron, gold and more---to further this growth.  The economic network is
-complex and different in the four tribes (Barbarians, Empire, Atlanteans, and
-Frisians).
+complex and different in the five tribes (Barbarians, Empire, Atlanteans,
+Frisians and Amazons).
 
 As you are not alone in the world, you will meet other clans sooner or later.
 Some of them may be friendly and you may eventually trade with them.  However,
