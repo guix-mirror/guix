@@ -1278,6 +1278,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        #:configure-flags
        (list
         "--enable-release-build"
+        "--with-vendor=GNU Guix"
         ;; Avoid using all cpu cores by default
         (format #f "--with-parallelism=~d" (parallel-job-count))
         "--disable-fetch-external"      ; disable downloads
