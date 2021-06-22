@@ -1721,14 +1721,15 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
              "--enable-ciderlib"
              "--enable-xspice"
              "--with-ngshared"
-             "--with-readline=yes")))
+             ;; Readline must be disabled to build KiCad with ngspice 34.  See
+             ;; https://bugs.archlinux.org/task/70563 for reference.
+             "--with-readline=no")))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
     (inputs
      `(("libxaw" ,libxaw)
-       ("mpi" ,openmpi)
-       ("readline" ,readline)))
+       ("mpi" ,openmpi)))
     (home-page "http://ngspice.sourceforge.net/")
     (synopsis "Mixed-level/mixed-signal circuit simulator")
     (description
