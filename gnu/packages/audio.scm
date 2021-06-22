@@ -5369,3 +5369,35 @@ Icecast server.")
 generator, generating audio signals out of Linux's /dev/dsp audio
 device.  There is support for mono and/or stereo and 8 or 16 bit samples.")
     (license license:gpl2)))
+
+(define-public mda-lv2
+  (package
+    (name "mda-lv2")
+    (version "1.2.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://download.drobilla.net/mda-lv2-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32 "1nspk2j11l65m5r9z5isw8j749vh9a89wgx8mkrrq15f4iq12rnd"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f  ; There are no tests.
+       #:configure-flags
+       (list (string-append "--prefix="
+                            (assoc-ref %outputs "out")))))
+    (inputs
+     `(("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "https://drobilla.net/software/mda-lv2")
+    (synopsis "Audio plug-in pack for LV2")
+    (description
+     "MDA-LV2 is an LV2 port of the MDA plugins.  It includes effects and a few
+instrument plugins.")
+    (license license:gpl3+)))
