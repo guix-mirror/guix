@@ -11174,6 +11174,30 @@ attribute names.")
     ;; modification, are permitted under any circumstances.  No warranty.
     (license license:public-domain)))
 
+(define-public perl-xsloader
+  (package
+    (name "perl-xsloader")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SAPER/"
+                           "XSLoader-" version ".tar.gz"))
+       (sha256
+        (base32 "0pyqr12jsqagna75fm2gijfzw06wy1hrh5chn9hwnmcfddda66g8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-distribution" ,perl-test-distribution)
+       ("perl-text-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-portability-files" ,perl-test-portability-files)))
+    (home-page "https://metacpan.org/dist/XSLoader")
+    (synopsis "Dynamically load C libraries into Perl code")
+    (description "XSLoader module defines a standard simplified interface to the
+dynamic linking mechanisms available on many platforms.  Its primary purpose is
+to implement cheap automatic dynamic loading of Perl modules.")
+    (license (package-license perl))))
+
 (define-public perl-xs-object-magic
   (package
     (name "perl-xs-object-magic")
