@@ -3542,7 +3542,7 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
 (define-public iwd
   (package
     (name "iwd")
-    (version "1.14")
+    (version "1.15")
     (source (origin
               ;; FIXME: We're using the bootstrapped sources because
               ;; otherwise using an external ell library is impossible.
@@ -3552,7 +3552,7 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
                                   "/wireless/iwd-" version ".tar.xz"))
               (sha256
                (base32
-                "02vz4lyd6vq3vcii357ljqprnas78zb8j670a0gblrm6kganmgi1"))))
+                "0ngng9a9ra5w0mp2813yy2ihfibyx10ns6v5icdcp99db608xax7"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
