@@ -32,6 +32,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 David Dashyan <mail@davie.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -518,12 +519,18 @@ any X11 window.")
                                  "}\"\n"))))
              #t))
          (add-before 'install 'patch-passmenu-path
+           ;; FIXME Wayland support requires ydotool and dmenu-wl packages
+           ;; We are ignoring part of the script that gets executed if
+           ;; WAYLAND_DISPLAY env variable is set, leaving dmenu-wl and ydotool
+           ;; commands as is.
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "contrib/dmenu/passmenu"
-               (("dmenu") (string-append (assoc-ref inputs "dmenu")
-                                         "/bin/dmenu"))
-               (("xdotool") (string-append (assoc-ref inputs "xdotool")
-                                           "/bin/xdotool")))
+               (("dmenu=dmenu\n")
+                (string-append "dmenu="
+                               (assoc-ref inputs "dmenu") "/bin/dmenu\n"))
+               (("xdotool=\"xdotool")
+                (string-append "xdotool=\""
+                               (assoc-ref inputs "xdotool") "/bin/xdotool")))
              #t))
          (add-after 'install 'install-passmenu
            (lambda* (#:key outputs #:allow-other-keys)
