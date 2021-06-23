@@ -1110,7 +1110,7 @@ derived from Mozilla's collection.")
 (define-public s2n
   (package
     (name "s2n")
-    (version "1.0.0")
+    (version "1.0.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1119,7 +1119,7 @@ derived from Mozilla's collection.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q6kmgwb8jxmc4ijzk9pkqzz8lsbfsv9hyzqvy944w7306zx1r5h"))))
+                "0ampvh2n235hhd9nabgjjvja7d5r5kj45q56ass1k8g52a6xg0jq"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; tests fail to build for static library
