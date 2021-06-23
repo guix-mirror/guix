@@ -647,7 +647,14 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
        #:make-flags
        (list (string-append "LIBDIR="
                             (assoc-ref %outputs "out")
-                            "/lib/ocaml/site-lib"))))
+                            "/lib/ocaml/site-lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-script
+           (lambda _
+             (substitute* "applications/dose-tests.py"
+               (("warning\\(")
+                "from warnings import warn\nwarn(")))))))
     (propagated-inputs
       `(("ocaml-graph" ,ocaml-graph)
         ("ocaml-cudf" ,ocaml-cudf)
