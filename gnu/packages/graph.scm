@@ -232,9 +232,6 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
     (arguments
      '(#:tests? #f)))) ; The tests are not distributed in the release
 
-(define-public python2-plotly
-  (package-with-python2 python-plotly-2.4.1))
-
 (define-public python-louvain
   (package
     (name "python-louvain")
