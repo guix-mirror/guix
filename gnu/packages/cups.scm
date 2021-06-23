@@ -254,16 +254,20 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.3.3")
+    (version "2.3.3op2")
     (source
      (origin
        (method git-fetch)
+       ;; Version maintained by the OpenPrinting organization, NOT a fork.  The
+       ;; CUPS author tracks the current Apple CUPS sources and includes common
+       ;; changes and bug fixes for GNU/Linux.  See its README and for example
+       ;; <https://github.com/apple/cups/issues/5917#issuecomment-819465891>.
        (uri (git-reference
-             (url "https://github.com/apple/cups")
+             (url "https://github.com/OpenPrinting/cups")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13jbr93aiszkkw4fyh4rmapjfb4ngkqnb05jkqdfyv5rhy72si2m"))))
+        (base32 "126d6kd3pkhmsvbcflkcpk3y30iqlkdqyvrk9aqq88vbxzjd5ia6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -327,7 +331,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
     (inputs
      `(("zlib"  ,zlib)
        ("gnutls" ,gnutls)))
-    (home-page "https://www.cups.org")
+    (home-page "https://openprinting.github.io/")
     (synopsis "The Common Unix Printing System")
     (description
      "CUPS is a printing system that uses the Internet Printing Protocol
