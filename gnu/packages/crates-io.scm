@@ -31222,14 +31222,14 @@ synchronization primitives.")
 (define-public rust-parquet-4
   (package
     (name "rust-parquet")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "parquet" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "19l8ya7jqym8bpf1pyg0i31a7sqaw18dskwbj6v6lkmhxbwafxcj"))))
+        (base32 "0m3aqmaa79wka7adijl3zqkfjf1iwm2y58v0g16askv73pj48l16"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
