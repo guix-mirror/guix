@@ -663,15 +663,53 @@ CLEANFILES =					\
 # the whole thing.  Likewise, set 'XDG_CACHE_HOME' to avoid loading possibly
 # stale files from ~/.cache/guile/ccache.
 %.go: make-go ; @:
-make-go: $(MODULES) guix/config.scm $(dist_noinst_DATA)
-	$(AM_V_at)echo "Compiling Scheme modules..." ;			\
-	unset GUILE_LOAD_COMPILED_PATH ;				\
-	XDG_CACHE_HOME=/nowhere						\
-	host=$(host) srcdir="$(top_srcdir)"				\
-	$(top_builddir)/pre-inst-env					\
-	$(GUILE) -L "$(top_builddir)" -L "$(top_srcdir)"		\
-	  --no-auto-compile 						\
-	  -s "$(top_srcdir)"/build-aux/compile-all.scm $^
+make-go: make-core-go make-packages-go make-system-go make-cli-go
+
+# Define a rule to build a subset of the .go files.
+define guile-compilation-rule
+
+$(1): $(2)
+	$(AM_V_at)echo "Compiling Scheme modules..." ;		\
+	unset GUILE_LOAD_COMPILED_PATH ;			\
+	XDG_CACHE_HOME=/nowhere					\
+	host=$(host) srcdir="$(top_srcdir)"			\
+	$(top_builddir)/pre-inst-env				\
+	$(GUILE) -L "$(top_builddir)" -L "$(top_srcdir)"	\
+	  --no-auto-compile					\
+	  -s "$(top_srcdir)"/build-aux/compile-all.scm		\
+	  --total $(words $(MODULES))				\
+	  --completed $(3)					\
+	  $$(filter %.scm,$$^)
+
+.PHONY: $(1)
+
+endef
+
+# Split compilation in several steps, each of which building a subset of
+# $(MODULES).  The main goal is to reduce peak memory consumption, as reported
+# in <https://issues.guix.gnu.org/48963>.  Each 'eval' call below creates a
+# 'make-*-go' phony target that builds the corresponding subset.
+
+MODULES_CORE     = $(filter-out guix/scripts/%,$(filter guix/%,$(MODULES)))
+MODULES_PACKAGES = $(filter gnu/packages/%,$(MODULES))
+MODULES_SYSTEM   = $(filter-out gnu/packages/%,$(filter gnu/%,$(MODULES)))
+MODULES_CLI      = $(filter guix/scripts/%,$(MODULES))
+
+$(eval $(call guile-compilation-rule,make-core-go,	\
+  $(MODULES_CORE) guix/config.scm $(dist_noinst_DATA),	\
+  0))
+
+$(eval $(call guile-compilation-rule,make-packages-go,	\
+  $(MODULES_PACKAGES) make-core-go,			\
+  $(words $(MODULES_CORE))))
+
+$(eval $(call guile-compilation-rule,make-system-go,	\
+  $(MODULES_SYSTEM) make-packages-go make-core-go,	\
+  $(words $(MODULES_CORE) $(MODULES_PACKAGES))))
+
+$(eval $(call guile-compilation-rule,make-cli-go,			\
+  $(MODULES_CLI) make-system-go make-packages-go make-core-go,		\
+  $(words $(MODULES_CORE) $(MODULES_PACKAGES) $(MODULES_SYSTEM))))
 
 SUFFIXES = .go
 

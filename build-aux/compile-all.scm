@@ -98,26 +98,36 @@ to 'make'."
     (exit 1)))
 
 (match (command-line)
-  ((_ . files)
+  ((_ "--total" (= string->number grand-total)
+      "--completed" (= string->number processed)
+      . files)
+   ;; GRAND-TOTAL is the total number of .scm files in the project; PROCESSED
+   ;; is the total number of .scm files already compiled in previous
+   ;; invocations of this script.
    (catch #t
      (lambda ()
-       (compile-files srcdir (getcwd)
-                      (filter file-needs-compilation? files)
-                      #:workers (parallel-job-count*)
-                      #:host host
-                      #:report-load (lambda (file total completed)
-                                      (when file
-                                        (format #t "[~3d%] LOAD     ~a~%"
-                                                (% (+ 1 completed) (* 2 total))
-                                                file)
-                                        (force-output)))
-                      #:report-compilation (lambda (file total completed)
-                                             (when file
-                                               (format #t "[~3d%] GUILEC   ~a~%"
-                                                       (% (+ total completed 1)
-                                                          (* 2 total))
-                                                       (scm->go file))
-                                               (force-output)))))
+       (let* ((to-build  (filter file-needs-compilation? files))
+              (processed (+ processed
+                            (- (length files) (length to-build)))))
+         (compile-files srcdir (getcwd) to-build
+                        #:workers (parallel-job-count*)
+                        #:host host
+                        #:report-load (lambda (file total completed)
+                                        (when file
+                                          (format #t "[~3d%] LOAD     ~a~%"
+                                                  (% (+ 1 completed
+                                                          (* 2 processed))
+                                                     (* 2 grand-total))
+                                                  file)
+                                          (force-output)))
+                        #:report-compilation (lambda (file total completed)
+                                               (when file
+                                                 (format #t "[~3d%] GUILEC   ~a~%"
+                                                         (% (+ total completed 1
+                                                                     (* 2 processed))
+                                                            (* 2 grand-total))
+                                                         (scm->go file))
+                                                 (force-output))))))
      (lambda _
        (primitive-exit 1))
      (lambda args
