@@ -17695,3 +17695,51 @@ computing and event based message handling.")
 
 (define-public cl-gserver
   (sbcl-package->cl-source-package sbcl-cl-gserver))
+
+(define-public sbcl-cl-posix-mqueue
+  (let ((commit "8977370c7206d1f62bd1be80f4254af40654b83f")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-posix-mqueue")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/xFA25E/cl-posix-mqueue")
+               (commit commit)))
+         (file-name (git-file-name "cl-posix-mqueue" version))
+         (sha256
+          (base32 "04519rg8vc782z097dzlb8nx0skab2fy2zd0m60r6mz2nw8xdvh6"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:test-asd-file "cl-posix-mqueue-tests.asd"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-librt-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/spec.lisp"
+                 (("librt.so" all)
+                  (string-append (assoc-ref inputs "glibc") "/lib/" all))))))))
+      (native-inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("rove" ,sbcl-rove)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("cffi" ,sbcl-cffi)
+         ("glibc" ,glibc)
+         ("local-time" ,sbcl-local-time)))
+      (home-page "https://github.com/xFA25E/cl-posix-mqueue")
+      (synopsis "Common Lisp binding to POSIX mqueue")
+      (description
+       "This package provides Common Lisp bindings to POSIX message queue, an
+@acronym{IPC, Inter-Process Communication} method that is easy to use and quick
+to setup.")
+      (license license:gpl3))))
+
+(define-public ecl-cl-posix-mqueue
+  (sbcl-package->ecl-package sbcl-cl-posix-mqueue))
+
+(define-public cl-posix-mqueue
+  (sbcl-package->cl-source-package sbcl-cl-posix-mqueue))
