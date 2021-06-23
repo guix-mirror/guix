@@ -6712,8 +6712,8 @@ extension-points via the concept of hooks.")
   (sbcl-package->ecl-package sbcl-cl-hooks))
 
 (define-public sbcl-cl-autowrap
-  (let ((revision "1")
-        (commit "ae846d6968fc0d000de0c541638929a157f3009e"))
+  (let ((revision "2")
+        (commit "a5d71ebd7c21b87f449db1e16ab815750d7c0ea4"))
     ;; no taged branches
     (package
       (name "sbcl-cl-autowrap")
@@ -6724,10 +6724,12 @@ extension-points via the concept of hooks.")
          (uri (git-reference
                (url "https://github.com/rpav/cl-autowrap")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-autowrap" version))
          (sha256
-          (base32 "1gisldp2zns92kdcaikghm7c38ldy2d884n8bfg0wcjvbz78p3ar"))))
+          (base32 "0795c817m1c41cz3ywzzg83z4pgkxdg6si553pay9mdgjvmrwmaw"))))
       (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("cl-plus-c" "cl-autowrap")))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)
