@@ -32839,18 +32839,17 @@ applications.")
      "Polars is a dataframe Library based on Apache Arrow.")
     (license license:expat)))
 
-(define-public rust-polars-arrow-0.13
+(define-public rust-polars-arrow-0.14
   (package
     (name "rust-polars-arrow")
-    (version "0.13.4")
+    (version "0.14.8")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "polars-arrow" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0r6k2zm9f3nngjszdjnjz7r7c91qpq88lwjfgsbwfi8383xxbcjk"))))
+        (base32 "1wk6qfj821w6qqs35n9f0zhp9n7mffxzah12nqk1xlpv2ci2ahsr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -32863,6 +32862,26 @@ applications.")
     (description
      "This crate provides Arrow interfaces for Polars DataFrame library.")
     (license license:expat)))
+
+(define-public rust-polars-arrow-0.13
+  (package
+    (inherit rust-polars-arrow-0.14)
+    (name "rust-polars-arrow")
+    (version "0.13.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polars-arrow" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r6k2zm9f3nngjszdjnjz7r7c91qpq88lwjfgsbwfi8383xxbcjk"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrow" ,rust-arrow-4)
+        ("rust-num" ,rust-num-0.4)
+        ("rust-thiserror" ,rust-thiserror-1))))))
 
 (define-public rust-polars-core-0.14
   (package
