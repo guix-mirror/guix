@@ -30592,6 +30592,26 @@ platform-native strings.")
      "Utility to activate escape codes in Windows' CMD and PowerShell.")
     (license license:expat)))
 
+(define-public rust-overload-0.1
+  (package
+    (name "rust-overload")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "overload" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fdgbaqwknillagy1xq7xfgv60qdbk010diwl7s1p0qx7hb16n5i"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/danaugrs/overload")
+    (synopsis "Macro to simplify operator overloading")
+    (description
+     "This package provides a macro to simplify operator overloading.")
+    (license license:expat)))
+
 (define-public rust-owned-ttf-parser-0.6
   (package
     (name "rust-owned-ttf-parser")
