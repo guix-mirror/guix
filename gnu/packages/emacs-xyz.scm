@@ -3310,7 +3310,7 @@ during idle time, while Emacs is doing nothing else.")
                  ("pdf-tools-handle-upgrades" '()))))
            (add-after 'emacs-patch-variables 'emacs-expand-load-path
              (assoc-ref emacs:%standard-phases 'expand-load-path))
-           (add-after 'emacs-add-source-to-load-path 'emacs-install
+           (add-after 'emacs-expand-load-path 'emacs-install
              (assoc-ref emacs:%standard-phases 'install))
            (add-after 'emacs-install 'emacs-build
              (assoc-ref emacs:%standard-phases 'build))

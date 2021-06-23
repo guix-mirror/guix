@@ -232,7 +232,7 @@ built-in support for concurrency, distribution and fault tolerance.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'add-source-to-load-path 'change-working-directory
+         (add-before 'expand-load-path 'change-working-directory
            (lambda _ (chdir "lib/tools/emacs") #t)))))
     (home-page "https://www.erlang.org/")
     (synopsis "Erlang major mode for Emacs")
