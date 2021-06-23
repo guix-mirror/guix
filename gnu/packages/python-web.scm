@@ -2882,9 +2882,6 @@ It also includes code to sign requests and pass private data,
 and to spawn subprocesses to handle requests.")
     (license license:expat)))
 
-(define-public python2-wsgiproxy2
- (package-with-python2 python-wsgiproxy2))
-
 (define-public python-pastedeploy
   (package
     (name "python-pastedeploy")
