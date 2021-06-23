@@ -43303,7 +43303,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
 (define-public rust-stackvector-1
   (package
     (name "rust-stackvector")
-    (version "1.0.6")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -43312,7 +43312,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bv820fhdad16islwli1g3iksk39ivf0zaqz4j1m08vq15jjaiqw"))))
+         "0xnz2z9hvn8h1hb3fq9mpf0ibw4g9pk54wpqis0knj329cfhz3zl"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
