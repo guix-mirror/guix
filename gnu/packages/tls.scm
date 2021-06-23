@@ -1129,7 +1129,15 @@ derived from Mozilla's collection.")
     (propagated-inputs
      `(("openssl" ,openssl)
        ("openssl:static" ,openssl "static")))
-    (synopsis "SSL/TLS implementation")
-    (description "This library provides a C99 implementation of SSL/TLS.")
+    (synopsis "SSL/TLS implementation in C99")
+    (description
+     "This library provides a C99 implementation of SSL/TLS.  It is designed to
+be familiar to users of the widely-used POSIX I/O APIs.  It supports blocking,
+non-blocking, and full-duplex I/O.  There are no locks or mutexes.
+
+As it can be difficult to keep track of which encryption algorithms and
+protocols are best to use, s2n-tls features a simple API to use the latest
+default set of preferences.  Remaining on a specific version for backwards
+compatibility is also supported.")
     (home-page "https://github.com/awslabs/s2n")
     (license license:asl2.0)))
