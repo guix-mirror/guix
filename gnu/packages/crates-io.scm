@@ -2359,14 +2359,14 @@ ArrayVec and ArrayString.")
 (define-public rust-arrow-4
   (package
     (name "rust-arrow")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "arrow" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0qw6940mfqz2z6fq83sqkrx3kp4zwpadld0bv0lln3znq3hip0ck"))))
+        (base32 "141qb0yqk179n324qrhbv14ysz13mcfsw00d6m09882gx9637wzn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
