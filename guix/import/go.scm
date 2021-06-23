@@ -5,6 +5,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,8 +187,9 @@ e.g. \"google.golang.org/protobuf/proto\"."
          (description (if (not (null? overview))
                           overview
                           (select-content sxml)))
-         (description* (and (not (null? description))
-                            (first description))))
+         (description* (if (not (null? description))
+                           (first description)
+                           description)))
     (match description*
       (() #f)                           ;nothing selected
       ((p elements ...)
