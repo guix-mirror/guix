@@ -257,12 +257,13 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
     (version "2.3.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/apple/cups/releases/download/v"
-                           version "/cups-" version "-source.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/apple/cups")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1vpk0b2vq830f8fvf9z8qjsm5k141i7pi8djbinpnr78pi4dj7r6"))))
+        (base32 "13jbr93aiszkkw4fyh4rmapjfb4ngkqnb05jkqdfyv5rhy72si2m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
