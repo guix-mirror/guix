@@ -18931,7 +18931,7 @@ Specifies an access list for a job's private values.  @code{@@ACL} maps
 to the printer's requesting-user-name-allowed or
 requesting-user-name-denied values.  @code{@@OWNER} maps to the job's
 owner.  @code{@@SYSTEM} maps to the groups listed for the
-@code{system-group} field of the @code{files-config} configuration,
+@code{system-group} field of the @code{files-configuration},
 which is reified into the @code{cups-files.conf(5)} file.  Other
 possible elements of the access list include specific user names, and
 @code{@@@var{group}} to indicate members of a specific group.  The
@@ -18953,7 +18953,7 @@ Specifies an access list for a subscription's private values.
 @code{@@ACL} maps to the printer's requesting-user-name-allowed or
 requesting-user-name-denied values.  @code{@@OWNER} maps to the job's
 owner.  @code{@@SYSTEM} maps to the groups listed for the
-@code{system-group} field of the @code{files-config} configuration,
+@code{system-group} field of the @code{files-configuration},
 which is reified into the @code{cups-files.conf(5)} file.  Other
 possible elements of the access list include specific user names, and
 @code{@@@var{group}} to indicate members of a specific group.  The
