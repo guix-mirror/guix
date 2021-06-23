@@ -3605,9 +3605,6 @@ is designed to have a low barrier to entry.")
 provides support for parsing, splitting and formatting SQL statements.")
     (license license:bsd-3)))
 
-(define-public python2-sqlparse
-  (package-with-python2 python-sqlparse))
-
 (define-public python-sql
   (package
     (name "python-sql")
