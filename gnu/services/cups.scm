@@ -615,9 +615,6 @@ policy is @code{retry-job} or @code{retry-current-job}.")
   (keep-alive?
    (boolean #t)
    "Specifies whether to support HTTP keep-alive connections.")
-  (keep-alive-timeout
-   (non-negative-integer 30)
-   "Specifies how long an idle client connection remains open, in seconds.")
   (limit-request-body
    (non-negative-integer 0)
    "Specifies the maximum size of print files, IPP requests, and HTML form

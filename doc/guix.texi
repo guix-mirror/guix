@@ -18699,12 +18699,6 @@ Specifies whether to support HTTP keep-alive connections.
 Defaults to @samp{#t}.
 @end deftypevr
 
-@deftypevr {@code{cups-configuration} parameter} non-negative-integer keep-alive-timeout
-Specifies how long an idle client connection remains open, in seconds.
-
-Defaults to @samp{30}.
-@end deftypevr
-
 @deftypevr {@code{cups-configuration} parameter} non-negative-integer limit-request-body
 Specifies the maximum size of print files, IPP requests, and HTML form
 data.  A limit of 0 disables the limit check.
