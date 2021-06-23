@@ -200,6 +200,53 @@ another location, similar to @command{mount --bind}.  It can be used for:
 @end itemize ")
     (license license:gpl2+)))
 
+(define-public cachefilesd-inotify
+  (package
+    (name "cachefilesd-inotify")
+    (version "0.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/tomalok/cachefilesd-inotify")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qkrpz69ql6fb3fwh0l35hhf9znnqyxhgv5fzd1gl2a2kz13rq5a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             ;; The Makefile doesn't support prefix= or similar.
+             (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             "MANDIR=/share/man")
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://gitlab.com/tomalok/cachefilesd-inotify")
+    (synopsis
+     "CacheFiles file system cache management daemon (using @code{inotify})")
+    (description
+     "This package provides the user space component of CacheFiles, a caching
+back end that uses a directory on a locally mounted file system (such as ext4)
+as a cache to speed up (by reducing) access to a slower file system and make it
+appear more reliable.
+
+The cached file system is often a network file system such as NFS or CIFS, but
+can also be a local file system like ISO 9660 on a slow optical drive.
+
+CacheFiles itself is part of the kernel but relies on this user space
+@command{cachefilesd} daemon to perform maintenance tasks like culling and
+reaping stale nodes.  Only one such daemon can be running at a time, and
+communicates with the kernel through the @file{/dev/cachefiles} character
+device.
+
+This version modifies David Howells original cachefilesd---which appears
+unmaintained---to use the @code{inotify} API instead of the deprecated
+@code{dnotify} to monitor file changes.")
+    (license license:gpl2+)))
+
 (define-public davfs2
   (package
     (name "davfs2")
