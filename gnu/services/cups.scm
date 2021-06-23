@@ -418,6 +418,9 @@ queues.  The URI @url{file:///dev/null} is always allowed.")
    (string "lp")
    "Specifies the group name or ID that will be used when executing external
 programs.")
+  (log-file-group
+   (string "lpadmin")
+   "Specifies the group name or ID that will be used for log files.")
   (log-file-perm
    (string "0644")
    "Specifies the permissions for all log files that the scheduler writes.")

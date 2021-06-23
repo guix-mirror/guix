@@ -18463,6 +18463,12 @@ programs.
 Defaults to @samp{"lp"}.
 @end deftypevr
 
+@deftypevr {@code{files-configuration} parameter} string log-file-group
+Specifies the group name or ID that will be used for log files.
+
+Defaults to @samp{"lpadmin"}.
+@end deftypevr
+
 @deftypevr {@code{files-configuration} parameter} string log-file-perm
 Specifies the permissions for all log files that the scheduler writes.
 
