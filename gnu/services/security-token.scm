@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,9 @@
         (requirement '(syslogd))
         (modules '((gnu build shepherd)))
         (start #~(lambda _
+                   (let ((socket "/run/pcscd/pcscd.comm"))
+                     (when (file-exists? socket)
+                       (delete-file socket)))
                    (invoke #$(file-append pcsc-lite "/sbin/pcscd"))
                    (call-with-input-file "/run/pcscd/pcscd.pid" read)))
         (stop #~(make-kill-destructor)))))))

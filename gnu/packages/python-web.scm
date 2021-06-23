@@ -356,13 +356,13 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
 (define-public python-aws-sam-translator
   (package
     (name "python-aws-sam-translator")
-    (version "1.30.1")
+    (version "1.36.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "aws-sam-translator" version))
               (sha256
                (base32
-                "0d9ppd94x2kw404m49ajswmmxgdngbs4p5ajyrdvnlivfzqbv7dx"))))
+                "115mcbb4r205c1hln199llqrvvbijfqz075rwx991l99jc6rj6zs"))))
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are not distributed with the PyPI archive, and would
@@ -456,7 +456,7 @@ emit information from within their applications to the AWS X-Ray service.")
 (define-public python-cfn-lint
   (package
     (name "python-cfn-lint")
-    (version "0.41.0")
+    (version "0.51.0")
     (home-page "https://github.com/aws-cloudformation/cfn-python-lint")
     (source (origin
               (method git-fetch)
@@ -466,7 +466,7 @@ emit information from within their applications to the AWS X-Ray service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nqs0fmj3hd7pnd9hkb4z57jvi2iv82hh6n3xxba6i6p8zgx75q4"))))
+                "1027s243sik25c6sqw6gla7k7vl3jdicrik5zdsa8pafxh2baja4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -477,6 +477,8 @@ emit information from within their applications to the AWS X-Ray service.")
                         ;; to avoid a dependency on 'git'.
                         (delete-file
                          "test/unit/module/maintenance/test_update_documentation.py")
+                        (delete-file
+                         "test/unit/module/maintenance/test_update_resource_specs.py")
                         (invoke "python" "-m" "unittest" "discover"
                                 "-s" "test")))))))
     (native-inputs

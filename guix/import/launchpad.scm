@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,8 +102,8 @@ URL of the form
   (match (string-split (uri-path (string->uri url)) #\/)
     ((_ repo . rest) repo)))
 
-(define (latest-released-version package-name)
-  "Return a string of the newest released version name given the PACKAGE-NAME,
+(define (latest-released-version repository)
+  "Return a string of the newest released version name given the REPOSITORY,
 for example, 'linuxdcpp'. Return #f if there is no releases."
   (define (pre-release? x)
     ;; Versions containing anything other than digit characters and "." (for
@@ -112,7 +114,7 @@ for example, 'linuxdcpp'. Return #f if there is no releases."
 
   (match (json-fetch
           (string-append "https://api.launchpad.net/1.0/"
-                         package-name "/releases"))
+                         repository "/releases"))
     (#f #f)                                       ;404 or similar
     (json
      (assoc-ref
@@ -121,15 +123,16 @@ for example, 'linuxdcpp'. Return #f if there is no releases."
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
-  (define (origin-github-uri origin)
+  (define (origin-launchpad-uri origin)
     (match (origin-uri origin)
       ((? string? url) url) ; surely a Launchpad URL
       ((urls ...)
        (find (cut string-contains <> "launchpad.net") urls))))
 
-  (let* ((source-uri (origin-github-uri (package-source pkg)))
+  (let* ((source-uri (origin-launchpad-uri (package-source pkg)))
          (name (package-name pkg))
-         (newest-version (latest-released-version name)))
+         (repository (launchpad-repository source-uri))
+         (newest-version (latest-released-version repository)))
     (if newest-version
         (upstream-source
          (package name)

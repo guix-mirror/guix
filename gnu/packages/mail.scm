@@ -1833,7 +1833,7 @@ facilities for checking incoming mail.")
   (package
     (name "dovecot")
     ;; Also update dovecot-pigeonhole when updating to a new minor version.
-    (version "2.3.14")
+    (version "2.3.15")
     (source
      (origin
        (method url-fetch)
@@ -1841,7 +1841,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "0jm3p52z619v7ajh533g2g7d790k82fk0w7ry0zqlm8ymzrxgcy8"))))
+        (base32 "141manrh54cy8xizr7f8fsa3vdzc2ccfgdz87l9rjylm8mfxvfr1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1902,7 +1902,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
   (let ((dovecot-version (version-major+minor (package-version dovecot))))
     (package
       (name "dovecot-pigeonhole")
-      (version "0.5.14")
+      (version "0.5.15")
       (source
        (origin
          (method url-fetch)
@@ -1910,7 +1910,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
                "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
          (sha256
-          (base32 "1lmjzz4kd90wbdslacybizd1dks4bhwmrx39lj8b19naldw0zjk8"))
+          (base32 "1l2h0p8ddsl3ja2lnwk0mfqplqh8n0iw8k27awd3ak7prr88yjg1"))
          (modules '((guix build utils)))
          (snippet
           '(begin

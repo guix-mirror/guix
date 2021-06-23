@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -1597,7 +1597,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.11.14")
+    (version "0.12.9")
     (source
      (origin
        (method git-fetch)
@@ -1606,7 +1606,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qxylzc7lzpsp5hm3dl5jvy9aca8azn8dmbjz9z5n5rkdmm8vd9p"))
+        (base32 "10bz1xq2frdja7mbx04m009svg8b5rj7vfq3sc2gc88n31v21b1j"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6577,41 +6577,36 @@ Instagram and YouTube.")
 (define-public linkchecker
   (package
     (name "linkchecker")
-    (version "9.4.0")
+    (version "10.0.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
-       (patches
-        (search-patches "linkchecker-tests-require-network.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
+         "1j97dc9a4yhpscwadhv5dxp7036pnrxiaky18l8ddr3pvxdjvkxs"))))
     (build-system python-build-system)
     (inputs
-     `(("python2-dnspython" ,python2-dnspython-1.16)
-       ("python2-pyxdg" ,python2-pyxdg)
-       ("python2-requests" ,python2-requests)))
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-dnspython" ,python-dnspython)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-requests" ,python-requests)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-miniboa" ,python2-miniboa)
-       ("python2-parameterized" ,python2-parameterized)))
+       ("python-pytest" ,python-pytest)
+       ("python-miniboa" ,python-miniboa)
+       ("python-parameterized" ,python-parameterized)))
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Remove this directory to avoid it being used when running
-               ;; the tests
-               (delete-file-recursively "linkcheck")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
                (invoke "py.test" "tests")))))))
-    (home-page "https://linkcheck.github.io/linkchecker")
+    (home-page "https://linkchecker.github.io/linkchecker/")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken
 links in websites.  It is recursive and multithreaded providing output in

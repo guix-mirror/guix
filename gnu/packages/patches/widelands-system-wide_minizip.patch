@@ -2,41 +2,29 @@ Description: use the system-wide minizip instead of the embeeded one if found.
 Forwarded-Upstream: It was provided by upstream: http://bazaar.launchpad.net/~widelands-dev/widelands/b19-debian/revision/8147
  .
  Thanks to Fòram na Gàidhlig for the patch.
- 
-I just added this line to make its use easier:
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/Modules)
 
 === modified file 'CMakeLists.txt'
 ---
- CMakeLists.txt                     |    3 +++
- Modules/FindMinizip.cmake          |   37 +++++++++++++++++++++++++++++++++++++
- cmake/WlFunctions.cmake            |    7 +++++++
- src/io/CMakeLists.txt              |    2 +-
- src/third_party/CMakeLists.txt     |   20 +++++++++++---------
- src/third_party/minizip/README.txt |    4 ++++
- 6 files changed, 63 insertions(+), 10 deletions(-)
+ CMakeLists.txt                     |  1 +
+ cmake/Modules/FindMinizip.cmake    | 37 +++++++++++++++++++++++++++++++++++++
+ cmake/WlFunctions.cmake            |  8 ++++++++
+ src/io/filesystem/CMakeLists.txt   |  2 +-
+ src/io/filesystem/zip_filesystem.h |  6 ++++++
+ src/third_party/CMakeLists.txt     | 20 +++++++++++---------
+ 6 files changed, 64 insertions(+), 10 deletions(-)
 
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -43,6 +43,7 @@
- endif(POLICY CMP0074)
- 
- include("${CMAKE_SOURCE_DIR}/cmake/WlFunctions.cmake")
-+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/Modules)
- 
- option(OPTION_USE_GLBINDING "Use glbinding instead of GLEW" OFF)
- option(OPTION_GLEW_STATIC "Use static GLEW Library" OFF)
-@@ -105,6 +106,8 @@
+@@ -142,6 +142,7 @@
+ find_package(SDL2_mixer REQUIRED)
  find_package(SDL2_ttf REQUIRED)
  find_package(ZLIB REQUIRED)
- find_package(ICU REQUIRED)
 +find_package(Minizip)
-+
- if(OPTION_USE_GLBINDING)
-   find_package(glbinding REQUIRED)
+ if(${CMAKE_VERSION} VERSION_LESS 3.9.0)
+     find_package(ICU_old REQUIRED)
  else()
 --- /dev/null
-+++ b/Modules/FindMinizip.cmake
++++ b/cmake/Modules/FindMinizip.cmake
 @@ -0,0 +1,37 @@
 +# - Try to find Minizip
 +# Once done this will define
@@ -77,10 +65,10 @@ I just added this line to make its use easier:
 +
 --- a/cmake/WlFunctions.cmake
 +++ b/cmake/WlFunctions.cmake
-@@ -81,6 +81,14 @@
+@@ -84,6 +84,14 @@
+ 
    if(ARG_USES_ZLIB)
-     wl_include_system_directories(${NAME} ${ZLIB_INCLUDE_DIRS})
-     target_link_libraries(${NAME} ${ZLIB_LIBRARY})
+     target_link_libraries(${NAME} ZLIB::ZLIB)
 +    if (MINIZIP_FOUND)
 +      wl_include_system_directories(${NAME}  ${MINIZIP_INCLUDE_DIR})
 +      target_link_libraries(${NAME}  ${MINIZIP_LIBRARY})
@@ -136,7 +124,7 @@ I just added this line to make its use easier:
  )
 --- a/src/io/filesystem/zip_filesystem.h
 +++ b/src/io/filesystem/zip_filesystem.h
-@@ -28,8 +28,14 @@
+@@ -25,8 +25,14 @@
  #include "io/filesystem/filesystem.h"
  #include "io/streamread.h"
  #include "io/streamwrite.h"

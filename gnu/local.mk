@@ -934,6 +934,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
+  %D%/packages/patches/cups-CVE-2020-10001.patch		\
   %D%/packages/patches/curl-use-ssl-cert-env.patch		\
   %D%/packages/patches/curl-7.77-tls-priority-string.patch	\
   %D%/packages/patches/cursynth-wave-rand.patch			\
@@ -1358,7 +1359,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linbox-fix-pkgconfig.patch		\
-  %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linphone-desktop-without-sdk.patch           \
   %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
   %D%/packages/patches/linux-libre-arm64-generic-pinebook-lcd.patch \
@@ -1717,6 +1717,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-qt5.patch			\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/tla2tools-build-xml.patch		\
+  %D%/packages/patches/tlf-support-hamlib-4.2+.patch		\
   %D%/packages/patches/tor-fix-build-with-gcc-7.patch		\
   %D%/packages/patches/transcode-ffmpeg.patch	\
   %D%/packages/patches/transmission-honor-localedir.patch	\

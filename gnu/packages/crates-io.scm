@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4205,6 +4206,42 @@ c6e7d37.  However, this package works only up to 128 bytes.")
     (synopsis "Encode/decode any base")
     (description "This library provides for encoding and decoding any base.")
     (license license:expat)))
+
+(define-public rust-battery-0.7
+  (package
+    (name "rust-battery")
+    (version "0.7.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "battery" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r1641dyks76p39i1iihswhc6iz5z51pihmpxniy1h1pi4k29dml"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; Tests fail with "No such file or directory".
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-core-foundation"
+         ,rust-core-foundation-0.7)
+        ("rust-lazycell" ,rust-lazycell-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mach" ,rust-mach-0.3)
+        ("rust-nix" ,rust-nix-0.19)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-uom" ,rust-uom-0.30)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/svartalf/rust-battery")
+    (synopsis "Information about the notebook batteries")
+    (description
+     "@code{battery} provides a unified API to a notebook batteries state.")
+    ;; Dual licensed, either license applies.
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-beef-0.5
   (package
@@ -23160,7 +23197,7 @@ requires non-const function calls to be computed.")
 (define-public rust-lazycell-1
   (package
     (name "rust-lazycell")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -23169,11 +23206,10 @@ requires non-const function calls to be computed.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0gvqycmpv7parc98i6y64ai7rvxrn1947z2a6maa02g4kvxdd55j"))))
+         "0m8gw7dn30i0zjjpjdyf6pc16c34nl71lpv461mix50x3p70h3c3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-clippy" ,rust-clippy-0.0))))
+     `(#:cargo-inputs (("rust-clippy" ,rust-clippy-0.0))))
     (home-page "https://github.com/indiv0/lazycell")
     (synopsis "Lazily filled Cell struct")
     (description
@@ -24874,17 +24910,17 @@ lexer.")
      "This package provides a collection of great and ubiqutitous macros.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-mach-0.2
+(define-public rust-mach-0.3
   (package
     (name "rust-mach")
-    (version "0.2.3")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "mach" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1qdhs16cl1j3w7kvy6ak7h8lbyqmr6i3i15qfzpnv9gyrn3j9pc6"))))
+        (base32 "0a895rhg3a1l3ws4qf83s5mx0g29v1fzgjmbag1h36v62hmg1vi8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -24896,6 +24932,19 @@ lexer.")
      "This package provides a Rust interface to the user-space API of the
 Mach 3.0 kernel that underlies OSX.")
     (license (list license:asl2.0 license:expat license:bsd-2))))
+
+(define-public rust-mach-0.2
+  (package
+    (inherit rust-mach-0.3)
+    (name "rust-mach")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mach" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qdhs16cl1j3w7kvy6ak7h8lbyqmr6i3i15qfzpnv9gyrn3j9pc6"))))))
 
 (define-public rust-mach-o-sys-0.1
   (package
@@ -29688,14 +29737,14 @@ system for OpenSSL.")
 (define-public rust-openssl-sys-0.9
   (package
     (name "rust-openssl-sys")
-    (version "0.9.60")
+    (version "0.9.64")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-sys" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "1rpkfl0rmdcvxzyzp3n24g9clplh4avgzpi5c2a3hx96hcccf7wj"))
+         (base32 "1bsim2zk69q1dw6rixn48l1ci8bmz5kvbkgsks2ci079w0pzr7i0"))
         (patches (search-patches "rust-openssl-sys-no-vendor.patch"))))
     (build-system cargo-build-system)
     (arguments
@@ -51618,6 +51667,52 @@ untrusted inputs in Rust.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0byf88b7ca1kb5aap8f6npp6xncvg95dnma8ipmnmd4n9r5izkam"))))))
+
+(define-public rust-uom-0.31
+  (package
+    (name "rust-uom")
+    (version "0.31.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dwih0bclq18gfdf7if6kqip82w8yrf076l0ad1n3gr71bynpvmi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-rational" ,rust-num-rational-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-typenum" ,rust-typenum-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-static-assertions"
+         ,rust-static-assertions-1))))
+    (home-page "https://github.com/iliekturtles/uom")
+    (synopsis "Units of measurement")
+    (description "Units of measurement is a crate that does automatic
+type-safe zero-cost dimensional analysis.")
+    ;; Dual-licensed, either license applies.
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-uom-0.30
+  (package
+    (inherit rust-uom-0.31)
+    (name "rust-uom")
+    (version "0.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vg59hnb7hh0p8kjjhgmrsnn3597722lkfdkp481wksq6vk06rg7"))))))
 
 (define-public rust-url-2
   (package

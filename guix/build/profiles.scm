@@ -159,15 +159,15 @@ search path specifications."
          (((name version output item
                  ('propagated-inputs deps)
                  ('search-paths paths) _ ...) . rest)
-          (loop (append deps rest)
+          (loop (append rest deps)                ;breadth-first traversal
                 (cons item inputs)
                 (append paths search-paths)))
          (()
-          (values inputs
+          (values (reverse inputs)
                   (delete-duplicates
                    (cons $PATH
                          (map sexp->search-path-specification
-                              search-paths))))))))))
+                              (reverse search-paths)))))))))))
 
 (define* (build-profile output manifest
                         #:key (extra-inputs '()) (symlink symlink))

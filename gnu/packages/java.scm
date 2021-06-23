@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019, 2021 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017-2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017-2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -45,6 +45,7 @@
   #:use-module (guix gexp)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system maven)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -3851,25 +3852,11 @@ documentation tools.")
     (arguments
      `(#:jar-name "qdox.jar"
        #:tests? #f; no tests
-       #:modules
-       ((guix build ant-build-system)
-        (guix build java-utils)
-        (guix build utils)
-        (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "QDox")
-                       (groupId "com.thoughtworks.qdox")
-                       (artifactId "qdox")
-                       (version ,,version))))))
-             #t))
+           (generate-pom.xml "pom.xml" "com.thoughtworks.qdox" "qdox" ,version
+                             #:name "QDox"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "https://github.com/codehaus/qdox")
@@ -3895,7 +3882,14 @@ documentation tools.")
                                   "/qdox-" version "-sources.jar"))
               (sha256
                (base32
-                "1s2jnmx2dkwnaha12lcj26aynywgwa8sslc47z82wx8xai13y4fg"))))))
+                "1s2jnmx2dkwnaha12lcj26aynywgwa8sslc47z82wx8xai13y4fg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-qdox)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'create-pom
+             (generate-pom.xml "pom.xml" "com.thoughtworks.qdox" "qdox" ,version
+                               #:name "QDox"))))))))
 
 (define-public java-jarjar
   (package
@@ -5792,7 +5786,13 @@ The jMock library
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
-       #:jar-name "jopt-simple.jar"))
+       #:jar-name "jopt-simple.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'create-pom
+           (generate-pom.xml "pom.xml" "net.sf.jopt-simple" "jopt-simple" ,version))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "https://pholser.github.io/jopt-simple/")
     (synopsis "Java library for parsing command line options")
     (description "JOpt Simple is a Java library for parsing command line
@@ -5803,6 +5803,28 @@ GNU @code{getopt_long}.  It also aims to make option parser configuration and
 retrieval of options and their arguments simple and expressive, without being
 overly clever.")
     (license license:expat)))
+
+;; Required by jmh
+(define-public java-jopt-simple-4
+  (package
+    (inherit java-jopt-simple)
+    (version "4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "net/sf/jopt-simple/jopt-simple/"
+                                  version "/jopt-simple-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0ny82zczxkn201ld0b7rps0ifzjhfs8m1ncdmy1f50145ciszkpd"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-jopt-simple)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'create-pom
+             (generate-pom.xml "pom.xml" "net.sf.jopt-simple" "jopt-simple"
+                               ,version))))))))
 
 (define-public java-commons-math3
   (package
@@ -5838,7 +5860,7 @@ overly clever.")
              #t))
          ;; There is no install target.
          (replace 'install
-           (install-jars "target")))))
+           (install-from-pom "pom.xml")))))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
@@ -5852,36 +5874,37 @@ available in the Java programming language or Commons Lang.")
 (define-public java-jmh
   (package
     (name "java-jmh")
-    (version "1.17.5")
+    (version "1.32")
     (source (origin
-              (method hg-fetch)
-              (uri (hg-reference
-                    (url "http://hg.openjdk.java.net/code-tools/jmh/")
-                    (changeset version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jmh")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fxyxhg9famwcg1prc4cgwb5wzyxqavn3cjm5vz8605xz7x5k084"))))
-    (build-system ant-build-system)
+                "0i7fa7l3gdqkkgz5ddayp6m46dgbj9rqlz35xffrcbyiz3gpljy0"))))
+    (build-system maven-build-system)
     (arguments
-     `(#:jar-name "jmh-core.jar"
-       #:source-dir "jmh-core/src/main"
-       #:test-dir "jmh-core/src/test"
+     `(#:exclude
+       (("org.apache.maven.plugins" .
+         ("maven-source-plugin" "maven-archetype-plugin" "maven-shade-plugin"
+          "maven-site-plugin" "maven-javadoc-plugin" "maven-eclipse-plugin"))
+        ("com.mycila.maven-license-plugin" . ("maven-license-plugin"))
+        ("org.apache.maven.wagon" . ("wagon-ssh")))
+       #:maven-plugins
+       (("maven-enforcer-plugin" ,maven-enforcer-plugin)
+        ,@(default-maven-plugins))
        #:phases
        (modify-phases %standard-phases
-         ;; This seems to be a bug in the JDK.  It may not be necessary in
-         ;; future versions of the JDK.
-         (add-after 'unpack 'fix-bug
+         (add-after 'unpack 'remove-unnecessary
            (lambda _
-             (with-directory-excursion
-                 "jmh-core/src/main/java/org/openjdk/jmh/runner/options"
-               (substitute* '("IntegerValueConverter.java"
-                              "ThreadsValueConverter.java")
-                 (("public Class<Integer> valueType")
-                  "public Class<? extends Integer> valueType")))
-             #t)))))
-    (inputs
-     `(("java-jopt-simple" ,java-jopt-simple)
+             ;; requires org.apache.maven.archetype:archetype-packaging.
+             ;; Its subprojects also require groovy, kotlin and scala,
+             ;; respectively.
+             (delete-file-recursively "jmh-archetypes"))))))
+    (propagated-inputs
+     `(("java-jopt-simple" ,java-jopt-simple-4)
        ("java-commons-math3" ,java-commons-math3)))
     (native-inputs
      `(("java-junit" ,java-junit)
@@ -6467,25 +6490,11 @@ bottlenecks move away from the database in an effectively cached system.")
      `(#:tests? #f ; no tests included
        #:jdk ,icedtea-8
        #:jar-name "jsr250.jar"
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "jsr250")
-                       (groupId "javax.annotation")
-                       (artifactId "jsr250-api")
-                       (version ,,version))))))
-             #t))
+           (generate-pom.xml "pom.xml" "javax.annotation" "jsr250-api" ,version
+                             #:name "jsr250"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "https://jcp.org/en/jsr/detail?id=250")
@@ -6514,25 +6523,10 @@ namespaces.")
     (arguments
      `(#:tests? #f ; no tests included
        #:jar-name "jsr305.jar"
-       #:modules ((guix build ant-build-system)
-                  (guix build java-utils)
-                  (guix build maven pom)
-                  (guix build utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "jsr305")
-                       (groupId "com.google.code.findbugs")
-                       (artifactId "jsr305")
-                       (version ,,version))))))
-             #t))
+           (generate-pom.xml "pom.xml" "com.google.code.findbugs" "jsr305" ,version))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "http://findbugs.sourceforge.net/")
@@ -10563,25 +10557,10 @@ this is not a static analysis tool.)")
        #:jdk ,icedtea-8
        #:tests? #f; no tests
        #:source-dir "aopalliance/src/main"
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'create-pom
-           (lambda _
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `((project
-                       (modelVersion "4.0.0")
-                       (name "aopalliance")
-                       (groupId "aopalliance")
-                       (artifactId "aopalliance")
-                       (version "1.0"))))))
-             #t))
+           (generate-pom.xml "pom.xml" "aopalliance" "aopalliance" ,version))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "http://aopalliance.sourceforge.net")
@@ -11706,7 +11685,9 @@ protocol-independent framework to build mail and messaging applications.")
          "**/ClientUtilsTest.java"
          ;; End with errors that seem related to our powermock
          "**/KafkaProducerTest.java"
-         "**/BufferPoolTest.java")))
+         "**/BufferPoolTest.java"
+         ;; Undeterministic failure, seems to affect mostly ci
+         "**/GarbageCollectedMemoryPoolTest.java")))
     (inputs
      `(("java-slf4j-api" ,java-slf4j-api)
        ("java-lz4" ,java-lz4)))
@@ -12180,29 +12161,14 @@ sequences to format your console output which works on every platform.")
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jboss-el-api_spec.jar"
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          ;; the origin of javax.el:javax.el-api is unknown, so we use this package
          ;; instead, which implements the same thing.  We override the pom file
          ;; to "rename" the package so it can be found by maven.
          (add-before 'install 'override-pom
-           (lambda _
-             (delete-file "pom.xml")
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `(project
-                      (modelVersion "4.0.0")
-                      (name "el-api")
-                      (groupId "javax.el")
-                      (artifactId "javax.el-api")
-                      (version "3.0")))))
-             #t))
+           (generate-pom.xml "pom.xml" "javax.el" "javax.el-api" "3.0"
+                             #:name "el-api"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (inputs
@@ -12234,11 +12200,6 @@ JavaServer Pages (JSP).")
        #:jdk ,icedtea-8
        #:source-dir "."
        #:tests? #f; no tests
-       #:modules ((guix build ant-build-system)
-                  (guix build utils)
-                  (guix build maven pom)
-                  (guix build java-utils)
-                  (sxml simple))
        #:phases
        (modify-phases %standard-phases
          ;; the origin of javax.interceptor:javax.interceptor-api is unknown,
@@ -12246,18 +12207,8 @@ JavaServer Pages (JSP).")
          ;; We override the pom file to "rename" the package so it can be found
          ;; by maven.
          (add-before 'install 'override-pom
-           (lambda _
-             (delete-file "pom.xml")
-             (with-output-to-file "pom.xml"
-               (lambda _
-                 (sxml->xml
-                   `(project
-                      (modelVersion "4.0.0")
-                      (name "interceptor-api")
-                      (groupId "javax.interceptor")
-                      (artifactId "javax.interceptor-api")
-                      (version "3.0")))))
-             #t))
+           (generate-pom.xml "pom.xml" "javax.interceptor" "javax.interceptor-api"
+                             "3.0" #:name "interceptor-api"))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (home-page "https://github.com/jboss/jboss-interceptors-api_spec")

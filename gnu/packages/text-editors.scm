@@ -840,14 +840,14 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.21")
+    (version "2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32 "0zmm8212cha22dp1xablj1h4anlnyhjh09n13ckqf6ppb1bkf4gm"))))
+        (base32 "1gl6k1bwrk1y7hjyl4xvlqvmk5crl4jvsk8wrfp7ynbdin6n2i48"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -868,16 +868,14 @@ editors.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* "packages/linux/icons.sh"
                  (("/usr/share")
-                  (string-append out "/share")))
-               #t)))
+                  (string-append out "/share"))))))
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install desktop file.
              (let* ((out (assoc-ref outputs "out"))
                     (apps (string-append out "/share/applications"))
                     (source "TeXmacs/misc/mime/texmacs.desktop"))
-               (install-file source apps)
-               #t)))
+               (install-file source apps))))
          (add-before 'configure 'gzip-flags
            (lambda _
              (substitute* "Makefile.in"

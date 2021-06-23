@@ -17471,3 +17471,227 @@ Memory transactions give freedom from deadlocks, are immune to thread-safety
 bugs and race conditions, provide automatic roll-back on failure, and aim at
 resolving the tension between granularity and concurrency.")
      (license license:llgpl))))
+
+(define-public ecl-stmx
+  (sbcl-package->ecl-package sbcl-stmx))
+
+(define-public cl-stmx
+  (sbcl-package->cl-source-package sbcl-stmx))
+
+(define-public sbcl-binding-arrows
+  ;; Fork of sbcl-arrows that does not have a new tag.
+  (let ((commit "d19364ec8850880ed6e42078ccaa2ed9114dc83a")
+        (revision "1"))
+    (package
+     (name "sbcl-binding-arrows")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phoe/binding-arrows")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hqikgzic7kjq2n1d924yldfm30qz67cmsk6gghi9cbmxkwdlwp8"))))
+     (build-system asdf-build-system/sbcl)
+     (native-inputs
+      `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+     (home-page "https://github.com/phoe/binding-arrows")
+     (synopsis "Threading macros based on binding anonymous variables")
+     (description
+      "This system implements binding threading macros -- a kind of threading
+macros with different semantics than classical, Clojure core threading macros
+or their extension, swiss-arrows.  Two Common Lisp implementations of those are
+@code{arrows} and @code{arrow-macros}.
+
+This system is a fork of @code{arrows} with changes in semantics that make it
+impossible to merge back upstream.")
+     (license license:expat))))
+
+(define-public ecl-binding-arrows
+  (sbcl-package->ecl-package sbcl-binding-arrows))
+
+(define-public cl-binding-arrows
+  (sbcl-package->cl-source-package sbcl-binding-arrows))
+
+(define-public sbcl-atomics
+  ;; No release in years.
+  (let ((commit "9ee0bdebcd2bb9b242671a75460db13fbf45454c")
+        (revision "1"))
+    (package
+      (name "sbcl-atomics")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/atomics")
+               (commit commit)))
+         (file-name (git-file-name "atomics" version))
+         (sha256
+          (base32 "0mp5jdqq0aamdhgnvw149cqqi3zg7dkkibp25qi4rafw1fnpd40z"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (home-page "https://shinmera.github.io/atomics/")
+      (synopsis "Common Lisp portability layer for atomic operations")
+      (description
+       "This is a library for access to atomic operation primitives such as
+compare-and-swap.  It aims to be a rather thin layer over what the
+implementations offer.")
+      (license license:zlib))))
+
+(define-public ecl-atomics
+  (sbcl-package->ecl-package sbcl-atomics))
+
+(define-public cl-atomics
+  (sbcl-package->cl-source-package sbcl-atomics))
+
+(define-public sbcl-cl-mock
+  ;; .asd version only got updated recently, despired the old GitHug "1.0.1" release.
+  (let ((commit "7988dca2093358911b67597a2cd1570c785dfe76"))
+    (package
+      (name "sbcl-cl-mock")
+      (version (git-version "1.0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ferada/cl-mock/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0f40wikcf783jx26ip0nnhwjjfjvjiw7njqsqrb6kaphc8bgw0i1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("trivia" ,sbcl-trivia)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/Ferada/cl-mock")
+      (synopsis "Mocking functions for Common Lisp testing")
+      (description
+       "This small library provides a way to replace the actual implementation
+of either regular or generic functions with mocks.")
+      (license license:agpl3))))
+
+(define-public ecl-cl-mock
+  (sbcl-package->ecl-package sbcl-cl-mock))
+
+(define-public cl-mock
+  (sbcl-package->cl-source-package sbcl-cl-mock))
+
+(define-public sbcl-cl-murmurhash
+  ;; No release.
+  (let ((commit "5433f5e95f1cce63a81259a471150834c6a59364")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-murmurhash")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/ruricolist/cl-murmurhash/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0251r0mpjm0y3qsm4lm7ncvrkxvgwc53spdm1p2mpayhvkkqqsws"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "32-bit version of Murmurhash3 for Common Lisp")
+      (description
+       "This Common Lisp package offers an implementation of the 32-bit
+variant of MurmurHash3 (@url{https://github.com/aappleby/smhasher}), a fast
+non-crytographic hashing algorithm.")
+      (license license:expat))))
+
+(define-public ecl-cl-murmurhash
+  (sbcl-package->ecl-package sbcl-cl-murmurhash))
+
+(define-public cl-murmurhash
+  (sbcl-package->cl-source-package sbcl-cl-murmurhash))
+
+(define-public sbcl-cl-hamt
+  ;; No release
+  (let ((commit "7a99eaaca1f952029def9ad5a2b80a612a712208"))
+    (package
+      (name "sbcl-cl-hamt")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/danshapero/cl-hamt/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ycbd73ykfj5j9sdhlzamyv18qbjj6xqf7fhm4fa0nsyr6sr3rf5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-murmurhash" ,sbcl-cl-murmurhash)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/danshapero/cl-hamt")
+      (synopsis "Dictionary & set data structure using hash array-mapped tries")
+      (description
+       "This library provides purely functional dictionaries and sets in
+Common Lisp based on the hash array-mapped trie data structure.")
+      (license license:bsd-3))))
+
+(define-public ecl-cl-hamt
+  (sbcl-package->ecl-package sbcl-cl-hamt))
+
+(define-public cl-hamt
+  (sbcl-package->cl-source-package sbcl-cl-hamt))
+
+(define-public sbcl-cl-gserver
+  (package
+    (name "sbcl-cl-gserver")
+    (version "1.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mdbergmann/cl-gserver")
+             (commit version)))
+       (file-name (git-file-name "cl-gserver" version))
+       (sha256
+        (base32 "1vkxs6ybi1pkpji2crmhq8c71zg0dn2ji0lcwhs0rivphz5jxk24"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("lparallel" ,sbcl-lparallel)
+       ("cl-speedy-queue" ,sbcl-cl-speedy-queue)
+       ("log4cl" ,sbcl-log4cl)
+       ("str" ,sbcl-cl-str)
+       ("blackbird" ,sbcl-blackbird)
+       ("cl-hamt" ,sbcl-cl-hamt)
+       ("binding-arrows" ,sbcl-binding-arrows)
+       ("atomics" ,sbcl-atomics)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("mock" ,sbcl-cl-mock)))
+    (home-page "https://mdbergmann.github.io/cl-gserver/index.html")
+    (synopsis "Actor framework for easy access to state and async operations")
+    (description
+     "@code{cl-gserver} is a 'message passing' library / framework with actors
+similar to Erlang or Akka.  It supports creating reactive systems for parallel
+computing and event based message handling.")
+    (license license:agpl3)))
+
+(define-public ecl-cl-gserver
+  (sbcl-package->ecl-package sbcl-cl-gserver))
+
+(define-public cl-gserver
+  (sbcl-package->cl-source-package sbcl-cl-gserver))

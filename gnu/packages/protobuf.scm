@@ -298,7 +298,7 @@ structured data.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'add-source-to-load-path 'change-working-directory
+         (add-before 'expand-load-path 'change-working-directory
            (lambda _ (chdir "editors") #t)))))
     (home-page "https://github.com/protocolbuffers/protobuf")
     (synopsis "Protocol buffers major mode for Emacs")

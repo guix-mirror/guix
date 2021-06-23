@@ -292,11 +292,12 @@ methods.  Otherwise apply to only the listed methods.")
    "Name of the policy.")
   (job-private-access
    (string "@OWNER @SYSTEM")
-   "Specifies an access list for a job's private values.  @code{@@ACL} maps to
-the printer's requesting-user-name-allowed or requesting-user-name-denied
-values.  @code{@@OWNER} maps to the job's owner.  @code{@@SYSTEM} maps to the
-groups listed for the @code{system-group} field of the @code{files-config}
-configuration, which is reified into the @code{cups-files.conf(5)} file.
+   "Specifies an access list for a job's private values.
+@code{@@ACL} maps to the printer's requesting-user-name-allowed or
+requesting-user-name-denied values.  @code{@@OWNER} maps to the job's owner.
+@code{@@SYSTEM} maps to the groups listed for the @code{system-group} field of
+the @code{files-configuration}, which is reified into the
+@code{cups-files.conf(5)} file.
 Other possible elements of the access list include specific user names, and
 @code{@@@var{group}} to indicate members of a specific group.  The access list
 may also be simply @code{all} or @code{default}.")
@@ -312,11 +313,11 @@ may also be simply @code{all} or @code{default}.")
 @code{@@ACL} maps to the printer's requesting-user-name-allowed or
 requesting-user-name-denied values.  @code{@@OWNER} maps to the job's owner.
 @code{@@SYSTEM} maps to the groups listed for the @code{system-group} field of
-the @code{files-config} configuration, which is reified into the
-@code{cups-files.conf(5)} file.  Other possible elements of the access list
-include specific user names, and @code{@@@var{group}} to indicate members of a
-specific group.  The access list may also be simply @code{all} or
-@code{default}.")
+the @code{files-configuration}, which is reified into the
+@code{cups-files.conf(5)} file.
+Other possible elements of the access list include specific user names, and
+@code{@@@var{group}} to indicate members of a specific group.  The access list
+may also be simply @code{all} or @code{default}.")
   (subscription-private-values
    (string (string-join '("notify-events" "notify-pull-method"
                           "notify-recipient-uri" "notify-subscriber-user-name"
@@ -617,9 +618,6 @@ policy is @code{retry-job} or @code{retry-current-job}.")
   (keep-alive?
    (boolean #t)
    "Specifies whether to support HTTP keep-alive connections.")
-  (keep-alive-timeout
-   (non-negative-integer 30)
-   "Specifies how long an idle client connection remains open, in seconds.")
   (limit-request-body
    (non-negative-integer 0)
    "Specifies the maximum size of print files, IPP requests, and HTML form

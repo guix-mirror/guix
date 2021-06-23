@@ -81,6 +81,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -3640,7 +3641,7 @@ the SQL language using a syntax that reflects the resulting query.")
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "3.0.0")
+    (version "4.0.1")
     (source
      (origin
        (method git-fetch)
@@ -3650,21 +3651,22 @@ the SQL language using a syntax that reflects the resulting query.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03ngddh3r1g6f9aja2jlfksgvgyzmxmfy4bxvzjrcv5fvl5x8ii0"))))
+         "1lcd9gdpwlrr92rm812a5p4l6zx0arwd0zj72a4ga699s1psz8yv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'enter-source-directory
-           (lambda _ (chdir "cpp") #t))
+           (lambda _ (chdir "cpp")))
          (add-after 'unpack 'set-env
            (lambda _
+             (substitute* "cpp/cmake_modules/ThirdpartyToolchain.cmake"
+               (("set\\(xsimd_SOURCE.*") ""))
              (setenv "BOOST_ROOT" (assoc-ref %build-inputs "boost"))
              (setenv "BROTLI_HOME" (assoc-ref %build-inputs "brotli"))
              (setenv "FLATBUFFERS_HOME" (assoc-ref %build-inputs "flatbuffers"))
-             (setenv "RAPIDJSON_HOME" (assoc-ref %build-inputs "rapidjson"))
-             #t)))
+             (setenv "RAPIDJSON_HOME" (assoc-ref %build-inputs "rapidjson")))))
        #:build-type "Release"
        #:configure-flags
        (list "-DARROW_PYTHON=ON"
@@ -3686,6 +3688,7 @@ the SQL language using a syntax that reflects the resulting query.")
              ;; function, or using pkg-config for packages that do not
              ;; have this feature
              "-DARROW_DEPENDENCY_SOURCE=SYSTEM"
+             "-Dxsimd_SOURCE=SYSTEM"
 
              ;; Split output into its component packages.
              (string-append "-DCMAKE_INSTALL_PREFIX="
@@ -3744,6 +3747,7 @@ the SQL language using a syntax that reflects the resulting query.")
        ("re2" ,re2)
        ("snappy" ,snappy)
        ("utf8proc" ,utf8proc)
+       ("xsimd" ,xsimd)
        ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (native-inputs

@@ -127,6 +127,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -11577,6 +11578,69 @@ and toolbars.")
      "Setzer is a simple yet full-featured LaTeX editor written in Python with
 GTK+.  It integrates well with the GNOME desktop environment.")
     (license license:gpl3+)))
+
+(define-public apostrophe
+  (package
+    (name "apostrophe")
+    (version "2.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/somas/apostrophe")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qzy3zhi18wf42m034s8kcmx9gl05j620x3hf6rnycq2fvy7g4gz"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-meson
+           (lambda _
+             (substitute* "build-aux/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/apostrophe"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
+                 `("PATH" prefix (,(string-append (assoc-ref inputs "pandoc")
+                                                  "/bin"))))
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("libhandy" ,libhandy)
+       ("pandoc" ,pandoc)
+       ("python-chardet" ,python-chardet)
+       ("python-levenshtein" ,python-levenshtein)
+       ("python-regex" ,python-regex)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyenchant" ,python-pyenchant)
+       ("python-pypandoc" ,python-pypandoc)
+       ("webkitgtk" ,webkitgtk)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.gnome.org/somas/apostrophe")
+    (synopsis "Markdown editor written in Python with GTK+")
+    (description "Apostrophe is a GTK+ based distraction free Markdown editor.
+It uses pandoc as back-end for parsing Markdown.")
+    (license license:gpl3)))
 
 (define-public libratbag
   (package

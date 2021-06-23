@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
@@ -2286,6 +2286,39 @@ computer games, 3D authoring tools and simulation tools.")
     (synopsis "Fast and lightweight 2D game physics library")
     (description "Chipmunk is a simple, lightweight, fast and portable 2D
 rigid body physics library written in C.")
+    (license license:expat)))
+
+(define-public box2d
+  (package
+    (name "box2d")
+    (version "2.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/erincatto/box2d")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ja9cahf3z9zzrdaqcw44lpjmqf2ir2g4chwz0iwqwlkckwhpgvh"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Bundled code only used for the testbed.
+           (delete-file-recursively "extern")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:test-target "unit_test"
+       #:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DBOX2D_BUILD_TESTBED=OFF")))
+    (inputs
+     `(("libx11" ,libx11)))
+    (home-page "https://box2d.org/")
+    (synopsis "2D physics engine for games")
+    (description "Box2D is a 2D rigid body simulation library for games.
+Programmers can use it in their games to make objects move in realistic ways and
+make the game world more interactive.  From the game engine's point of view, a
+physics engine is just a system for procedural animation.")
     (license license:expat)))
 
 (define-public libtcod

@@ -424,9 +424,9 @@ it a convenient format to store user input files.")
              ;; /etc/services, which is not present in build environment.
              (substitute* "src/kj/async-io-test.c++" ((":http") ":80"))
              #t))
-         (add-before 'check 'use-tmp-for-tempory-files
+         (add-before 'check 'use-tmp-for-temporary-files
            (lambda _
-             ;; Use /tmp for tempory files, as the default /var/tmp directory
+             ;; Use /tmp for temporary files, as the default /var/tmp directory
              ;; doesn't exist.
              (substitute* "src/kj/filesystem-disk-test.c++"
                (("VAR\\_TMP \"/var/tmp\"")

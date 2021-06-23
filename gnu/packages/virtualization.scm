@@ -1026,10 +1026,10 @@ manage system or application containers.")
     (inputs
      `(("fuse" ,fuse)))
     (build-system gnu-build-system)
-    (synopsis "FUSE based filesystem for LXC")
-    (description "LXCFS is a small FUSE filesystem written with the intention
+    (synopsis "FUSE-based file system for LXC")
+    (description "LXCFS is a small FUSE file system written with the intention
 of making Linux containers feel more like a virtual machine.
-It started as a side-project of LXC but is useable by any runtime.")
+It started as a side project of LXC but can be used by any run-time.")
     (license license:lgpl2.1+)))
 
 (define-public libvirt

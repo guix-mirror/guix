@@ -42,7 +42,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
@@ -86,6 +86,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -2988,7 +2989,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.22.1")
+    (version "6.26.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2997,11 +2998,12 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jxv848ykw0csbnayrd710ylw46m0picfv7rpzsxz1vh4jzs395k"))))
+                "1gz79xvs5jrzqhwhfk0dqdd3xiavnjp4q957h7nb02rij32byb39"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags '("CC=gcc" "CXX=g++")
+       #:make-flags '(,(string-append "CC=" (cc-for-target))
+                      ,(string-append "CXX=" (cxx-for-target)))
        #:configure-flags
        (list "--enable-gpl3"
              "--enable-gpl")
@@ -3018,6 +3020,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("alsa-plugins" ,alsa-plugins "pulseaudio")
        ("ffmpeg" ,ffmpeg)
        ("fftw" ,fftw)
        ("frei0r-plugins" ,frei0r-plugins)
@@ -3026,6 +3029,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
+       ("libebur128" ,libebur128)
        ("libexif" ,libexif)
        ("libvorbis" ,libvorbis)
        ("rubberband" ,rubberband)
@@ -3033,8 +3037,11 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
-       ("sdl" ,sdl)
-       ("sox" ,sox)))
+       ("rtaudio" ,rtaudio)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sox" ,sox)
+       ("vidstab" ,vidstab)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://www.mltframework.org/")
@@ -3045,7 +3052,7 @@ broadcasting.  It provides a toolkit for broadcasters, video editors, media
 players, transcoders, web streamers and many more types of applications.  The
 functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
-    (license license:gpl3)))
+    (license license:lgpl2.1+)))
 
 (define-public v4l-utils
   (package
@@ -4604,6 +4611,82 @@ API.  It includes bindings for Python, Ruby, and other languages.")
     (description "OpenShot takes your videos, photos, and music files and
 helps you create the film you have always dreamed of.  Easily add sub-titles,
 transitions, and effects and then export your film to many common formats.")
+    (license license:gpl3+)))
+
+(define-public shotcut
+  (package
+    (name "shotcut")
+    (version "21.03.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mltframework/shotcut")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jb488vynn0vmq22z51bg4hb4617732nva9rg52lzl89v5n8gmsi"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out)
+                       "QMAKE_LRELEASE=lrelease"
+                       "QMAKE_LUPDATE=lupdate"
+                       "shotcut.pro"))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (frei0r (assoc-ref inputs "frei0r-plugins"))
+                    (ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (jack (assoc-ref inputs "jack"))
+                    (sdl2 (assoc-ref inputs "sdl2")))
+               (wrap-program (string-append out "/bin/shotcut")
+                 `("PATH" ":" prefix
+                   ,(list (string-append ffmpeg "/bin")))
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   ,(list (string-append jack "/lib" ":" sdl2 "/lib")))
+                 `("FREI0R_PATH" ":" =
+                   (,(string-append frei0r "/lib/frei0r-1/")))
+                 `("MLT_PREFIX" ":" =
+                   (,(assoc-ref inputs "mlt")))))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("frei0r-plugins" ,frei0r-plugins)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lame" ,lame)
+       ("libvpx" ,libvpx)
+       ("libx264" ,libx264)
+       ("mlt" ,mlt)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase-5)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qtwebsockets" ,qtwebsockets)
+       ("qtx11extras" ,qtx11extras)
+       ("sdl2" ,sdl2)))
+    (home-page "https://www.shotcut.org/")
+    (synopsis "Video editor built on the MLT framework")
+    (description
+     "Shotcut is a video editor built on the MLT framework.  Features include
+a wide range of formats through @code{ffmpeg}, 4k resolution support, webcam
+and audio capture, network stream playback, and many more.")
     (license license:gpl3+)))
 
 (define-public dav1d

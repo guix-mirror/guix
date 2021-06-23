@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017, 2021 Eric Bavier <bavier@posteo.net>
@@ -3514,14 +3514,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "5.3.1")
+    (version "5.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "0pb4zvkfxfijkpgd1b86xjsqql97ssf1knbd1v53wkg1qm9cgsmq"))))
+         "0pm440pmpvgv5rbbnm8hk4qga5a292kvlm1bh3x2nwr8pb5p8xv0"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
@@ -4916,8 +4916,7 @@ between language specification and implementation aspects.")
          "1ak9dmjja0q90a7fsxli51ypcwssh8c4pb6f8wkrsnf2xgdk6dy9"))))
     (build-system python-build-system)
     (inputs
-     `(("openblas" ,openblas)
-       ("lapack" ,lapack)))
+     `(("openblas" ,openblas)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
@@ -5859,6 +5858,28 @@ operators such as union, intersection, and difference.")
 (define-public python2-pysnptools
   (package-with-python2 python-pysnptools))
 
+(define-public python-pykdtree
+  (package
+    (name "python-pykdtree")
+    (version "1.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pykdtree" version))
+       (sha256
+        (base32 "0p8n2ljdacfixkiw092974dmhy4s1c0h032ii1z9kwi9h5h5rgmy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/storpipfugl/pykdtree")
+    (synopsis "Fast kd-tree implementation with OpenMP-enabled queries")
+    (description
+     "@code{pykdtree} is a kd-tree implementation for fast nearest neighbour
+search in Python.")
+    (license license:lgpl3+)))
+
 (define-public python-wurlitzer
   (package
     (name "python-wurlitzer")
@@ -6204,13 +6225,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.12.2")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "1r68zh8whp8wg4brjf5vha8h1ly8pjqyb37pfw91hyxfn6cm9wsz"))))
+        (base32 "1di5bbh2mr8m1aydky8ix12pkybrd0cvs8xqf5s2y1xa349r514l"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
@@ -14322,17 +14343,40 @@ focus on event-based network programming and multiprotocol integration.")
 (define-public python-pika
   (package
     (name "python-pika")
-    (version "0.12.0")
+    (version "1.2.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (pypi-uri "pika" version))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/pika/pika")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0ld7akgm93s8pfa4dsx9qlzlhj76zspbr5m9ms0ns09yd2w4aq9h"))))
+          "0cm45xydk2jigydwszwik89qlbk6l3l18sxhzppzqmxw2rdkm22s"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-live-tests
+                    (lambda _
+                      ;; Disable tests that require RabbitMQ, which is not
+                      ;; yet available in Guix.
+                      (substitute* "setup.cfg"
+                        (("tests/unit,tests/acceptance")
+                         "tests/unit"))
+                      (with-directory-excursion "tests"
+                        (for-each delete-file
+                                '("unit/base_connection_tests.py"
+                                  "unit/threaded_test_wrapper_test.py")))))
+                  (replace 'check
+                    (lambda _
+                      (invoke "nosetests"))))))
     (native-inputs
-     `(("python-pyev" ,python-pyev)
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+
+       ;; These are optional at runtime, and provided here for tests.
+       ("python-gevent" ,python-gevent)
        ("python-tornado" ,python-tornado)
        ("python-twisted" ,python-twisted)))
     (home-page "https://pika.readthedocs.org")
@@ -14342,9 +14386,6 @@ focus on event-based network programming and multiprotocol integration.")
 Protocol) 0-9-1 protocol that tries to stay fairly independent of the underlying
 network support library.")
     (license license:bsd-3)))
-
-(define-public python2-pika
-  (package-with-python2 python-pika))
 
 (define-public python-ply
   (package
@@ -16584,14 +16625,14 @@ can even create animations with the cursor controls.")
 (define-public python-ddt
   (package
     (name "python-ddt")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ddt" version))
        (sha256
         (base32
-         "1niqpzc26sxdbyi46r07n4pma5fjx6crww2539vpfmsf0w6yg585"))))
+         "0y2k756qjz1rhpivi60hy29b4bf0bh3wck39i1mn6pkil9k779k4"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -22680,8 +22721,7 @@ standard error channel (stderr) in your program.")
          ("python-mock" ,python-mock)
          ("python-pytest" ,python-pytest)
          ("python-pytest-cov" ,python-pytest-cov)
-         ("python-pytest-xdist" ,python-pytest-xdist)
-         ("python-tox" ,python-tox)))
+         ("python-pytest-xdist" ,python-pytest-xdist)))
       (home-page "https://github.com/neithere/argh/")
       (synopsis "Argparse wrapper with natural syntax")
       (description

@@ -6,6 +6,8 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +32,7 @@
   #:use-module (gnu services web)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
+  #:use-module (guix deprecation)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
@@ -288,7 +291,7 @@ The other options should be self-descriptive."
   ;; integer
   (port-number           openssh-configuration-port-number
                          (default 22))
-  ;; Boolean | 'without-password
+  ;; Boolean | 'prohibit-password
   (permit-root-login     openssh-configuration-permit-root-login
                          (default #f))
   ;; Boolean
@@ -441,7 +444,11 @@ of user-name/file-like tuples."
                    #$(match (openssh-configuration-permit-root-login config)
                        (#t "yes")
                        (#f "no")
-                       ('without-password "without-password")))
+                       ('without-password (warn-about-deprecation
+                                           'without-password #f
+                                           #:replacement 'prohibit-password)
+                                          "prohibit-password")
+                       ('prohibit-password "prohibit-password")))
            (format port "PermitEmptyPasswords ~a\n"
                    #$(if (openssh-configuration-allow-empty-passwords? config)
                          "yes" "no"))

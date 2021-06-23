@@ -1,0 +1,66 @@
+From 295fa956f899af37acb6bda9c76ad77748eb9a4a Mon Sep 17 00:00:00 2001
+From: Ervin Hegedus <airween@gmail.com>
+Date: Sat, 5 Jun 2021 09:23:06 +0200
+Subject: [PATCH] Quick fix for changing of Hamlib's FILPATHLEN macro
+
+This patch was prepared for Guix by Jack Hill <jackhill@jackhill.us> by
+squashing together the changes from upstream #268
+<https://github.com/Tlf/tlf/pull/268>.
+
+It allows the released version of Tlf to build against the version 4.2 of
+hamlib in Guix.
+
+---
+ src/sendqrg.c |  6 +++---
+ src/sendqrg.h | 10 ++++++++++
+ 2 files changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/src/sendqrg.c b/src/sendqrg.c
+index ceeb356..5d4420e 100644
+--- a/src/sendqrg.c
++++ b/src/sendqrg.c
+@@ -87,7 +87,7 @@ int init_tlf_rig(void) {
+ 
+     rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
+     strncpy(my_rig->state.rigport.pathname, rigportname,
+-	    FILPATHLEN - 1);
++	    TLFFILPATHLEN - 1);
+ 
+     caps = my_rig->caps;
+ 
+@@ -104,9 +104,9 @@ int init_tlf_rig(void) {
+     if (dcd_type != RIG_DCD_NONE)
+ 	my_rig->state.dcdport.type.dcd = dcd_type;
+     if (ptt_file)
+-	strncpy(my_rig->state.pttport.pathname, ptt_file, FILPATHLEN);
++	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
+     if (dcd_file)
+-	strncpy(my_rig->state.dcdport.pathname, dcd_file, FILPATHLEN);
++	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
+ 
+     my_rig->state.rigport.parm.serial.rate = serial_rate;
+ 
+diff --git a/src/sendqrg.h b/src/sendqrg.h
+index 8c53f2e..1ef85a6 100644
+--- a/src/sendqrg.h
++++ b/src/sendqrg.h
+@@ -23,6 +23,16 @@
+ 
+ #include <hamlib/rig.h>
+ 
++#ifdef HAMLIB_FILPATHLEN
++  #define TLFFILPATHLEN HAMLIB_FILPATHLEN
++#else
++  #ifdef FILPATHLEN
++  #define TLFFILPATHLEN FILPATHLEN
++  #else
++  #error "(HAMLIB_)FILPATHLEN macro not found"
++  #endif
++#endif
++
+ int init_tlf_rig(void);
+ void close_tlf_rig(RIG *my_rig);
+ 
+-- 
+2.32.0
+

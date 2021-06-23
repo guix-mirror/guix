@@ -29,7 +29,6 @@
             system-service-packages
 
             desktop-system-service?
-            networking-system-service?
 
             %system-services
             system-services->configuration))
@@ -38,7 +37,7 @@
   system-service make-system-service
   system-service?
   (name            system-service-name)           ;string
-  (type            system-service-type)           ;'desktop | 'networking
+  (type            system-service-type)           ;'desktop|'networking|…
   (recommended?    system-service-recommended?    ;Boolean
                    (default #f))
   (snippet         system-service-snippet         ;list of sexps
@@ -46,7 +45,6 @@
   (packages        system-service-packages        ;list of sexps
                    (default '())))
 
-;; This is the list of desktop environments supported as services.
 (define %system-services
   (let-syntax ((desktop-environment (syntax-rules ()
                                       ((_ fields ...)
@@ -56,6 +54,7 @@
                (G_ (syntax-rules ()               ;for xgettext
                      ((_ str) str))))
     (list
+     ;; This is the list of desktop environments supported as services.
      (desktop-environment
       (name "GNOME")
       (snippet '((service gnome-desktop-service-type))))
@@ -123,10 +122,6 @@
 (define (desktop-system-service? service)
   "Return true if SERVICE is a desktop environment service."
   (eq? 'desktop (system-service-type service)))
-
-(define (networking-system-service? service)
-  "Return true if SERVICE is a desktop environment service."
-  (eq? 'networking (system-service-type service)))
 
 (define (system-services->configuration services)
   "Return the configuration field for SERVICES."

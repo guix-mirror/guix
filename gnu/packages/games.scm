@@ -396,14 +396,14 @@ The game includes a built-in editor so you can design and share your own maps.")
 (define-public armagetronad
   (package
     (name "armagetronad")
-    (version "0.2.9.0.1")
+    (version "0.2.9.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/armagetronad/stable/"
                                   version "/armagetronad-" version ".tbz"))
               (sha256
                (base32
-                "19rfhlg4gp0r7k1j8v4iw20325ciy156nmzax4xikmw22c6nmxcz"))))
+                "18gn4sg4j5sw38ngb90sl50raliplrsgjcvy8fjwry733k0cgdjr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -946,7 +946,7 @@ allows users to brew while offline.")
 (define-public corsix-th
   (package
     (name "corsix-th")
-    (version "0.64")
+    (version "0.65")
     (source
      (origin
        (method git-fetch)
@@ -955,7 +955,7 @@ allows users to brew while offline.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0chh9cv2kdc39sr0x8hclcyzd8dz2y6grgagqzkvr7j570wa5cqh"))))
+        (base32 "0hp7da7b73dpn1h22rw3h8w6aaj9azn18qnp3ap3lrlqhj4fzcb3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4164,7 +4164,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.16")
+    (version "1.14.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -4173,7 +4173,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "1d9hq3dcx0sgs2v4400rg2nw98v46m7bwiqqjv8z8n7vw8kx8lhg"))))
+                "1qc4ylhc4ab51milclzhflpmzw6bg35knwqaj3b157700jkcniin"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -5203,15 +5203,16 @@ tactics.")
 (define-public widelands
   (package
     (name "widelands")
-    (version "21")
+    (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://launchpad.net/widelands/"
-                           "build" version "/build" version "/+download/"
-                           "widelands-build" version "-source.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/widelands/widelands")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0mz3jily0w1zxxqbnkqrp6hl88xhrwzbil9crq7gpcwidx60w7k0"))
+        (base32 "1hw51binnbia15mj1gzx1cbk3cw9r91sisqci2qzcy4ahxiadnw0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5251,7 +5252,8 @@ tactics.")
      `(("gettext" ,gettext-minimal)
        ("python" ,python-wrapper)))
     (inputs
-     `(("boost" ,boost)
+     `(("curl" ,curl)
+       ("boost" ,boost)
        ("glew" ,glew)
        ("icu4c" ,icu4c)
        ("libpng" ,libpng)
@@ -5270,8 +5272,8 @@ nothing but your headquarters, where all your resources are stored.
 In the course of the game, you will build an ever growing settlement.  Every
 member of your clan will do his or her part to produce more resources---wood,
 food, iron, gold and more---to further this growth.  The economic network is
-complex and different in the four tribes (Barbarians, Empire, Atlanteans, and
-Frisians).
+complex and different in the five tribes (Barbarians, Empire, Atlanteans,
+Frisians and Amazons).
 
 As you are not alone in the world, you will meet other clans sooner or later.
 Some of them may be friendly and you may eventually trade with them.  However,
@@ -5288,6 +5290,12 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                    license:expat           ;src/third_party/eris
                    license:silofl1.1       ;Widelands.ttf
                    license:cc-by-sa3.0)))) ;some music files
+
+(define-public widelands-21
+  (package
+    (inherit widelands)
+    (version "21")
+    (properties `((superseded . ,widelands)))))
 
 (define-public starfighter
   (package
@@ -7499,7 +7507,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.9.0")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -7507,7 +7515,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
              "mirror://sourceforge/odamex/Odamex/" version "/"
              "odamex-src-" version ".tar.bz2"))
        (sha256
-        (base32 "0yfrvx8zb3chy47fyz4nik6gbh0y5608yvld4gz4y8l158qk71y1"))))
+        (base32 "0vmw9ijb6n4wrxjxixakn7l6a6carnvs9wbbzb4vcq1brbzyrb0p"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
     (native-inputs

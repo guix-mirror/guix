@@ -85,6 +85,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -2426,6 +2427,98 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 
 (define-public python2-pyliblo
   (package-with-python2 python-pyliblo))
+
+(define-public python-soundfile
+  (package
+    (name "python-soundfile")
+    (version "0.10.3.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "SoundFile" version))
+       (sha256
+        (base32
+         "0yqhrfz7xkvqrwdxdx2ydy4h467sk7z3gf984y1x2cq7cm1gy329"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-numpy" ,python-numpy)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (arguments
+     `(#:tests? #f ; missing OGG support
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "soundfile.py"
+               (("_find_library\\('sndfile'\\)")
+                (string-append "\"" (assoc-ref inputs "libsndfile")
+                               "/lib/libsndfile.so\""))))))))
+    (home-page "https://github.com/bastibe/SoundFile")
+    (synopsis "Python bindings for libsndfile")
+    (description "This package provides python bindings for libsndfile based on
+CFFI and NumPy.")
+    (license license:expat)))
+
+(define-public python-python3-midi
+  (package
+    (name "python-python3-midi")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python3_midi" version))
+       (sha256
+        (base32
+         "1z9j1w7mpn3xhkcpxmqm5rvmj6nffb5rf14bv7n3sdh07nf6n7sf"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/NFJones/python3-midi")
+    (synopsis "Python MIDI API")
+    (description "This package provides a python API to read and write MIDI
+files.")
+    (license license:expat)))
+
+(define-public audio-to-midi
+  (package
+    (name "audio-to-midi")
+    (version "2020.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/NFJones/audio-to-midi")
+              (commit (string-append "v" version))))
+        (sha256
+          (base32
+            "12wf17abn3psbsg2r2lk0xdnk8n5cd5rrvjlpxjnjfhd09n7qqgm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-cffi" ,python-cffi)
+        ("python-cython" ,python-cython)
+        ("python-numpy" ,python-numpy)
+        ("python-progressbar2" ,python-progressbar2)
+        ("python-pycparser" ,python-pycparser)
+        ("python-python3-midi" ,python-python3-midi)
+        ("python-soundfile" ,python-soundfile)))
+    (native-inputs
+     `(("libsndfile" ,libsndfile)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-versions
+           (lambda _
+             (substitute* "requirements.txt" (("==") ">=")))))))
+    (home-page "https://github.com/NFJones/audio-to-midi")
+    (synopsis "Convert audio to multichannel MIDI.")
+    (description "@command{audio-to-midi} converts audio files to multichannel
+MIDI files.  It accomplishes this by performing FFTs on all channels of the
+audio data at user-specified time steps.  It then separates the resulting
+frequency analysis into equivalence classes which correspond to the twelve tone
+scale; the volume of each class being the average volume of its constituent
+frequencies.  This data is then formatted to MIDI and written to disk.")
+    (license license:expat)))
 
 (define-public lilv
   (package

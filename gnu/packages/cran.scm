@@ -17760,7 +17760,8 @@ colored by the number of neighboring points.  This is useful to visualize the
     (properties `((upstream-name . "arrow")))
     (build-system r-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     `(("apache-arrow" ,apache-arrow "lib")
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-bit64" ,r-bit64)

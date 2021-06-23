@@ -6205,6 +6205,80 @@ classification (assignment) methods.  It also contains a Shiny application for
 interactive exploration of results.")
     (license license:gpl2+)))
 
+(define-public r-residualmatrix
+  (package
+    (name "r-residualmatrix")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ResidualMatrix" version))
+       (sha256
+        (base32
+         "0p7va19aw0j6anx7ck879kbi5cn7dy712h5ia94adr38ssismv1v"))))
+    (properties
+     `((upstream-name . "ResidualMatrix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/LTLA/ResidualMatrix")
+    (synopsis "Create a DelayedMatrix of regression residuals")
+    (description
+     "This package implements tools for delayed computation of a matrix of
+residuals after fitting a linear model to each column of an input matrix.  It
+also supports partial computation of residuals where selected factors are to
+be preserved in the output matrix.  It implements a number of efficient
+methods for operating on the delayed matrix of residuals, most notably matrix
+multiplication and calculation of row/column sums or means.")
+    (license license:gpl3)))
+
+(define-public r-batchelor
+  (package
+    (name "r-batchelor")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "batchelor" version))
+       (sha256
+        (base32
+         "1xm204wp3m3mmlc1s59lscbbjvwm5nj32vvf16njcg7pb32lsiqa"))))
+    (properties `((upstream-name . "batchelor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-residualmatrix" ,r-residualmatrix)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scaledmatrix" ,r-scaledmatrix)
+       ("r-scuttle" ,r-scuttle)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/batchelor")
+    (synopsis "Single-Cell Batch Correction Methods")
+    (description
+     "This package implements a variety of methods for batch correction of
+single-cell (RNA sequencing) data.  This includes methods based on detecting
+mutually nearest neighbors, as well as several efficient variants of linear
+regression of the log-expression values.  Functions are also provided to
+perform global rescaling to remove differences in depth between batches, and
+to perform a principal components analysis that is robust to differences in
+the numbers of cells across batches.")
+    (license license:gpl3)))
+
 (define-public r-mast
   (package
     (name "r-mast")
@@ -6297,10 +6371,44 @@ tasks on single cell expression data.  It is designed to work with RNA-Seq and
 qPCR data, but could be used with other types as well.")
     (license license:artistic2.0)))
 
+(define-public r-leidenbase
+  (let ((commit "430f22af6982cc7d2e6e77f6b0df47bc970dcbce")
+        (revision "1"))
+    (package
+      (name "r-leidenbase")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cole-trapnell-lab/leidenbase")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ylqsmdpv4xq6f6ldxvwkhk33a9i1jcgk60zvksk3iplykfzd6c0"))))
+      (properties `((upstream-name . "leidenbase")))
+      (build-system r-build-system)
+      (inputs
+       `(("zlib" ,zlib)))
+      (native-inputs
+       `(("gfortran" ,gfortran)))
+      (propagated-inputs
+       `(("r-igraph" ,r-igraph)))
+      (home-page "https://github.com/cole-trapnell-lab/leidenbase")
+      (synopsis "R and C wrappers to run the Leiden find_partition function")
+      (description
+       "This package provides an R to C interface that runs the Leiden
+community detection algorithm to find a basic partition.  It runs the
+equivalent of the @code{find_partition} function.  This package includes the
+required source code files from the official Leidenalg distribution and
+several functions from the R igraph package.")
+      (license license:gpl3+))))
+
 (define-public r-monocle3
   (package
     (name "r-monocle3")
-    (version "0.1.2")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -6310,10 +6418,12 @@ qPCR data, but could be used with other types as well.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1cjxqfw3qvy269hsf5v80d4kshl932wrl949iayas02saj6f70ls"))))
+         "16vpvlbms8fdvpfwzcig0rkg2mxnsq1h80d2l7q3953wm91qc9x4"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biobase" ,r-biobase)
+     `(("r-assertthat" ,r-assertthat)
+       ("r-batchelor" ,r-batchelor)
+       ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-delayedmatrixstats" ,r-delayedmatrixstats)
        ("r-dplyr" ,r-dplyr)
@@ -6323,6 +6433,7 @@ qPCR data, but could be used with other types as well.")
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-igraph" ,r-igraph)
        ("r-irlba" ,r-irlba)
+       ("r-leidenbase" ,r-leidenbase)
        ("r-limma" ,r-limma)
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
@@ -6342,6 +6453,7 @@ qPCR data, but could be used with other types as well.")
        ("r-reshape2" ,r-reshape2)
        ("r-reticulate" ,r-reticulate)
        ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-rsample" ,r-rsample)
        ("r-rtsne" ,r-rtsne)
        ("r-shiny" ,r-shiny)
        ("r-slam" ,r-slam)

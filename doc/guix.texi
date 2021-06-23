@@ -3738,7 +3738,7 @@ other substitute server.
 @cindex access control list (ACL), for substitutes
 @cindex ACL (access control list), for substitutes
 To allow Guix to download substitutes from @code{@value{SUBSTITUTE-SERVER-1}}, @code{@value{SUBSTITUTE-SERVER-2}} or a mirror, you
-must add the releavnt public key to the access control list (ACL) of archive
+must add the relevant public key to the access control list (ACL) of archive
 imports, using the @command{guix archive} command (@pxref{Invoking guix
 archive}).  Doing so implies that you trust the substitute server to not
 be compromised and to serve genuine substitutes.
@@ -17100,7 +17100,7 @@ shell daemon, @command{sshd}.  Its value must be an
 (service openssh-service-type
          (openssh-configuration
            (x11-forwarding? #t)
-           (permit-root-login 'without-password)
+           (permit-root-login 'prohibit-password)
            (authorized-keys
              `(("alice" ,(local-file "alice.pub"))
                ("bob" ,(local-file "bob.pub"))))))
@@ -17134,7 +17134,7 @@ TCP port on which @command{sshd} listens for incoming connections.
 @item @code{permit-root-login} (default: @code{#f})
 This field determines whether and when to allow logins as root.  If
 @code{#f}, root logins are disallowed; if @code{#t}, they are allowed.
-If it's the symbol @code{'without-password}, then root logins are
+If it's the symbol @code{'prohibit-password}, then root logins are
 permitted but not with password-based authentication.
 
 @item @code{allow-empty-passwords?} (default: @code{#f})
@@ -18735,12 +18735,6 @@ Specifies whether to support HTTP keep-alive connections.
 Defaults to @samp{#t}.
 @end deftypevr
 
-@deftypevr {@code{cups-configuration} parameter} non-negative-integer keep-alive-timeout
-Specifies how long an idle client connection remains open, in seconds.
-
-Defaults to @samp{30}.
-@end deftypevr
-
 @deftypevr {@code{cups-configuration} parameter} non-negative-integer limit-request-body
 Specifies the maximum size of print files, IPP requests, and HTML form
 data.  A limit of 0 disables the limit check.
@@ -18967,7 +18961,7 @@ Specifies an access list for a job's private values.  @code{@@ACL} maps
 to the printer's requesting-user-name-allowed or
 requesting-user-name-denied values.  @code{@@OWNER} maps to the job's
 owner.  @code{@@SYSTEM} maps to the groups listed for the
-@code{system-group} field of the @code{files-config} configuration,
+@code{system-group} field of the @code{files-configuration},
 which is reified into the @code{cups-files.conf(5)} file.  Other
 possible elements of the access list include specific user names, and
 @code{@@@var{group}} to indicate members of a specific group.  The
@@ -18989,7 +18983,7 @@ Specifies an access list for a subscription's private values.
 @code{@@ACL} maps to the printer's requesting-user-name-allowed or
 requesting-user-name-denied values.  @code{@@OWNER} maps to the job's
 owner.  @code{@@SYSTEM} maps to the groups listed for the
-@code{system-group} field of the @code{files-config} configuration,
+@code{system-group} field of the @code{files-configuration},
 which is reified into the @code{cups-files.conf(5)} file.  Other
 possible elements of the access list include specific user names, and
 @code{@@@var{group}} to indicate members of a specific group.  The
@@ -29369,7 +29363,7 @@ cluster node that supports multiple storage backends, and installs the
                  ;; Ganeti uses SSH to communicate between nodes.
                  (service openssh-service-type
                           (openssh-configuration
-                           (permit-root-login 'without-password)))
+                           (permit-root-login 'prohibit-password)))
 
                  (service ganeti-service-type
                           (ganeti-configuration

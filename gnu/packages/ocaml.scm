@@ -647,7 +647,14 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
        #:make-flags
        (list (string-append "LIBDIR="
                             (assoc-ref %outputs "out")
-                            "/lib/ocaml/site-lib"))))
+                            "/lib/ocaml/site-lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-script
+           (lambda _
+             (substitute* "applications/dose-tests.py"
+               (("warning\\(")
+                "from warnings import warn\nwarn(")))))))
     (propagated-inputs
       `(("ocaml-graph" ,ocaml-graph)
         ("ocaml-cudf" ,ocaml-cudf)
@@ -1030,7 +1037,7 @@ Emacs.")
 (define-public ocaml-menhir
   (package
     (name "ocaml-menhir")
-    (version "20200211")
+    (version "20210419")
     (source
      (origin
        (method git-fetch)
@@ -1039,7 +1046,7 @@ Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "019izf51kdc7pzkw68zg8a2alc8lxw1gwdp7in970mr90n16b5zj"))))
+        (base32 "0jcbr7s3iwfr7xxfybs3h407g76yfp5yq5r9i0wg2ahvvbqh03ky"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -3086,39 +3093,41 @@ every compliant installation of OCaml and organize these libraries into a
 hierarchy of modules.")
     (license license:lgpl2.1+)))
 
-(define-public ocaml4.07-pcre
+(define-public ocaml-pcre
   (package
-    (name "ocaml4.07-pcre")
-    (version "7.4.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/mmottl/pcre-ocaml")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "11sd8g668h48790lamz0riw9jgnfkaif5qdfa0akcndwa6aj07jf"))))
+    (name "ocaml-pcre")
+    (version "7.4.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/mmottl/pcre-ocaml")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "11mck879p5zvkghps4ky8yslm0isgz52d84adl0dmcfxv2ibvcym"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     ;; No tests.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("dune-configurator" ,dune-configurator)
+       ("pcre" ,pcre)))
     (native-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("pcre:bin" ,pcre "bin")))
-    (propagated-inputs `(("pcre" ,pcre)))
+     `(("pcre:bin" ,pcre "bin")))
     (home-page "https://mmottl.github.io/pcre-ocaml")
-    (synopsis "Bindings to the Perl Compatibility Regular Expressions library")
-    (description "Pcre-ocaml offers library functions for string pattern
-matching and substitution, similar to the functionality offered by the Perl
-language.")
-    (license license:lgpl2.1+))); with the OCaml link exception
+    (synopsis
+      "Bindings to the Perl Compatibility Regular Expressions library")
+    (description "Pcre-ocaml offers library functions for string
+pattern matching and substitution, similar to the functionality
+offered by the Perl language.")
+    ;; With static linking exception
+    (license license:lgpl2.1+)))
 
-(define-public ocaml4.07-expect
+(define-public ocaml-expect
   (package
-    (name "ocaml4.07-expect")
+    (name "ocaml-expect")
     (version "0.0.6")
     (source (origin
               (method url-fetch)
@@ -3127,21 +3136,20 @@ language.")
                (base32
                 "098qvg9d4yrqzr5ax291y3whrpax0m3sx4gi6is0mblc96r9yqk0"))))
     (arguments
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib))
+     `(#:tests? #f))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))
-       ("ocaml-num" ,(package-with-ocaml4.07 ocaml-num))
-       ("ocaml-pcre" ,ocaml4.07-pcre)
-       ("ounit" ,(package-with-ocaml4.07 ocaml-ounit))))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-num" ,ocaml-num)
+       ("ocaml-pcre" ,ocaml-pcre)
+       ("ounit" ,ocaml-ounit)))
     (propagated-inputs
-     `(("batteries" ,(package-with-ocaml4.07 ocaml-batteries))))
+     `(("batteries" ,ocaml-batteries)))
     (home-page "https://forge.ocamlcore.org/projects/ocaml-expect/")
     (synopsis "Simple implementation of expect")
-    (description "Help building unitary testing of interactive program.  You
-can match the question using a regular expression or a timeout.")
+    (description "This package provides utilities for building unitary testing
+of interactive program.  You can match the question using a regular expression
+or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
 
 (define-public ocaml-stdlib-shims
@@ -3452,6 +3460,7 @@ JSON.")
        (uri (git-reference
              (url home-page)
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "10bf28my1yhj8a2d7bkgbna9j20wq0ghp92k926y29bmjj2qh0l7"))))
@@ -4539,7 +4548,7 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
 (define-public ocaml-dot-merlin-reader
   (package
     (name "ocaml-dot-merlin-reader")
-    (version "3.4.2")
+    (version "4.2-411")
     (source
      (origin
        (method git-fetch)
@@ -4549,7 +4558,7 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i2nwkdh6cfzmnsdsr8aw86vs8j1k5jkjzrs61b9384wnffdbbmj"))))
+         "1vl6p8m2pag5j283h5g2gzxxfm599k6qhyrjkdf3kyc476fc9lw8"))))
     (build-system dune-build-system)
     (arguments '(#:package "dot-merlin-reader"
                  #:tests? #f))          ; no tests
@@ -4565,21 +4574,16 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
 
 (define-public ocaml-merlin
   (package
+    (inherit ocaml-dot-merlin-reader)
     (name "ocaml-merlin")
-    (version "3.4.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ocaml/merlin")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0i2nwkdh6cfzmnsdsr8aw86vs8j1k5jkjzrs61b9384wnffdbbmj"))))
-    (build-system dune-build-system)
-    (arguments '(#:package "merlin"
-                 #:test-target "tests"))
+    (arguments
+     '(#:package "merlin"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dune" "runtest" "-p" "merlin,dot-merlin-reader")))))))
     (inputs
      `(("ocaml-yojson" ,ocaml-yojson)
        ("ocaml-csexp" ,ocaml-csexp)
@@ -4588,7 +4592,6 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
      `(("ocaml-dot-merlin-reader" ,ocaml-dot-merlin-reader) ; required for tests
        ("ocaml-mdx" ,ocaml-mdx)
        ("jq" ,jq)))
-    (home-page "https://ocaml.github.io/merlin/")
     (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
     (description "Merlin is an editor service that provides modern IDE
 features for OCaml.  Emacs and Vim support is provided out-of-the-box.
@@ -5024,7 +5027,7 @@ as part of the same ocaml-migrate-parsetree driver.")
 (define-public ocaml-ppxlib
   (package
     (name "ocaml-ppxlib")
-    (version "0.22.0")
+    (version "0.22.1")
     (home-page "https://github.com/ocaml-ppx/ppxlib")
     (source
      (origin
@@ -5035,7 +5038,7 @@ as part of the same ocaml-migrate-parsetree driver.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kf7lgcwygf6zlx7rwddqpqvasa6v7xiq0bqal8vxlib6lpg074q"))))
+         "0cpfg634if1py1b2rljk3cagq9gj68dl2gk1kdg76f9rapvl2i4g"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
@@ -6797,6 +6800,64 @@ in the documentation always stays up-to-date.
 @code{mdx} which are the same, mdx being the deprecated name, kept for now for
 compatibility.")
     (license license:isc)))
+
+(define-public ocaml-mparser
+  (package
+    (name "ocaml-mparser")
+    (version "1.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/murmour/mparser")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "16j19v16r42gcsii6a337zrs5cxnf12ig0vaysxyr7sq5lplqhkx"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests.
+     '(#:package "mparser"
+       #:tests? #f))
+    (home-page "https://github.com/murmour/mparser")
+    (synopsis "Simple monadic parser combinator library")
+    (description
+      "This library implements a rather complete and efficient monadic parser
+combinator library similar to the Parsec library for Haskell by Daan Leijen and
+the FParsec library for FSharp by Stephan Tolksdorf.")
+    ;; With static linking exception.
+    (license license:lgpl2.1+)))
+
+(define-public ocaml-mparser-re
+  (package
+    (inherit ocaml-mparser)
+    (name "ocaml-mparser-re")
+    (arguments
+     ;; No tests.
+     '(#:package "mparser-re"
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-mparser" ,ocaml-mparser)
+       ("ocaml-re" ,ocaml-re)))
+    (synopsis "MParser plugin for RE-based regular expressions")
+    (description "This package provides RE-based regular expressions
+support for Mparser.")))
+
+(define-public ocaml-mparser-pcre
+  (package
+    (inherit ocaml-mparser)
+    (name "ocaml-mparser-pcre")
+    (arguments
+     ;; No tests.
+     '(#:package "mparser-pcre"
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-mparser" ,ocaml-mparser)
+       ("ocaml-pcre" ,ocaml-pcre)))
+    (synopsis "MParser plugin for PCRE-based regular expressions")
+    (description "This package provides PCRE-based regular expressions
+support for Mparser.")))
 
 (define-public lablgtk3
   (package

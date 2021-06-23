@@ -55,7 +55,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
-;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
@@ -2050,14 +2050,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "7.4")
+    (version "7.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "153j76jfnh01b4pkkpyxfh83rl975rx0mh7mx4nnf83qd4dzkkd4"))))
+        (base32 "0d7nsx2idzbp6d5im5rrsnwppbr2cimvxgx31bhwsm2aq3ya5v2j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
@@ -2815,7 +2815,7 @@ of bibliographic references.")
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2824,7 +2824,7 @@ of bibliographic references.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "007r1l3ian2bfj4h2xkd2qwh1d1m7kda1p6pj51dikbzaphglh1r"))))
+                "0265kld5vg870n1zaks42qdawl03zi6rjhffrkkngwgs9i9ap30i"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
@@ -3308,7 +3308,7 @@ during idle time, while Emacs is doing nothing else.")
                  ("pdf-tools-handle-upgrades" '()))))
            (add-after 'emacs-patch-variables 'emacs-expand-load-path
              (assoc-ref emacs:%standard-phases 'expand-load-path))
-           (add-after 'emacs-add-source-to-load-path 'emacs-install
+           (add-after 'emacs-expand-load-path 'emacs-install
              (assoc-ref emacs:%standard-phases 'install))
            (add-after 'emacs-install 'emacs-build
              (assoc-ref emacs:%standard-phases 'build))
@@ -8029,7 +8029,7 @@ list of candidates.")
 (define-public emacs-marginalia
   (package
     (name "emacs-marginalia")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method git-fetch)
@@ -8038,7 +8038,7 @@ list of candidates.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lisns2vghmqlg8wiv6jy15cfgnc8j83khz0vfnmrjwgcmjw3bbz"))))
+        (base32 "0yn6dybvsdhr37hnadmbfqi7pf7scxr9z6a6ghsqbrghycddd0mc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/marginalia")
     (synopsis "Marginalia in the minibuffer completions")
@@ -14361,7 +14361,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.5.2")
+    (version "3.5.3")
     (source
      (origin
        (method git-fetch)
@@ -14370,7 +14370,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wgygby4zwlbx6ry6asraaixl169qdz092zgk1brvg63w7f8vkkb"))))
+        (base32 "144i3hkgm36wnfmqk5vq390snziy3zhwifbh6q6dzs99ic77d5g6"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -20481,6 +20481,36 @@ e.g. the package dependencies it requires.  See function
 @code{package-lint-buffer}.  Checks will currently be enabled only if a
 \"Package-Requires:\" or \"Package-Version:\" header is present in the
 file.")
+    (license license:gpl3+)))
+
+(define-public emacs-packed
+  (package
+    (name "emacs-packed")
+    (version "3.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/packed")
+             (commit version)))
+       (sha256
+        (base32
+         "06blk8parnpq3qi6y5628q3v59c8dyi41glb289a0l16248qwphk"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacscollective/packed")
+    (synopsis "Package manager agnostic Emacs Lisp package utilities")
+    (description
+     "Packed provides some package manager agnostic utilities to work
+with Emacs Lisp packages.  As far as Packed is concerned packages
+are collections of Emacs Lisp libraries that are stored in a
+dedicated directory such as a Git repository.  And libraries are
+Emacs Lisp files that provide the correct feature (matching the
+filename).
+
+Where a package manager might depend on metadata, Packed instead
+uses some heuristics to get the same information---that is slower
+and might also fail at times but makes it unnecessary to maintain
+package recipes.")
     (license license:gpl3+)))
 
 (define-public emacs-picpocket
@@ -27815,6 +27845,7 @@ Features:
               (uri (git-reference
                     (url "https://git.sr.ht/~zge/bang")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32 "1micvz6smhjma7qbka8h3w0crb3sgrxf9lz2548iqfgww50gb0lj"))))
     (build-system emacs-build-system)
@@ -28499,7 +28530,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method git-fetch)
@@ -28508,7 +28539,7 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vx23csk1nsrcazifwjxchqdmp3qbg2mwbvkqxn134g89qi8pqkw"))))
+        (base32 "1qb5qmspc7042r366d73j26hrzmrsdwscv8ly9glsa4gbdxcjkln"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))

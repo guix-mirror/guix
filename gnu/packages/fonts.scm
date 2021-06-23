@@ -426,7 +426,7 @@ The unified Libertinus family consists of:
        (sha256
         (base32 "0yggffiplk22lgqklfmd2c0rw8gwchynjh5kz4bz8yv2h6vw2qfr"))))
     (build-system gnu-build-system)
-    (outputs (list "out" "pcf-8bit"))
+    (outputs (list "out" "pcf-8bit" "otb"))
     (arguments
      `(#:tests? #f                      ; no test target in tarball
        #:phases
@@ -441,6 +441,15 @@ The unified Libertinus family consists of:
              (let ((pcf-8bit (assoc-ref outputs "pcf-8bit")))
                (apply invoke "make" "install-pcf-8bit" (string-append "prefix="
                                                                       pcf-8bit)
+                      make-flags))))
+         (add-after 'build-more-bits 'build-otb
+           ;; Build Open Type Bitmap
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "otb" make-flags)))
+         (add-after 'install 'install-otb
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((otb (assoc-ref outputs "otb")))
+               (apply invoke "make" "install-otb" (string-append "prefix=" otb)
                       make-flags)))))))
     (native-inputs
      `(("bdftopcf" ,bdftopcf)
@@ -807,6 +816,27 @@ display all Unicode symbols.")
      "Roboto is Google’s signature family of fonts, the default font on Android
 and Chrome OS, and the recommended font for the
 visual language \"Material Design\".")
+    (license license:asl2.0)))
+
+(define-public font-borg-sans-mono
+  (package
+    (name "font-borg-sans-mono")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/charje/borg-sans-mono"
+             "/releases/download/v" version "/borg-sans-mono.zip"))
+       (sha256
+        (base32
+         "1xxakd9nfb8wz76rh0gbd69gh0mlqs2453g0j516xgxn8bxip2yj"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/charje/borg-sans-mono")
+    (synopsis "The Borg Sans Mono font")
+    (description "Borg Sans Mono is a monospaced font derived from Droid Sans
+Mono.  It includes additions commonly found in programming fonts such as a
+slashed zero and ligatures for operators.")
     (license license:asl2.0)))
 
 (define-public font-un
@@ -2234,6 +2264,6 @@ half of the twentieth century.")
     (description
      "Overpass is a sans-serif typeface based on the U.S. interstate highway
 road signage typefaces, adapted for on-screen display and user interfaces.
-Overpass includes proprotional and monospace variants.")
+Overpass includes proportional and monospace variants.")
     (license (list license:silofl1.1
                    license:lgpl2.1))))

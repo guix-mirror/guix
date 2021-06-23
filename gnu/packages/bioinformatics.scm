@@ -11894,6 +11894,30 @@ options), bedgraph, links (represented as arcs), and Hi-C matrices.
 pyGenomeTracks can make plots with or without Hi-C data.")
     (license license:gpl3+)))
 
+(define-public python-iced
+  (package
+    (name "python-iced")
+    (version "0.5.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iced" version))
+       (sha256
+        (base32
+         "1avcjmpyyvhgbj5qca4l70ipiz7j3xmcw9p6rd9c06j99faa0r71"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #false)) ; there are none
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-scikit-learn" ,python-scikit-learn)))
+    (home-page "https://github.com/hiclib/iced")
+    (synopsis "ICE normalization")
+    (description "This is a package for normalizing Hi-C contact counts
+efficiently.")
+    (license license:bsd-3)))
+
 (define-public python-hic2cool
   (package
     (name "python-hic2cool")
@@ -14175,6 +14199,100 @@ researchers to design and build computational workflows for the analysis of
 large-scale data-analysis.")
     (license license:expat)))
 
+(define-public perl-cworld-dekker
+  (package
+    (name "perl-cworld-dekker")
+    (version "1.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dekkerlab/cworld-dekker.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1dvh23fx52m59y6304xi2j2pl2hiqadlqg8jyv2pm14j1hy71ych"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:modules ((guix build perl-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'hardcode-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bedtools (assoc-ref inputs "bedtools"))
+                   (r (assoc-ref inputs "r-minimal")))
+               (substitute* '("scripts/python/getEigenVectors.py"
+                              "scripts/python/matrix2EigenVectors.py")
+                 (("bedtools intersect")
+                  (string-append bedtools "/bin/bedtools intersect")))
+               (substitute* "lib/cworld/dekker.pm"
+                 (("bedtools --version")
+                  (string-append bedtools "/bin/bedtools --version")))
+               (substitute* '("scripts/perl/correlateMatrices.pl"
+                              "scripts/perl/matrix2scaling.pl"
+                              "scripts/perl/matrix2distance.pl"
+                              "scripts/perl/coverageCorrect.pl"
+                              "scripts/perl/matrix2anchorPlot.pl"
+                              "scripts/python/matrix2EigenVectors.py"
+                              "scripts/python/matrix2insulation-lite.py"
+                              "scripts/perl/matrix2compartment.pl"
+                              "scripts/perl/anchorPurge.pl"
+                              "scripts/perl/applyCorrection.pl"
+                              "scripts/perl/compareInsulation.pl"
+                              "scripts/perl/fillMissingData.pl"
+                              "scripts/perl/matrix2loess.pl"
+                              "scripts/python/getEigenVectors.py"
+                              "scripts/perl/aggregateBED.pl"
+                              "scripts/perl/collapseMatrix.pl"
+                              "scripts/perl/matrix2direction.pl"
+                              "scripts/perl/singletonRemoval.pl"
+                              "lib/cworld/dekker.pm"
+                              "scripts/perl/matrix2insulation.pl")
+                 (("(`|\")Rscript" _ pre)
+                  (string-append pre r "/bin/Rscript"))))))
+         (add-after 'install 'install-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share/cworld-dekker")))
+               (mkdir-p share)
+               (copy-recursively "scripts" share)
+
+               ;; Make all scripts executable and wrap them.
+               (let ((r     (find-files share "\\.R$"))
+                     (py    (find-files share "\\.py$"))
+                     (pl    (find-files share "\\.pl$"))
+                     (wrap  (lambda* (script var #:optional (extra ""))
+                              (let ((path (string-append (getenv var)
+                                                         extra)))
+                                (wrap-program script
+                                  `(,var ":" prefix (,path)))))))
+                 (for-each (cut chmod <> #o555) (append r py pl))
+                 (for-each (cut wrap <> "PERL5LIB"
+                                (string-append ":" out
+                                               "/lib/perl5/site_perl"))
+                           pl)
+                 (for-each (cut wrap <> "PYTHONPATH") py))))))))
+    (inputs
+     `(("libgd" ,gd)
+       ("perl-gd" ,perl-gd)
+       ("bedtools" ,bedtools)
+       ("python" ,python-wrapper)
+       ("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-h5py" ,python-h5py)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("r-minimal" ,r-minimal)))
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "https://github.com/dekkerlab/cworld-dekker")
+    (synopsis "Utility and analysis scripts for 3C, 4C, 5C, and Hi-C data")
+    (description "This package is a collection of Perl, Python, and R
+scripts for manipulating 3C/4C/5C/Hi-C data.")
+    (license license:asl2.0)))
+
 (define-public ensembl-vep
   (let* ((api-version "103")
          (api-module
@@ -14195,6 +14313,7 @@ large-scale data-analysis.")
          (uri (git-reference
                (url "https://github.com/Ensembl/ensembl-vep.git")
                (commit (string-append "release/" version))))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1iq7p72cv9b38jz2v8a4slzy2n8y0md487943180ym9xc8qvw09c"))))

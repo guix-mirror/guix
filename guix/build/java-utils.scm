@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,7 @@
   #:use-module (sxml simple)
   #:export (ant-build-javadoc
             generate-plugin.xml
+            generate-pom.xml
             install-jars
             install-javadoc
             install-pom-file
@@ -68,9 +69,9 @@ fetched."
     (let* ((out (assoc-ref outputs "out"))
            (java-inputs (append (map cdr inputs) (map cdr outputs)))
            (pom-content (get-pom pom-file))
-           (version (pom-version pom-content java-inputs))
+           (version (pom-version pom-content))
            (artifact (pom-artifactid pom-content))
-           (group (group->dir (pom-groupid pom-content java-inputs)))
+           (group (group->dir (pom-groupid pom-content)))
            (repository (string-append out "/lib/m2/" group "/" artifact "/"
                                       version "/"))
            (pom-name (string-append repository artifact "-" version ".pom")))
@@ -86,8 +87,8 @@ to ensure that maven can find dependencies."
          (manifest (string-append dir "/META-INF/MANIFEST.MF"))
          (pom (get-pom pom-file))
          (artifact (pom-artifactid pom))
-         (group (pom-groupid pom inputs))
-         (version (pom-version pom inputs))
+         (group (pom-groupid pom))
+         (version (pom-version pom))
          (pom-dir (string-append "META-INF/maven/" group "/" artifact)))
     (mkdir-p (string-append dir "/" pom-dir))
     (copy-file pom-file (string-append dir "/" pom-dir "/pom.xml"))
@@ -112,9 +113,9 @@ the phase fails."
     (let* ((out (assoc-ref outputs "out"))
            (java-inputs (append (map cdr inputs) (map cdr outputs)))
            (pom-content (get-pom pom-file))
-           (version (pom-version pom-content java-inputs))
+           (version (pom-version pom-content))
            (artifact (pom-artifactid pom-content))
-           (group (group->dir (pom-groupid pom-content java-inputs)))
+           (group (group->dir (pom-groupid pom-content)))
            (repository (string-append out "/lib/m2/" group "/" artifact "/"
                                       version "/"))
            ;; We try to find the file that was built.  If it was built from our
@@ -124,7 +125,7 @@ the phase fails."
                                                              version ".jar"))))
            ;; Otherwise, we try to find any jar file.
            (jars (if (null? jars)
-                     (find-files "." ".*.jar")
+                     (find-files "." "\\.jar$")
                      jars))
            (jar-name (string-append repository artifact "-" version ".jar"))
            (pom-name (string-append repository artifact "-" version ".pom")))
@@ -179,9 +180,9 @@ recognize the package as a plugin, and find the entry points in the plugin."
            (name (pom-name pom-content))
            (description (pom-description pom-content))
            (dependencies (pom-dependencies pom-content))
-           (version (pom-version pom-content java-inputs))
+           (version (pom-version pom-content))
            (artifact (pom-artifactid pom-content))
-           (groupid (pom-groupid pom-content java-inputs))
+           (groupid (pom-groupid pom-content))
            (mojos
             `(mojos
                ,@(with-directory-excursion directory
@@ -206,3 +207,31 @@ recognize the package as a plugin, and find the entry points in the plugin."
                  ,mojos
                  (dependencies
                   ,@dependencies)))))))))
+
+(define* (generate-pom.xml pom-file groupid artifactid version
+                           #:key (dependencies '())
+                                 (name artifactid))
+  "Generates the @file{pom.xml} for a project. It is required by Maven to find
+a package, and by the java build system to know where to install a package, when
+a pom.xml doesn't already exist and installing to the maven repository."
+  (lambda _
+    (mkdir-p (dirname pom-file))
+    (with-output-to-file pom-file
+      (lambda _
+        (sxml->xml
+          (sxml-indent
+            `(project
+               (modelVersion "4.0.0")
+               (name ,name)
+               (groupId ,groupid)
+               (artifactId ,artifactid)
+               (version ,version)
+               (dependencies
+                ,@(map
+                    (match-lambda
+                      ((groupid artifactid version)
+                      `(dependency
+                         (groupId ,groupid)
+                         (artifactId ,artifactid)
+                         (version ,version))))
+                    dependencies)))))))))

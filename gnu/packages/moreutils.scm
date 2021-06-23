@@ -34,13 +34,9 @@
     (source
      (origin
        (method url-fetch)
-       (uri (list
-             (string-append
-              "https://git.joeyh.name/index.cgi/moreutils.git/snapshot/"
-              name "-" version ".tar.gz")
-             (string-append
-              "http://drabczyk.org/"
-              name "-" version ".tar.gz")))
+       (uri (string-append
+             "https://git.joeyh.name/index.cgi/moreutils.git/snapshot/"
+             name "-" version ".tar.gz"))
        (sha256
         (base32 "10c8b4bwnli4gxwvgmgkc5kin1ksrxsnxmigs7y4rrh4aaszdjb0"))))
     (build-system gnu-build-system)

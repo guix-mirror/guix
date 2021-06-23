@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,6 +92,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -880,6 +882,93 @@ utilities for data translation and processing.")
     (inputs
      `(("gdal" ,gdal)))
     (synopsis "GDAL (Geospatial Data Abstraction Library) python bindings")))
+
+(define-public python-pyshp
+  (package
+    (name "python-pyshp")
+    (version "2.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/GeospatialPython/pyshp")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jsraqzq82pw19wvx84x7w5cs8agr44a9b5y0jjw540wim4xa73r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This is the only test file.
+               (invoke "python" "-m" "pytest" "test_shapefile.py")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/GeospatialPython/pyshp")
+    (synopsis "Read/write support for ESRI Shapefile format")
+    (description
+      "The Python Shapefile Library (PyShp) reads and writes ESRI Shapefiles.")
+    (license license:expat)))
+
+(define-public python-cartopy
+  (package
+    (name "python-cartopy")
+    ;; This is a post-release fix that adds build_ext to setup.py.
+    (version "0.19.0.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Cartopy" version))
+       (sha256
+        (base32 "0xnm8z3as3hriivdfd26s6vn5b63gb46x6vxw6gh1mwfm5rlg2sb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--pyargs" "cartopy"
+                       ;; These tests require online data.
+                       "-m" "not natural_earth and not network"
+                       ;; This one too but it's not marked as such.
+                       "-k" "not test_gridliner_labels_bbox_style")))))))
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pykdtree" ,python-pykdtree)
+       ("python-pyshp" ,python-pyshp)
+       ("python-scipy" ,python-scipy)
+       ("python-shapely" ,python-shapely)))
+    (inputs
+     `(("geos" ,geos)
+       ("proj" ,proj)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-flufl-lock" ,python-flufl-lock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://scitools.org.uk/cartopy/docs/latest/")
+    (synopsis "Cartographic library for visualisation")
+    (description
+     "Cartopy is a Python package designed to make drawing maps for data
+analysis and visualisation easy.
+
+It features:
+
+@itemize
+@item object oriented projection definitions
+@item point, line, polygon and image transformations between projections
+@item integration to expose advanced mapping in Matplotlib with a simple and
+intuitive interface
+@item powerful vector data handling by integrating shapefile reading with
+Shapely capabilities
+@end itemize")
+    (license license:lgpl3+)))
 
 (define-public postgis
   (package

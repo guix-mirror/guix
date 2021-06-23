@@ -1399,7 +1399,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.9")
+    (version "5.5.10")
     (source
      (origin
        (method git-fetch)
@@ -1408,7 +1408,7 @@ and up to 1 Mbit/s downstream.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0l9dhyciylh14lqw8j5mrk0y2hl95cnj8pyvvabbgwxpsdn0yvbb"))))
+        (base32 "179hgmh9yqk8jq26ybik4cr3lgryd5p6kdwccc3r7mfssk3yp8lz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -3033,14 +3033,14 @@ asynchronous model using a modern C++ approach.")
 (define-public asio
   (package
     (inherit asio-1.12)
-    (version "1.18.1")
+    (version "1.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
                            version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
-        (base32 "04wi69d72l1p5c7d63z1dz06zn8pdqsbgx1if98dszs9ymfqgyaa"))))))
+        (base32 "1wpr4ymv63a192fmymwyxd7v0bv575v022gz53y0mcflhr2mvh1s"))))))
 
 (define-public shadowsocks
   ;; There are some security fixes after the last release.
