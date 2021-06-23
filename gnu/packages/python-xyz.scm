@@ -4986,29 +4986,6 @@ writing C extensions for Python as easy as Python itself.")
                     ""))
                  #t)))))))))
 
-;; The RPython toolchain currently does not support Python 3.
-(define-public python2-rpython
-  (package
-    (name "python2-rpython")
-    (version "0.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "rpython" version))
-       (sha256
-        (base32
-         "02z9cvxf0y41dcvwnvf2zn0albhhw1drvjjbq27m6i1piw1k6fc0"))))
-    (build-system python-build-system)
-    (arguments `(#:python ,python-2))
-    (native-inputs
-     `(("python2-pytest" ,python2-pytest))) ; needed for running tests
-    (home-page "https://rpython.readthedocs.org")
-    (synopsis "Framework for implementing interpreters and virtual machines")
-    (description "RPython is a translation and support framework for
-producing implementations of dynamic languages, emphasizing a clean separation
-between language specification and implementation aspects.")
-    (license license:expat)))
-
 ;; NOTE: when upgrading numpy please make sure that python-pandas and
 ;; python-scipy still build, as these three packages are often used together.
 (define-public python-numpy
