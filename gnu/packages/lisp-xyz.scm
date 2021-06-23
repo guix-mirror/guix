@@ -17745,3 +17745,48 @@ to setup.")
 
 (define-public cl-posix-mqueue
   (sbcl-package->cl-source-package sbcl-cl-posix-mqueue))
+
+(define-public sbcl-sdl2
+  (let ((commit "bb2aa2a41cf799e3bb1ddf50de41fe389c6db668")
+        (revision "1"))
+    (package
+      (name "sbcl-sdl2")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lispgames/cl-sdl2")
+               (commit commit)))
+         (file-name (git-file-name "cl-sdl2" version))
+         (sha256
+          (base32 "1a4904310z2wwq80grnlixmyz30452vgd4lh74y105j2yrr43z97"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/library.lisp"
+                 (("libSDL2-2.0.so.0" all)
+                  (string-append (assoc-ref inputs "libsdl2") "/lib/" all)))
+               #t)))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-autowrap" ,sbcl-cl-autowrap)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("libsdl2" ,sdl2)
+         ("trivial-channels" ,sbcl-trivial-channels)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/lispgames/cl-sdl2")
+      (synopsis "Common Lisp bindings for SDL2 using C2FFI")
+      (description
+       "This package provides a Common Lisp wrapper system for the SDL 2.0
+C Library.")
+      (license license:expat))))
+
+(define-public ecl-sdl2
+  (sbcl-package->ecl-package sbcl-sdl2))
+
+(define-public cl-sdl2
+  (sbcl-package->cl-source-package sbcl-sdl2))
