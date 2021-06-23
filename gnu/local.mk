@@ -929,6 +929,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
+  %D%/packages/patches/cups-CVE-2020-10001.patch		\
   %D%/packages/patches/curl-use-ssl-cert-env.patch		\
   %D%/packages/patches/curl-7.76-use-ssl-cert-env.patch	\
   %D%/packages/patches/curl-7.77-tls-priority-string.patch	\

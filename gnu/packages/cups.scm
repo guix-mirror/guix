@@ -252,6 +252,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
   (package
     (name "cups-minimal")
     (version "2.3.3")
+    (replacement cups-minimal/fixed)
     (source
      (origin
        (method url-fetch)
@@ -311,6 +312,11 @@ describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
     ;; CUPS is Apache 2.0 with exceptions, see the NOTICE file.
     (license license:asl2.0)))
+
+(define cups-minimal/fixed
+  (package-with-extra-patches
+   cups-minimal
+   (search-patches "cups-CVE-2020-10001.patch")))
 
 (define-public cups
   (package/inherit cups-minimal
