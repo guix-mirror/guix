@@ -1391,9 +1391,6 @@ interactive command-line applications.  With it you can run a script in a
 subprocess and see the output as well as any file modifications.")
     (license license:expat)))
 
-(define-public python2-scripttest
-  (package-with-python2 python-scripttest))
-
 (define-public python-testtools-bootstrap
   (package
     (name "python-testtools-bootstrap")
