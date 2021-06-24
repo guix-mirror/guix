@@ -11121,8 +11121,7 @@ repository and commit your work.")
     (inputs
      `(("glib" ,glib)))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://people.gnome.org/~veillard/gamin/")
     (synopsis "File alteration monitor")
     (description
