@@ -299,7 +299,6 @@ shared NFS home directories.")
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)
        ("gettext" ,gettext-minimal)
-       ("libintl" ,intltool)
        ("m4" ,m4)                       ; for installing m4 macros
        ("perl" ,perl)                   ; needed by GIO tests
        ("pkg-config" ,pkg-config)
