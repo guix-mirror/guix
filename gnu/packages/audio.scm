@@ -2490,6 +2490,7 @@ files.")
         (uri (git-reference
               (url "https://github.com/NFJones/audio-to-midi")
               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
           (base32
             "12wf17abn3psbsg2r2lk0xdnk8n5cd5rrvjlpxjnjfhd09n7qqgm"))))
