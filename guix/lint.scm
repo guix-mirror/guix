@@ -68,6 +68,7 @@
                            . guix:open-connection-for-uri)))
   #:use-module (web request)
   #:use-module (web response)
+  #:autoload   (gnutls) (error->string)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-6)                      ;Unicode string ports
   #:use-module (srfi srfi-9)
@@ -1161,6 +1162,11 @@ display a message including MESSAGE and return ERROR-VALUE."
          (warning (G_ "~a: TLS certificate error: ~a")
                   message
                   (tls-certificate-error-string args))
+         error-value)
+        (('gnutls-error error function _ ...)
+         (warning (G_ "~a: TLS error in '~a': ~a~%")
+                  message
+                  function (error->string error))
          error-value)
         ((and ('system-error _ ...) args)
          (let ((errno (system-error-errno args)))
