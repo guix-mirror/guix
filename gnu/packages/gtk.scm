@@ -1586,7 +1586,7 @@ write GNOME applications.")
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
-    (inputs
+    (propagated-inputs
      `(("cairo" ,cairo)))
     (home-page "https://metacpan.org/release/Cairo")
     (synopsis "Perl interface to the cairo 2d vector graphics library")
