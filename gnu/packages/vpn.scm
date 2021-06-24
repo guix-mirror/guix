@@ -114,6 +114,10 @@ endpoints.")
        (modify-phases %standard-phases
          (add-before 'build 'patch-command-file-names
            (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/ipsec/_ipsec.in"
+               (("cat|kill|sleep|rm|uname" command)
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/" command)))
              (substitute* "src/libstrongswan/utils/process.c"
                (("/bin/sh")
                 (string-append (assoc-ref inputs "bash") "/bin/sh")))
@@ -179,7 +183,8 @@ endpoints.")
         ;; Use libcap by default.
         "--with-capabilities=libcap")))
     (inputs
-     `(("curl" ,curl)
+     `(("coreutils" ,coreutils)
+       ("curl" ,curl)
        ("gmp" ,gmp)
        ("libcap" ,libcap)
        ("libgcrypt" ,libgcrypt)
