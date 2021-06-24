@@ -617,6 +617,51 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
       (_
        (values 'unknown-protocol #f)))))
 
+(define (call-with-networking-fail-safe message error-value proc)
+  "Call PROC catching any network-related errors.  Upon a networking error,
+display a message including MESSAGE and return ERROR-VALUE."
+  (guard (c ((http-get-error? c)
+             (warning (G_ "~a: HTTP GET error for ~a: ~a (~s)~%")
+                      message
+                      (uri->string (http-get-error-uri c))
+                      (http-get-error-code c)
+                      (http-get-error-reason c))
+             error-value))
+    (catch #t
+      proc
+      (match-lambda*
+        (('getaddrinfo-error errcode)
+         (warning (G_ "~a: host lookup failure: ~a~%")
+                  message
+                  (gai-strerror errcode))
+         error-value)
+        (('tls-certificate-error args ...)
+         (warning (G_ "~a: TLS certificate error: ~a")
+                  message
+                  (tls-certificate-error-string args))
+         error-value)
+        (('gnutls-error error function _ ...)
+         (warning (G_ "~a: TLS error in '~a': ~a~%")
+                  message
+                  function (error->string error))
+         error-value)
+        ((and ('system-error _ ...) args)
+         (let ((errno (system-error-errno args)))
+           (if (member errno (list ECONNRESET ECONNABORTED ECONNREFUSED))
+               (let ((details (call-with-output-string
+                                (lambda (port)
+                                  (print-exception port #f (car args)
+                                                   (cdr args))))))
+                 (warning (G_ "~a: ~a~%") message details)
+                 error-value)
+               (apply throw args))))
+        (args
+         (apply throw args))))))
+
+(define-syntax-rule (with-networking-fail-safe message error-value exp ...)
+  (call-with-networking-fail-safe message error-value
+                                  (lambda () exp ...)))
+
 (define (tls-certificate-error-string args)
   "Return a string explaining the 'tls-certificate-error' arguments ARGS."
   (call-with-output-string
@@ -1035,15 +1080,17 @@ descriptions maintained upstream."
              (eqv? (origin-method origin) url-fetch))
         (filter-map
          (lambda (uri)
-           (and=> (follow-redirects-to-github uri)
+           (and=> (with-networking-fail-safe
+                   (format #f (G_ "while accessing '~a'") uri)
+                   #f
+                   (follow-redirects-to-github uri))
                   (lambda (github-uri)
-                    (if (string=? github-uri uri)
-                        #f
-                        (make-warning
-                         package
-                         (G_ "URL should be '~a'")
-                         (list github-uri)
-                         #:field 'source)))))
+                    (and (not (string=? github-uri uri))
+                         (make-warning
+                          package
+                          (G_ "URL should be '~a'")
+                          (list github-uri)
+                          #:field 'source)))))
          (origin-uris origin))
         '())))
 
@@ -1139,51 +1186,6 @@ of the propagated inputs it pulls in."
      (list
       (make-warning package (G_ "invalid license field")
                     #:field 'license)))))
-
-(define (call-with-networking-fail-safe message error-value proc)
-  "Call PROC catching any network-related errors.  Upon a networking error,
-display a message including MESSAGE and return ERROR-VALUE."
-  (guard (c ((http-get-error? c)
-             (warning (G_ "~a: HTTP GET error for ~a: ~a (~s)~%")
-                      message
-                      (uri->string (http-get-error-uri c))
-                      (http-get-error-code c)
-                      (http-get-error-reason c))
-             error-value))
-    (catch #t
-      proc
-      (match-lambda*
-        (('getaddrinfo-error errcode)
-         (warning (G_ "~a: host lookup failure: ~a~%")
-                  message
-                  (gai-strerror errcode))
-         error-value)
-        (('tls-certificate-error args ...)
-         (warning (G_ "~a: TLS certificate error: ~a")
-                  message
-                  (tls-certificate-error-string args))
-         error-value)
-        (('gnutls-error error function _ ...)
-         (warning (G_ "~a: TLS error in '~a': ~a~%")
-                  message
-                  function (error->string error))
-         error-value)
-        ((and ('system-error _ ...) args)
-         (let ((errno (system-error-errno args)))
-           (if (member errno (list ECONNRESET ECONNABORTED ECONNREFUSED))
-               (let ((details (call-with-output-string
-                                (lambda (port)
-                                  (print-exception port #f (car args)
-                                                   (cdr args))))))
-                 (warning (G_ "~a: ~a~%") message details)
-                 error-value)
-               (apply throw args))))
-        (args
-         (apply throw args))))))
-
-(define-syntax-rule (with-networking-fail-safe message error-value exp ...)
-  (call-with-networking-fail-safe message error-value
-                                  (lambda () exp ...)))
 
 (define (current-vulnerabilities*)
   "Like 'current-vulnerabilities', but return the empty list upon networking
