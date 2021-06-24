@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -404,7 +405,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
        ("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
        ("flatbuffers" ,flatbuffers)
-       ("fmt" ,fmt)
+       ("fmt" ,fmt-7)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)

@@ -7,6 +7,7 @@
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -582,7 +583,7 @@ any arbitrary astrometric projection defined in the WCS standard.")
          ;; maybe required?
          ("mesa" ,mesa)
          ;; optional: fmtlib, Eigen3;
-         ("fmt" ,fmt)
+         ("fmt" ,fmt-7)
          ("eigen" ,eigen)
          ;; glut: for glut interface
          ("freeglut" ,freeglut)))

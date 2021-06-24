@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2020 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1141,7 +1142,7 @@ shell command executions.")
    (inputs
     `(("boost" ,boost)
       ("boost-static" ,boost-static)
-      ("fmt" ,fmt)
+      ("fmt" ,fmt-7)
       ;; LuaJIT has a 2GiB addressing limit[1] that has been fixed on OpenResty
       ;; fork. Emilua is severely affected by this limit, so the upstream package
       ;; is avoided. Emilua also depends on the -DLUAJIT_ENABLE_LUA52COMPAT
