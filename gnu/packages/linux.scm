@@ -7710,14 +7710,14 @@ platforms, it is not limited to resource-constrained systems.")
 (define-public lttng-ust
   (package
     (name "lttng-ust")
-    (version "2.11.0")
+    (version "2.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-ust/"
                                   "lttng-ust-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n646yz7882svf5a4ay3vqiiz3qjn3pgkkij9kk22871wp7q0ck8"))))
+                "1iwz6p79zvibj8sl8qqw84lcir9a8z1ylq77hhnwg26anrjg1l5w"))))
     (build-system gnu-build-system)
     (inputs
      `(("liburcu" ,liburcu)
