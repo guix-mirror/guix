@@ -17862,3 +17862,69 @@ joysticks, and other such HID devices.")
 
 (define-public cl-gamepad
   (sbcl-package->cl-source-package sbcl-cl-gamepad))
+
+(define-public sbcl-trial
+  (let ((commit "ba178cac3a5528c570c7e8dad66c58cc770db53a")
+        (revision "1"))
+    (package
+      (name "sbcl-trial")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/trial")
+               (commit commit)))
+         (file-name (git-file-name "trial" version))
+         (sha256
+          (base32 "1vpv9nrpq93fz1c5cyi1hazaaz9ijbrf1l7zwp7gammndr5v028r"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("trivial-features" ,sbcl-trivial-features)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("3d-matrices" ,sbcl-3d-matrices)
+         ("3d-vectors" ,sbcl-3d-vectors)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-gamepad" ,sbcl-cl-gamepad)
+         ("cl-jpeg" ,sbcl-cl-jpeg)
+         ("cl-opengl" ,sbcl-cl-opengl)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-tga" ,sbcl-cl-tga)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("deploy" ,sbcl-deploy)
+         ("fast-io" ,sbcl-fast-io)
+         ("flare" ,sbcl-flare)
+         ("float-features" ,sbcl-float-features)
+         ("flow" ,sbcl-flow)
+         ("for" ,sbcl-for)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("glsl-toolkit" ,sbcl-glsl-toolkit)
+         ("ieee-floats" ,sbcl-ieee-floats)
+         ("jsown" ,sbcl-jsown)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("lquery" ,sbcl-lquery)
+         ("messagebox" ,sbcl-messagebox)
+         ("mmap" ,sbcl-mmap)
+         ("pathname-utils" ,sbcl-pathname-utils)
+         ("pngload" ,sbcl-pngload)
+         ("retrospectiff" ,sbcl-retrospectiff)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("terrable" ,sbcl-terrable)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("trivial-indent" ,sbcl-trivial-indent)
+         ("verbose" ,sbcl-verbose)
+         ("zpng" ,sbcl-zpng)))
+      (home-page "https://github.com/Shirakumo/trial")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public ecl-trial
+  (sbcl-package->ecl-package sbcl-trial))
+
+(define-public cl-trial
+  (sbcl-package->cl-source-package sbcl-trial))
