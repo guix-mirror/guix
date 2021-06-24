@@ -90,6 +90,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
@@ -17790,3 +17791,74 @@ C Library.")
 
 (define-public cl-sdl2
   (sbcl-package->cl-source-package sbcl-sdl2))
+
+(define-public sbcl-cl-gamepad
+  (let ((commit "7e12137927b42db064ffbf9ea34bd4790ad4bb33")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-gamepad")
+      (version (git-version "3.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/cl-gamepad")
+               (commit commit)))
+         (file-name (git-file-name "cl-gamepad" version))
+         (sha256
+          (base32 "1gzx590i7s81qmramnjvfzrrq5yppas8yxqq1jl3yzqhhjwjfvkd"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-evdev-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "evdev-cffi.lisp"
+                 (("libevdev.so" all)
+                  (string-append (assoc-ref inputs "libevdev")
+                                 "/lib/" all)))))
+           ;; Here we use a custom build phase to work around a compilation bug.
+           ;; Using 'asdf:compile-system' fails, but using 'asdf:load-system'
+           ;; succeeds (and also compiles the system).
+           ;; See https://github.com/Shirakumo/cl-gamepad/issues/8
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (source-path (string-append out
+                                                  "/share/common-lisp/"
+                                                  (%lisp-type)))
+                      (translations `((,source-path
+                                       :**/ :*.*.*)
+                                      (,(string-append out
+                                                       "/lib/common-lisp/"
+                                                       (%lisp-type))
+                                       :**/ :*.*.*))))
+                 (setenv "ASDF_OUTPUT_TRANSLATIONS"
+                         (format #f "~S" `(:output-translations
+                                           ,translations
+                                           :inherit-configuration)))
+                 (setenv "HOME" (assoc-ref outputs "out"))
+                 (with-directory-excursion (string-append source-path
+                                                          "/cl-gamepad")
+                   (invoke (%lisp-type)
+                           "--eval" "(require :asdf)"
+                           "--eval" "(asdf:load-asd (truename \"cl-gamepad.asd\"))"
+                           "--eval" "(asdf:load-system :cl-gamepad)"
+                           "--eval" "(quit)"))))))))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("libevdev" ,libevdev)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://shirakumo.github.io/cl-gamepad/")
+      (synopsis "Library for access to gamepads and joystick input devices")
+      (description
+       "This is a library to provide cross-platform access to gamepads,
+joysticks, and other such HID devices.")
+      (license license:zlib))))
+
+(define-public ecl-cl-gamepad
+  (sbcl-package->ecl-package sbcl-cl-gamepad))
+
+(define-public cl-gamepad
+  (sbcl-package->cl-source-package sbcl-cl-gamepad))
