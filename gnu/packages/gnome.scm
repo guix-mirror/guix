@@ -4756,7 +4756,7 @@ library.")
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
