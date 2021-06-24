@@ -2672,7 +2672,7 @@ on the GNOME Desktop with a single simple application.")
      `(("glib" ,glib)
        ("gnome-backgrounds" ,gnome-backgrounds)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
