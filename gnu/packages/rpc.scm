@@ -209,7 +209,7 @@ with the HTTP/2-based RPC framework gRPC.")
 (define-public apache-thrift
   (package
     (name "apache-thrift")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
@@ -218,7 +218,7 @@ with the HTTP/2-based RPC framework gRPC.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mj3c5jhjbg2sfkx9k9jqg88h1c5rswr9b606s02ny9ydf3akcny"))))
+        (base32 "0wmnb3h0xq8qc5a9g9lliszh6qg254f5856h72viab46bizmdd4a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
