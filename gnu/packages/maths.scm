@@ -3555,7 +3555,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.45.0")
+    (version "5.45.1")
     (source
      (origin
        (method url-fetch)
@@ -3563,7 +3563,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1n6hc2d07d93hgc4yf3yqb9aqjqw6fskmvxggfxww1a8chr1yqy7"))
+         "1p77nk5sz1qfkn5zr97szpbi8ib4b22k8i52l4ag5gkhd4kid47y"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -3654,7 +3654,7 @@ to BMP, JPEG or PNG image formats.")
                (wrap-program (string-append out "/bin/maxima")
                  `("PATH" prefix (,binutils))))
              #t)))))
-    (home-page "http://maxima.sourceforge.net")
+    (home-page "https://maxima.sourceforge.io")
     (synopsis "Numeric and symbolic expression manipulation")
     (description "Maxima is a system for the manipulation of symbolic and
 numerical expressions.  It yields high precision numeric results by using
