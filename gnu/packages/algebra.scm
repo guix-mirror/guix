@@ -34,6 +34,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
@@ -1244,6 +1245,47 @@ objects.")
     ;; means that the gpl2+ licence of GAP itself applies, but to be on the
     ;; safe side, we drop them for now.
     (license license:gpl2+)))
+
+(define-public gappa
+  (package
+   (name "gappa")
+   (version "1.3.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://gforge.inria.fr/frs/download.php/latestfile/"
+                                "2699/gappa-" version ".tar.gz"))
+            (sha256
+             (base32
+              "0q1wdiwqj6fsbifaayb1zkp20bz8a1my81sqjsail577jmzwi07w"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("boost" ,boost)
+      ("gmp" ,gmp)
+      ("mpfr" ,mpfr)))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-remake-shell
+          (lambda _
+            (substitute* "remake.cpp"
+             (("/bin/sh") (which "sh")))
+            #t))
+        (replace 'build
+          (lambda _ (invoke "./remake" "-s" "-d")))
+        (replace 'install
+          (lambda _ (invoke "./remake" "-s" "-d" "install")))
+        (replace 'check
+          (lambda _ (invoke "./remake" "check"))))))
+   (home-page "http://gappa.gforge.inria.fr/")
+   (synopsis "Proof generator for arithmetic properties")
+   (description "Gappa is a tool intended to help verifying and formally
+proving properties on numerical programs dealing with floating-point or
+fixed-point arithmetic.  It has been used to write robust floating-point
+filters for CGAL and it is used to certify elementary functions in CRlibm.
+While Gappa is intended to be used directly, it can also act as a backend
+prover for the Why3 software verification platform or as an automatic tactic
+for the Coq proof assistant.")
+   (license (list license:gpl3+ license:cecill-c)))) ; either/or
 
 (define-public givaro
   (package
