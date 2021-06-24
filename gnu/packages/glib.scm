@@ -877,7 +877,7 @@ useful for C++.")
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
-    (inputs
+    (propagated-inputs
      `(("glib" ,glib)))
     (home-page "https://metacpan.org/release/Glib")
     (synopsis "Perl wrappers for the GLib utility and Object libraries")
