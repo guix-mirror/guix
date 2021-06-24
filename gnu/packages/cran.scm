@@ -103,6 +103,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -29402,3 +29403,51 @@ complex functions.")
     (description
       "The Gaussian hypergeometric function for complex numbers.")
     (license license:gpl2)))
+
+(define-public r-gganimate
+  (package
+    (name "r-gganimate")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "gganimate" version))
+        (sha256
+          (base32
+            "046v6j92xxgaghsnh88dy5h8x040qsfa8csvhp4dmsfmrrf0dz0f"))))
+    (properties `((upstream-name . "gganimate")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'absolute-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "R/renderers.R"
+               (("'ffmpeg'")
+                (string-append "'" (assoc-ref inputs "ffmpeg") "/bin/ffmpeg'"))))))))
+    (inputs
+      ;; For video output.
+      `(("ffmpeg" ,ffmpeg)))
+    (propagated-inputs
+      `(("r-ggplot2" ,r-ggplot2)
+        ("r-glue" ,r-glue)
+        ("r-plyr" ,r-plyr)
+        ("r-progress" ,r-progress)
+        ("r-rlang" ,r-rlang)
+        ("r-scales" ,r-scales)
+        ("r-stringi" ,r-stringi)
+        ("r-tweenr" ,r-tweenr)
+        ;; For GIF/SVG output. gifski is faster, but depends on Rust.
+        ("r-magick" ,r-magick)
+        ;; For HTML output.
+        ("r-base64enc" ,r-base64enc)
+        ("r-htmltools" ,r-htmltools)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://gganimate.com")
+    (synopsis "Grammar of Animated Graphics")
+    (description
+      "This package extends the grammar of graphics as implemented by
+@code{ggplot2} to include the description of animation.  It does this by
+providing a range of new grammar classes that can be added to the plot object
+in order to customise how it should change with time.")
+    (license license:expat)))
