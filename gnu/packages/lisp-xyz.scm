@@ -17928,3 +17928,34 @@ fit together as required by any particular game.")
 
 (define-public cl-trial
   (sbcl-package->cl-source-package sbcl-trial))
+
+(define-public sbcl-org-sampler
+  (let ((commit "ee135a417750e5b1d810bb9574eb85223cb3038a")
+        (revision "1"))
+    (package
+     (name "sbcl-org-sampler")
+     (version (git-version "0.2.1" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jphmrst/cl-org-sampler")
+             (commit commit)))
+       (file-name (git-file-name "cl-org-sampler" version))
+       (sha256
+        (base32 "1dg029in14928qfxvfshyxmdwhzskzhxx3na0zy98ybx69b21qla"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("iterate" ,sbcl-iterate)))
+     (home-page "https://github.com/jphmrst/cl-org-sampler")
+     (synopsis "Extracting Common Lisp docstrings as Emacs Org-mode documents")
+     (description
+      "ORG-SAMPLER allows using Lisp docstrings and reflection to make org-mode
+text for inclusion into a larger document.")
+     (license license:llgpl))))
+
+(define-public ecl-org-sampler
+  (sbcl-package->ecl-package sbcl-org-sampler))
+
+(define-public cl-org-sampler
+  (sbcl-package->cl-source-package sbcl-org-sampler))
