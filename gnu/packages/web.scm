@@ -8007,7 +8007,7 @@ solution for any project's interface needs:
 (define-public libzim
   (package
     (name "libzim")
-    (version "6.3.0")
+    (version "6.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8015,7 +8015,7 @@ solution for any project's interface needs:
                     (commit version)))
               (sha256
                (base32
-                "0iy0f1clhihq277x218ccx3mszgpr3h9l0by48b9ykr115nffw3s"))
+                "00kc4qc0a69jh1jwk5xhi567b7ffpc3p38ffrf2xaax4hvpjwmn6"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (arguments
