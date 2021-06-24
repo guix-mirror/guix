@@ -713,7 +713,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
 
      #$@(map virtfs-option shared-fs)
      "-vga std"
-     (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly"
+     (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly=on"
              #$image)))
 
 (define* (system-qemu-image/shared-store-script os
