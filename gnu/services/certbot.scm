@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,8 @@
                        (default '()))
   (challenge           certificate-configuration-challenge
                        (default #f))
+  (csr                 certificate-configuration-csr
+                       (default #f))
   (authentication-hook certificate-authentication-hook
                        (default #f))
   (cleanup-hook        certificate-cleanup-hook
@@ -94,8 +97,8 @@
              (map
               (match-lambda
                 (($ <certificate-configuration> custom-name domains challenge
-                                                authentication-hook cleanup-hook
-                                                deploy-hook)
+                                                csr authentication-hook
+                                                cleanup-hook deploy-hook)
                  (let ((name (or custom-name (car domains))))
                    (if challenge
                      (append
@@ -105,6 +108,7 @@
                             "--cert-name" name
                             "--manual-public-ip-logging-ok"
                             "-d" (string-join domains ","))
+                      (if csr `("--csr" ,csr) '())
                       (if email
                           `("--email" ,email)
                           '("--register-unsafely-without-email"))
@@ -120,6 +124,7 @@
                             "--webroot" "-w" webroot
                             "--cert-name" name
                             "-d" (string-join domains ","))
+                      (if csr `("--csr" ,csr) '())
                       (if email
                           `("--email" ,email)
                           '("--register-unsafely-without-email"))
