@@ -8943,7 +8943,7 @@ is complete it provides a graphical representation of each selected folder.")
          "0zxlwy55fz7i582hch2wnj8zy1kzikssgaix0l2y41ccp5nzpdy2"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("gettext" ,gettext-minimal)))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-backgrounds")
     (synopsis "Background images for the GNOME desktop")
     (description
