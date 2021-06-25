@@ -18000,3 +18000,53 @@ functions allow Lisp programs to explore the web.")
 
 (define-public cl-acl-compat
   (sbcl-package->cl-source-package sbcl-acl-compat))
+
+(define-public sbcl-aserve
+  ;; There does not seem to be proper releases.
+  (let ((commit "cac1d6920998ddcbee8310a873414732e707d8e5"))
+    (package
+      (name "sbcl-aserve")
+      (version (git-version "1.2.50" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; https://github.com/franzinc/aserve/ seems to be incompatible
+               ;; with SBCL, etc.
+               (url "git://git.code.sf.net/p/portableaserve/git")
+               (commit commit)))
+         (file-name (git-file-name "aserve" version))
+         (sha256
+          (base32 "0ak6mqp84sjr0a7h5svr16vra4bf4fcx6wpir0n88dc1vjwy5xqa"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'cd-aserve
+             (lambda _
+               (chdir "aserve")
+               #t))
+           (add-after 'cd-aserve 'fix-asd
+             (lambda _
+               (substitute* "aserve.asd"
+                 ((" :force t") ""))
+               #t))
+           (add-after 'cd-aserve 'fix-tests
+             (lambda _
+               (substitute* "test/t-aserve.cl"
+                 (("\\(asdf:oos 'asdf:load-op :ptester\\)") ""))
+               #t)))))
+      (inputs
+       `(("acl-compat" ,sbcl-acl-compat)))
+      (home-page "https://franz.com/support/documentation/current/doc/aserve/aserve.html")
+      (synopsis "AllegroServe, a web server written in Common Lisp")
+      (description
+       "The server part of AllegroServe can be used either as a standalone web
+server or a module loaded into an application to provide a user interface to
+the application.  AllegroServe's proxy ability allows it to run on the gateway
+machine between some internal network and the Internet.  AllegroServe's client
+functions allow Lisp programs to explore the web.")
+      (license license:llgpl))))
+
+(define-public cl-aserve
+  (sbcl-package->cl-source-package sbcl-aserve))
