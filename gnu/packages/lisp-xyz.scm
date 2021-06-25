@@ -18050,3 +18050,37 @@ functions allow Lisp programs to explore the web.")
 
 (define-public cl-aserve
   (sbcl-package->cl-source-package sbcl-aserve))
+
+(define-public sbcl-rss
+  ;; No release.
+  (let ((commit "2aeeb0301ac27d209bf1ee1be120ad0772838b79"))
+    (package
+      (name "sbcl-rss")
+      (version (git-version "0.9.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nsrahmad/cl-rss/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "039rpk8dx5b98jifyi6si49prdgacy9pz425ml0alx84mpflmqyl"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Tests are missing.
+       `(#:tests? #f))
+      (inputs
+       `(("aserve" ,sbcl-aserve)
+         ("kmrcl" ,sbcl-kmrcl)
+         ("xmls" ,sbcl-xmls)))
+      (home-page "https://github.com/nsrahmad/cl-rss")
+      (synopsis "Common Lisp RSS processor")
+      (description
+       "This package provides a Common Lisp library for fetching and parsing
+RSS feeds data via HTTP.  Currently, it supports RSS versions 0.90,
+0.91, and 0.92 as well as RSS version 2.")
+      (license license:bsd-3))))
+
+(define-public cl-rss
+  (sbcl-package->cl-source-package sbcl-rss))
