@@ -29451,3 +29451,34 @@ complex functions.")
 providing a range of new grammar classes that can be added to the plot object
 in order to customise how it should change with time.")
     (license license:expat)))
+
+;; This library bundles ‘date’ from (gnu packages calendar). We cannot unbundle
+;; it, because its C++ libtz.so is built with different compiler flags than
+;; ours.
+(define-public r-tzdb
+ (package
+    (name "r-tzdb")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "tzdb" version))
+        (sha256
+          (base32
+            "0ym5rh6abs8ash6xz0av0gfhsjp7k1lgnjvpba36zwrxyfg2wrqi"))))
+    (properties `((upstream-name . "tzdb")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-cpp11" ,r-cpp11)))
+    (home-page "https://github.com/r-lib/tzdb")
+    (synopsis "Time Zone Database Information")
+    (description
+      "This package provides an up-to-date copy of the Internet Assigned
+Numbers Authority (IANA) Time Zone Database.  It is updated periodically to
+reflect changes made by political bodies to time zone boundaries, UTC offsets,
+and daylight saving time rules.  Additionally, this package provides a C++
+interface for working with the @code{date} library. @code{date} provides
+comprehensive support for working with dates and date-times, which this package
+exposes to make it easier for other R packages to utilize.  Headers are
+provided for calendar specific calculations, along with a limited interface for
+time zone manipulations.")
+    (license license:expat)))
