@@ -3215,7 +3215,7 @@ application's http.Handlers.")
 (define-public go-github-com-pelletier-go-toml
   (package
     (name "go-github-com-pelletier-go-toml")
-    (version "1.8.0")
+    (version "1.9.3")
     (source
      (origin
        (method git-fetch)
@@ -3225,7 +3225,7 @@ application's http.Handlers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fxmjm85c9h43lvqz71wr93fcc63bhj82nwby80222xx8ja63g7y"))))
+         "0cqwnvlgs1wgdgjxlwv8j52f7d6syniadr51sjh2fya99m5wzvsn"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/pelletier/go-toml"))
