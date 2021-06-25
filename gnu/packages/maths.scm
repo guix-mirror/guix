@@ -4073,7 +4073,7 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "5.9.0")
+    (version "5.10.1")
     (source
      (origin
        (method git-fetch)
@@ -4083,7 +4083,7 @@ Fresnel integrals, and similar related functions as well.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zhkix58afw92s7p291prljdm3yi0pjg1kbi3lczdb8rb14jkz5n"))
+         "19gx5wlgqnqpgz6mvam9lalyzpbfwgqhppps8z3np9sh0mgaiyw9"))
        (patches (search-patches "suitesparse-mongoose-cmake.patch"))
        (modules '((guix build utils)))
        (snippet
