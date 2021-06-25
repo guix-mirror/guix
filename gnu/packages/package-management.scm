@@ -589,7 +589,7 @@ out) and returning a package that uses that as its 'source'."
     (version "2.3.13")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://nixos.org/releases/nix/nix-"
+             (uri (string-append "https://releases.nixos.org/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
