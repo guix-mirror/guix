@@ -423,7 +423,7 @@ server certificates."
                            (list error/invalid-session
 
                                  ;; XXX: These two are not properly handled in
-                                 ;; GnuTLS < 3.7.2, in
+                                 ;; GnuTLS < 3.7.3, in
                                  ;; 'write_to_session_record_port'; see
                                  ;; <https://bugs.gnu.org/47867>.
                                  error/again error/interrupted)))
