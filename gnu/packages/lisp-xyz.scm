@@ -17959,3 +17959,44 @@ text for inclusion into a larger document.")
 
 (define-public cl-org-sampler
   (sbcl-package->cl-source-package sbcl-org-sampler))
+
+(define-public sbcl-acl-compat
+  ;; There does not seem to be proper releases.
+  (let ((commit "cac1d6920998ddcbee8310a873414732e707d8e5"))
+    (package
+      (name "sbcl-acl-compat")
+      (version (git-version "0.1.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.code.sf.net/p/portableaserve/git")
+               (commit commit)))
+         (file-name (git-file-name "acl-compat" version))
+         (sha256
+          (base32 "0ak6mqp84sjr0a7h5svr16vra4bf4fcx6wpir0n88dc1vjwy5xqa"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'cd-acl-compat
+             (lambda _
+               (chdir "acl-compat")
+               #t)))))
+      (inputs
+       `(("puri" ,sbcl-puri)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("ironclad" ,sbcl-ironclad)
+         ("cl-fad" ,sbcl-cl-fad)))
+      (home-page "https://sourceforge.net/projects/portableaserve/")
+      (synopsis "AllegroServe, a web server written in Common Lisp")
+      (description
+       "The server part of AllegroServe can be used either as a standalone web
+server or a module loaded into an application to provide a user interface to
+the application.  AllegroServe's proxy ability allows it to run on the gateway
+machine between some internal network and the Internet.  AllegroServe's client
+functions allow Lisp programs to explore the web.")
+      (license license:llgpl))))
+
+(define-public cl-acl-compat
+  (sbcl-package->cl-source-package sbcl-acl-compat))
