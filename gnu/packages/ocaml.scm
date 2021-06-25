@@ -7071,6 +7071,21 @@ Graphics.open_graph is called.  This library used to be distributed with OCaml
 up to OCaml 4.08.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml-uri-sexp
+  (package
+    (inherit ocaml-uri)
+    (name "ocaml-uri-sexp")
+    (arguments
+     '(#:package "uri-sexp"
+       #:test-target "."))
+    (propagated-inputs
+      `(("ocaml-uri" ,ocaml-uri)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
+    (synopsis "RFC3986 URI/URL parsing library")
+    (description "This package adds S-exp support to @code{ocaml-uri}.")))
+
 (define-public js-of-ocaml
   (package
     (name "js-of-ocaml")
