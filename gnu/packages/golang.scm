@@ -6567,7 +6567,7 @@ can be used almost directly in Go source code.")
 (define-public go-github-com-sergi-go-diff
   (package
     (name "go-github-com-sergi-go-diff")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6576,7 +6576,7 @@ can be used almost directly in Go source code.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ir8ali2vx0j7pipmlfd6k8c973akyy2nmbjrf008fm800zcp7z2"))))
+                "0cbj8nshllq102iiav0k1s01b8gwbkzj674g71n938qqna32y2pa"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/sergi/go-diff/diffmatchpatch"
