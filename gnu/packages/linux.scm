@@ -3563,7 +3563,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public interception-tools
   (package
     (name "interception-tools")
-    (version "0.6.4")
+    (version "0.6.6")
     (home-page "https://gitlab.com/interception/linux/tools")
     (source (origin
               (method git-fetch)
@@ -3573,7 +3573,7 @@ devices that can inject events directly into the input subsystem.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "121jy40ynkbzlqnx7g0dqwvkb7dm2ahcy6vwrz6ylsyd0jmi6s5a"))))
+                "0k9h14a9d65nwvv7pj0kigjgzfv453mm3r4svnxfg1h5lccmy8jj"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost)
