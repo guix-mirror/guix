@@ -6492,7 +6492,7 @@ matching and globbing with support for \"doublestar\" patterns.")
 (define-public go-github-com-dlclark-regexp2
   (package
     (name "go-github-com-dlclark-regexp2")
-    (version "1.2.0")
+    (version "1.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6501,7 +6501,7 @@ matching and globbing with support for \"doublestar\" patterns.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "011l1prsywvhhi0yc7qmpsca1cwavmawyyld5kjzi0ff9ghvj4ng"))))
+                "1irfv89b7lfkn7k3zgx610ssil6k61qs1wjj31kvqpxb3pdx4kry"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/dlclark/regexp2"))
