@@ -3531,7 +3531,14 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))))
+                "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "Makefile"
+                    (("go test -v")
+                     "GO111MODULE=off go test -v"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
