@@ -18053,23 +18053,20 @@ functions allow Lisp programs to explore the web.")
 
 (define-public sbcl-rss
   ;; No release.
-  (let ((commit "2aeeb0301ac27d209bf1ee1be120ad0772838b79"))
+  (let ((commit "51d0145e91b86327ae5c36364f9c3048052e7a58"))
     (package
       (name "sbcl-rss")
-      (version (git-version "0.9.1" "1" commit))
+      (version (git-version "0.9.1.1" "2" commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/nsrahmad/cl-rss/")
+               (url "http://git.kpe.io/cl-rss.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "039rpk8dx5b98jifyi6si49prdgacy9pz425ml0alx84mpflmqyl"))))
+          (base32 "0wv3j13fj73gigriw5r9vi920hz05ld7zllsvbxdxvmyfy9k1kly"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       ;; Tests are missing.
-       `(#:tests? #f))
       (inputs
        `(("aserve" ,sbcl-aserve)
          ("kmrcl" ,sbcl-kmrcl)
