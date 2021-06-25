@@ -4098,6 +4098,11 @@ Fresnel integrals, and similar related functions as well.")
        (list (string-append "CC=" ,(cc-for-target))
              "TBB=-ltbb"
              "MY_METIS_LIB=-lmetis"
+
+             ;; The default is to link against netlib lapack.  Use OpenBLAS
+             ;; instead.
+             "BLAS=-lopenblas" "LAPACK=-lopenblas"
+
              ;; Flags for cmake (required to build GraphBLAS and Mongoose)
              (string-append "CMAKE_OPTIONS=-DCMAKE_INSTALL_PREFIX="
                             (assoc-ref %outputs "out")
@@ -4117,7 +4122,7 @@ Fresnel integrals, and similar related functions as well.")
          (delete 'configure))))         ;no configure script
     (inputs
      `(("tbb" ,tbb)
-       ("lapack" ,lapack)
+       ("openblas" ,openblas)
        ("gmp" ,gmp)
        ("mpfr" ,mpfr)
        ("metis" ,metis)))
