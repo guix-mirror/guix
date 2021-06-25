@@ -320,6 +320,27 @@ always possible.")
     (license (list license:bsd-2        ; src/fuse_kernel.h
                    license:gpl3+))))    ; everything else
 
+(define-public exfat-utils
+  (package
+    (name "exfat-utils")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/relan/exfat/releases/download/v"
+             version "/exfat-utils-" version ".tar.gz"))
+       (sha256
+        (base32 "0da8f8mm1sbwqp7prh78qk33xm0b8kk2d5is7mh2szlhgdxd1syz"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/relan/exfat")
+    (synopsis "Utilities to manipulate exFAT file systems")
+    (description
+     "This package provides an implementation of the exFAT file system,
+including command-line tools to validate exFAT file systems and to create new
+ones.")
+    (license license:gpl2+)))
+
 (define-public fsarchiver
   (package
     (name "fsarchiver")
