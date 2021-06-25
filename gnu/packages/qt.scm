@@ -338,6 +338,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
+       ("gtk+" ,gtk+)                   ;for GTK theme support
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
        ("libinput" ,libinput-minimal)
