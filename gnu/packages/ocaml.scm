@@ -3452,7 +3452,7 @@ JSON.")
 (define-public ocaml-uri
   (package
     (name "ocaml-uri")
-    (version "4.1.0")
+    (version "4.2.0")
     (home-page "https://github.com/mirage/ocaml-uri")
     (source
      (origin
@@ -3463,7 +3463,7 @@ JSON.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10bf28my1yhj8a2d7bkgbna9j20wq0ghp92k926y29bmjj2qh0l7"))))
+         "1bgkc66cq00mgnkz3i535srwzwc4cpdsv0mly5dzvvq33451xwf0"))))
     (build-system dune-build-system)
     (arguments '(#:package "uri"
                  #:test-target "."))
