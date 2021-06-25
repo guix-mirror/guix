@@ -29482,3 +29482,43 @@ exposes to make it easier for other R packages to utilize.  Headers are
 provided for calendar specific calculations, along with a limited interface for
 time zone manipulations.")
     (license license:expat)))
+
+(define-public r-vroom
+  (package
+    (name "r-vroom")
+    (version "1.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "vroom" version))
+        (sha256
+          (base32
+            "1f07wa85qydpm6zjyiljg6px1l78wkcgcpm4l9mp9ffb7hmqq2zy"))))
+    (properties `((upstream-name . "vroom")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-bit64" ,r-bit64)
+        ("r-cli" ,r-cli)
+        ("r-cpp11" ,r-cpp11)
+        ("r-crayon" ,r-crayon)
+        ("r-glue" ,r-glue)
+        ("r-hms" ,r-hms)
+        ("r-lifecycle" ,r-lifecycle)
+        ("r-progress" ,r-progress)
+        ("r-rlang" ,r-rlang)
+        ("r-tibble" ,r-tibble)
+        ("r-tidyselect" ,r-tidyselect)
+        ("r-tzdb" ,r-tzdb)
+        ("r-vctrs" ,r-vctrs)
+        ("r-withr" ,r-withr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://vroom.r-lib.org")
+    (synopsis
+      "Read and Write Rectangular Text Data")
+    (description
+      "This package reads and writes data files like @acronym{CSV},
+@acronym{TSV} and @acronym{FWF}.  When reading it uses a quick initial indexing
+step, then reads the values lazily, so only the data you actually use needs to
+be read.  The writer formats the data in parallel and writes to disk
+asynchronously from formatting.")
+    (license license:expat)))
