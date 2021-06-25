@@ -6334,7 +6334,7 @@ suffix comparison, rather than the string-based or tree-based approaches.")
 (define-public go-github-com-masterminds-goutils
   (package
     (name "go-github-com-masterminds-goutils")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6343,7 +6343,7 @@ suffix comparison, rather than the string-based or tree-based approaches.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "180px47gj936qyk5bkv5mbbgiil9abdjq6kwkf7sq70vyi9mcfiq"))))
+                "09m4mbcdlv9ng3xcrmjlxi0niavby52y9nl2jhjnbx1xxpjw0jrh"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/Masterminds/goutils"))
