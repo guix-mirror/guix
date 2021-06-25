@@ -1247,3 +1247,61 @@ purposes.")
     (description "Python library for object detection, semantic and instance
 segmentation.")
     (license license:expat)))
+
+(define-public labelme
+  (package
+    (name "labelme")
+    (version "4.5.7")
+    (source
+     (origin
+       ;; PyPi tarball lacks tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wkentaro/labelme.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rgyd76mczv0d0gg6n4qhkjm7icjpx73a0896max2lvjkpplhsmv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               ;; Options taken from CI workflow.
+               (system (string-append xorg-server "/bin/Xvfb :99 -screen 0 "
+                                      "1920x1200x24 -ac +extension GLX +render "
+                                      "-noreset &"))
+               (setenv "DISPLAY" ":99.0"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Fails when invoking help2man for unknown reason.
+               (delete-file "tests/docs_tests/man_tests/test_labelme_1.py")
+               ;; One test hangs.
+               (delete-file "tests/labelme_tests/widgets_tests/test_label_dialog.py")
+               ;; Calls incompatible function signatures.
+               (delete-file "tests/labelme_tests/widgets_tests/test_label_list_widget.py")
+               (setenv "MPLBACKEND" "agg")
+               (invoke "pytest" "-v" "tests" "-m" "not gpu")))))))
+    (propagated-inputs
+      `(("python-imgviz" ,python-imgviz)
+        ("python-matplotlib" ,python-matplotlib)
+        ("python-numpy" ,python-numpy)
+        ("python-pillow" ,python-pillow)
+        ("python-pyyaml" ,python-pyyaml)
+        ("python-qtpy" ,python-qtpy)
+        ("python-termcolor" ,python-termcolor)))
+    (native-inputs
+      `(("python-pytest" ,python-pytest)
+        ("python-pytest-qt" ,python-pytest-qt)
+        ("xorg-server" ,xorg-server-for-tests)))
+    (home-page "https://github.com/wkentaro/labelme")
+    (synopsis
+      "Image Polygonal Annotation")
+    (description
+      "Image and video labeling tool supporting different shapes like
+polygons, rectangles, circles, lines, points and VOC/COCO export.")
+    (license license:gpl3+)))
