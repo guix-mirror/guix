@@ -690,9 +690,9 @@ endef
 # in <https://issues.guix.gnu.org/48963>.  Each 'eval' call below creates a
 # 'make-*-go' phony target that builds the corresponding subset.
 
-MODULES_CORE     = $(filter-out guix/scripts/%,$(filter guix/%,$(MODULES)))
+MODULES_CORE     = guix.scm $(filter-out guix/scripts/%,$(filter guix/%,$(MODULES)))
 MODULES_PACKAGES = $(filter gnu/packages/%,$(MODULES))
-MODULES_SYSTEM   = $(filter-out gnu/packages/%,$(filter gnu/%,$(MODULES)))
+MODULES_SYSTEM   = gnu.scm $(filter-out gnu/packages/%,$(filter gnu/%,$(MODULES)))
 MODULES_CLI      = $(filter guix/scripts/%,$(MODULES))
 
 $(eval $(call guile-compilation-rule,make-core-go,	\
