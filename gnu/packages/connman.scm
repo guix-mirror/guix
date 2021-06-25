@@ -28,6 +28,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
@@ -44,15 +45,14 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.39")
+    (version "1.40")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             "connman-" version ".tar.xz"))
-        (patches (search-patches "connman-CVE-2021-33833.patch"))
         (sha256
-         (base32 "1wqs307vjphhh73qbqk25zxhhqwn1mdk6bpzl5qcd4blkcbafqlz"))))
+         (base32 "04nbxpaxykncp65fyh4lk778vn9145fbxhxa8hbkmailw9yawmqs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -76,6 +76,7 @@
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("libmnl" ,libmnl)
+       ("lz4" ,lz4)                     ; required by openconnect.pc
        ("readline" ,readline)
        ;; These inputs are needed for connman to include the interface to
        ;; these technologies so IF they are installed they can be used.
