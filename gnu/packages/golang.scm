@@ -6683,7 +6683,7 @@ the parse trees produced by the html package.")
 (define-public go-github-com-puerkitobio-goquery
   (package
     (name "go-github-com-puerkitobio-goquery")
-    (version "1.5.1")
+    (version "1.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6692,7 +6692,7 @@ the parse trees produced by the html package.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08nf88cg663slzqr51k2jxlm1krnh86nrzwbk6v41ccq5jkfm7fx"))))
+                "0gh1d99l5xc9hvwa4j40pfq3y9vfyq52mnrz6bf1kw2r2zr2gbcc"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/PuerkitoBio/goquery"))
