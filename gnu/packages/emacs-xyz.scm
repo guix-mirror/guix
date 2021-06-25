@@ -81,7 +81,7 @@
 ;;; Copyright © 2020, 2021 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
-;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020, 2021 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
@@ -146,6 +146,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
@@ -26217,6 +26218,58 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
 @code{helm-switch-to-repl} action, a generalized and extensible version of
 @code{helm-ff-switch-to-shell}.  It can be added to @code{helm-find-files} and
 other @code{helm-type-file} sources such as @code{helm-locate}.")
+    (license license:gpl3+)))
+
+(define-public emacs-telega-server
+  (package
+    (name "emacs-telega-server")
+    (version "0.7.024")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zevlg/telega.el")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1ra04cp49zzx8vy8aswd00l46ixyc44sxh1s3nw880b4ywzxmc6j"))
+       (file-name (git-file-name "emacs-telega" version))
+       (patches
+        (search-patches "emacs-telega-path-placeholder.patch"
+                        "emacs-telega-test-env.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-subdirectory
+           (lambda _ (chdir "server") #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("CC=cc") ,(string-append "CC=" (cc-for-target)))
+                 (("^(INSTALL_PREFIX=).*$" _all prefix)
+                  (string-append prefix out "/bin\n")))
+
+               (substitute* "run_tests.py"
+                 (("^(TELEGA_SERVER = ).*$" _all prefix)
+                  (string-append prefix
+                                 "\"" out "/bin/telega-server\"\n"))))))
+         (delete 'check)
+         (add-after 'install 'check
+           (assoc-ref %standard-phases 'check))
+         (add-before 'install-license-files 'leave-subdirectory
+           (lambda _ (chdir "..") #t)))
+       #:test-target "test"))
+    (inputs
+     `(("tdlib" ,tdlib)
+       ("libappindicator" ,libappindicator)))
+    (native-inputs
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://zevlg.github.io/telega.el/")
+    (synopsis "Server process of Telega")
+    (description "Telega-server is helper program to interact with Telegram
+service, and connect it with Emacs via inter-process communication.")
     (license license:gpl3+)))
 
 (define-public emacs-telega

@@ -988,7 +988,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-hyperbole-toggle-messaging.patch	\
   %D%/packages/patches/emacs-libgit-use-system-libgit2.patch    \
   %D%/packages/patches/emacs-source-date-epoch.patch		\
-  %D%/packages/patches/emacs-telega-patch-server-functions.patch	\
+  %D%/packages/patches/emacs-telega-path-placeholder.patch	\
   %D%/packages/patches/emacs-telega-test-env.patch		\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/enjarify-setup-py.patch			\
