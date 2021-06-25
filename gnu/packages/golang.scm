@@ -3504,30 +3504,28 @@ which satisfies the cron expression.")
                      license:asl2.0)))))
 
 (define-public go-gopkg-in-check-v1
-  (let ((commit "788fd78401277ebd861206a03c884797c6ec5541")
-        (revision "1"))
-    (package
-      (name "go-gopkg-in-check-v1")
-      (version (git-version "1.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/go-check/check")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0v3bim0j375z81zrpr5qv42knqs0y2qv2vkjiqi5axvb78slki1a"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "gopkg.in/check.v1"))
-      (propagated-inputs
-       `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
-      (home-page "https://gopkg.in/check.v1")
-      (synopsis "Test framework for the Go language")
-      (description "This package provides a test library for the Go language.")
-      (license license:asl2.0))))
+  (package
+    (name "go-gopkg-in-check-v1")
+    (version "1.0.0-20201130134442-10cb98267c6c")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-check/check")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1jwxndf8rsyx0fgrp47d99rp55yzssmryb92jfj3yf7zd8rjjljn"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/check.v1"))
+    (propagated-inputs
+     `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+    (home-page "https://gopkg.in/check.v1")
+    (synopsis "Test framework for the Go language")
+    (description "This package provides a test library for the Go language.")
+    (license license:bsd-2)))
 
 (define-public go-gopkg-in-ini-v1
   (package
