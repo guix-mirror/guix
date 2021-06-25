@@ -26340,19 +26340,28 @@ service, and connect it with Emacs via inter-process communication.")
 for the Telegram messaging platform.")))
 
 (define-public emacs-telega-contrib
-  (package/inherit emacs-telega
+  (package
+    (inherit emacs-telega)
     (name "emacs-telega-contrib")
-    (build-system emacs-build-system)
     (arguments
      `(#:exclude '("telega-live-location.el")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "contrib") #t)))))
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _ (chdir "contrib") #t))
+         (add-before 'install-license-files 'leave-subdirectory
+           (lambda _ (chdir "..") #t)))))
+    (inputs '())
+    (native-inputs '())
     (propagated-inputs
-     `(("emacs-telega" ,emacs-telega)
-       ("emacs-alert" ,emacs-alert)
-       ("emacs-all-the-icons" ,emacs-all-the-icons)))))
+     `(("emacs-alert" ,emacs-alert)
+       ("emacs-all-the-icons" ,emacs-all-the-icons)
+       ("emacs-dashboard" ,emacs-dashboard)
+       ("emacs-telega" ,emacs-telega)
+       ("emacs-transient" ,emacs-transient)))
+    (synopsis "Contributed packages to Telega")
+    (description "Telega-contrib is a collection of third-party
+contributed packages to Telega.")))
 
 (define-public emacs-doom-modeline
   (package
