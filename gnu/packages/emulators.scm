@@ -343,10 +343,22 @@ older games.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       ;; Several files #include <SDL_net.h> instead of <SDL2/SDL_net.h>,
-       ;; including configure.ac itself.
-       (list (string-append "CXXFLAGS=-I" (assoc-ref %build-inputs "sdl2")
-                            "/include/SDL2"))))
+       (let* ((flags (list "-O3"
+                           ;; From scripts/automator/build/gcc-defaults.
+                           "-fstrict-aliasing"
+                           "-fno-signed-zeros"
+                           "-fno-trapping-math"
+                           "-fassociative-math"
+                           "-frename-registers"
+                           "-ffunction-sections"
+                           "-fdata-sections"))
+              (CFLAGS (string-join flags " ")))
+         ;; Several files #include <SDL_net.h> instead of <SDL2/SDL_net.h>,
+         ;; including configure.ac itself.
+         (list (string-append "CPPFLAGS=-I" (assoc-ref %build-inputs "sdl2")
+                              "/include/SDL2")
+               (string-append "CFLAGS=" CFLAGS)
+               (string-append "CXXFLAGS=-DNDEBUG " CFLAGS)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
