@@ -326,6 +326,66 @@ SoundBlaster/Gravis Ultra Sound card for excellent sound compatibility with
 older games.")
     (license license:gpl2+)))
 
+(define-public dosbox-staging
+  ;; This is not a patch staging area for DOSBox, but an unaffiliated fork.
+  (package
+    (name "dosbox-staging")
+    (version "0.76.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dosbox-staging/dosbox-staging")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14zlkm9qmaq2x4zdiadczsxvdnrf35w13ccvkxzd8cwrzxv84fvd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; Several files #include <SDL_net.h> instead of <SDL2/SDL_net.h>,
+       ;; including configure.ac itself.
+       (list (string-append "CXXFLAGS=-I" (assoc-ref %build-inputs "sdl2")
+                            "/include/SDL2"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fluidsynth" ,fluidsynth)
+       ("libpng" ,libpng)
+       ("opusfile" ,opusfile)
+       ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
+       ("zlib" ,zlib)))
+    (home-page "https://dosbox-staging.github.io")
+    (synopsis "DOS/x86 PC emulator focusing on ease of use")
+    (description
+     "The DOSBox Staging project attempts to modernize DOSBox.
+
+DOSBox emulates an Intel x86 personal computer running an IBM PC compatible disk
+operating system (@dfn{DOS}) in both real and protected modes.  It was primarily
+designed to run old DOS games, but aims to be fully compatible with all DOS
+programs and replicate the experience as accurately as possible.
+
+This fork fixes some perceived issues with DOSBox and adds new features such as
+Wayland support, PowerPC/POWER dynamic recompilation, and FluidSynth MIDI.
+Other features may be removed: for example, physical CDs can no longer be
+played, only emulated media.
+
+Graphical emulation includes contemporary text mode, Hercules, CGA, EGA, VGA,
+VESA, S3@tie{}Trio@tie{}64, and Tandy hardware.
+
+Emulated legacy sound devices range from a rudimentary `PC speaker' buzzer to
+the once state-of-the-art Gravis Utrasound sampling sound card.  The default is
+a SoundBlaster 16 providing 16-bit stereo sound.  MIDI is forwarded to the host
+through an emulated MPU-401.
+
+An emulated hardware modem is also included, letting one host or dial a
+@acronym{BBS, Bulletin Board System} across the Internet, network over IPX, and
+emulate a serial nullmodem over TCP/IP.")
+    (license license:gpl3+)))
+
 (define-public qtmips
   (package
     (name "qtmips")
