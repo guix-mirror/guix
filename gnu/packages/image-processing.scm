@@ -42,6 +42,7 @@
   #:use-module (guix build-system qt)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
@@ -72,6 +73,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
@@ -1209,3 +1211,39 @@ and Scan Tailor Enhanced versions as well as including many more bug fixes.")
 Transport System} images to the more popular TIFF format for illustration
 purposes.")
     (license license:gpl3+)))
+
+(define-public python-imgviz
+  (package
+    (name "python-imgviz")
+    (version "1.2.6")
+    (source
+     (origin
+       ;; PyPi tarball lacks tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wkentaro/imgviz.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bm0wdv5p26i8nl4kx3145cz553v401sgbpgc96sddzjfmfiydcw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v" "tests"))
+             #t)))))
+    (propagated-inputs
+      `(("python-matplotlib" ,python-matplotlib)
+        ("python-numpy" ,python-numpy)
+        ("python-pillow" ,python-pillow)
+        ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "http://github.com/wkentaro/imgviz")
+    (synopsis "Image Visualization Tools")
+    (description "Python library for object detection, semantic and instance
+segmentation.")
+    (license license:expat)))
