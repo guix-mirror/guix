@@ -8059,7 +8059,7 @@ programs that use traditional command lines.")
 (define-public go-go-uber-org-atomic
   (package
     (name "go-go-uber-org-atomic")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -8068,7 +8068,7 @@ programs that use traditional command lines.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yxvb5sixh76cl9j8dpa97gznj0p8pmg2cdw0ypfwhd3ipx9wph1"))))
+        (base32 "0grswsk7nkf7zmmychf6aj6032shyag1kgs6zf7qwxyn55dym1v8"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "go.uber.org/atomic"))
