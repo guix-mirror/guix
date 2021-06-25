@@ -6170,7 +6170,7 @@ discovery protocols.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.38.0")
+    (version "3.38.1")
     (source
      (origin
        (method url-fetch)
@@ -6178,8 +6178,7 @@ discovery protocols.")
                            (version-major+minor version) "/"
                            "totem-" version ".tar.xz"))
        (sha256
-        (base32
-         "0bs33ijvxbr2prb9yj4dxglsszslsn9k258n311sld84masz4ad8"))))
+        (base32 "02510lvzvxvmpcs64k6sqix8ysl7sihhhwvp0vmfv7521ryczylg"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -6240,14 +6239,6 @@ discovery protocols.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t))
-         (add-after 'unpack 'patch-failing-test
-           (lambda _
-             ;; Work around test failure with GStreamer 1.18, because the test
-             ;; relies on "und" not being mapped to a particular language:
-             ;; https://gitlab.gnome.org/GNOME/totem/-/issues/450
-            (substitute* "src/test-totem.c"
-              (("und") "nosuchlang"))
-            #t))
          (add-before
           'install 'disable-cache-generation
           (lambda _
