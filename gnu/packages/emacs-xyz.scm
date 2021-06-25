@@ -26273,125 +26273,71 @@ service, and connect it with Emacs via inter-process communication.")
     (license license:gpl3+)))
 
 (define-public emacs-telega
-  ;; This package has versions newer than indicated on MELPA.
-  ;; Get the current version from `telega-version` in telega.el.
-  ;; or by running M-x telega-version.
-  (let ((commit "1d28dc209e2acf1a3bf2852cc620b6e412ea73f9")
-	(revision "1")
-	(version "0.7.1"))
-    (package
-      (name "emacs-telega")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/zevlg/telega.el")
-               (commit commit)))
-         (sha256
-          (base32
-           "0h6kj3r36x26v6p4gkzg5s6fv0brlvrf6ycsdwnz27fw5sdb99k7"))
-         (patches (search-patches
-                   "emacs-telega-patch-server-functions.patch"
-                   "emacs-telega-test-env.patch"))
-         (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    ((guix build emacs-build-system) #:prefix emacs:)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-build-system)
-                             (guix build emacs-utils))
-         #:test-target "test"
-         ;; TODO: Currently tgVOIP is not functional, thus we have disabled it
-         ;; temporarily.
-         ;; #:make-flags (list "WITH_VOIP=t")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'prefix-patch
-             (lambda _
-               (substitute* "server/Makefile"
-                 (("CC=cc")
-                  ,(string-append "CC=" (cc-for-target)))
-                 (("INSTALL_PREFIX=\\$\\(HOME\\)/.telega")
-                  (string-append "INSTALL_PREFIX=" (assoc-ref %outputs "out")
-                                 "/bin"))
-                 ;; Manually invoke `run_tests.py` after install phase.
-                 (("python3 run_tests.py")
-                  ""))
-               #t))
-           (add-after 'unpack 'expand-load-path
-             (assoc-ref emacs:%standard-phases 'expand-load-path))
-           (add-after 'unpack 'patch-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; Hard-code paths to `ffplay` and `ffmpeg`.
-               (let ((ffplay-bin (string-append (assoc-ref inputs "ffmpeg")
-                                                "/bin/ffplay"))
-                     (ffmpeg-bin (string-append (assoc-ref inputs "ffmpeg")
-                                                "/bin/ffmpeg")))
-                 (substitute* "telega-ffplay.el"
-                   (("\\(executable-find \"ffplay\"\\)")
-                    (string-append
-                     "(and (file-executable-p \"" ffplay-bin "\")"
-                     "\"" ffplay-bin "\")"))
-                   (("\\(executable-find \"ffmpeg\"\\)")
-                    (string-append
-                     "(and (file-executable-p \"" ffmpeg-bin "\")"
-                     "\"" ffmpeg-bin "\")"))))
-               ;; This would push the "contrib" sources to the load path,
-               ;; but as contrib is not installed alongside telega, it does
-               ;; nothing.
-               (substitute* "telega.el"
-                 (("\\(push .* load-path\\)") ""))
-               #t))
-           ;; The server test suite has a hardcoded path.
-           ;; Reset this behavior to use the proper path.
-           (add-after 'unpack 'patch-test-suite
-             (lambda _
-               (substitute* "server/run_tests.py"
-                 (("~/.telega/telega-server")
-                  (string-append (assoc-ref %outputs "out")
-                                 "/bin/telega-server")))
-               #t))
-           (add-after 'install 'run-server-suite
-             (lambda _
-               (invoke "python3" "server/run_tests.py")
-               #t))
-           (delete 'configure)
-           (add-after 'expand-load-path 'emacs-install
-             (lambda args
-               (apply (assoc-ref emacs:%standard-phases 'install)
-                      #:include `("etc" ,@emacs:%default-include)
-                      args)))
-           (add-after 'emacs-install 'emacs-build
-             (assoc-ref emacs:%standard-phases 'build))
-           (add-after 'emacs-install 'emacs-make-autoloads
-             (assoc-ref emacs:%standard-phases 'make-autoloads)))))
-      (inputs
-       `(("ffmpeg" ,ffmpeg))) ; mp4/gif support.
-      (propagated-inputs
-       `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
-         ("emacs-company" ,emacs-company)
-         ("emacs-rainbow-identifiers"
-          ,emacs-rainbow-identifiers)
-         ("libwebp" ,libwebp))) ; sticker support.
-      (native-inputs
-       `(("tdlib" ,tdlib)
-         ;; Use Emacs with wide ints on 32-bit architectures.
-         ("emacs" ,(match (%current-system)
-                     ((or "i686-linux" "armhf-linux")
-                      emacs-wide-int)
-                     (_
-                      emacs)))
-         ("python" ,python)))
-      (synopsis "GNU Emacs client for the Telegram messenger")
-      (description
-       "Telega is a full-featured, unofficial GNU Emacs-based client for the
-Telegram messaging platform.")
-      (home-page "https://zevlg.github.io/telega.el/")
-      (license license:gpl3+))))
+  (package
+    (inherit emacs-telega-server)
+    (name "emacs-telega")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:emacs ,(if (target-64bit?)
+                    emacs-minimal
+                    ;; Require wide-int support for 32-bit platform.
+                    emacs-wide-int)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hard-code paths to `ffplay` and `ffmpeg`.
+             (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (ffmpeg-bin (string-append ffmpeg "/bin/ffmpeg"))
+                    (ffplay-bin (string-append ffmpeg "/bin/ffplay")))
+              (substitute* "telega-ffplay.el"
+                (("(shell-command-to-string\|concat) \"(ffmpeg\|ffprobe)"
+                  all func cmd)
+                 (string-append func " \"" (assoc-ref inputs "ffmpeg")
+                                "bin/" cmd))
+                (("\\(executable-find \"ffplay\"\\)")
+                 (string-append "(and (file-executable-p \"" ffplay-bin "\")"
+                                "\"" ffplay-bin "\")"))
+                (("\\(executable-find \"ffmpeg\"\\)")
+                 (string-append "(and (file-executable-p \"" ffmpeg-bin "\")"
+                                "\"" ffmpeg-bin "\")"))))))
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "telega-server.el"
+               (("@TELEGA_SERVER_BIN@")
+                (string-append (assoc-ref inputs "emacs-telega-server")
+                               "/bin/telega-server")))
+             (substitute* "telega-util.el"
+               (("@TELEGA_SHARE@")
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs-telega")))))
+         (add-after 'install 'install-share-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define install-plan
+               '("langs" "sounds" "emojis.alist"
+                 "verified.svg" "telega-logo.svg"))
+
+             (define prefix (string-append (assoc-ref outputs "out")
+                                                "/share/emacs-telega"))
+             (with-directory-excursion "etc"
+               (for-each (lambda (file)
+                           (if (file-is-directory? file)
+                               (let ((dest (string-append prefix "/" file)))
+                                 (copy-recursively file dest))
+                               (install-file file prefix)))
+                         install-plan))
+             #t)))))
+    (inputs
+     `(("emacs-telega-server" ,emacs-telega-server)
+       ("ffmpeg" ,ffmpeg)))
+    (native-inputs '())
+    (propagated-inputs
+     `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
+       ("emacs-company" ,emacs-company)
+       ("emacs-rainbow-identifiers" ,emacs-rainbow-identifiers)))
+    (synopsis "GNU Emacs client for the Telegram messenger")
+    (description "Telega is a full-featured, unofficial GNU Emacs-based client
+for the Telegram messaging platform.")))
 
 (define-public emacs-telega-contrib
   (package/inherit emacs-telega
