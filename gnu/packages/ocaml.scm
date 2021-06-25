@@ -7086,6 +7086,44 @@ up to OCaml 4.08.")
     (synopsis "RFC3986 URI/URL parsing library")
     (description "This package adds S-exp support to @code{ocaml-uri}.")))
 
+(define-public ocaml-cohttp
+  (package
+    (name "ocaml-cohttp")
+    (version "4.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/mirage/ocaml-cohttp")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "02d7417yy1i62by368w3wyw3756047pbrw69spcvz3cd1z7vqaci"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:package "cohttp"
+       #:test-target "cohttp_test/src"))
+    (propagated-inputs
+      `(("ocaml-re" ,ocaml-re)
+        ("ocaml-uri" ,ocaml-uri)
+        ("ocaml-uri-sexp" ,ocaml-uri-sexp)
+        ("ocaml-sexplib0" ,ocaml-sexplib0)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-stringext" ,ocaml-stringext)
+        ("ocaml-base64" ,ocaml-base64)))
+    (native-inputs
+      `(("ocaml-fmt" ,ocaml-fmt)
+        ("ocaml-jsonm" ,ocaml-jsonm)
+        ("ocaml-alcotest" ,ocaml-alcotest)))
+    (home-page "https://github.com/mirage/ocaml-cohttp")
+    (synopsis "OCaml library for HTTP clients and servers")
+    (description
+      "Cohttp is an OCaml library for creating HTTP daemons.  It has a portable
+HTTP parser, and implementations using various asynchronous programming
+libraries.")
+    (license license:isc)))
+
 (define-public js-of-ocaml
   (package
     (name "js-of-ocaml")
