@@ -239,6 +239,21 @@ remembers the order in which the items were inserted and supports almost all the
 features of the Python's built-in dict.")
     (license license:unlicense)))
 
+(define-public python2-twodict
+  (package
+    (inherit python-twodict)
+    (name "python2-twodict")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "twodict" version))
+       (sha256
+        (base32 "0ifv7dv18jn2lg0a3l6zdlvmmlda2ivixfjbsda58a2ay6kxznr0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))))
+
 (define-public python-argopt
   (package
    (name "python-argopt")
