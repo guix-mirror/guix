@@ -18355,3 +18355,38 @@ Javascript.")
 (define-public cl-hunchenissr
   (sbcl-package->cl-source-package sbcl-hunchenissr))
 
+(define-public sbcl-hunchenissr-routes
+  (let ((commit "2e831975dc2a6c030f1b518747cf429be8484b31")
+        (revision "1"))
+    (package
+      (name "sbcl-hunchenissr-routes")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/interactive-ssr/hunchenissr-routes")
+               (commit commit)))
+         (file-name (git-file-name "hunchenissr-routes" version))
+         (sha256
+          (base32 "1xyqacihxwk4vnffqlg93czmalscglp6sh3bwy3qwb7hdxv6yxz6"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-unification" ,sbcl-cl-unification)
+         ("hunchenissr" ,sbcl-hunchenissr)))
+      (home-page "https://github.com/interactive-ssr/hunchenissr-routes")
+      (synopsis "Enable path variables when using Hunchenissr")
+      (description
+       "This library enables path variables in networking routes when using
+Hunchenissr for Common Lisp.  If a part of the path (between two slashes)
+starts with a question mark (?), that symbol (without question mark) will be
+bound to whatever value was in the same place in the URL (as a string).")
+      (license license:llgpl))))
+
+(define-public ecl-hunchenissr-routes
+  (sbcl-package->ecl-package sbcl-hunchenissr-routes))
+
+(define-public cl-hunchenissr-routes
+  (sbcl-package->cl-source-package sbcl-hunchenissr-routes))
