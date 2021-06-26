@@ -22432,8 +22432,9 @@ comments.")
     (home-page "https://gitea.petton.fr/mpdel/libmpdel")
     (synopsis "Emacs library to communicate with Music Player Daemon (MPD)")
     (description
-     "An Emacs library client to communicate with Music Player Daemon (MPD), a
-flexible, powerful, server-side application for playing music.")
+     "LibMPDel is an Emacs library client to communicate with Music Player
+Daemon (MPD), a flexible, powerful, server-side application for playing
+music.")
     (license license:gpl3+)))
 
 (define-public emacs-mpdel
