@@ -100,6 +100,7 @@
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,6 +219,25 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-twodict
+  (package
+    (name "python-twodict")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "twodict" version))
+       (sha256
+        (base32 "0ifv7dv18jn2lg0a3l6zdlvmmlda2ivixfjbsda58a2ay6kxznr0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/MrS0m30n3/twodict")
+    (synopsis "Two way ordered dictionary for Python")
+    (description "TwoDict is a custom dictionary in which you can get the
+key:value relationship but you can also get the value:key relationship.  It also
+remembers the order in which the items were inserted and supports almost all the
+features of the Python's built-in dict.")
+    (license license:unlicense)))
 
 (define-public python-argopt
   (package
