@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
@@ -84,7 +84,7 @@ data in motion, or as a file format for data at rest.")
 (define-public protobuf
   (package
     (name "protobuf")
-    (version "3.14.0")
+    (version "3.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/protobuf/releases/"
@@ -92,7 +92,7 @@ data in motion, or as a file format for data at rest.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nan2wkkwkcx3qyx0cf5vfzjcjhr5qgh4jfx6v2lwpf5q03mmv2h"))))
+                "1jzqrklhj9grs6xbddyb5dyxfbgbgbyhl5zig8ml50wb22gwkkji"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (outputs (list "out"
@@ -100,6 +100,26 @@ data in motion, or as a file format for data at rest.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-tests
+           ;; The following tests fail on 32 bit architectures such as
+           ;; i686-linux.
+           (lambda _
+             (let-syntax ((disable-tests
+                           (syntax-rules ()
+                             ((_ file test ...)
+                              (substitute* file
+                                ((test name)
+                                 (string-append "DISABLED_" name)) ...)))))
+               ;; See: https://github.com/protocolbuffers/protobuf/issues/8460.
+               (disable-tests "src/google/protobuf/any_test.cc"
+                              "TestPackFromSerializationExceedsSizeLimit")
+               ;; See: https://github.com/protocolbuffers/protobuf/issues/8459.
+               (disable-tests "src/google/protobuf/arena_unittest.cc"
+                              "SpaceAllocated_and_Used"
+                              "BlockSizeSmallerThanAllocation")
+               ;; See: https://github.com/protocolbuffers/protobuf/issues/8082.
+               (disable-tests "src/google/protobuf/io/zero_copy_stream_unittest.cc"
+                              "LargeOutput"))))
          (add-after 'install 'move-static-libraries
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Move static libraries to the "static" output.
@@ -111,8 +131,7 @@ data in motion, or as a file format for data at rest.")
                (for-each (lambda (file)
                            (install-file file slib)
                            (delete-file file))
-                         (find-files lib "\\.a$"))
-               #t))))))
+                         (find-files lib "\\.a$"))))))))
     (home-page "https://github.com/google/protobuf")
     (synopsis "Data encoding for remote procedure calls (RPCs)")
     (description
