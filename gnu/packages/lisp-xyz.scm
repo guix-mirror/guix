@@ -18315,3 +18315,43 @@ customizable errors.")
 
 (define-public cl-portal
   (sbcl-package->cl-source-package sbcl-portal))
+
+(define-public sbcl-hunchenissr
+  (let ((commit "7df702f2e110999a2f31c7ebad81bfc39ac06670")
+        (revision "1"))
+    (package
+      (name "sbcl-hunchenissr")
+      (version (git-version "1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/interactive-ssr/hunchenissr")
+               (commit commit)))
+         (file-name (git-file-name "hunchenissr" version))
+         (sha256
+          (base32 "0826qrvk64pjspdklns29dv3zhzfhd6k42fq030xajv8a7hkcxda"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-base64" ,sbcl-cl-base64)
+         ("cl-str" ,sbcl-cl-str)
+         ("hunchentoot" ,sbcl-hunchentoot)
+         ("issr-core" ,sbcl-issr-core)
+         ("jonathan" ,sbcl-jonathan)
+         ("plump" ,sbcl-plump)
+         ("portal" ,sbcl-portal)))
+      (home-page "https://github.com/interactive-ssr/hunchenissr")
+      (synopsis "Interactive Server Side Rendering backend for Hunchentoot")
+      (description
+       "Hunchenissr works together with issr.js for the develpment of
+interactive (changing without page refreshes) websites making use of websocket
+and Common Lisp server HTML generation instead of mountains of convoluted
+Javascript.")
+      (license license:llgpl))))
+
+(define-public ecl-hunchenissr
+  (sbcl-package->ecl-package sbcl-hunchenissr))
+
+(define-public cl-hunchenissr
+  (sbcl-package->cl-source-package sbcl-hunchenissr))
+
