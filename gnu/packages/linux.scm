@@ -6446,6 +6446,8 @@ set the screen to be pitch black at a value of 0 (or higher).
          (delete 'configure)
          (add-after 'unpack 'adjust-udev-rules
            (lambda _
+             (substitute* "Makefile"
+               (("INSTALL_UDEV_RULES=0") "INSTALL_UDEV_RULES=1"))
              (substitute* "90-brightnessctl.rules"
                (("/bin/") "/run/current-system/profile/bin/"))
              #t)))))
