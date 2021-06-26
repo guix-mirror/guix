@@ -49,6 +49,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
@@ -909,20 +910,21 @@ interface.")
 (define-public telescope
   (package
     (name "telescope")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://git.omarpolo.com/telescope/snapshot/"
                            "telescope-" version ".tar.gz"))
        (sha256
-        (base32 "1j7cj7fmvl11dvyhb23jx20k4r7m310qnyq0pwz3ijdpm5s88rf1"))))
+        (base32 "1wg5x04n9iri7jx1lzhmd79j41grhjm3mpxn9qq9nf8n102wlvm3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("bison"   ,bison)
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("libevent"  ,libevent)
