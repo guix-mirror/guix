@@ -9899,6 +9899,48 @@ correctly.")
 (define-public ecl-trivialib-type-unify
   (sbcl-package->ecl-package sbcl-trivialib-type-unify))
 
+(define-public sbcl-cl-unification
+  (let ((commit "01079f34d197495880aa49ab727d63774d83035c")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-unification")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/cl-unification/cl-unification")
+               (commit commit)))
+         (file-name (git-file-name "cl-unification" version))
+         (sha256
+          (base32 "0nhqamn3qgg38i6aw2pshffdwr2hzslycg8ficmn333gw0h9rf4g"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("ptester" ,sbcl-ptester)))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "https://common-lisp.net/project/cl-unification/")
+      (synopsis "Unification framework for Common Lisp")
+      (description
+       "This package provides a framework to unify arbitrary
+Common Lisp objects while constructing bindings for placeholders
+(unification variables) in a template sublanguage.")
+      (license license:bsd-0))))
+
+(define-public ecl-cl-unification
+  (let ((pkg (sbcl-package->ecl-package sbcl-cl-unification)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ;; The tests fail on ECL with:
+         ;;   "In MAKE-ARRAY: the elements in :INITIAL-CONTENTS do not match
+         ;;    the array dimensions."
+         ((#:tests? _ #f) #f))))))
+
+(define-public cl-unification
+  (sbcl-package->cl-source-package sbcl-cl-unification))
+
 (define-public sbcl-specialized-function
   (let ((commit "5e2b04432bdf728496e6ff7227f210f845af7247")
         (revision "3"))
