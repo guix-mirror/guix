@@ -117,7 +117,13 @@ extensive examples, including parsers for the Javascript and C99 languages.")
 $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
                   #t))))
     (inputs
-     `(("guile" ,guile-3.0)))))
+     `(("guile" ,guile-3.0)))
+    (description
+     "@acronym{NYACC, Not Yet Another Compiler Compiler} is set of Guile
+modules for generating parsers and lexical analyzers.  It also provides sample
+parsers, pretty-printers using SXML trees as an intermediate representation, a
+decent C parser and an `FFI Helper' tool to help create Guile Scheme bindings
+for C-based libraries.")))
 
 (define-public nyacc-1.00.2
   (package
