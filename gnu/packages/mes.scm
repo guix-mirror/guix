@@ -119,11 +119,12 @@ $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
     (inputs
      `(("guile" ,guile-3.0)))
     (description
-     "@acronym{NYACC, Not Yet Another Compiler Compiler} is set of Guile
-modules for generating parsers and lexical analyzers.  It also provides sample
-parsers, pretty-printers using SXML trees as an intermediate representation, a
-decent C parser and an `FFI Helper' tool to help create Guile Scheme bindings
-for C-based libraries.")))
+     "@acronym{NYACC, Not Yet Another Compiler Compiler} is set of Guile modules
+for generating parsers and lexical analyzers.  It provides sample parsers,
+pretty-printers using SXML trees as an intermediate representation, a decent C
+parser and an `FFI Helper' tool to help create Guile Scheme bindings for C-based
+libraries.  It also provides (partially implemented) compilers based on these
+parsers to allow execution with Guile as extension languages.")))
 
 (define-public nyacc-1.00.2
   (package
