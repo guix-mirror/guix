@@ -101,6 +101,7 @@
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -219,6 +220,44 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-fire
+  (package
+    (name "python-fire")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fire" version))
+       (sha256
+        (base32
+         "0qka44n88y3qcj7xz0k0f3qb4phcg4z0wvd4jcii9lcr6rvbiqn5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest", python-pytest)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (inputs
+     `(("python-six", python-six)
+       ("python-termcolor", python-termcolor)))
+    (synopsis "Library for automatically generating command line interfaces")
+    (description
+     "Fire is a library for automatically generating command line interfaces
+from absolutely any Python object.  The following are the advantages:
+@itemize
+@item A simple way to create a CLI in Python.
+@item A helpful tool for developing and debugging Python code.
+@item Helps with exploring existing code or turning other people's code into a
+command line interface.
+@item Makes transitioning between Bash and Python easier.
+@item Makes using a Python REPL easier by setting up the REPL with the modules
+and variables you'll need already imported and created.
+@end itemize")
+    (home-page "https://github.com/google/python-fire")
+    (license license:asl2.0)))
 
 (define-public python-twodict
   (package
