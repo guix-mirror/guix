@@ -2284,14 +2284,14 @@ YouTube.com and many more sites.")
 (define-public youtube-dl-gui
   (package
     (name "youtube-dl-gui")
-    (version "0.3.8")
+    (version "0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Youtube-DLG" version))
        (sha256
         (base32
-         "0napxwzgls5ik1bxbp99vly32l23xpc4ng5kr24hfhf21ypjyadb"))))
+         "1bvq2wyn6az59vpdy04dh68fs8m2qzz948xhphibbcpwpcdk00cd"))))
     (build-system python-build-system)
     (arguments
      ;; In Guix, wxpython has not yet been packaged for Python 3.
@@ -2365,8 +2365,11 @@ YouTube.com and many more sites.")
                      Type=Application~@
                      Categories=AudioVideo;Audio;Video;Network~%")))
                #t))))))
+    (native-inputs
+     `(("gettext-minimal" ,gettext-minimal)))
     (inputs
-     `(("python2-wxpython" ,python2-wxpython)
+     `(("python2-twodict" ,python2-twodict)
+       ("python2-wxpython" ,python2-wxpython)
        ("youtube-dl" ,youtube-dl)))
     (home-page "https://github.com/MrS0m30n3/youtube-dl-gui")
     (synopsis
