@@ -129,7 +129,7 @@ driver is known to work with these printers:
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.28.8")
+    (version "1.28.9")
     (source(origin
               (method url-fetch)
               (uri
@@ -137,7 +137,7 @@ driver is known to work with these printers:
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0652xkpgcr2m2axrk68bjb7gv4b7hv6arxcpq2apgqrwz1ildz7n"))
+                "1bk0x1rrb8wqbhh5c979ppgy6s2kqss8mjdlahgcjvd79wm3fs9g"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -213,13 +213,13 @@ driver is known to work with these printers:
                                                out "/lib/cups/filter")))
                         #t))))))
     (native-inputs
-     `(("glib" ,glib "bin") ; for gdbus-codegen
+     `(("glib" ,glib "bin")             ; for gdbus-codegen
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("avahi"        ,avahi)
        ("fontconfig"   ,fontconfig)
        ("freetype"     ,freetype)
-       ("font-dejavu"  ,font-dejavu) ; also needed by test suite
+       ("font-dejavu"  ,font-dejavu)    ; also needed by test suite
        ("ghostscript"  ,ghostscript/cups)
        ("grep"         ,grep)
        ("ijs"          ,ijs)
