@@ -26,6 +26,7 @@
 ;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
+;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3591,6 +3592,48 @@ Lisp, featuring:
 
 (define-public ecl-cl-markup
   (sbcl-package->ecl-package sbcl-cl-markup))
+
+;;; The following package is renamed from "markup" to "markup-reader" in order
+;;; not to conflict with the "cl-markup" package.
+(define-public sbcl-markup-reader
+  (let ((commit "d2d4d7b073554f47c24223a9304452966608702e")
+        (revision "1"))
+    (package
+      (name "sbcl-markup-reader")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/moderninterpreters/markup")
+               (commit commit)))
+         (file-name (git-file-name "markup-reader" version))
+         (sha256
+          (base32 "0i3v938j8zpzkd6p9j8gadp5zndjcdxhswj1qgsp592v6497rpzj"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:asd-systems '("markup")))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-str" ,sbcl-cl-str)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (home-page "https://github.com/moderninterpreters/markup")
+      (synopsis "Reader-macro to read HTML tags inside of Common Lisp code")
+      (description
+       "Markup allows the use of HTML syntax with in Common Lisp code.
+This has the advantage of being able to copy HTML snippets and have them
+instantly be functional, less double quotes than a s-expression approach,
+and designers will be able to understand the embeded HTML.")
+      (license license:asl2.0))))
+
+(define-public ecl-markup-reader
+  (sbcl-package->ecl-package sbcl-markup-reader))
+
+(define-public cl-markup-reader
+  (sbcl-package->cl-source-package sbcl-markup-reader))
 
 (define-public sbcl-cl-mustache
   (package
