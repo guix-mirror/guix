@@ -18202,3 +18202,37 @@ concept of a source-form to report where the error or warning is located.")
 
 (define-public cl-trivial-with-current-source-form
   (sbcl-package->cl-source-package sbcl-trivial-with-current-source-form))
+
+(define-public sbcl-tailrec
+  (let ((commit "a7cf91ef7bd73c118e96817e809a7ae587d4673f")
+        (revision "1"))
+    (package
+      (name "sbcl-tailrec")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charje/tailrec")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a25xa2kqai480micv8ap5bg4pz1dg7q3lz61g1ygim96cdjpwhl"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandia" ,sbcl-alexandria)
+         ("trivial-macroexpand-all" ,sbcl-trivial-macroexpand-all)
+         ("trivial-with-current-source-form"
+          ,sbcl-trivial-with-current-source-form)))
+      (home-page "https://github.com/charje/tailrec")
+      (synopsis "Macro to optimize a Common Lisp function for tail recursion")
+      (description "Just wrap your Common Lisp function in this macro call and
+it will be optimized for tail recursion.  You will be warned if the function
+is not tail recursive.")
+      (license license:llgpl))))
+
+(define-public ecl-tailrec
+  (sbcl-package->ecl-package sbcl-tailrec))
+
+(define-public cl-tailrec
+  (sbcl-package->cl-source-package sbcl-tailrec))
