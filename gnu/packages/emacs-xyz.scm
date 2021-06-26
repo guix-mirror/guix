@@ -4407,7 +4407,7 @@ result.")
 (define-public emacs-rg
   (package
     (name "emacs-rg")
-    (version "2.0.3")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -4416,7 +4416,7 @@ result.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d8habjr4nv0xbgsk7nj5zid5zywf00vbl5zcx7anda5w1cy2zvr"))))
+        (base32 "17f11znjyfnxs5y0zafcx9aa055wkw3igzk9gy0cipnyp42yb4v7"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
