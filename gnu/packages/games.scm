@@ -3945,7 +3945,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3953,7 +3953,7 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "05ysaxvsgps9fxc421kdifsxmc1sn6n79cjaa0k0i3fs9qqrja2b"))))
+                "0hc3qd9hv3h9qm53yxgc7iy1v1wyajwxyvil4vqvzf9ascz9dnlj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
