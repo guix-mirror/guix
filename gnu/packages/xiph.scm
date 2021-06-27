@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,14 +51,14 @@
 (define-public libogg
   (package
    (name "libogg")
-   (version "1.3.4")
+   (version "1.3.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://downloads.xiph.org/releases/ogg/libogg-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1zlk33vxvxr0l9lhkbhkdwvylw96d2n0fnd3d8dl031hph9bqqy1"))))
+              "01b7050bghdvbxvw0gzv588fn4a27zh42ljpwzm4vrf8dziipnf4"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--disable-static")))
