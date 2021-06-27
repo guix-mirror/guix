@@ -43315,8 +43315,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
          "0xnz2z9hvn8h1hb3fq9mpf0ibw4g9pk54wpqis0knj329cfhz3zl"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-unreachable" ,rust-unreachable-1))
        #:cargo-development-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2))))
