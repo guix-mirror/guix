@@ -491,6 +491,7 @@ it has in Guix."
 user interfaces, ignores."
   (package
     (inherit p)
+    (location (package-location p))
     (properties `((hidden? . #t)
                   ,@(package-properties p)))))
 
