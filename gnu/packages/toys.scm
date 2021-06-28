@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
-;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019, 2020, 2021 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
@@ -21,6 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages toys)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gtk)
@@ -35,6 +36,66 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public oneko
+  (package
+    (name "oneko")
+    (version "1.2.sakura.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.daidouji.com/oneko/distfiles/oneko-" version ".tar.gz"))
+       (sha256
+        (base32 "0bxjlbafn10sfi5d06420pg70rpvsiy5gdbm8kspd6qy4kqhabic"))
+       (patches (search-patches "oneko-remove-nonfree-characters.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bitmaps with copyright issues.
+        '(begin
+           (for-each delete-file-recursively
+                     (cons* "bitmaps/bsd" "bitmaps/sakura" "bitmaps/tomoyo"
+                            "bitmasks/bsd" "bitmasks/sakura" "bitmasks/tomoyo"
+                            (find-files "cursors" "(bsd|card|petal).*\\.xbm")))
+           #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("imake" ,imake)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (invoke "xmkmf")
+             ;; Fix incorrectly generated compiler flags.
+             (substitute* "Makefile"
+               (("(CDEBUGFLAGS = ).*" _ front) (string-append front "-O2\n")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (man (string-append out "/share/man"))
+                    (man6 (string-append man "/man6"))
+                    (man6-ja (string-append man "/ja/man6")))
+               (install-file "oneko" bin)
+               (mkdir-p man6)
+               (mkdir-p man6-ja)
+               (copy-file "oneko.man" (string-append man6 "/oneko.6"))
+               (copy-file "oneko.man.jp" (string-append man6-ja "/oneko.6"))
+               (for-each (lambda (file) (install-file file doc))
+                         (find-files "." "README.*")))
+             #t)))))
+    (home-page "http://www.daidouji.com/oneko/")
+    (synopsis "Cute cat chasing your mouse pointer")
+    (description "Displays a cat or another animated character that chases the
+mouse pointer around the screen while you work.")
+    (license license:public-domain))) ; see https://directory.fsf.org/wiki/Oneko
 
 (define-public sl
   (package

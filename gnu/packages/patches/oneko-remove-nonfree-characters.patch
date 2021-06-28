@@ -1,0 +1,307 @@
+Remove options and code to use bitmaps of the BSD daemon and other characters
+with copyright issues. The bitmaps themselves are deleted in a source snippet.
+diff --git a/cursors/cursor.include b/cursors/cursor.include
+index ef96d72..1dc3dc2 100644
+--- a/cursors/cursor.include
++++ b/cursors/cursor.include
+@@ -2,9 +2,3 @@
+ #include "mouse_cursor_mask.xbm"
+ #include "bone_cursor.xbm"
+ #include "bone_cursor_mask.xbm"
+-#include "bsd_cursor.xbm"
+-#include "bsd_cursor_mask.xbm"
+-#include "card_cursor.xbm"
+-#include "card_cursor_mask.xbm"
+-#include "petal_cursor.xbm"
+-#include "petal_cursor_mask.xbm"
+diff --git a/oneko.c b/oneko.c
+index d2b81fe..04fa59f 100644
+--- a/oneko.c
++++ b/oneko.c
+@@ -33,7 +33,7 @@ XColor	theBackgroundColor;		/* 色 (バックグラウンド) */
+ 
+ int Synchronous = False;
+ /* Types of animals */
+-#define BITMAPTYPES 6
++#define BITMAPTYPES 3
+ typedef struct _AnimalDefaults {
+   char *name;
+   int speed, idle, bitmap_width, bitmap_height;
+@@ -51,12 +51,6 @@ AnimalDefaultsData AnimalDefaultsDataTable[] =
+       mouse_cursor_width,mouse_cursor_height, mouse_cursor_x_hot,mouse_cursor_y_hot },
+   { "dog" , 10, 6, 32, 32, 125000L, 0, 0, bone_cursor_bits,bone_cursor_mask_bits,
+       bone_cursor_width,bone_cursor_height, bone_cursor_x_hot,bone_cursor_y_hot },
+-  { "bsd_daemon" , 16, 6, 32, 32, 300000L, 22, 20, bsd_cursor_bits,bsd_cursor_mask_bits,
+-      bsd_cursor_width,bsd_cursor_height, bsd_cursor_x_hot,bsd_cursor_y_hot },
+-  { "sakura" , 13, 6, 32, 32, 125000L, 0, 0, card_cursor_bits,card_cursor_mask_bits,
+-      card_cursor_width,card_cursor_height, card_cursor_x_hot,card_cursor_y_hot },
+-  { "tomoyo" , 10, 6, 32, 32, 125000L, 32, 32, petal_cursor_bits,petal_cursor_mask_bits,
+-      petal_cursor_width,petal_cursor_height, petal_cursor_x_hot,petal_cursor_y_hot },
+ };
+ 
+ /*
+@@ -154,70 +148,70 @@ typedef struct {
+ 
+ BitmapGCData	BitmapGCDataTable[] =
+ {
+-    { &Mati2GC, &Mati2Xbm,  mati2_bits, mati2_tora_bits, mati2_dog_bits, mati2_bsd_bits, mati2_sakura_bits, mati2_tomoyo_bits,
+-      &Mati2Msk, mati2_mask_bits, mati2_mask_bits, mati2_dog_mask_bits, mati2_bsd_mask_bits, mati2_sakura_mask_bits, mati2_tomoyo_mask_bits },
+-    { &Jare2GC, &Jare2Xbm,  jare2_bits, jare2_tora_bits, jare2_dog_bits, jare2_bsd_bits, jare2_sakura_bits, jare2_tomoyo_bits,
+-      &Jare2Msk, jare2_mask_bits, jare2_mask_bits, jare2_dog_mask_bits, jare2_bsd_mask_bits, jare2_sakura_mask_bits, jare2_tomoyo_mask_bits },
+-    { &Kaki1GC, &Kaki1Xbm,  kaki1_bits, kaki1_tora_bits, kaki1_dog_bits, kaki1_bsd_bits, kaki1_sakura_bits, kaki1_tomoyo_bits,
+-      &Kaki1Msk, kaki1_mask_bits, kaki1_mask_bits, kaki1_dog_mask_bits, kaki1_bsd_mask_bits, kaki1_sakura_mask_bits, kaki1_tomoyo_mask_bits },
+-    { &Kaki2GC, &Kaki2Xbm,  kaki2_bits, kaki2_tora_bits, kaki2_dog_bits, kaki2_bsd_bits, kaki2_sakura_bits, kaki2_tomoyo_bits,
+-      &Kaki2Msk, kaki2_mask_bits, kaki2_mask_bits, kaki2_dog_mask_bits, kaki2_bsd_mask_bits, kaki2_sakura_mask_bits, kaki2_tomoyo_mask_bits },
+-    { &Mati3GC, &Mati3Xbm,  mati3_bits, mati3_tora_bits, mati3_dog_bits, mati3_bsd_bits, mati3_sakura_bits, mati3_tomoyo_bits,
+-      &Mati3Msk, mati3_mask_bits, mati3_mask_bits, mati3_dog_mask_bits, mati3_bsd_mask_bits, mati3_sakura_mask_bits, mati3_tomoyo_mask_bits },
+-    { &Sleep1GC, &Sleep1Xbm,  sleep1_bits, sleep1_tora_bits, sleep1_dog_bits, sleep1_bsd_bits, sleep1_sakura_bits, sleep1_tomoyo_bits,
+-      &Sleep1Msk, sleep1_mask_bits, sleep1_mask_bits, sleep1_dog_mask_bits, sleep1_bsd_mask_bits, sleep1_sakura_mask_bits, sleep1_tomoyo_mask_bits },
+-    { &Sleep2GC, &Sleep2Xbm,  sleep2_bits, sleep2_tora_bits, sleep2_dog_bits, sleep2_bsd_bits, sleep2_sakura_bits, sleep2_tomoyo_bits,
+-      &Sleep2Msk, sleep2_mask_bits, sleep2_mask_bits, sleep2_dog_mask_bits, sleep2_bsd_mask_bits, sleep2_sakura_mask_bits, sleep2_tomoyo_mask_bits },
+-    { &AwakeGC, &AwakeXbm,  awake_bits, awake_tora_bits, awake_dog_bits, awake_bsd_bits, awake_sakura_bits, awake_tomoyo_bits,
+-      &AwakeMsk, awake_mask_bits, awake_mask_bits, awake_dog_mask_bits, awake_bsd_mask_bits, awake_sakura_mask_bits, awake_tomoyo_mask_bits },
+-    { &Up1GC, &Up1Xbm,  up1_bits, up1_tora_bits, up1_dog_bits, up1_bsd_bits, up1_sakura_bits, up1_tomoyo_bits,
+-      &Up1Msk, up1_mask_bits, up1_mask_bits, up1_dog_mask_bits, up1_bsd_mask_bits, up1_sakura_mask_bits, up1_tomoyo_mask_bits },
+-    { &Up2GC, &Up2Xbm,  up2_bits, up2_tora_bits, up2_dog_bits, up2_bsd_bits, up2_sakura_bits, up2_tomoyo_bits,
+-      &Up2Msk, up2_mask_bits, up2_mask_bits, up2_dog_mask_bits, up2_bsd_mask_bits, up2_sakura_mask_bits, up2_tomoyo_mask_bits },
+-    { &Down1GC, &Down1Xbm,  down1_bits, down1_tora_bits, down1_dog_bits, down1_bsd_bits, down1_sakura_bits, down1_tomoyo_bits,
+-      &Down1Msk, down1_mask_bits, down1_mask_bits, down1_dog_mask_bits, down1_bsd_mask_bits, down1_sakura_mask_bits, down1_tomoyo_mask_bits },
+-    { &Down2GC, &Down2Xbm,  down2_bits, down2_tora_bits, down2_dog_bits, down2_bsd_bits, down2_sakura_bits, down2_tomoyo_bits,
+-      &Down2Msk, down2_mask_bits, down2_mask_bits, down2_dog_mask_bits, down2_bsd_mask_bits, down2_sakura_mask_bits, down2_tomoyo_mask_bits },
+-    { &Left1GC, &Left1Xbm,  left1_bits, left1_tora_bits, left1_dog_bits, left1_bsd_bits, left1_sakura_bits, left1_tomoyo_bits,
+-      &Left1Msk, left1_mask_bits, left1_mask_bits, left1_dog_mask_bits, left1_bsd_mask_bits, left1_sakura_mask_bits, left1_tomoyo_mask_bits },
+-    { &Left2GC, &Left2Xbm,  left2_bits, left2_tora_bits, left2_dog_bits, left2_bsd_bits, left2_sakura_bits, left2_tomoyo_bits,
+-      &Left2Msk, left2_mask_bits, left2_mask_bits, left2_dog_mask_bits, left2_bsd_mask_bits, left2_sakura_mask_bits, left2_tomoyo_mask_bits },
+-    { &Right1GC, &Right1Xbm,  right1_bits, right1_tora_bits, right1_dog_bits, right1_bsd_bits, right1_sakura_bits, right1_tomoyo_bits,
+-      &Right1Msk, right1_mask_bits, right1_mask_bits,right1_dog_mask_bits, right1_bsd_mask_bits, right1_sakura_mask_bits, right1_tomoyo_mask_bits },
+-    { &Right2GC, &Right2Xbm,  right2_bits, right2_tora_bits, right2_dog_bits, right2_bsd_bits, right2_sakura_bits, right2_tomoyo_bits,
+-      &Right2Msk, right2_mask_bits, right2_mask_bits, right2_dog_mask_bits, right2_bsd_mask_bits, right2_sakura_mask_bits, right2_tomoyo_mask_bits },
+-    { &UpLeft1GC, &UpLeft1Xbm,  upleft1_bits, upleft1_tora_bits, upleft1_dog_bits, upleft1_bsd_bits, upleft1_sakura_bits, upleft1_tomoyo_bits,
+-      &UpLeft1Msk, upleft1_mask_bits, upleft1_mask_bits, upleft1_dog_mask_bits, upleft1_bsd_mask_bits, upleft1_sakura_mask_bits, upleft1_tomoyo_mask_bits },
+-    { &UpLeft2GC, &UpLeft2Xbm,  upleft2_bits, upleft2_tora_bits, upleft2_dog_bits, upleft2_bsd_bits, upleft2_sakura_bits, upleft2_tomoyo_bits,
+-      &UpLeft2Msk, upleft2_mask_bits, upleft2_mask_bits,upleft2_dog_mask_bits, upleft2_bsd_mask_bits, upleft2_sakura_mask_bits, upleft2_tomoyo_mask_bits },
+-    { &UpRight1GC, &UpRight1Xbm,  upright1_bits, upright1_tora_bits, upright1_dog_bits, upright1_bsd_bits, upright1_sakura_bits, upright1_tomoyo_bits,
+-      &UpRight1Msk, upright1_mask_bits, upright1_mask_bits,upright1_dog_mask_bits, upright1_bsd_mask_bits, upright1_sakura_mask_bits, upright1_tomoyo_mask_bits },
+-    { &UpRight2GC, &UpRight2Xbm,  upright2_bits, upright2_tora_bits, upright2_dog_bits, upright2_bsd_bits, upright2_sakura_bits, upright2_tomoyo_bits,
+-      &UpRight2Msk, upright2_mask_bits, upright2_mask_bits,upright2_dog_mask_bits, upright2_bsd_mask_bits, upright2_sakura_mask_bits, upright2_tomoyo_mask_bits },
+-    { &DownLeft1GC, &DownLeft1Xbm,  dwleft1_bits, dwleft1_tora_bits, dwleft1_dog_bits, dwleft1_bsd_bits, dwleft1_sakura_bits, dwleft1_tomoyo_bits,
+-      &DownLeft1Msk, dwleft1_mask_bits, dwleft1_mask_bits, dwleft1_dog_mask_bits, dwleft1_bsd_mask_bits, dwleft1_sakura_mask_bits, dwleft1_tomoyo_mask_bits },
+-    { &DownLeft2GC, &DownLeft2Xbm,  dwleft2_bits, dwleft2_tora_bits, dwleft2_dog_bits, dwleft2_bsd_bits, dwleft2_sakura_bits, dwleft2_tomoyo_bits,
+-      &DownLeft2Msk, dwleft2_mask_bits, dwleft2_mask_bits, dwleft2_dog_mask_bits, dwleft2_bsd_mask_bits, dwleft2_sakura_mask_bits, dwleft2_tomoyo_mask_bits },
+-    { &DownRight1GC, &DownRight1Xbm,  dwright1_bits, dwright1_tora_bits, dwright1_dog_bits, dwright1_bsd_bits, dwright1_sakura_bits, dwright1_tomoyo_bits,
+-      &DownRight1Msk, dwright1_mask_bits, dwright1_mask_bits, dwright1_dog_mask_bits, dwright1_bsd_mask_bits, dwright1_sakura_mask_bits, dwright1_tomoyo_mask_bits },
+-    { &DownRight2GC, &DownRight2Xbm,  dwright2_bits, dwright2_tora_bits, dwright2_dog_bits, dwright2_bsd_bits, dwright2_sakura_bits, dwright2_tomoyo_bits,
+-      &DownRight2Msk, dwright2_mask_bits, dwright2_mask_bits, dwright2_dog_mask_bits, dwright2_bsd_mask_bits, dwright2_sakura_mask_bits, dwright2_tomoyo_mask_bits },
+-    { &UpTogi1GC, &UpTogi1Xbm,  utogi1_bits, utogi1_tora_bits, utogi1_dog_bits, utogi1_bsd_bits, utogi1_sakura_bits, utogi1_tomoyo_bits,
+-      &UpTogi1Msk, utogi1_mask_bits, utogi1_mask_bits, utogi1_dog_mask_bits, utogi1_bsd_mask_bits, utogi1_sakura_mask_bits, utogi1_tomoyo_mask_bits },
+-    { &UpTogi2GC, &UpTogi2Xbm,  utogi2_bits, utogi2_tora_bits, utogi2_dog_bits, utogi2_bsd_bits, utogi2_sakura_bits, utogi2_tomoyo_bits,
+-      &UpTogi2Msk, utogi2_mask_bits, utogi2_mask_bits, utogi2_dog_mask_bits, utogi2_bsd_mask_bits, utogi2_sakura_mask_bits, utogi2_tomoyo_mask_bits },
+-    { &DownTogi1GC, &DownTogi1Xbm,  dtogi1_bits, dtogi1_tora_bits, dtogi1_dog_bits, dtogi1_bsd_bits, dtogi1_sakura_bits, dtogi1_tomoyo_bits,
+-      &DownTogi1Msk, dtogi1_mask_bits, dtogi1_mask_bits, dtogi1_dog_mask_bits, dtogi1_bsd_mask_bits, dtogi1_sakura_mask_bits, dtogi1_tomoyo_mask_bits },
+-    { &DownTogi2GC, &DownTogi2Xbm,  dtogi2_bits, dtogi2_tora_bits, dtogi2_dog_bits, dtogi2_bsd_bits, dtogi2_sakura_bits, dtogi2_tomoyo_bits,
+-      &DownTogi2Msk, dtogi2_mask_bits, dtogi2_mask_bits, dtogi2_dog_mask_bits, dtogi2_bsd_mask_bits, dtogi2_sakura_mask_bits, dtogi2_tomoyo_mask_bits },
+-    { &LeftTogi1GC, &LeftTogi1Xbm,  ltogi1_bits, ltogi1_tora_bits, ltogi1_dog_bits, ltogi1_bsd_bits, ltogi1_sakura_bits, ltogi1_tomoyo_bits,
+-      &LeftTogi1Msk, ltogi1_mask_bits, ltogi1_mask_bits,ltogi1_dog_mask_bits, ltogi1_bsd_mask_bits, ltogi1_sakura_mask_bits, ltogi1_tomoyo_mask_bits },
+-    { &LeftTogi2GC, &LeftTogi2Xbm,  ltogi2_bits, ltogi2_tora_bits, ltogi2_dog_bits, ltogi2_bsd_bits, ltogi2_sakura_bits, ltogi2_tomoyo_bits,
+-      &LeftTogi2Msk, ltogi2_mask_bits, ltogi2_mask_bits,ltogi2_dog_mask_bits, ltogi2_bsd_mask_bits, ltogi2_sakura_mask_bits, ltogi2_tomoyo_mask_bits },
+-    { &RightTogi1GC, &RightTogi1Xbm,  rtogi1_bits, rtogi1_tora_bits, rtogi1_dog_bits, rtogi1_bsd_bits, rtogi1_sakura_bits, rtogi1_tomoyo_bits,
+-      &RightTogi1Msk, rtogi1_mask_bits, rtogi1_mask_bits,rtogi1_dog_mask_bits, rtogi1_bsd_mask_bits, rtogi1_sakura_mask_bits, rtogi1_tomoyo_mask_bits },
+-    { &RightTogi2GC, &RightTogi2Xbm,  rtogi2_bits, rtogi2_tora_bits, rtogi2_dog_bits, rtogi2_bsd_bits, rtogi2_sakura_bits, rtogi2_tomoyo_bits,
+-      &RightTogi2Msk, rtogi2_mask_bits, rtogi2_mask_bits,rtogi2_dog_mask_bits, rtogi2_bsd_mask_bits, rtogi2_sakura_mask_bits, rtogi2_tomoyo_mask_bits },
++    { &Mati2GC, &Mati2Xbm,  mati2_bits, mati2_tora_bits, mati2_dog_bits,
++      &Mati2Msk, mati2_mask_bits, mati2_mask_bits, mati2_dog_mask_bits },
++    { &Jare2GC, &Jare2Xbm,  jare2_bits, jare2_tora_bits, jare2_dog_bits,
++      &Jare2Msk, jare2_mask_bits, jare2_mask_bits, jare2_dog_mask_bits },
++    { &Kaki1GC, &Kaki1Xbm,  kaki1_bits, kaki1_tora_bits, kaki1_dog_bits,
++      &Kaki1Msk, kaki1_mask_bits, kaki1_mask_bits, kaki1_dog_mask_bits },
++    { &Kaki2GC, &Kaki2Xbm,  kaki2_bits, kaki2_tora_bits, kaki2_dog_bits,
++      &Kaki2Msk, kaki2_mask_bits, kaki2_mask_bits, kaki2_dog_mask_bits },
++    { &Mati3GC, &Mati3Xbm,  mati3_bits, mati3_tora_bits, mati3_dog_bits,
++      &Mati3Msk, mati3_mask_bits, mati3_mask_bits, mati3_dog_mask_bits },
++    { &Sleep1GC, &Sleep1Xbm,  sleep1_bits, sleep1_tora_bits, sleep1_dog_bits,
++      &Sleep1Msk, sleep1_mask_bits, sleep1_mask_bits, sleep1_dog_mask_bits },
++    { &Sleep2GC, &Sleep2Xbm,  sleep2_bits, sleep2_tora_bits, sleep2_dog_bits,
++      &Sleep2Msk, sleep2_mask_bits, sleep2_mask_bits, sleep2_dog_mask_bits },
++    { &AwakeGC, &AwakeXbm,  awake_bits, awake_tora_bits, awake_dog_bits,
++      &AwakeMsk, awake_mask_bits, awake_mask_bits, awake_dog_mask_bits },
++    { &Up1GC, &Up1Xbm,  up1_bits, up1_tora_bits, up1_dog_bits,
++      &Up1Msk, up1_mask_bits, up1_mask_bits, up1_dog_mask_bits },
++    { &Up2GC, &Up2Xbm,  up2_bits, up2_tora_bits, up2_dog_bits,
++      &Up2Msk, up2_mask_bits, up2_mask_bits, up2_dog_mask_bits },
++    { &Down1GC, &Down1Xbm,  down1_bits, down1_tora_bits, down1_dog_bits,
++      &Down1Msk, down1_mask_bits, down1_mask_bits, down1_dog_mask_bits },
++    { &Down2GC, &Down2Xbm,  down2_bits, down2_tora_bits, down2_dog_bits,
++      &Down2Msk, down2_mask_bits, down2_mask_bits, down2_dog_mask_bits },
++    { &Left1GC, &Left1Xbm,  left1_bits, left1_tora_bits, left1_dog_bits,
++      &Left1Msk, left1_mask_bits, left1_mask_bits, left1_dog_mask_bits },
++    { &Left2GC, &Left2Xbm,  left2_bits, left2_tora_bits, left2_dog_bits,
++      &Left2Msk, left2_mask_bits, left2_mask_bits, left2_dog_mask_bits },
++    { &Right1GC, &Right1Xbm,  right1_bits, right1_tora_bits, right1_dog_bits,
++      &Right1Msk, right1_mask_bits, right1_mask_bits,right1_dog_mask_bits },
++    { &Right2GC, &Right2Xbm,  right2_bits, right2_tora_bits, right2_dog_bits,
++      &Right2Msk, right2_mask_bits, right2_mask_bits, right2_dog_mask_bits },
++    { &UpLeft1GC, &UpLeft1Xbm,  upleft1_bits, upleft1_tora_bits, upleft1_dog_bits,
++      &UpLeft1Msk, upleft1_mask_bits, upleft1_mask_bits, upleft1_dog_mask_bits },
++    { &UpLeft2GC, &UpLeft2Xbm,  upleft2_bits, upleft2_tora_bits, upleft2_dog_bits,
++      &UpLeft2Msk, upleft2_mask_bits, upleft2_mask_bits,upleft2_dog_mask_bits },
++    { &UpRight1GC, &UpRight1Xbm,  upright1_bits, upright1_tora_bits, upright1_dog_bits,
++      &UpRight1Msk, upright1_mask_bits, upright1_mask_bits,upright1_dog_mask_bits },
++    { &UpRight2GC, &UpRight2Xbm,  upright2_bits, upright2_tora_bits, upright2_dog_bits,
++      &UpRight2Msk, upright2_mask_bits, upright2_mask_bits,upright2_dog_mask_bits },
++    { &DownLeft1GC, &DownLeft1Xbm,  dwleft1_bits, dwleft1_tora_bits, dwleft1_dog_bits,
++      &DownLeft1Msk, dwleft1_mask_bits, dwleft1_mask_bits, dwleft1_dog_mask_bits },
++    { &DownLeft2GC, &DownLeft2Xbm,  dwleft2_bits, dwleft2_tora_bits, dwleft2_dog_bits,
++      &DownLeft2Msk, dwleft2_mask_bits, dwleft2_mask_bits, dwleft2_dog_mask_bits },
++    { &DownRight1GC, &DownRight1Xbm,  dwright1_bits, dwright1_tora_bits, dwright1_dog_bits,
++      &DownRight1Msk, dwright1_mask_bits, dwright1_mask_bits, dwright1_dog_mask_bits },
++    { &DownRight2GC, &DownRight2Xbm,  dwright2_bits, dwright2_tora_bits, dwright2_dog_bits,
++      &DownRight2Msk, dwright2_mask_bits, dwright2_mask_bits, dwright2_dog_mask_bits },
++    { &UpTogi1GC, &UpTogi1Xbm,  utogi1_bits, utogi1_tora_bits, utogi1_dog_bits,
++      &UpTogi1Msk, utogi1_mask_bits, utogi1_mask_bits, utogi1_dog_mask_bits },
++    { &UpTogi2GC, &UpTogi2Xbm,  utogi2_bits, utogi2_tora_bits, utogi2_dog_bits,
++      &UpTogi2Msk, utogi2_mask_bits, utogi2_mask_bits, utogi2_dog_mask_bits },
++    { &DownTogi1GC, &DownTogi1Xbm,  dtogi1_bits, dtogi1_tora_bits, dtogi1_dog_bits,
++      &DownTogi1Msk, dtogi1_mask_bits, dtogi1_mask_bits, dtogi1_dog_mask_bits },
++    { &DownTogi2GC, &DownTogi2Xbm,  dtogi2_bits, dtogi2_tora_bits, dtogi2_dog_bits,
++      &DownTogi2Msk, dtogi2_mask_bits, dtogi2_mask_bits, dtogi2_dog_mask_bits },
++    { &LeftTogi1GC, &LeftTogi1Xbm,  ltogi1_bits, ltogi1_tora_bits, ltogi1_dog_bits,
++      &LeftTogi1Msk, ltogi1_mask_bits, ltogi1_mask_bits,ltogi1_dog_mask_bits },
++    { &LeftTogi2GC, &LeftTogi2Xbm,  ltogi2_bits, ltogi2_tora_bits, ltogi2_dog_bits,
++      &LeftTogi2Msk, ltogi2_mask_bits, ltogi2_mask_bits,ltogi2_dog_mask_bits },
++    { &RightTogi1GC, &RightTogi1Xbm,  rtogi1_bits, rtogi1_tora_bits, rtogi1_dog_bits,
++      &RightTogi1Msk, rtogi1_mask_bits, rtogi1_mask_bits,rtogi1_dog_mask_bits },
++    { &RightTogi2GC, &RightTogi2Xbm,  rtogi2_bits, rtogi2_tora_bits, rtogi2_dog_bits,
++      &RightTogi2Msk, rtogi2_mask_bits, rtogi2_mask_bits,rtogi2_dog_mask_bits },
+     { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL }
+ };
+ 
+@@ -1512,8 +1506,6 @@ GetArguments(argc, argv, theDisplayName)
+     }
+     else {
+       char *av = argv[ArgCounter] + 1;
+-      if (strcmp(av, "bsd") == 0)
+-	av = "bsd_daemon";
+       for (loop=0;loop<BITMAPTYPES;loop++) {
+ 	if (strcmp(av,AnimalDefaultsDataTable[loop].name)==0)
+ 	  {NekoMoyou = loop;found=1;}
+diff --git a/oneko.h b/oneko.h
+index 414e12f..38281fd 100644
+--- a/oneko.h
++++ b/oneko.h
+@@ -36,17 +36,11 @@
+ #include "bitmaps/neko/neko.include"
+ #include "bitmaps/tora/tora.include"
+ #include "bitmaps/dog/dog.include"
+-#include "bitmaps/bsd/bsd.include"
+-#include "bitmaps/sakura/sakura.include"
+-#include "bitmaps/tomoyo/tomoyo.include"
+ 
+ /* These are the bitmasks that allow the use of the shape extension. */
+ 
+ #include "bitmasks/neko/neko.mask.include"
+ #include "bitmasks/dog/dog.mask.include"
+-#include "bitmasks/bsd/bsd.mask.include"
+-#include "bitmasks/sakura/sakura.mask.include"
+-#include "bitmasks/tomoyo/tomoyo.mask.include"
+ 
+ /*
+  *	定数定義
+diff --git a/oneko.man b/oneko.man
+index d6d2b40..0e9b09d 100644
+--- a/oneko.man
++++ b/oneko.man
+@@ -3,9 +3,7 @@
+ The program oneko creates a cute cat chasing around your mouse cursor.
+ .SH SYNOPSIS
+ .B oneko
+-[\fB-help\fP] [\fB-tora\fP]
+-[\fB-dog\fP] [\fB-bsd_daemon\fP] [\fB-bsd\fP]
+-[\fB-sakura\fP] [\fB-tomoyo\fP]
++[\fB-help\fP] [\fB-tora\fP] [\fB-dog\fP]
+ [\fB-time\fP \fIn\fP] [\fB-speed\fP \fIn\fP] [\fB-idle\fP \fIn\fP]
+ [\fB-name\fP \fIname\fP] [\fB-towindow\fP] [\fB-toname\fP \fIname\fP]
+ [\fB-tofocus\fP]
+@@ -28,19 +26,6 @@ I don't know how to say it in English.
+ .B -dog
+ Runs a dog instead of a cat.
+ .TP
+-.B -bsd_daemon
+-Runs a 4.3BSD daemon instead of a cat.
+-.TP
+-.B -bsd
+-Same as
+-.B -bsd_daemon.
+-.TP
+-.B -sakura
+-Runs Sakura Kinomoto instead of a cat.
+-.TP
+-.B -tomoyo
+-Runs Tomoyo Daidouji instead of a cat.
+-.TP
+ .BI \-time " interval"
+ Sets interval timer which determine intervals for cat animation.
+ Default value is 125000 and unit is micro-second.  Smaller value makes cat
+@@ -129,12 +114,6 @@ Background color.
+ While this program uses XGetDefault, be sure to use "neko.resouce" form.
+ If you run this program as "tora", by hard of soft link, the \fB-tora\fP
+ option is enabled by default.
+-.PP
+-BSD Daemon Copyright 1988 by Marshall Kirk McKusick. All Rights Reserved.
+-.PP
+-Sakura Kinomoto and Tomoyo Daidouji are characters in a comic strip
+-"CARDCAPTOR SAKURA" (CLAMP, Kodansha), with the sanction indicated in
+-CLAMP SCHOOL WEB CAMPUS (http://www.clamp.f-2.co.jp/).
+ .SH AUTHOR
+ Original
+ .I xneko
+diff --git a/oneko.man.jp b/oneko.man.jp
+index 96f9e3a..9a885df 100644
+--- a/oneko.man.jp
++++ b/oneko.man.jp
+@@ -3,9 +3,7 @@
+ かわいい猫がマウスカーソルを追いかけるプログラム
+ .SH 書式
+ .B oneko
+-[\fB-help\fP] [\fB-tora\fP]
+-[\fB-dog\fP] [\fB-bsd_daemon\fP] [\fB-bsd\fP]
+-[\fB-sakura\fP] [\fB-tomoyo\fP]
++[\fB-help\fP] [\fB-tora\fP] [\fB-dog\fP]
+ [\fB-time\fP \fIn\fP] [\fB-speed\fP \fIn\fP] [\fB-idle\fP \fIn\fP]
+ [\fB-name\fP \fIname\fP] [\fB-towindow\fP] [\fB-toname\fP \fIname\fP]
+ [\fB-tofocus\fP]
+@@ -27,19 +25,6 @@
+ .B -dog
+ 猫に代わり犬が走ります。
+ .TP
+-.B -bsd_daemon
+-猫に代わり 4.3BSD デーモンが走ります。
+-.TP
+-.B -bsd
+-.B -bsd_daemon
+-に同じ。
+-.TP
+-.B -sakura
+-猫に代わり木之本桜が走ります。
+-.TP
+-.B -tomoyo
+-猫に代わり大道寺知世が走ります。
+-.TP
+ .BI \-time " interval"
+ 猫アニメーションの間隔を指定します。
+ デフォルト値は 125000 で単位はマイクロ秒です。
+@@ -127,15 +112,6 @@ SHAPE extension を使いたくない場合 True とします。
+ を使うことに留意してください。
+ ハードリンクあるいはソフトリンクによって、このプログラムを tora として
+ 起動した場合には、デフォルトで \fB-tora\fP オプションが有効となります。
+-.PP
+-BSD デーモンは  Marshall Kirk McKusick 氏の著作物です。すべての権利は
+-保持されています。
+-BSD Daemon Copyright 1988 by Marshall Kirk McKusick. All Rights Reserved.
+-.PP
+-木之本桜および大道寺知世は漫画『カードキャプターさくら』（CLAMP, 講談
+-社）のキャラクターであり、CLAMP 学園電子分校
+-（http://www.clamp.f-2.co.jp/）に示されている容認のもとに利用されてい
+-ます。
+ .SH 作者
+ オリジナルの
+ .I xneko
