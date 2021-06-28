@@ -48,6 +48,7 @@
 ;;; Copyright © 2021 Renzo Poddighe <renzo@poddighe.nl>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -260,7 +261,7 @@ used to further tweak the behaviour of the different profiles.")
 (define-public bemenu
   (package
     (name "bemenu")
-    (version "0.4.1")
+    (version "0.6.2")
     (source
      (origin
        (method git-fetch)
@@ -269,7 +270,7 @@ used to further tweak the behaviour of the different profiles.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fjcs9d3533ay3nz79cx3c0lmy2chgragr2lhsy0xl2ckr0iins0"))))
+        (base32 "13y4y3i03vdx3zkh4lm67xmigzycf8fxg4fdr5s4x2brr3ya46fv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
