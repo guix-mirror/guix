@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020, 2021 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +46,7 @@
               (string-append "libreoffice-" version))))
        (file-name (git-file-name "libreoffice-dictionaries" version))
        (sha256
-        (base32 "0vvxnjpm1322ahf9q8bqs1yhkn7krglw8c6yazcf7a3jljykd9k9"))))
+        (base32 "0h1sz8haqwpis4af1vy7jvivl4rr9g53l4l680qa7yn0691gkiv3"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
