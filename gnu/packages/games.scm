@@ -1517,7 +1517,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
 (define-public opensurge
   (package
     (name "opensurge")
-    (version "0.5.1.2")
+    (version "0.5.2.1")
     (source
      (origin
        (method git-fetch)
@@ -1526,14 +1526,15 @@ shadow mimic them to reach blocks you couldn't reach alone.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ih7hlqjnp9rv0m4lqf7c0s1ai532way5i4pk45jq1gqm8325dbv"))))
+        (base32 "13g5izss7dmgigc8iif8hid3z6i066b0z29rbql2b9qjmdj1dp41"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;there are no tests
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
               (share (string-append out "/share")))
-         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out "/bin")
+         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+               (string-append "-DGAME_BINDIR=" out "/bin") ; not /bin/games
                (string-append "-DGAME_DATADIR=" share "/" ,name)
                (string-append "-DDESKTOP_ENTRY_PATH=" share "/applications")
                (string-append "-DDESKTOP_ICON_PATH=" share "/pixmaps")
