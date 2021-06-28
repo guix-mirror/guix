@@ -481,11 +481,13 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
     (version "3.9.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.gnuradio.org/releases/gnuradio/"
-                           "gnuradio-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnuradio/gnuradio")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1jvm9xd0l2pz1fww4zii6hl7ccnvy256nrf70ljb594n7j9j49ha"))))
+        (base32 "1fbl8lslzrkx7lpkibhvs6gvhqnn8yrrq3n6irybfnifh2536d36"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -550,6 +552,11 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                             "/share/javascript/mathjax"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-writable
+           (lambda _
+             ;; The test_add and test_newmod open(sources, "w") for some reason.
+             (for-each make-file-writable
+                       (find-files "." ".*"))))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((qwt (assoc-ref inputs "qwt")))

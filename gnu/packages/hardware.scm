@@ -137,6 +137,53 @@ calibrated, and restored when the calibration is applied.")
 human-readable format and checks if it conforms to the standards.")
       (license license:expat))))
 
+(define-public i7z
+  (let ((revision "0")
+        (commit "1a41ff13db747e962456ddbb5ccb2b7fc43ca0cb"))
+    (package
+      (name "i7z")
+      (version (git-version "0.28" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/afontenot/i7z")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jxm63a8y1mfl1sa4mzzfs3bgnym6achj1yc0jglmp05xal16lm1"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (for-each delete-file-recursively
+                       (list "src/GUI"
+                             "src/perfmon-i7z"
+                             "scripts"))))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list (string-append "prefix=" (assoc-ref %outputs "out"))
+               (string-append "CC=" ,(cc-for-target)))
+         #:tests? #f                    ; no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))       ; no configure script
+      (inputs
+       `(("ncurses" ,ncurses)))
+      (home-page "https://github.com/afontenot/i7z")
+      (synopsis "Thermal and C-state reporting on older Intel Core CPUs")
+      (description
+       "The @command{i7z} utility accurately measures the current frequency
+and temperature of older Intel Core (i3, i5, and i7) processors including the
+Nehalem, Sandy Bridge, and Ivy Bridge generations.  Reliable support for newer
+CPUs is not guaranteed, as this package has not seen significant development
+since 2013.
+
+If your processor is supported, you'll get detailed reports on Turbo Boost and
+clock multipliers, core voltage, and time spent in different C-states.  This
+information can be viewed in real time and/or logged to a file.")
+      (license license:gpl2))))
+
 (define-public libsmbios
   (package
     (name "libsmbios")
