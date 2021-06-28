@@ -276,7 +276,9 @@ workspaces.
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "pytest"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
     (inputs
      `(("python-six", python-six)
        ("python-termcolor", python-termcolor)))
