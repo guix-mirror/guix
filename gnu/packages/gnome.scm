@@ -5393,7 +5393,7 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.11")
+    (version "0.99.12")
     (source
      (origin
        (method git-fetch)
@@ -5405,7 +5405,7 @@ faster results and to avoid unnecessary server load.")
                                                 version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0frs6ywvsz48d0zfviy40h6mj0icfc1q21hn7p99nchps39z85f8"))
+        (base32 "00q63yc8vp5cq05vhpwq3qglapdm8hg0lrqkzdwkphk30qzb6hv6"))
        (patches (search-patches "upower-builddir.patch"))
        (modules '((guix build utils)))
        (snippet
