@@ -4254,7 +4254,7 @@ engineering.")
 (define-public drawing
   (package
     (name "drawing")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -4263,7 +4263,7 @@ engineering.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03cx6acb0ph7b3difshjfddi8ld79wp8d12bdp7dp1q1820j5mz0"))))
+        (base32 "0a65mil9w4iw0h6kncg5d15s302sxfx25fpnkfv9pz54nj3hzghk"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
