@@ -2571,24 +2571,30 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.36.5")
+    (version "40.2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/evince/"
-                                 (version-major+minor version) "/"
-                                 "evince-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0z79jl0j9xq9wgwkfr0d1w1qrdy4447y8shs407n5srr0vixc3bg"))))
-    (build-system glib-or-gtk-build-system)
+              (method url-fetch)
+              (uri "mirror://gnome/sources/evince/40/evince-40.2.tar.xz")
+              (sha256
+               (base32
+                "0xrwls1bhvny8vvd7mfjy9p26zjch0pd6x6j9jn9g2ka6xwyrxqg"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--disable-nautilus" "--enable-introspection")
+     `(#:glib-or-gtk? #t
+       #:build-type "release"
+       #:configure-flags
+       '("-Dnautilus=false"
+         "-Dintrospection=true"
+         ;; XXX: Generating the documentation fails because the
+         ;; libevdocument.devhelp document cannot be created. This seems to be
+         ;; caused by a problem during the XSL transformation.
+         "-Dgtk_doc=false")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'install 'skip-gtk-update-icon-cache
+         (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
            (lambda _
-             (substitute* "data/Makefile"
+             (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
@@ -2617,9 +2623,7 @@ forgotten when the session ends.")
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
        ("libsecret" ,libsecret)
-
-       ;; For tests.
-       ("dogtail" ,python2-dogtail)))
+       ("libhandy" ,libhandy)))
     (native-inputs
      `(("itstool" ,itstool)
        ("intltool" ,intltool)
