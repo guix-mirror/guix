@@ -896,7 +896,7 @@ through its msgpack-rpc API.")
 (define-public vim-guix-vim
   (package
     (name "vim-guix-vim")
-    (version "0.1.1")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -905,15 +905,17 @@ through its msgpack-rpc API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10bfy0dgwizxr56b4272b7sqajpr6lnz332pzx055dis2zzjap8z"))))
+                "1gsdjxf6f6zcjg5az78570b5m68lgsfn20ld16y7zbagwh51lj20"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
-       '(("compiler" "share/vim/vimfiles/")
+       '(("autoload" "share/vim/vimfiles/")
+         ("compiler" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("indent" "share/vim/vimfiles/")
          ("ftdetect" "share/vim/vimfiles/")
          ("ftplugin" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
          ("syntax" "share/vim/vimfiles/"))))
     (home-page "https://gitlab.com/Efraim/guix.vim")
     (synopsis "Guix integration in Vim")
