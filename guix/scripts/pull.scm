@@ -51,11 +51,11 @@
   #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
   #:autoload   (gnu packages certs) (le-certs)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -601,7 +601,7 @@ Return true when there is more package info to display."
               (string-join lst ", ")))
         (cut string-join <> ", ")))
 
-  (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
+  (let ((new upgraded (new/upgraded-packages alist1 alist2)))
     (define new-count (length new))
     (define upgraded-count (length upgraded))
 
