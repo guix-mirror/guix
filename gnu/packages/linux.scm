@@ -1182,6 +1182,32 @@ It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
+(define-public librem-ec-acpi-linux-module
+  (package
+    (name "librem-ec-acpi-linux-module")
+    (version "0.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://source.puri.sm/nicole.faerber/librem-ec-acpi-dkms")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qnbfj60i8nn2ahgj2zp5ixd79bb0wl1ld36x3igws2f3c0f5pfi"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no test suite
+    (home-page "https://source.puri.sm/nicole.faerber/librem-ec-acpi-dkms")
+    (synopsis "Linux kernel module to control the Librem Embedded Controller")
+    (description
+     "This is the Linux kernel @acronym{ACPI, Advanced Configuration and Power
+Interface} platform driver for the @acronym{EC, Embedded Controller} firmware
+on Purism Librem laptop computers.  It allows user-space control over the
+battery charging thresholds, keyboard backlight, fans and thermal monitors,
+and the notification, WiFi, and Bluetooth LED.")
+    (license license:gpl2+)))
+
 (define-public rtl8812au-aircrack-ng-linux-module
   (let ((commit "059e06a51be025fde5b2bec6565540b3d9981b0b")
         (revision "4"))
