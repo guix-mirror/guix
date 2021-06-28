@@ -46,7 +46,9 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
-  #:use-module (gnu packages)
+  #:autoload   (gnu packages) (%package-module-path
+                               %patch-path
+                               specification->package)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module ((guix progress) #:select (current-terminal-columns))
   #:use-module ((guix build syscalls) #:select (terminal-columns))
