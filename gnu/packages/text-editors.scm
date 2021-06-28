@@ -788,7 +788,7 @@ in plain text file format.")
 (define-public editorconfig-core-c
   (package
     (name "editorconfig-core-c")
-    (version "0.12.4")
+    (version "0.12.5")
     (source
       (origin
         (method git-fetch)
@@ -797,7 +797,7 @@ in plain text file format.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1311fhh2jfsja2hhk3nwb6nijlq03jw8dk35cwbrac0p9jvy03jx"))))
+         (base32 "073sh18y0v8wm10iphaia54pkdmwylalccpn1k5i9dwyfjzgj7yg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
