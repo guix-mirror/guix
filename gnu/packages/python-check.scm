@@ -116,7 +116,7 @@ are useful when writing automated tests in Python.")
 (define-public python-coveralls
   (package
     (name "python-coveralls")
-    (version "1.11.1")
+    (version "3.1.0")
     (home-page "https://github.com/coveralls-clients/coveralls-python")
     (source
      (origin
@@ -126,21 +126,19 @@ are useful when writing automated tests in Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zr1lqdjcfwj6wcx2449mzzjq8bbhwnqcm5vdif5s8hlz35bjxkp"))))
+         "1rpdv7rhs4xy6q4s63krrfhwihli9vla0qsw64vls0naail9yjn3"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-before 'check 'disable-git-test
                     (lambda _
                       ;; Remove test that requires 'git' and the full checkout.
-                      (delete-file "tests/git_test.py")
-                      #t))
+                      (delete-file "tests/git_test.py")))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
                           (invoke "pytest" "-vv")
-                          (format #t "test suite not run~%"))
-                      #t)))))
+                          (format #t "test suite not run~%")))))))
     (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-docopt" ,python-docopt)
@@ -148,7 +146,8 @@ are useful when writing automated tests in Python.")
        ("python-requests" ,python-requests)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)))
     (synopsis "Show coverage stats online via coveralls.io")
     (description
      "Coveralls.io is a service for publishing code coverage statistics online.
