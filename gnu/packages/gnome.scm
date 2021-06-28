@@ -5394,27 +5394,32 @@ faster results and to avoid unnecessary server load.")
   (package
     (name "upower")
     (version "0.99.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://upower.freedesktop.org/releases/"
-                                  "upower-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1vxxvmz2cxb1qy6ibszaz5bskqdy9nd9fxspj9fv3gfmrjzzzdb4"))
-              (patches (search-patches "upower-builddir.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Upstream commit
-                  ;; <https://cgit.freedesktop.org/upower/commit/?id=18457c99b68786cd729b315723d680e6860d9cfa>
-                  ;; moved 'dbus-1/system.d' from etc/ to share/.  However,
-                  ;; 'dbus-configuration-directory' in (gnu services dbus)
-                  ;; expects it in etc/.  Thus, move it back to its previous
-                  ;; location.
-                  (substitute* "src/Makefile.in"
-                    (("^dbusconfdir =.*$")
-                     "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/upower/upower")
+             (commit (string-append "UPOWER_"
+                                    (string-map (match-lambda (#\. #\_)
+                                                              (chr chr))
+                                                version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0frs6ywvsz48d0zfviy40h6mj0icfc1q21hn7p99nchps39z85f8"))
+       (patches (search-patches "upower-builddir.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Upstream commit
+           ;; <https://cgit.freedesktop.org/upower/commit/?id=18457c99b68786cd729b315723d680e6860d9cfa>
+           ;; moved 'dbus-1/system.d' from etc/ to share/.  However,
+           ;; 'dbus-configuration-directory' in (gnu services dbus)
+           ;; expects it in etc/.  Thus, move it back to its previous
+           ;; location.
+           (substitute* "src/Makefile.am"
+             (("^dbusconfdir =.*$")
+              "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
+           #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5430,10 +5435,15 @@ faster results and to avoid unnecessary server load.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
        ("python" ,python)
+       ("which" ,which)                 ; for ./autogen.sh
 
        ;; For tests.
        ("python-dbus" ,python-dbus)
@@ -5442,9 +5452,9 @@ faster results and to avoid unnecessary server load.")
        ("umockdev" ,umockdev)
 
        ;; For man pages.
-       ("libxslt" ,libxslt)                       ;for 'xsltproc'
-       ("libxml2" ,libxml2)                       ;for 'XML_CATALOG_FILES'
-       ("docbook-xsl" ,docbook-xsl)))
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxslt" ,libxslt)             ; for 'xsltproc'
+       ("libxml2" ,libxml2)))           ; for 'XML_CATALOG_FILES'
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
