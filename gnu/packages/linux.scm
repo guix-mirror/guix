@@ -1206,7 +1206,7 @@ Interface} platform driver for the @acronym{EC, Embedded Controller} firmware
 on Purism Librem laptop computers.  It allows user-space control over the
 battery charging thresholds, keyboard backlight, fans and thermal monitors,
 and the notification, WiFi, and Bluetooth LED.")
-    (license license:gpl2+)))
+    (license license:gpl2)))
 
 (define-public rtl8812au-aircrack-ng-linux-module
   (let ((commit "059e06a51be025fde5b2bec6565540b3d9981b0b")
