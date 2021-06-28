@@ -10208,48 +10208,46 @@ analysis, evolutionary conservation, biogenesis to functional analysis.")
     (license license:gpl3)))
 
 (define-public r-cistopic
-  (let ((commit "29abd8df9afb60ff27ac3f0a590930debe926950")
-        (revision "0"))
-    (package
-      (name "r-cistopic")
-      (version (git-version "0.2.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/aertslab/cisTopic")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0s8irpsv5d2zcv4ihanvsf1vrpignzliscxnvs4519af3jmx78h8"))))
-      (build-system r-build-system)
-      (propagated-inputs
-       `(("r-aucell" ,r-aucell)
-         ("r-data-table" ,r-data-table)
-         ("r-dplyr" ,r-dplyr)
-         ("r-dosnow" ,r-dosnow)
-         ("r-dt" ,r-dt)
-         ("r-feather" ,r-feather)
-         ("r-fitdistrplus" ,r-fitdistrplus)
-         ("r-genomicranges" ,r-genomicranges)
-         ("r-ggplot2" ,r-ggplot2)
-         ("r-lda" ,r-lda)
-         ("r-matrix" ,r-matrix)
-         ("r-plyr" ,r-plyr)
-         ("r-rcistarget" ,r-rcistarget)
-         ("r-rtracklayer" ,r-rtracklayer)
-         ("r-s4vectors" ,r-s4vectors)))
-      (home-page "https://github.com/aertslab/cisTopic")
-      (synopsis "Modelling of cis-regulatory topics from single cell epigenomics data")
-      (description
-       "The sparse nature of single cell epigenomics data can be overruled using
+  (package
+    (name "r-cistopic")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aertslab/cisTopic")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c4553rnxq7b1w451kcc3iwvak4qa5h2b43xmfw6ii8096zd1gbf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-aucell" ,r-aucell)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dosnow" ,r-dosnow)
+       ("r-dt" ,r-dt)
+       ("r-feather" ,r-feather)
+       ("r-fitdistrplus" ,r-fitdistrplus)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lda" ,r-lda)
+       ("r-matrix" ,r-matrix)
+       ("r-plyr" ,r-plyr)
+       ("r-rcistarget" ,r-rcistarget)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/aertslab/cisTopic")
+    (synopsis "Modelling of cis-regulatory topics from single cell epigenomics data")
+    (description
+     "The sparse nature of single cell epigenomics data can be overruled using
 probabilistic modelling methods such as @dfn{Latent Dirichlet
 Allocation} (LDA).  This package allows the probabilistic modelling of
 cis-regulatory topics (cisTopics) from single cell epigenomics data, and
 includes functionalities to identify cell states based on the contribution of
 cisTopics and explore the nature and regulatory proteins driving them.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public r-genie3
   (package
