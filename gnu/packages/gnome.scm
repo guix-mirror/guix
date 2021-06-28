@@ -6477,25 +6477,22 @@ side panel;
 (define-public libgudev
   (package
     (name "libgudev")
-    (version "232")
+    (version "236")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0q3qki451zzgdjazlgshsfzbbm0in40lyx7dyrag7kbkqnwv4k7f"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags
-       ;; umockdev depends on libgudev.
-       (list "--disable-umockdev")))
+                "094mgjmwgsgqrr1i0vd20ynvlkihvs3vgbmpbrhswjsrdp86j0z5"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by gudev-1.0.pc
+     `(("glib" ,glib)                   ; in Requires of gudev-1.0.pc
+       ("eudev" ,eudev)))               ; in Requires.private of gudev-1.0.pc
     (inputs
      `(("udev" ,eudev)))
     (home-page "https://wiki.gnome.org/Projects/libgudev")
