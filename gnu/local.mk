@@ -1858,8 +1858,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xsane-support-ipv6.patch			\
   %D%/packages/patches/xsane-tighten-default-umask.patch	\
   %D%/packages/patches/yggdrasil-extra-config.patch	\
-  %D%/packages/patches/ytfzf-programs.patch        \
-  %D%/packages/patches/ytfzf-updates.patch        \
   %D%/packages/patches/ytnef-CVE-2021-3403.patch	\
   %D%/packages/patches/ytnef-CVE-2021-3404.patch	\
   %D%/packages/patches/zstd-CVE-2021-24031_CVE-2021-24032.patch	\
