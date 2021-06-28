@@ -40,7 +40,8 @@
   #:use-module (guix packages)
   #:use-module (guix i18n)
   #:use-module ((guix gexp)
-                #:select (local-file? local-file-absolute-file-name))
+                #:select (gexp? local-file? local-file-absolute-file-name
+                                gexp->approximate-sexp))
   #:use-module (guix licenses)
   #:use-module (guix records)
   #:use-module (guix grafts)
@@ -89,6 +90,7 @@
             check-source
             check-source-file-name
             check-source-unstable-tarball
+            check-optional-tests
             check-mirror-url
             check-github-url
             check-license
@@ -1098,6 +1100,58 @@ descriptions maintained upstream."
 (define exception-with-kind-and-args?
   (exception-predicate &exception-with-kind-and-args))
 
+(define (check-optional-tests package)
+  "Emit a warning if the test suite is run unconditionally."
+  (define (sexp-contains-atom? sexp atom)
+    "Test if SEXP contains ATOM."
+    (if (pair? sexp)
+        (or (sexp-contains-atom? (car sexp) atom)
+            (sexp-contains-atom? (cdr sexp) atom))
+        (eq? sexp atom)))
+  (define (sexp-uses-tests?? sexp)
+    "Test if SEXP contains the symbol 'tests?'."
+    (sexp-contains-atom? sexp 'tests?))
+  (define (check-check-procedure expression)
+    (match expression
+      (`(,(or 'let 'let*) . ,_)
+       (check-check-procedure (car (last-pair expression))))
+      (`(,(or 'lambda 'lambda*) ,_ . ,code)
+       (if (sexp-uses-tests?? code)
+           '()
+           (list (make-warning package
+                               ;; TRANSLATORS: check and #:tests? are a
+                               ;; Scheme symbol and keyword respectively
+                               ;; and should not be translated.
+                               (G_ "the 'check' phase should respect #:tests?")
+                               #:field 'arguments))))
+      (_ '())))
+  (define (check-phases-delta delta)
+    (match delta
+      (`(replace 'check ,expression)
+       (check-check-procedure expression))
+      (_ '())))
+  (define (check-phases-deltas deltas)
+    (match deltas
+      (() '())
+      ((head . tail)
+       (append (check-phases-delta head)
+               (check-phases-deltas tail)))
+      (_ (list (make-warning package
+                             ;; TRANSLATORS: modify-phases is a Scheme
+                             ;; syntax and must not be translated.
+                             (G_ "incorrect call to ‘modify-phases’")
+                             #:field 'arguments)))))
+  (apply (lambda* (#:key phases #:allow-other-keys)
+           (define phases/sexp
+             (if (gexp? phases)
+                 (gexp->approximate-sexp phases)
+                 phases))
+           (match phases/sexp
+             (`(modify-phases ,_ . ,changes)
+              (check-phases-deltas changes))
+             (_ '())))
+         (package-arguments package)))
+
 (define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (define (try store system)
@@ -1598,6 +1652,10 @@ them for PACKAGE."
      (description "Make sure the 'license' field is a <license> \
 or a list thereof")
      (check       check-license))
+   (lint-checker
+     (name        'optional-tests)
+     (description "Make sure tests are only run when requested")
+     (check       check-optional-tests))
    (lint-checker
      (name        'mirror-url)
      (description "Suggest 'mirror://' URLs")

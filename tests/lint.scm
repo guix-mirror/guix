@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,7 @@
   #:use-module (guix lint)
   #:use-module (guix ui)
   #:use-module (guix swh)
-  #:use-module ((guix gexp) #:select (local-file))
+  #:use-module ((guix gexp) #:select (gexp local-file gexp?))
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module ((guix import hackage) #:select (%hackage-url))
   #:use-module ((guix import stackage) #:select (%stackage-url))
@@ -743,6 +744,80 @@
                                      (commit "0")))
                                (sha256 %null-sha256))))))
     (check-source-unstable-tarball pkg)))
+
+(define (package-with-phase-changes changes)
+  (dummy-package "x"
+                 (arguments `(#:phases
+                              ,(if (gexp? changes)
+                                   #~(modify-phases %standard-phases
+                                       #$@changes)
+                                   `(modify-phases %standard-phases
+                                      ,@changes))))))
+
+(test-equal "optional-tests: no check phase"
+  '()
+  (let ((pkg (package-with-phase-changes '())))
+    (check-optional-tests pkg)))
+
+(test-equal "optional-tests: check phase respects #:tests?"
+  '()
+  (let ((pkg (package-with-phase-changes
+              '((replace 'check
+                  (lambda* (#:key tests? #:allow-other-keys?)
+                    (when tests?
+                      (invoke "./the-test-suite"))))))))
+    (check-optional-tests pkg)))
+
+(test-equal "optional-tests: check phase ignores #:tests?"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              '((replace 'check
+                  (lambda _
+                    (invoke "./the-test-suite")))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: do not crash when #:phases is invalid"
+  "incorrect call to ‘modify-phases’"
+  (let ((pkg (package-with-phase-changes 'this-is-not-a-list)))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: allow G-exps (no warning)"
+  '()
+  (let ((pkg (package-with-phase-changes #~())))
+    (check-optional-tests pkg)))
+
+(test-equal "optional-tests: allow G-exps (warning)"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              #~((replace 'check
+                   (lambda _
+                     (invoke "/the-test-suite")))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: complicated 'check' phase"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              '((replace 'check
+                  (lambda* (#:key inputs tests? #:allow-other-keys)
+                    (let ((something (stuff from inputs or native-inputs)))
+                      (delete-file "dateutil/test/test_utils.py")
+                      (invoke "pytest" "-vv"))))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: 'check' phase is not first phase"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              '((add-after 'unpack
+                    (lambda _
+                      (chdir "libtestcase-0.0.0")))
+                (replace 'check
+                  (lambda _ (invoke "./test-suite")))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
 
 (test-equal "source: 200"
   '()
