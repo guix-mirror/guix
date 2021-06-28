@@ -3983,6 +3983,32 @@ make keyboards more accessible to people with physical impairments.")
 requested commands if they occur.")
     (license license:x11)))
 
+(define-public xkbprint
+  (package
+    (name "xkbprint")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append  "mirror://xorg/individual/app/"
+                             "xkbprint-" version ".tar.bz2"))
+        (sha256
+          (base32 "1yi3232g25hhp241irncd8znv3090k2gm0yjcdnz08h89y1zwn2v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxkbfile" ,libxkbfile)
+        ("xorgproto" ,xorgproto)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Visualise an XKB keyboard layout description")
+    (description
+     "The @command{xkbprint} utility visualises (``prints'') an XKB keyboard
+description as printable or encapsulated PostScript.  It accepts any compiled
+keymap (@file{.xkm}) file that includes a geometry description, or can obtain
+one from a running X server.")
+    (license license:x11)))
 
 (define-public xkbutils
   (package
