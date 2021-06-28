@@ -2139,16 +2139,14 @@ found."
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))
     (parameterize ((program-name command))
-      ;; Disable canonicalization so we don't don't stat unreasonably.
-      (with-fluids ((%file-port-name-canonicalization #f))
-        (dynamic-wind
-          (const #f)
-          (lambda ()
-            (apply command-main args))
-          (lambda ()
-            ;; Abuse 'exit-hook' (which is normally meant to be used by the
-            ;; REPL) to run things like profiling hooks upon completion.
-            (run-hook exit-hook)))))))
+      (dynamic-wind
+        (const #f)
+        (lambda ()
+          (apply command-main args))
+        (lambda ()
+          ;; Abuse 'exit-hook' (which is normally meant to be used by the
+          ;; REPL) to run things like profiling hooks upon completion.
+          (run-hook exit-hook))))))
 
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.
@@ -2160,28 +2158,30 @@ and signal handling have already been set up."
   ;; number of 'stat' calls per entry in %LOAD-PATH.  Shamelessly remove it.
   (set! %load-extensions '(".scm"))
 
-  (match args
-    (()
-     (format (current-error-port)
-             (G_ "guix: missing command name~%"))
-     (show-guix-usage))
-    ((or ("-h") ("--help"))
-     (leave-on-EPIPE (show-guix-help)))
-    ((or ("-V") ("--version"))
-     (show-version-and-exit "guix"))
-    (((? option? o) args ...)
-     (format (current-error-port)
-             (G_ "guix: unrecognized option '~a'~%") o)
-     (show-guix-usage))
-    (("help" command)
-     (apply run-guix-command (string->symbol command)
-            '("--help")))
-    (("help" args ...)
-     (leave-on-EPIPE (show-guix-help)))
-    ((command args ...)
-     (apply run-guix-command
-            (string->symbol command)
-            args))))
+  ;; Disable canonicalization so we don't don't stat unreasonably.
+  (with-fluids ((%file-port-name-canonicalization #f))
+    (match args
+      (()
+       (format (current-error-port)
+               (G_ "guix: missing command name~%"))
+       (show-guix-usage))
+      ((or ("-h") ("--help"))
+       (leave-on-EPIPE (show-guix-help)))
+      ((or ("-V") ("--version"))
+       (show-version-and-exit "guix"))
+      (((? option? o) args ...)
+       (format (current-error-port)
+               (G_ "guix: unrecognized option '~a'~%") o)
+       (show-guix-usage))
+      (("help" command)
+       (apply run-guix-command (string->symbol command)
+              '("--help")))
+      (("help" args ...)
+       (leave-on-EPIPE (show-guix-help)))
+      ((command args ...)
+       (apply run-guix-command
+              (string->symbol command)
+              args)))))
 
 (define (guix-main arg0 . args)
   (initialize-guix)
