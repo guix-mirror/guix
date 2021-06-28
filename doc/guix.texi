@@ -10046,6 +10046,16 @@ corresponding to @var{obj} for @var{system}, cross-compiling for
 has an associated gexp compiler, such as a @code{<package>}.
 @end deffn
 
+@deffn {Procedure} gexp->approximate-sexp @var{gexp}
+Sometimes, it may be useful to convert a G-exp into a S-exp.  For
+example, some linters (@pxref{Invoking guix lint}) peek into the build
+phases of a package to detect potential problems.  This conversion can
+be achieved with this procedure.  However, some information can be lost
+in the process.  More specifically, lowerable objects will be silently
+replaced with some arbitrary object -- currently the list
+@code{(*approximate*)}, but this may change.
+@end deffn
+
 @node Invoking guix repl
 @section Invoking @command{guix repl}
 

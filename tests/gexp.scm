@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +89,36 @@
 
 
 (test-begin "gexp")
+
+(test-equal "no references"
+  '(display "hello gexp->approximate-sexp!")
+  (gexp->approximate-sexp #~(display "hello gexp->approximate-sexp!")))
+
+(test-equal "unquoted gexp"
+  '(display "hello")
+  (let ((inside #~"hello"))
+    (gexp->approximate-sexp #~(display #$inside))))
+
+(test-equal "unquoted gexp (native)"
+  '(display "hello")
+  (let ((inside #~"hello"))
+    (gexp->approximate-sexp #~(display #+inside))))
+
+(test-equal "spliced gexp"
+  '(display '(fresh vegetables))
+  (let ((inside #~(fresh vegetables)))
+    (gexp->approximate-sexp #~(display '(#$@inside)))))
+
+(test-equal "unspliced gexp, approximated"
+  ;; (*approximate*) is really an implementation detail
+  '(display '(*approximate*))
+  (let ((inside (file-append coreutils "/bin/hello")))
+    (gexp->approximate-sexp #~(display '(#$@inside)))))
+
+(test-equal "unquoted gexp, approximated"
+  '(display '(*approximate*))
+  (let ((inside (file-append coreutils "/bin/hello")))
+    (gexp->approximate-sexp #~(display '#$inside))))
 
 (test-equal "no refs"
   '(display "hello!")
