@@ -1532,14 +1532,14 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public powerstat
   (package
     (name "powerstat")
-    (version "0.02.25")
+    (version "0.02.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://kernel.ubuntu.com/~cking/tarballs/"
                            "powerstat/powerstat-" version ".tar.gz"))
        (sha256
-        (base32 "0dmixbxm4qd08ds26i0wvxwyy8nrjzfjj2q9ylx35564g4wh58qb"))))
+        (base32 "18m85k83hryj05vix63fay1hh0sb9h87hy5r7g1dqg2y9i8lzgxk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1548,12 +1548,6 @@ at login.  Local and dynamic reconfiguration are its key features.")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'respect-$prefix
-           ;; https://bugs.launchpad.net/ubuntu/+source/powerstat/+bug/1877744
-           (lambda _
-             (substitute* "Makefile"
-               (("DIR=/usr/") "DIR=$(prefix)/"))
-             #t))
          (delete 'configure))))         ; no configure script
     (home-page "https://kernel.ubuntu.com/~cking/powerstat/")
     (synopsis "Measure system power consumption")
