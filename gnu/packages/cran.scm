@@ -17896,6 +17896,42 @@ products and native slicing of the sparse matrices in @dfn{Compressed Sparse
 Row} (CSR) format.")
     (license license:gpl2+)))
 
+(define-public r-text2vec
+  (package
+    (name "r-text2vec")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "text2vec" version))
+       (sha256
+        (base32
+         "0r75cv77x2zm1z66s95hic71dpbqmybz39n48q6mz7gfd3m7312y"))))
+    (properties `((upstream-name . "text2vec")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-digest" ,r-digest)
+       ("r-lgr" ,r-lgr)
+       ("r-matrix" ,r-matrix)
+       ("r-mlapi" ,r-mlapi)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rsparse" ,r-rsparse)
+       ("r-stringi" ,r-stringi)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://text2vec.org")
+    (synopsis "Text mining framework for R")
+    (description
+     "This package provides fast and memory-friendly tools for text
+vectorization, topic modeling (LDA, LSA), word embeddings (GloVe),
+similarities.  It provides a source-agnostic streaming API, which allows
+researchers to perform analysis of collections of documents which are larger
+than available RAM.  All core functions are parallelized to benefit from
+multicore machines.")
+    (license license:gpl2+)))
+
 (define-public r-xmlparsedata
   (package
     (name "r-xmlparsedata")
