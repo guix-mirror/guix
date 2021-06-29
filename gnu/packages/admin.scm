@@ -1305,7 +1305,15 @@ tools: server, client, and relay agent.")
        ("flex" ,flex)))
     (arguments
      ;; There are some tests in testprogs/, but no automated test suite.
-     '(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'omit-static-library
+           ;; Neither build nor install libpcap.a.
+           (lambda _
+             (substitute* "Makefile.in"
+               ((" libpcap\\.a") "")
+               ((" install-archive ") " ")))))))
     (home-page "https://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description
