@@ -228,7 +228,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
 (define-public remind
   (package
     (name "remind")
-    (version "3.3.6")
+    (version "3.3.7")
     (source
      (origin
        (method url-fetch)
@@ -239,7 +239,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
                                         ".")
                            ".tar.gz"))
        (sha256
-        (base32 "0nszv62gqyclsvsygqj4b1c5h40rp66s5njgcf1h7iy9f00hr6ln"))))
+        (base32 "0gca7f5gc0zr111c28hxw4hycz1hr9z7s912bpzm92g1s4llxjc7"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "tcl"))           ; more than doubles the closure by >110 MiB
