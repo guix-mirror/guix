@@ -1182,6 +1182,94 @@ It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
+(define-public corefreq
+  (package
+    (name "corefreq")
+    (version "1.86.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cyring/CoreFreq")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k8pyxcahc78kcc8q1h76dr91i1r33jciqhgkajkz3xa28qx8mhn"))))
+    (build-system linux-module-build-system)
+    (outputs (list "out" "linux-module"))
+    (arguments
+     `(#:imported-modules ((guix build gnu-build-system)
+                           ,@%linux-module-build-system-modules)
+       #:modules ((guix build linux-module-build-system)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  (guix build utils))
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "OPTIM_LVL=3"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'untangle-module-targets
+           ;; Having to build everything in one pass would complicate the
+           ;; definition.  Let each build system handle what it's good at.
+           (lambda _
+             (substitute* "Makefile"
+               ((".*MAKE.*KERNELDIR.*") ""))))
+         (add-after 'build 'gnu:build
+           (assoc-ref gnu:%standard-phases 'build))
+         (add-after 'install 'gnu:install
+           (assoc-ref gnu:%standard-phases 'install))
+         (add-after 'install 'separate-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Adding INSTALL_MOD_PATH= to #:make-flags would still create an
+             ;; empty <out>/lib/modules directory, so just do it all by hand.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (module (assoc-ref outputs "linux-module")))
+               (mkdir-p (string-append module "/lib"))
+               (rename-file (string-append out    "/lib/modules")
+                            (string-append module "/lib/modules")))))
+         (add-after 'install 'install-README
+           ;; There is no proper documentation.  Provide something.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/"
+                                        ,name "-" ,version)))
+               (install-file "README.md" doc)))))))
+    (home-page "https://github.com/cyring/CoreFreq")
+    (synopsis
+     "Measure performance data & tweak low-level settings on x86-64 CPUs")
+    (description
+     "CoreFreq is a CPU monitor that reports low-level processor settings and
+performance data with notably high precision by using a loadable Linux kernel
+module.  Unlike most similar tools, it can be used to modify some settings if
+supported by the hardware and at your own risk.  It's designed for 64-bit x86
+Intel processors (Atom, Core2, Nehalem, SandyBridge, and newer) and compatible
+architectures like AMD@tie{}Zen and Hygon@tie{}Dhyana.
+
+Supported processor features include:
+@enumerate
+@item time spent in C-states, including C1/C3 Auto- and UnDemotion;
+@item core temperatures, voltage, and tweaking thermal limits;
+@item core frequencies, ratios, and base clock rate;
+@item enabling, disabling, and testing SpeedStep (EIST), Turbo Boost, and
+Hyper-Threading or SMT;
+@item enabling or disabling data cache prefetching;
+@item kernel assembly code to keep as near as possible readings of performance
+counters such as the @acronym{TSC, Time Stamp Counter}, @acronym{UCC, Unhalted
+Core Cycles}, and @acronym{URC, Unhalted Reference Cycles};
+@item the number of instructions per cycle or second (IPS, IPC, and CPI);
+@item memory controller geometry and RAM timings;
+@item running processes' CPU affinity.
+@end enumerate
+
+This package provides the @command{corefreqd} data collection daemon, the
+@command{corefreq-cli} client to visualise and control it in real time, and the
+@code{corefreqk} kernel module in its own separate output.  Read the included
+@file{README.md} before loading it.")
+    (supported-systems (list "x86_64-linux"))
+    (license license:gpl2)))
+
 (define-public librem-ec-acpi-linux-module
   (package
     (name "librem-ec-acpi-linux-module")
