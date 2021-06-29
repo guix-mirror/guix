@@ -11314,38 +11314,7 @@ convert an @code{.ipynb} notebook file into various static formats including:
 @item ReStructured Text (rst)
 @item executable script
 @end enumerate\n")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-nbconvert))))))
-
-(define-public python2-nbconvert
-  (let ((parent
-         (package-with-python2
-          (strip-python2-variant python-nbconvert))))
-    (package
-      (inherit parent)
-      (version "5.0.0b1")
-      (source
-       (origin
-         (method url-fetch)
-         (uri (pypi-uri "nbconvert" version))
-         (sha256
-          (base32
-           "0brclbb18l4nmd5qy3dl9wn05rjdh1fz4rmzdlfqacj12rcdvdgp"))))
-      (arguments
-       `(;; The "bdist_egg" target is disabled by default, causing the installation
-         ;; to fail.
-         #:configure-flags (list "bdist_egg")
-         ;; FIXME: 5 failures, 40 errors.
-         #:tests? #f))
-      (propagated-inputs
-       `(("python-bleach" ,python-bleach)
-         ("python-entrypoints" ,python-entrypoints)
-         ("python-jinja2" ,python-jinja2)
-         ("python-jupyter-core" ,python-jupyter-core)
-         ("python-mistune" ,python-mistune)
-         ("python-nbformat" ,python-nbformat)
-         ("python-pygments" ,python-pygments)
-         ("python-traitlets" ,python-traitlets))))))
+    (license license:bsd-3)))
 
 (define-public python-notebook
   (package
