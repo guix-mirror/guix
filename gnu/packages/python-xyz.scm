@@ -9149,9 +9149,6 @@ applications.")
      "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
     (license license:bsd-4)))
 
-(define-public python2-pyzmq
-  (package-with-python2 python-pyzmq))
-
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
   ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
