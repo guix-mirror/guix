@@ -8103,8 +8103,9 @@ kernel side implementation.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
-    (synopsis "User-space tools for EROFS file system")
-    (description "EROFS (Enhanced Read-Only File System) is a compressed,
+    (synopsis "User-space tools for the EROFS file system")
+    (description
+     "@acronym{EROFS, The Enhanced Read-Only File System} is a compressed,
 read-only file system optimized for resource-scarce devices.  This package
 provides user-space tools for creating EROFS file systems.")
     (license license:gpl2+)))
