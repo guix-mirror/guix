@@ -10956,22 +10956,7 @@ drafts 04, 06 and 07.")
     (synopsis "Jupyter Notebook format")
     (description "This package provides the reference implementation of the
 Jupyter Notebook format and Python APIs for working with notebooks.")
-    (properties `((python2-variant . ,(delay python2-nbformat))))
     (license license:bsd-3)))
-
-(define-public python2-nbformat
-  (let ((parent (package-with-python2
-                 (strip-python2-variant python-nbformat))))
-    (package
-      (inherit parent)
-      (version "4.4.0")
-      (source
-       (origin
-         (method url-fetch)
-         (uri (pypi-uri "nbformat" version))
-         (sha256
-          (base32
-           "00nlf08h8yc4q73nphfvfhxrcnilaqanb8z0mdy6nxk0vzq4wjgp")))))))
 
 (define-public python-bleach
   (package
