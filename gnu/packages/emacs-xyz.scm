@@ -26402,7 +26402,7 @@ REPL appropriate to the current major mode.")
 (define-public emacs-rime
   (package
     (name "emacs-rime")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
        (method git-fetch)
@@ -26411,7 +26411,7 @@ REPL appropriate to the current major mode.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a50cziwg7lpgh26yvwxs46jfyfq1m0l6igbg5g5m288mz4d3an9"))))
+        (base32 "0z0iwsqr92g8ykxb51gkawwxwzx0faw0027zgdi7c38ngjqld237"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "\\.so$" %default-include)
