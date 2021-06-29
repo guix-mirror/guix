@@ -1291,14 +1291,14 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07ibr6zzfh1wk5gqcbnlyh6v0dfmhpfd0fqj5y3yxvzf4ckb84ld"))))
+                "1m5x26vlbymp90k1qh0w3nj2nxzyvfrmfmwpj17k81dgri55ya7d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
