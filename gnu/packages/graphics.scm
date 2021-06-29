@@ -772,7 +772,12 @@ more.")
                 "0yjzq12ivizp23y7zqm30x20psv9gzwbcdrhyd3f7h0ds94m1c40"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ; no test target
+     `(#:configure-flags
+       ;; Prevent two mostly-duplicate directories.  Use Guix's versioned
+       ;; default for licences instead of CGAL's unversioned one.
+       (list (string-append "-DCGAL_INSTALL_DOC_DIR=share/doc/"
+                            ,name "-" ,version))
+       #:tests? #f))                    ; no test target
     (inputs
      `(("mpfr" ,mpfr)
        ("gmp" ,gmp)
