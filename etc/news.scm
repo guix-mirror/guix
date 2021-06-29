@@ -23,6 +23,21 @@
 (channel-news
  (version 0)
 
+(entry (commit "82daab42811a2e3c7684ebdf12af75ff0fa67b99")
+        (title
+         (en "New @samp{deb} format for the @command{guix pack} command"))
+        (body
+         (en "Debian archives (with the .deb file extension) can now be
+produced via the @command{guix pack --format=deb} command, providing an
+alternative distribution path for software built with Guix.  Here is a simple
+example that generates a Debian archive for the @code{hello} package:
+
+@example
+guix pack --format=deb --symlink=/usr/bin/hello=bin/hello hello
+@end example
+
+See @command{info \"(guix) Invoking guix pack\"} for more information.")))
+
  (entry (commit "bdc298ecee15283451d3aa20a849dd7bb22c8538")
         (title
          (en "New @command{guix import egg} command")
