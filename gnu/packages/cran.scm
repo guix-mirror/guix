@@ -17810,6 +17810,33 @@ they are often difficult to interpret.  Rex allows you to build complex
 regular expressions from human readable expressions")
     (license license:expat)))
 
+(define-public r-mlapi
+  (package
+    (name "r-mlapi")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mlapi" version))
+       (sha256
+        (base32
+         "023vk5bp8cjcq88sapkl87kdxr92bay1dyxl6xirnyj699pyj51k"))))
+    (properties `((upstream-name . "mlapi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-r6" ,r-r6)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/package=mlapi")
+    (synopsis "Abstract classes for building scikit-learn like API")
+    (description
+     "This package provides R6 abstract classes for building machine learning
+models with a scikit-learn like API.  Scikit-learn is a popular module for the
+Python programming language whose design became a de facto standard in
+industry for machine learning tasks.")
+    (license license:expat)))
+
 (define-public r-xmlparsedata
   (package
     (name "r-xmlparsedata")
