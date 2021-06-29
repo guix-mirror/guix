@@ -1799,9 +1799,6 @@ and commands.  It contains functions to check things on the file system, and
 tools for mocking system commands and recording calls to those.")
     (license license:expat)))
 
-(define-public python2-testpath
-  (package-with-python2 python-testpath))
-
 (define-public python-testlib
   (package
     (name "python-testlib")
