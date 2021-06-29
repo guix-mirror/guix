@@ -10249,6 +10249,46 @@ includes functionalities to identify cell states based on the contribution of
 cisTopics and explore the nature and regulatory proteins driving them.")
     (license license:gpl3)))
 
+(define-public r-cistopic-next
+  (let ((commit "04cecbb9d1112fcc1a6edc28b5a506bcb49f2803")
+        (revision "1"))
+    (package
+      (inherit r-cistopic)
+      (name "r-cistopic-next")
+      ;; The DESCRIPTION file says this is version 0.3.0, which is a bit odd
+      ;; since the previous release is 2.1.0.  Oh well.
+      (version (git-version "0.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aertslab/cisTopic")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11cg9szlysnsjiaahda4k5v2vh4rxx27zhz53hafgaq9mdz0kgi2"))))
+      (properties `((upstream-name . "cisTopic")))
+      (propagated-inputs
+       `(("r-aucell" ,r-aucell)
+         ("r-data-table" ,r-data-table)
+         ("r-dosnow" ,r-dosnow)
+         ("r-dplyr" ,r-dplyr)
+         ("r-dt" ,r-dt)
+         ("r-feather" ,r-feather)
+         ("r-fitdistrplus" ,r-fitdistrplus)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-lda" ,r-lda)
+         ("r-matrix" ,r-matrix)
+         ("r-plyr" ,r-plyr)
+         ("r-rcistarget" ,r-rcistarget)
+         ("r-rtracklayer" ,r-rtracklayer)
+         ("r-s4vectors" ,r-s4vectors)
+         ("r-text2vec" ,r-text2vec)))
+      (native-inputs
+       `(("r-knitr" ,r-knitr))))))
+
 (define-public r-genie3
   (package
     (name "r-genie3")
