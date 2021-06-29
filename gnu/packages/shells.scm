@@ -945,7 +945,7 @@ files and text.")
 (define-public nushell
   (package
     (name "nushell")
-    (version "0.33.0")
+    (version "0.32.0")
     (source
      (origin
        (method git-fetch)
@@ -954,7 +954,7 @@ files and text.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rdvvg6hf01bljq0zz0c66kbzy5ggbcbil1j45hklzq0ibffdj02"))))
+        (base32 "1wj054rzv88ys4ask4zp7crrw0dxrck8svlj3i16qqd8x5dnyhqs"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.47
@@ -995,7 +995,6 @@ files and text.")
         ("rust-nu-plugin-to-sqlite" ,rust-nu-plugin-to-sqlite-0.32)
         ("rust-nu-plugin-tree" ,rust-nu-plugin-tree-0.32)
         ("rust-nu-plugin-xpath" ,rust-nu-plugin-xpath-0.32)
-        ("rust-polars-0.13" ,rust-polars-0.13)
         ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4))
        #:cargo-development-inputs
        (("rust-dunce" ,rust-dunce-1)
