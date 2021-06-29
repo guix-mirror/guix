@@ -172,18 +172,16 @@ application-facing EGL functions.")
 (define-public egl-wayland
   (package
     (name "egl-wayland")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/NVIDIA/egl-wayland")
-         (commit version)))
-       (file-name
-        (git-file-name name version))
+       (uri (git-reference
+             (url "https://github.com/NVIDIA/egl-wayland")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1n9lg8hpjgxlf7dpddkjhbslsfd0symla2wk6jjmnl9n9jv2gmzk"))))
+        (base32 "0xcx1132zwyp4qps074m72ngjlfmysi1jc2d0lp1ml1r9bllkam6"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
