@@ -17864,6 +17864,38 @@ precision) data.  Float vectors/matrices have half the precision of their
 on, for a performance vs accuracy trade-off.")
     (license license:bsd-2)))
 
+(define-public r-rsparse
+  (package
+    (name "r-rsparse")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsparse" version))
+       (sha256
+        (base32
+         "1blg59gsidh0sn6yy761pisz2phml0hzgqc24s5s8q9q903rddr9"))))
+    (properties `((upstream-name . "rsparse")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-float" ,r-float)
+       ("r-lgr" ,r-lgr)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rhpcblasctl" ,r-rhpcblasctl)))
+    (home-page "https://github.com/rexyai/rsparse")
+    (synopsis "Statistical learning on sparse matrices")
+    (description
+     "This package implements many algorithms for statistical learning on
+sparse matrices: matrix factorizations, matrix completion, elastic net
+regressions, factorization machines.  The rsparse package also enhances the
+Matrix package by providing methods for multithreaded <sparse, dense> matrix
+products and native slicing of the sparse matrices in @dfn{Compressed Sparse
+Row} (CSR) format.")
+    (license license:gpl2+)))
+
 (define-public r-xmlparsedata
   (package
     (name "r-xmlparsedata")
