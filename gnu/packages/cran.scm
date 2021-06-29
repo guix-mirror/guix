@@ -17837,6 +17837,33 @@ Python programming language whose design became a de facto standard in
 industry for machine learning tasks.")
     (license license:expat)))
 
+(define-public r-float
+  (package
+    (name "r-float")
+    (version "0.2-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "float" version))
+       (sha256
+        (base32
+         "1wf1dfybgbhvh9sa5z41xkh8liwp5n9gyydfq2mpg6bag0r457z1"))))
+    (properties `((upstream-name . "float")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/wrathematics/float")
+    (synopsis "32-bit floats")
+    (description
+     "R comes with a suite of utilities for linear algebra with
+\"numeric\" (double precision) vectors/matrices.  However, sometimes single
+precision (or less!) is more than enough for a particular task.  This package
+extends R's linear algebra facilities to include 32-bit float (single
+precision) data.  Float vectors/matrices have half the precision of their
+\"numeric\"-type counterparts but are generally faster to numerically operate
+on, for a performance vs accuracy trade-off.")
+    (license license:bsd-2)))
+
 (define-public r-xmlparsedata
   (package
     (name "r-xmlparsedata")
