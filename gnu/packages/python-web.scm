@@ -1772,17 +1772,7 @@ web framework, either via the basic or digest authentication schemes.")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
 term.js Javascript terminal emulator library.")
-    (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-terminado))))))
-
-(define-public python2-terminado
-  (let ((terminado (package-with-python2 (strip-python2-variant python-terminado))))
-    (package/inherit terminado
-      (propagated-inputs
-       `(("python2-backport-ssl-match-hostname"
-          ,python2-backport-ssl-match-hostname)
-         ("python2-futures" ,python2-futures)
-          ,@(package-propagated-inputs terminado))))))
+    (license license:bsd-2)))
 
 (define-public python-wsgi-intercept
   (package
