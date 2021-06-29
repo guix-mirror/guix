@@ -3168,14 +3168,14 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.1.0")
+    (version "6.1.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "1184fcv4wa2df8szb5lan6pjh0raarr45pk8ilpvbz23naikzg53"))
+       (base32 "04dkz24a2g20wq703fnyi4440ac4mwycy9gwrrllljj7zxcjy19r"))
       (patches (search-patches "scotch-build-parallelism.patch"
                                "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
@@ -3183,7 +3183,8 @@ implemented in ANSI C, and MPI for communications.")
      `(("zlib" ,zlib)))
     (native-inputs
      `(("flex" ,flex)
-       ("bison" ,bison)))
+       ("bison" ,bison)
+       ("gfortran" ,gfortran)))
     (outputs '("out" "metis"))
     (arguments
      `(#:make-flags (list (string-append "prefix=" %output))
@@ -3208,6 +3209,7 @@ CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
+FC = gfortran
 CPPFLAGS =~{ -D~a~}
 CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
 LDFLAGS = -lz -lm -lrt -lpthread
@@ -3289,6 +3291,7 @@ CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
+FC = gfortran
 CPPFLAGS =~{ -D~a~}
 CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
 LDFLAGS = -lz -lm -lrt -lpthread
@@ -3343,6 +3346,7 @@ CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
+FC = gfortran
 CPPFLAGS =~{ -D~a~}
 CFLAGS = -O2 -g -fPIC $(CPPFLAGS) $(RPATHFLAGS)
 CLIBFLAGS = -shared -fPIC
