@@ -21255,9 +21255,6 @@ library's @code{threading} module.")
 functions, and dictionaries.")
     (license license:bsd-3)))
 
-(define-public python2-toolz
-  (package-with-python2 python-toolz))
-
 (define-public python-cytoolz
   (package
     (name "python-cytoolz")
