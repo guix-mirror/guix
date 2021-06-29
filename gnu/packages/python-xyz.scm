@@ -7889,9 +7889,6 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
             ,@(package-arguments base)))
         (native-inputs `())))))
 
-(define-public python2-jupyter-client
-  (package-with-python2 python-jupyter-client))
-
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
