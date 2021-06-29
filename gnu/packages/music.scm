@@ -4886,7 +4886,7 @@ studio.")
 (define-public gsequencer
   (package
     (name "gsequencer")
-    (version "3.7.48")
+    (version "3.8.13")
     (source
      (origin
        (method git-fetch)
@@ -4895,16 +4895,15 @@ studio.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pqaj09x3lzcj0zbbkqpyaky9i1w462bhhvg1akh73nzwvyy46zd"))))
-    (build-system gnu-build-system)
+        (base32 "1gwy7fhbxgrd5n6afq1hnxc6p873wsh4qs63yhkkdfzyl7s412z4"))))
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'prepare-x-for-test
            (lambda _
              (system "Xvfb &")
-             (setenv "DISPLAY" ":0")
-             #t)))))
+             (setenv "DISPLAY" ":0"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
