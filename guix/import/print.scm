@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,14 @@
   #:use-module (ice-9 control)
   #:use-module (ice-9 match)
   #:export (package->code))
+
+(define (redundant-input-labels? inputs)
+  "Return #t if input labels in the INPUTS list are redundant."
+  (every (match-lambda
+           ((label (? package? package) . _)
+            (string=? label (package-name package)))
+           (_ #f))
+         inputs))
 
 ;; FIXME: the quasiquoted arguments field may contain embedded package
 ;; objects, e.g. in #:disallowed-references; they will just be printed with
@@ -104,21 +113,33 @@ when evaluated."
          ,@(if (null? patches) '()
                `((patches (search-patches ,@(map basename patches))))))))
 
-  (define (package-lists->code lsts)
-    (list 'quasiquote
-          (map (match-lambda
-                 ((? symbol? s)
-                  (list (symbol->string s) (list 'unquote s)))
-                 ((label pkg . out)
-                  (let ((mod (package-module-name pkg)))
-                    (cons* label
-                           ;; FIXME: using '@ certainly isn't pretty, but it
-                           ;; avoids having to import the individual package
-                           ;; modules.
-                           (list 'unquote
-                                 (list '@ mod (variable-name pkg mod)))
-                           out))))
-               lsts)))
+  (define (inputs->code inputs)
+    (if (redundant-input-labels? inputs)
+        `(list ,@(map (match-lambda    ;no need for input labels ("new style")
+                        ((_ package)
+                         (let ((module (package-module-name package)))
+                           `(@ ,module ,(variable-name package module))))
+                        ((_ package output)
+                         (let ((module (package-module-name package)))
+                           (list 'quasiquote
+                                 (list
+                                  (list 'unquote
+                                        `(@ ,module
+                                            ,(variable-name package module)))
+                                  output)))))
+                      inputs))
+        (list 'quasiquote                  ;preserve input labels (deprecated)
+              (map (match-lambda
+                     ((label pkg . out)
+                      (let ((mod (package-module-name pkg)))
+                        (cons* label
+                               ;; FIXME: using '@ certainly isn't pretty, but it
+                               ;; avoids having to import the individual package
+                               ;; modules.
+                               (list 'unquote
+                                     (list '@ mod (variable-name pkg mod)))
+                               out))))
+                   inputs))))
 
   (let ((name                (package-name package))
         (version             (package-version package))
@@ -160,13 +181,13 @@ when evaluated."
              (outs `((outputs (list ,@outs)))))
          ,@(match native-inputs
              (() '())
-             (pkgs `((native-inputs ,(package-lists->code pkgs)))))
+             (pkgs `((native-inputs ,(inputs->code pkgs)))))
          ,@(match inputs
              (() '())
-             (pkgs `((inputs ,(package-lists->code pkgs)))))
+             (pkgs `((inputs ,(inputs->code pkgs)))))
          ,@(match propagated-inputs
              (() '())
-             (pkgs `((propagated-inputs ,(package-lists->code pkgs)))))
+             (pkgs `((propagated-inputs ,(inputs->code pkgs)))))
          ,@(if (lset= string=? supported-systems %supported-systems)
                '()
                `((supported-systems (list ,@supported-systems))))

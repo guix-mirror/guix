@@ -60,8 +60,8 @@
                (base32
                 "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
     (build-system (@ (guix build-system gnu) gnu-build-system))
-    (inputs `(("coreutils" ,(@ (gnu packages base) coreutils))
-              ("glibc" ,(@ (gnu packages base) glibc) "debug")))
+    (inputs (list (@ (gnu packages base) coreutils)
+                  `(,(@ (gnu packages base) glibc) "debug")))
     (home-page "http://gnu.org")
     (synopsis "Dummy")
     (description "This is a dummy package.")
