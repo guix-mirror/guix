@@ -3119,23 +3119,27 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "26.1.2")
+    (version "27.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/obsproject/obs-studio")
-                    (commit version)))
+                    (commit version)
+                    (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k1asqiqw757v59ayx0w029ril947hs0lcp8n91knzjl891fr4nc"))
+                "04fzsr9yizmxy0r7z2706crvnsnybpnv5kgfn77znknxxjacfhkn"))
               (patches
                (search-patches "obs-modules-location.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version)
-             "-DENABLE_UNIT_TESTS=TRUE")
+             "-DENABLE_UNIT_TESTS=TRUE"
+             ;; Browser plugin requires cef, but it is not packaged yet.
+             ;; <https://bitbucket.org/chromiumembedded/cef/src/master/>
+             "-DBUILD_BROWSER=FALSE")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-executable
@@ -3164,18 +3168,22 @@ be used for realtime video capture via Linux-specific APIs.")
        ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("glib" ,glib)
        ("jack" ,jack-1)
        ("jansson" ,jansson)
        ("libx264" ,libx264)
        ("libxcomposite" ,libxcomposite)
        ("mbedtls" ,mbedtls-apache)
        ("mesa" ,mesa)
+       ("pipewire" ,pipewire-0.3)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("speexdsp" ,speexdsp)
        ("v4l-utils" ,v4l-utils)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")
     (description "Open Broadcaster Software provides a graphical interface for
