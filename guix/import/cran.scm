@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
@@ -135,9 +135,9 @@
   (map (lambda (name)
          (case (%input-style)
            ((specification)
-            (list name (list 'unquote (list 'specification->package name))))
+            `(specification->package ,name))
            (else
-            (list name (list 'unquote (string->symbol name))))))
+            (string->symbol name))))
        (sort names string-ci<?)))
 
 (define* (maybe-inputs package-inputs #:optional (type 'inputs))
@@ -147,7 +147,7 @@ package definition."
     (()
      '())
     ((package-inputs ...)
-     `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
+     `((,type (list ,@(format-inputs package-inputs)))))))
 
 (define %cran-url "https://cran.r-project.org/web/packages/")
 (define %cran-canonical-url "https://cran.r-project.org/package=")
