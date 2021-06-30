@@ -2837,15 +2837,14 @@ implementation for Python.")
 (define-public virtuoso-ose
   (package
     (name "virtuoso-ose")
-    (version "7.2.5")
+    (version "7.2.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/openlink/virtuoso-opensource/releases/"
-             "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/virtuoso/virtuoso/" version "/"
+                           "virtuoso-opensource-" version ".tar.gz"))
        (sha256
-        (base32 "0r1xakclkfi69pzh8z2k16z3x0m49pxp764icj0ad4w4bb97fr42"))))
+        (base32 "0ly7s7a3w2a2zhhi9rq9k2qlnzapqbbc1rcdqb3zqqpgg81krz9q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.
@@ -2866,7 +2865,7 @@ implementation for Python.")
                          '("libvirtuoso-t.a"
                            "libvirtuoso-t.la"))))))))
     (inputs
-     `(("openssl" ,openssl-1.0)
+     `(("openssl" ,openssl)
        ("net-tools" ,net-tools)
        ("readline" ,readline)
        ("zlib" ,zlib)))
