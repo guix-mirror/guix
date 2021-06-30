@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019, 2020, 2021 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -302,7 +302,7 @@ of the Nyan Cat / Poptart Cat animation.")
 (define-public cbonsai
   (package
     (name "cbonsai")
-    (version "1.0.4")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -311,7 +311,7 @@ of the Nyan Cat / Poptart Cat animation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0a5lqc0il0dq26j4wxg1z2siqanra2905x9akwi86zriq65ayb77"))))
+                "16q02mr5zmnd9bmhnlkvjddcxvk0s8323pvmazmz3ch1ralck1wj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No test suite
