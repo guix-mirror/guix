@@ -3042,7 +3042,7 @@ is statically typed so there are differences.")
 (define-public sbcl-cffi
   (package
     (name "sbcl-cffi")
-    (version "0.23.0")
+    (version "0.24.1")
     (source
      (origin
        (method git-fetch)
@@ -3051,7 +3051,7 @@ is statically typed so there are differences.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "03s98imc5niwnpj3hhrafl7dmxq45g74h96sm68976k7ahi3vl5b"))))
+        (base32 "17ryim4xilb1rzxydfr7595dnhqkk02lmrbkqrkvi9091shi4cj3"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("alexandria" ,sbcl-alexandria)
