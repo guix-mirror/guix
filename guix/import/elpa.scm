@@ -350,9 +350,7 @@ type '<elpa-package>'."
                           (elpa-package-inputs pkg))))
 
   (define dependencies
-    (map (lambda (n)
-           (let ((new-n (elpa-name->package-name n)))
-             (list new-n (list 'unquote (string->symbol new-n)))))
+    (map (compose string->symbol elpa-name->package-name)
          dependencies-names))
 
   (define (maybe-inputs input-type inputs)
@@ -360,8 +358,7 @@ type '<elpa-package>'."
       (()
        '())
       ((inputs ...)
-       (list (list input-type
-                   (list 'quasiquote inputs))))))
+       (list (list input-type `(list ,@inputs))))))
 
   (define melpa-source
     (melpa-recipe->origin melpa-recipe))
