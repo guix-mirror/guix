@@ -182,6 +182,7 @@ since 2013.
 If your processor is supported, you'll get detailed reports on Turbo Boost and
 clock multipliers, core voltage, and time spent in different C-states.  This
 information can be viewed in real time and/or logged to a file.")
+      (supported-systems (list "x86_64-linux"))
       (license license:gpl2))))
 
 (define-public libsmbios
