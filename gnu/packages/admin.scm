@@ -43,6 +43,7 @@
 ;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1232,7 +1233,11 @@ connection alive.")
                            "--owner=root:0"
                            "--group=root:0")))))
            (add-after 'install 'post-install
-             (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; TODO(core-updates): native-inputs isn't required anymore.
+             (lambda* (#:key ,@(if (%current-target-system)
+                                   '(native-inputs)
+                                   '())
+                       inputs outputs #:allow-other-keys)
                ;; Install the dhclient script for GNU/Linux and make sure
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
@@ -1257,6 +1262,19 @@ connection alive.")
                              (string-append dir "/bin:"
                                             dir "/sbin"))
                            (list inetutils net-tools coreutils sed))))
+                 ;; TODO(core-updates): should not be required anymore,
+                 ;; once <https://issues.guix.gnu.org/49290> has been merged.
+                 ,@(if (%current-target-system)
+                       '((for-each
+                          (lambda (file)
+                            (substitute* file
+                              (((assoc-ref native-inputs "bash"))
+                               (assoc-ref inputs "bash"))))
+                          (list (string-append libexec
+                                               "/dhclient-script")
+                                (string-append libexec
+                                               "/.dhclient-script-real"))))
+                       '())
                  #t))))))
 
       (native-inputs
@@ -1264,6 +1282,11 @@ connection alive.")
          ("file" ,file)))
 
       (inputs `(("inetutils" ,inetutils)
+                ;; TODO(core-updates): simply make this unconditional
+                ,@(if (%current-target-system)
+                      ;; for wrap-program
+                      `(("bash" ,(canonical-package bash-minimal)))
+                      '())
                 ,@(if (hurd-target?) '()
                       `(("net-tools" ,net-tools)
                         ("iproute" ,iproute)))
