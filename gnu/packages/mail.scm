@@ -2330,11 +2330,20 @@ format and headers.")
      `(("openssl" ,openssl)))
     (home-page "http://www.stafford.uklinux.net/libesmtp/")
     (synopsis "Library for sending mail via remote hosts using SMTP")
-    (description "libESMTP is an SMTP client which manages posting (or
-submission of) electronic mail via a preconfigured Mail Transport Agent (MTA).
-It may be used as part of a Mail User Agent (MUA) or other program that must
-be able to post electronic mail where mail functionality may not be that
-program's primary purpose.")
+    (description
+     "libESMTP is an @acronym{SMTP, Simple Mail Transfer Protocol} client that
+manages posting (or submission of) electronic mail via a preconfigured
+@acronym{MTA, Mail Transport Agent}.
+
+It may be used as part of a @acronym{MUA, Mail User Agent}, or other program
+that must be able to post electronic mail where mail functionality may not be
+that program's primary purpose.
+
+libESMTP's high-level API shields developers from the complexity of SMTP.  It
+transparently handles many SMTP extensions including authentication,
+@acronym{TLS, Transport-Level Security}, and PIPELINING for performance.  Even
+without a pipelining server, libESMTP offers much better performance than would
+be expected from a simple client.")
     (license (list license:lgpl2.1+ license:gpl2+))))
 
 (define-public esmtp
