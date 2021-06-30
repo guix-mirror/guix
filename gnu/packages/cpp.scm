@@ -1053,8 +1053,8 @@ computation.")
     (license license:bsd-3)))
 
 (define-public pcg-cpp
-  (let ((commit "5b5cac8d61339e810c5dbb4692d868a1d7ca1b2d")
-        (revision "1"))
+  (let ((commit "ffd522e7188bef30a00c74dc7eb9de5faff90092")
+        (revision "2"))
     (package
       (name "pcg-cpp")
       (version (git-version "0.98.1" revision commit))
@@ -1066,7 +1066,7 @@ computation.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1s9dcd4iydlc1xj9m6f7c52nlyx99klk043sk7arqy6kp7gdaa33"))))
+                  "0yxyqaphcc38zilpwpmssrl8ly1v6dimscqk2f4rcv1h22dinnqx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
