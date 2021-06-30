@@ -162,6 +162,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system guile)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -2314,7 +2315,7 @@ format and headers.")
 (define-public libesmtp
   (package
     (name "libesmtp")
-    (version "1.0.6")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -2323,12 +2324,8 @@ format and headers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pylvjpdf92i0j9bl43sg37k1ksbzk1k7cgdk91kkcc0krh0r09g"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+        (base32 "1bhh8hlsl9597x0bnfl563k2c09b61qnkb9mfyqcmzlq63m1zw5y"))))
+    (build-system meson-build-system)
     (propagated-inputs
      `(("openssl" ,openssl)))
     (home-page "http://www.stafford.uklinux.net/libesmtp/")
