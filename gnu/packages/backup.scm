@@ -85,7 +85,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.8.19")
+    (version "0.8.20")
     (source
      (origin
       (method url-fetch)
@@ -94,7 +94,7 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "1c03rp4gw97gz3dzrbrray3dh4q5an3gdq0cmxbhw3qa1nw8ni4c"))))
+       (base32 "0d125mxknpn44xwgqzzak9y5ydigscrpjv9d63126mfc6yfngr5v"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; for msgfmt
