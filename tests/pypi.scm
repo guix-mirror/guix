@@ -213,13 +213,8 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                                  ('base32
                                   (? string? hash)))))
                      ('build-system 'python-build-system)
-                     ('propagated-inputs
-                      ('quasiquote
-                       (("python-bar" ('unquote 'python-bar))
-                        ("python-foo" ('unquote 'python-foo)))))
-                     ('native-inputs
-                      ('quasiquote
-                       (("python-pytest" ('unquote 'python-pytest)))))
+                     ('propagated-inputs ('list 'python-bar 'python-foo))
+                     ('native-inputs ('list 'python-pytest))
                      ('home-page "http://example.com")
                      ('synopsis "summary")
                      ('description "summary")
@@ -282,13 +277,8 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                                ('base32
                                 (? string? hash)))))
                    ('build-system 'python-build-system)
-                   ('propagated-inputs
-                    ('quasiquote
-                     (("python-bar" ('unquote 'python-bar))
-                      ("python-baz" ('unquote 'python-baz)))))
-                   ('native-inputs
-                    ('quasiquote
-                     (("python-pytest" ('unquote 'python-pytest)))))
+                   ('propagated-inputs ('list 'python-bar 'python-baz))
+                   ('native-inputs ('list 'python-pytest))
                    ('home-page "http://example.com")
                    ('synopsis "summary")
                    ('description "summary")

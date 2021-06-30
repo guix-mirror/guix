@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -183,7 +183,7 @@ the input field."
     (()
      '())
     ((package-inputs ...)
-     `((,input-type (,'quasiquote ,package-inputs))))))
+     `((,input-type (list ,@package-inputs))))))
 
 (define %requirement-name-regexp
   ;; Regexp to match the requirement name in a requirement specification.
@@ -402,15 +402,8 @@ return the unaltered list of upstream dependency names."
     (remove (cut string=? "argparse" <>) deps))
 
   (define (requirement->package-name/sort deps)
-    (sort
-     (map (lambda (input)
-            (let ((guix-name (python->package-name input)))
-              (list guix-name (list 'unquote (string->symbol guix-name)))))
-          deps)
-     (lambda args
-       (match args
-         (((a _ ...) (b _ ...))
-          (string-ci<? a b))))))
+    (map string->symbol
+         (sort (map python->package-name deps) string-ci<?)))
 
   (define process-requirements
     (compose requirement->package-name/sort strip-argparse))
