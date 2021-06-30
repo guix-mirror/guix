@@ -23286,10 +23286,13 @@ and cuts down boilerplate code when testing libraries for asyncio.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-paths
+         (add-after 'unpack 'apply-upstream-fixes
            (lambda* _
              (substitute* "k5test/realm.py"
-               (("'kadmin_local'") "'kadmin.local'")))))))
+               ;; Upstream commit f6b302d94dbdce37a1b81cc3faeeac4dc637b0e9.
+               (("'kadmin_local'") "'kadmin.local'")
+               ;; Upstream commit 3aef84515cf3d1a171c66856c898d0a5cbbd03ea.
+               (("\\.stop_daemon") "._stop_daemon")))))))
     (home-page "https://github.com/pythongssapi/k5test")
     (synopsis "Library for setting up self-contained Kerberos 5 environments")
     (description
