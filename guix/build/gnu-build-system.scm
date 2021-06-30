@@ -407,7 +407,8 @@ makefiles."
     (match-lambda
      ((_ . dir)
       (list (string-append dir "/bin")
-            (string-append dir "/sbin")))))
+            (string-append dir "/sbin")
+            (string-append dir "/libexec")))))
 
   (define output-bindirs
     (append-map bin-directories outputs))
