@@ -668,7 +668,7 @@ event-driven, asynchronous network application protocols.")
 (define-public aws-c-cal
   (package
     (name "aws-c-cal")
-    (version "0.4.5")
+    (version "0.5.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -677,7 +677,7 @@ event-driven, asynchronous network application protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04acra1mnzw9q7jycs5966akfbgnx96hkrq90nq0dhw8pvarlyv6"))
+                "0rqqk4n56h8sf4q070rhgjwas04j8h0vq4wl1alq5l1rqq72qqdf"))
               (patches (search-patches "aws-c-cal-cmake-prefix.patch"))))
     (build-system cmake-build-system)
     (arguments
