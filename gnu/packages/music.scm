@@ -2785,14 +2785,14 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public vmpk
   (package
     (name "vmpk")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
                                   version "/vmpk-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wk3jvlfdpd76vks4gdrhrv9m8icqbkimg5g3d5ybck3k01qaab6"))))
+                "0kh8pns9pla9c47y2nwckjpiihczg6rpg96aignsdsd7vkql69s9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target
