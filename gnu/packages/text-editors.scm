@@ -634,7 +634,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -643,7 +643,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07jrsh6549zypdnyy7g6yvggrz5mlya9jm7zmkjmvl7s0min3mbc"))))
+                "19cf55b86yj2b5hdazbyw4iyp6xq155243aiyg4m0vhwh0h79nwh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
