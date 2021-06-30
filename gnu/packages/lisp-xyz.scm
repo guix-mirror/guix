@@ -4674,7 +4674,7 @@ Lisp.")
 (define-public sbcl-static-vectors
   (package
     (name "sbcl-static-vectors")
-    (version "1.8.6")
+    (version "1.8.9")
     (source
      (origin
        (method git-fetch)
@@ -4683,7 +4683,7 @@ Lisp.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01hwxzhyjkhsd3949g70120g7msw01byf0ia0pbj319q1a3cq7j9"))))
+        (base32 "079qa20lhanzsz1qf4iags91n0ziylbjgbcymm5a5qj7yryas4fw"))))
     (native-inputs
      `(("sbcl-fiveam" ,sbcl-fiveam)))
     (inputs
