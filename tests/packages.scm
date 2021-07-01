@@ -717,6 +717,21 @@
     (string=? (derivation-file-name (package-derivation %store p0))
               (derivation-file-name (package-derivation %store p1)))))
 
+(test-assert "package-derivation, different system"
+  ;; Make sure the 'system' argument of 'package-derivation' is respected.
+  (let* ((system (if (string=? (%current-system) "x86_64-linux")
+                     "aarch64-linux"
+                     "x86_64-linux"))
+         (drv    (package-derivation %store (dummy-package "p")
+                                     system #:graft? #f)))
+    (define right-system?
+      (mlambdaq (drv)
+        (and (string=? (derivation-system drv) system)
+             (every (compose right-system? derivation-input-derivation)
+                    (derivation-inputs drv)))))
+
+    (right-system? drv)))
+
 (test-assert "package-output"
   (let* ((package  (dummy-package "p"))
          (drv      (package-derivation %store package)))

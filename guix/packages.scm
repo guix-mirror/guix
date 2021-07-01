@@ -1211,7 +1211,7 @@ Return the cached result when available."
          (#f
           (cache! cache package key thunk)))))))
 
-(define* (expand-input package input #:key target)
+(define* (expand-input package input system #:key target)
   "Expand INPUT, an input tuple, to a name/<gexp-input> tuple.  PACKAGE is
 only used to provide contextual information in exceptions."
   (with-monad %store-monad
@@ -1224,15 +1224,19 @@ only used to provide contextual information in exceptions."
       ;; derivation.
       (((? string? name) (? package? package))
        (mlet %store-monad ((drv (if target
-                                    (package->cross-derivation package target
+                                    (package->cross-derivation package
+                                                               target system
                                                                #:graft? #f)
-                                    (package->derivation package #:graft? #f))))
+                                    (package->derivation package system
+                                                         #:graft? #f))))
          (return (list name (gexp-input drv #:native? (not target))))))
       (((? string? name) (? package? package) (? string? output))
        (mlet %store-monad ((drv (if target
-                                    (package->cross-derivation package target
+                                    (package->cross-derivation package
+                                                               target system
                                                                #:graft? #f)
-                                    (package->derivation package #:graft? #f))))
+                                    (package->derivation package system
+                                                         #:graft? #f))))
          (return (list name (gexp-input drv output #:native? (not target))))))
 
       (((? string? name) (? file-like? thing))
@@ -1462,7 +1466,7 @@ error reporting."
       (mlet* %store-monad ((system ->  (bag-system bag))
                            (inputs ->  (bag-transitive-inputs bag))
                            (input-drvs (mapm %store-monad
-                                             (cut expand-input context <>)
+                                             (cut expand-input context <> system)
                                              inputs))
                            (paths ->   (delete-duplicates
                                         (append-map (match-lambda
@@ -1489,15 +1493,15 @@ This is an internal procedure."
                        (host ->     (bag-transitive-host-inputs bag))
                        (host-drvs   (mapm %store-monad
                                           (cut expand-input context <>
-                                               #:target target)
+                                               system #:target target)
                                           host))
                        (target* ->  (bag-transitive-target-inputs bag))
                        (target-drvs (mapm %store-monad
-                                          (cut expand-input context <>)
+                                          (cut expand-input context <> system)
                                           target*))
                        (build ->    (bag-transitive-build-inputs bag))
                        (build-drvs  (mapm %store-monad
-                                          (cut expand-input context <>)
+                                          (cut expand-input context <> system)
                                           build))
                        (all ->      (append build target* host))
                        (paths ->    (delete-duplicates
