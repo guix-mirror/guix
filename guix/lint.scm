@@ -81,6 +81,7 @@
   #:export (check-description-style
             check-inputs-should-be-native
             check-inputs-should-not-be-an-input-at-all
+            check-wrapper-inputs
             check-patch-file-names
             check-patch-headers
             check-synopsis-style
@@ -490,6 +491,49 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             #:field 'inputs))
          (package-input-intersection (package-direct-inputs package)
                                      input-names))))
+
+(define (report-wrap-program-error package wrapper-name)
+  "Warn that \"bash-minimal\" is missing from 'inputs', while WRAPPER-NAME
+requires it."
+  (make-warning package
+                (G_ "\"bash-minimal\" should be in 'inputs' when '~a' is used")
+                (list wrapper-name)))
+
+(define (check-wrapper-inputs package)
+  "Emit a warning if PACKAGE uses 'wrap-program' or similar, but \"bash\"
+or \"bash-minimal\" is not in its inputs. 'wrap-script' is not supported."
+  (define input-names '("bash" "bash-minimal"))
+  (define has-bash-input?
+    (pair? (package-input-intersection (package-inputs package)
+                                       input-names)))
+  (define (check-procedure-body body)
+    (match body
+      ;; Explicitely setting an interpreter is acceptable,
+      ;; #:sh support is added on 'core-updates'.
+      ;; TODO(core-updates): remove mention of core-updates.
+      (('wrap-program _ '#:sh . _) '())
+      (('wrap-program _ . _)
+       (list (report-wrap-program-error package 'wrap-program)))
+      ;; Wrapper of 'wrap-program' for Qt programs.
+      ;; TODO #:sh is not yet supported but probably will be.
+      (('wrap-qt-program _ '#:sh . _) '())
+      (('wrap-qt-program _ . _)
+       (list (report-wrap-program-error package 'wrap-qt-program)))
+      ((x . y)
+       (append (check-procedure-body x) (check-procedure-body y)))
+      (_ '())))
+  (define (check-phase-procedure expression)
+    (find-procedure-body expression check-procedure-body))
+  (define (check-delta expression)
+    (find-phase-procedure package expression check-phase-procedure))
+  (define (check-deltas deltas)
+    (append-map check-delta deltas))
+  (if has-bash-input?
+      ;; "bash" (or "bash-minimal") is in 'inputs', so everything seems ok.
+      '()
+      ;; "bash" is not in 'inputs'.  Verify 'wrap-program' and friends
+      ;; are unused
+      (find-phase-deltas package check-deltas)))
 
 (define (package-name-regexp package)
   "Return a regexp that matches PACKAGE's name as a word at the beginning of a
@@ -1696,6 +1740,10 @@ them for PACKAGE."
      (name        'inputs-should-not-be-input)
      (description "Identify inputs that shouldn't be inputs at all")
      (check       check-inputs-should-not-be-an-input-at-all))
+   (lint-checker
+     (name        'wrapper-inputs)
+     (description "Make sure 'wrap-program' can finds its interpreter.")
+     (check       check-wrapper-inputs))
    (lint-checker
      (name        'license)
      ;; TRANSLATORS: <license> is the name of a data type and must not be
