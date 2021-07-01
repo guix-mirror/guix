@@ -1118,6 +1118,7 @@ It started as a side project of LXC but can be used by any run-time.")
                   ""))))))))
     (inputs
      `(("acl" ,acl)
+       ("attr" ,attr)
        ("libxml2" ,libxml2)
        ("eudev" ,eudev)
        ("libpciaccess" ,libpciaccess)
