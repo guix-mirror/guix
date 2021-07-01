@@ -8806,7 +8806,7 @@ possible, and falls back to moving the left or top border otherwise.")
 (define-public emacs-window-purpose
   (package
     (name "emacs-window-purpose")
-    (version "1.8")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -8816,7 +8816,7 @@ possible, and falls back to moving the left or top border otherwise.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1bq0s56wj6ibyh625zfnisy8yniz72dpg4mcgq55azsbnd4fblqq"))))
+         "1cw513mh3gyl21qpmgwqjgpi8kwddmd4n69l4ax5a5pv3vvwrcx9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-let-alist" ,emacs-let-alist)
