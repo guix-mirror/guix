@@ -38,6 +38,7 @@
 
 (define-module (gnu packages virtualization)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages attr)
@@ -1116,7 +1117,8 @@ It started as a side project of LXC but can be used by any run-time.")
                  (((format #f ".*'name': '(~a)'.*" (string-join tests "|")))
                   ""))))))))
     (inputs
-     `(("libxml2" ,libxml2)
+     `(("acl" ,acl)
+       ("libxml2" ,libxml2)
        ("eudev" ,eudev)
        ("libpciaccess" ,libpciaccess)
        ("gnutls" ,gnutls)
