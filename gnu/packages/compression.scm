@@ -856,7 +856,7 @@ time for compression ratio.")
 (define-public squashfs-tools
   (package
     (name "squashfs-tools")
-    (version "4.4")
+    (version "4.4-git.1")               ; ‘A point release of […] 4.4’
     (source
      (origin
        (method git-fetch)
@@ -865,15 +865,7 @@ time for compression ratio.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0697fv8n6739mcyn57jclzwwbbqwpvjdfkv1qh9s56lvyqnplwaw"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Fix build with -fno-common (default in GCC 10).
-           ;; Remove for squashfs-tools > 4.4.
-           (substitute* "squashfs-tools/mksquashfs.h"
-             (("struct cache \\*bwriter_buffer" all)
-              (string-append "extern " all)))))))
+        (base32 "1hb95iy445hs2p3f7hg51jkrpkfi3bphddk60p2la0qmcdjkgbbm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
