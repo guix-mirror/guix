@@ -3808,13 +3808,13 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-7))
 
 (define-public gcc-toolchain-8
-  gcc-toolchain)
+  (make-gcc-toolchain gcc-8))
 
 (define-public gcc-toolchain-9
   (make-gcc-toolchain gcc-9))
 
 (define-public gcc-toolchain-10
-  (make-gcc-toolchain gcc-10))
+  gcc-toolchain)
 
 (define-public gcc-toolchain-11
   (make-gcc-toolchain gcc-11))
