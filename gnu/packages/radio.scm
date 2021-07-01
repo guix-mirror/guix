@@ -821,7 +821,7 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.18")
+    (version "4.1.19")
     (source
      (origin
        (method git-fetch)
@@ -830,7 +830,7 @@ using GNU Radio and the Qt GUI toolkit.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "177qnl1bxy46rqwdxizfy2i3mxk5bzz733cp445rfzl7b6yf6zrn"))))
+        (base32 "08rmc7vb2irb67g3sry7md653n9ac0x0b44az729lj6sljqvw3bv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -840,6 +840,7 @@ using GNU Radio and the Qt GUI toolkit.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fltk" ,fltk)
+       ("eudev" ,eudev)
        ("hamlib" ,hamlib)
        ("libpng" ,libpng)
        ("libsamplerate" ,libsamplerate)
