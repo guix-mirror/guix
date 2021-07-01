@@ -1875,14 +1875,14 @@ stdout.")
 (define-public gifsicle
   (package
    (name "gifsicle")
-   (version "1.92")
+   (version "1.93")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lcdf.org/gifsicle/gifsicle-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas"))))
+        (base32 "0irljjm76anicsm5rfkpqxd6x105aa8f0sky13dc3x1bfdwp1xlj"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
