@@ -8433,6 +8433,31 @@ sources.  Unlike GUD, it also supports running multiple debug sessions in
 parallel.")
     (license license:gpl3+)))
 
+(define-public emacs-rmsbolt
+  ;; There is no release tag. Version is extracted from main file.
+  (let ((commit "ff496660cc52a6dd33d358ef0acc6d4bb70cc340")
+        (revision "0")
+        (version "0.1.2"))
+    (package
+      (name "emacs-rmsbolt")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jgkamat/rmsbolt")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "05i0101238yy1da6z543nr9x5gpvgdxrrdn3sw5dibcn6z62ml3p"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/jgkamat/rmsbolt")
+      (synopsis "Emacs viewer for compiler output")
+      (description
+       "RMSBolt is a package to provide assembly or bytecode output for
+a source code input file.")
+      (license license:agpl3+))))
+
 (define-public emacs-request
   ;; We prefer a more recent commit that has support for auth-source,
   ;; which makes authentication more convenient for users and maintainers.
