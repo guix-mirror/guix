@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -342,14 +342,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20210428")
+    (version "8.20210630")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "0xpvhpnl600874sa392wjfd2yd9s6ps2cq2qfkzyxxf90p9fcwg8"))))
+        (base32 "0mxzddaf7ra807aazx9gd4rl5565xzky0hwiyby0a06yqnf02266"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
