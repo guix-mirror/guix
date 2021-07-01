@@ -163,6 +163,78 @@
 
 
 ;;;
+;;; Procedures for analysing Scheme code in package definitions
+;;;
+
+(define* (find-procedure-body expression found
+                              #:key (not-found (const '())))
+  "Try to find the body of the procedure defined inline by EXPRESSION.
+If it was found, call FOUND with its body. If it wasn't, call
+the thunk NOT-FOUND."
+  (match expression
+    (`(,(or 'let 'let*) . ,_)
+     (find-procedure-body (car (last-pair expression)) found
+                          #:not-found not-found))
+    (`(,(or 'lambda 'lambda*) ,_ . ,code)
+     (found code))
+    (_ (not-found))))
+
+(define* (report-bogus-phase-deltas package bogus-deltas)
+  "Report a bogus invocation of ‘modify-phases’."
+  (list (make-warning package
+                      ;; TRANSLATORS: 'modify-phases' is a Scheme syntax
+                      ;; and should not be translated.
+                      (G_ "incorrect call to ‘modify-phases’")
+                      #:field 'arguments)))
+
+(define* (find-phase-deltas package found
+                            #:key (not-found (const '()))
+                            (bogus
+                             (cut report-bogus-phase-deltas package <>)))
+  "Try to find the clauses of the ‘modify-phases’ form in the phases
+specification of PACKAGE.  If they were found, all FOUND with a list
+of the clauses.  If they weren't (e.g. because ‘modify-phases’ wasn't
+used at all), call the thunk NOT-FOUND instead.  If ‘modify-phases’
+was used, but the clauses don't form a list, call BOGUS with the
+not-a-list."
+  (apply (lambda* (#:key phases #:allow-other-keys)
+           (define phases/sexp
+             (if (gexp? phases)
+                 (gexp->approximate-sexp phases)
+                 phases))
+           (match phases/sexp
+             (`(modify-phases ,_ . ,changes)
+              ((if (list? changes) found bogus) changes))
+             (_ (not-found))))
+         (package-arguments package)))
+
+(define (report-bogus-phase-procedure package)
+  "Report a syntactically-invalid phase clause."
+  (list (make-warning package
+                      ;; TRANSLATORS: See ‘modify-phases’ in the manual.
+                      (G_ "invalid phase clause")
+                      #:field 'arguments)))
+
+(define* (find-phase-procedure package expression found
+                               #:key (not-found (const '()))
+                               (bogus (cut report-bogus-phase-procedure
+                                           package)))
+  "Try to find the procedure in the phase clause EXPRESSION. If it was
+found, call FOUND with the procedure expression. If EXPRESSION isn't
+actually a phase clause, call the thunk BOGUS. If the phase form doesn't
+have a procedure, call the thunk NOT-FOUND."
+  (match expression
+    (('add-after before after proc-expr)
+     (found proc-expr))
+    (('add-before after before proc-expr)
+     (found proc-expr))
+    (('replace _ proc-expr)
+     (found proc-expr))
+    (('delete _) (not-found))
+    (_ (bogus))))
+
+
+;;;
 ;;; Checkers
 ;;;
 
@@ -1111,46 +1183,25 @@ descriptions maintained upstream."
   (define (sexp-uses-tests?? sexp)
     "Test if SEXP contains the symbol 'tests?'."
     (sexp-contains-atom? sexp 'tests?))
+  (define (check-procedure-body code)
+    (if (sexp-uses-tests?? code)
+        '()
+        (list (make-warning package
+                            ;; TRANSLATORS: check and #:tests? are a
+                            ;; Scheme symbol and keyword respectively
+                            ;; and should not be translated.
+                            (G_ "the 'check' phase should respect #:tests?")
+                            #:field 'arguments))))
   (define (check-check-procedure expression)
-    (match expression
-      (`(,(or 'let 'let*) . ,_)
-       (check-check-procedure (car (last-pair expression))))
-      (`(,(or 'lambda 'lambda*) ,_ . ,code)
-       (if (sexp-uses-tests?? code)
-           '()
-           (list (make-warning package
-                               ;; TRANSLATORS: check and #:tests? are a
-                               ;; Scheme symbol and keyword respectively
-                               ;; and should not be translated.
-                               (G_ "the 'check' phase should respect #:tests?")
-                               #:field 'arguments))))
-      (_ '())))
+    (find-procedure-body expression check-procedure-body))
   (define (check-phases-delta delta)
     (match delta
       (`(replace 'check ,expression)
        (check-check-procedure expression))
       (_ '())))
   (define (check-phases-deltas deltas)
-    (match deltas
-      (() '())
-      ((head . tail)
-       (append (check-phases-delta head)
-               (check-phases-deltas tail)))
-      (_ (list (make-warning package
-                             ;; TRANSLATORS: modify-phases is a Scheme
-                             ;; syntax and must not be translated.
-                             (G_ "incorrect call to ‘modify-phases’")
-                             #:field 'arguments)))))
-  (apply (lambda* (#:key phases #:allow-other-keys)
-           (define phases/sexp
-             (if (gexp? phases)
-                 (gexp->approximate-sexp phases)
-                 phases))
-           (match phases/sexp
-             (`(modify-phases ,_ . ,changes)
-              (check-phases-deltas changes))
-             (_ '())))
-         (package-arguments package)))
+    (append-map check-phases-delta deltas))
+  (find-phase-deltas package check-phases-deltas))
 
 (define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
