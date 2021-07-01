@@ -3339,6 +3339,30 @@ e.g. ghostscript and stored in the file-system, but rather created on-demand
 and stored in memory.")
       (license license:gpl3+))))
 
+(define-public emacs-saveplace-pdf-view
+  (package
+    (name "emacs-saveplace-pdf-view")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nicolaisingh/saveplace-pdf-view")
+             (commit (string-append "saveplace-pdf-view-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i03qb6qc2agp9s5s7l08f1wl8anqndh6xshg1c3w357vd1whv7i"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/nicolaisingh/saveplace-pdf-view")
+    (synopsis "Save place in pdf-view buffers for Emacs")
+    (description
+     "This package extends the built-in Save-Place mode by adding support for
+PDF view (see @code{emacs-pdf-tools}).  This package will store the
+place (e.g., the current page and zoom) of PDF buffers under PDFView mode or
+DocView mode, and revisiting those PDF files later using the same mode will
+restore the saved place.")
+    (license license:gpl3+)))
+
 (define-public emacs-dash
   (package
     (name "emacs-dash")
