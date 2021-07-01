@@ -1980,12 +1980,14 @@ timestamps in the file header with a fixed time (1 January 2008).
                (base32
                 "0zn9vaiwy2izj8cnm8i7c2mbdn38n328grqb8f07x55s4kd3nxph"))))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
        ("liblzma" ,xz)
        ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
     (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
