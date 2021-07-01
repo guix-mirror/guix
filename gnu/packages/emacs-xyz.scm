@@ -2453,8 +2453,8 @@ configuration language. It features:
 
 (define-public emacs-link-hint
   ;; Last release was in 2015.
-  (let ((commit "d74a483652486260c052941fedeadddb1ea71f88")
-        (revision "1"))
+  (let ((commit "ae73db6a5948c8d109fc1d570760bcafa3f07175")
+        (revision "2"))
     (package
       (name "emacs-link-hint")
       (version (git-version "0.1" revision commit))
@@ -2467,7 +2467,7 @@ configuration language. It features:
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0dghxd165fbds6czy9bfwpid3i4irgp3q08n9mg57sfifi0cmij0"))))
+           "1rlbxlh9a0hnlaxpgfjvjjvmhnzwc84p9xiqi740xv82cd27wcnl"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-avy" ,emacs-avy)))
