@@ -896,12 +896,12 @@ time for compression ratio.")
     (home-page "https://github.com/plougher/squashfs-tools")
     (synopsis "Tools to create and extract squashfs file systems")
     (description
-     "Squashfs is a highly compressed read-only file system for Linux.  It uses
-zlib to compress files, inodes, and directories.  All blocks are packed to
-minimize the data overhead, and block sizes of between 4K and 1M are supported.
-It is intended to be used for archival use, for live CDs, and for embedded
-systems where low overhead is needed.  This package allows you to create and
-extract such file systems.")
+     "Squashfs is a highly compressed read-only file system for Linux.  It
+compresses files, inodes, and directories with one of several compressors.
+All blocks are packed to minimize the data overhead, and block sizes of
+between 4K and 1M are supported.  It is intended to be used for archival use,
+for live media, and for embedded systems where low overhead is needed.
+This package allows you to create and extract such file systems.")
     (license license:gpl2+)))
 
 (define-public pigz
