@@ -1072,14 +1072,14 @@ It started as a side project of LXC but can be used by any run-time.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "7.3.0")
+    (version "7.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1gn13mfwbdhp31pkzvrba7avz84yc9f1ik9f3ympa51hq22vpg97"))
+        (base32 "15987ihnsjvcgi11dzcf1k3zp1si2d4wcxj0r0i30brc0d4pn44h"))
        (patches (search-patches "libvirt-add-install-prefix.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -1100,6 +1100,12 @@ It started as a side project of LXC but can be used by any run-time.")
        #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-directory-confusion
+           (lambda _
+             ;; Don't try to install an (unused) /var outside of the store.
+             (substitute* "scripts/meson-install-dirs.py"
+               (("destdir = .*")
+                "destdir = '/tmp'"))))
          (add-before 'configure 'disable-broken-tests
            (lambda _
              (let ((tests (list "commandtest"           ; hangs idly
@@ -1107,13 +1113,7 @@ It started as a side project of LXC but can be used by any run-time.")
                                 "virnetsockettest")))   ; tries to network
                (substitute* "tests/meson.build"
                  (((format #f ".*'name': '(~a)'.*" (string-join tests "|")))
-                  ""))
-               #t)))
-         (add-before 'install 'no-polkit-magic
-           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
-           (lambda _
-             (setenv "PKEXEC_UID" "something")
-             #t)))))
+                  ""))))))))
     (inputs
      `(("libxml2" ,libxml2)
        ("eudev" ,eudev)
