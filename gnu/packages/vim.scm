@@ -896,7 +896,7 @@ through its msgpack-rpc API.")
 (define-public vim-guix-vim
   (package
     (name "vim-guix-vim")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -905,7 +905,7 @@ through its msgpack-rpc API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gsdjxf6f6zcjg5az78570b5m68lgsfn20ld16y7zbagwh51lj20"))))
+                "1fyfwsvv787al88lqjgqcgykav8pcf4xgj5d4i0j7wjcfb3mh1vw"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
