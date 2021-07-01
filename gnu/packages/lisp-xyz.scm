@@ -15202,8 +15202,8 @@ protocol for Mastodon.")
   (sbcl-package->cl-source-package sbcl-tooter))
 
 (define-public sbcl-croatoan
-  (let ((commit "7077ef14d27e8708515ad8d309886f516e7fbd98")
-        (revision "2"))
+  (let ((commit "a577951d8dd607f828d6efb3290b4e8ac9f1e654")
+        (revision "3"))
     (package
       (name "sbcl-croatoan")
       (version (git-version "0.0.1" revision commit))
@@ -15215,7 +15215,7 @@ protocol for Mastodon.")
                (commit commit)))
          (file-name (git-file-name "croatoan" version))
          (sha256
-          (base32 "0gf2sjpsdkd9s8imwy2wjrkdx82a5sc4yy9bndlnjlwmdraw4j37"))))
+          (base32 "1y7a13mzy0cz19pw0xvqwca1s7frfaqryaqwl1mrq7iz84sw0fcw"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        '(#:phases
