@@ -28755,7 +28755,7 @@ shorter than usual, using mostly unprefixed keys.")
 (define-public emacs-multitran
   (package
     (name "emacs-multitran")
-    (version "0.4.10")
+    (version "0.4.11")
     (source
      (origin
        (method git-fetch)
@@ -28764,13 +28764,13 @@ shorter than usual, using mostly unprefixed keys.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08b9a0pb38swgvg2v97pm4g2zda0xagdgq42znwhkmhzjiskh2g1"))))
-   (build-system emacs-build-system)
-   (home-page "https://github.com/zevlg/multitran.el")
-   (synopsis "Emacs interface to the multitran.com online dictionary")
-   (description "@code{emacs-multitran} is a zero-dependency Emacs interface
-to the https://multitran.com online dictionary.")
-   (license license:gpl3+)))
+        (base32 "0iqkgs3rrkhbj2mind4aa4qv7bf7vflnkdysd39b50jbwd7rv4fx"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/zevlg/multitran.el")
+    (synopsis "Emacs interface to the multitran.com online dictionary")
+    (description "@code{emacs-multitran} is a zero-dependency Emacs interface
+to the @url{https://multitran.com} online dictionary.")
+    (license license:gpl3+)))
 
 (define-public emacs-kibit-helper
   (package
