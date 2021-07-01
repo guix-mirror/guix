@@ -3259,8 +3259,8 @@ during idle time, while Emacs is doing nothing else.")
 (define-public emacs-pdf-tools
   ;; XXX: Development branch fixes an incompatibility with Emacs 27+.  See
   ;; <https://github.com/politza/pdf-tools/issues/616>.
-  (let ((commit "c510442ab89c8a9e9881230eeb364f4663f59e76")
-        (revision "1"))
+  (let ((commit "5f77dae43eb8f71e52e10ba8cf994883f74c3fb7")
+        (revision "2"))
     (package
       (name "emacs-pdf-tools")
       (version (git-version "0.90" revision commit))
@@ -3268,11 +3268,11 @@ during idle time, while Emacs is doing nothing else.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/politza/pdf-tools")
+               (url "https://github.com/vedang/pdf-tools")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "17z3cpn76g9dp62drjrgrqpp1bgf4gl5k5gspylskpvd4kj4bq4d"))))
+          (base32 "0hzqcnxi66d0c3dq7y3dn28f3yri4zcx46yylhy0xnm3f1yja0rm"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                    ; there are no tests
