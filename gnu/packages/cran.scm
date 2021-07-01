@@ -17933,6 +17933,38 @@ than available RAM.  All core functions are parallelized to benefit from
 multicore machines.")
     (license license:gpl2+)))
 
+(define-public r-mcmcpack
+  (package
+    (name "r-mcmcpack")
+    (version "1.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MCMCpack" version))
+       (sha256
+        (base32
+         "1khavqsimiwbfq7gyw5jyj67jxfd579pnc7mngnd655zc8yzspvr"))))
+    (properties `((upstream-name . "MCMCpack")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-coda" ,r-coda)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-mcmc" ,r-mcmc)
+       ("r-quantreg" ,r-quantreg)))
+    (home-page "https://cran.r-project.org/package=MCMCpack")
+    (synopsis "Markov Chain Monte Carlo (MCMC) package")
+    (description
+     "This package contains functions to perform Bayesian inference using
+posterior simulation for a number of statistical models.  Most simulation is
+done in compiled C++ written in the Scythe Statistical Library.  All models
+return @code{coda} @code{mcmc} objects that can then be summarized using the
+@code{coda} package.  Some useful utility functions such as density functions,
+pseudo-random number generators for statistical distributions, a general
+purpose Metropolis sampling algorithm, and tools for visualization are
+provided.")
+    (license license:gpl3)))
+
 (define-public r-xmlparsedata
   (package
     (name "r-xmlparsedata")
