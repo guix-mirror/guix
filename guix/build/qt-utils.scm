@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,40 +37,41 @@
 ;; contain any of the standard subdirectories.
 (define (variables-for-wrapping base-directories output-directory)
 
-  (define (collect-sub-dirs base-directories subdirectory-spec)
-    (filter-map
-     (lambda (dir)
-       (match
-        subdirectory-spec
-        ((subdir)
-         (and (directory-exists? (string-append dir subdir))
-              (string-append dir (car subdirectory-spec))))
-        ((subdir children)
-         (and
-          (or
-           (and (string=? dir output-directory)
-                (directory-exists? (string-append dir subdir)))
-           (or-map
-            (lambda (kid) (directory-exists? (string-append dir subdir kid)))
-            children))
-          (string-append dir subdir)))))
-     base-directories))
+  (define (collect-sub-dirs base-directories subdirectory selectors)
+    ;; Append SUBDIRECTORY and each of BASE-DIRECTORIES, and return the subset
+    ;; that exists and has at least one of the SELECTORS sub-directories,
+    ;; unless SELECTORS is the empty list.
+    (filter-map (lambda (dir)
+                  (let ((directory (string-append dir subdirectory)))
+                    (and (directory-exists? directory)
+                         (or (null? selectors)
+                             (any (lambda (selector)
+                                    (directory-exists?
+                                     (string-append directory selector)))
+                                  selectors))
+                         directory)))
+                base-directories))
 
-  (filter
-   (lambda (var-to-wrap) (not (null? (last var-to-wrap))))
-   (map
-    (match-lambda
-     ((var kind . subdir-spec)
-      `(,var ,kind ,(collect-sub-dirs base-directories subdir-spec))))
-    (list
-     ;; these shall match the search-path-specification for Qt and KDE
-     ;; libraries
-     '("XDG_DATA_DIRS" suffix "/share" ("/applications" "/fonts"
-                                        "/icons" "/mime"))
-     '("XDG_CONFIG_DIRS" suffix "/etc/xdg")
-     '("QT_PLUGIN_PATH" prefix "/lib/qt5/plugins")
-     '("QML2_IMPORT_PATH" prefix "/lib/qt5/qml")))))
-
+  (filter-map
+   (match-lambda
+     ((variable type directory selectors ...)
+      (match (collect-sub-dirs base-directories directory selectors)
+        (()
+         #f)
+        (directories
+         `(,variable ,type ,directories)))))
+   ;; These shall match the search-path-specification for Qt and KDE
+   ;; libraries.
+   (list '("XDG_DATA_DIRS" suffix "/share"
+           ;; These are "selectors": consider /share if and only if at least
+           ;; one of these sub-directories exist.  This avoids adding
+           ;; irrelevant packages to XDG_DATA_DIRS just because they have a
+           ;; /share sub-directory.
+           "/applications" "/cursors" "/fonts" "/icons" "/glib-2.0/schemas"
+           "/mime" "/sounds" "/themes" "/wallpapers")
+         '("XDG_CONFIG_DIRS" suffix "/etc/xdg")
+         '("QT_PLUGIN_PATH" prefix "/lib/qt5/plugins")
+         '("QML2_IMPORT_PATH" prefix "/lib/qt5/qml"))))
 
 (define* (wrap-qt-program* program #:key inputs output-dir
                            qt-wrap-excluded-inputs)
