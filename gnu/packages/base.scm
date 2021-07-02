@@ -58,6 +58,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (guix i18n)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1270,71 +1271,72 @@ command.")
                "022fn6gkmp7pamlgab04x0dm5hnyn2m2fcnyr3pvm36612xd5rrr"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
-       ;; This consists purely of (architecture-independent) data,
-       ;; so ‘cross-compilation’ is pointless here!
-       ;; (The binaries zic, dump, and tzselect are deleted in the post-install
-       ;; phase.)
-       #:target #f
-       ;; share/zoneinfo/posix is a symlink to share/zoneinfo,
-       ;; so include the package itself in #:allowed-references.
-       #:allowed-references ("out")
-       #:make-flags (let ((out (assoc-ref %outputs "out"))
-                          (tmp (getenv "TMPDIR")))
-                      (list (string-append "TOPDIR=" out)
-                            (string-append "TZDIR=" out "/share/zoneinfo")
-                            (string-append "TZDEFAULT=" out
-                                           "/share/zoneinfo/localtime")
+     (list #:tests? #f
 
-                            ;; Likewise for the C library routines.
-                            (string-append "LIBDIR=" tmp "/lib")
-                            (string-append "MANDIR=" tmp "/man")
+           ;; This consists purely of (architecture-independent) data, so
+           ;; ‘cross-compilation’ is pointless here!  (The binaries zic,
+           ;; dump, and tzselect are deleted in the post-install phase.)
+           #:target #f
 
-                            ;; XXX: tzdata 2020b changed the on-disk format
-                            ;; of the time zone files from 'fat' to 'slim'.
-                            ;; Many packages (particularly evolution-data-server)
-                            ;; can not yet handle the latter, so we stick with
-                            ;; 'fat' for now.
-                            ,@(if (version>=? (package-version this-package)
-                                              "2020b")
-                                  '("CPPFLAGS=-DZIC_BLOAT_DEFAULT='\"fat\"'")
-                                  '())
+           #:make-flags
+           #~(let ((out #$output)
+                   (tmp (getenv "TMPDIR")))
+               (list (string-append "TOPDIR=" out)
+                     (string-append "TZDIR=" out "/share/zoneinfo")
+                     (string-append "TZDEFAULT=" out
+                                    "/share/zoneinfo/localtime")
 
-                            "AWK=awk"
-                            "CC=gcc"))
-       #:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (srfi srfi-1))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key source inputs #:allow-other-keys)
-             (invoke "tar" "xvf" source)
-             (invoke "tar" "xvf" (assoc-ref inputs "tzcode"))))
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Move data in the right place.
-             (let ((out (assoc-ref outputs "out")))
-               ;; Discard zic, dump, and tzselect, already
-               ;; provided by glibc.
-               (delete-file-recursively (string-append out "/usr"))
-               (symlink (string-append out "/share/zoneinfo")
-                        (string-append out "/share/zoneinfo/posix"))
-               (delete-file-recursively
-                (string-append out "/share/zoneinfo-posix"))
-               (copy-recursively (string-append out "/share/zoneinfo-leaps")
-                                 (string-append out "/share/zoneinfo/right"))
-               (delete-file-recursively
-                (string-append out "/share/zoneinfo-leaps")))))
-         (delete 'configure))))
-    (inputs `(("tzcode" ,(origin
-                          (method url-fetch)
-                          (uri (string-append
-                                "https://data.iana.org/time-zones/releases/tzcode"
-                                version ".tar.gz"))
-                          (sha256
-                           (base32
-                            "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb"))))))
+                     ;; Likewise for the C library routines.
+                     (string-append "LIBDIR=" tmp "/lib")
+                     (string-append "MANDIR=" tmp "/man")
+
+                     ;; XXX: tzdata 2020b changed the on-disk format
+                     ;; of the time zone files from 'fat' to 'slim'.
+                     ;; Many packages (particularly evolution-data-server)
+                     ;; can not yet handle the latter, so we stick with
+                     ;; 'fat' for now.
+                     #$@(if (version>=? (package-version this-package)
+                                        "2020b")
+                            '("CPPFLAGS=-DZIC_BLOAT_DEFAULT='\"fat\"'")
+                            '())
+
+                     "AWK=awk"
+                     "CC=gcc"))
+           #:modules '((guix build utils)
+                       (guix build gnu-build-system)
+                       (srfi srfi-1))
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'unpack
+                 (lambda* (#:key source inputs #:allow-other-keys)
+                   (invoke "tar" "xvf" source)
+                   (invoke "tar" "xvf"
+                           #$(match (package-inputs this-package)
+                               (((_ tzcode)) tzcode)))))
+               (add-after 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Move data in the right place.
+                   (let ((out (assoc-ref outputs "out")))
+                     ;; Discard zic, dump, and tzselect, already
+                     ;; provided by glibc.
+                     (delete-file-recursively (string-append out "/usr"))
+                     (symlink (string-append out "/share/zoneinfo")
+                              (string-append out "/share/zoneinfo/posix"))
+                     (delete-file-recursively
+                      (string-append out "/share/zoneinfo-posix"))
+                     (copy-recursively (string-append out "/share/zoneinfo-leaps")
+                                       (string-append out "/share/zoneinfo/right"))
+                     (delete-file-recursively
+                      (string-append out "/share/zoneinfo-leaps")))))
+               (delete 'configure))))
+    (inputs (list (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://data.iana.org/time-zones/releases/tzcode"
+                          version ".tar.gz"))
+                    (sha256
+                     (base32
+                      "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb")))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1363,14 +1365,14 @@ and daylight-saving rules.")
                 (base32
                  "022fn6gkmp7pamlgab04x0dm5hnyn2m2fcnyr3pvm36612xd5rrr"))))
      (inputs
-      `(("tzcode" ,(origin
-                     (method url-fetch)
-                     (uri (string-append
-                           "https://data.iana.org/time-zones/releases/tzcode"
-                           version ".tar.gz"))
-                     (sha256
-                      (base32
-                       "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb")))))))))
+      (list (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://data.iana.org/time-zones/releases/tzcode"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb"))))))))
 
 (define-public libiconv
   (package
