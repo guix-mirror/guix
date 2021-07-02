@@ -270,10 +270,17 @@ directory comparison and more.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "LDFLAGS=-lcap -lcrypt -lpam -pie")
+       (list "LDFLAGS=-lcap -lcrypt -lpam")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'append-make-flags
+           (lambda _
+             (substitute* "Makefile"
+               (("(CFLAGS|LDFLAGS)[[:blank:]]*=" _ variable)
+                (format #f "UPSTREAM_~a +=" variable))
+               (("\\$\\((CFLAGS|LDFLAGS)\\)" _ variable)
+                (format #f "$(UPSTREAM_~a) $(~@*~a)" variable)))))
          (add-after 'unpack 'patch-installation-directory
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile"
