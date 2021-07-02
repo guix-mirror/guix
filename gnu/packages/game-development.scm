@@ -1266,15 +1266,22 @@ are only used to bootstrap it.")
     (arguments
      `(#:tests? #f ; see python2-renpy
        #:python ,python-2
+       #:modules ((srfi srfi-1)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:imported-modules ((srfi srfi-1) ,@%python-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-commands
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "launcher/game/choose_directory.rpy"
-               (("/usr/bin/python") (which "python2")))
+               (("/usr/bin/python")
+                (string-append (assoc-ref inputs "python2")
+                               "/bin/python2")))
              (substitute* "launcher/game/front_page.rpy"
                (("xdg-open")
-                (which "xdg-open")))
+                (string-append (assoc-ref inputs "xdg-utils")
+                               "/bin/xdg-open")))
              (substitute* "launcher/game/project.rpy"
                (("cmd = \\[ executable, \"-EO\", sys.argv\\[0\\] \\]")
                 (string-append "cmd = [ \"" (assoc-ref outputs "out")
@@ -1291,8 +1298,9 @@ are only used to bootstrap it.")
                ((", \"game\",") ","))
              #t))
          (add-before 'build 'start-xserver
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref (or native-inputs inputs)
+                                           "xorg-server")))
                (setenv "HOME" (getcwd))
                (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
                (setenv "DISPLAY" ":1")
@@ -1344,7 +1352,8 @@ are only used to bootstrap it.")
 
                (call-with-output-file bin/renpy
                  (lambda (port)
-                   (format port "#!~a~%" (which "python2"))
+                   (format port "#!~a/bin/python2~%"
+                           (assoc-ref inputs "python2"))
                    (format port "
 from __future__ import print_function
 
@@ -1433,15 +1442,32 @@ if __name__ == \"__main__\":
              #t))
          (replace 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/renpy")
-               `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
-             #t)))))
+             (let ((out (assoc-ref outputs "out"))
+                   (site (string-append "/lib/python"
+                                        (python-version
+                                         (assoc-ref inputs "python"))
+                                        "/site-packages")))
+               (wrap-program (string-append out "/bin/renpy")
+                 `("PYTHONPATH" =
+                   (,@(delete-duplicates
+                       (map
+                        (lambda (store-path)
+                          (string-append store-path site))
+                        (cons (assoc-ref outputs "out")
+                              (map cdr
+                                   (filter
+                                    (lambda (input)
+                                      (string-prefix? "python2" (car input)))
+                                    inputs))))))))
+               #t))))))
     (inputs
-     `(("python2-tkinter" ,python-2 "tk")
-       ("python2-pygame" ,python2-pygame-sdl2)
-       ("python2-renpy" ,python2-renpy)
-       ("xorg-server" ,xorg-server)))
+     `(("python2-renpy" ,python2-renpy)
+       ("python2-tkinter" ,python-2 "tk")
+       ("python2" ,python-2) ; for ‘fix-commands’ and ‘wrap’
+       ("xdg-utils" ,xdg-utils)))
+    (propagated-inputs '())
+    (native-inputs
+     `(("xorg-server" ,xorg-server-for-tests)))
     (outputs
      (list "out" "tutorial" "the-question"))
     (home-page "https://www.renpy.org/")
