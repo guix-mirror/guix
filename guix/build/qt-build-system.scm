@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2014, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -49,45 +49,25 @@
 
 (define (variables-for-wrapping base-directories)
 
-  (define (collect-sub-dirs base-directories subdirectory
-                            selectors)
-    ;; Append SUBDIRECTORY and each of BASE-DIRECTORIES, and return the subset
-    ;; that exists and has at least one of the SELECTORS sub-directories,
-    ;; unless SELECTORS is the empty list.
-    (filter-map (lambda (dir)
-                  (let ((directory (string-append dir subdirectory)))
-                    (and (directory-exists? directory)
-                         (or (null? selectors)
-                             (any (lambda (selector)
-                                    (directory-exists?
-                                     (string-append directory selector)))
-                                  selectors))
-                         directory)))
-                base-directories))
+  (define (collect-sub-dirs base-directories subdirectory)
+    (filter-map
+     (lambda (dir)
+       (let ((directory (string-append dir subdirectory)))
+         (if (directory-exists? directory) directory #f)))
+     base-directories))
 
-  (filter-map
-   (match-lambda
-     ((variable directory selectors ...)
-      (match (collect-sub-dirs base-directories directory
-                               selectors)
-        (()
-         #f)
-        (directories
-         `(,variable = ,directories)))))
-
-   ;; These shall match the search-path-specification for Qt and KDE
-   ;; libraries.
-   (list '("XDG_DATA_DIRS" "/share"
-
-           ;; These are "selectors": consider /share if and only if at least
-           ;; one of these sub-directories exist.  This avoids adding
-           ;; irrelevant packages to XDG_DATA_DIRS just because they have a
-           ;; /share sub-directory.
-           "/glib-2.0/schemas" "/sounds" "/themes"
-           "/cursors" "/wallpapers" "/icons" "/mime")
-         '("XDG_CONFIG_DIRS" "/etc/xdg")
-         '("QT_PLUGIN_PATH" "/lib/qt5/plugins")
-         '("QML2_IMPORT_PATH" "/lib/qt5/qml"))))
+  (filter
+   (lambda (var-to-wrap) (not (null? (last var-to-wrap))))
+   (map
+    (lambda (var-spec)
+      `(,(first var-spec) = ,(collect-sub-dirs base-directories (last var-spec))))
+    (list
+     ;; these shall match the search-path-specification for Qt and KDE
+     ;; libraries
+     '("XDG_DATA_DIRS" "/share")
+     '("XDG_CONFIG_DIRS" "/etc/xdg")
+     '("QT_PLUGIN_PATH" "/lib/qt5/plugins")
+     '("QML2_IMPORT_PATH" "/lib/qt5/qml")))))
 
 (define* (wrap-all-programs #:key inputs outputs
                             (qt-wrap-excluded-outputs '())
