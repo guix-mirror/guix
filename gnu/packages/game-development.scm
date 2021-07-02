@@ -1230,7 +1230,8 @@ developed mainly for Ren'py.")
                (with-directory-excursion "module"
                  (apply (assoc-ref %standard-phases 'install) args))
                (copy-recursively "renpy"
-                                 (string-append out site "/renpy")))
+                                 (string-append out site "/renpy"))
+               (delete-file-recursively (string-append out site "/renpy/common")))
              #t)))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
@@ -1304,11 +1305,14 @@ modules of Ren'py.")
              ;; After finishing this step, "out" will have the following:
              ;; |-- bin/renpy
              ;; `-- share/renpy ; i.e. path_to_renpy_base()
-             ;;     `-- common
+             ;;     |-- common
+             ;;     `-- gui
              ;;
-             ;; Note that common is also a de facto unused directory in
-             ;; python2-renpy. On other systems, renpy_base would point to
-             ;; site-packages or even somewhere in /opt.
+             ;; Note that common shares the source files that would be installed
+             ;; by python2-renpy (which are instead deleted from that package),
+             ;; but also contains their byte-compiled versions.
+             ;; On other systems, renpy_base would point to site-packages or
+             ;; even somewhere in /opt.
              ;; The former approach is not as straightforward as it seems
              ;; -- it causes renpy to load files twice for some weird reason --
              ;; and the latter is impossible on Guix. Hence the detour through
@@ -1319,9 +1323,11 @@ modules of Ren'py.")
              ;; well. This differs from the traditional layout, which is
              ;; roughly the following:
              ;; `-- Super Awesome Game
-             ;;     |-- game      ; <- the folder we actually want
-             ;;     |-- lib       ; compiled renpy module and dependencies
-             ;;     |-- renpy     ; Ren'py python code (source + compiled)
+             ;;     |-- game       ; <- the folder we actually want
+             ;;     |-- lib        ; compiled renpy module and dependencies
+             ;;     |-- renpy      ; yet another copy of Ren'py's code
+             ;;     |   |-- common ; the common folder from above
+             ;;     |   `-- ...    ; Python code (source + compiled)
              ;;     |-- Super Awesome Game.py
              ;;     `-- Super Awesome Game.sh
              (let* ((out (assoc-ref outputs "out"))
