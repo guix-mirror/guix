@@ -1186,10 +1186,11 @@ developed mainly for Ren'py.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-commands
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "renpy/editor.py"
                (("xdg-open")
-                (which "xdg-open")))
+                (string-append (assoc-ref inputs "xdg-utils")
+                               "/bin/xdg-open")))
              #t))
          (add-after 'unpack 'fix-include-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1199,9 +1200,10 @@ developed mainly for Ren'py.")
                                "/include/fribidi")))
              #t))
          (add-after 'set-paths 'set-build-vars
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (setenv "RENPY_CYTHON"
-                     (string-append (assoc-ref inputs "python2-cython")
+                     (string-append (assoc-ref (or native-inputs inputs)
+                                               "python2-cython")
                                     "/bin/cython"))
              (setenv "RENPY_DEPS_INSTALL" (string-join (map cdr inputs) ":"))
              #t))
@@ -1240,14 +1242,14 @@ developed mainly for Ren'py.")
        ("glew" ,glew)
        ("libpng" ,libpng)
        ("sdl-union"
-        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("xdg-utils" ,xdg-utils)))
     (propagated-inputs
      `(("python2-future" ,python2-future)
        ("python2-pygame" ,python2-pygame-sdl2)))
     (native-inputs
      `(("gcc" ,gcc-8) ; for const variables as initializer elements
-       ("python2-cython" ,python2-cython)
-       ("xdg-utils" ,xdg-utils)))
+       ("python2-cython" ,python2-cython)))
     (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
     (description "This package contains the shared libraries and Python modules
