@@ -270,7 +270,8 @@ directory comparison and more.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "LDFLAGS=-lcap -lcrypt -lpam")
+       (list "LDFLAGS=-lcap -lcrypt -lpam"
+             "INSTALL=install -D")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
@@ -284,17 +285,7 @@ directory comparison and more.")
          (add-after 'unpack 'patch-installation-directory
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile"
-               (("/usr") (assoc-ref outputs "out")))
-             #t))
-         (add-before 'install 'mkdir
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p out)
-               (mkdir (string-append out "/sbin"))
-               (mkdir (string-append out "/man"))
-               (mkdir (string-append out "/man/man5"))
-               (mkdir (string-append out "/man/man8"))
-               #t)))
+               (("/usr") (assoc-ref outputs "out")))))
          (delete 'configure))))         ; no configure script
     (inputs
      `(("libcap" ,libcap)
