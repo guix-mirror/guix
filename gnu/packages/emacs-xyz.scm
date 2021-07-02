@@ -4405,6 +4405,36 @@ column by drawing a thin line down the length of the editing window.")
 result.")
     (license license:gpl3+)))
 
+(define-public emacs-ripgrep
+  (package
+    (name "emacs-ripgrep")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nlamirault/ripgrep.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1a5rdpmvsgsjlc9sywism9pq7jd6n9qbcdsvpbfkq1npwhpifkbj"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The repository contains both ripgrep and projectile-ripgrep
+         ;; packages. The latter has been merged into projectile itself.
+         (add-after 'unpack 'delete-projectile-ripgrep
+           (lambda _
+             (delete-file "projectile-ripgrep.el"))))))
+    (propagated-inputs
+     `(("ripgrep" ,ripgrep)))
+    (home-page "https://github.com/nlamirault/ripgrep.el")
+    (synopsis "Search using ripgrep from inside Emacs")
+    (description "@code{ripgrep} is an Emacs search package based on the
+@command{ripgrep} command line tool.")
+    (license license:gpl2+)))
+
 (define-public emacs-rg
   (package
     (name "emacs-rg")
