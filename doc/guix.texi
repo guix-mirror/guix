@@ -7377,7 +7377,7 @@ the @code{RUNPATH} of ELF binaries (@code{.so} shared libraries as well
 as executables) previously installed by the @code{install} phase.
 
 This validation step consists in making sure that all the shared
-libraries needed by an ELF binaries, which are listed as
+libraries needed by an ELF binary, which are listed as
 @code{DT_NEEDED} entries in its @code{PT_DYNAMIC} segment, appear in the
 @code{DT_RUNPATH} entry of that binary.  In other words, it ensures that
 running or using those binaries will not result in a ``file not found''
