@@ -4273,6 +4273,9 @@ done in the BIOS, or, on GNU/Linux, with the following command:
 @end example
 
 Failure to do so will result in a library with poor performance.")
+    ;; The test suite is notoriously lengthy and routinely exceeds the default
+    ;; timeout of 21600 seconds on the not unbeefy berlin build nodes.
+    (properties '((timeout . 86400)))        ; 1 day
     (license license:bsd-3)))
 
 (define-public cglm
