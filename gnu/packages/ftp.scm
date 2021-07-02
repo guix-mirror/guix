@@ -293,9 +293,11 @@ directory comparison and more.")
      `(("libcap" ,libcap)
        ("linux-pam" ,linux-pam)
        ("openssl" ,openssl)))
-    (synopsis "vsftpd FTP daemon")
-    (description "@command{vsftpd} is a daemon that listens on a TCP socket
-for clients and gives them access to local files via File Transfer
-Protocol.")
+    (synopsis "Small FTP server with a focus on security")
+    (description
+     "The Very Secure File Transfer Protocol Daemon or @command{vsftpd} is a
+server that listens on a TCP socket for clients and gives them access to local
+files via @acronym{FTP, the File Transfer Protocol}.  Security is a goal; not a
+guarantee.")
     (home-page "https://security.appspot.com/vsftpd.html")
-    (license gpl2)))
+    (license gpl2)))                    ; with OpenSSL exception
