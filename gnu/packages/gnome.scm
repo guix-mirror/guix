@@ -1167,13 +1167,19 @@ Library reference documentation.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'fix-udev-rules-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out   (assoc-ref outputs "out"))
+                   (rules (string-append out "/lib/udev/rules.d")))
+              (substitute* "data/meson.build"
+                (("udev\\.get_pkgconfig_variable\\('udevdir'\\)")
+                 (format #f "'~a'" rules))))))
         (add-before 'check 'start-virtual-dir-server
           ;; The same server when started by tests/virtual-dir returns an
           ;; unexpected status (4 instead of 200) and fails a test.  It is
           ;; unclear why starting it manually here makes it pass.
           (lambda _
-            (system "tests/virtual-dir-server &")
-            #t)))))
+            (system "tests/virtual-dir-server &"))))))
    (native-inputs
     `(("docbook-xml" ,docbook-xml-4.3)
       ("gettext" ,gettext-minimal)
