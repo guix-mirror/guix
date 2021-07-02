@@ -11964,7 +11964,7 @@ etc.  You can also play games on FICS or against an engine.")
 (define-public stockfish
   (package
     (name "stockfish")
-    (version "13")
+    (version "14")
     (source
      (origin
        (method git-fetch)
@@ -11973,15 +11973,15 @@ etc.  You can also play games on FICS or against an engine.")
              (commit (string-append "sf_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15dfp9fnl3w7dgxhqmsm461amsysn646rj1arnzvwhy2i6ijhg2m"))))
+        (base32 "046b3rq9w8lzgk07q5zazzkl93ai99ab18hr9d8n73mabjpi6zbx"))))
     (build-system gnu-build-system)
     (inputs
      `(("neural-network"
         ,(origin
            (method url-fetch)
-           (uri "https://tests.stockfishchess.org/api/nn/nn-62ef826d1a6d.nnue")
+           (uri "https://tests.stockfishchess.org/api/nn/nn-3475407dc199.nnue")
            (sha256
-            (base32 "0qsy9rr4zgxrpgwhwbi96z01a2560am2b00q2klbj4bd39nq5vv2"))))))
+            (base32 "11zci5kgwdw9rh8w2w4p84764g82rr666y3n8r2flwwrq5yl0x9l"))))))
     (arguments
      `(#:tests? #f
        #:make-flags (list "-C" "src"
@@ -12003,7 +12003,7 @@ etc.  You can also play games on FICS or against an engine.")
                   (add-after 'unpack 'copy-net
                     (lambda* (#:key inputs #:allow-other-keys)
                       (copy-file (assoc-ref inputs "neural-network")
-                                 "src/nn-62ef826d1a6d.nnue")
+                                 "src/nn-3475407dc199.nnue")
                       #t)))))
     (synopsis "Strong chess engine")
     (description
