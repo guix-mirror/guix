@@ -1250,8 +1250,10 @@ developed mainly for Ren'py.")
        ("xdg-utils" ,xdg-utils)))
     (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
-    (description "This package contains the shared libraries and Python
-modules of Ren'py.")
+    (description "This package contains the shared libraries and Python modules
+of Ren'py.  While functional, they are not meaningful on their own without
+the launcher and common Ren'py code provided by the @code{renpy} package and
+are only used to bootstrap it.")
     (license license:expat)))
 
 (define-public renpy
