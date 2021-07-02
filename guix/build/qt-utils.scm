@@ -3,6 +3,7 @@
 ;;; Copyright © 2019, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,16 +38,22 @@
 ;; contain any of the standard subdirectories.
 (define (variables-for-wrapping base-directories output-directory)
 
-  (define (collect-sub-dirs base-directories subdirectory selectors)
+  (define (collect-sub-dirs base-directories file-type subdirectory selectors)
     ;; Append SUBDIRECTORY and each of BASE-DIRECTORIES, and return the subset
     ;; that exists and has at least one of the SELECTORS sub-directories,
-    ;; unless SELECTORS is the empty list.
+    ;; unless SELECTORS is the empty list.  FILE-TYPE should by 'directory or
+    ;; 'regular file.  For the later, it allows searching for plain files
+    ;; rather than directories.
+    (define exists? (match file-type
+                      ('directory directory-exists?)
+                      ('regular file-exists?)))
+
     (filter-map (lambda (dir)
                   (let ((directory (string-append dir subdirectory)))
-                    (and (directory-exists? directory)
+                    (and (exists? directory)
                          (or (null? selectors)
                              (any (lambda (selector)
-                                    (directory-exists?
+                                    (exists?
                                      (string-append directory selector)))
                                   selectors))
                          directory)))
@@ -54,24 +61,34 @@
 
   (filter-map
    (match-lambda
-     ((variable type directory selectors ...)
-      (match (collect-sub-dirs base-directories directory selectors)
+     ((variable type file-type directory selectors ...)
+      (match (collect-sub-dirs base-directories file-type directory selectors)
         (()
          #f)
         (directories
          `(,variable ,type ,directories)))))
    ;; These shall match the search-path-specification for Qt and KDE
    ;; libraries.
-   (list '("XDG_DATA_DIRS" suffix "/share"
-           ;; These are "selectors": consider /share if and only if at least
-           ;; one of these sub-directories exist.  This avoids adding
-           ;; irrelevant packages to XDG_DATA_DIRS just because they have a
-           ;; /share sub-directory.
-           "/applications" "/cursors" "/fonts" "/icons" "/glib-2.0/schemas"
-           "/mime" "/sounds" "/themes" "/wallpapers")
-         '("XDG_CONFIG_DIRS" suffix "/etc/xdg")
-         '("QT_PLUGIN_PATH" prefix "/lib/qt5/plugins")
-         '("QML2_IMPORT_PATH" prefix "/lib/qt5/qml"))))
+   (list
+    ;; The XDG environment variables are defined with the 'suffix type, which
+    ;; allows the users to override or extend their value, so that custom icon
+    ;; themes can be honored, for example.
+    '("XDG_DATA_DIRS" suffix directory "/share"
+      ;; These are "selectors": consider /share if and only if at least
+      ;; one of these sub-directories exist.  This avoids adding
+      ;; irrelevant packages to XDG_DATA_DIRS just because they have a
+      ;; /share sub-directory.
+      "/applications" "/cursors" "/fonts" "/icons" "/glib-2.0/schemas"
+      "/mime" "/sounds" "/themes" "/wallpapers")
+    '("XDG_CONFIG_DIRS" suffix directory "/etc/xdg")
+    ;; The following variables can be extended by the user, but not
+    ;; overridden, to ensure proper operation.
+    '("QT_PLUGIN_PATH" prefix directory "/lib/qt5/plugins")
+    '("QML2_IMPORT_PATH" prefix directory "/lib/qt5/qml")
+    ;; QTWEBENGINEPROCESS_PATH accepts a single value, which makes 'exact the
+    ;; most suitable environment variable type for it.
+    '("QTWEBENGINEPROCESS_PATH" = regular
+      "/lib/qt5/libexec/QtWebEngineProcess"))))
 
 (define* (wrap-qt-program* program #:key inputs output-dir
                            qt-wrap-excluded-inputs)
@@ -90,7 +107,6 @@
     (when (not (null? vars-to-wrap))
       (apply wrap-program program vars-to-wrap))))
 
-
 (define* (wrap-qt-program program-name #:key inputs output
                           (qt-wrap-excluded-inputs %qt-wrap-excluded-inputs))
   "Wrap the specified programm (which must reside in the OUTPUT's \"/bin\"
@@ -101,7 +117,6 @@ is wrapped."
   (wrap-qt-program* (string-append output "/bin/" program-name)
                     #:output-dir output #:inputs inputs
                     #:qt-wrap-excluded-inputs qt-wrap-excluded-inputs))
-
 
 (define* (wrap-all-qt-programs #:key inputs outputs
                                (qt-wrap-excluded-outputs '())
@@ -133,5 +148,4 @@ add a dependency of that output on Qt."
                        #:qt-wrap-excluded-inputs qt-wrap-excluded-inputs)
                   (find-files-to-wrap output-dir))))))
 
-  (for-each handle-output outputs)
-  #t)
+  (for-each handle-output outputs))
