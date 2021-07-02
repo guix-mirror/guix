@@ -1393,9 +1393,13 @@ network adapters.")
     (arguments
      `(#:tests? #f))                    ; no test suite
     (home-page "https://cdemu.sourceforge.io/")
-    (synopsis "Kernel module that emulates SCSI devices")
-    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
-between the CDemu userspace daemon and linux kernel.")
+    (synopsis "Linux kernel module that emulates SCSI devices")
+    (description
+     "The @acronym{VHBA, Virtual SCSI Host Bus Adapter} module is the link
+between the CDemu user-space daemon and the kernel Linux.  It acts as a
+low-level SCSI driver that emulates a virtual SCSI adapter which can have
+multiple virtual devices attached to it.  Its typical use with CDEmu is to
+emulate optical devices such as DVD and CD-ROM drives.")
     (license license:gpl2+)))
 
 (define-public bbswitch-module
