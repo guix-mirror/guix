@@ -26,6 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
@@ -270,7 +271,8 @@ directory comparison and more.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "LDFLAGS=-lcap -lcrypt -lpam"
+       (list (string-append "CC=" ,(cc-for-target))
+             "LDFLAGS=-lcap -lcrypt -lpam"
              "INSTALL=install -D")
        #:tests? #f                      ; no test suite
        #:phases
