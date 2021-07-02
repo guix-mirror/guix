@@ -1456,13 +1456,14 @@ library}.")
     (name "guile-dbi")
     (version "2.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/guile-dbi/guile-dbi-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://example.org") ;only hosted on Software Heritage
+                    (commit "e19b019e9683faf66c3f385b20fcc112e65f8c6e")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "116njrprhgrsv1qm904sp3b02rq01fx639r433d657gyhw3x159n"))))
+                "09ys5hj7gnj5w1iv1m194j06jk6b8sdhc8j6hcv3bprq1428kyxw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1489,7 +1490,7 @@ library}.")
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
-    (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
+    (home-page "https://web.archive.org/web/20160328232717/http://home.gna.org/guile-dbi/guile-dbi.html")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  Database programming with guile-dbi is generic in that the same
