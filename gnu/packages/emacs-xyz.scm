@@ -100,6 +100,7 @@
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 David Dashyan <mail@davie.li>
 ;;; Copyright © 2021 Dhruvin Gandhi <contact@dhruvin.dev>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -731,7 +732,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "3.0.0")
+    (version "3.1.1")
     (source
      (origin
        (method git-fetch)
@@ -740,7 +741,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dbp3gx43ipxv8zg9m0hfhksz85rnkikaq35rx705qqz6xq6xq9m"))))
+        (base32 "0sn4iiicmqfqmvi7zwii6qdp35k09kqn36rpalv0w1i4jcm6j9kk"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs-no-x             ;module support is required
