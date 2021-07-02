@@ -1380,19 +1380,18 @@ network adapters.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20200106")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "10rlvsfj0fw6n0qmwcnvhimqnsnhi7n55lyl7fq1pkwggf5218sr"))))
+    (version "20210418")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "119zgav6caialmf3hr096wkf72l9h76sqc9w5dhx26kj4yp85g8q"))))
     (build-system linux-module-build-system)
     (arguments
-     ;; TODO: No tests?
-     `(#:tests? #f))
+     `(#:tests? #f))                    ; no test suite
     (home-page "https://cdemu.sourceforge.io/")
     (synopsis "Kernel module that emulates SCSI devices")
     (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
