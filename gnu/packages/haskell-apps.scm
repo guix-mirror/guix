@@ -890,6 +890,8 @@ that cause a shell to behave strangely and counter-intuitively.
 @item Point out subtle caveats, corner cases and pitfalls that may cause an
 advanced user's otherwise working script to fail under future circumstances.
 @end enumerate")
+    ;; CVE-2021-28794 is for a completely different, unofficial add-on.
+    (properties `((lint-hidden-cve . ("CVE-2021-28794"))))
     (license license:gpl3+)))
 
 (define-public shelltestrunner
