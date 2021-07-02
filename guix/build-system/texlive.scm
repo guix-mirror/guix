@@ -128,7 +128,14 @@ level package ID."
                         (tests? #f)
                         tex-directory
                         (build-targets #f)
-                        (tex-format "luatex")
+
+                        ;; FIXME: This would normally default to "luatex" but
+                        ;; LuaTeX has a bug where sometimes it corrupts the
+                        ;; heap and aborts. This causes the build of texlive
+                        ;; packages to fail at random. The problem is being
+                        ;; tracked at <https://issues.guix.gnu.org/48064>.
+                        (tex-format "pdftex")
+
                         (phases '(@ (guix build texlive-build-system)
                                     %standard-phases))
                         (outputs '("out"))
