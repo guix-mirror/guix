@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -792,3 +792,47 @@ areas in the model.  A semi-implicit method is used to advance the
 solution in time.  The tool is typically applied to the modelling of
 river flooding.")
       (license license:cecill))))
+
+(define-public python-meshio
+  (package
+    (name "python-meshio")
+    (version "4.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "meshio" version))
+        (sha256
+          (base32
+           "0kv832s2vyff30zz8yqypw5jifwdanvh5x56d2bzkvy94h4jlddy"))
+        (snippet
+         '(begin
+            (let ((file (open-file "setup.py" "a")))
+              (display "from setuptools import setup\nsetup()" file)
+              (close-port file))
+            #t))))
+    (build-system python-build-system)
+    (inputs
+     `(("h5py" ,python-h5py)
+       ("netcdf4" ,python-netcdf4)))
+    (native-inputs
+     `(("pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("importlib-metadata" ,python-importlib-metadata)
+       ("numpy" ,python-numpy)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "-m" "pytest" "-v" "tests")
+             #t)))))
+    (home-page "https://github.com/nschloe/meshio")
+    (synopsis "I/O for mesh files")
+    (description "There are various file formats available for
+representing unstructured meshes and mesh data.  The @code{meshio}
+package is able to read and write mesh files in many formats and to
+convert files from one format to another.  Formats such as cgns, h5m,
+gmsh, xdmf and vtk are supported.  The package provides command-line
+tools and a collection of Python modules for programmatic use.")
+    (license license:expat)))
