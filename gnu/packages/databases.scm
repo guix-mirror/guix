@@ -2015,18 +2015,19 @@ your data changes, as this module figures it out.")
 (define-public perl-sql-splitstatement
   (package
     (name "perl-sql-splitstatement")
-    (version "1.00020")
+    (version "1.00023")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/EM/EMAZEP/"
+       (uri (string-append "mirror://cpan/authors/id/V/VE/VEESH/"
                            "SQL-SplitStatement-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bqg45k4c9qkb2ypynlwhpvzsl4ssfagmsalys18s5c79ps30z7p"))))
+        (base32 "0ppkx46nydzlnsxf9a8pkyb74wggfrdiiwafab143lrarlh88x0s"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-test-differences" ,perl-test-differences)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-script" ,perl-test-script)))
     (propagated-inputs
      `(("perl-class-accessor" ,perl-class-accessor)
        ("perl-list-moreutils" ,perl-list-moreutils)
