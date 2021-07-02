@@ -49,23 +49,17 @@
 
 (define (variables-for-wrapping base-directories)
 
-  (define (collect-sub-dirs base-directories file-type subdirectory
+  (define (collect-sub-dirs base-directories subdirectory
                             selectors)
     ;; Append SUBDIRECTORY and each of BASE-DIRECTORIES, and return the subset
     ;; that exists and has at least one of the SELECTORS sub-directories,
-    ;; unless SELECTORS is the empty list.  FILE-TYPE should by 'directory or
-    ;; 'regular file.  For the later, it allows searching for plain files
-    ;; rather than directories.
-    (define exists? (match file-type
-                      ('directory directory-exists?)
-                      ('regular file-exists?)))
-
+    ;; unless SELECTORS is the empty list.
     (filter-map (lambda (dir)
                   (let ((directory (string-append dir subdirectory)))
-                    (and (exists? directory)
+                    (and (directory-exists? directory)
                          (or (null? selectors)
                              (any (lambda (selector)
-                                    (exists?
+                                    (directory-exists?
                                      (string-append directory selector)))
                                   selectors))
                          directory)))
@@ -73,8 +67,8 @@
 
   (filter-map
    (match-lambda
-     ((variable file-type directory selectors ...)
-      (match (collect-sub-dirs base-directories file-type directory
+     ((variable directory selectors ...)
+      (match (collect-sub-dirs base-directories directory
                                selectors)
         (()
          #f)
@@ -83,7 +77,7 @@
 
    ;; These shall match the search-path-specification for Qt and KDE
    ;; libraries.
-   (list '("XDG_DATA_DIRS" directory "/share"
+   (list '("XDG_DATA_DIRS" "/share"
 
            ;; These are "selectors": consider /share if and only if at least
            ;; one of these sub-directories exist.  This avoids adding
@@ -91,11 +85,10 @@
            ;; /share sub-directory.
            "/glib-2.0/schemas" "/sounds" "/themes"
            "/cursors" "/wallpapers" "/icons" "/mime")
-         '("XDG_CONFIG_DIRS" directory "/etc/xdg")
-         '("QT_PLUGIN_PATH" directory "/lib/qt5/plugins")
-         '("QML2_IMPORT_PATH"  directory "/lib/qt5/qml")
-         '("QTWEBENGINEPROCESS_PATH" regular
-           "/lib/qt5/libexec/QtWebEngineProcess"))))
+         '("XDG_CONFIG_DIRS" "/etc/xdg")
+         '("QT_PLUGIN_PATH" "/lib/qt5/plugins")
+         '("QML2_IMPORT_PATH" "/lib/qt5/qml")
+         '("QTWEBENGINEPROCESS_PATH" "/lib/qt5/libexec/QtWebEngineProcess"))))
 
 (define* (wrap-all-programs #:key inputs outputs
                             (qt-wrap-excluded-outputs '())
