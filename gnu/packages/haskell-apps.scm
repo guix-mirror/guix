@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2021 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -857,6 +858,19 @@ too slow and you'll get wound up in the scroll and crushed.")
         (base32 "06m4wh891nah3y0br4wh3adpsb16zawkb2ijgf1vcz61fznj6ps1"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-man-page
+           (lambda _
+             (invoke "./manpage")))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "shellcheck.1"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/man/man1/")))))))
+    (native-inputs
+     `(("pandoc" ,pandoc)))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-diff" ,ghc-diff)
