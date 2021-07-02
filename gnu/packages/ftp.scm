@@ -272,11 +272,18 @@ directory comparison and more.")
     (arguments
      `(#:make-flags
        (list (string-append "CC=" ,(cc-for-target))
-             "LDFLAGS=-lcap -lcrypt -lpam"
+             ;; vsf_findlibs.sh looks only for hard-coded {/usr,}/lib file names
+             ;; that will never exist on Guix.  Manage libraries ourselves.
+             "LDFLAGS=-lcap -lpam"
              "INSTALL=install -D")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'build-SSL
+           (lambda _
+             (substitute* "builddefs.h"
+               (("#undef (VSF_BUILD_SSL)" _ symbol)
+                (string-append "#define " symbol)))))
          (add-after 'unpack 'append-make-flags
            (lambda _
              (substitute* "Makefile"
