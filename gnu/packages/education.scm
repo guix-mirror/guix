@@ -218,6 +218,61 @@ Currently available boards include:
     (license (list license:silofl1.1    ; bundled fonts
                    license:gpl3+))))
 
+(define-public gotypist
+  (let ((revision "0")
+        (commit "03f8618f8e23acdaa94cda3bcf197da520db8dd4"))
+    (package
+      (name "gotypist")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/KappaDistributive/gotypist")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0sjndaspqfzffjxz388m384wqz5lzbiw4cwpi688k5aq7n05jh0f"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:unpack-path "github.com/KappaDistributive/gotypist"
+         #:import-path "github.com/KappaDistributive/gotypist/v1"
+         #:install-source? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'install-data
+             (lambda* (#:key import-path unpack-path outputs #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (data (string-append out "/share/gotypist/data")))
+                 (with-directory-excursion "src"
+                   (with-directory-excursion import-path
+                     (substitute* "lesson.go"
+                       (("\"data/")
+                        (format #f "\"~a/" data))))
+                   (with-directory-excursion unpack-path
+                     (mkdir-p data)
+                     (copy-recursively "data" data))))))
+           (add-after 'install 'rename-executable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (with-directory-excursion bin
+                   (rename-file "v1" "gotypist"))))))))
+      (native-inputs
+       `(("go-github-com-gizak-termui" ,go-github-com-gizak-termui)
+         ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+      (home-page "https://github.com/KappaDistributive/gotypist")
+      (synopsis "Simple typing trainer for text terminals")
+      (description
+       "Gotypist is a simple typing tutor for text terminals, similar to
+gtypist but with no instruction.  Hence it's best suited for people who already
+know how to touch type and wish to improve their typing accuracy and/or speed.
+
+You can provide your own lesson text, choose from the included samples, or ask
+@command{gotypist} to construct a random lesson from a fixed list of the most
+frequently used words in American English.")
+      (license license:expat))))
+
 (define-public tipp10
   (package
     (name "tipp10")
