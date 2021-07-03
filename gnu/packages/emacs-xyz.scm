@@ -13516,6 +13516,26 @@ with CJK languages.")
 to org file, you can use this tool to write orgify commentary.")
     (license license:gpl2+)))
 
+(define-public emacs-muse
+  (package
+    (name "emacs-muse")
+    (version "3.20.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "muse-" version ".tar"))
+       (sha256
+        (base32 "0g2ff6x45x2k5dnkp31sk3bjj92jyhhnar7l5hzn8vp22l0rv8wn"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.gnu.org/software/emacs-muse")
+    (synopsis "Authoring and publishing environment for Emacs")
+    (description
+     "Emacs Muse (also known as Muse) is an authoring and publishing
+environment for Emacs.  It simplifies the process of writing documents and
+publishing them to various output formats such as HTML, LaTeX, or PDF.")
+    (license license:gpl3+)))
+
 (define-public emacs-mustache
   (package
     (name "emacs-mustache")
