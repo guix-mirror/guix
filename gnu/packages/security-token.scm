@@ -758,8 +758,9 @@ devices.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-qt
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out") "AusweisApp2"))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program "AusweisApp2" #:output out #:inputs inputs)))))))
     (home-page "https://github.com/Governikus/AusweisApp2")
     (synopsis
      "Authentication program for German ID cards and residence permits")
