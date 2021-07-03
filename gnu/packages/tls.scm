@@ -976,7 +976,7 @@ then ported to the GNU / Linux environment.")
 for developers to include cryptographic and SSL/TLS capabilities in their
 (embedded) products, facilitating this functionality with a minimal
 coding footprint.")
-    (home-page "https://tls.mbed.org")
+    (home-page "https://www.trustedfirmware.org/projects/mbed-tls/")
     (license license:asl2.0)))
 
 ;; The Hiawatha Web server requires some specific features to be enabled.
