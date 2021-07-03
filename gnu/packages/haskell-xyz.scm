@@ -15161,6 +15161,28 @@ modernized interface.")
      "A clone of wl-pprint for use with the text library.")
     (license license:bsd-3)))
 
+(define-public ghc-word-wrap
+  (package
+    (name "ghc-word-wrap")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "word-wrap/word-wrap-" version ".tar.gz"))
+       (sha256
+        (base32 "15rcqhg9vb7qisk9ryjnyhhfgigxksnkrczycaw2rin08wczjwpb"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1k4w4g053vhmpp08542hrqaw81p3p35i567xgdarqmpghfrk68pp")))
+    (home-page "https://github.com/jtdaugherty/word-wrap/")
+    (synopsis "Haskell library for word-wrapping text")
+    (description
+     "The @code{word-wrap} Haskell library wraps long lines of text.")
+    (license license:bsd-3)))
+
 (define-public ghc-word8
   (package
     (name "ghc-word8")
