@@ -148,9 +148,9 @@ human.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-qt
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out") "keepassxc")
-             #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program "keepassxc" #:output out #:inputs inputs)))))))
     (native-inputs
      `(("asciidoctor" ,ruby-asciidoctor)
        ("qttools" ,qttools)))
