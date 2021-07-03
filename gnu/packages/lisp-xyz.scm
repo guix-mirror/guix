@@ -18273,3 +18273,45 @@ and DOM cleaning, to ensure that all remote DOMs are the same.")
 
 (define-public cl-issr-core
   (sbcl-package->cl-source-package sbcl-issr-core))
+
+(define-public sbcl-portal
+  (let ((commit "cc7ba6a54cea6ef63b17dcc6e653d91d9907f59e")
+        (revision "1"))
+    (package
+      (name "sbcl-portal")
+      (version (git-version "1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charJe/portal")
+               (commit commit)))
+         (file-name (git-file-name "portal" version))
+         (sha256
+          (base32 "0fc81iwb4lpp8d2scdwafkixxwkfmq4gqns522zyb4bh6c1rfmwy"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("arrows" ,sbcl-arrows)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-str" ,sbcl-cl-str)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("global-vars" ,sbcl-global-vars)
+         ("ironclad" ,sbcl-ironclad)
+         ("parse-float" ,sbcl-parse-float)
+         ("usocket" ,sbcl-usocket)))
+      (home-page "https://github.com/charJe/portal")
+      (synopsis "Portable Websocket Server for Common Lisp")
+      (description
+       "This is a websocket server for Common Lisp using usockets to be
+portable between implementations and operating systems.  It has a programming
+interface that allows for multiple websocket apps per server using Common Lisp
+keywords for different websocket events.  It has useful restarts and
+customizable errors.")
+      (license license:llgpl))))
+
+(define-public ecl-portal
+  (sbcl-package->ecl-package sbcl-portal))
+
+(define-public cl-portal
+  (sbcl-package->cl-source-package sbcl-portal))
