@@ -2592,6 +2592,44 @@ a very thin wrapper around the
 interface}.")
     (license license:expat)))
 
+(define-public ghc-config-ini
+  (package
+    (name "ghc-config-ini")
+    (version "0.2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "config-ini/config-ini-" version ".tar.gz"))
+       (sha256
+        (base32 "0dfm4xb1sd713rcqzplzdgw68fyhj24i6lj8j3q8kldpmkl98lbf"))))
+    (build-system haskell-build-system)
+    (arguments
+     ;; XXX The tests fail to compile: “The constructor ‘I1.Ini’ should have 2
+     ;; arguments, but has been given 1”.
+     `(#:tests? #f
+       #:cabal-revision
+       ("2" "0iwraaa0y1b3xdsg760j1wpylkqshky0k2djcg0k4s97lrwqpbcz")))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-hedgehog" ,ghc-hedgehog)
+       ("ghc-ini" ,ghc-ini)
+       ("ghc-microlens" ,ghc-microlens)))
+    (inputs
+     `(("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/aisamanra/config-ini")
+    (synopsis "Monadic Haskell DSL for parsing simple INI configuration files")
+    (description
+     "The @code{config-ini} Haskell library exports some simple monadic
+functions to ease the parsing of @file{.ini}-style configuration files, and
+to write and update them in an efficient @i{diff-minimal} way.  This means that
+if you parse a file, update a single field, and reserialize, that file should
+differ only in the field we changed and @emph{that's it}: field order, comments,
+and incidental whitespace will remain unchanged.  The library aims to produce
+human-readable error messages when things go wrong.")
+    (license license:bsd-3)))
+
 (define-public ghc-configurator
   (package
     (name "ghc-configurator")
