@@ -18236,3 +18236,40 @@ is not tail recursive.")
 
 (define-public cl-tailrec
   (sbcl-package->cl-source-package sbcl-tailrec))
+
+(define-public sbcl-issr-core
+  (let ((commit "64e3b07a63a7ca3ad70ba42474f98ac4513580aa")
+        (revision "1"))
+    (package
+      (name "sbcl-issr-core")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/interactive-ssr/core")
+               (commit commit)))
+         (file-name (git-file-name "issr-core" version))
+         (sha256
+          (base32 "1bajb09crzadkirdpd6jrpcc55irjd4sxzavygr25l85pafyhniw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-str" ,sbcl-cl-str)
+         ("global-vars" ,sbcl-global-vars)
+         ("plump" ,sbcl-plump)
+         ("tailrec" ,sbcl-tailrec)))
+      (home-page
+       "https://github.com/interactive-ssr/client/blob/master/main.org")
+      (synopsis "The core functionality for ISSR server modules")
+      (description
+       "ISSR core provides functions and variables for ISSR server modules so
+that different servers can behave similarly.  The most important features are
+Document Object Model differencing to generate instructions to update a DOM,
+and DOM cleaning, to ensure that all remote DOMs are the same.")
+      (license license:llgpl))))
+
+(define-public ecl-issr-core
+  (sbcl-package->ecl-package sbcl-issr-core))
+
+(define-public cl-issr-core
+  (sbcl-package->cl-source-package sbcl-issr-core))
