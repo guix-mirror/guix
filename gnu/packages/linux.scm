@@ -5298,7 +5298,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.55")
+    (version "5.59")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5306,7 +5306,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "124v9s4y1s7s6klx5vlmzpk1jlr4x84ch7r7scm7x2f42dqp2qw8"))))
+                "05kk8zdh3msf5j88jbai8m877rvya6fpkzhicfhv5gyhhsrrasq4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -5351,6 +5351,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("rst2man" ,python-docutils)
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("glib" ,glib)
