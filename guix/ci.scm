@@ -51,10 +51,18 @@
             evaluation-complete?
             evaluation-checkouts
 
+            job?
+            job-build-id
+            job-status
+            job-name
+
             %query-limit
             queued-builds
             latest-builds
             evaluation
+            evaluation-jobs
+            build
+            job-build
             latest-evaluations
             evaluations-for-commit
 
@@ -108,6 +116,13 @@
                       (if (vector? products)
                           (vector->list products)
                           '())))))
+
+(define-json-mapping <job> make-job job?
+  json->job
+  (build-id    job-build-id "build")              ;integer
+  (status      job-status "status"                ;symbol
+               integer->build-status)
+  (name        job-name))                         ;string
 
 (define-json-mapping <checkout> make-checkout checkout?
   json->checkout
@@ -196,6 +211,28 @@ as one of their inputs."
                     (string=? (checkout-commit checkout) commit))
                   (evaluation-checkouts evaluation)))
           (latest-evaluations url limit)))
+
+(define (evaluation-jobs url evaluation-id)
+  "Return the list of jobs of evaluation EVALUATION-ID."
+  (map json->job
+       (vector->list
+        (json->scm (http-fetch
+                    (string-append url "/api/jobs?evaluation="
+                                   (number->string evaluation-id)))))))
+
+(define (build url id)
+  "Look up build ID at URL and return it.  Raise &http-get-error if it is not
+found (404)."
+  (json->build
+   (http-fetch (string-append url "/build/"       ;note: no "/api" here
+                              (number->string id)))))
+
+(define (job-build url job)
+  "Return the build associated with JOB."
+  (build url (job-build-id job)))
+
+;; TODO: job history:
+;; https://ci.guix.gnu.org/api/jobs/history?spec=master&names=coreutils.x86_64-linux&nr=10
 
 (define (find-latest-commit-with-substitutes url)
   "Return the latest commit with available substitutes for the Guix package
