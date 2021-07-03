@@ -2417,7 +2417,16 @@ exec " gcc "/bin/" program
             ;; The generated config.status has some problems due to the
             ;; bootstrap environment.  Disable dependency tracking to work
             ;; around it.
-            `(cons "--disable-dependency-tracking" ,flags))
+            `(cons "--disable-dependency-tracking"
+
+                   ;; 'glibc-bootstrap' on non-x86 platforms has a buggy
+                   ;; 'posix_spawn'.  Thus, disable it.  See
+                   ;; <https://bugs.gnu.org/49367>.
+                   ,(match (%current-system)
+                      ((or "i686-linux" "x86_64-linux")
+                       flags)
+                      (_
+                       `(cons "--disable-posix-spawn" ,flags)))))
            ((#:phases phases)
             `(modify-phases ,phases
                (replace 'build
