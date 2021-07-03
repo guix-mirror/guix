@@ -1092,6 +1092,9 @@ It started as a side project of LXC but can be used by any run-time.")
              "-Dstorage_disk=enabled"
              "-Dstorage_dir=enabled"
              "-Dpolkit=enabled"
+             ;; XXX The default, but required to make -Dsasl ‘stick’.
+             ;; See <https://gitlab.com/libvirt/libvirt/-/issues/185>
+             "-Ddriver_remote=enabled"
              "-Dnls=enabled"            ;translations
              (string-append "-Ddocdir=" (assoc-ref %outputs "out") "/share/doc/"
                             ,name "-" ,version)
