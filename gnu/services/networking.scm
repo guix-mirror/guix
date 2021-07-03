@@ -492,7 +492,8 @@ restrict source notrap nomodify noquery\n"))
                                 "-c" #$ntpd.conf "-u" "ntpd"
                                 #$@(if allow-large-adjustment?
                                        '("-g")
-                                       '()))))
+                                       '()))
+                          #:log-file "/var/log/ntpd.log"))
                 (stop #~(make-kill-destructor)))))))))
 
 (define %ntp-accounts
