@@ -18166,3 +18166,39 @@ RSS feeds data via HTTP.  Currently, it supports RSS versions 0.90,
 
 (define-public cl-rss
   (sbcl-package->cl-source-package sbcl-rss))
+
+(define-public sbcl-trivial-with-current-source-form
+  (let ((commit "9e343e043a77a5478c1f77bb626db22335fbbfb8")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-with-current-source-form")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/scymtym/trivial-with-current-source-form")
+               (commit commit)))
+         (file-name (git-file-name "trivial-with-current-source-form" version))
+         (sha256
+          (base32 "15zs7mc422ycp1cvcxmirif1dq15mlmv8vzd6l6nzn4qgmph9wz0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/scymtym/trivial-with-current-source-form")
+      (synopsis "Help producing better errors for macro users")
+      (description
+       "This library allows macro writers to provide better feedback to macro
+users when errors are signaled during macroexpansion.  It uses the compiler's
+concept of a source-form to report where the error or warning is located.")
+      (license license:lgpl3))))
+
+(define-public ecl-trivial-with-current-source-form
+  ;; Trivial-with-current-source-form does not give any benefits on ECL.
+  ;; This package is so packages dependent on trivial-with-current-source-form
+  ;; can be loaded on ECL.
+  (sbcl-package->ecl-package sbcl-trivial-with-current-source-form))
+
+(define-public cl-trivial-with-current-source-form
+  (sbcl-package->cl-source-package sbcl-trivial-with-current-source-form))
