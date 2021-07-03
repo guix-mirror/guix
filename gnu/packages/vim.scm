@@ -141,6 +141,11 @@
                ((".*Test_popup_drag_termwin.*" line)
                 (string-append line "return\n")))
              #t))
+         (add-before 'install 'fix-installman.sh
+           (lambda _
+             (substitute* "src/installman.sh"
+               (("/bin/sh")
+                (which "sh")))))
          (add-after 'install 'install-guix.vim
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((vimdir (string-append (assoc-ref outputs "out") "/share/vim")))
