@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -6463,6 +6463,30 @@ lines continued at an indented level below.")
     (description "This library provides tools to infer a software
 license from a given license file.")
     (license license:expat)))
+
+(define-public ghc-ini
+  (package
+    (name "ghc-ini")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "ini/ini-" version ".tar.gz"))
+       (sha256
+        (base32 "0mvwii8jbh2ll54qb9dij5m66c6324s2y4vrwz1qr4wz40m3qa8l"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/chrisdone/ini")
+    (synopsis
+     "Haskell library to easily handle configuration files in the INI format")
+    (description
+     "The @code{ghc-ini} Haskell library lets programmers quickly and easily
+read and write configuration files in the simple INI format.")
+    (license license:bsd-3)))
 
 (define-public ghc-inline-c
   (package
