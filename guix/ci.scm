@@ -75,13 +75,31 @@
   (file-size   build-product-file-size)           ;integer
   (path        build-product-path))               ;string
 
+(define-syntax-rule (define-enumeration-mapping proc
+                      (names integers) ...)
+  (define (proc value)
+    (match value
+      (integers 'names) ...)))
+
+(define-enumeration-mapping integer->build-status
+  ;; Copied from 'build-status' in Cuirass.
+  (submitted        -3)
+  (scheduled        -2)
+  (started          -1)
+  (succeeded         0)
+  (failed            1)
+  (failed-dependency 2)
+  (failed-other      3)
+  (canceled          4))
+
 (define-json-mapping <build> make-build build?
   json->build
   (id          build-id "id")                     ;integer
   (derivation  build-derivation)                  ;string | #f
   (evaluation  build-evaluation)                  ;integer
   (system      build-system)                      ;string
-  (status      build-status "buildstatus" )       ;integer
+  (status      build-status "buildstatus"         ;symbol
+               integer->build-status)
   (timestamp   build-timestamp)                   ;integer
   (products    build-products "buildproducts"     ;<build-product>*
                (lambda (products)
