@@ -673,6 +673,32 @@ jar struct to manage the cookies added to the cookie jar.")
     (description "This package provides additions to Go's stdlib @code{fmt}.")
     (license license:bsd-3)))
 
+(define-public go-github-com-mitchellh-go-wordwrap
+  (package
+    (name "go-github-com-mitchellh-go-wordwrap")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitchellh/go-wordwrap")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12imq66hgj8q9ii2xqdy8apc0icphh6yimjb0div1pvl3s9gn83y"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/mitchellh/go-wordwrap"))
+    (propagated-inputs
+     `(("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/mitchellh/go-wordwrap")
+    (synopsis "Go library for word-wrapping strings")
+    (description
+     "This Go library automatically wraps words onto multiple lines.  It's
+primary goal is to format command-line output, but of course word wrapping is a
+generally useful thing to do.")
+    (license license:expat)))
+
 (define-public go-github-com-motemen-go-colorine
   (let ((commit "45d19169413a019e4e2be69629dde5c7d92f8706")
         (revision "0"))
