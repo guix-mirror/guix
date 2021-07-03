@@ -65,6 +65,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -652,6 +653,41 @@ Netscape/Mozilla's old-style cookie files.  It also implements a simple cookie
 jar struct to manage the cookies added to the cookie jar.")
       (home-page "https://github.com/aki237/nscjar")
       (license license:expat))))
+
+(define-public go-github-com-gizak-termui
+  (package
+    (name "go-github-com-gizak-termui")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gizak/termui")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v3k8l5p95kb1v297ra5mw9sxdd59y82y6ibjzya5ma2pry6k5cn"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gizak/termui"
+       #:import-path "github.com/gizak/termui/v3"))
+    (propagated-inputs
+     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-github-com-mitchellh-go-wordwrap"
+        ,go-github-com-mitchellh-go-wordwrap)
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+    (home-page "https://github.com/gizak/termui")
+    (synopsis "Terminal dashboard widget Go library")
+    (description
+     "The termui Go library draws customizable dashboard widgets in a text
+terminal.  It includes several common widgets: lists, trees, tables and tabs,
+but also more complex items such as (stacked) bar and pie charts, scatter plots,
+gauges, and even images and a canvas for drawing `high resolution' braille dots.
+
+You can also easily create new custom widgets.  Widgets can be coloured and
+styled and positioned absolutely or relatively.  They respond to keyboard,
+mouse, and terminal resizing events.")
+    (license license:expat)))
 
 (define-public go-github-com-golangplus-fmt
   (package
