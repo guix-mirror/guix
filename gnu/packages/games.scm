@@ -10,7 +10,7 @@
 ;;; Copyright © 2014, 2015, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017, 2018, 2021 Chris Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -104,6 +104,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
@@ -835,7 +836,7 @@ high a score as possible.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.E-3")
+    (version "0.F")
     (source
      (origin
        (method git-fetch)
@@ -843,7 +844,7 @@ high a score as possible.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA")
              (commit version)))
        (sha256
-        (base32 "108cs6vp99qmqqfnmczad0xjgcl82bypm5xszwnlfcswdsrfs4da"))
+        (base32 "1jid8lcl04y768b3psj1ifhx96lmd6fn1j2wzxhl4ic7ra66p2z3"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -854,14 +855,22 @@ high a score as possible.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'build 'build-tiles
+         ;; Apparently we can't do make on both tiles and a console version at
+         ;; the same time anymore, so we have to either "make clean" between
+         ;; builds or do some other hackery.  See:
+         ;;   https://github.com/CleverRaven/Cataclysm-DDA/issues/42598#issuecomment-667702746
+         (add-after 'install 'make-clean-pre-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             ;; Change prefix directory and enable tile graphics and sound.
+             (invoke "make" "clean")))
+         (add-after 'make-clean-pre-tiles 'build-tiles
            (lambda* (#:key make-flags outputs #:allow-other-keys)
              ;; Change prefix directory and enable tile graphics and sound.
              (apply invoke "make" "TILES=1" "SOUND=1"
                     (string-append "PREFIX="
                                    (assoc-ref outputs "tiles"))
                     (cdr make-flags))))
-         (add-after 'install 'install-tiles
+         (add-after 'build-tiles 'install-tiles
            (lambda* (#:key make-flags outputs #:allow-other-keys)
              (apply invoke "make" "install" "TILES=1" "SOUND=1"
                     (string-append "PREFIX="
@@ -874,7 +883,8 @@ high a score as possible.")
                "tiles"))                ;for tile graphics and sound support
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("astyle" ,astyle)))
     (inputs
      `(("freetype" ,freetype)
        ("libogg" ,libogg)
