@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
@@ -129,7 +129,7 @@ building the derivation."
 (define (package-cross-job store job-name package target system)
   "Return a job called TARGET.JOB-NAME that cross-builds PACKAGE for TARGET on
 SYSTEM."
-  (let ((name (string-append target "." job-name "." system)))
+  (let ((name (string-append target "." job-name)))
     (package-job store name package system
                  #:cross? #t
                  #:target target)))
