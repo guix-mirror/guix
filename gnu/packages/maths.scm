@@ -47,6 +47,7 @@
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4184,7 +4185,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
 (define-public openlibm
   (package
     (name "openlibm")
-    (version "0.6.0")
+    (version "0.7.4")
     (source
      (origin
        (method git-fetch)
@@ -4193,7 +4194,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08wfchmmr5200fvmn1kwq9byc1fhsq46hn0y5k8scdl74771c7gh"))))
+        (base32 "1azms0lpxb7vxb3bln5lyz0wpwx6jnzbffkclclpq2v5aiw8d14i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
