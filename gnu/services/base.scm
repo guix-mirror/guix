@@ -2217,23 +2217,13 @@ instance."
      (list (shepherd-service
             (requirement '(udev))
             (provision '(gpm))
-            (start #~(lambda ()
-                       ;; 'gpm' runs in the background and sets a PID file.
-                       ;; Note that it requires running as "root".
-                       (false-if-exception (delete-file "/var/run/gpm.pid"))
-                       (fork+exec-command (list #$(file-append gpm "/sbin/gpm")
-                                                #$@options))
-
-                       ;; Wait for the PID file to appear; declare failure if
-                       ;; it doesn't show up.
-                       (let loop ((i 3))
-                         (or (file-exists? "/var/run/gpm.pid")
-                             (if (zero? i)
-                                 #f
-                                 (begin
-                                   (sleep 1)
-                                   (loop (1- i))))))))
-
+            ;; 'gpm' runs in the background and sets a PID file.
+            ;; Note that it requires running as "root".
+            (start #~(make-forkexec-constructor
+                      (list #$(file-append gpm "/sbin/gpm")
+                            #$@options)
+                      #:pid-file "/var/run/gpm.pid"
+                      #:pid-file-timeout 3))
             (stop #~(lambda (_)
                       ;; Return #f if successfully stopped.
                       (not (zero? (system* #$(file-append gpm "/sbin/gpm")
