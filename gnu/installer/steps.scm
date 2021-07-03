@@ -235,7 +235,7 @@ found in RESULTS."
                   '())))
           steps))
         (modules '((use-modules (gnu))
-                   (use-service-modules desktop networking ssh xorg))))
+                   (use-service-modules cups desktop networking ssh xorg))))
     `(,@modules
       ()
       (operating-system ,@configuration))))
