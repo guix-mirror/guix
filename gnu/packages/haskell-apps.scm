@@ -145,16 +145,17 @@ installation of Haskell libraries and programs.")
    (license license:bsd-3)))
 
 (define-public corrode
-  (let ((commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
+  (let ((revision "0")
+        (commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
     (package
       (name "corrode")
-      (version (string-append "0.0.1-" (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/jameysharp/corrode")
-               (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
+               (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
