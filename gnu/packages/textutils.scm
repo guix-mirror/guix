@@ -20,6 +20,8 @@
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +65,7 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages web))
 
@@ -200,6 +203,46 @@ libenca and several charset conversion libraries and tools.")
 normalization, case-folding, and other operations for data in the UTF-8
 encoding, supporting Unicode version 9.0.0.")
     (license license:expat)))
+
+(define-public utf8proc-2.6.1
+  (package
+    (inherit utf8proc)
+    (name "utf8proc")
+    (version "2.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaStrings/utf8proc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zqc6airkzkssbjxanx5v8blfk90180gc9id0dx8ncs54f1ib8w7"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments utf8proc)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'check-data
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (display native-inputs)
+               (for-each (lambda (i)
+                           (copy-file (assoc-ref (or native-inputs inputs) i)
+                                      (string-append "data/" i)))
+                         '("NormalizationTest.txt" "GraphemeBreakTest.txt"
+                           "DerivedCoreProperties.txt"))))))))
+    (native-inputs
+     (append
+      (package-native-inputs utf8proc)
+      (let ((UNICODE_VERSION "13.0.0"))
+        `(("DerivedCoreProperties.txt"
+           ,(origin
+              (method url-fetch)
+              (uri (string-append "https://www.unicode.org/Public/"
+                                  UNICODE_VERSION "/ucd/DerivedCoreProperties.txt"))
+              (sha256
+               (base32 "0j12x112cd8fpgazkc8izxnhhpia44p1m36ff8yapslxndcmzm55"))))
+          ;; For tests
+          ("ruby" ,ruby)))))))
 
 (define-public libconfuse
   (package
