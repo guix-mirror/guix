@@ -6,6 +6,8 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Domagoj Stolfa <ds815@gmx.com>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +27,7 @@
 (define-module (gnu services vpn)
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
+  #:use-module (gnu services dbus)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
@@ -68,6 +71,22 @@
             wireguard-configuration-peers
 
             wireguard-service-type))
+
+;;;
+;;; Bitmask.
+;;;
+
+(define-public bitmask-service-type
+  (service-type
+   (name 'bitmask)
+   (description "Setup the @uref{https://bitmask.net, Bitmask} VPN application.")
+   (default-value bitmask)
+   (extensions
+    (list
+     ;; Add bitmask to the system profile.
+     (service-extension profile-service-type list)
+     ;; Configure polkit policy of bitmask.
+     (service-extension polkit-service-type list)))))
 
 ;;;
 ;;; OpenVPN.

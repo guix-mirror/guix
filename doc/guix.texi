@@ -26772,6 +26772,15 @@ Defaults to @samp{()}.
 The @code{(gnu services vpn)} module provides services related to
 @dfn{virtual private networks} (VPNs).
 
+@subsubheading Bitmask
+
+@defvr {Scheme Variable} bitmask-service-type
+A service type for the @uref{https://bitmask.net, Bitmask} VPN client.  It makes
+the client available in the system and loads its polkit policy.  Please note that
+the client expects an active polkit-agent, which is either run by your
+desktop-environment or should be run manually.
+@end defvr
+
 @subsubheading OpenVPN
 
 It provides a @emph{client} service for your machine to connect to a
