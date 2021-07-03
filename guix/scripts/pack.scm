@@ -205,7 +205,8 @@ its source property."
                                          (compressor (first %compressors))
                                          localstatedir?
                                          (symlinks '())
-                                         (archiver tar))
+                                         (archiver tar)
+                                         (extra-options '()))
   "Return the G-Expression of the builder used for self-contained-tarball."
   (define database
     (and localstatedir?
@@ -324,7 +325,8 @@ its source property."
                                  (compressor (first %compressors))
                                  localstatedir?
                                  (symlinks '())
-                                 (archiver tar))
+                                 (archiver tar)
+                                 (extra-options '()))
   "Return a self-contained tarball containing a store initialized with the
 closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
 LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
@@ -389,7 +391,8 @@ to the search paths of PROFILE."
                          entry-point
                          localstatedir?
                          (symlinks '())
-                         (archiver squashfs-tools))
+                         (archiver squashfs-tools)
+                         (extra-options '()))
   "Return a squashfs image containing a store initialized with the closure of
 PROFILE, a derivation.  The image contains a subset of /gnu/store, empty mount
 points for virtual file systems (like procfs), and optional symlinks.
@@ -567,7 +570,8 @@ added to the pack."
                        entry-point
                        localstatedir?
                        (symlinks '())
-                       (archiver tar))
+                       (archiver tar)
+                       (extra-options '()))
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
@@ -654,8 +658,6 @@ the image."
 ;;; TODO: When relocatable option is selected, install to a unique prefix.
 ;;; This would enable installation of multiple deb packs with conflicting
 ;;; files at the same time.
-;;; TODO: Allow passing a custom control file from the CLI.
-;;; TODO: Allow providing a postinst script.
 (define* (debian-archive name profile
                          #:key target
                          (profile-name "guix-profile")
@@ -664,7 +666,8 @@ the image."
                          (compressor (first %compressors))
                          localstatedir?
                          (symlinks '())
-                         (archiver tar))
+                         (archiver tar)
+                         (extra-options '()))
   "Return a Debian archive (.deb) containing a store initialized with the
 closure of PROFILE, a derivation.  The archive contains /gnu/store; if
 LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
@@ -672,7 +675,8 @@ with a properly initialized store database.  The supported compressors are
 \"none\", \"gz\" or \"xz\".
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
-added to the pack."
+added to the pack.  EXTRA-OPTIONS may contain the CONFIG-FILE, POSTINST-FILE
+or TRIGGERS-FILE keyword arguments."
   ;; For simplicity, limit the supported compressors to the superset of
   ;; compressors able to compress both the control file (gz or xz) and the
   ;; data tarball (gz, bz2 or xz).
@@ -714,21 +718,23 @@ Valid compressors are: ~a~%") compressor-name %valid-compressors)))
                          (guix build utils)
                          (guix profiles)
                          (ice-9 match)
+                         ((oop goops) #:select (get-keyword))
                          (srfi srfi-1))
 
             (define machine-type
               ;; Extract the machine type from the specified target, else from the
               ;; current system.
-              (and=> (or #$target %host-type) (lambda (triplet)
-                                              (first (string-split triplet #\-)))))
+              (and=> (or #$target %host-type)
+                     (lambda (triplet)
+                       (first (string-split triplet #\-)))))
 
             (define (gnu-machine-type->debian-machine-type type)
               "Translate machine TYPE from the GNU to Debian terminology."
               ;; Debian has its own jargon, different from the one used in GNU, for
               ;; machine types (see data/cputable in the sources of dpkg).
               (match type
-                ("i586" "i386")
                 ("i486" "i386")
+                ("i586" "i386")
                 ("i686" "i386")
                 ("x86_64" "amd64")
                 ("aarch64" "arm64")
@@ -773,21 +779,40 @@ Valid compressors are: ~a~%") compressor-name %valid-compressors)))
 
             (copy-file #+data-tarball data-tarball-file-name)
 
+            ;; Generate the control archive.
+            (define control-file
+              (get-keyword #:control-file '#$extra-options))
+
+            (define postinst-file
+              (get-keyword #:postinst-file '#$extra-options))
+
+            (define triggers-file
+              (get-keyword #:triggers-file '#$extra-options))
+
             (define control-tarball-file-name
               (string-append "control.tar"
                              #$(compressor-extension compressor)))
 
             ;; Write the compressed control tarball.  Only the control file is
             ;; mandatory (see: 'man deb' and 'man deb-control').
-            (call-with-output-file "control"
-              (lambda (port)
-                (format port "\
+            (if control-file
+                (copy-file control-file "control")
+                (call-with-output-file "control"
+                  (lambda (port)
+                    (format port "\
 Package: ~a
 Version: ~a
 Description: Debian archive generated by GNU Guix.
 Maintainer: GNU Guix
 Architecture: ~a
-~%" package-name package-version architecture)))
+~%" package-name package-version architecture))))
+
+            (when postinst-file
+              (copy-file postinst-file "postinst")
+              (chmod "postinst" #o755))
+
+            (when triggers-file
+              (copy-file triggers-file "triggers"))
 
             (define tar (string-append #+archiver "/bin/tar"))
 
@@ -796,7 +821,9 @@ Architecture: ~a
                         #:tar tar
                         #:compressor '#+(and=> compressor compressor-command))
                      "-cvf" ,control-tarball-file-name
-                     "control"))
+                     "control"
+                     ,@(if postinst-file '("postinst") '())
+                     ,@(if triggers-file '("triggers") '())))
 
             ;; Create the .deb archive using GNU ar.
             (invoke (string-append #+binutils "/bin/ar") "-rv" #$output
@@ -1157,6 +1184,34 @@ last resort for relocation."
   deb           Debian archive installable via dpkg/apt"))
   (newline))
 
+(define %deb-format-options
+  (let ((required-option (lambda (symbol)
+                           (option (list (symbol->string symbol)) #t #f
+                                   (lambda (opt name arg result . rest)
+                                     (apply values
+                                            (alist-cons symbol arg result)
+                                            rest))))))
+    (list (required-option 'control-file)
+          (required-option 'postinst-file)
+          (required-option 'triggers-file))))
+
+(define (show-deb-format-options)
+  (display (G_ "
+      --help-deb-format  list options specific to the deb format")))
+
+(define (show-deb-format-options/detailed)
+  (display (G_ "
+      --control-file=FILE
+                         Embed the provided control FILE"))
+  (display (G_ "
+      --postinst-file=FILE
+                         Embed the provided postinst script"))
+  (display (G_ "
+      --triggers-file=FILE
+                         Embed the provided triggers FILE"))
+  (newline)
+  (exit 0))
+
 (define %options
   ;; Specifications of the command-line options.
   (cons* (option '(#\h "help") #f #f
@@ -1250,7 +1305,12 @@ last resort for relocation."
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
 
-         (append %transformation-options
+         (option '("help-deb-format") #f #f
+                 (lambda args
+                   (show-deb-format-options/detailed)))
+
+         (append %deb-format-options
+                 %transformation-options
                  %standard-build-options)))
 
 (define (show-help)
@@ -1259,6 +1319,8 @@ Create a bundle of PACKAGE.\n"))
   (show-build-options-help)
   (newline)
   (show-transformation-options-help)
+  (newline)
+  (show-deb-format-options)
   (newline)
   (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
@@ -1369,6 +1431,18 @@ Create a bundle of PACKAGE.\n"))
         (else
          (packages->manifest packages))))))
 
+  (define (process-file-arg opts name)
+    ;; Validate that the file exists and return it as a <local-file> object,
+    ;; else #f.
+    (let ((value (assoc-ref opts name)))
+      (match value
+        ((and (? string?) (not (? file-exists?)))
+         (leave (G_ "file provided with option ~a does not exist: ~a~%")
+                (string-append "--" (symbol->string name)) value))
+        ((? string?)
+         (local-file value))
+        (#f #f))))
+
   (with-error-handling
     (with-store store
       (with-status-verbosity (assoc-ref opts 'verbosity)
@@ -1401,6 +1475,15 @@ Create a bundle of PACKAGE.\n"))
                                        manifest)
                                       manifest)))
                    (pack-format (assoc-ref opts 'format))
+                   (extra-options (match pack-format
+                                    ('deb
+                                     (list #:control-file
+                                           (process-file-arg opts 'control-file)
+                                           #:postinst-file
+                                           (process-file-arg opts 'postinst-file)
+                                           #:triggers-file
+                                           (process-file-arg opts 'triggers-file)))
+                                    (_ '())))
                    (target      (assoc-ref opts 'target))
                    (bootstrap?  (assoc-ref opts 'bootstrap?))
                    (compressor  (if bootstrap?
@@ -1465,7 +1548,9 @@ to your package list.")))
                                                        #:profile-name
                                                        profile-name
                                                        #:archiver
-                                                       archiver)))
+                                                       archiver
+                                                       #:extra-options
+                                                       extra-options)))
                   (mbegin %store-monad
                     (mwhen derivation?
                       (return (format #t "~a~%"

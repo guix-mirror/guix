@@ -277,17 +277,25 @@
       (built-derivations (list check))))
 
   (unless store (test-skip 1))
-  (test-assertm "deb archive with symlinks" store
+  (test-assertm "deb archive with symlinks and control files" store
     (mlet* %store-monad
         ((guile   (set-guile-for-build (default-guile)))
          (profile (profile-derivation (packages->manifest
                                        (list %bootstrap-guile))
                                       #:hooks '()
                                       #:locales? #f))
-         (deb (debian-archive "deb-pack" profile
-                              #:compressor %gzip-compressor
-                              #:symlinks '(("/opt/gnu/bin" -> "bin"))
-                              #:archiver %tar-bootstrap))
+         (deb (debian-archive
+               "deb-pack" profile
+               #:compressor %gzip-compressor
+               #:symlinks '(("/opt/gnu/bin" -> "bin"))
+               #:archiver %tar-bootstrap
+               #:extra-options
+               (list #:triggers-file
+                     (plain-file "triggers"
+                                 "activate-noawait /usr/share/icons/hicolor\n")
+                     #:postinst-file
+                     (plain-file "postinst"
+                                 "echo running configure script\n"))))
          (check
           (gexp->derivation "check-deb-pack"
             (with-imported-modules '((guix build utils))
@@ -343,6 +351,15 @@
 
                   (unless (null? hard-links)
                     (error "hard links found in data.tar.gz" hard-links))
+
+                  ;; Verify the presence of the control files.
+                  (invoke "tar" "-xf" "control.tar.gz")
+                  (assert (file-exists? "control"))
+                  (assert (and (file-exists? "postinst")
+                               (= #o111 ;script is executable
+                                  (logand #o111 (stat:perms
+                                                 (stat "postinst"))))))
+                  (assert (file-exists? "triggers"))
 
                   (mkdir #$output))))))
       (built-derivations (list check)))))

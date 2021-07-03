@@ -6047,6 +6047,14 @@ such file or directory'' message.
 This produces a Debian archive (a package with the @samp{.deb} file
 extension) containing all the specified binaries and symbolic links,
 that can be installed on top of any dpkg-based GNU(/Linux) distribution.
+Advanced options can be revealed via the @option{--help-deb-format}
+option.  They allow embedding control files for more fine-grained
+control, such as activating specific triggers or providing a maintainer
+configure script to run arbitrary setup code upon installation.
+
+@example
+guix pack -f deb -C xz -S /usr/bin/hello=bin/hello hello
+@end example
 
 @quotation Note
 Because archives produced with @command{guix pack} contain a collection
