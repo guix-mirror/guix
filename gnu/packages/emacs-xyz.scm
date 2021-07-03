@@ -28603,6 +28603,34 @@ between cursor and next word, parenthesis or delimiter while honoring some
 rules about where space should be left to separate words and parentheses.")
       (license license:gpl2+))))
 
+(define-public emacs-seriestracker
+  (package
+    (name "emacs-seriestracker")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MaximeWack/seriesTracker")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0b9hf20iah3ym2d4kz67k0kb48dq0442zxw4zmc03zg3sxfdxh0x"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-transient" ,emacs-transient)))
+    (home-page "https://github.com/MaximeWack/seriesTracker")
+    (synopsis "Keep track of the TV shows you watch from Emacs")
+    (description
+     "This package provides a major mode for tracking TV shows.
+TV shows data (episode list, release dates, etc.) are sourced from
+the free database hosted at @url{episodate.com}.  The mode presents an
+outlined list of tracked shows, their episodes and release dates, and
+enables the user to see when new episodes for their favorite shows get
+released, and track their progress in watching a series.")
+    (license license:gpl3+)))
+
 (define-public emacs-webpaste
   (package
     (name "emacs-webpaste")
