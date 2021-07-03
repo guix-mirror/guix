@@ -1106,12 +1106,12 @@ to create fully featured games and multimedia programs in the python language.")
 (define-public python2-pygame
   (package-with-python2 python-pygame))
 
-(define-public python2-pygame-sdl2
+(define-public python-pygame-sdl2
   (let ((real-version "2.1.0")
         (renpy-version "7.4.6"))
     (package
-      (inherit python2-pygame)
-      (name "python2-pygame-sdl2")
+      (inherit python-pygame)
+      (name "python-pygame-sdl2")
       (version (string-append real-version "-for-renpy-" renpy-version))
       (source
        (origin
@@ -1124,12 +1124,12 @@ to create fully featured games and multimedia programs in the python language.")
           '(begin
              ;; drop generated sources
              (delete-file-recursively "gen")
+             (delete-file-recursively "gen3")
              (delete-file-recursively "gen-static")
              #t))))
       (build-system python-build-system)
       (arguments
        `(#:tests? #f                ; tests require pygame to be installed first
-         #:python ,python-2
          #:phases
          (modify-phases %standard-phases
            (add-after 'set-paths 'set-sdl-vars
@@ -1149,7 +1149,7 @@ to create fully featured games and multimedia programs in the python language.")
        `(("sdl-union"
           ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
       (native-inputs
-       `(("python2-cython" ,python2-cython)))
+       `(("python-cython" ,python-cython)))
       (home-page "https://www.renpy.org/")
       (synopsis "Reimplementation of the Pygame API using SDL2")
       (description "Pygame_SDL2 reimplements the Pygame API using SDL2,
@@ -1157,6 +1157,9 @@ staying close to the original, but also adding some SDL2-specific features.
 While it aims to be used as a drop-in replacement, it appears to be
 developed mainly for Ren'py.")
       (license (list license:lgpl2.1 license:zlib)))))
+
+(define-public python2-pygame-sdl2
+  (package-with-python2 python-pygame-sdl2))
 
 (define-public python2-renpy
   (package
