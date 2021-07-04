@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,8 +60,13 @@
     (container_config . #nil)))
 
 (define (canonicalize-repository-name name)
-  "\"Repository\" names are restricted to roughtl [a-z0-9_.-].
+  "\"Repository\" names are restricted to roughly [a-z0-9_.-].
 Return a version of TAG that follows these rules."
+  ;; Refer to https://docs.docker.com/docker-hub/repos/.
+  (define min-length 2)
+  (define padding-character #\a)
+  (define max-length 255)
+
   (define ascii-letters
     (string->char-set "abcdefghijklmnopqrstuvwxyz"))
 
@@ -70,11 +76,21 @@ Return a version of TAG that follows these rules."
   (define repo-char-set
     (char-set-union char-set:digit ascii-letters separators))
 
-  (string-map (lambda (chr)
-                (if (char-set-contains? repo-char-set chr)
-                    chr
-                    #\.))
-              (string-trim (string-downcase name) separators)))
+  (define normalized-name
+    (string-map (lambda (chr)
+                  (if (char-set-contains? repo-char-set chr)
+                      chr
+                      #\.))
+                (string-trim (string-downcase name) separators)))
+
+  (let ((l (string-length normalized-name)))
+    (match l
+      ((? (cut > <> max-length))
+       (string-take normalized-name max-length))
+      ((? (cut < <> min-length))
+       (string-append normalized-name
+                      (make-string (- min-length l) padding-character)))
+      (_ normalized-name))))
 
 (define* (manifest path id #:optional (tag "guix"))
   "Generate a simple image manifest."
