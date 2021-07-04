@@ -515,6 +515,33 @@ hold in a large number of randomly generated cases.  Specifications are
 expressed in Haskell, using combinators defined in the QuickCheck library.")
     (license license:bsd-3)))
 
+(define-public ghc-quickcheck-assertions
+  (package
+    (name "ghc-quickcheck-assertions")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "quickcheck-assertions/"
+                           "quickcheck-assertions-" version ".tar.gz"))
+       (sha256
+        (base32 "1kyam4cy7qmnizjwjm8jamq43w7f0fs6ljfplwj0ib6wi2kjh0wv"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (inputs
+     `(("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/s9gf4ult/quickcheck-assertions")
+    (synopsis "HUnit-like assertions for QuickCheck")
+    (description
+     "This Haskell library provides convenient assertions with pretty-printed
+failure messages for QuickCheck properties, that are similar to those of
+HUnit.")
+    (license license:lgpl3)))
+
 (define-public ghc-test-framework
   (package
     (name "ghc-test-framework")
