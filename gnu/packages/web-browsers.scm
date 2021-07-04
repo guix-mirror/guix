@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -736,7 +736,8 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (base32 "0gqaipgs16kw711ijhshmbhhvlyjvh37wxdz059p4vvjhfrxbr1v"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #false))                ;no tests
+     `(#:tests? #false                  ;no tests
+       #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
