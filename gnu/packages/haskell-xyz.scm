@@ -9284,6 +9284,36 @@ footprint of a (boxed) @{ShortText} value is 4 words (2 words when unboxed)
 plus the length of the UTF-8 encoded payload.")
     (license license:bsd-3)))
 
+(define-public ghc-text-zipper
+  (package
+    (name "ghc-text-zipper")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/text-zipper/"
+                           "text-zipper-" version ".tar.gz"))
+       (sha256
+        (base32 "0jxicjp0ak1fyl1n3yspxq6hv9l90zzy75glsv8bc2svsn9ypyls"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("hspec-discover" ,hspec-discover)))
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/jtdaugherty/text-zipper/")
+    (synopsis "Text editor zipper library")
+    (description
+     "This Haskell library provides a two-dimensional zipper data structure for
+editing text.  The structure represents the body of text and an editing cursor
+which can be moved through it, along with a set of editing transformations.
+
+Text zippers are generalized over the set of data types that might be used to
+store lists of characters (e.g., @code{String}, @code{T.Text}, etc.).
+Implementations using both of these examples are provided.")
+    (license license:bsd-3)))
+
 (define-public ghc-doclayout
   (package
     (name "ghc-doclayout")
