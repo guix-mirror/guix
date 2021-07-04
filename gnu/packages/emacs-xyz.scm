@@ -9393,10 +9393,9 @@ languages.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/spinner-"
-                                  version ".el"))
+                                  version ".tar"))
               (sha256
-               (base32
-                "140kss25ijbwf8hzflbjz67ry76w2cyrh02axk95n6qcxv7jr7pv"))))
+               (base32 "140kss25ijbwf8hzflbjz67ry76w2cyrh02axk95n6qcxv7jr7pv"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/spinner.el")
     (synopsis "Emacs mode-line spinner for operations in progress")
