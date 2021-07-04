@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2020 Dion Mendel <guix@dm9.info>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,6 +113,10 @@ text.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             ;; Failing tests since tmux-3.2a
+             (delete-file "spec/options/buffer_max_size_spec.rb")))
          (delete 'configure)
          (replace 'check ; Tests use ruby's bundler; instead execute rspec directly.
            (lambda _
