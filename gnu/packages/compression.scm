@@ -2601,14 +2601,14 @@ to their original, binary CD format.")
 (define-public tarlz
   (package
     (name "tarlz")
-    (version "0.19")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/tarlz/"
                            "tarlz-" version ".tar.lz"))
        (sha256
-        (base32 "09xal55973ivzpaja93jcc1pfla8gb3vrk8dx7pj9qvvz5aynf9n"))))
+        (base32 "1x5dw03lcwfigcv97cg70gkbkfycjmv1012s9lwnl4izvl9235qg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("lzip" ,lzip)))
