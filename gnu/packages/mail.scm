@@ -2091,15 +2091,14 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
 (define-public perl-email-abstract
   (package
     (name "perl-email-abstract")
-    (version "3.008")
+    (version "3.009")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Abstract-" version ".tar.gz"))
        (sha256
-        (base32
-         "0h42rhvp769wb421cpbbg6v6xjp8iv86mvz70pqgfgf4nsn6jwgw"))))
+        (base32 "1z01wbflg49nbgzl81x260cp8x6qr7xdpz3dkrg82m1fwa9742q4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-simple" ,perl-email-simple)
