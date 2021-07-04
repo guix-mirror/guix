@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,15 +154,20 @@ denotes, similar to 'stat:type'."
           (else
            (error "unsupported file type" mode)))))
 
-(define (device-number major minor)               ;see <sys/sysmacros.h>
+(define (device-number major minor)     ; see glibc's <sys/sysmacros.h>
   "Return the device number for the device with MAJOR and MINOR, for use as
 the last argument of `mknod'."
-  (+ (* major 256) minor))
+  (logior (ash (logand #x00000fff major) 8)
+          (ash (logand #xfffff000 major) 32)
+               (logand #x000000ff minor)
+          (ash (logand #xffffff00 minor) 12)))
 
-(define (device->major+minor device)
+(define (device->major+minor device)     ; see glibc's <sys/sysmacros.h>
   "Return two values: the major and minor device numbers that make up DEVICE."
-  (values (ash device -8)
-          (logand device #xff)))
+  (values (logior (ash (logand #x00000000000fff00 device) -8)
+                  (ash (logand #xfffff00000000000 device) -32))
+          (logior      (logand #x00000000000000ff device)
+                  (ash (logand #x00000ffffff00000 device) -12))))
 
 (define* (file->cpio-header file #:optional (file-name file)
                             #:key (stat lstat))
