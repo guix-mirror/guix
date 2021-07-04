@@ -946,7 +946,7 @@ then ported to the GNU / Linux environment.")
     (name "mbedtls-apache")
     ;; XXX Check whether ‘-Wformat-signedness’ still breaks mbedtls-for-hiawatha
     ;; when updating.
-    (version "2.23.0")
+    (version "2.26.0")
     (source
      (origin
        (method git-fetch)
@@ -954,8 +954,17 @@ then ported to the GNU / Linux environment.")
              (url "https://github.com/ARMmbed/mbedtls")
              (commit (string-append "mbedtls-" version))))
        (sha256
-        (base32 "13fa9h2i989cbf8n8c0j019mshv6wg213va18my1s787lhcq2d62"))
-       (file-name (git-file-name name version))))
+        (base32 "0scwpmrgvg6q7rvqkc352d2fqlsx0aylcbyibcp1f1rsn8iiif2m"))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Can be removed with the next version.
+           ;; Reduce level of format truncation warnings due to false positives.
+           ;; https://github.com/ARMmbed/mbedtls/commit/2065a8d8af27c6cb1e40c9462b5933336dca7434
+           (substitute* "CMakeLists.txt"
+             (("Wformat-truncation=2") "Wformat-truncation"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
