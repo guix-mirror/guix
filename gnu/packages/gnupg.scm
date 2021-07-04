@@ -317,14 +317,12 @@ compatible to GNU Pth.")
             (substitute* "scd/scdaemon.c"
               (("\"(libpcsclite\\.so[^\"]*)\"" _ name)
                (string-append "\"" (assoc-ref inputs "pcsc-lite")
-                              "/lib/" name "\"")))
-            #t))
+                              "/lib/" name "\"")))))
         (add-after 'build 'patch-scheme-tests
           (lambda _
             (substitute* (find-files "tests" ".\\.scm$")
               (("/usr/bin/env gpgscm")
-               (string-append (getcwd) "/tests/gpgscm/gpgscm")))
-            #t))
+               (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
         (add-before 'build 'patch-test-paths
           (lambda _
             (substitute* '("tests/inittests"
@@ -336,8 +334,7 @@ compatible to GNU Pth.")
             (substitute* "common/t-exectool.c"
               (("/bin/cat") (which "cat"))
               (("/bin/true") (which "true"))
-              (("/bin/false") (which "false")))
-            #t)))))
+              (("/bin/false") (which "false"))))))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
