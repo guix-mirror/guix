@@ -7011,7 +7011,7 @@ the MTP device as a file system.")
 (define-public procenv
   (package
    (name "procenv")
-   (version "0.55")
+   (version "0.58")
    (source
     (origin
      (method git-fetch)
@@ -7020,7 +7020,7 @@ the MTP device as a file system.")
             (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "13fnr4gfj2xlxghw93m5gsxzlwzv3s6jv9hja0w0pb23hlncbmhy"))))
+      (base32 "137n630qzml4yraqzp2fij8nzn8341nf8d58yzfhk8ddlzi60sfm"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
@@ -7033,7 +7033,8 @@ the MTP device as a file system.")
       ("libcap" ,libcap)
       ("libselinux" ,libselinux)))
    (synopsis "Utility to show process environment")
-   (description "Procenv is a command-line tool that displays as much detail about
+   (description
+    "Procenv is a command-line tool that displays as much detail about
 itself and its environment as possible.  It can be used as a test
 tool, to understand the type of environment a process runs in, and for
 comparing system environments.")
