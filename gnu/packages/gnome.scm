@@ -392,7 +392,9 @@ services.")
                        (version-major+minor version) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1nalslgyglvhpva3px06fj6lv5zgfg0qmj0sbxyyl5d963vc02b7"))))
+        (base32 "1nalslgyglvhpva3px06fj6lv5zgfg0qmj0sbxyyl5d963vc02b7"))
+       (patches
+        (search-patches "libgrss-CVE-2016-2001.patch"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
