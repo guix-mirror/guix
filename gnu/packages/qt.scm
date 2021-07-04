@@ -156,9 +156,7 @@
     (arguments
      `(#:tests? #f                      ; No target
        #:imported-modules
-       (,@%gnu-build-system-modules
-        (guix build cmake-build-system)
-        (guix build qt-build-system))
+       (,@%qt-build-system-modules)
        #:modules
        ((guix build gnu-build-system)
         ((guix build qt-build-system)
