@@ -691,6 +691,7 @@ the store.")
                                      "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
                                      "glibc-supported-locales.patch"
+                                     "glibc-cross-objdump.patch"
                                      "glibc-hurd-clock_t_centiseconds.patch"
                                      "glibc-hurd-clock_gettime_monotonic.patch"
                                      "glibc-hurd-mach-print.patch"
