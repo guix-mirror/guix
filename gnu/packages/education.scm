@@ -670,14 +670,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "6.0.2")
+    (version "6.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "08q265i43bnj9syh3xlp11fr47xmzb0nma3nnwm76xq314102f0f"))))
+        (base32 "16yajwbvm2ain1p2h81qfm8pbrdp70zljck67j9yijwyr6xqdj2a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -693,7 +693,7 @@ Portuguese, Spanish and Italian.")
          (replace 'configure
            (lambda _ (invoke "qmake" "fet.pro"))))))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     `(("qtbase" ,qtbase)))
     (home-page "https://www.lalescu.ro/liviu/fet/")
     (synopsis "Timetabling software")
     (description
