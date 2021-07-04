@@ -2,6 +2,7 @@
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -392,6 +393,36 @@ package produces approximate derivatives by several forms of finite
 differencing or produces exact derivative using symbolic differentiation.  It
 can also be used to compute definite integrals by different numerical
 methods.")
+    (license license:expat)))
+
+(define-public julia-categoricalarrays
+  (package
+    (name "julia-categoricalarrays")
+    (version "0.9.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaData/CategoricalArrays.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bcfylxdaizgasnmlkjjkf4dgfvy2y9ycnphw2d0z6mm9vx3n04x"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-pooledarrays" ,julia-pooledarrays)))
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)
+       ("julia-json" ,julia-json)
+       ("julia-json3" ,julia-json3)
+       ("julia-missings" ,julia-missings)
+       ("julia-recipesbase" ,julia-recipesbase)
+       ("julia-structtypes" ,julia-structtypes)))
+    (home-page "https://github.com/JuliaData/CategoricalArrays.jl")
+    (synopsis "Arrays for working with categorical data")
+    (description "This package provides tools for working with categorical
+variables, both with unordered (nominal variables) and ordered categories
+(ordinal variables), optionally with missing values.")
     (license license:expat)))
 
 (define-public julia-chainrules
