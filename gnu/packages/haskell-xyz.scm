@@ -2906,6 +2906,32 @@ manipulating fields of records.")
 Accessor to access state in transformers State monad.")
     (license license:bsd-3)))
 
+(define-public ghc-data-clist
+  (package
+    (name "ghc-data-clist")
+    (version "0.1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/data-clist/"
+                           "data-clist-" version ".tar.gz"))
+       (sha256
+        (base32 "1mwfhnmvi3vicyjzl33m6pcipi2v887zazyqxygq258ndd010s9m"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "13hg7a3d4ky8b765dl03ryxg28lq8iaqj5ky3j51r0i1i4f2a9hy")))
+    (home-page "https://github.com/sw17ch/data-clist")
+    (synopsis "Simple, functional, bidirectional circular list type")
+    (description
+     "This Haskell library provides a simple purely functional circular list,
+or ring, data type: a circular data structure such that if you continue rotating
+the ring in either direction, you'll eventually return to the element you first
+observed.")
+    (license license:bsd-3)))
+
 (define-public ghc-data-default
   (package
     (name "ghc-data-default")
