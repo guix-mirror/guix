@@ -9389,14 +9389,14 @@ languages.")
 (define-public emacs-spinner
   (package
     (name "emacs-spinner")
-    (version "1.7.3")
+    (version "1.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
                (base32
-                "19kp1mmndbmw11sgvv2ggfjl4pyf5zrsbh3871f0965pw9z8vahd"))))
+                "140kss25ijbwf8hzflbjz67ry76w2cyrh02axk95n6qcxv7jr7pv"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/spinner.el")
     (synopsis "Emacs mode-line spinner for operations in progress")
