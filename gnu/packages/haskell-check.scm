@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
@@ -609,6 +609,29 @@ reporting and test statistics output.")
     (description
      "This package provides QuickCheck2 support for the test-framework
 package.")
+    (license license:bsd-3)))
+
+(define-public ghc-test-framework-smallcheck
+  (package
+    (name "ghc-test-framework-smallcheck")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "test-framework-smallcheck/"
+                           "test-framework-smallcheck-" version ".tar.gz"))
+       (sha256
+        (base32 "1xpgpk1gp4w7w46b4rhj80fa0bcyz8asj2dcjb5x1c37b7rw90b0"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-test-framework" ,ghc-test-framework)))
+    (home-page "https://github.com/Bodigrim/smallcheck")
+    (synopsis "SmallCheck support for test-framework")
+    (description
+     "This package lets programmers use SmallCheck properties in Haskell's
+test-framework.  New projects should use ghc-tasty-smallcheck instead.")
     (license license:bsd-3)))
 
 (define-public ghc-test-framework-th
