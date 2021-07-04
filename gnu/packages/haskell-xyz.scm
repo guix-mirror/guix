@@ -4575,6 +4575,26 @@ described in section 4 of Ralf Hinze and Ross Paterson, \"Finger trees: a
 simple general-purpose data structure\".")
     (license license:bsd-3)))
 
+(define-public ghc-finite-typelits
+  (package
+    (name "ghc-finite-typelits")
+    (version "0.1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "finite-typelits/"
+                           "finite-typelits-" version ".tar.gz"))
+       (sha256
+        (base32 "0iyp9fyd2ki9qcmk9infz9p6rjhsx9jrs3f5yz0yqs8vj5na81yj"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/mniip/finite-typelits")
+    (synopsis "Finitely many values, indexed by type-level naturals")
+    (description
+     "This package provides a Haskell type inhabited by finitely many values
+and indexed by type-level naturals.")
+    (license license:bsd-3)))
+
 (define-public ghc-fixed
   (package
     (name "ghc-fixed")
