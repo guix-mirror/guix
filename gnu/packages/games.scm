@@ -12061,14 +12061,14 @@ get high scores.")
 (define-public burgerspace
   (package
     (name "burgerspace")
-    (version "1.9.3")
+    (version "1.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
                            "burgerspace-" version ".tar.gz"))
        (sha256
-        (base32 "1005a04rbn4lzjrpfg0m394k2mfaji63fm2qhdqdsxila8a6kjbv"))))
+        (base32 "1xb4immzmd419aa08lgkzf7ibxa6ax238zb2l5iw9nkgvzlh1v6l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
