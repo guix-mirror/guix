@@ -49,7 +49,9 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages time))
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages python-science)
+  #:use-module (gnu packages graph))
 
 (define-public python-sphinx
   (package
@@ -837,3 +839,40 @@ automated way to document command-line programs.  It scans
 @code{argparse.ArgumentParser} object, and then expands it into a set of
 @code{.. program::} and @code{.. option::} directives.")
     (license license:bsd-2)))
+
+(define-public python-pydata-sphinx-theme
+  (package
+    (name "python-pydata-sphinx-theme")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydata-sphinx-theme" version))
+       (sha256
+        (base32
+         "055bh3hyh72pafiylvgpsjlk18wm15gg4azc5rjlsww5z475iq1j"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)))
+    (native-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-docutils" ,python-docutils)
+       ("python-jupyter-sphinx" ,python-jupyter-sphinx)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-pandas" ,python-pandas)
+       ("python-plotly" ,python-plotly)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-regressions"
+        ,python-pytest-regressions)
+       ("python-recommonmark" ,python-recommonmark)
+       ("python-sphinx" ,python-sphinx)
+       ("python-xarray" ,python-xarray)
+       ("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/pydata/pydata-sphinx-theme")
+    (synopsis "Bootstrap-based Sphinx theme")
+    (description
+     "This package provides a Bootstrap-based Sphinx theme from the PyData
+community.")
+    (license license:bsd-3)))
