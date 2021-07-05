@@ -6902,8 +6902,12 @@ support for Mparser.")))
            (lambda _
              (for-each (lambda (file)
                          (chmod file #o644))
-                       (find-files "." "."))
-             #t)))))
+                       (find-files "." "."))))
+         (add-before 'build 'set-version
+           (lambda _
+             (substitute* "dune-project"
+               (("\\(name lablgtk3\\)")
+                (string-append "(name lablgtk3)\n(version " ,version ")"))))))))
     (propagated-inputs
      `(("ocaml-cairo2" ,ocaml-cairo2)))
     (inputs
