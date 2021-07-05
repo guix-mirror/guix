@@ -18,6 +18,8 @@
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +48,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -53,6 +57,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -63,7 +68,9 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages photo)
@@ -71,9 +78,180 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages suckless)
+  #:use-module (gnu packages terminals)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages))
+
+(define-public ytfzf
+  (package
+    (name "ytfzf")
+    (version "1.2.0")
+    (home-page "https://github.com/pystardust/ytfzf")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url home-page)
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00d416qb4109pm77ikhnmds8qng90ni2jan9kdnxz7b6sh5f61nz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:modules
+       ((guix build gnu-build-system)
+        (guix build utils)
+        (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'apply-patches
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Pre-requisite for 'patch-script' phase.
+             (invoke "patch" "--input"
+                     (assoc-ref inputs "ytfzf-programs"))
+             ;; Disables self-update.
+             (invoke "patch" "--input"
+                     (assoc-ref inputs "ytfzf-updates"))))
+         (add-after 'apply-patches 'patch-script
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (assoc-ref inputs "bash"))
+                    (catimg (assoc-ref inputs "catimg"))
+                    (chafa (assoc-ref inputs "chafa"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (curl (assoc-ref inputs "curl"))
+                    (dmenu (assoc-ref inputs "dmenu"))
+                    (fzf (assoc-ref inputs "fzf"))
+                    (gawk (assoc-ref inputs "gawk"))
+                    (grep (assoc-ref inputs "grep"))
+                    (jp2a (assoc-ref inputs "jp2a"))
+                    (jq (assoc-ref inputs "jq"))
+                    (libnotify (assoc-ref inputs "libnotify"))
+                    (mpv (assoc-ref inputs "mpv"))
+                    (ncurses (assoc-ref inputs "ncurses"))
+                    (python-ueberzug (assoc-ref inputs "python-ueberzug"))
+                    (sed (assoc-ref inputs "sed"))
+                    (util-linux (assoc-ref inputs "util-linux"))
+                    (youtube-dl (assoc-ref inputs "youtube-dl")))
+               ;; Use correct $PREFIX path.
+               (substitute* "Makefile"
+                 (("/usr/bin")
+                  (string-append out "/bin")))
+               ;; Use absolute path for referenced programs.
+               (substitute* "ytfzf"
+                 (("@awk@")
+                  (string-append gawk "/bin/awk"))
+                 (("@cat@")
+                  (string-append coreutils "/bin/cat"))
+                 (("@catimg@")
+                  (string-append catimg "/bin/catimg"))
+                 (("@chafa@")
+                  (string-append chafa "/bin/chafa"))
+                 (("@chmod@")
+                  (string-append coreutils "/bin/chmod"))
+                 (("@column@")
+                  (string-append util-linux "/bin/column"))
+                 (("@cp@")
+                  (string-append coreutils "/bin/cp"))
+                 (("@cut@")
+                  (string-append coreutils "/bin/cut"))
+                 (("@curl@")
+                  (string-append curl "/bin/curl"))
+                 (("@date@")
+                  (string-append coreutils "/bin/date"))
+                 (("@dmenu@")
+                  (string-append dmenu "/bin/dmenu"))
+                 (("@fzf@")
+                  (string-append fzf "/bin/fzf"))
+                 (("@grep@")
+                  (string-append grep "/bin/grep"))
+                 (("@head@")
+                  (string-append coreutils "/bin/head"))
+                 (("@jp2a@")
+                  (string-append jp2a "/bin/jp2a"))
+                 (("@jq@")
+                  (string-append jq "/bin/jq"))
+                 (("@mkdir@")
+                  (string-append coreutils "/bin/mkdir"))
+                 (("@mkfifo@")
+                  (string-append coreutils "/bin/mkfifo"))
+                 (("@mpv@")
+                  (string-append mpv "/bin/mpv"))
+                 (("@nohup@")
+                  (string-append coreutils "/bin/nohup"))
+                 (("@notify-send@")
+                  (string-append libnotify "/bin/notify-send"))
+                 (("@rm@")
+                  (string-append coreutils "/bin/rm"))
+                 (("@sed@")
+                  (string-append sed "/bin/sed"))
+                 (("@seq@")
+                  (string-append coreutils "/bin/seq"))
+                 (("@setsid@")
+                  (string-append util-linux "/bin/setsid"))
+                 (("@sh@")
+                  (string-append bash "/bin/sh"))
+                 (("@sleep@")
+                  (string-append coreutils "/bin/sleep"))
+                 (("@sort@")
+                  (string-append coreutils "/bin/sort"))
+                 (("@tput@")
+                  (string-append ncurses "/bin/tput"))
+                 (("@tr@")
+                  (string-append coreutils "/bin/tr"))
+                 (("@ueberzug@")
+                  (string-append python-ueberzug "/bin/ueberzug"))
+                 (("@uname@")
+                  (string-append coreutils "/bin/uname"))
+                 (("@uniq@")
+                  (string-append coreutils "/bin/uniq"))
+                 (("@wc@")
+                  (string-append coreutils "/bin/wc"))
+                 (("@youtube-dl@")
+                  (string-append youtube-dl "/bin/youtube-dl"))))
+             (substitute* "ytfzf"
+               ;; Generate temporary files in the user-specific path,
+               ;; to avoid issues in multi-user systems.
+               (("/tmp/ytfzf")
+                "$HOME/.cache/ytfzf")
+               ;; Report errors to Guix.
+               (("report at: https://github.com/pystardust/ytfzf")
+                "report at: https://issues.guix.gnu.org"))))
+         (delete 'configure))))         ;no configure script
+    (native-inputs
+     `(("ytfzf-programs"
+        ,(search-patch "ytfzf-programs.patch"))
+       ("ytfzf-updates"
+        ,(search-patch "ytfzf-updates.patch"))))
+    (inputs
+     `(("bash" ,bash)
+       ("catimg" ,catimg)
+       ("chafa" ,chafa)
+       ("coreutils" ,coreutils)
+       ("curl" ,curl)
+       ("dmenu" ,dmenu)
+       ("fzf" ,fzf)
+       ("gawk" ,gawk)
+       ("grep" ,grep)
+       ("jp2a" ,jp2a)
+       ("jq" ,jq)
+       ("libnotify" ,libnotify)
+       ("mpv" ,mpv)
+       ("ncurses" ,ncurses)
+       ("python-ueberzug" ,python-ueberzug)
+       ("sed" ,sed)
+       ("util-linux" ,util-linux)
+       ("youtube-dl" ,youtube-dl)))
+    (synopsis "Watch PeerTube or YouTube videos from the terminal")
+    (description "@code{ytfzf} is a POSIX script that helps you find PeerTube or
+YouTube videos without requiring API and opens/downloads them using mpv/ytdl.")
+    (license license:gpl3+)))
 
 (define-public feh
   (package
