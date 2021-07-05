@@ -104,6 +104,7 @@
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25962,4 +25963,24 @@ is the cythonized version of @code{fractions.Fraction}.")
     (description
      "@code{pathvalidate} is a Python library to sanitize/validate strings
 representing paths or filenames.")
+    (license license:expat)))
+
+(define-public python-escapism
+  (package
+    (name "python-escapism")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "escapism" version))
+       (sha256
+        (base32
+         "1v74243wifcwhj5zkdiispxc9kb1xvnfzilg8bq308pjnkgnn9bk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/minrk/escapism")
+    (synopsis "Simple, generic library for escaping strings")
+    (description
+     "This Python library provides a programming interface to, given a set of
+safe characters and an escape character, escape safe strings and unescape the
+result.")
     (license license:expat)))
