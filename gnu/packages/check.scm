@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2918,3 +2919,26 @@ to mark some tests as dependent from other tests.  These tests will then be
 skipped if any of the dependencies did fail or has been skipped.")
     (license license:asl2.0)))
 
+(define-public python-pytest-datadir
+  (package
+    (name "python-pytest-datadir")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-datadir" version))
+       (sha256
+        (base32
+         "066bg6wlzgq2pqnjp73dfrcmk8951xw3aqcxa3p1axgqimrixbyk"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/gabrielcnr/pytest-datadir")
+    (synopsis "Pytest plugin for manipulating test data directories and files")
+    (description
+     "This package provides a Pytest plugin for manipulating test data
+directories and files.")
+    (license license:expat)))
