@@ -812,3 +812,28 @@ Jupyter kernel, and embeds outputs of that code in the document.  It has
 support for rich output such as images, LaTeX math and even JavaScript
 widgets, and supports thebelab for live code execution with minimal effort.")
     (license license:bsd-3)))
+
+(define-public python-sphinxcontrib-autoprogram
+  (package
+    (name "python-sphinxcontrib-autoprogram")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinxcontrib-autoprogram" version))
+       (sha256
+        (base32
+         "06hzim0d3fd72kf30fyjbbm5n8ibyybic0kf62gm79qp50zjwr5w"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/sphinx-contrib/autoprogram")
+    (synopsis "Documenting CLI programs")
+    (description
+     "This Sphinx extension, @code{sphinxcontrib.autoprogram}, provides an
+automated way to document command-line programs.  It scans
+@code{argparse.ArgumentParser} object, and then expands it into a set of
+@code{.. program::} and @code{.. option::} directives.")
+    (license license:bsd-2)))
