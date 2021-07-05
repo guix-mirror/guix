@@ -33893,17 +33893,17 @@ to write.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-quick-xml-0.21
+(define-public rust-quick-xml-0.22
   (package
     (name "rust-quick-xml")
-    (version "0.21.0")
+    (version "0.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "quick-xml" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0xgcmf5qlpjsl239igbkf4j6mlmsm5xp14a3rv45h2j185cnjlh4"))))
+        (base32 "0ssk30ymrd1724g36qjnnql225i6p31jm09cb46sval2hd6g2cw5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -33916,6 +33916,19 @@ to write.")
     (description
      "This package provides a high performance XML reader and writer.")
     (license license:expat)))
+
+(define-public rust-quick-xml-0.21
+  (package
+    (inherit rust-quick-xml-0.22)
+    (name "rust-quick-xml")
+    (version "0.21.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quick-xml" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xgcmf5qlpjsl239igbkf4j6mlmsm5xp14a3rv45h2j185cnjlh4"))))))
 
 (define-public rust-quick-xml-0.20
   (package
