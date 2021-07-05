@@ -534,7 +534,8 @@
                  (d (build-expression->derivation
                      %store "foo" `(display ,s)
                      #:guile-for-build
-                     (package-derivation s %bootstrap-guile (%current-system)))))
+                     (package-derivation %store %bootstrap-guile
+                                         (%current-system)))))
             (guard (c ((store-protocol-error? c) #t))
               (build-derivations %store (list d))))))))
    "Here’s a Greek letter: λ."))
