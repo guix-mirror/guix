@@ -66,7 +66,7 @@
                         (range #\# #\頋)))
 (define-peg-pattern operator all (or "=" "!" "<" ">"))
 
-(define-peg-pattern records body (* (and (or record weird-record) (* SP))))
+(define-peg-pattern records body (and (* SP) (* (and (or record weird-record) (* SP)))))
 (define-peg-pattern record all (and key COLON (* SP) value))
 (define-peg-pattern weird-record all (and key (* SP) dict))
 (define-peg-pattern key body (+ (or (range #\a #\z) "-")))
