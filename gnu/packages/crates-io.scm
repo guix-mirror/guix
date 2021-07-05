@@ -32642,8 +32642,37 @@ libpq.")
 dependency to expose a precomputed hash.")
     (license license:expat)))
 
+(define-public rust-predicates-2
+  (package
+    (name "rust-predicates")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "predicates" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xma6v1qnfjxr4hmby5b6a9vc2i5f4638c24q4p1xqmlksknrr66"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-difflib" ,rust-difflib-0.4)
+        ("rust-float-cmp" ,rust-float-cmp-0.8)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.3)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/assert-rs/predicates-rs")
+    (synopsis "Implementation of boolean-valued predicate functions")
+    (description
+     "This package provides an implementation of boolean-valued predicate
+functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-predicates-1
   (package
+    (inherit rust-predicates-2)
     (name "rust-predicates")
     (version "1.0.7")
     (source
@@ -32653,7 +32682,6 @@ dependency to expose a precomputed hash.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1ai5qdqym11x1x55via1gq2w86ac1gj3rsjdan9wqmqsdi2k7d7f"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-difference" ,rust-difference-2)
@@ -32662,13 +32690,7 @@ dependency to expose a precomputed hash.")
         ("rust-predicates-core" ,rust-predicates-core-1)
         ("rust-regex" ,rust-regex-1))
        #:cargo-development-inputs
-       (("rust-predicates-tree" ,rust-predicates-tree-1))))
-    (home-page "https://github.com/assert-rs/predicates-rs")
-    (synopsis "Implementation of boolean-valued predicate functions")
-    (description
-     "This package provides an implementation of boolean-valued predicate
-functions.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-predicates-tree" ,rust-predicates-tree-1))))))
 
 (define-public rust-predicates-0.9
   (package
