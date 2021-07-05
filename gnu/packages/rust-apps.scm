@@ -587,14 +587,14 @@ gitignore rules.")
 (define-public tectonic
   (package
     (name "tectonic")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1x6i97dl28y6wxpq2r4dcsa853sa4yw5vhl79qdb44q5wsd6ba1f"))))
+        (base32 "0rjkfmbam81anpdqs2qafcmd5bf7y898c8a7iqqqwkbl1hfw4sqs"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.52
@@ -610,6 +610,7 @@ gitignore rules.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-md-5" ,rust-md-5-0.9)
         ("rust-open" ,rust-open-1)
+        ("rust-quick-xml" ,rust-quick-xml-0.22)
         ("rust-serde" ,rust-serde-1)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-structopt" ,rust-structopt-0.3)
