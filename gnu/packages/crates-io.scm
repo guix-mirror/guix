@@ -32662,7 +32662,9 @@ dependency to expose a precomputed hash.")
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.3)
         ("rust-predicates-core" ,rust-predicates-core-1)
-        ("rust-regex" ,rust-regex-1))))
+        ("rust-regex" ,rust-regex-1))
+       #:cargo-development-inputs
+       (("rust-predicates-tree" ,rust-predicates-tree-1))))
     (home-page "https://github.com/assert-rs/predicates-rs")
     (synopsis "Implementation of boolean-valued predicate functions")
     (description
