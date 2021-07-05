@@ -80,7 +80,7 @@ ignored."
                                        (sexp->gexp builder)
                                        builder)))
     (gexp->derivation name (with-build-variables
-                               (append build-inputs target-inputs)
+                               (append build-inputs target-inputs host-inputs)
                                outputs
                              builder)
                       #:system system
