@@ -2629,22 +2629,22 @@ standard library.")
 (define-public rust-assert-cmd-1
   (package
     (name "rust-assert-cmd")
-    (version "1.0.5")
+    (version "1.0.7")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "assert-cmd" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0j2s0i585yf6h4nzdr88hc3f2j000qrlvpsdvzznfx98vzanp2x8"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert-cmd" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pz938z0wipy2czmp5aym6agfsgkpzd9rhbjqg3s9p84s0dq681x"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
         ("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-predicates" ,rust-predicates-1)
+        ("rust-predicates" ,rust-predicates-2)
         ("rust-predicates-core" ,rust-predicates-core-1)
         ("rust-predicates-tree" ,rust-predicates-tree-1)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))
