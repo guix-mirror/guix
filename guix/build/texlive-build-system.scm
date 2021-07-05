@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,16 +35,17 @@
 ;;
 ;; Code:
 
-(define (compile-with-latex format file)
-  (invoke format
+(define (compile-with-latex engine format file)
+  (invoke engine
           "-interaction=nonstopmode"
           "-output-directory=build"
-          (string-append "&" format)
+          (if format (string-append "&" format) "-ini")
           file))
 
-(define* (build #:key inputs build-targets tex-format #:allow-other-keys)
+(define* (build #:key inputs build-targets tex-engine tex-format
+                #:allow-other-keys)
   (mkdir "build")
-  (for-each (cut compile-with-latex tex-format <>)
+  (for-each (cut compile-with-latex tex-engine tex-format <>)
             (if build-targets build-targets
                 (scandir "." (cut string-suffix? ".ins" <>)))))
 

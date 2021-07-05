@@ -19,6 +19,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3387,7 +3388,12 @@ Live distribution.")
                 "0w82d5a4d3rc950ms6ymj4mpw5ndz6qs5x53szcfgzgjxsns9l4w"))))
     (build-system texlive-build-system)
     (arguments
-     '(#:tex-directory "latex/l3kernel"))
+     '(#:tex-directory "latex/l3kernel"
+       #:tex-engine "tex"
+       #:tex-format #f
+       #:texlive-latex-base #f))
+    (native-inputs
+     `(("texlive-docstrip" ,texlive-docstrip)))
     (home-page "https://www.ctan.org/pkg/l3kernel")
     (synopsis "LaTeX3 programmers’ interface")
     (description
@@ -3412,6 +3418,9 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
+       #:tex-engine "tex"
+       #:tex-format #f
+       #:texlive-latex-base #f
        ;; build-targets must be specified manually since they are in
        ;; sub-directories.
        #:build-targets '("l3keys2e.ins" "xparse.ins" "xfrac.ins" "xfp.ins" "xtemplate.ins")
@@ -3433,6 +3442,8 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
                                       ":")))
              #t)))
        ))
+    (native-inputs
+     `(("texlive-docstrip" ,texlive-docstrip)))
     (propagated-inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
     (home-page "https://www.ctan.org/pkg/l3packages")

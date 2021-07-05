@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,7 +117,9 @@ level package ID."
                    ;; Keep the standard inputs of 'gnu-build-system'.
                    ,@(standard-packages)))
     (build-inputs `(("texlive-bin" ,texlive-bin)
-                    ("texlive-latex-base" ,texlive-latex-base)
+                    ,@(if texlive-latex-base
+                          `(("texlive-latex-base" ,texlive-latex-base))
+                          '())
                     ,@native-inputs))
     (outputs outputs)
     (build texlive-build)
@@ -128,6 +131,7 @@ level package ID."
                         (tests? #f)
                         tex-directory
                         (build-targets #f)
+                        (tex-engine #f)
 
                         ;; FIXME: This would normally default to "luatex" but
                         ;; LuaTeX has a bug where sometimes it corrupts the
@@ -158,6 +162,9 @@ level package ID."
                                #:source #+source
                                #:tex-directory #$tex-directory
                                #:build-targets #$build-targets
+                               #:tex-engine #$(if tex-engine
+                                                  tex-engine
+                                                  tex-format)
                                #:tex-format #$tex-format
                                #:system #$system
                                #:tests? #$tests?
