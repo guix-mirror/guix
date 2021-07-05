@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,13 +138,21 @@ no external store to talk to."
           (open-connection))
         (const #f)))
 
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        (proc store))
-      (lambda ()
-        (when store
-          (close-connection store))))))
+    (let ((store-variable (getenv "NIX_STORE_DIR")))
+      (dynamic-wind
+        (lambda ()
+          ;; This environment variable is set by 'pre-inst-env' but it
+          ;; influences '%store-directory' in (guix build utils), which is
+          ;; itself used in (guix packages).  Thus, unset it before going any
+          ;; further.
+          (unsetenv "NIX_STORE_DIR"))
+        (lambda ()
+          (proc store))
+        (lambda ()
+          (when store-variable
+            (setenv "NIX_STORE_DIR" store-variable))
+          (when store
+            (close-connection store)))))))
 
 (define-syntax-rule (with-external-store store exp ...)
   "Evaluate EXP with STORE bound to the external store rather than the
