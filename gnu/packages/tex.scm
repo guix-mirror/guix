@@ -4520,10 +4520,10 @@ Unicode option of @code{inputenc} or @code{inputenx}, or by XeLaTeX/LuaLaTeX.")
   (package
     (inherit (simple-texlive-package
               "texlive-latex-pdftexcmds"
-              '("/doc/latex/pdftexcmds/"
-                "/tex/latex/pdftexcmds/")
+              '("/doc/generic/pdftexcmds/"
+                "/tex/generic/pdftexcmds/")
               (base32
-               "0kqav8jri789698wxwr2ww8ssn74fvw3agrv677nz5qyq5zmix8h")
+               "1hph0djbfc8hlwfc41rzlf8l3ccyyvc0n7a0qdrr9881jwd6iv1b")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-generic-iftex" ,texlive-generic-iftex)
