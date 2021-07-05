@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -783,3 +784,31 @@ executed during the Sphinx build process.")
     (synopsis "Sphinx cross-reference tool")
     (description "Sphinx objects.inv inspection/manipulation tool.")
     (license license:expat)))
+
+(define-public python-jupyter-sphinx
+  (package
+    (name "python-jupyter-sphinx")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_sphinx" version))
+       (sha256
+        (base32
+         "1wma60787m2451nn4bc4jw7bzqksplplb84wqxm34iaw70499z1p"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-nbformat" ,python-nbformat)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/jupyter/jupyter-sphinx/")
+    (synopsis "Jupyter Sphinx Extensions")
+    (description
+     "Jupyter-sphinx is a Sphinx extension that executes embedded code in a
+Jupyter kernel, and embeds outputs of that code in the document.  It has
+support for rich output such as images, LaTeX math and even JavaScript
+widgets, and supports thebelab for live code execution with minimal effort.")
+    (license license:bsd-3)))
