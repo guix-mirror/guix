@@ -8453,6 +8453,7 @@ are part of the LaTeX required tools distribution, comprising the packages:
                #t))))))
     (native-inputs
      `(("texlive-latex-base" ,texlive-latex-base)
+       ("texlive-latex-l3backend" ,texlive-latex-l3backend)
        ("texlive-cm" ,texlive-cm)
        ("texlive-lm" ,texlive-lm)
        ("texlive-url" ,texlive-url)
