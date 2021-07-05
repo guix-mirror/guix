@@ -792,7 +792,7 @@ environments.")
 (define-public python-conda-package-handling
   (package
     (name "python-conda-package-handling")
-    (version "1.6.0")
+    (version "1.7.3")
     (source
      (origin
        (method git-fetch)
@@ -802,7 +802,7 @@ environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bqbs6a8jbjmbn47n5n1p529cx7pf4vgfnhqca9mflgidfb5i0jf"))))
+         "1dq6f5ks3cinb355x712bls9bvv6bli6x3c43sdkqvawdw8xgv9j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -810,22 +810,11 @@ environments.")
          (add-after 'unpack 'use-unmodified-libarchive
            (lambda _
              (substitute* "setup.py"
-               (("archive_and_deps") "archive"))
-             #t))
+               (("archive_and_deps") "archive"))))
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "tests"
-                     "-k"
-                     (string-append
-                      ;; TODO: these three fail because the mocker fixture
-                      ;; cannot be found
-                      "not test_rename_to_trash"
-                      " and not test_api_extract_tarball_with_libarchive_import_error"
-                      " and not test_delete_trash"
-                      ;; TODO: this one does not raise an exception when it
-                      ;; should.
-                      " and not test_secure_refusal_to_extract_abs_paths")))))))
+             (invoke "pytest" "-vv" "tests"))))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-tqdm" ,python-tqdm)))
@@ -835,6 +824,7 @@ environments.")
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
        ("python-mock" ,python-mock)))
     (home-page "https://conda.io")
     (synopsis "Create and extract conda packages of various formats")
