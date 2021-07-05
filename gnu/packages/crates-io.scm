@@ -33951,7 +33951,11 @@ to write.")
        #:cargo-inputs
        (("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-memchr" ,rust-memchr-2)
-        ("rust-serde" ,rust-serde-1))))
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-value" ,rust-serde-value-0.7))))
     (home-page "https://github.com/tafia/quick-xml")
     (synopsis "High performance XML reader and writer")
     (description
