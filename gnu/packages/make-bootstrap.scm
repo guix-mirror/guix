@@ -23,6 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages make-bootstrap)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix memoization)
@@ -878,27 +879,26 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (source #f)
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match)
-                      (srfi srfi-26))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (guix build utils)
+                            (ice-9 match)
+                            (srfi srfi-26))
 
-         (define out (assoc-ref %outputs "out"))
+               (define out #$output)
 
-         (setvbuf (current-output-port)
-                  (cond-expand (guile-2.0 _IOLBF) (else 'line)))
-         (mkdir out)
-         (chdir out)
-         (for-each (match-lambda
-                    ((name . directory)
-                     (for-each (lambda (file)
-                                 (format #t "~a -> ~a~%" file out)
-                                 (symlink file (basename file)))
-                               (find-files directory "\\.tar\\."))))
-                   %build-inputs)
-         #t)))
+               (setvbuf (current-output-port)
+                        (cond-expand (guile-2.0 _IOLBF) (else 'line)))
+               (mkdir out)
+               (chdir out)
+               (for-each (match-lambda
+                           ((name . directory)
+                            (for-each (lambda (file)
+                                        (format #t "~a -> ~a~%" file out)
+                                        (symlink file (basename file)))
+                                      (find-files directory "\\.tar\\."))))
+                         %build-inputs))))
     (inputs `(("guile-tarball" ,%guile-bootstrap-tarball)
               ,@(match (or (%current-target-system) (%current-system))
                   ((or "i686-linux" "x86_64-linux")
