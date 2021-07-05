@@ -101,6 +101,7 @@
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -220,6 +221,41 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-ueberzug
+  (package
+    (name "python-ueberzug")
+    (version "18.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ueberzug" version))
+       (sha256
+        (base32
+         "1hxd45dnwa9yv908acarr98n2drmar66wzq9z2qd3irj24srzr3w"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-docopt" ,python-docopt)
+       ("python-pillow" ,python-pillow)
+       ("python-xlib" ,python-xlib)))
+    (home-page "https://github.com/seebye/ueberzug")
+    (synopsis "Command line util to display images in combination with X11")
+    (description "Überzug is a command line util which allows to draw images on
+terminals by using child windows.  The advantages of using Überzug are:
+@itemize
+@item No race conditions as a new window is created to display images.
+@item Expose events will be processed, so images will be redrawn on switch
+workspaces.
+@item Tmux support (excluding multi pane windows).
+@item Terminals without the WINDOWID environment variable are supported.
+@item Chars are used as position - and size unit.
+@item No memory leak (/ unlimited cache).
+@end itemize")
+    (license license:gpl3+)))
 
 (define-public python-fire
   (package
