@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018-2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
@@ -38,6 +38,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages texinfo)
+  #:use-module (guix build-system dune)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
@@ -50,7 +51,7 @@
 (define-public coq
   (package
     (name "coq")
-    (version "8.11.2")
+    (version "8.13.2")
     (source
      (origin
        (method git-fetch)
@@ -60,78 +61,24 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1gia82dkmzqspw2w3s4gjyh39ghbmw4i41i4hyzc91g7mza17nbz"))))
+         "15r0cm3p9dlsxbg0lf05njjp1xi1y74vxvq6drxjykax67x95l8a"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
-            (files (list "lib/coq/user-contrib")))))
-    (build-system ocaml-build-system)
-    (outputs '("out" "ide"))
+            (files (list "lib/coq/user-contrib")))
+           (search-path-specification
+            (variable "COQLIB")
+            (files (list "lib/ocaml/site-lib/coq"))
+            (separator #f))))
+    (build-system dune-build-system)
     (inputs
-     `(("lablgtk" ,lablgtk3)
-       ("python" ,python-2)
-       ("camlp5" ,camlp5)
-       ("ocaml-num" ,ocaml-num)))
+     `(("gmp" ,gmp)
+       ("ocaml-zarith" ,ocaml-zarith)))
     (native-inputs
-     `(("ocaml-ounit" ,ocaml-ounit)
-       ("rsync" ,rsync)
-       ("which" ,which)))
+     `(("which" ,which)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'make-git-checkout-writable
-           (lambda _
-             (for-each make-file-writable (find-files "."))
-             #t))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mandir (string-append out "/share/man"))
-                    (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-               (invoke "./configure"
-                       "-prefix" out
-                       "-mandir" mandir
-                       "-browser" browser
-                       "-coqide" "opt"))))
-         (replace 'build
-           (lambda _
-             (invoke "make"
-                     "-j" (number->string (parallel-job-count))
-                     "world")))
-         (delete 'check)
-         (add-after 'install 'remove-duplicate
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (coqtop (string-append bin "/coqtop"))
-                    (coqidetop (string-append bin "/coqidetop"))
-                    (coqtop.opt (string-append coqtop ".opt"))
-                    (coqidetop.opt (string-append coqidetop ".opt")))
-               ;; These files are exact copies without `.opt` extension.
-               ;; Removing these saves 35 MiB in the resulting package.
-               ;; Unfortunately, completely deleting them breaks coqide.
-               (delete-file coqtop.opt)
-               (delete-file coqidetop.opt)
-               (symlink coqtop coqtop.opt)
-               (symlink coqidetop coqidetop.opt))
-             #t))
-         (add-after 'install 'install-ide
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (ide (assoc-ref outputs "ide")))
-               (mkdir-p (string-append ide "/bin"))
-               (rename-file (string-append out "/bin/coqide")
-                            (string-append ide "/bin/coqide")))
-             #t))
-         (add-after 'install 'check
-           (lambda _
-             (with-directory-excursion "test-suite"
-               ;; These two tests fail.
-               ;; Fails because the output is not formatted as expected.
-               (delete-file-recursively "coq-makefile/timing")
-               ;; Fails because we didn't build coqtop.byte.
-               (delete-file "misc/printers.sh")
-               (invoke "make")))))))
+     `(#:package "coq"
+       #:test-target "test-suite"))
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description
@@ -141,6 +88,31 @@ It is developed using Objective Caml and Camlp5.")
     ;; The source code is distributed under lgpl2.1.
     ;; Some of the documentation is distributed under opl1.0+.
     (license (list license:lgpl2.1 license:opl1.0+))))
+
+(define-public coq-ide-server
+  (package
+    (inherit coq)
+    (name "coq-ide-server")
+    (arguments
+     `(#:tests? #f
+       #:package "coqide-server"))
+    (inputs
+     `(("coq" ,coq)
+       ("gmp" ,gmp)
+       ("ocaml-zarith" ,ocaml-zarith)))))
+
+(define-public coq-ide
+  (package
+    (inherit coq)
+    (name "coq-ide")
+    (arguments
+     `(#:tests? #f
+       #:package "coqide"))
+    (propagated-inputs
+     `(("coq" ,coq)
+       ("coq-ide-server" ,coq-ide-server)))
+    (inputs
+     `(("lablgtk3" ,lablgtk3)))))
 
 (define-public proof-general
   ;; The latest release is from 2016 and there has been more than 450 commits
@@ -274,7 +246,7 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.4.4")
+    (version "1.4.6")
     (source
      (origin
        (method git-fetch)
@@ -284,7 +256,7 @@ inside Coq.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0f3g3wjkvfkm961l4jpckhsqd43jnvm7f5qqk78qc32zh1fg339n"))))
+         "0492i0ksrz6dnc1d57jzsbmdlb9fp9hrh9ib5v8j0yqxpyi0x8f4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -298,13 +270,14 @@ inside Coq.")
     (inputs
      `(("gmp" ,gmp)
        ("mpfr" ,mpfr)
+       ("ocaml-zarith" ,ocaml-zarith)
        ("boost" ,boost)))
     (propagated-inputs
      `(("coq-flocq" ,coq-flocq)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
+       (list (string-append "COQUSERCONTRIB=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-remake
@@ -334,7 +307,7 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.11.0")
+    (version "1.12.0")
     (source
      (origin
        (method git-fetch)
@@ -343,7 +316,7 @@ assistant.")
              (commit (string-append "mathcomp-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1axywpa1jcpnidd86irpd1gdbbg2sfbwc652675xisq5wnmfmf6f"))))
+        (base32 "12cgrmzlcjnp9kv9zxsk34fgf0qfa35jdb23cbf13kmg8dyfi3h5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -429,7 +402,7 @@ theorems between the two libraries.")
 (define-public coq-bignums
   (package
     (name "coq-bignums")
-    (version "8.11.0")
+    (version "8.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -438,13 +411,14 @@ theorems between the two libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xcd7c7qlvs0narfba6px34zq0mz8rffnhxw0kzhhg6i4iw115dp"))))
+                "1n66i7hd9222b2ks606mak7m4f0dgy02xgygjskmmav6h7g2sx7y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
        ("coq" ,coq)))
     (inputs
-     `(("camlp5" ,camlp5)))
+     `(("camlp5" ,camlp5)
+       ("ocaml-zarith" ,ocaml-zarith)))
     (arguments
      `(#:tests? #f ; No test target.
        #:make-flags
@@ -462,7 +436,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "4.0.0")
+    (version "4.3.0")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +446,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01iz6qmnsm6b9s1vmdjs79vjx9xgwzn5rwyjp6bvs8hg3zlmhpip"))))
+         "1jqvd17czhliscf40idhnxgrha620039ilrdyfahn71dg2jmzqnm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -484,11 +458,12 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
      `(("flocq" ,coq-flocq)
        ("bignums" ,coq-bignums)
        ("coquelicot" ,coq-coquelicot)
-       ("mathcomp" ,coq-mathcomp)))
+       ("mathcomp" ,coq-mathcomp)
+       ("ocaml-zarith" ,ocaml-zarith)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
+       (list (string-append "COQUSERCONTRIB=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-remake
@@ -558,21 +533,23 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations")
-                    (commit (string-append "v" version "-8.11"))))
+                    (commit (string-append "v" version "-8.13"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1srxz1rws8jsh7402g2x2vcqgjbbsr64dxxj5d2zs48pmhb20csf"))))
+                "0i014lshsdflzw6h0qxra9d2f0q82vffxv2f29awbb9ad0p4rq4q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
        ("coq"    ,coq)
        ("camlp5" ,camlp5)))
+    (inputs
+     `(("ocaml-zarith" ,ocaml-zarith)))
     (arguments
      `(#:test-target "test-suite"
        #:phases
