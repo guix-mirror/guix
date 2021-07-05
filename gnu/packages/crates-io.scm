@@ -13032,6 +13032,25 @@ Diesel.")
        #:cargo-development-inputs
        (("rust-term" ,rust-term-0.2))))))
 
+(define-public rust-difflib-0.4
+  (package
+    (name "rust-difflib")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "difflib" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1s7byq4d7jgf2hcp2lcqxi2piqwl8xqlharfbi8kf90n8csy7131"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/DimaKudosh/difflib")
+    (synopsis "Compare word sequences in Rust")
+    (description
+     "This crate provides all necessary tools for comparing word sequences.")
+    (license license:expat)))
+
 (define-public rust-diffs-0.3
   (package
     (name "rust-diffs")
