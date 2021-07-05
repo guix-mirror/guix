@@ -2904,6 +2904,15 @@ exec " gcc "/bin/" program
                            "RANLIB=ranlib -D"))
                       "V=1")
 
+       ;; 'glibc-bootstrap' on non-x86 platforms has a buggy 'posix_spawn'.
+       ;; Thus, use the Gnulib replacement instead.  See
+       ;; <https://bugs.gnu.org/49367>.
+       ,@(match (%current-system)
+           ((or "i686-linux" "x86_64-linux")
+            '())
+           (_
+            '(#:configure-flags '("gl_cv_func_posix_spawn_works=no"))))
+
        ,@(package-arguments bison)))))
 
 (define flex-boot0
