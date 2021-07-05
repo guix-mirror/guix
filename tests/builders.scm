@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -38,6 +38,7 @@
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
 ;; Test the higher-level builders.
@@ -178,7 +179,11 @@ setup(
 (define (check-build-failure store p)
   (unless store (test-skip 1))
   (test-assert (string-append "python-build-system: " (package-name p))
-    (not (false-if-exception (package-derivation store python-dummy-fail-requirements)))))
+    (let ((drv (package-derivation store p)))
+      (guard (c ((store-protocol-error? c)
+                 (pk 'failure c #t)))             ;good!
+        (build-derivations store (list drv))
+        #f))))                                    ;bad: it should have failed
 
 (with-external-store store
   (for-each (lambda (p) (check-build-success store p))
