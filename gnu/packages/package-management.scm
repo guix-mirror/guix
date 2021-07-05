@@ -77,6 +77,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
@@ -736,7 +737,7 @@ transactions from C or Python.")
 (define-public python-anaconda-client
   (package
     (name "python-anaconda-client")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -746,18 +747,20 @@ transactions from C or Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0w1bfxnydjl9qp53r2gcvr6vlpdqqilcrzqxrll9sgg6vwdyiyyp"))))
+         "1vyk0g0gci4z9psisb8h50zi3j1nwfdg1jw3j76cxv0brln0v3fw"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-clyent" ,python-clyent)))
+     `(("python-clyent" ,python-clyent)
+       ("python-nbformat" ,python-nbformat)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)))
     (native-inputs
-     `(("python-pytz" ,python-pytz)
+     `(("python-coverage" ,python-coverage)
        ("python-dateutil" ,python-dateutil)
+       ("python-freezegun" ,python-freezegun)
        ("python-mock" ,python-mock)
-       ("python-coverage" ,python-coverage)
-       ("python-pillow" ,python-pillow)))
+       ("python-pillow" ,python-pillow)
+       ("python-pytz" ,python-pytz)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -785,9 +788,6 @@ transactions from C or Python.")
 Anaconda Cloud.  Anaconda Cloud is useful for sharing packages, notebooks and
 environments.")
     (license license:bsd-3)))
-
-(define-public python2-anaconda-client
-  (package-with-python2 python-anaconda-client))
 
 (define-public python-conda-package-handling
   (package
