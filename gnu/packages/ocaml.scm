@@ -1959,10 +1959,10 @@ to operate on the result type available from OCaml 4.03 in the standard
 library.")
     (license license:isc)))
 
-(define-public ocaml4.07-sqlite3
+(define-public ocaml-sqlite3
   (package
-    (name "ocaml4.07-sqlite3")
-    (version "4.4.1")
+    (name "ocaml-sqlite3")
+    (version "5.0.2")
     (source
      (origin
        (method git-fetch)
@@ -1972,18 +1972,16 @@ library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1536agm5fgcqysszhpd3kmw7lkc5n5ni7gmlyglrbvmnmrwf3av2"))))
+         "15mmq7ak5facpfawfrc6hjz211gli7jab52iqdsihfvh790xm55f"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-sqlite3))))
+    (propagated-inputs
+     `(("dune-configurator" ,dune-configurator)
+       ("ocaml-odoc" ,ocaml-odoc)))
     (native-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("sqlite" ,sqlite)))
+     `(("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("pkg-config" ,pkg-config)
+       ("sqlite" ,sqlite)))
     (home-page "https://mmottl.github.io/sqlite3-ocaml")
     (synopsis "SQLite3 Bindings for OCaml")
     (description
@@ -1994,6 +1992,21 @@ cases.  These bindings are written in a way that enables a friendly
 coexistence with the old (version 2) SQLite and its OCaml wrapper
 @code{ocaml-sqlite}.")
     (license license:expat)))
+
+(define-public ocaml4.07-sqlite3
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-sqlite3)
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+         (add-before 'build 'chmod
+           (lambda _
+             (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
+             #t)))))
+     (propagated-inputs
+      `(("ocaml-odoc" ,ocaml-odoc)))
+     (properties '()))))
 
 (define-public ocaml-csv
   (package

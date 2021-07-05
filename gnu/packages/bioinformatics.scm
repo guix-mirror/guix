@@ -13002,7 +13002,7 @@ let before_space s =
          ("ocaml-batteries" ,(package-with-ocaml4.07 ocaml-batteries))
          ("ocaml-camlzip" ,(package-with-ocaml4.07 camlzip))
          ("ocaml-csv" ,(package-with-ocaml4.07 ocaml-csv))
-         ("ocaml-sqlite3" ,ocaml4.07-sqlite3)
+         ("ocaml-sqlite3" ,(package-with-ocaml4.07 ocaml-sqlite3))
          ("ocaml-xmlm" ,(package-with-ocaml4.07 ocaml-xmlm))
          ("ocaml-mcl" ,(package-with-ocaml4.07 ocaml-mcl))
          ("ocaml-gsl" ,ocaml4.07-gsl-1)))
