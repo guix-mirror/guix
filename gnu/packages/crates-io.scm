@@ -41065,8 +41065,33 @@ the application/x-www-form-urlencoded format.")
        #:cargo-development-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))))))
 
+(define-public rust-serde-value-0.7
+  (package
+    (name "rust-serde-value")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-value" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0b18ngk7n4f9zmwsfdkhgsp31192smzyl5z143qmx1qi28sa78gk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ordered-float" ,rust-ordered-float-2)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/arcnmx/serde-value")
+    (synopsis "Serialization value trees")
+    (description
+     "@code{serde-value} provides a way to capture serialization value trees
+for later processing.")
+    (license license:expat)))
+
 (define-public rust-serde-value-0.6
   (package
+    (inherit rust-serde-value-0.7)
     (name "rust-serde-value")
     (version "0.6.0")
     (source
@@ -41076,18 +41101,11 @@ the application/x-www-form-urlencoded format.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1swh6870pr1cxr6ha769rv4wdnyfxdvsc42cmvf8lmla38lsfras"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-ordered-float" ,rust-ordered-float-1)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://github.com/arcnmx/serde-value")
-    (synopsis "Serialization value trees")
-    (description
-     "@code{serde-value} provides a way to capture serialization value trees
-for later processing.")
-    (license license:expat)))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-serde-yaml-0.8
   (package
