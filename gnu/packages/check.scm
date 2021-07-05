@@ -71,6 +71,7 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (guix utils)
@@ -2941,4 +2942,38 @@ skipped if any of the dependencies did fail or has been skipped.")
     (description
      "This package provides a Pytest plugin for manipulating test data
 directories and files.")
+    (license license:expat)))
+
+(define-public python-pytest-regressions
+  (package
+    (name "python-pytest-regressions")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-regressions" version))
+       (sha256
+        (base32
+         "05jpsvv8rj8i4x24fphpnar5dl4s6d6bw6ikjk5d8v96rdviz9qm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest-datadir" ,python-pytest-datadir)
+       ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pillow" ,python-pillow)
+       ("python-pre-commit" ,python-pre-commit)
+       ("python-restructuredtext-lint"
+        ,python-restructuredtext-lint)
+       ("python-tox" ,python-tox)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ESSS/pytest-regressions")
+    (synopsis "Easy to use fixtures to write regression tests")
+    (description
+     "This plugin makes it simple to test general data, images, files, and numeric
+tables by saving expected data in a data directory (courtesy of pytest-datadir)
+that can be used to verify that future runs produce the same data.")
     (license license:expat)))
