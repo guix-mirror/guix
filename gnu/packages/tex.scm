@@ -154,7 +154,7 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                               "-checkout"))
     (sha256
      (base32
-      "1gdyc8nmvp5jqlc429rmfzfl0cqqsdayc70y1hxwz025pv9jn960"))))
+      "04xzf5gr3ylyh3ls09imrx4mwq3qp1k97r9njzlan6hlff875rx2"))))
 
 (define (texlive-hyphen-package name code locations hash)
   "Return a TeX Live hyphenation package with the given NAME, using source
@@ -227,37 +227,38 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2020/texlive-20200406-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2021/texlive-20210325-extra.tar.xz")
     (sha256 (base32
-             "0kx6r2ncnqpmhs0jhjk4ypq99czcvql9l9n0npcgqzrv4qmzsg94"))))
+             "171kg1n9zapw3d2g47d8l0cywa99bl9m54xkqvp9625ks22z78s6"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2021/texlive-20210325-texmf.tar.xz")
     (sha256 (base32
-             "15ashyxm3j78wjik1pp7vwi1wg07xjgh9zv0vkhqim6g7rc7xa8a"))))
+             "070gczcm1h9rx29w2f02xd3nhd84c4k28nfmm8qgp69yq8vd84pz"))))
 
 (define-public texlive-bin
   (package
     (name "texlive-bin")
-    (version "20200406")
+    (version "20210325")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://tug.org/historic/systems/texlive/2020/"
+       (uri (string-append "ftp://tug.org/historic/systems/texlive/2021/"
                            "texlive-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0y4h4j2qg714srhvf1hvn165w7sanr1j2vzrsgc23kxvrc43sbz3"))
+         "0jsq1p66l46k2qq0gbqmx25flj2nprsz4wrd1ybn286p11kdkvvs"))
        (modules '((guix build utils)
                   (ice-9 ftw)))
        (snippet
         '(begin
            (with-directory-excursion "libs"
-             (let ((preserved-directories '("." ".." "lua53" "luajit")))
+             (let ((preserved-directories '("." ".." "lua53" "luajit" "pplib" "xpdf")))
                ;; Delete bundled software, except Lua which cannot easily be
-               ;; used as an external dependency.
+               ;; used as an external dependency, pplib and xpdf which aren't
+               ;; supported as system libraries (see m4/kpse-xpdf-flags.m4).
                (for-each delete-file-recursively
                          (scandir "."
                                   (lambda (file)
@@ -282,7 +283,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                                      "-checkout"))
            (sha256
             (base32
-             "0p3ff839q4kv3zj4xxc76fqcjcjinv8xf7ix0zgwl7yhy5p3sm80"))))
+             "10xpa4nnz1biap7qfv7fb0zk6132ki5g1j8w0bqwkggfncdfl07d"))))
        ("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
        ("fontforge" ,fontforge)
@@ -300,7 +301,6 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
        ("mpfr" ,mpfr)
        ("perl" ,perl)
        ("pixman" ,pixman)
-       ("poppler" ,poppler)
        ("potrace" ,potrace)
        ("python" ,python)
        ("ruby" ,ruby)
@@ -333,10 +333,8 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
          "--with-system-libpng"
          "--with-system-mpfr"
          "--with-system-pixman"
-         "--with-system-poppler"
          "--with-system-potrace"
          "--with-system-teckit"
-         "--with-system-xpdf"
          "--with-system-zlib"
          "--with-system-zziplib"
          ;; LuaJIT is not ported to powerpc64le* yet.
@@ -369,13 +367,6 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
              (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
                (("\"gs\"")
                 (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
-             #t))
-         (add-after 'unpack 'use-code-for-new-poppler
-           (lambda _
-             (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.86.0.cc"
-                        "texk/web2c/pdftexdir/pdftoepdf.cc")
-             (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.83.0.cc"
-                        "texk/web2c/pdftexdir/pdftosrc.cc")
              #t))
          (add-after 'unpack 'patch-dvisvgm-build-files
            (lambda _
@@ -576,7 +567,7 @@ executables.  It is maintained as a part of TeX Live.")))
               "texlive-docstrip"
               (list "/tex/latex/base/docstrip.tex")
               (base32
-               "1vyn0vskxqmq58fbq4r4pknbzpxpyw30nmlmsncnialrmrwqm7k5")
+               "1pxbqbia0727vg01xv8451szm55z2w8sb0vv3kf4iqx5ibb6m0d2")
               #:trivial? #t))
     (home-page "https://www.ctan.org/texlive")
     (synopsis "Utility to strip documentation from TeX files.")
@@ -591,7 +582,7 @@ documentation from TeX files.  It is part of the LaTeX base.")
               (list "/tex/generic/unicode-data/"
                     "/doc/generic/unicode-data/")
               (base32
-               "1mxb55ml92zd00w0zbr0dkscnxdgpxamfabl0izhk3cpz81n9g92")
+               "1d41zvjsig7sqf2j2m89dnbv3gicpb16r04b4ikps4gabhbky83k")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/unicode-data")
     (synopsis "Unicode data and loaders for TeX")
@@ -624,7 +615,7 @@ out to date by @code{unicode-letters.tex}. ")
                     "/tex/generic/hyphen/hypht1.tex"
                     "/tex/generic/hyphen/zerohyph.tex")
               (base32
-               "1vakayd82a4ga0b80mxypbibw2vrf2a8p4v6bim7s97zh8b9mzk3")
+               "1sagn9aybs34m1s6m3zwya5g5kbiwfnw8ifcgxssygmzzs88dgjp")
               #:trivial? #t))
     (home-page "https://tug.org/texlive/")
     (synopsis "Core hyphenation support files")
@@ -688,7 +679,7 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1r1v3zm600nrl3iskx130fjwj1qib82n02dlca446zb53x0hg6gr"))))
+                "17y72xmz5a36vdsq7pfrwj0j4c7llrm9j5kcq349cpaas7r32lmb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no test target
@@ -849,7 +840,7 @@ documents.")
                          "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map"
                          "/doc/fonts/cm/")
                    (base32
-                    "09mvl94qrwlb9b4pkigi151l256v3djhwl4m5lgvk6yhn5y75zrp")
+                    "1ky4gvcn8qn3d61bvb39512b8r92igv6il7vh02hw04223yj6q8i")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -972,7 +963,7 @@ originals.")
                     "/tex4ht/ht-fonts/alias/adobe/courier/"
                     "/tex4ht/ht-fonts/unicode/adobe/courier/")
               (base32
-               "03vz7zd7gayry9h4pq81s2bqqn2kmxf9yyzs0vap0w9rkf99rrci")
+               "05lglavi073glj26k9966351hka5ac22g4vim61dkfy001vz4i7r")
               #:trivial? #t))
     (home-page "https://ctan.org/pkg/urw-base35")
     (synopsis "URW Base 35 font pack for LaTeX")
@@ -1034,7 +1025,7 @@ support (for use with a variety of encodings) is provided.")
                     "/fonts/type1/public/lm/"
                     "/tex/latex/lm/")
               (base32
-               "0i1hwr8rp0jqyvs4qyplrirscd4w7lsgwsncyv3yzy80bsa56jq5")
+               "0yyk0dr4yms82mwy4dc03zf5igyhgcb65icdah042rk23rlpxygv")
               #:trivial? #t))
     (home-page "http://www.gust.org.pl/projects/e-foundry/latin-modern/")
     (synopsis "Latin Modern family of fonts")
@@ -1056,7 +1047,7 @@ Computers & Typesetting series.")
                          "/tex/generic/knuth-lib/"
                          "/tex/plain/knuth-lib/")
                    (base32
-                    "0lizrhdr4pirhh4ry44znddksd7akkxli2i6sddm5rzqljiqdy3v")
+                    "1cxyqqprp8sj2j4zp9l0wry8cq2awpz3a8i5alzpc4ndg7a6pgdf")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -1513,7 +1504,7 @@ incorporates the e-TeX extensions.")
               "texlive-tex-plain"
               (list "/tex/plain/")
               (base32
-               "1qryji08shim7fwjfcm0rcb0m5pwagjv1ahpr3xkfg8mkj160nrg")
+               "0gwygkm8i2jmpf7bfg6fb6824rl7fq4a2s0wni73v0fz6s4chr1n")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/plain")
     (synopsis "Plain TeX format and supporting files")
@@ -1791,10 +1782,22 @@ be replaced by files tailored to individual languages.")
               "texlive-hyphen-finnish" "fi"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fi.tex")
               (base32
-               "1f72b4ydb4zddvw2i004948khmwzigxkdkwfym5v1kkq0183sfpj")))
+               "1pa8sjs9zvnv1y6dma4s60sf9cr4zrvhxwm6i8cnshm84q16w4bc")))
     (synopsis "Hyphenation patterns for Finnish")
     (description "The package provides hyphenation patterns for Finnish in
 T1/EC and UTF-8 encodings.")
+    (license license:public-domain)))
+
+(define-public texlive-hyphen-schoolfinnish
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-schoolfinnish" "fi-x-school"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fi-x-school.tex")
+              (base32
+               "1w5n6gaclgifbbnafg32vz3mfaibyldvh4yh1ya3sq9fwfmv035c")))
+    (synopsis "Hyphenation patterns for Finnish for school")
+    (description "The package provides hyphenation patterns for Finnish for
+school in T1/EC and UTF-8 encodings.")
     (license license:public-domain)))
 
 (define-public texlive-hyphen-french
@@ -1858,7 +1861,7 @@ T8M, T8K, and UTF-8 encodings.")
                     "/tex/generic/dehyph/dehyphtex.tex"
                     "/tex/generic/dehyph/README")
               (base32
-               "0wp5by5kkf4ac6li5mbppqzw11500wa7f22p5vpz3m1kwd15zavw")))
+               "17cc5hd0fr3ykpgly9nxaiz4sik3kmfn2wyxz1fkdnqqhl3i41a0")))
     (synopsis "Hyphenation patterns for German")
     (description "This package provides hyphenation patterns for German in
 T1/EC and UTF-8 encodings, for traditional and reformed spelling, including
@@ -2054,9 +2057,10 @@ L7X and UTF-8 encodings.")
   (package
     (inherit (texlive-hyphen-package
               "texlive-hyphen-macedonian" "mk"
-              '("/tex/generic/hyph-utf8/patterns/tex/hyph-mk.tex")
+              '("/tex/generic/hyph-utf8/patterns/tex/hyph-mk.tex"
+                "/tex/generic/hyph-utf8/patterns/tex-8bit/hyph-mk.macedonian.tex")
               (base32
-               "01w4cv8jm9q2gijys7cd7s6lfycdpgw9m26yxicc14ywbpi4ij3i")))
+               "1fv6y8gpic5ciw8cclfxc8h3wr5xir1j0a7shixja1pmdyz7db2b")))
     (synopsis "Macedonian hyphenation patterns")
     (description "This package provides hypenation patterns for Macedonian.")
     ;; XXX: License just says 'GPL'.  Assume GPL2 since the file predates GPL3.
@@ -2381,7 +2385,7 @@ T1/EC and UTF-8 encodings.")
                     "/doc/generic/hyph-utf8/img/miktex-languages.png"
                     "/doc/generic/hyph-utf8/img/texlive-collection.png")
               (base32
-               "1v6f59r1fcp7pk7ddskqdzl7hzbszsxd04mfd3xznv8fc73iv72l")))
+               "0rgp0zn36gwzqwpmjb9h01ns3m19v3r7lpw1h0pc9bx115w6c9jx")))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
@@ -2514,7 +2518,7 @@ converters, will completely supplant the older patterns.")
               (list "/tex/generic/dehyph-exptl/"
                     "/doc/generic/dehyph-exptl/")
               (base32
-               "1fnqc63gz8gvdyfz45bx8dxn1r1rwrypahs3bqd2vlc8ff76xp86")
+               "0l57a0r4gycp94kz6lrxqvh9m57j2shmbr2laf5zjb0qnrisq46d")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-hyphen-base" ,texlive-hyphen-base)
@@ -2621,7 +2625,7 @@ UCY (Omega Unicode Cyrillic), LCY, LWN (OT2), and koi8-r.")
                     "/web2c/tcvn-t5.tcx"
                     "/web2c/viscii-t5.tcx")
               (base32
-               "1prvxq211hqfss1bhiykazqfcy298lsz3x8lbmbyrh9c8grnj4ip")
+               "00q2nny7lw7jxyln6ch4h0alygbrzk8yynliyc291m53kds1h0mr")
               #:trivial? #t))
     (home-page "https://www.tug.org/texlive/")
     (synopsis "Files related to the path searching library for TeX")
@@ -2663,7 +2667,7 @@ formats.")
                          "/tex/latex/base/testpage.tex"
                          "/tex/latex/base/texsys.cfg")
                    (base32
-                    "11bcjmn0n7sv7g6r8v6nxl4x1pw0famqmq0v0pbjyz04akhvfvry")
+                    "0msyjz0937rc7hs77v6la152sdiwd73qj41z1mlyh0m3dns9qz4g")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -2707,7 +2711,8 @@ formats.")
                             cwd "/build:"
                             (string-join
                              (map (match-lambda ((_ . dir) dir)) inputs)
-                             "//:"))))
+                             "//:")))
+                   (setenv "LUAINPUTS" (string-append cwd "/build:")))
 
                  ;; This is the actual build step.
                  (mkdir "build")
@@ -2793,7 +2798,7 @@ formats.")
                   "/tex/generic/config/luatexiniconfig.tex"
                   "/web2c/texmfcnf.lua")
             (base32
-             "0pk0ckwd5p58nqmhlajhbgxynym25jmhv48xm5ns540r996k0g2r")))))
+             "0yjx7nw9mgfgnq1givkzbxh7z7ncw1liaddjgm7n2nwn0aw6xfdg")))))
       (propagated-inputs
        `(("texlive-dehyph-exptl" ,texlive-dehyph-exptl)
          ("texlive-etex" ,texlive-etex)
@@ -2818,6 +2823,7 @@ formats.")
          ("texlive-hyphen-estonian" ,texlive-hyphen-estonian)
          ("texlive-hyphen-ethiopic" ,texlive-hyphen-ethiopic)
          ("texlive-hyphen-finnish" ,texlive-hyphen-finnish)
+         ("texlive-hyphen-schoolfinnish" ,texlive-hyphen-schoolfinnish)
          ("texlive-hyphen-french" ,texlive-hyphen-french)
          ("texlive-hyphen-friulan" ,texlive-hyphen-friulan)
          ("texlive-hyphen-galician" ,texlive-hyphen-galician)
@@ -2861,6 +2867,11 @@ formats.")
          ("texlive-unicode-data" ,texlive-unicode-data)
          ("texlive-ukrhyph" ,texlive-ukrhyph)
          ("texlive-ruhyphen" ,texlive-ruhyphen)
+         ("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
+         ;; TODO: This dependency isn't needed for LaTeX version 2021-06-01
+         ;; and later. See:
+         ;; https://tug.org/pipermail/tex-live/2021-June/047180.html
+         ("texlive-latex-l3packages" ,texlive-latex-l3packages)
          ("texlive-latexconfig" ,texlive-latexconfig)))
       (home-page "https://www.ctan.org/pkg/latex-base")
       (synopsis "Base sources of LaTeX")
@@ -2980,7 +2991,7 @@ users, via its Plain TeX version.)")
               (list "/doc/latex/fancyvrb/README"
                     "/tex/latex/fancyvrb/")
               (base32
-               "005ylzlysmvy21rwkbnrf0hnp5bmsjsj11hydg1d9dnq9ffv2s1h")
+               "0pdilgpw4zc0ipp4z9kdi61nymifyjy2mfpk74xk2cw9vhynkk3w")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/fancyvrb")
     (synopsis "Sophisticated verbatim text")
@@ -3000,7 +3011,7 @@ verbatim source).")
               (list "/doc/latex/graphics-def/README.md"
                     "/tex/latex/graphics-def/")
               (base32
-               "125lm2m9813p29yl7am21kgqdpigyqvrjarg73jpaczifbbbqklf")
+               "0b66fy06safyrd717rfr476g1gz6nqfv1vqvam7ac2yy0g0djb17")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-epstopdf-pkg" ,texlive-latex-epstopdf-pkg)))
@@ -3039,7 +3050,7 @@ set default \"driver\" options for the color and graphics packages.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0asln498brkd1miyhc7029fjx7gcj6vbbas5aan6w289ac4yz54h"))))
+                "0fgjl58f25zvagssz4dwmmsclzw8cr7mx00kdrbx2kcnamcb7h8d"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/graphics"))
     (propagated-inputs
@@ -3188,7 +3199,7 @@ XML, using UTF-8 or a suitable 8-bit encoding.")
                          "/tex/latex/hyperref/ntheorem-hyper.sty"
                          "/tex/latex/hyperref/xr-hyper.sty")
                    (base32
-                    "1d9myrrwf9zr62j5vp9q4drxs7rj4b06wq04imrnzban5s4gaq6v"))))
+                    "0nmbxaq676m2y9fgdji0bxqchmrli4hwhspijaszx51b3ki6bj2h"))))
     (package
       (inherit template)
       (arguments
@@ -3246,7 +3257,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1ff6yjchdmn7lyllfrnxygjr2ipkrjbb1rs5iyryn47rc3r8mpmk"))))
+                "1cadrkpdqs65gxsaszfgfd8wqp8pvpik2sjmlyq3hz5p9yna3p9m"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/oberdiek"
@@ -3304,7 +3315,7 @@ files have changed.  It is based on MD5 checksum, provided by pdfTeX.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1p92bg1wdlg28m7xbdipx8rxavvpbmsx8zy845bk2rdqhc9gbhkl"))))
+                "1vm5wfyd0vbmv31a29fc7k8y14xiw00msvdx9n7dzsn9zpfjflqs"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/tools"
@@ -3385,7 +3396,7 @@ Live distribution.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0w82d5a4d3rc950ms6ymj4mpw5ndz6qs5x53szcfgzgjxsns9l4w"))))
+                "068xkinrkl6qjf8r6a9i0msvnzp4y7a3gnd2h12ws0km1dv19r20"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3kernel"
@@ -3408,13 +3419,20 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
   (package
     (name "texlive-latex-l3packages")
     (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "l3packages"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "15m3ly55gj8hk5xrkpw5bkj0ddwkk4v7qxa6sl3rkymdka1xl3cc"))))
+    (source (texlive-origin name version
+                            '("/source/latex/l3packages/"
+                              ;; These files have been generated with a
+                              ;; bespoke source tree and then modified by
+                              ;; hand. It's unfeasible to recreate them. See:
+                              ;; https://tug.org/pipermail/tex-live/2021-June/047188.html
+                              "/tex/latex/l3packages/xparse/xparse-2018-04-12.sty"
+                              "/tex/latex/l3packages/xparse/xparse-2020-10-01.sty"
+
+                              ;; TODO: This file can be removed when using
+                              ;; LaTeX version 2021-06-01 or newer. See:
+                              ;; https://tug.org/pipermail/tex-live/2021-June/047180.html
+                              "/tex/latex/l3packages/xparse/xparse-generic.tex")
+                            (base32 "05rjxdqhhg7z1z2rmhmwj2qf09xygymayy3jzj9fdphk0pab3amm")))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
@@ -3432,15 +3450,20 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
            (lambda _
              (let ((cwd (getcwd)))
                (setenv "TEXINPUTS"
-                       (string-append cwd "/l3keys2e:"
-                                      cwd "/xparse:"
-                                      cwd "/xfrac:"
-                                      cwd "/xfp:"
-                                      cwd "/xtemplate"
+                       (string-append cwd "/source/latex/l3packages/l3keys2e:"
+                                      cwd "/source/latex/l3packages/xparse:"
+                                      cwd "/source/latex/l3packages/xfrac:"
+                                      cwd "/source/latex/l3packages/xfp:"
+                                      cwd "/source/latex/l3packages/xtemplate"
                                       ;; The terminating ":" is required to include the
                                       ;; l3kernel input as well.
                                       ":")))
-             #t)))
+             #t))
+         (add-after 'install 'copy-generated-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dest (string-append (assoc-ref outputs "out")
+                                        "/share/texmf-dist/tex/latex/l3packages")))
+               (copy-recursively "tex/latex/l3packages/xparse" dest)))))
        ))
     (native-inputs
      `(("texlive-docstrip" ,texlive-docstrip)))
@@ -3509,7 +3532,7 @@ the l3kernel and xparse bundles from the LaTeX 3 development team.")
                          ;; /doc/latex/l3build and the man page in the future.
                          "/source/latex/l3build/")
                    (base32
-                    "0hqb0f5rpj3mfmxfyn8cgxrm1j5ij466a9y23s0xxpmv11ma5i0i")
+                    "1fcay05jj53qgp2b98jpawi0id298fs5xc4y1r5krrfr4sp4hd59")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -3594,7 +3617,7 @@ this bundle for use independent of ConTeXt.")
                          "/scripts/luaotfload/luaotfload-tool.lua"
                          "/tex/luatex/luaotfload/")
                    (base32
-                    "0a07m8gckkhzj30rjglj4abpx6pqhl9bx4vq2ak29k0wa3s9rm76")
+                    "10wznvxx3qsl88n560py5vyx5r3a3914anbqfhwcmhmwg097xxl4")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -3624,7 +3647,7 @@ loading fonts by their proper names instead of file names.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1jx4sd35iwcr5qpvnirshp4rdffqq09k6sbmhwxi8kkir4x5hkmc"))))
+                "172zybw7rp05jca8wl6x0mh6z6gncdyi1j9wdfyjnhbvqw0z4wi4"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/amsmath"))
     (home-page "https://www.ctan.org/pkg/amsmath")
@@ -3650,7 +3673,7 @@ definitions.")
                          "/source/latex/amscls/"
                          "/bibtex/bst/amscls/")
                    (base32
-                    "1mv96i5372257zaciv06n1wwa7v09q0fa9pbq9kck826a0syidvs"))))
+                    "0vw0b815slvfqfd8qffyfzb3xfvyv6k77m12xp0l67hs8p08s5b7"))))
     (package
       (inherit template)
       (arguments
@@ -3681,7 +3704,7 @@ distribution.")
                          "/source/latex/babel/"
                          "/makeindex/babel/")
                    (base32
-                    "0xjj4h48vdb9ydyg13c5jyfi4vm39117c8jv2gjrvjw89h0djbp1"))))
+                    "0qr5vjp79g1c1l6k173qhfdfabgbky73wymzhm56pazx4a8r08wz"))))
     (package
       (inherit template)
       (arguments
@@ -3756,7 +3779,7 @@ for Canadian and USA text.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "129f9w41cb6yyrr6kpv3zz9ml6334hyq1wcz7j9jn47p0hlxqfk8"))))
+                "1x9hnr9gz5mqdb97cinivn9xjnfr4qi996aa4cnr2sm2dsbhqxnp"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "generic/babel-german"))
     (home-page "https://www.ctan.org/pkg/babel-german")
@@ -3774,7 +3797,7 @@ Swiss varieties of German.")
                    "texlive-babel-swedish"
                    (list "/source/generic/babel-swedish/")
                    (base32
-                    "0swdg2l5i7cbcvy4q4xgsnwwnbxiyvs6f5b72kiw7mjn24v27g8f"))))
+                    "03rp4n9wkqyckman765r8v8j2pg5fg9frbfxsnhq0i2mr0yhbr6v"))))
     (package
       (inherit template)
       (arguments
@@ -3912,7 +3935,7 @@ language that is written in a Cyrillic alphabet.")
                          "/tex/latex/psnfss/upsy.fd"
                          "/tex/latex/psnfss/upzd.fd")
                    (base32
-                    "1ql4gidwf5m5gwcwwmx7vj60lj4xygw02pm5mzin49nlwsa1vbnv"))))
+                    "11f14dzhwsy4pli21acccip43d36nf3pac33ihjffnps1i2mhqkd"))))
     (package
       (inherit template)
       (arguments
@@ -4231,7 +4254,7 @@ package.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0alshj9d2cdssqfawhyqmgsvqysmn7dgfk8bc59ni1bii3ydm2zm"))))
+                "0rhn74ywv000b89w8qjf1i0qsk6kd1mjapfwis14jwjvbjqgvj95"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/draftwatermark"))
     (home-page "https://www.ctan.org/pkg/draftwatermark")
@@ -4303,7 +4326,7 @@ also provided.")
                 "/doc/latex/etoc/etoc.pdf"
                 "/tex/latex/etoc/")
               (base32
-               "0i4fgqzqajirjyih6gbx890l17y648mdfqm09v3iz4af0dz4mbdy")
+               "0198cn75m1y8ggbfv1qlnif0d9275f6mxqsansyqw4np0rv6q9sv")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/etoc")
     (synopsis "Completely customisable TOCs")
@@ -4715,7 +4738,7 @@ hyperlink to the target of the DOI.")
               (list "/doc/latex/etoolbox/"
                     "/tex/latex/etoolbox/")
               (base32
-               "1w9mycfa0lx9whjzfybx58608phcrfk33w3igy566qv23a1z9rzc")
+               "070iaj540rglf0c80l0hjkwg6aa7qyskhh4iwyhf7n8vrg5cjjab")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/etoolbox")
     (synopsis "e-TeX tools for LaTeX")
@@ -4941,7 +4964,7 @@ array environments; verbatim handling; and syntax diagrams.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0c3hrki9pmhz4iall0436wrlrg6qkb1fsdfhz9hv7ysxryr2gihj"))))
+                "1ci6hr8hx4g2x359n6wqvw6w8fv42cjjpzxxxd3pn6av5nkaiav3"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/polyglossia"))
     (home-page "https://www.ctan.org/pkg/polyglossia")
@@ -4987,7 +5010,7 @@ situations where longtable has problems.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1ngzgiy8wd3b9gnbx802x90xa179xxm7vf5jhfdkpgrfxwlycfby"))))
+                "1qcmcsxdsibca0mad559vhz36xaxsbkivgv1hc98vdyd90fg4y31"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5101,7 +5124,7 @@ command.")
               (list "/doc/latex/bookmark/"
                     "/tex/latex/bookmark/")
               (base32
-               "1vl1rrydh5jh78llp4i5r1hvznghm9gddwcnfnzwlgp9z67gybh1")
+               "0xwjdah0p4an0fknvgj9y5phl62sf522z6570pvy6c09hkz0j4h1")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/bookmark")
     (synopsis "Bookmark (outline) organization for hyperref")
@@ -5148,7 +5171,7 @@ drivers, and VTeX and pdfTeX.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1s1rv6zgw105w2j6ffhnk914qrix87y1ndzri1q72g2kbr91zlbg"))))
+                "0m4r52gw9vwsi1pzwh0cy03jxhwizymi4a2fj3jfs5rrvh105r5y"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5237,7 +5260,7 @@ floats, center, flushleft, and flushright, lists, and pages.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0hrwspqkqfahxyzzsnjyrxlgxj06zw1f3636gx76pvl4xhvdj1cj"))))
+                "1h2zv7cps0pknqhy2dyfclyi002lmsfshm0rn6ywfl9p4fnvh0bc"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5393,7 +5416,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
               (list "/doc/latex/kvoptions/"
                     "/tex/latex/kvoptions/")
               (base32
-               "04v733njj6ynf1prj5rxljqbjq925jyycdprc78n7g01knn13wgr")
+               "02i4n2n3j4lg68d3nam08m63kb4irc99wfhyc2z51r02lm1wwmvw")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-generic-kvsetkeys" ,texlive-generic-kvsetkeys)
@@ -5707,7 +5730,7 @@ one of the packages @code{calrsfs} and @code{mathrsfs}.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0y2y08kr3w6asm9lblj9yywqmhaal36fq71zzcbfsc7cvwf641q7"))))
+                "12f7pbhiav4iz3rra5vq85v9f14h8j1ybi42kvnkzgjsay87p7gf"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/eso-pic"))
     (home-page "https://www.ctan.org/pkg/eso-pic")
@@ -5801,7 +5824,7 @@ in the form @code{key=value} are available, for example:
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1bfpl8mr4h3p46649wb7pdkc3l44r8fqbv89abb3jj0zh8c10928"))))
+                "1kak9i6nwz6vc4xjj6lbvkb69s49pis6qynjzvsjraxbdw28y2dq"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/multirow"))
     (home-page "https://www.ctan.org/pkg/multirow")
@@ -5862,7 +5885,7 @@ positions; a grid for orientation is available.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "12kdsrr55lp0s4xl279gh6mi9gw909vmd96p10dvhbazgxn3ccxs"))))
+                "1zll8jci8lsd7y44j567akf6y8fp2p7qq23rs527zhr0br9mn3sh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5892,7 +5915,7 @@ designed class) helps alleviate this untidiness.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1r1g9lb6bqjrahqmdkazsnifcyxgkp8r33za2h60h50jfvrab66f"))))
+                "140kl8r7g2ak2frjn5pmwiwibfynyfwp897r9vk8pypmn390lzr2"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/pdfpages"))
     (home-page "https://www.ctan.org/pkg/pdfpages")
@@ -6452,7 +6475,7 @@ the derived Type 1 font, together with support files for TeX (LaTeX).")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "01ghqyaxxkfscs9jjgnx65hmvqllfzgxc0r5vwpqs7y1h97y6cgc"))))
+                "140k9dz2g2vj5ypgyqx3px9c1y9a820y8kq139p96lw0yk6839aw"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -6481,7 +6504,7 @@ than the bitmaps Metafont creates.")
               (uri (texlive-ref "latex" "acmart"))
               (sha256
                (base32
-                "1avk9wl7hmgxvv8axd134wl6l8khvw7chw568nc8q70xwiwcqcpk"))
+                "12wxav9r6v7dlfja9myrwz7famgfpcfwd292qzmgg283xgngh9kd"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/acmart"))
@@ -6653,7 +6676,7 @@ package of that name now exists.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mcp0x3snhx9phhfxqwn6d12b84vi049ljd1l11ianp3i4kad6ls"))))
+                "0hnf821yvki9bzfkz79ns9m1msjp3yvd4dhf3268wrpr1zjx6w8v"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/preview"
@@ -6685,7 +6708,7 @@ files.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0dl3dliz0vwds3804s1kxaj0ghd721v2c6hws9ghx0bjky09yxbx"))))
+                "09pd4wynksg1y1ddxnqbhk2dc185zw5nyi794d86n3qx8l014ijy"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/acronym"))
     (home-page "https://www.ctan.org/pkg/acronym")
@@ -6714,7 +6737,7 @@ e-TeX.")
                     "/tex/generic/config/pdftex-dvi.tex"
                     "/tex/generic/pdftex/")
               (base32
-               "181krzhxs61s62fr6gz7x08c57rbgc2b8i2pr7r8hr6f706ywp26")
+               "1wx928rqsv0x1a8vc7aq49w3nglr4bmlhl822slqglymfxrmb91b")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
@@ -6729,7 +6752,7 @@ directly generate PDF documents instead of DVI.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "20200406")
+   (version "20210325")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -6806,7 +6829,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "20200406")
+   (version "20210325")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash-minimal)     ;for wrap-program
@@ -7198,7 +7221,7 @@ required: automatic sectioning and pagination, spell checking and so forth.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ganz4r78zmvq0s3w9d59pc2qh9pv0akv21f57yc3d5yyb520p6x"))))
+                "0a1v70k6231323y1lazfda1y9568w8hn7c8jhc7rblkhdfv3slw7"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -7238,7 +7261,7 @@ specification.  It replaces the now obsolete @code{movie15} package.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0x7v3ih7k9hqfcnya0wchks63b67yngi21a6343vlwzdqn84mbyp"))))
+                "1mrz1mj59m27bfya52vi4lm84ifisaf30pmf8id1biqwcq4jyynh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -7279,7 +7302,7 @@ It also ensures compatibility with the @code{media9} and @code{animate} packages
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "07zqxynjh3qnnb4fxx5bhw4r21dbsrhanrq38ag62acr876l7agm"))))
+                "04ww5abfm7dx81d21yr2gwy9jswaalnfm2384xp4cyx7srd9spfv"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/ms"
@@ -7439,7 +7462,7 @@ striking out (line through words) and crossing out (/// over words).")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1hxivv4iq4ji1rz34fdx3hf9i0dj3a8336w1pa87jyavbl07n5g7"))))
+         "1jk10rxz5f8vh46am11b40hxhhikk67h9jr3z877q5qc8kwppgza"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("texlive-latex-pgf-generic"
@@ -7453,7 +7476,7 @@ striking out (line through words) and crossing out (/// over words).")
            (file-name (string-append "texlive-latex-pgf-generic" version "-checkout"))
            (sha256
             (base32
-             "1gh1vm8hkfgz1kw1cdws9hbw9llzw6n7w0v7z763am5amd3cyhhm"))))))
+             "05zdq7y3am109m5534ahqqp9x5iar3ha68v1r4zkrdly2mijxz2j"))))))
     (propagated-inputs
      `(("texlive-latex-xcolor" ,texlive-latex-xcolor)))
     (arguments
@@ -7497,7 +7520,7 @@ produce either PostScript or PDF output.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "18bfdfhdfc7nxr29wvcmp08wgq6f3fc7yysg1sgzgsqrffr1viwa"))))
+                "1m6i8162r6ka19q517llrf0lax80rrsq564qirwk1chv5dqsmnfi"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -7741,7 +7764,7 @@ these items with a simple syntax.")
               "texlive-generic-ltxcmds"
               '("/tex/generic/ltxcmds/")
               (base32
-               "0mdzy76sbc3pmas5zqxn35w9xcg4v7j4p31jcjm9f4hzm27y974a")
+               "1lr77yai2qivlx26s5094czpfxmg96bhxps5wbm8xn7cpsw0zbd9")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/ltxcmds")
     (synopsis "LaTeX kernel commands extracted for general use")
@@ -7956,7 +7979,7 @@ AMS-LaTeX, AMS-TeX, and plain TeX).  The distribution includes Michael Barr's
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "056q9sg3bn8j70laspwdvh7fr3635l7vv3762h6rq79a58g3bya4"))))
+         "0fr0s3jhrvplddb42if570dxllz54fa0pf4d2am27h8m385nghbf"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -8015,7 +8038,7 @@ Support for use with LaTeX is available in @code{freenfss}, part of
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "145klhcf1i1n9rldjxccd3gkjxwp3i36601xlhch8kyf64rrgybk"))))
+                "1xprxdy0a5bwhyiyzdffq0q0dd4ijhra8hs39djdjd32r1mk3n8a"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -8067,7 +8090,7 @@ of support information.")
                     "/tex/generic/context/ppchtex/"
                     "/tex/latex/context/")
               (base32
-               "0krbxj0cjyy9b6xv5xx670rh8y3pxbqziljjj80qbdwixk1lf01q")
+               "0qrc9278h50c9k94jdjlbcbjnsmidxf7pqh10azqf6sgzifx3d7s")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/context")
     (synopsis "ConTeXt macro package")
@@ -8087,7 +8110,7 @@ for a wealth of support information.")
               (list "/doc/latex/beamer/"
                     "/tex/latex/beamer/")
               (base32
-               "1yw9ixmjc0h1nqxsvd8lvibdggcysx25001pzzixg1b00l2jf242")
+               "091n27n4l3iac911bvmpp735ffryyzaq46mkclgn3q9jsvc4ngiv")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-hyperref" ,texlive-latex-hyperref)
@@ -8221,7 +8244,7 @@ change.")
                          "/tex/generic/pstricks/"
                          "/tex/latex/pstricks/")
                    (base32
-                    "0sdq0ij83vg154205n1cps9yirr45240dfcly4bms2cqc789bk5a")
+                    "15c9iqfq2y9c8c78cvqb6vzd5a5rm7qq5x7m05jq1hb8sgqrqb0j")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -8320,7 +8343,7 @@ LuaTeX (respectively) is not the engine in use.")
                    (list "/doc/latex/tools/"
                          "/source/latex/tools/")
                    (base32
-                    "1860bll28mr8nhbdfx073mj87vgg3gpc62v8bk9q0kq8pg0wsx1a"))))
+                    "1xas0b69r3d5x4zhcqysgybyqaikd9avv6r1bdckb947id3iaz58"))))
     (package
       (inherit template)
       (arguments
@@ -8355,7 +8378,7 @@ are part of the LaTeX required tools distribution, comprising the packages:
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
+                "0w4x82wmdvcmy8z3p55xvpz5q7jac1q1j591hi8mngfyqa8rda1c"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/xkeyval"
@@ -8521,7 +8544,7 @@ to what constitutes a good table in this context.  The package offers
                    (list "/doc/latex/csquotes/"
                          "/tex/latex/csquotes/")
                    (base32
-                    "1k7riymar0xx41n03p6yscrsjr2mzmzzkqihh2yv4lixd1nd7l8j")
+                    "17y5mrmjmi7n0cgq4cnqr55f4bni6lx1pfdv5pzsmbrzha3mhbfg")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -8579,7 +8602,7 @@ XML file.
                    (list "/doc/latex/biblatex/"
                          "/tex/latex/biblatex/")
                    (base32
-                    "0bq15ynx84v3ppz5ar1k321k1ck85x2p0irgxgzjh1lna9h6w7v0")
+                    "091cz2vrq22d1fr05wljd8vbllsz95q2hn2p8hhrwb2l2xrmxwn8")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -8618,7 +8641,7 @@ section.
                    (list "/doc/latex/todonotes/"
                          "/tex/latex/todonotes/")
                    (base32
-                    "0lvxsskz4bdfxhd59hf77kiq8k4nh2spb66vc6hifdgi21z8r8wm")
+                    "1jqw8jy73488bdr971w0dnlggsvicagpnpx8ddqkma920ba8rabp")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -8657,7 +8680,7 @@ included in the @code{units} bundle.")
                    (list "/doc/latex/microtype/"
                          "/tex/latex/microtype/")
                    (base32
-                    "1yig4i0alqrb1a6hhhlh5y0y4dzpznh698j0cb9632m2cd3aghwz")
+                    "07861ixrjzxm0l24z82ivhaj4v6xm4ijbaabp66jxsf8s8h7dq9n")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -8682,7 +8705,7 @@ the bundle.")
                    (list "/doc/latex/caption/"
                          "/tex/latex/caption/")
                    (base32
-                    "11wnakgbqbpqvc6rr1j0s7qw5jvkhf3miizax4l73i87a90gxk6b")
+                    "1isnn375d14xsx398j3m8rbb0pdk12kijw4xcgl82xici170klwq")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -8905,7 +8928,7 @@ matching maths fonts are provided by the @code{fourier} and
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "19mhp9l7cjw0sbq55c9lz0l2pffkyhyir3i63jqynifjmglbgkl7"))))
+         "0j3w1y66pkf3bjl9dh5xy3lfg33rg08s4wx37a3jcndvcji20j3f"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/fontaxes"))
     (home-page "http://www.ctan.org/pkg/fontaxes")
@@ -8974,7 +8997,7 @@ or if it differs from the weight desired for another font family.  The
                     "/fonts/vf/impallari/cabin/"
                     "/tex/latex/cabin/")
               (base32
-               "0878gc4aqs9168kfb1j3js7rrxvf9lrxwfqzc9cag1cjy60nqljy")
+               "1gqqqbj7i18fs1ss5n3axd821hzq5kbv1dl7dqxp4gba619f1rli")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/cabin")
     (synopsis "Humanist Sans Serif font with LaTeX support")
@@ -9005,7 +9028,7 @@ use with [pdf]LaTeX.")
                     "/fonts/vf/public/newtx/"
                     "/tex/latex/newtx/")
               (base32
-               "0fa90qz8px369yk0x1nhmq4901rvnclx06ijb4ir57f2324rrg8d")
+               "0h0wm3cd0wxag5x7vy3vgr42jd8m6ffkl90pnkvqdxzbnfdjv3l6")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/newtx")
     (synopsis "Repackaging of the TX fonts with improved metrics")
@@ -9033,7 +9056,7 @@ mathematics package that matches Libertine text quite well.")
                     "/fonts/vf/public/xcharter/"
                     "/tex/latex/xcharter/")
               (base32
-               "1qlid98lg0wcdq6hpk9kl2cl139pxcw6y8x8mfah2j95wq1i64lm")
+               "0d8rvcmvxrlxqqxpirxqbhmiijpsz5y4vvldh1jnc018aannjlhm")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/xcharter")
     (synopsis "Extension of the Bitstream Charter fonts")
@@ -9310,7 +9333,7 @@ The macros were designed for use within other macros.")
                    (list "/doc/latex/adjustbox/"
                          "/source/latex/adjustbox/")
                    (base32
-                    "14vd0yd50bky2pbbjkn59q1aglnqpdhh8vwjdyan0jkzljsr2ch8"))))
+                    "074nxbnl184b6iwhis5n85pilq3b2pld3bbrq0wc30hw462m898k"))))
     (package
       (inherit template)
       (arguments
@@ -9351,7 +9374,7 @@ provided box macros are @code{\\lapbox}, @code{\\marginbox},
                    (list "/doc/latex/tcolorbox/"
                          "/tex/latex/tcolorbox/")
                    (base32
-                    "1swhagdj0a39ssifp29a36ldrjqmx8w92dqsgsjpal6lhksvzn2w")
+                    "1qnsbblkadzdn1fx2k21xnlwcb35pg9xya24chkm66jmidi22qp0")
                    #:trivial? #true)))
     (package
       (inherit template)
