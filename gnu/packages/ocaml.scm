@@ -4381,10 +4381,10 @@ for programming languages, but also for manipulating terms of the λ-calculus
 or quantified formulas.")
     (license license:gpl3+)))
 
-(define-public ocaml4.07-earley
+(define-public ocaml-earley
   (package
-    (name "ocaml4.07-earley")
-    (version "2.0.0")
+    (name "ocaml-earley")
+    (version "3.0.0")
     (home-page "https://github.com/rlepigre/ocaml-earley")
     (source
      (origin
@@ -4395,13 +4395,12 @@ or quantified formulas.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "18k7bi7krc4bvqnhijz1q0pfr0nfahghfjifci8rh1q4i5zd0xz5"))))
+         "1vi58zdxchpw6ai0bz9h2ggcmg8kv57yk6qbx82lh47s5wb3mz5y"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
+    (propagated-inputs
+     `(("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (synopsis "Parsing library based on Earley Algorithm")
     (description "Earley is a parser combinator library base on Earley's
 algorithm.  It is intended to be used in conjunction with an OCaml syntax
