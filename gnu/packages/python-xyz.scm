@@ -25984,3 +25984,32 @@ representing paths or filenames.")
 safe characters and an escape character, escape safe strings and unescape the
 result.")
     (license license:expat)))
+
+(define-public python-recommonmark
+  (package
+    (name "python-recommonmark")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "recommonmark" version))
+       (sha256
+        (base32
+         "0rvdd2ikdr0yg6cx6594fdzn53cmdc0g0i6qsbcdq8i2kxjdpd5x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-commonmark" ,python-commonmark)
+       ("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-test-sphinx
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (delete-file "tests/test_sphinx.py")))))))
+    (home-page "https://github.com/readthedocs/recommonmark")
+    (synopsis "Docutils-compatibility bridge to CommonMark")
+    (description
+     "This packages provides a docutils-compatibility bridge to CommonMark,
+enabling you to write CommonMark inside of Docutils & Sphinx projects.")
+    (license license:expat)))
