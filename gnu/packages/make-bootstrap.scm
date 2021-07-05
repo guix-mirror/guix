@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -880,10 +880,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (arguments
      `(#:modules ((guix build utils))
        #:builder
-       (let ((out (assoc-ref %outputs "out")))
+       (begin
          (use-modules (guix build utils)
                       (ice-9 match)
                       (srfi srfi-26))
+
+         (define out (assoc-ref %outputs "out"))
 
          (setvbuf (current-output-port)
                   (cond-expand (guile-2.0 _IOLBF) (else 'line)))
