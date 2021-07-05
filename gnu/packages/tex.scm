@@ -3415,6 +3415,35 @@ code are built: it is an API for TeX programmers.  The packages are set up so
 that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-l3backend
+  (package
+    (name "texlive-latex-l3backend")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "l3backend"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0mlwyzssqn6wkyv9hzp24d40p8f20zrjqgvqyqs1rd7q7awan42a"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/l3backend"
+       #:tex-engine "tex"
+       #:tex-format #f
+       #:texlive-latex-base #f))
+    (native-inputs
+     `(("texlive-docstrip" ,texlive-docstrip)))
+    (home-page "https://www.ctan.org/pkg/l3backend")
+    (synopsis "LaTeX3 backend drivers")
+    (description
+     "This package forms parts of expl3, and contains the code used to
+interface with backends (drivers) across the expl3 codebase. The functions
+here are defined differently depending on the engine in use. As such, these
+are distributed separately from l3kernel to allow this code to be updated on
+an independent schedule.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-l3packages
   (package
     (name "texlive-latex-l3packages")
