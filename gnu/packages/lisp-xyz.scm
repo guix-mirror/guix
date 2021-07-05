@@ -9820,6 +9820,35 @@ caching based on arguments (an expanded form of memoization).")
 (define-public ecl-function-cache
   (sbcl-package->ecl-package sbcl-function-cache))
 
+(define-public sbcl-cache-while
+  (let ((commit "38e9ffbdb2c894670c366c1e5802ffcc8cfd43a7")
+        (revision "1"))
+    (package
+      (name "sbcl-cache-while")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charje/cache-while")
+               (commit commit)))
+         (file-name (git-file-name "cache-while" version))
+         (sha256
+          (base32 "1qil68rfn5irmkb0jk1f6g1zy80wgc3skl8cr4rfgh7ywgm5izx3"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/charje/cache-while")
+      (synopsis "Temporary / one-time caching macro for Common Lisp")
+      (description
+       "This is a Common Lisp macro for defining temporary caches that
+invalidate based on expressions evaluating to different values.")
+      (license license:llgpl))))
+
+(define-public cl-cache-while
+  (sbcl-package->cl-source-package sbcl-cache-while))
+
+(define-public ecl-cache-while
+  (sbcl-package->ecl-package sbcl-cache-while))
+
 (define-public sbcl-type-r
   (let ((commit "83c89e38f2f7a7b16f1012777ecaf878cfa6a267")
         (revision "1"))
