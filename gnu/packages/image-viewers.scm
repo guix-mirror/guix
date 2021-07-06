@@ -100,7 +100,13 @@
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00d416qb4109pm77ikhnmds8qng90ni2jan9kdnxz7b6sh5f61nz"))))
+        (base32 "00d416qb4109pm77ikhnmds8qng90ni2jan9kdnxz7b6sh5f61nz"))
+       (patches
+        (search-patches
+         ;; Pre-requisite for 'patch-script' phase.
+         "ytfzf-programs.patch"
+         ;; Disables self-update.
+         "ytfzf-updates.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no test suite
@@ -110,15 +116,7 @@
         (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'apply-patches
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Pre-requisite for 'patch-script' phase.
-             (invoke "patch" "--input"
-                     (assoc-ref inputs "ytfzf-programs"))
-             ;; Disables self-update.
-             (invoke "patch" "--input"
-                     (assoc-ref inputs "ytfzf-updates"))))
-         (add-after 'apply-patches 'patch-script
+         (add-after 'unpack 'patch-script
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bash (assoc-ref inputs "bash"))
@@ -224,11 +222,6 @@
                (("report at: https://github.com/pystardust/ytfzf")
                 "report at: https://issues.guix.gnu.org"))))
          (delete 'configure))))         ;no configure script
-    (native-inputs
-     `(("ytfzf-programs"
-        ,(search-patch "ytfzf-programs.patch"))
-       ("ytfzf-updates"
-        ,(search-patch "ytfzf-updates.patch"))))
     (inputs
      `(("bash" ,bash)
        ("catimg" ,catimg)
