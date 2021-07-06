@@ -32,7 +32,7 @@
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2345,6 +2345,18 @@ implementation of the Open Sound Control (@dfn{OSC}) protocol.")
        (sha256
         (base32 "156c2dgh6jrsyfn1y89nslvaxm4yifmxridsb708yvkaym02w2l8"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The header that pkg-config expects is include/rtaudio/RtAudio.h,
+         ;; but this package installs it as include/RtAudio.h by default.
+         (add-after 'install 'fix-inc-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (inc (string-append out "/include")))
+               (mkdir-p (string-append inc "/rtaudio"))
+               (rename-file (string-append inc "/RtAudio.h")
+                            (string-append inc "/rtaudio/RtAudio.h"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

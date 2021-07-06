@@ -4841,12 +4841,7 @@ sample library.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "src") #t))
-         (add-after 'chdir 'fix-include
-           (lambda _
-             (substitute* "muse/driver/rtaudio.h"
-               (("rtaudio/RtAudio.h") "RtAudio.h"))
-             #t)))))
+           (lambda _ (chdir "src"))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dssi" ,dssi)
