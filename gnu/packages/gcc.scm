@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -46,6 +46,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 regex))
@@ -457,6 +458,17 @@ Go.  It also includes runtime support libraries for these languages.")
                              "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
                              (getenv "CPLUS_INCLUDE_PATH"))))))))))))
 
+(define gcc-canadian-cross-objdump-snippet
+  ;; Fix 'libcc1/configure' error when cross-compiling GCC.  Without that,
+  ;; 'libcc1/configure' wrongfully determines that '-rdynamic' support is
+  ;; missing because $gcc_cv_objdump is empty:
+  ;;
+  ;;   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67590
+  ;;   http://cgit.openembedded.org/openembedded-core/commit/?id=f6e47aa9b12f9ab61530c40e0343f451699d9077
+  #~(substitute* "libcc1/configure"
+      (("\\$gcc_cv_objdump -T")
+       "$OBJDUMP_FOR_TARGET -T")))
+
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
   ;; them in a VPATH build.
@@ -479,17 +491,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-fix-texi2pod.patch"
                                        "gcc-5-hurd.patch"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Fix 'libcc1/configure' error when cross-compiling GCC.
-               ;; Without that, 'libcc1/configure' wrongfully determines that
-               ;; '-rdynamic' support is missing because $gcc_cv_objdump is
-               ;; empty:
-               ;;
-               ;;   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67590
-               ;;   http://cgit.openembedded.org/openembedded-core/commit/?id=f6e47aa9b12f9ab61530c40e0343f451699d9077
-               '(substitute* "libcc1/configure"
-                  (("\\$gcc_cv_objdump -T")
-                   "$OBJDUMP_FOR_TARGET -T")))))
+              (snippet gcc-canadian-cross-objdump-snippet)))
     (inputs
      `(;; GCC5 needs <isl/band.h> which is removed in later versions.
        ("isl" ,isl-0.18)
@@ -557,7 +559,9 @@ It also includes runtime support libraries for these languages.")))
                 "0l7d4m9jx124xsk6xardchgy2k5j5l2b15q322k31f0va4d8826k"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
-                                       "gcc-8-sort-libtool-find-output.patch"))))))
+                                       "gcc-8-sort-libtool-find-output.patch"))
+              (modules '((guix build utils)))
+              (snippet gcc-canadian-cross-objdump-snippet)))))
 
 (define-public gcc-9
   (package
@@ -572,7 +576,9 @@ It also includes runtime support libraries for these languages.")))
               "13l3p6g2krilaawbapmn9zmmrh3zdwc36mfr3msxfy038hps6pf9"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))))))
+                                     "gcc-5.0-libvtv-runpath.patch"))
+            (modules '((guix build utils)))
+            (snippet gcc-canadian-cross-objdump-snippet)))))
 
 (define-public gcc-10
   (package
@@ -586,7 +592,9 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "0i6378ig6h397zkhd7m4ccwjx5alvzrf2hm27p1pzwjhlv0h9x34"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))))))
+                                     "gcc-5.0-libvtv-runpath.patch"))
+            (modules '((guix build utils)))
+            (snippet gcc-canadian-cross-objdump-snippet)))))
 
 (define-public gcc-11
   (package
@@ -600,7 +608,9 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "1pwxrjhsymv90xzh0x42cxfnmhjinf2lnrrf3hj5jq1rm2w6yjjc"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))))))
+                                     "gcc-5.0-libvtv-runpath.patch"))
+            (modules '((guix build utils)))
+            (snippet gcc-canadian-cross-objdump-snippet)))))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
