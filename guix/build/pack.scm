@@ -27,8 +27,10 @@ deterministically.  When TAR, a GNU tar command file name, is provided, the
 '(\"gzip\" \"-9n\"), is provided, the compressor is explicitly specified via
 the `-I' option."
   (define (tar-supports-sort? tar)
-    (zero? (system* tar "cf" "/dev/null" "--files-from=/dev/null"
-                    "--sort=name")))
+    (with-error-to-port (%make-void-port "w")
+      (lambda ()
+        (zero? (system* tar "cf" "/dev/null" "--files-from=/dev/null"
+                        "--sort=name")))))
 
   `(,@(if compressor
           (list "-I" (string-join compressor))
