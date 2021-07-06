@@ -4,6 +4,8 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
+;;; Copyright © 2020 Christine Lemmer-Webber <cwebber@dustycloud.org>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu system setuid)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -801,15 +804,49 @@ directory."
 FILES must be a list of name/file-like object pairs."
   (service etc-service-type files))
 
+(define (setuid-program->activation-gexp programs)
+  "Return an activation gexp for setuid-program from PROGRAMS."
+  (let ((programs (map (lambda (program)
+                         ;; FIXME This is really ugly, I didn't managed to use
+                         ;; "inherit"
+                         (let ((program-name (setuid-program-program program))
+                               (setuid?      (setuid-program-setuid? program))
+                               (setgid?      (setuid-program-setgid? program))
+                               (user         (setuid-program-user program))
+                               (group        (setuid-program-group program)) )
+                           #~(setuid-program
+                              (setuid? #$setuid?)
+                              (setgid? #$setgid?)
+                              (user    #$user)
+                              (group   #$group)
+                              (program #$program-name))))
+                       programs)))
+    (with-imported-modules (source-module-closure
+                            '((gnu system setuid)))
+      #~(begin
+          (use-modules (gnu system setuid))
+
+          (activate-setuid-programs (list #$@programs))))))
+
+(define (setuid-program-file-like-deprecated file-like)
+  (match file-like
+    ((? file-like? program)
+     (warning
+      (G_ "representing setuid programs with '~a' is \
+deprecated; use 'setuid-program' instead~%") program)
+     (setuid-program (program program)))
+    ((? setuid-program? program)
+     program)))
+
 (define setuid-program-service-type
   (service-type (name 'setuid-program)
                 (extensions
                  (list (service-extension activation-service-type
-                                          (lambda (programs)
-                                            #~(activate-setuid-programs
-                                               (list #$@programs))))))
+                                          setuid-program->activation-gexp)))
                 (compose concatenate)
-                (extend append)
+                (extend (lambda (config extensions)
+                          (map setuid-program-file-like-deprecated
+                               (append config extensions))))
                 (description
                  "Populate @file{/run/setuid-programs} with the specified
 executables, making them setuid-root.")))

@@ -46,7 +46,7 @@ Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
-Copyright @copyright{} 2017, 2021 Christopher Lemmer Webber@*
+Copyright @copyright{} 2017, 2021 Christine Lemmer-Webber@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
@@ -32397,6 +32397,30 @@ package, can be designated by this G-expression (@pxref{G-Expressions}):
 @example
 #~(string-append #$shadow "/bin/passwd")
 @end example
+
+@deftp {Data Type} setuid-program
+This data type represents a program with a setuid or setgid bit set.
+
+@table @asis
+@item @code{program}
+A file-like object having its setuid and/or setgid bit set.
+
+@item @code{setuid?} (default: @code{#t})
+Whether to set user setuid bit.
+
+@item @code{setgid?} (default: @code{#f})
+Whether to set group setgid bit.
+
+@item @code{user} (default: @code{0})
+UID (integer) or user name (string) for the user owner of the program,
+defaults to root.
+
+@item @code{group} (default: @code{0})
+GID (integer) goup name (string) for the group owner of the program,
+defaults to root.
+
+@end table
+@end deftp
 
 A default set of setuid programs is defined by the
 @code{%setuid-programs} variable of the @code{(gnu system)} module.
