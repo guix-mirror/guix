@@ -23,6 +23,7 @@
 (define-module (gnu packages task-management)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -45,32 +46,44 @@
   #:use-module (guix build-system python))
 
 (define-public clikan
-  (let ((commit "90fd60e485b46e49fcec7d029384fe1471c4443a")
-        (revision "0"))
+  (let ((commit "55ab29e68263c6fed2844aef96fbebacda3eba9b")
+        (revision "1"))
     (package
       (name "clikan")
       (version
-       (git-version "0.1.3" revision commit))
+       (git-version "0.2.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/kitplummer/clikan/")
+               (url "https://github.com/kitplummer/clikan")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "113kizm05v4cvyhdlg9zami54wk9qaiizq19mx36qvq9w7pg7a3k"))))
+          (base32 "1nyx80z53xxlbhpb5k22jnv4jajxqhjm0gz7qb18w9pqqlrvkqd4"))))
       (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+               (setenv "HOME" (getenv "TEMP"))
+               (when tests?
+                 (add-installed-pythonpath inputs outputs)
+                 (invoke "pytest" "-vv")))))))
+      (native-inputs
+       `(("pytest" ,python-pytest)
+         ("click" ,python-click)))
       (inputs
        `(("click" ,python-click)
          ("click-default-group" ,python-click-default-group)
          ("pyyaml" ,python-pyyaml)
-         ("terminaltables" ,python-terminaltables)))
-      (synopsis "Command-line kanban (boarding) utility")
+         ("rich" ,python-rich)))
+      (home-page "https://github.com/kitplummer/clikan")
+      (synopsis "Command-line kanban utility")
       (description
        "Clikan is a super simple command-line utility for tracking tasks
 following the Japanese kanban (boarding) style.")
-      (home-page "https://github.com/kitplummer/clikan/")
       (license license:expat))))
 
 (define-public t-todo-manager
