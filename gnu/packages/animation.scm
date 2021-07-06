@@ -178,7 +178,7 @@ C++ @dfn{Standard Template Library} (STL).")
        ("imagemagick" ,imagemagick)
        ("libxml++" ,libxml++)
        ("libsigc++" ,libsigc++)
-       ("mlt" ,mlt)
+       ("mlt" ,mlt-6)
        ("openexr" ,openexr)
        ("pango" ,pango)))
     (native-inputs

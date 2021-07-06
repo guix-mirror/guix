@@ -3014,7 +3014,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        "This package provides a command-line interface for Twitch.tv")
       (license license:gpl3+))))
 
-(define-public mlt
+(define-public mlt-6
   (package
     (name "mlt")
     (version "6.26.1")
@@ -3027,25 +3027,24 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (sha256
                (base32
                 "1gz79xvs5jrzqhwhfk0dqdd3xiavnjp4q957h7nb02rij32byb39"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags '(,(string-append "CC=" (cc-for-target))
-                      ,(string-append "CXX=" (cxx-for-target)))
+     `(#:tests? #f ;no tests
        #:configure-flags
-       (list "--enable-gpl3"
-             "--enable-gpl")
+       (list (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "gtk+")
+                            "/lib/gtk-2.0/include")
+             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "glib")
+                            "/lib/glib-2.0/include"))
        #:phases
        (modify-phases %standard-phases
-         (add-after
-             'configure 'override-LDFLAGS
+         (add-before 'configure 'override-LDFLAGS
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "config.mak"
-               (("LDFLAGS\\+=")
-                (string-append "LDFLAGS+=-Wl,-rpath="
-                               (assoc-ref outputs "out")
-                               "/lib ")))
-             #t)))))
+             (setenv "LDFLAGS"
+                     (string-append
+                      "-Wl,-rpath="
+                      (assoc-ref outputs "out") "/lib")))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("alsa-plugins" ,alsa-plugins "pulseaudio")
@@ -4705,7 +4704,7 @@ transitions, and effects and then export your film to many common formats.")
        ("lame" ,lame)
        ("libvpx" ,libvpx)
        ("libx264" ,libx264)
-       ("mlt" ,mlt)
+       ("mlt" ,mlt-6)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
