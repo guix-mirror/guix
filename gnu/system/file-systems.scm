@@ -55,7 +55,6 @@
             file-system-dependencies
             file-system-location
 
-            reduce-directories
             file-system-type-predicate
             btrfs-subvolume?
             btrfs-store-subvolume-file-name
@@ -265,27 +264,6 @@ For example:
 
 (define (file-name-depth file-name)
   (length (string-tokenize file-name %not-slash)))
-
-(define (reduce-directories file-names)
-  "Eliminate entries in FILE-NAMES that are children of other entries in
-FILE-NAMES.  This is for example useful when passing a list of files to GNU
-tar, which would otherwise descend into each directory passed and archive the
-duplicate files as hard links, which can be undesirable."
-  (let* ((file-names/sorted
-          ;; Ascending sort by file hierarchy depth, then by file name length.
-          (stable-sort (delete-duplicates file-names)
-                       (lambda (f1 f2)
-                         (let ((depth1 (file-name-depth f1))
-                               (depth2 (file-name-depth f2)))
-                           (if (= depth1 depth2)
-                               (string< f1 f2)
-                               (< depth1 depth2)))))))
-    (reverse (fold (lambda (file-name results)
-                     (if (find (cut file-prefix? <> file-name) results)
-                         results        ;parent found -- skipping
-                         (cons file-name results)))
-                   '()
-                   file-names/sorted))))
 
 (define* (file-system-device->string device #:key uuid-type)
   "Return the string representations of the DEVICE field of a <file-system>

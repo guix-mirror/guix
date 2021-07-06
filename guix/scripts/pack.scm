@@ -231,17 +231,17 @@ its source property."
 
   (with-imported-modules (source-module-closure
                           `((guix build pack)
+                            (guix build store-copy)
                             (guix build utils)
                             (guix build union)
-                            (gnu build install)
-                            (gnu system file-systems))
+                            (gnu build install))
                           #:select? import-module?)
     #~(begin
         (use-modules (guix build pack)
+                     (guix build store-copy)
                      (guix build utils)
                      ((guix build union) #:select (relative-file-name))
                      (gnu build install)
-                     ((gnu system file-systems) #:select (reduce-directories))
                      (srfi srfi-1)
                      (srfi srfi-26)
                      (ice-9 match))
@@ -279,11 +279,11 @@ its source property."
         ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
         ;; with hard links:
         ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
-        (populate-single-profile-directory %root
-                                           #:profile #$profile
-                                           #:profile-name #$profile-name
-                                           #:closure "profile"
-                                           #:database #+database)
+        (populate-store (list "profile") %root #:deduplicate? #f)
+
+        (when #+localstatedir?
+          (install-database-and-gc-roots %root #+database #$profile
+                                         #:profile-name #$profile-name))
 
         ;; Create SYMLINKS.
         (for-each (cut evaluate-populate-directive <> %root)
@@ -291,31 +291,14 @@ its source property."
 
         ;; Create the tarball.
         (with-directory-excursion %root
-          (apply invoke tar
-                 `(,@(tar-base-options
-                      #:tar tar
-                      #:compressor '#+(and=> compressor compressor-command))
-                   "-cvf" ,#$output
-                   ;; Avoid adding / and /var to the tarball, so
-                   ;; that the ownership and permissions of those
-                   ;; directories will not be overwritten when
-                   ;; extracting the archive.  Do not include /root
-                   ;; because the root account might have a
-                   ;; different home directory.
-                   ,#$@(if localstatedir?
-                           '("./var/guix")
-                           '())
-
-                   ,(string-append "." (%store-directory))
-
-                   ,@(reduce-directories
-                      (filter-map (match-lambda
-                                    (('directory directory)
-                                     (string-append "." directory))
-                                    ((source '-> _)
-                                     (string-append "." source))
-                                    (_ #f))
-                                  directives))))))))
+          ;; GNU Tar recurses directories by default.  Simply add the whole
+          ;; current directory, which contains all the generated files so far.
+          ;; This avoids creating duplicate files in the archives that would
+          ;; be stored as hard links by GNU Tar.
+          (apply invoke tar "-cvf" #$output "."
+                 (tar-base-options
+                  #:tar tar
+                  #:compressor '#+(and=> compressor compressor-command)))))))
 
 (define* (self-contained-tarball name profile
                                  #:key target
