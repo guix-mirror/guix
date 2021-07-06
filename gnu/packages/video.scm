@@ -3014,29 +3014,22 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        "This package provides a command-line interface for Twitch.tv")
       (license license:gpl3+))))
 
-(define-public mlt-6
+(define-public mlt
   (package
     (name "mlt")
-    (version "6.26.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/mltframework/mlt")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1gz79xvs5jrzqhwhfk0dqdd3xiavnjp4q957h7nb02rij32byb39"))))
+    (version "7.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mltframework/mlt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13c5miph9jjbz69dhy0zvbkk5zbb05dr3vraaci0d5fdbrlhyscf"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;no tests
-       #:configure-flags
-       (list (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "gtk+")
-                            "/lib/gtk-2.0/include")
-             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "glib")
-                            "/lib/glib-2.0/include"))
+     `(#:tests? #f ;requires "Kwalify"
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'override-LDFLAGS
@@ -3052,7 +3045,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        ("fftw" ,fftw)
        ("frei0r-plugins" ,frei0r-plugins)
        ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
@@ -3080,6 +3073,33 @@ players, transcoders, web streamers and many more types of applications.  The
 functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
     (license license:lgpl2.1+)))
+
+(define-public mlt-6
+  (package
+    (inherit mlt)
+    (name "mlt")
+    (version "6.26.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mltframework/mlt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gz79xvs5jrzqhwhfk0dqdd3xiavnjp4q957h7nb02rij32byb39"))))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "gtk+")
+                             "/lib/gtk-2.0/include")
+             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "glib")
+                            "/lib/glib-2.0/include"))
+       ,@(package-arguments mlt)))
+    (inputs
+     `(("gtk+", gtk+-2)
+       ,@(alist-delete "gtk+" (package-inputs mlt))))))
 
 (define-public v4l-utils
   (package
