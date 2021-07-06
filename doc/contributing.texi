@@ -1299,9 +1299,9 @@ so keep that in mind if you choose to use this feature.}.
 
 For example, to view all the bug reports (or patches, in the case of
 @code{guix-patches}) tagged with the usertag @code{powerpc64le-linux}
-for the user @code{guix-devel@@gnu.org}, open a URL like the following
-in a web browser:
-@url{https://debbugs.gnu.org/cgi-bin/pkgreport.cgi?tag=powerpc64le-linux;users=guix-devel@@gnu.org}.
+for the user @code{guix}, open a URL like the following in a web
+browser:
+@url{https://debbugs.gnu.org/cgi-bin/pkgreport.cgi?tag=powerpc64le-linux;users=guix}.
 
 For more information on how to use usertags, please refer to the
 documentation for Debbugs or the documentation for whatever tool you use
@@ -1309,8 +1309,8 @@ to interact with Debbugs.
 
 In Guix, we are experimenting with usertags to keep track of
 architecture-specific issues.  To facilitate collaboration, all our
-usertags are associated with the single user @code{guix-devel@@gnu.org}.
-The following usertags currently exist for that user:
+usertags are associated with the single user @code{guix}.  The following
+usertags currently exist for that user:
 
 @table @code
 
@@ -1331,9 +1331,9 @@ fails to build reproducibly.
 @end table
 
 If you're a committer and you want to add a usertag, just start using it
-with the @code{guix-devel@@gnu.org} user.  If the usertag proves useful
-to you, consider updating this section of the manual so that others will
-know what your usertag means.
+with the @code{guix} user.  If the usertag proves useful to you,
+consider updating this section of the manual so that others will know
+what your usertag means.
 
 @node Commit Access
 @section Commit Access
