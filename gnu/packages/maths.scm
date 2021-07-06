@@ -3858,6 +3858,9 @@ parts of it.")
                   ;; On aarch64 force the generic 'armv8-a' target
                   ((string-prefix? "aarch64" system)
                    '("TARGET=ARMV8"))
+                  ;; Failed to detect CPU.
+                  ((string-prefix? "armhf" system)
+                   '("TARGET=ARMV7"))
                   (else '()))))
        ;; no configure script
        #:phases
