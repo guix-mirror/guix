@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 shtwzrd <shtwzrd@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
+  #:use-module (gnu system setuid)
   #:use-module (gnu system keyboard)
   #:use-module (gnu services base)
   #:use-module (gnu services dbus)
@@ -681,7 +683,7 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                              #:allow-empty-passwords? empty?)))))
 
 (define screen-locker-setuid-programs
-  (compose list screen-locker-program))
+  (compose list file-like->setuid-program screen-locker-program))
 
 (define screen-locker-service-type
   (service-type (name 'screen-locker)

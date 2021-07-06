@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 (define-module (gnu services dbus)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu system setuid)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module ((gnu packages glib) #:select (dbus))
@@ -156,10 +158,12 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define dbus-setuid-programs
-  ;; Return the file name of the setuid program that we need.
+  ;; Return a list of <setuid-program> for the program that we need.
   (match-lambda
     (($ <dbus-configuration> dbus services)
-     (list (file-append dbus "/libexec/dbus-daemon-launch-helper")))))
+     (list (setuid-program
+            (program (file-append
+                      dbus "/libexec/dbus-daemon-launch-helper")))))))
 
 (define (dbus-activation config)
   "Return an activation gexp for D-Bus using @var{config}."
@@ -335,8 +339,9 @@ tuples, are all set as environment variables when the bus daemon launches it."
 (define polkit-setuid-programs
   (match-lambda
     (($ <polkit-configuration> polkit)
-     (list (file-append polkit "/lib/polkit-1/polkit-agent-helper-1")
-           (file-append polkit "/bin/pkexec")))))
+     (map file-like->setuid-program
+          (list (file-append polkit "/lib/polkit-1/polkit-agent-helper-1")
+                (file-append polkit "/bin/pkexec"))))))
 
 (define polkit-service-type
   (service-type (name 'polkit)

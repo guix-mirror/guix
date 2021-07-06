@@ -13905,8 +13905,8 @@ Linux @dfn{pluggable authentication module} (PAM) services.
 @c FIXME: Add xref to PAM services section.
 
 @item @code{setuid-programs} (default: @code{%setuid-programs})
-List of string-valued G-expressions denoting setuid programs.
-@xref{Setuid Programs}.
+List of @code{<setuid-program>}.  @xref{Setuid Programs}, for more
+information.
 
 @item @code{sudoers-file} (default: @code{%sudoers-specification})
 @cindex sudoers file
@@ -32389,13 +32389,15 @@ the store, we let the system administrator @emph{declare} which programs
 should be setuid root.
 
 The @code{setuid-programs} field of an @code{operating-system}
-declaration contains a list of G-expressions denoting the names of
-programs to be setuid-root (@pxref{Using the Configuration System}).
-For instance, the @command{passwd} program, which is part of the Shadow
-package, can be designated by this G-expression (@pxref{G-Expressions}):
+declaration contains a list of @code{<setuid-program>} denoting the
+names of programs to have a setuid or setgid bit set (@pxref{Using the
+Configuration System}).  For instance, the @command{passwd} program,
+which is part of the Shadow package, with a setuid root can be
+designated like this:
 
 @example
-#~(string-append #$shadow "/bin/passwd")
+(setuid-program
+  (program (file-append #$shadow "/bin/passwd")))
 @end example
 
 @deftp {Data Type} setuid-program
@@ -32426,7 +32428,8 @@ A default set of setuid programs is defined by the
 @code{%setuid-programs} variable of the @code{(gnu system)} module.
 
 @defvr {Scheme Variable} %setuid-programs
-A list of G-expressions denoting common programs that are setuid-root.
+A list of @code{<setuid-program>} denoting common programs that are
+setuid-root.
 
 The list includes commands such as @command{passwd}, @command{ping},
 @command{su}, and @command{sudo}.

@@ -1074,22 +1074,23 @@ use 'plain-file' instead~%")
 (define %setuid-programs
   ;; Default set of setuid-root programs.
   (let ((shadow (@ (gnu packages admin) shadow)))
-    (list (file-append shadow "/bin/passwd")
-          (file-append shadow "/bin/sg")
-          (file-append shadow "/bin/su")
-          (file-append shadow "/bin/newgrp")
-          (file-append shadow "/bin/newuidmap")
-          (file-append shadow "/bin/newgidmap")
-          (file-append inetutils "/bin/ping")
-          (file-append inetutils "/bin/ping6")
-          (file-append sudo "/bin/sudo")
-          (file-append sudo "/bin/sudoedit")
-          (file-append fuse "/bin/fusermount")
+    (map file-like->setuid-program
+         (list (file-append shadow "/bin/passwd")
+               (file-append shadow "/bin/sg")
+               (file-append shadow "/bin/su")
+               (file-append shadow "/bin/newgrp")
+               (file-append shadow "/bin/newuidmap")
+               (file-append shadow "/bin/newgidmap")
+               (file-append inetutils "/bin/ping")
+               (file-append inetutils "/bin/ping6")
+               (file-append sudo "/bin/sudo")
+               (file-append sudo "/bin/sudoedit")
+               (file-append fuse "/bin/fusermount")
 
-          ;; To allow mounts with the "user" option, "mount" and "umount" must
-          ;; be setuid-root.
-          (file-append util-linux "/bin/mount")
-          (file-append util-linux "/bin/umount"))))
+               ;; To allow mounts with the "user" option, "mount" and "umount" must
+               ;; be setuid-root.
+               (file-append util-linux "/bin/mount")
+               (file-append util-linux "/bin/umount")))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'

@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module ((gnu system file-systems)
                 #:select (%elogind-file-systems file-system))
   #:use-module (gnu system)
+  #:use-module (gnu system setuid)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
@@ -1034,14 +1036,15 @@ rules."
 
 (define (enlightenment-setuid-programs enlightenment-desktop-configuration)
   (match-record enlightenment-desktop-configuration
-                <enlightenment-desktop-configuration>
-                (enlightenment)
-    (list (file-append enlightenment
-                       "/lib/enlightenment/utils/enlightenment_sys")
-          (file-append enlightenment
-                       "/lib/enlightenment/utils/enlightenment_system")
-          (file-append enlightenment
-                       "/lib/enlightenment/utils/enlightenment_ckpasswd"))))
+      <enlightenment-desktop-configuration>
+    (enlightenment)
+    (map file-like->setuid-program
+         (list (file-append enlightenment
+                            "/lib/enlightenment/utils/enlightenment_sys")
+               (file-append enlightenment
+                            "/lib/enlightenment/utils/enlightenment_system")
+               (file-append enlightenment
+                            "/lib/enlightenment/utils/enlightenment_ckpasswd")))))
 
 (define enlightenment-desktop-service-type
   (service-type
@@ -1204,8 +1207,11 @@ or setting its password with passwd.")))
          ;; Allow desktop users to also mount NTFS and NFS file systems
          ;; without root.
          (simple-service 'mount-setuid-helpers setuid-program-service-type
-                         (list (file-append nfs-utils "/sbin/mount.nfs")
-                               (file-append ntfs-3g "/sbin/mount.ntfs-3g")))
+                         (map (lambda (program)
+                                (setuid-program
+                                 (program program)))
+                              (list (file-append nfs-utils "/sbin/mount.nfs")
+                               (file-append ntfs-3g "/sbin/mount.ntfs-3g"))))
 
          ;; The global fontconfig cache directory can sometimes contain
          ;; stale entries, possibly referencing fonts that have been GC'd,
