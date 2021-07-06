@@ -3843,13 +3843,17 @@ parts of it.")
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
-             ;; Unfortunately, this is not supported on non-x86 architectures,
+             ;; Unfortunately, this is not supported on all architectures,
              ;; where it leads to failed builds.
              ,@(let ((system (or (%current-target-system) (%current-system))))
                  (cond
                   ((or (string-prefix? "x86_64" system)
                        (string-prefix? "i686" system))
                    '("DYNAMIC_ARCH=1"))
+                  ;; On some of these architectures the CPU can't be detected.
+                  ((string-prefix? "powerpc64le" system)
+                   '("DYNAMIC_ARCH=1"
+                     "TARGET=GENERIC"))
                   ;; On MIPS we force the "SICORTEX" TARGET, as for the other
                   ;; two available MIPS targets special extended instructions
                   ;; for Loongson cores are used.
