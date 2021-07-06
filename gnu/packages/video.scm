@@ -4672,7 +4672,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public shotcut
   (package
     (name "shotcut")
-    (version "21.03.21")
+    (version "21.06.29")
     (source
      (origin
        (method git-fetch)
@@ -4681,7 +4681,7 @@ transitions, and effects and then export your film to many common formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jb488vynn0vmq22z51bg4hb4617732nva9rg52lzl89v5n8gmsi"))))
+        (base32 "0384iv2129mpalia39x8mn5xlbgx9ip994700jzjjxdqfq23a9qm"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f ;there are no tests
@@ -4710,8 +4710,7 @@ transitions, and effects and then export your film to many common formats.")
                  `("FREI0R_PATH" ":" =
                    (,(string-append frei0r "/lib/frei0r-1/")))
                  `("MLT_PREFIX" ":" =
-                   (,(assoc-ref inputs "mlt")))))
-             #t)))))
+                   (,(assoc-ref inputs "mlt"))))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -4724,7 +4723,7 @@ transitions, and effects and then export your film to many common formats.")
        ("lame" ,lame)
        ("libvpx" ,libvpx)
        ("libx264" ,libx264)
-       ("mlt" ,mlt-6)
+       ("mlt" ,mlt)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
