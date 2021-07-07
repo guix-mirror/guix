@@ -692,6 +692,7 @@ the store.")
                                      "glibc-reinstate-prlimit64-fallback.patch"
                                      "glibc-supported-locales.patch"
                                      "glibc-cross-objdump.patch"
+                                     "glibc-cross-objcopy.patch" ;must come 2nd
                                      "glibc-hurd-clock_t_centiseconds.patch"
                                      "glibc-hurd-clock_gettime_monotonic.patch"
                                      "glibc-hurd-mach-print.patch"
