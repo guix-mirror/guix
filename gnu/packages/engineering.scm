@@ -1046,17 +1046,10 @@ translations for KiCad.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_FORMATS=html")
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'build)
-         (add-before 'install 'set-perl-env
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "PERL5LIB"
-                     (string-append (assoc-ref inputs "perl-unicode-linebreak")
-                                    "/lib/perl5/site_perl" ":"
-                                    (getenv "PERL5LIB")))
-             #t))
-         (delete 'check))))
+         (delete 'build))))
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("gettext" ,gettext-minimal)
