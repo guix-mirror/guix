@@ -715,7 +715,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
 (define-public pies
   (package
     (name "pies")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -723,7 +723,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
                            version ".tar.bz2"))
        (sha256
         (base32
-         "11j168qljsinaj5dwmg7nkm2z1aghi6gc3d0wf0pikflnh2q2wqf"))))
+         "0ad5bg1czwmr4qw33aszxzc6ll99a9lfs32lyfb1wl5x9s1cc7az"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
