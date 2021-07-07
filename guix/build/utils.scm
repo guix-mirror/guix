@@ -81,6 +81,7 @@
             list->search-path-as-string
             which
             search-input-file
+            search-input-directory
             search-error?
             search-error-path
             search-error-file
@@ -632,6 +633,22 @@ raised."
     (((_ . directories) ...)
      (or (search-path directories file)
          (raise (condition (&search-error (path directories) (file file))))))))
+
+(define (search-input-directory inputs directory)
+  "Find a sub-directory named DIRECTORY among the INPUTS and return its
+absolute file name.
+
+DIRECTORY must be a string like \"xml/dtd/docbook\".  If DIRECTORY is not
+found, an exception is raised."
+  (match inputs
+    (((_ . directories) ...)
+     (or (any (lambda (parent)
+                (let ((directory (string-append parent "/" directory)))
+                  (and (directory-exists? directory)
+                       directory)))
+              directories)
+         (raise (condition
+                 (&search-error (path directories) (file directory))))))))
 
 
 ;;;

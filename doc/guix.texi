@@ -8677,10 +8677,15 @@ Return the complete file name for @var{program} as found in
 @end deffn
 
 @deffn {Scheme Procedure} search-input-file @var{inputs} @var{name}
-Return the complete file name for @var{name} as found in @var{inputs}.
-If @var{name} could not be found, an exception is raised instead.
-Here, @var{inputs} is an association list like @var{inputs} and
-@var{native-inputs} as available to build phases.
+@deffnx {Scheme Procedure} search-input-directory @var{inputs} @var{name}
+Return the complete file name for @var{name} as found in @var{inputs};
+@code{search-input-file} searches for a regular file and
+@code{search-input-directory} searches for a directory.  If @var{name}
+could not be found, an exception is raised.
+
+Here, @var{inputs} must be an association list like @code{inputs} and
+@code{native-inputs} as available to build phases (@pxref{Build
+Phases}).
 @end deffn
 
 Here is a (simplified) example of how @code{search-input-file} is used
