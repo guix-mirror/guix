@@ -52,6 +52,7 @@
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8340,3 +8341,39 @@ Availability and Serviceability} reports from Linux kernel trace events.
 These trace events are logged in @file{/sys/kernel/debug/tracing} and reported
 through standard log mechanisms like syslog.")
     (license license:gpl2)))
+
+(define-public libgpiod
+  (package
+    (name "libgpiod")
+    (version "1.6.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git")
+            (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256 (base32 "0rv8a11hx3pc6sdw6nfc6k35hkp2clb3v53n1381cvip8fzhbsad"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:configure-flags
+        '("--enable-tools=yes"
+          "--enable-bindings-cxx"
+          "--enable-bindings-python")))
+    (native-inputs
+      `(("automake" ,automake)
+        ("autoconf" ,autoconf)
+        ("libtool" ,libtool)
+        ("autoconf-archive" ,autoconf-archive)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python-3)))
+    (synopsis "Interact with the Linux GPIO character device")
+    (description
+     "This package provides a C library with C++/Python bindings and
+command-line tools for interacting with GPIO devices that avoids the usage of
+older system-wide @file{/sys} interface.")
+    (home-page "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/")
+    (license (list license:lgpl2.1+   ;; libgpiod
+                   license:gpl2+      ;; gpio-tools
+                   license:lgpl3+)))) ;; C++ bindings
