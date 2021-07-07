@@ -1,0 +1,36 @@
+This fixes a build failure in VTK when building against recent versions
+of freetype.
+
+  https://gitlab.kitware.com/vtk/vtk/-/merge_requests/7432
+
+Patch by Ben Boeckel <ben.boeckel@kitware.com>
+
+Subject: [PATCH] vtkFreeTypeTools: avoid using an internal macro
+
+This macro has been removed upstream as it was always intended to be
+private.
+---
+ Rendering/FreeType/vtkFreeTypeTools.cxx | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/Rendering/FreeType/vtkFreeTypeTools.cxx b/Rendering/FreeType/vtkFreeTypeTools.cxx
+index c54289dc60..03b899c4da 100644
+--- a/Rendering/FreeType/vtkFreeTypeTools.cxx
++++ b/Rendering/FreeType/vtkFreeTypeTools.cxx
+@@ -387,11 +387,8 @@ FTC_CMapCache* vtkFreeTypeTools::GetCMapCache()
+ }
+ 
+ //----------------------------------------------------------------------------
+-FT_CALLBACK_DEF(FT_Error)
+-vtkFreeTypeToolsFaceRequester(FTC_FaceID face_id,
+-                              FT_Library lib,
+-                              FT_Pointer request_data,
+-                              FT_Face* face)
++static FT_Error vtkFreeTypeToolsFaceRequester(
++  FTC_FaceID face_id, FT_Library lib, FT_Pointer request_data, FT_Face* face)
+ {
+ #if VTK_FTFC_DEBUG_CD
+   printf("vtkFreeTypeToolsFaceRequester()\n");
+-- 
+2.30.1
+

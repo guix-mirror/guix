@@ -358,7 +358,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
 
 ;; freecad needs an old version of VTK, because VTK's API changed from 8 to 9
 (define-public vtk-8
-  (package (inherit vtk)
+  (package
+    (name "vtk")
     (version "8.2.0")
     (source (origin
               (method url-fetch)
@@ -367,10 +368,84 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+              (patches
+               (search-patches "vtk-8-fix-freetypetools-build-failure.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each
+                    (lambda (dir)
+                      (delete-file-recursively
+                        (string-append "ThirdParty/" dir "/vtk" dir)))
+                    ;; ogg, pugixml depended upon unconditionally
+                    '("doubleconversion" "eigen" "expat" "freetype" "gl2ps"
+                      "glew" "hdf5" "jpeg" "jsoncpp" "libproj" "libxml2" "lz4"
+                      "netcdf" "png" "sqlite" "theora" "tiff" "zlib"))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:build-type "Release"           ;Build without '-g' to save space.
+       #:configure-flags '(;"-DBUILD_TESTING:BOOL=TRUE"
+                           ;"-DVTK_MODULE_USE_EXTERNAL_vtkogg:BOOL=TRUE"    ; not honored
+                           "-DVTK_USE_SYSTEM_DOUBLECONVERSION:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EIGEN:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GL2PS:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GLEW:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBPROJ:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LZ4:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
+                           ;"-DVTK_USE_SYSTEM_PUGIXML:BOOL=TRUE"    ; breaks IO/CityGML
+                           "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
+       #:tests? #f))        ;XXX: test data not included
     (inputs
-     `(("jsoncpp" ,jsoncpp-for-tensorflow)
-       ,@(alist-delete "jsoncpp" (package-inputs vtk))))))
+     `(("double-conversion" ,double-conversion)
+       ("eigen" ,eigen)
+       ("expat" ,expat)
+       ("freetype" ,freetype)
+       ("gl2ps" ,gl2ps)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("hdf5" ,hdf5)
+       ("jpeg" ,libjpeg-turbo)
+       ("jsoncpp" ,jsoncpp)
+       ;("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("libX11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libXt" ,libxt)
+       ("lz4" ,lz4)
+       ("mesa" ,mesa)
+       ("netcdf" ,netcdf)
+       ("png" ,libpng)
+       ("proj" ,proj.4)
+       ;("pugixml" ,pugixml)
+       ("sqlite" ,sqlite)
+       ("tiff" ,libtiff)
+       ("xorgproto" ,xorgproto)
+       ("zlib" ,zlib)))
+    (home-page "https://vtk.org/")
+    (synopsis "Libraries for 3D computer graphics")
+    (description
+     "The Visualization Toolkit (VTK) is a C++ library for 3D computer graphics,
+image processing and visualization.  It supports a wide variety of
+visualization algorithms including: scalar, vector, tensor, texture, and
+volumetric methods; and advanced modeling techniques such as: implicit
+modeling, polygon reduction, mesh smoothing, cutting, contouring, and Delaunay
+triangulation.  VTK has an extensive information visualization framework, has
+a suite of 3D interaction widgets, supports parallel processing, and
+integrates with various databases on GUI toolkits such as Qt and Tk.")
+    (license license:bsd-3)))
 
 ;; itksnap needs an older variant of VTK.
 (define-public vtk-6
