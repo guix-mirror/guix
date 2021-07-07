@@ -7176,3 +7176,33 @@ libraries.")
 It makes it possible to run pure OCaml programs in JavaScript environment like
 browsers and Node.js.")
     (license license:lgpl2.1+)))
+
+(define-public ocaml-bibtex2html
+  (package
+    (name "ocaml-bibtex2html")
+    (version "1.99")
+    (source
+      (origin
+        (method url-fetch)
+        (uri "https://www.lri.fr/~filliatr/ftp/bibtex2html/bibtex2html-1.99.tar.gz")
+        (sha256 (base32 "07gzrs4lfrkvbn48cgn2gn6c7cx3jsanakkrb2irj0gmjzfxl96j"))))
+    (build-system ocaml-build-system)
+    (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'patch-/bin/sh
+            (lambda _
+              (substitute* "configure" (("/bin/sh") (which "bash")))
+              (setenv "HOME" (getcwd)) ;; mktexfmt needs writable home directory
+              #t)))))
+    (native-inputs
+     `(("which" ,which)
+       ("texlive" ,(texlive-union (list texlive-fonts-ec texlive-preprint
+                                        texlive-latex-hyperref texlive-bibtex)))))
+    (propagated-inputs
+     `(("hevea" ,hevea)))
+    (home-page "https://www.lri.fr/~filliatr/bibtex2html/")
+    (synopsis "BibTeX to HTML translator")
+    (description "This package allows you to produce, from a set of
+bibliography files in BibTeX format, a bibliography in HTML format.")
+    (license license:gpl2)))
