@@ -324,22 +324,30 @@ without requiring the source code to be rewritten.")
               `(cons "--disable-jit" ,flags)
               flags)))
        ((#:phases phases)
-         (if (string-prefix? "powerpc-" (%current-system))
-           `(modify-phases ,phases
-              (add-after 'unpack 'adjust-bootstrap-flags
-                (lambda _
-                  ;; Upstream knows about suggested solution.
-                  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=45214
-                  (substitute* "bootstrap/Makefile.in"
-                    (("^GUILE_OPTIMIZATIONS.*")
-                     "GUILE_OPTIMIZATIONS = -O1 -Oresolve-primitives -Ocps\n"))))
-              (add-after 'unpack 'skip-failing-fdes-test
-                (lambda _
-                  ;; ERROR: ((system-error "seek" "~A" ("Bad file descriptor") (9)))
-                  (substitute* "test-suite/tests/ports.test"
-                    (("fdes not closed\"" all) (string-append all "(exit 77)")))
-                  #t)))
-           phases))))
+        `(modify-phases ,phases
+           (add-before 'check 'disable-stack-overflow-test
+             (lambda _
+               ;; This test can invoke the "OOM killer", especially when
+               ;; running on emulated hardware (QEMU).  Skip it.
+               (substitute* "test-suite/standalone/test-stack-overflow"
+                 (("!#")
+                  "!#\n(exit 77)\n"))))
+
+           ,@(if (string-prefix? "powerpc-" (%current-system))
+                 `((add-after 'unpack 'adjust-bootstrap-flags
+                     (lambda _
+                       ;; Upstream knows about suggested solution.
+                       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=45214
+                       (substitute* "bootstrap/Makefile.in"
+                         (("^GUILE_OPTIMIZATIONS.*")
+                          "GUILE_OPTIMIZATIONS = -O1 -Oresolve-primitives -Ocps\n"))))
+                   (add-after 'unpack 'skip-failing-fdes-test
+                     (lambda _
+                       ;; ERROR: ((system-error "seek" "~A" ("Bad file descriptor") (9)))
+                       (substitute* "test-suite/tests/ports.test"
+                         (("fdes not closed\"" all) (string-append all "(exit 77)")))
+                       #t)))
+                 '())))))
 
     (native-search-paths
      (list (search-path-specification
