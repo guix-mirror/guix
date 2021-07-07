@@ -21,6 +21,7 @@
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -933,14 +934,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.34")
+    (version "2.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   "hevea-" version ".tar.gz"))
               (sha256
                (base32
-                "1pzyszxw90klpcmhjqrjfc8cw6c0gm4w2blim8ydyxb6rq6qml1s"))))
+                "1jwydkb9ldb1sx815c364dxgr569f2rbbzgxbn2kanrybpdbm2gi"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
