@@ -20802,10 +20802,24 @@ accept and reject GitHub pull requests.")
           (base32
            "1vjhrq02l8gvdn2haygzq7277hnhjchs9xrfpcnh76gqip200gx4"))))
       (build-system emacs-build-system)
+      (inputs `(("ripgrep" ,ripgrep)))
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
          ("emacs-s" ,emacs-s)
          ("emacs-spinner" ,emacs-spinner)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((ripgrep (assoc-ref inputs "ripgrep")))
+                 ;; .el is read-only in git.
+                 (make-file-writable "deadgrep.el")
+                 ;; Specify the absolute file names of rg so that everything
+                 ;; works out-of-the-box.
+                 (emacs-substitute-variables "deadgrep.el"
+                   ("deadgrep-executable"
+                    (string-append ripgrep "/bin/rg")))))))))
       (home-page "https://github.com/Wilfred/deadgrep")
       (synopsis "Frontend for @code{ripgrep}")
       (description "This package provides an Emacs interface for performing
