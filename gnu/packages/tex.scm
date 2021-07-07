@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8629,3 +8630,33 @@ constructs TeX accepts as arguments to its @code{\\number} primitive
 are valid as arguments for the macros.  The package may be used under
 LaTeX and plain TeX.")
     (license (license:fsf-free "file:/binhex.dtx"))))
+
+(define-public bibtool
+  (package
+    (name "bibtool")
+    (version "2.68")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ge-ne/bibtool")
+         (commit (string-append
+                  "BibTool_"
+                  (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                              version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0grnmqj8w5018nd7r6drnq2yvfhf22gj9i3rj8ilhzm7zmz3zn0g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://www.gerd-neugebauer.de/software/TeX/BibTool/en")
+    (synopsis "Tool for manipulating BibTeX databases")
+    (description
+     "BibTool manipulates BibTeX files.  The possibilities of BibTool include
+sorting and merging of BibTeX databases, generation of uniform reference keys,
+and selecting references used in a publication.")
+    (license license:gpl2+)))
