@@ -17,6 +17,7 @@ Copyright @copyright{} 2020 Marcin Karpezo@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
 Copyright @copyright{} 2020 André Batista@*
 Copyright @copyright{} 2020 Christopher Lemmer Webber
+Copyright @copyright{} 2021 Joshua Branson@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -85,8 +86,8 @@ Packaging
 
 System Configuration
 
-* Customizing the Kernel::      Creating and using a custom Linux kernel
-
+* Auto-Login to a Specific TTY:: Automatically Login a User to a Specific TTY
+* Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
 
 @end detailmenu
 @end menu
@@ -1353,6 +1354,7 @@ chapter is to demonstrate some advanced configuration concepts.
 reference.
 
 @menu
+* Auto-Login to a Specific TTY:: Automatically Login a User to a Specific TTY
 * Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
 * Guix System Image API::        Customizing images to target specific platforms.
 * Connecting to Wireguard VPN::  Connecting to a Wireguard VPN.
@@ -1362,6 +1364,51 @@ reference.
 * Getting substitutes from Tor:: Configuring Guix daemon to get substitutes through Tor.
 * Setting up NGINX with Lua:: Configuring NGINX web-server to load Lua modules.
 @end menu
+
+@node Auto-Login to a Specific TTY
+@section Auto-Login to a Specific TTY
+
+While the Guix manual explains auto-login one user to @emph{all} TTYs (
+@pxref{auto-login to TTY,,, guix, GNU Guix Reference Manual}), some
+might prefer a situation, in which one user is logged into one TTY with
+the other TTYs either configured to login different users or no one at
+all.  Note that one can auto-login one user to any TTY, but it is
+usually advisable to avoid @code{tty1}, which, by default, is used to
+log warnings and errors.
+
+Here is how one might set up auto login for one user to one tty:
+
+@lisp
+(define (auto-login-to-tty config tty user)
+  (if (string=? tty (mingetty-configuration-tty config))
+        (mingetty-configuration
+         (inherit config)
+         (auto-login user))
+        config))
+
+(define %my-services
+  (modify-services %base-services
+    ;; @dots{}
+    (mingetty-service-type config =>
+                           (auto-login-to-tty
+                            config "tty3" "alice"))))
+
+(operating-system
+  ;; @dots{}
+  (services %my-services))
+@end lisp
+
+One could also @code{compose} (@pxref{Higher-Order Functions,,, guile,
+The Guile Reference Manual}) @code{auto-login-to-tty} to login multiple
+users to multiple ttys.
+
+Finally, here is a note of caution.  Setting up auto login to a TTY,
+means that anyone can turn on your computer and run commands as your
+regular user.
+However, if you have an encrypted root partition, and thus already need
+to enter a passphrase when the system boots, auto-login might be a
+convenient option.
+
 
 @node Customizing the Kernel
 @section Customizing the Kernel

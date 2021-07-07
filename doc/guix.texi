@@ -13542,10 +13542,11 @@ Occasionally, instead of using the base services as is, you will want to
 customize them.  To do this, use @code{modify-services} (@pxref{Service
 Reference, @code{modify-services}}) to modify the list.
 
-For example, suppose you want to modify @code{guix-daemon} and Mingetty
-(the console log-in) in the @code{%base-services} list (@pxref{Base
-Services, @code{%base-services}}).  To do that, you can write the
-following in your operating system declaration:
+@anchor{auto-login to TTY} For example, suppose you want to modify
+@code{guix-daemon} and Mingetty (the console log-in) in the
+@code{%base-services} list (@pxref{Base Services,
+@code{%base-services}}).  To do that, you can write the following in
+your operating system declaration:
 
 @lisp
 (define %my-services
@@ -13571,7 +13572,9 @@ following in your operating system declaration:
 
 This changes the configuration---i.e., the service parameters---of the
 @code{guix-service-type} instance, and that of all the
-@code{mingetty-service-type} instances in the @code{%base-services} list.
+@code{mingetty-service-type} instances in the @code{%base-services} list
+(@pxref{Auto Login a User to a Specific TTY, see the cookbook for how to
+auto-login one user to a specific TTY,, guix-cookbook, GNU Guix Cookbook})).
 Observe how this is accomplished: first, we arrange for the original
 configuration to be bound to the identifier @code{config} in the
 @var{body}, and then we write the @var{body} so that it evaluates to the
