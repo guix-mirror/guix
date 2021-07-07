@@ -8084,6 +8084,30 @@ Emacs completion function completing-read, which allows quickly selecting from a
 list of candidates.")
     (license license:gpl3+)))
 
+(define-public emacs-consult-notmuch
+  (package
+    (name "emacs-consult-notmuch")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://codeberg.org/jao/consult-notmuch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19flyh3v1xm2zswzjkvjbijvpbq5r8isafza4fd0yicvqbjyklhx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-consult" ,emacs-consult)
+       ("notmuch" ,notmuch)))
+    (home-page "https://codeberg.org/jao/consult-notmuch")
+    (synopsis "Search and preview Notmuch emails using Consult")
+    (description
+     "This package provides two commands using consult to query Notmuch emails
+and present results either as single emails or full trees.")
+    (license license:gpl3+)))
+
 (define-public emacs-marginalia
   (package
     (name "emacs-marginalia")
