@@ -777,7 +777,7 @@ default value."
                (loop))))))
        ((or ("-V") ("--version"))
         (show-version-and-exit "guix substitute"))
-       (("--help")
+       ((or ("-h") ("--help"))
         (show-help))
        (opts
         (leave (G_ "~a: unrecognized options~%") opts))))))
