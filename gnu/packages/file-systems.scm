@@ -65,6 +65,7 @@
   #:use-module (gnu packages nfs)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -1554,6 +1555,56 @@ local file system using FUSE.")
     (description
      "This package provides Go native bindings for the FUSE kernel module.")
     (license license:bsd-3)))
+
+(define-public rewritefs
+  (let ((revision "0")
+        ;; This is the last commit supporting our fuse@2.
+        (commit "31e2810b596028a12e49a08664567755f4b387b2"))
+    (package
+      (name "rewritefs")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sloonz/rewritefs")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0k1aas2bdq2l3a6q3fvmngpakcxiws8qny2w6z7ffngyqxh33fv7"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((srfi srfi-26)
+                    ,@%gnu-build-system-modules)
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:test-target "test"
+         #:tests? #f                   ; all require a kernel with FUSE loaded
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no configure script
+           (add-after 'install 'install-examples
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (string-append out "/share/doc/" ,name "-" ,version)))
+                 (for-each (cut install-file <> (string-append doc "/examples"))
+                           (find-files "." "^config\\."))))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("fuse" ,fuse)
+         ("pcre" ,pcre)))
+      (home-page "https://github.com/sloonz/rewritefs")
+      (synopsis "FUSE file system that changes particular file names")
+      (description
+       "RewriteFS is a @acronym{FUSE, File system in USEr space} to change the
+name of accessed files on the fly based on any number of regular expressions.
+It's like the @code{rewrite} action of many Web servers, but for your file
+system.  For example, it can help keep your home directory tidy by transparently
+rewriting the location of configuration files of software that doesn't follow
+the XDG directory specification from @file{~/.@var{name}} to
+@file{~/.config/@var{name}}.")
+      (license license:gpl2+))))
 
 (define-public tmsu
   (package
