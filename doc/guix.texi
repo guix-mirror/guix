@@ -13573,7 +13573,7 @@ your operating system declaration:
 This changes the configuration---i.e., the service parameters---of the
 @code{guix-service-type} instance, and that of all the
 @code{mingetty-service-type} instances in the @code{%base-services} list
-(@pxref{Auto Login a User to a Specific TTY, see the cookbook for how to
+(@pxref{Auto-Login to a Specific TTY, see the cookbook for how to
 auto-login one user to a specific TTY,, guix-cookbook, GNU Guix Cookbook})).
 Observe how this is accomplished: first, we arrange for the original
 configuration to be bound to the identifier @code{config} in the
