@@ -25918,6 +25918,32 @@ compression function.")
     (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:expat)))
 
+(define-public rust-mdns-0.3
+  (package
+    (name "rust-mdns")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mdns" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a96id6nzpbqhdiv90fdmaji0nlmfsdcbk1nvrmapv5xw6fiaclw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dns-parser" ,rust-dns-parser-0.8)
+        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-get-if-addrs" ,rust-get-if-addrs-0.5)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-net2" ,rust-net2-0.2))))
+    (home-page "https://github.com/dylanmckay/mdns")
+    (synopsis "Multicast DNS client library")
+    (description "This package provides a multicast DNS client library.  It
+supports discovery of any mDNS device on a LAN.")
+    (license license:expat)))
+
 (define-public rust-measureme-0.7
   (package
     (name "rust-measureme")
