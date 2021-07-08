@@ -55,7 +55,7 @@
             %mes-bootstrap-tarball
             %bootstrap-tarballs
 
-            %guile-3.0-static-stripped))
+            %guile-static-stripped))
 
 ;;; Commentary:
 ;;;
@@ -798,7 +798,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (outputs '("out"))
     (synopsis "Minimal statically-linked and relocatable Guile")))
 
-(define %guile-3.0-static-stripped
+(define %guile-static-stripped
   ;; A stripped static Guile 3.0 binary, for use in initrds
   ;; and during bootstrap.
   (make-guile-static-stripped
@@ -863,7 +863,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
-  (tarball-package %guile-3.0-static-stripped))
+  (tarball-package %guile-static-stripped))
 
 (define %mescc-tools-bootstrap-tarball
   ;; A tarball with statically-linked MesCC binary seed.
