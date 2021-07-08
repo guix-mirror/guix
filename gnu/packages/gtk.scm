@@ -45,6 +45,7 @@
 
 (define-module (gnu packages gtk)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -276,15 +277,13 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:configure-flags
-       (list
-        (string-append "--with-html-docdir="
-                       (assoc-ref %outputs "doc")
-                       "/share/doc/datrie/html"))
+     (list #:configure-flags
+           #~(list (string-append "--with-html-docdir=" #$output:doc
+                                  "/share/doc/datrie/html"))
 
-       ;; Several tests refer to the 'test.tri' file, leading to race
-       ;; conditions when running tests in parallel.
-       #:parallel-tests? #f))
+           ;; Several tests refer to the 'test.tri' file, leading to race
+           ;; conditions when running tests in parallel.
+           #:parallel-tests? #f))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
