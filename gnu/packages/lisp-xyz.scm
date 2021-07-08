@@ -16528,6 +16528,41 @@ for Common Lisp.")
 (define-public cl-bknr-datastore
   (sbcl-package->cl-source-package sbcl-bknr-datastore))
 
+(define-public sbcl-authentic
+  (let ((commit "d5ff2f4666ce24e41fb4ca22476c782c070e6f6e")
+        (revision "1"))
+    (package
+      (name "sbcl-authentic")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charje/cl-authentic")
+               (commit commit)))
+         (file-name (git-file-name "cl-authentic" version))
+         (sha256
+          (base32 "1dmi9lw1ickx0i41lh9sfchalvy7km6wc9w3szfjlvny7svwf6qp"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("clsql" ,sbcl-clsql)
+         ("ironclad" ,sbcl-ironclad)))
+      (home-page "https://github.com/charje/cl-authentic")
+      (synopsis "User/password management for Common Lisp applications")
+      (description "Authentic provides a light-weight and extendible
+solution to user/password management for Common Lisp applications.  It has
+features such as safe password storage in a database, password reset, user
+confirmation tokens, and user authentication.")
+      (license license:llgpl))))
+
+(define-public ecl-authentic
+  (sbcl-package->ecl-package sbcl-authentic))
+
+(define-public cl-authentic
+  (sbcl-package->cl-source-package sbcl-authentic))
+
 (define-public sbcl-3d-vectors
   (let ((commit "29bb9684df803590deed344af63dbf7b712aabc0")
         (revision "1"))
