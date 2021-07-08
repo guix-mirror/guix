@@ -10414,6 +10414,26 @@ your package is installed, via @code{pkg_resources} (part of
 primary use case is APIs defined before keyword-only parameters existed.")
     (license license:gpl3+)))
 
+(define-public python-langdetect
+  (package
+    (name "python-langdetect")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "langdetect" version))
+       (sha256
+        (base32 "1805svvb7xjm4sf1j7b6nc3409x37pd1xmabfwwjf1ldkzwgxhfb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/Mimino666/langdetect")
+    (synopsis "Language detection library")
+    (description
+     "This library is a port of Nakatani Shuyo's language-detection library
+(version from 03/03/2014) to Python.")
+    (license license:expat)))
+
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
