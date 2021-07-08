@@ -103,6 +103,7 @@
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -857,14 +858,14 @@ to CommonMark.")
                                "/lib/libmediainfo.so.0")))
              #t))
          (replace 'check
-           (lambda _
-             ;; Extend PYTHONPATH so the built package will be found.
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
-             ;; Skip the only failing test "test_parse_url"
-             (invoke "pytest" "-vv" "-k" "not test_parse_url")
-             #t)))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Extend PYTHONPATH so the built package will be found.
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) "/build/lib:"
+                                      (getenv "PYTHONPATH")))
+               ;; Skip the only failing test "test_parse_url"
+               (invoke "pytest" "-vv" "-k" "not test_parse_url")))))))
     (home-page
      "https://github.com/sbraz/pymediainfo")
     (synopsis
