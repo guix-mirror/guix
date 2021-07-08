@@ -2729,16 +2729,16 @@ Lock key.")
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
-    (version "0.7.0")
+    (version "0.9.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/contrapunctus-1/chronometrist")
+             (url "https://tildegit.org/contrapunctus/chronometrist")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s483ca4f8192gr9ix9jxjfcmxp30b7qk2jiaqzprkrn9kcgw544"))))
+        (base32 "156hj3sxjcfpwimnrykh4n3krkbzas9jg8m6xzy42rnzhx28ja6k"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -2746,8 +2746,7 @@ Lock key.")
          (add-after 'unpack 'chdir-elisp
            ;; Elisp directory is not in root of the source.
            (lambda _
-             (chdir "elisp")
-             #t))
+             (chdir "elisp")))
          (add-after 'install 'install-doc
            ;; Documentation consists of several Markdown files.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2762,10 +2761,9 @@ Lock key.")
                                   (find-files "." "\\.md$")))))
              #t)))))
     (propagated-inputs
-     `(("emacs-anaphora" ,emacs-anaphora)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-literate-elisp" ,emacs-literate-elisp)
+     `(("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
+       ("emacs-spark" ,emacs-spark)
        ("emacs-ts" ,emacs-ts)))
     (home-page "https://github.com/contrapunctus-1/chronometrist")
     (synopsis "Time tracker for Emacs")
