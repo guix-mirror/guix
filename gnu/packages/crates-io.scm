@@ -13740,6 +13740,33 @@ Google's diff-match-patch.")
 system libraries.")
     (license license:expat)))
 
+(define-public rust-dns-parser-0.8
+  (package
+    (name "rust-dns-parser")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dns-parser" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1spv0psvxc31qg9xnqf0gmjclyiim7vp23r2b1gzf1ix8zlkply4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-quick-error" ,rust-quick-error-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))
+       #:cargo-development-inputs
+       (("rust-matches" ,rust-matches-0.1))))
+    (home-page "https://github.com/tailhook/dns-parser")
+    (synopsis "DNS protocol parser library")
+    (description "This package provide a DNS protocol parser library.  It does
+not support network, only raw protocol parser.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-doc-comment-0.3
   (package
     (name "rust-doc-comment")
