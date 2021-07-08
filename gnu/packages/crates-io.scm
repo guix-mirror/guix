@@ -18206,6 +18206,29 @@ API library @code{gdi32}.")
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3))))))
 
+(define-public rust-get-if-addrs-sys-0.1
+  (package
+    (name "rust-get-if-addrs-sys")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "get_if_addrs-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0j5bypizbk59jhkaw1abkx7ydj79pplfvwq03hcnpwvcfkxzj10d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gcc" ,rust-gcc-0.3)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/maidsafe-archive/get_if_addrs")
+    (synopsis "Retrieve IP addresses for all interfaces")
+    (description "This library retrieves network interface info for all
+interfaces on the system.")
+    (license (list license:expat license:bsd-3))))
+
 (define-public rust-getch-0.2
   (package
     (name "rust-getch")
