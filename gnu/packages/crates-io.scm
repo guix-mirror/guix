@@ -52578,6 +52578,30 @@ untrusted inputs in Rust.")
        (sha256
         (base32 "0byf88b7ca1kb5aap8f6npp6xncvg95dnma8ipmnmd4n9r5izkam"))))))
 
+(define-public rust-unwrap-1
+  (package
+    (name "rust-unwrap")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unwrap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03y24m63l85ng23z19bg7vwn6g1h1asg6ldyqwifca23sy6n8cvy"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/canndrew/unwrap")
+    (synopsis "unwrap! and unwrap_err! macros")
+    (description
+     "This crate provides two macros, @code{unwrap!} and @code{unwrap_err!}.
+The former can be used to unwrap values of type @code{Result} or @code{Option}
+(or any type that implements VerboseUnwrap) and is comparable to calling
+@code{unwrap()}.  The latter can be used to unwrap an error from a
+@code{Result} (or any type that implements @code{VerboseUnwrapErr}) and is
+comparable to calling @code{unwrap_err()}.")
+    (license (list license:expat license:bsd-3))))
+
 (define-public rust-uom-0.31
   (package
     (name "rust-uom")
