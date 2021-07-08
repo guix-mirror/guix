@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
@@ -423,11 +423,12 @@ timestamps.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv" "tests"
-                     ;; python-dateutil doesn't recognize America/Nuuk.
-                     ;; Remove when python-dateutil > 2.8.1.
-                     "-k" "not test_parse_tz_name_zzz"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "tests"
+                       ;; python-dateutil doesn't recognize America/Nuuk.
+                       ;; Remove when python-dateutil > 2.8.1.
+                       "-k" "not test_parse_tz_name_zzz")))))))
     (native-inputs
      `(;; For testing
        ("python-chai" ,python-chai)
