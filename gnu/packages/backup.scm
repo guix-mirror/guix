@@ -80,6 +80,7 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml))
 
 (define-public duplicity
@@ -379,6 +380,65 @@ random access nor for in-place modification.")
 Rdup itself does not backup anything, it only print a list of absolute
 file names to standard output.  Auxiliary scripts are needed that act on this
 list and implement the backup strategy.")
+    (license license:gpl3+)))
+
+(define-public snapraid
+  (package
+    (name "snapraid")
+    (version "11.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/amadvance/snapraid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dlhdsmq5l208zldfr9z9g0p67wry81dr0r23lpybb5c9fm2f2rm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-valgrind"
+             "--with-blkid")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'set-version
+           (lambda _
+             (setenv "VERSION" ,version)
+             (patch-shebang "autover.sh"))))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+
+       ;; For the tests.
+       ("valgrind" ,valgrind)))
+    (inputs
+     `(("util-linux" ,util-linux "lib"))) ; libblkid
+    (home-page "https://www.snapraid.it/")
+    (synopsis "Efficient backups using parity snapshots across disk arrays")
+    (description
+     "SnapRAID backs up files stored across multiple storage devices, such as
+disk arrays, in an efficient way reminiscent of its namesake @acronym{RAID,
+Redundant Array of Independent Disks} level 4.
+
+Instead of creating a complete copy of the data like classic backups do, it
+saves space by calculating one or more sets of parity information that's a
+fraction of the size.  Each parity set is stored on an additional device the
+size of the largest single storage volume, and protects against the loss of any
+one device, up to a total of six.  If more devices fail than there are parity
+sets, (only) the files they contained are lost, not the entire array.  Data
+corruption by unreliable devices can also be detected and repaired.
+
+SnapRAID is distinct from actual RAID in that it operates on files and creates
+distinct snapshots only when run.  It mainly targets large collections of big
+files that rarely change, like home media centers.  One disadvantage is that
+@emph{all} data not in the latest snapshot may be lost if one device fails.  An
+advantage is that accidentally deleted files can be recovered, which is not the
+case with RAID.
+
+It's also more flexible than true RAID: devices can have different sizes and
+more can be added without disturbing others.  Devices that are not in use can
+remain fully idle, saving power and producing less noise.")
     (license license:gpl3+)))
 
 (define-public btar
