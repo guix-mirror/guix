@@ -8819,7 +8819,10 @@ SVG, EPS, PNG and terminal output.")
                (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
                (setenv "DISPLAY" ":1")
                #t)))
-         (replace 'check (lambda _ (invoke "pytest" "seaborn") #t)))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "seaborn")))))))
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
        ("python-matplotlib" ,python-matplotlib)
