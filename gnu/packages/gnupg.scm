@@ -975,7 +975,7 @@ with @code{rofi-pass} a good front end for @code{password-store}.")
     (synopsis "Pinentry implementation based on @code{bemenu}")
     (description
      "This package provides a Pinentry implementation based on Bemenu.")
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public pinentry
   (package (inherit pinentry-gtk2)
