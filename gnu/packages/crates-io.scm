@@ -18206,6 +18206,40 @@ API library @code{gdi32}.")
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3))))))
 
+(define-public rust-get-if-addrs-0.5
+  (package
+    (name "rust-get-if-addrs")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "get_if_addrs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xsfxq3ga63vllw5k6pxpdlfp3m6fh8jiga865gr4cldi5dbbpdb"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Cargo.toml"
+             (("\\~1.1.0") "^1.1"))
+           #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests use the network.
+       #:cargo-inputs
+       (("rust-c-linked-list" ,rust-c-linked-list-1)
+        ("rust-clippy" ,rust-clippy-0.0)
+        ("rust-get-if-addrs-sys" ,rust-get-if-addrs-sys-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-unwrap" ,rust-unwrap-1))))
+    (home-page "https://maidsafe.net")
+    (synopsis "Return interface IP addresses")
+    (description "This library returns interface IP addresses.")
+    (license (list license:expat license:bsd-3))))
+
 (define-public rust-get-if-addrs-sys-0.1
   (package
     (name "rust-get-if-addrs-sys")
