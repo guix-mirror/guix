@@ -219,14 +219,14 @@ cards.")
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.23")
+    (version "2.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://newsboat.org/releases/" version
                            "/newsboat-" version ".tar.xz"))
        (sha256
-        (base32 "1p6sqypgzhwirgljr898c9n7vr5y9322fvrlaigwrchxshwv35xr"))))
+        (base32 "1yvggkb29qykxlvrysb6yyf5piwsvzv0zla8jn2ihmm2rj40chk2"))))
     (build-system cargo-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -246,7 +246,7 @@ cards.")
                   (guix build utils)
                   ((guix build gnu-build-system) #:prefix gnu:))
        #:vendor-dir "vendor"
-       #:rust ,rust-1.46    ; or newer
+       #:rust ,rust-1.48    ; or newer
        #:install-source? #f
        #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
@@ -254,8 +254,8 @@ cards.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-curl-sys" ,rust-curl-sys-0.4)
-        ("rust-cxx" ,rust-cxx-0.5)
-        ("rust-gettext-rs" ,rust-gettext-rs-0.6)
+        ("rust-cxx" ,rust-cxx-1)
+        ("rust-gettext-rs" ,rust-gettext-rs-0.7)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-natord" ,rust-natord-1)
         ("rust-nom" ,rust-nom-6)
@@ -266,7 +266,7 @@ cards.")
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-xdg" ,rust-xdg-2))
        #:cargo-development-inputs
-       (("rust-cxx-build" ,rust-cxx-build-0.5)
+       (("rust-cxx-build" ,rust-cxx-build-1)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-proptest" ,rust-proptest-0.9)
         ("rust-section-testing" ,rust-section-testing-0.0))
