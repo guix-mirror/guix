@@ -877,12 +877,13 @@ into HTTP/2 frames.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "test" "-k"
-                     ;; This test will be fixed in the next version. See:
-                     ;; https://github.com/python-hyper/hpack/issues/168.
-                     "not test_get_by_index_out_of_range"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "test" "-k"
+                       ;; This test will be fixed in the next version. See:
+                       ;; https://github.com/python-hyper/hpack/issues/168.
+                       "not test_get_by_index_out_of_range")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://hyper.rtfd.org")
