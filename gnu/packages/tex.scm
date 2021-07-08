@@ -6921,7 +6921,7 @@ This package contains the complete TeX Live distribution.")
 (define-public perl-text-bibtex
   (package
     (name "perl-text-bibtex")
-    (version "0.85")
+    (version "0.88")
     (source
      (origin
        (method url-fetch)
@@ -6929,7 +6929,7 @@ This package contains the complete TeX Live distribution.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "036kxgbn1jf70pfm2lmjlzjwnhbkd888fp5lyvmkjpdd15gla18h"))))
+         "0b7lmjvfmypps1nw6nsdikgaakm0n0g4186glaqazg5xd1p5h55h"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
