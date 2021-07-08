@@ -321,6 +321,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
        '("--disable-static"
          "--disable-native-texlive-build"
          "--enable-shared"
+         "--with-banner-add=/GNU Guix"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
