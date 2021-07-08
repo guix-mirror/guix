@@ -33,7 +33,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020, 2021 Brice Waegeneire <brice@waegenei.re>
@@ -47,7 +47,6 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
@@ -6825,7 +6824,6 @@ userspace queueing component and the logging subsystem.")
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("-C" "src")
-
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-before 'build 'set-shell-file-name
@@ -6834,8 +6832,7 @@ userspace queueing component and the logging subsystem.")
                         (("\"/bin/sh\"")
                          (string-append "\""
                                         (assoc-ref inputs "bash")
-                                        "/bin/sh\"")))
-                      #t))
+                                        "/bin/sh\"")))))
                   (add-before 'check 'fix-fhs-assumptions-in-tests
                     (lambda _
                       (substitute* "tests/test-c6b77b77.mk"
@@ -6861,24 +6858,23 @@ userspace queueing component and the logging subsystem.")
 
                       ;; XXX: This test fails in an obscure corner case, just
                       ;; skip it.
-                      (delete-file "tests/test-kkkkkkkk.c")
-
-                      #t))
+                      (delete-file "tests/test-kkkkkkkk.c")))
                   (replace 'check
-                    (lambda _
-                      (let ((n (parallel-job-count)))
-                        ;; For some reason we get lots of segfaults with
-                        ;; seccomp support (x86_64, Linux-libre 4.11.0).
-                        (setenv "PROOT_NO_SECCOMP" "1")
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (let ((n (parallel-job-count)))
+                          ;; For some reason we get lots of segfaults with
+                          ;; seccomp support (x86_64, Linux-libre 4.11.0).
+                          (setenv "PROOT_NO_SECCOMP" "1")
 
-                        ;; Most of the tests expect "/bin" to be in $PATH so
-                        ;; they can run things that live in $ROOTFS/bin.
-                        (setenv "PATH"
-                                (string-append (getenv "PATH") ":/bin"))
+                          ;; Most of the tests expect "/bin" to be in $PATH so
+                          ;; they can run things that live in $ROOTFS/bin.
+                          (setenv "PATH"
+                                  (string-append (getenv "PATH") ":/bin"))
 
-                        (invoke "make" "check" "-C" "tests"
-                                ;;"V=1"
-                                "-j" (number->string n)))))
+                          (invoke "make" "check" "-C" "tests"
+                                  ;;"V=1"
+                                  "-j" (number->string n))))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; The 'install' rule does nearly nothing.
@@ -6891,8 +6887,7 @@ userspace queueing component and the logging subsystem.")
 
                         (mkdir-p man1)
                         (copy-file "doc/proot/man.1"
-                                   (string-append man1 "/proot.1"))
-                        #t))))))
+                                   (string-append man1 "/proot.1"))))))))
     (native-inputs `(("which" ,which)
 
                      ;; For 'mcookie', used by some of the tests.
