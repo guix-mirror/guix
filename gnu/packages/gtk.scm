@@ -280,7 +280,11 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
        (list
         (string-append "--with-html-docdir="
                        (assoc-ref %outputs "doc")
-                       "/share/doc/datrie/html"))))
+                       "/share/doc/datrie/html"))
+
+       ;; Several tests refer to the 'test.tri' file, leading to race
+       ;; conditions when running tests in parallel.
+       #:parallel-tests? #f))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
