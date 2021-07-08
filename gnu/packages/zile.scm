@@ -149,6 +149,14 @@ default Emacs configuration, but it carries a much lighter feature set.")
                          "--gnulib-srcdir=gnulib"
                          "--skip-git" "--skip-po"
                          "--verbose")))
+             (replace 'patch-/bin/sh
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   ;; Refer to the actual shell.
+                   (substitute* '("lib/spawni.c" "src/funcs.c")
+                     (("/bin/sh")
+                      (string-append bash "/bin/sh")))
+                   #t)))
              (add-after 'install 'wrap-command
                (lambda* (#:key outputs #:allow-other-keys)
                  ;; Add zile.scm to the search path.
