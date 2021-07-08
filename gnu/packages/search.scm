@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +25,7 @@
 
 (define-module (gnu packages search)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 x11 perl-license))
+                #:select (gpl2 gpl2+ gpl3+ agpl3+ lgpl2.1+ bsd-3 x11 perl-license))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -43,9 +44,11 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
@@ -206,6 +209,54 @@ files and directories.")
      "Tocc is a tag-based file management system.  This package contains the
 command line tool for interacting with libtocc.")
     (license gpl3+)))
+
+(define-public searx
+  (package
+    (name "searx")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/searx/searx")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ghkx8g8jnh8yd46p4mlbjn2zm12nx27v7qflr4c8xhlgi0px0mh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;what tests do is make online requests to each engine
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             ;; These packages are outdated in Guix at the time of packaging.
+             ;; When they are updated, remove corresponding substitutions.
+             ;; Tests can run after build with 'searx-checker' tool in /bin.
+             (substitute* "requirements.txt"
+               (("flask-babel==2.0.0") "flask-babel>=1.0.0")
+               (("jinja2==2.11.3") "jinja2>=2.11.2")
+               (("lxml==4.6.3") "lxml>=4.4.2")
+               (("pygments==2.8.0") "pygments>=2.7.3")
+               (("requests\\[socks\\]==2.25.1") "requests>=2.25")
+               (("==") ">=")))))))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-certifi" ,python-certifi)
+       ("python-dateutil" ,python-dateutil)
+       ("python-flask" ,python-flask)
+       ("python-flask-babel" ,python-flask-babel)
+       ("python-idna" ,python-idna)
+       ("python-jinja2" ,python-jinja2)
+       ("python-langdetect" ,python-langdetect)
+       ("python-lxml" ,python-lxml)
+       ("python-pygments" ,python-pygments)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)))
+    (home-page "https://searx.github.io/searx/")
+    (synopsis "Privacy-respecting metasearch engine")
+    (description "Searx is a privacy-respecting, hackable metasearch engine.")
+    (license agpl3+)))
 
 (define-public bool
   (package
