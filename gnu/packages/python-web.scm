@@ -937,9 +937,10 @@ and that could be anything you want.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "test"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
