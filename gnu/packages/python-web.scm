@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -843,9 +844,10 @@ follow links and submit forms.  It doesn’t do JavaScript.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "test"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/python-hyper/hyperframe")
