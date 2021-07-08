@@ -6646,6 +6646,25 @@ representation, with support for both SI and binary units.")
 exposed as Reader/Writer streams.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-c-linked-list-1
+  (package
+    (name "rust-c-linked-list")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "c_linked_list" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jvjr3233wqgx6li65kciqpg354pvb0cv1i8hc71ka5lsf5m2r29"))))
+    (build-system cargo-build-system)
+    (home-page "https://canndrew.org/rust-doc/c_linked_list/")
+    (synopsis "Utilities for handling NULL-terminated C linked lists")
+    (description "This package provides utilities for handling
+NULL-terminated C linked lists.")
+    (license (list license:expat license:bsd-3))))
+
 (define-public rust-c2-chacha-0.2
   (package
     (name "rust-c2-chacha")
