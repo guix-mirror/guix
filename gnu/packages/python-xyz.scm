@@ -8812,13 +8812,11 @@ SVG, EPS, PNG and terminal output.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xserver
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server")))
-               ;; There must be a running X server and make check doesn't
-               ;; start one.  Therefore we must do it.
-               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
-               (setenv "DISPLAY" ":1")
-               #t)))
+           (lambda _
+             ;; There must be a running X server and make check doesn't
+             ;; start one.  Therefore we must do it.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
