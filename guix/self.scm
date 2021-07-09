@@ -410,10 +410,7 @@ a list of extra files, such as '(\"contributing\")."
             ;; Limit thread creation by 'n-par-for-each'.  Going beyond can
             ;; lead libgc 8.0.4 to abort with:
             ;; mmap(PROT_NONE) failed
-            ;;
-            ;; FIXME: The above error would still happen when using only 4
-            ;; build jobs, so disable parallelism entirely for the time being.
-            (min (parallel-job-count) 1))
+            (min (parallel-job-count) 4))
 
           (mkdir #$output)
           (copy-recursively #$documentation "."
