@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -2291,11 +2291,37 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
        ("libxext" ,libxext)))
     (inputs
      `(("fontconfig" ,fontconfig)
-       ("libxft" ,libxft)))
+       ("libxft" ,libxft)
+       ("python" ,python)))
     (arguments
      `(#:configure-flags `("-DENABLE_SYSTEM_CONTRIB:BOOL=ON"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
-                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
+                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:modules (((guix build python-build-system) #:select (site-packages))
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Use the standard Guix site-package path for
+             ;; installation of the Python API.
+             (substitute* "CMakeLists.txt"
+               (("include\\(GNUInstallDirs\\)\n")
+                (string-append "include(GNUInstallDirs)\n"
+                               "  set(GMSH_PY_LIB "
+                               (site-packages inputs outputs) ")\n"))
+               (("\\$\\{GMSH\\_PY\\} DESTINATION \\$\\{GMSH\\_LIB\\}")
+                "${GMSH_PY} DESTINATION ${GMSH_PY_LIB}"))
+             ;; Find the shared library.
+             (let ((libgmsh (string-append (assoc-ref outputs "out")
+                                           "/lib/libgmsh.so")))
+               (substitute* "api/gmsh.py"
+                 (("find_library\\(\"gmsh\"\\)")
+                  (simple-format #f "\"~a\"" libgmsh))))
+             #t)))))
     (home-page "http://gmsh.info/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
