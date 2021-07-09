@@ -44,6 +44,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -1404,8 +1405,8 @@ On Guix System, you will need to invoke the included shell scripts as
                 (string-append (assoc-ref inputs "util-linux")
                                "/bin/" maybe-u "mount")))
              (substitute* '("libfuse/util/mount.mergerfs.c")
-               (("/bin/sh")
-                (which "sh")))
+               (("/bin/sh" command)
+                (string-append (assoc-ref inputs "bash-minimal") command)))
              ;; The Makefile does not allow overriding PREFIX via make variables.
              (substitute* '("Makefile" "libfuse/Makefile")
                (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
@@ -1416,7 +1417,9 @@ On Guix System, you will need to invoke the included shell scripts as
                (("strip") "true"))
              #t)))))
     ;; mergerfs bundles a heavily modified copy of libfuse.
-    (inputs `(("util-linux" ,util-linux)))
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("util-linux" ,util-linux)))
     (home-page "https://github.com/trapexit/mergerfs")
     (synopsis "Featureful union file system")
     (description "mergerfs is a union file system geared towards simplifying
