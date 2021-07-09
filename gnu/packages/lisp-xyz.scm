@@ -18246,8 +18246,8 @@ concept of a source-form to report where the error or warning is located.")
   (sbcl-package->cl-source-package sbcl-trivial-with-current-source-form))
 
 (define-public sbcl-tailrec
-  (let ((commit "a7cf91ef7bd73c118e96817e809a7ae587d4673f")
-        (revision "1"))
+  (let ((commit "6f882846d8f5bca9138df26510862e64bb15d92f")
+        (revision "2"))
     (package
       (name "sbcl-tailrec")
       (version (git-version "0" revision commit))
@@ -18259,7 +18259,7 @@ concept of a source-form to report where the error or warning is located.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0a25xa2kqai480micv8ap5bg4pz1dg7q3lz61g1ygim96cdjpwhl"))))
+          (base32 "1h8m2npdzd2cpnl75pvv4yvvfwxa7kl6qvalc9s0y4yws0kaih3i"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandia" ,sbcl-alexandria)
