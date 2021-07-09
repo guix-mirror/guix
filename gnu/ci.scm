@@ -69,6 +69,7 @@
   #:export (derivation->job
             image->job
 
+            %bootstrap-packages
             %core-packages
             %cross-targets
             channel-source->package
@@ -147,6 +148,14 @@ SYSTEM."
         %gcc-bootstrap-tarball
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
+
+(define %bootstrap-packages
+  ;; Return the list of bootstrap packages from the commencement module.
+  (filter package?
+          (module-map
+           (lambda (sym var)
+             (variable-ref var))
+           (resolve-module '(gnu packages commencement)))))
 
 (define (packages-to-cross-build target)
   "Return the list of packages to cross-build for TARGET."
@@ -508,7 +517,7 @@ valid."
            (map (lambda (package)
                   (package-job store (job-name package)
                                package system))
-                %core-packages)
+                (append %bootstrap-packages %core-packages))
            (cross-jobs store system)))
          ('guix
           ;; Build Guix modules only.
