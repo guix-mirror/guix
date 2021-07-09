@@ -1799,6 +1799,154 @@ large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
     (license license:epl2.0)))
 
+(define-public nomad-optimizer
+  (package
+    (name "nomad-optimizer")
+    (version "4.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bbopt/nomad/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0w386d8r5ldbvnv0c0g7vz95pfpvwdxis26vaalk2amsa5akl775"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-wrapper)
+       ("python-cython" ,python-cython)))
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%cmake-build-system-modules)
+       #:modules (((guix build python-build-system)
+                   #:select (python-version site-packages))
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:configure-flags
+       '("-DBUILD_INTERFACES=ON"
+         "-DBUILD_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sources-for-build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               ;; CMAKE_INSTALL_PREFIX is accidentally hardcoded.
+               (("set\\(CMAKE_INSTALL_PREFIX .* FORCE\\)") "")
+               ;; Requiring GCC version 8 or later is unwarranted.
+               (("message\\(FATAL_ERROR \"GCC version < 8")
+                "message(STATUS \"GCC version < 8"))
+
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "interfaces/PyNomad/CMakeLists.txt"
+                 ;; We don't want to build in-place, and anyway the install
+                 ;; command further below runs build_ext as a prerequisite.
+                 (("COMMAND python setup_PyNomad\\.py .* build_ext --inplace\n")
+                  "")
+                 ;; Don't install locally.
+                 (("COMMAND python (setup_PyNomad\\.py .* install) --user\n"
+                   _ args)
+                  (string-append "COMMAND ${CMAKE_COMMAND} -E env"
+                                 " CC=" ,(cc-for-target)
+                                 " CXX=" ,(cxx-for-target)
+                                 " " (which "python")
+                                 " " args
+                                 " --prefix=" out
+                                 "\n")))
+               ;; Fix erroneous assumptions about the paths of the include and
+               ;; library directories.
+               (substitute* "interfaces/PyNomad/setup_PyNomad.py"
+                 (("^( +os_include_dirs = ).*" _ prefix)
+                  (string-append prefix "[\"../../src\"]\n"))
+                 (("^(installed_lib_dir = ).*" _ prefix)
+                  (string-append prefix "\"" out "/lib\"\n"))))
+             #t))
+
+         ;; Fix the tests so they run in out-of-source builds.
+         (add-after 'fix-sources-for-build 'fix-sources-for-tests
+           (lambda _
+             (substitute*
+                 (map (lambda (d) (string-append "examples/" d "/CMakeLists.txt"))
+                      (append
+                       (map (lambda (d) (string-append "basic/library/" d))
+                            '("example1" "example2" "example3"
+                              "single_obj_parallel"))
+                       (map (lambda (d) (string-append "advanced/library/" d))
+                            '("FixedVariable" "NMonly" "PSDMads" "Restart"
+                              "c_api/example1" "c_api/example2"
+                              "exampleSuggestAndObserve"))))
+               ;; The built examples are assumed to be in the source tree
+               ;; (which isn't the case here).
+               (("(COMMAND \\$\\{CMAKE_BINARY_DIR\\}/examples/runExampleTest\\.sh )\\.(/.*)"
+                 _ command test)
+                (string-append command "${CMAKE_CURRENT_BINARY_DIR}" test)))
+             ;; (Unrelated to support for out-of-source testing.)
+             (make-file-writable
+              "examples/advanced/library/exampleSuggestAndObserve/cache0.txt")
+
+             (let* ((builddir (string-append (getcwd) "/../build"))
+                    ;; The BB_EXE and SURROGATE_EXE paths are interpreted
+                    ;; relative to the configuration file provided to NOMAD.
+                    ;; However, the configuration files are all in the source
+                    ;; tree rather than in the build tree (unlike the compiled
+                    ;; executables).
+                    (fix-exe-path (lambda* (dir #:optional
+                                                (file "param.txt")
+                                                (exe-opt "BB_EXE"))
+                                    (substitute* (string-append dir "/" file)
+                                      (((string-append "^" exe-opt " +"))
+                                       ;; The $ prevents NOMAD from prefixing
+                                       ;; the executable with the path of the
+                                       ;; parent directory of the configuration
+                                       ;; file NOMAD was provided with as
+                                       ;; argument (param.txt or some such).
+                                       (string-append exe-opt " $"
+                                                      builddir "/" dir "/"))))))
+               (for-each
+                (lambda (dir)
+                  (let ((dir (string-append "examples/" dir)))
+                    (substitute* (string-append dir "/CMakeLists.txt")
+                      ;; The install phase has not yet run.
+                      (("COMMAND \\$\\{CMAKE_INSTALL_PREFIX\\}/bin/nomad ")
+                       "COMMAND ${CMAKE_BINARY_DIR}/src/nomad "))
+                    (fix-exe-path dir)
+                    (when (equal? dir "examples/basic/batch/surrogate_sort")
+                      (fix-exe-path dir "param.txt" "SURROGATE_EXE"))))
+                (append (map (lambda (d) (string-append "basic/batch/" d))
+                             '("example1" "example2"
+                               "single_obj" "single_obj_parallel"
+                               "surrogate_sort"))
+                        '("advanced/batch/LHonly")))
+
+               (let ((dir "examples/advanced/batch/FixedVariable"))
+                 (substitute* (string-append dir "/runFixed.sh")
+                   ;; Hardcoded path to NOMAD executable.
+                   (("^\\.\\./\\.\\./\\.\\./\\.\\./bin/nomad ")
+                    (string-append builddir "/src/nomad ")))
+                 (for-each
+                  (lambda (f) (fix-exe-path dir f))
+                  '("param1.txt" "param2.txt" "param3.txt" "param10.txt"))))
+             #t))
+
+         ;; The information in the .egg-info file is not kept up to date.
+         (add-after 'install 'delete-superfluous-egg-info
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (delete-file (string-append
+                           (site-packages inputs outputs)
+                           "PyNomad-0.0.0-py"
+                           (python-version (assoc-ref inputs "python"))
+                           ".egg-info"))
+             #t)))))
+    (home-page "https://www.gerad.ca/nomad/")
+    (synopsis "Nonlinear optimization by mesh-adaptive direct search")
+    (description
+     "NOMAD is a C++ implementation of the mesh-adaptive direct search (MADS)
+algorithm, designed for difficult blackbox optimization problems.  These
+problems occur when the functions defining the objective and constraints are
+the result of costly computer simulations.")
+    (license license:lgpl3+)))
+
 (define-public cbc
   (package
     (name "cbc")
