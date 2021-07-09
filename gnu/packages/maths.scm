@@ -2258,7 +2258,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "4.6.0")
+    (version "4.8.4")
     (source
      (origin
       (method git-fetch)
@@ -2270,7 +2270,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
                                         version)))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0m0pjxcy1bnr7a20i11lh0ih159pphq9wsvfjr3sfx4y3lginz5y"))
+       (base32 "07mi6ja3b9libgcdp2b4dwnkap1b9ha2wi2zdn9mhmwvp3g1pxhp"))
       (modules '((guix build utils)))
       (snippet
        '(begin
