@@ -1578,7 +1578,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \
   %D%/packages/patches/procmail-CVE-2014-3618.patch		\
   %D%/packages/patches/procmail-CVE-2017-16844.patch		\
-  %D%/packages/patches/proot-test-fhs.patch			\
   %D%/packages/patches/psm-arch.patch				\
   %D%/packages/patches/psm-disable-memory-stats.patch		\
   %D%/packages/patches/psm-ldflags.patch			\

@@ -163,7 +163,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -6810,7 +6811,9 @@ userspace queueing component and the logging subsystem.")
 (define-public proot
   (package
     (name "proot")
-    (version "5.1.0")
+    ;; The last stable release was made in 2015, and fails to build for
+    ;; the aarch64 platform.
+    (version "5.2.0-alpha")
     (source
      (origin
        (method git-fetch)
@@ -6819,30 +6822,33 @@ userspace queueing component and the logging subsystem.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0azsqis99gxldmbcg43girch85ysg4hwzf0h1b44bmapnsm89fbz"))
-       (patches (search-patches "proot-test-fhs.patch"))))
+        (base32 "09vp806y4hqfq2fn2hpi873rh4j6a3c572ph4mkirx1n32wj8srl"))))
     (build-system gnu-build-system)
+    ;; The powerpc64le-linux and mips64el-linux architectures are not
+    ;; supported (see:
+    ;; https://github.com/proot-me/proot/blob/master/src/arch.h#L51).
+    (supported-systems '("x86_64-linux" "i686-linux"
+                         "armhf-linux" "aarch64-linux" "i586-gnu"))
     (arguments
-     '(#:make-flags '("-C" "src")
+     ;; Disable the test suite on ARM platforms, as there are too many
+     ;; failures to keep track of (see for example:
+     ;; https://github.com/proot-me/proot/issues/263).
+     `(#:tests? ,(not (string-match "^(arm|aarch64)"
+                                    (or (%current-target-system)
+                                        (%current-system))))
+       #:make-flags '("-C" "src")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'set-shell-file-name
+                  (add-after 'unpack 'patch-sources
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* (find-files "src" "\\.[ch]$")
                         (("\"/bin/sh\"")
-                         (string-append "\""
-                                        (assoc-ref inputs "bash")
-                                        "/bin/sh\"")))))
-                  (add-before 'check 'fix-fhs-assumptions-in-tests
-                    (lambda _
-                      (substitute* "tests/test-c6b77b77.mk"
-                        (("/bin/bash") (which "bash"))
-                        (("/usr/bin/test") (which "test")))
-                      (substitute* '("tests/test-16573e73.c")
-                        (("/bin/([a-z-]+)" _ program)
-                         (which program)))
+                         (string-append "\"" (assoc-ref inputs "bash")
+                                        "/bin/sh\"")))
 
-                      (substitute* (find-files "tests" "\\.sh$")
+                      (substitute* "src/GNUmakefile"
+                        (("/bin/echo") (which "echo")))
+
+                      (substitute* (find-files "test" "\\.sh$")
                         ;; Some of the tests try to "bind-mount" /bin/true.
                         (("-b /bin/true:")
                          (string-append "-b " (which "true") ":"))
@@ -6852,27 +6858,63 @@ userspace queueing component and the logging subsystem.")
                         (("/bin/sh") (which "sh"))
                         ;; Others assume /etc/fstab exists.
                         (("/etc/fstab") "/etc/passwd"))
-
-                      (substitute* "tests/GNUmakefile"
+                      (substitute* "test/GNUmakefile"
                         (("-b /bin:") "-b /gnu:"))
+                      (substitute* "test/test-c6b77b77.mk"
+                        (("/bin/bash") (which "bash"))
+                        (("/usr/bin/test") (which "test")))
+                      (substitute* "test/test-16573e73.c"
+                        (("/bin/([a-z-]+)" _ program)
+                         (which program)))
+                      (substitute* "test/test-d2175fc3.sh"
+                        (("\\^/bin/true\\$") "$(which true)"))
+                      (substitute* "test/test-5467b986.sh"
+                        (("-w /usr") "-w /gnu")
+                        (("-w usr") "-w gnu")
+                        (("/usr/share") "/gnu/store")
+                        (("share") "store"))
+                      (substitute* "test/test-092c5e26.sh"
+                        (("-q echo ")
+                         "-q $(which echo) "))
+
+                      ;; The following tests are known to fail (see:
+                      ;; https://github.com/proot-me/proot/issues/184).
+                      (delete-file "test/test-0228fbe7.sh")
+                      (delete-file "test/test-2db65cd2.sh")
+
+                      ;; This one fails with "bind: Address already in use"
+                      ;; (see: https://github.com/proot-me/proot/issues/260).
+                      (delete-file "test/test-ssssssss.c")
+
+                      ;; This one fails on a waitpid call that returns 1 (see:
+                      ;; https://github.com/proot-me/proot/issues/261).
+                      (delete-file "test/test-ptrace01.c")
 
                       ;; XXX: This test fails in an obscure corner case, just
                       ;; skip it.
-                      (delete-file "tests/test-kkkkkkkk.c")))
+                      (delete-file "test/test-kkkkkkkk.c")
+
+                      ;; The socket tests requires networking.
+                      (for-each delete-file
+                                (find-files "test" "test-socket.*\\.sh$"))))
+                  (delete 'configure)
+                  (add-after 'build 'build-manpage
+                    (lambda _
+                      (with-directory-excursion "doc"
+                        (invoke "make" "proot/man.1" "SUFFIX=.py"))))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
                         (let ((n (parallel-job-count)))
-                          ;; For some reason we get lots of segfaults with
-                          ;; seccomp support (x86_64, Linux-libre 4.11.0).
+                          ;; There are lots of segfaults with seccomp support
+                          ;; (x86_64, Linux-libre 4.11.0) (see:
+                          ;; https://github.com/proot-me/proot/issues/106).
                           (setenv "PROOT_NO_SECCOMP" "1")
-
                           ;; Most of the tests expect "/bin" to be in $PATH so
                           ;; they can run things that live in $ROOTFS/bin.
                           (setenv "PATH"
                                   (string-append (getenv "PATH") ":/bin"))
-
-                          (invoke "make" "check" "-C" "tests"
+                          (invoke "make" "check" "-C" "test"
                                   ;;"V=1"
                                   "-j" (number->string n))))))
                   (replace 'install
@@ -6884,24 +6926,22 @@ userspace queueing component and the logging subsystem.")
                         ;; build currently.)
                         (invoke "make" "-C" "src" "install"
                                 (string-append "PREFIX=" out))
-
                         (mkdir-p man1)
                         (copy-file "doc/proot/man.1"
                                    (string-append man1 "/proot.1"))))))))
     (native-inputs `(("which" ,which)
-
                      ;; For 'mcookie', used by some of the tests.
                      ("util-linux" ,util-linux)
-
                      ;; XXX: Choose the old coreutils because its 'stat'
                      ;; program does not use statx(2) when running 'stat -c
-                     ;; %a' or similar, which PRoot doesn't properly support.
+                     ;; %a' or similar, which PRoot doesn't properly support
+                     ;; (see: https://github.com/proot-me/proot/issues/262).
                      ("coreutils-old" ,coreutils-8.30)
-
-                     ;; XXX: 'test-c6b77b77.sh' runs 'make' and that leads
-                     ;; make 4.3 to segfault.
-                     ("make-old" ,gnu-make-4.2)))
-    (inputs `(("talloc" ,talloc)))
+                     ("pkg-config" ,pkg-config)
+                     ;; For rst2man, used to generate the manual page.
+                     ("python-docutils" ,python-docutils)))
+    (inputs `(("libarchive" ,libarchive)
+              ("talloc" ,talloc)))
     (home-page "https://github.com/proot-me/PRoot")
     (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
     (description
