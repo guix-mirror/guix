@@ -1377,15 +1377,15 @@ On Guix System, you will need to invoke the included shell scripts as
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.32.4")
+    (version "2.32.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/trapexit/mergerfs/releases/download/"
-                           version "/mergerfs-" version ".tar.gz"))
+       (uri (string-append "https://github.com/trapexit/mergerfs/"
+                           "releases/download/" version "/"
+                           "mergerfs-" version ".tar.gz"))
        (sha256
-        (base32
-         "0yz7nljx6axcj6hb09sgc0waspgfhp535228rjqvqgyd8y74jc3s"))))
+        (base32 "08gwi094ll0b7nf2i44fyjxiyvr45rp766npbdyw0yzyigas8a2f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
