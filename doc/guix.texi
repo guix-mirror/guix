@@ -2543,7 +2543,7 @@ provide the declaration of the operating system to be installed.  To
 that end, the installation system comes with three text editors.  We
 recommend GNU nano (@pxref{Top,,, nano, GNU nano Manual}), which
 supports syntax highlighting and parentheses matching; other editors
-include GNU Zile (an Emacs clone), and
+include mg (an Emacs clone), and
 nvi (a clone of the original BSD @command{vi} editor).
 We strongly recommend storing that file on the target root file system, say,
 as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
@@ -13485,7 +13485,7 @@ environment variable---in addition to the per-user profiles
 (@pxref{Invoking guix package}).  The @code{%base-packages} variable
 provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
-the GNU Zile lightweight text editor, @command{find}, @command{grep},
+the @command{mg} lightweight text editor, @command{find}, @command{grep},
 etc.  The example above adds GNU@tie{}Screen to those,
 taken from the @code{(gnu packages screen)}
 module (@pxref{Package Modules}).  The
