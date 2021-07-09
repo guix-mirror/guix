@@ -1309,7 +1309,11 @@ Trusted comments are signed, thus verified, before being displayed.")
               (sha256
                (base32
                 "0bixly6jqpwfx3p37c1qp1j685yg6m429r1nazwh43w4n527bs3y"))
-              (file-name (git-file-name name version))))
+              (file-name (git-file-name name version))
+              ;; Delete the bundled blob.  It's free, but unauditable,
+              ;; and apparently only required for android.
+              (snippet '(delete-file
+                         "android/gradle/wrapper/gradle-wrapper.jar"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
