@@ -26290,17 +26290,17 @@ service, and connect it with Emacs via inter-process communication.")
              (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
                     (ffmpeg-bin (string-append ffmpeg "/bin/ffmpeg"))
                     (ffplay-bin (string-append ffmpeg "/bin/ffplay")))
-              (substitute* "telega-ffplay.el"
-                (("(shell-command-to-string\|concat) \"(ffmpeg\|ffprobe)"
-                  all func cmd)
-                 (string-append func " \"" (assoc-ref inputs "ffmpeg")
-                                "bin/" cmd))
-                (("\\(executable-find \"ffplay\"\\)")
-                 (string-append "(and (file-executable-p \"" ffplay-bin "\")"
-                                "\"" ffplay-bin "\")"))
-                (("\\(executable-find \"ffmpeg\"\\)")
-                 (string-append "(and (file-executable-p \"" ffmpeg-bin "\")"
-                                "\"" ffmpeg-bin "\")"))))))
+               (substitute* '("telega-ffplay.el" "telega-vvnote.el")
+                 (("(shell-command-to-string\|concat) \"(ffmpeg\|ffprobe)"
+                   all func cmd)
+                  (string-append func " \"" (assoc-ref inputs "ffmpeg")
+                                 "/bin/" cmd))
+                 (("\\(executable-find \"ffplay\"\\)")
+                  (string-append "(and (file-executable-p \"" ffplay-bin "\")"
+                                 "\"" ffplay-bin "\")"))
+                 (("\\(executable-find \"ffmpeg\"\\)")
+                  (string-append "(and (file-executable-p \"" ffmpeg-bin "\")"
+                                 "\"" ffmpeg-bin "\")"))))))
          (add-after 'unpack 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "telega-server.el"
