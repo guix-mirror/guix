@@ -6966,20 +6966,16 @@ values (strings, macros, or numbers) pasted together.")
     ;; checking the Biber/BibLaTeX compatibility matrix in the BibLaTeX manual
     ;; at <https://ctan.org/pkg/biblatex>.
     (name "biber")
-    (version "2.12")
+    (version "2.16")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/plk/biber/")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
-              ;; TODO: Patch awaiting inclusion upstream (see:
-              ;; https://github.com/plk/biber/issues/239).
-              (patches (search-patches "biber-fix-encoding-write.patch"
-                                       "biber-sortinithash.patch"))
               (sha256
                (base32
-                "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
+                "0586q8y1f2k23mvb02ccm3qsb35cwskafksixsjaih7a7xcf5gxx"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -7002,6 +6998,7 @@ values (strings, macros, or numbers) pasted together.")
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
        ("perl-datetime-calendar-julian" ,perl-datetime-calendar-julian)
        ("perl-file-slurper" ,perl-file-slurper)
+       ("perl-io-string" ,perl-io-string)
        ("perl-ipc-cmd" ,perl-ipc-cmd)
        ("perl-ipc-run3" ,perl-ipc-run3)
        ("perl-list-allutils" ,perl-list-allutils)
@@ -7009,10 +7006,8 @@ values (strings, macros, or numbers) pasted together.")
        ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-regexp-common" ,perl-regexp-common)
        ("perl-log-log4perl" ,perl-log-log4perl)
-       ;; We cannot use perl-unicode-collate here, because otherwise the
-       ;; hardcoded hashes in the tests would differ.  See
-       ;; https://mail-archive.com/debian-bugs-dist@lists.debian.org/msg1469249.html
-       ;;("perl-unicode-collate" ,perl-unicode-collate)
+       ("perl-parse-recdescent" ,perl-parse-recdescent)
+       ("perl-unicode-collate" ,perl-unicode-collate)
        ("perl-unicode-normalize" ,perl-unicode-normalize)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
        ("perl-encode-eucjpascii" ,perl-encode-eucjpascii)
