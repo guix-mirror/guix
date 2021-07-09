@@ -26223,7 +26223,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
 (define-public emacs-telega-server
   (package
     (name "emacs-telega-server")
-    (version "0.7.024")
+    (version "0.7.025")
     (source
      (origin
        (method git-fetch)
@@ -26231,7 +26231,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
              (url "https://github.com/zevlg/telega.el")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1ra04cp49zzx8vy8aswd00l46ixyc44sxh1s3nw880b4ywzxmc6j"))
+        (base32 "1fdvghwpmja94d65p02j7wa09lwjs3ah1kfb1v17b6l9qd5g80nc"))
        (file-name (git-file-name "emacs-telega" version))
        (patches
         (search-patches "emacs-telega-path-placeholder.patch"
