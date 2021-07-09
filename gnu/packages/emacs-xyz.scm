@@ -7065,7 +7065,7 @@ linting of manifests and integration with Puppet Debugger.")
            (add-before 'install 'make-info
              (lambda _
                (invoke "makeinfo" "--no-split"
-                       "-o" "purescript-mode.info" "purescript-mode.texi")))))) 
+                       "-o" "purescript-mode.info" "purescript-mode.texi"))))))
       (native-inputs
        `(("texinfo" ,texinfo)))
       (home-page "https://github.com/purescript-emacs/purescript-mode")
@@ -28911,4 +28911,3 @@ to the @url{https://multitran.com} online dictionary.")
      "Kibit Helper provides functions to work with the Kibit Leiningen plugin
 for detecting and improve non-idiomatic Clojure source code.")
     (license license:gpl3+)))
-
