@@ -3524,7 +3524,8 @@ environments and back.")
          "0pm440pmpvgv5rbbnm8hk4qga5a292kvlm1bh3x2nwr8pb5p8xv0"))))
     (build-system python-build-system)
     (inputs
-     `(("libyaml" ,libyaml)))
+     `(("libyaml" ,libyaml)
+       ("python-cython" ,python-cython)))
     (home-page "https://pyyaml.org")
     (synopsis "YAML parser and emitter for Python")
     (description
