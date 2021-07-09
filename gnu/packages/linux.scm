@@ -3084,7 +3084,9 @@ processes currently causing I/O.")
                 "1ddlq6kzxilccgbvxjfx80jx6kamgw4sv49phks2zhlcc1frvrnh"))
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux)))
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("util-linux" ,util-linux)))
     (arguments
      '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
                                               (assoc-ref %outputs "out")
@@ -3107,9 +3109,9 @@ processes currently causing I/O.")
                (("/bin/(u?)mount" _ maybe-u)
                 (string-append (assoc-ref inputs "util-linux")
                                "/bin/" maybe-u "mount")))
-             (substitute* '("util/mount.fuse.c")
-               (("/bin/sh")
-                (which "sh")))
+             (substitute* "util/mount.fuse.c"
+               (("/bin/sh" command)
+                (string-append (assoc-ref inputs "bash-minimal") command)))
 
              ;; This hack leads libfuse to search for 'fusermount' in
              ;; $PATH, where it may find a setuid-root binary, instead of
@@ -3117,8 +3119,7 @@ processes currently causing I/O.")
              ;; it's not setuid.
              (substitute* "lib/Makefile"
                (("-DFUSERMOUNT_DIR=[[:graph:]]+")
-                "-DFUSERMOUNT_DIR=\\\"/var/empty\\\""))
-             #t)))))
+                "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))))))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
