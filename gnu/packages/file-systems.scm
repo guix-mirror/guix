@@ -1391,32 +1391,28 @@ On Guix System, you will need to invoke the included shell scripts as
     (arguments
      `(#:make-flags
        (list (string-append "CC=" ,(cc-for-target))
-             (string-append "CXX=" ,(cxx-for-target)))
-       #:tests? #f                      ; No tests exist.
+             (string-append "CXX=" ,(cxx-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                     ; all require a kernel with FUSE loaded
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'fix-paths
+         (delete 'configure)            ; no configure script
+         (add-after 'unpack 'set-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
-             ;; These were copied from the package libfuse.
-             (substitute* '("libfuse/lib/mount_util.c" "libfuse/util/mount_util.c")
+             (substitute* "libfuse/Makefile"
+               (("/sbin") "$(EXEC_PREFIX)/sbin")
+               (("chown") "true")  ; disallowed in the build environment
+               (("strip") "true")) ; breaks cross-compilation
+             ;; These were copied from the fuse package.
+             (substitute* '("libfuse/lib/mount_util.c"
+                            "libfuse/util/mount_util.c")
                (("/bin/(u?)mount" _ maybe-u)
                 (string-append (assoc-ref inputs "util-linux")
                                "/bin/" maybe-u "mount")))
              (substitute* '("libfuse/util/mount.mergerfs.c")
                (("/bin/sh" command)
-                (string-append (assoc-ref inputs "bash-minimal") command)))
-             ;; The Makefile does not allow overriding PREFIX via make variables.
-             (substitute* '("Makefile" "libfuse/Makefile")
-               (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
-               (("= /sbin") "= $(EXEC_PREFIX)/sbin")
-               ;; cannot chown as build user
-               (("chown root(:root)?") "true")
-               ;; Breaks cross-compilation.
-               (("strip") "true"))
-             #t)))))
-    ;; mergerfs bundles a heavily modified copy of libfuse.
+                (string-append (assoc-ref inputs "bash-minimal") command))))))))
+    ;; Mergerfs bundles a heavily modified copy of fuse.
     (inputs
      `(("bash-minimal" ,bash-minimal)
        ("util-linux" ,util-linux)))
