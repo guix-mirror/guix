@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
-;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020,2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -561,7 +561,17 @@ potential infinite waits blocking libvirt."))
   (family   qemu-platform-family)                 ;string
   (magic    qemu-platform-magic)                  ;bytevector
   (mask     qemu-platform-mask)                   ;bytevector
-  (flags    qemu-platform-flags (default "F")))   ;string
+
+  ;; Default flags:
+  ;;
+  ;;   "F": fix binary.  Open the qemu-user binary (statically linked) as soon
+  ;;   as binfmt_misc interpretation is handled.
+  ;;
+  ;;   "P": preserve argv[0].  QEMU 6.0 detects whether it's started with this
+  ;;   flag and automatically does the right thing.  Without this flag,
+  ;;   argv[0] is replaced by the absolute file name of the executable, an
+  ;;   observable difference that can cause discrepancies.
+  (flags    qemu-platform-flags (default "FP")))  ;string
 
 (define-syntax bv
   (lambda (s)
