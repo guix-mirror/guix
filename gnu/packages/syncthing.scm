@@ -5,6 +5,7 @@
 ;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -404,28 +405,26 @@ processes.")
       (license asl2.0))))
 
 (define-public go-github-com-golang-snappy
-  (let ((commit "553a641470496b2327abcac10b36396bd98e45c9")
-        (revision "0"))
-    (package
-      (name "go-github-com-golang-snappy")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/golang/snappy")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0kssxnih1l722hx9219c7javganjqkqhvl3i0hp0hif6xm6chvqk"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/golang/snappy"))
-      (synopsis "Snappy compression format in the Go programming language")
-      (description "This package provides a Go implementation of the Snappy
+  (package
+    (name "go-github-com-golang-snappy")
+    (version "0.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/golang/snappy")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "004cw699yz3pdpawhjhpa0y94c4w479nw1rf39zj6h6027kpwv2j"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/golang/snappy"))
+    (synopsis "Snappy compression format in the Go programming language")
+    (description "This package provides a Go implementation of the Snappy
 compression format.")
-      (home-page "https://github.com/golang/snappy")
-      (license bsd-3))))
+    (home-page "https://github.com/golang/snappy")
+    (license bsd-3)))
 
 (define-public go-github-com-jackpal-gateway
   (package
