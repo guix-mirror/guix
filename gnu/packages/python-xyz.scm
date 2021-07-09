@@ -105,6 +105,7 @@
 ;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
+;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26012,4 +26013,26 @@ result.")
     (description
      "This packages provides a docutils-compatibility bridge to CommonMark,
 enabling you to write CommonMark inside of Docutils & Sphinx projects.")
+    (license license:expat)))
+
+(define-public python-pyhull
+  (package
+    (name "python-pyhull")
+    (version "2015.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyhull" version))
+       (sha256
+        (base32
+         "091sph52c4yk1jlm5w8xidxpzbia9r7s42bnb23q4m4b56ihmzyj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/materialsvirtuallab/pyhull")
+    (synopsis "Python wrapper to Qhull")
+    (description
+     "This package provides a Python wrapper to @uref{http://www.qhull.org/,
+Qhull} for the computation of the convex hull, Delaunay triangulation, and
+Voronoi diagram.")
     (license license:expat)))
