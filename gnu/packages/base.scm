@@ -328,7 +328,8 @@ used to apply commands with arbitrarily long arguments.")
             (sha256
              (base32
               "1yjcrh5hw70c0yn8zw55pd6j51dj90anpq8mmg649ps9g3gdhn24"))
-            (patches (search-patches "coreutils-ls.patch"))))
+            (patches (search-patches "coreutils-ls.patch"
+                                     "coreutils-gnulib-tests.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("attr" ,attr)                       ;for xattrs in ls, mv, etc
