@@ -1388,7 +1388,10 @@ On Guix System, you will need to invoke the included shell scripts as
         (base32 "08gwi094ll0b7nf2i44fyjxiyvr45rp766npbdyw0yzyigas8a2f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; No tests exist.
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "CXX=" ,(cxx-for-target)))
+       #:tests? #f                      ; No tests exist.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -1408,7 +1411,9 @@ On Guix System, you will need to invoke the included shell scripts as
                (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
                (("= /sbin") "= $(EXEC_PREFIX)/sbin")
                ;; cannot chown as build user
-               (("chown root(:root)?") "true"))
+               (("chown root(:root)?") "true")
+               ;; Breaks cross-compilation.
+               (("strip") "true"))
              #t)))))
     ;; mergerfs bundles a heavily modified copy of libfuse.
     (inputs `(("util-linux" ,util-linux)))
