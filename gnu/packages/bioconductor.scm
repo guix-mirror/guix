@@ -2675,14 +2675,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-edaseq
   (package
     (name "r-edaseq")
-    (version "2.26.0")
+    (version "2.26.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "EDASeq" version))
        (sha256
         (base32
-         "1mqpi2iz4azr31b3ajsqb4n9izjh85dx642844n059c8s2pfmivh"))))
+         "0pakcbkalhhqz3d9lpfx3hscf53k24mlmrywxxzfg43yq57srkql"))))
     (properties `((upstream-name . "EDASeq")))
     (build-system r-build-system)
     (propagated-inputs
