@@ -11528,13 +11528,13 @@ and related methods.")
 (define-public r-rcppgsl
   (package
     (name "r-rcppgsl")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppGSL" version))
        (sha256
-        (base32 "17nlayy6gvwb3v6l5aiqm84i75yf4dfi3zclxrgpqwf3j9v09yvz"))))
+        (base32 "0zhfkn3w5q2k2ggizrikz9an8hm90g6mr60paq0z8xgp5hpkrlk6"))))
     (properties `((upstream-name . "RcppGSL")))
     (build-system r-build-system)
     (propagated-inputs
