@@ -1,0 +1,16 @@
+Description: prevent relocating initrd & fdt, that results in failure to boot
+Author: Heinrich Schuchardt (xypron)
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/u-boot/+bug/1937246
+Index: u-boot-2021.07~rc4+dfsg/include/configs/sifive-unmatched.h
+===================================================================
+--- u-boot-2021.07~rc4+dfsg.orig/include/configs/sifive-unmatched.h
++++ u-boot-2021.07~rc4+dfsg/include/configs/sifive-unmatched.h
+@@ -62,6 +62,8 @@
+ 	"name=system,size=-,bootable,type=${type_guid_gpt_system};"
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
++	"fdt_high=0xffffffffffffffff\0" \
++	"initrd_high=0xffffffffffffffff\0" \
+ 	"kernel_addr_r=0x84000000\0" \
+ 	"fdt_addr_r=0x88000000\0" \
+ 	"scriptaddr=0x88100000\0" \
