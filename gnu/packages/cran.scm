@@ -26036,14 +26036,14 @@ for spatial data on a linear network.")
 (define-public r-spatstat
   (package
     (name "r-spatstat")
-    (version "2.1-0")
+    (version "2.2-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spatstat" version))
        (sha256
         (base32
-         "0vr5md53247v6crvjvg9m82vc6h914zzvkzfkga8x79hv35ii4as"))))
+         "0lz3sidn05xjswxaxhagal6jj5hra6aya0azxybjw7mgspl903wg"))))
     (properties `((upstream-name . "spatstat")))
     (build-system r-build-system)
     (propagated-inputs
