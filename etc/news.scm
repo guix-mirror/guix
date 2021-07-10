@@ -23,6 +23,31 @@
 (channel-news
  (version 0)
 
+ (entry (commit "f23803af2018a148fb088f2516d79c20d6bf95f0")
+        (title
+         (en "Input labels can now be omitted in package definitions"))
+        (body
+         (en "If you have written package definitions before, you may know
+that package inputs required a bit of boilerplate: each input needs to have an
+associated label (a string), which you can refer to in ``build-side code''.
+
+Input labels are now unnecessary, meaning that you can write code like:
+
+@lisp
+(package
+  ;; @dots{}
+  (inputs (list libunistring libffi libgc)))
+@end lisp
+
+Notice that the @code{inputs} field is simplified compared to the ``old
+style''.  When needed, you can now use g-expressions (gexps) to refer to
+another package in build-side code.  Additionally, the new
+@code{modify-inputs} macro facilitates common operations on inputs---deleting,
+replacing, adding inputs.
+
+To ease transition to the ``new style'', a new @command{guix style} command is
+provided.  Run @command{info \"(guix) Invoking guix style\"} for more info.")))
+
  (entry (commit "bdc298ecee15283451d3aa20a849dd7bb22c8538")
         (title
          (en "New @command{guix import egg} command")
