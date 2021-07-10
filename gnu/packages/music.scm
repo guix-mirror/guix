@@ -39,6 +39,7 @@
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6679,3 +6680,45 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
   framework.")
       (home-page "http://shiru.untergrund.net/software.shtml")
       (license license:wtfpl2))))
+
+(define-public a2jmidid
+  (package
+    (name "a2jmidid")
+    (version "9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jackaudio/a2jmidid")
+                    (commit version)))
+              (sha256
+               (base32 "1x6rcl3f4nklnx4p5jln9a7fpj9y7agjxs9rw7cccmwnski7pnsq"))
+              (file-name (git-file-name name version))))
+    (arguments
+     `(#:tests? #f      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/")))
+               (substitute* (string-append bin "a2j")
+                 (("a2j_control") (string-append bin "a2j_control")))
+               (wrap-program (string-append bin "a2j_control")
+                `("PYTHONPATH" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (build-system meson-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("bash-minimal" ,bash-minimal)   ; for wrap-program
+       ("dbus" ,dbus)
+       ("jack" ,jack-1)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "ALSA sequencer to JACK MIDI bridging")
+    (description
+     "@code{a2jmidid} is a daemon that implements automatic bridging of ALSA
+midi devices to JACK midi devices.")
+    (home-page "https://github.com/jackaudio/a2jmidid")
+    (license license:gpl2)))
