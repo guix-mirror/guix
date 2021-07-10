@@ -5691,21 +5691,19 @@ Markdown documents.")
 (define-public r-seriation
   (package
     (name "r-seriation")
-    (version "1.2-9")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seriation" version))
        (sha256
         (base32
-         "1glxn098ar1v96xlwp85kjxzfd1nyfzp2f82x5z3fm87yv57k4lb"))))
+         "1vl0zfdvxdccvda8lwkjhg5rivj2q5gjm4qvkqwny6asm06x80ny"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-colorspace" ,r-colorspace)
-       ("r-dendextend" ,r-dendextend)
        ("r-gclus" ,r-gclus)
-       ("r-gplots" ,r-gplots)
        ("r-mass" ,r-mass)
        ("r-qap" ,r-qap)
        ("r-registry" ,r-registry)
