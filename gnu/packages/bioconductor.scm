@@ -13010,14 +13010,14 @@ relevant, and the minimum expression of the most abundant condition.")
 (define-public r-catalyst
   (package
     (name "r-catalyst")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
       (origin
         (method url-fetch)
         (uri (bioconductor-uri "CATALYST" version))
         (sha256
           (base32
-            "1lzi3wylx94k3gmfw5lsqh3cvg485ik3n5xd51jllczgavwvki16"))))
+            "12frw4myqr8y3ff4n74ld4478ndpmfj5ynr6gnigbr1h61b94m3v"))))
     (properties `((upstream-name . "CATALYST")))
     (build-system r-build-system)
     (propagated-inputs
