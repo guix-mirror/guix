@@ -13302,6 +13302,49 @@ and comparison operations when used heavily in numeric code.")
 (define-public ecl-static-dispatch
   (sbcl-package->ecl-package sbcl-static-dispatch))
 
+(define-public sbcl-cl-form-types
+  (package
+    (name "sbcl-cl-form-types")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex-gutev/cl-form-types")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17kdjqmm2ib347b8lqm3k4kca2j53kr0azb6h7m0v5i157ibndsw"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("agutil" ,sbcl-agutil)
+       ("anaphora" ,sbcl-anaphora)
+       ("arrows" ,sbcl-arrows)
+       ("cl-environments" ,sbcl-cl-environments)
+       ("introspect-environment" ,sbcl-introspect-environment)
+       ("optima" ,sbcl-optima)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (home-page "https://github.com/alex-gutev/cl-form-types")
+    (synopsis "determining the types of Common Lisp forms")
+    (description "This library provides functions for determining the value
+types of Common Lisp forms, based on type information contained in the
+environment.
+
+In order for this library to work the values types of variables and return
+types of functions have to be declared.
+
+Macros and symbol-macros are fully expanded and all special forms, except
+@code{CATCH}, are supported.")
+    (license license:expat)))
+
+(define-public cl-form-types
+  (sbcl-package->cl-source-package sbcl-cl-form-types))
+
+(define-public ecl-cl-form-types
+  (sbcl-package->ecl-package sbcl-cl-form-types))
+
 (define-public sbcl-generic-cl
   ;; Latest commit includes a necessary fix for our Guix build.
   (let ((commit "8e5a81487ee3c13fe5ffdc8bdda161d476639535"))
