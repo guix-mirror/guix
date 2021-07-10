@@ -20021,6 +20021,34 @@ elicitation options based on Kass and Vaidyanathan (1992)
 @url{doi:10.1111/j.2517-6161.1992.tb01868.x}.")
     (license license:gpl2+)))
 
+(define-public r-reldist
+  (package
+    (name "r-reldist")
+    (version "1.6-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "reldist" version))
+       (sha256
+        (base32
+         "09vips7spcz0fahrpy0bl15hk43zgnq74h189hmygyi41l95aywa"))))
+    (properties `((upstream-name . "reldist")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-hmisc" ,r-hmisc)
+       ("r-mgcv" ,r-mgcv)))
+    (home-page "http://www.stat.ucla.edu/~handcock/RelDist")
+    (synopsis "Relative distribution methods")
+    (description
+     "This package provides tools for the comparison of distributions.  This
+includes nonparametric estimation of the relative distribution PDF and CDF and
+numerical summaries as described in \"Relative Distribution Methods in the
+Social Sciences\" by Mark S. Handcock and Martina Morris, Springer-Verlag,
+1999, Springer-Verlag, ISBN 0387987789.")
+    ;; See also https://cran.r-project.org/web/packages/reldist/LICENSE for
+    ;; attribution requirements.
+    (license license:gpl3)))
+
 (define-public r-accept
   (package
     (name "r-accept")
