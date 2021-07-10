@@ -839,7 +839,7 @@ program capable of converting PDF into other formats.")
        (sha256
         (base32 "0v1rl126hvblajnph2hkansgi0s8vjdc5yxrm4y3faa0lxzjwr6c"))
        (patches (search-patches "qpdfview-qt515-compat.patch"))))
-    (build-system gnu-build-system)
+    (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -850,22 +850,14 @@ program capable of converting PDF into other formats.")
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:imported-modules ((guix build qt-build-system)
-                           (guix build cmake-build-system)
-                           ,@%gnu-build-system-modules)
-       #:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  ((guix build qt-build-system) #:prefix qt:))
+     `(#:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _
              (substitute* "qpdfview.pri"
                (("/usr") (assoc-ref %outputs "out")))
-             (invoke "qmake" "qpdfview.pro")))
-         ;; Otherwise, the user interface will not display any icons.
-         (add-after 'install 'qt-wrap
-           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+             (invoke "qmake" "qpdfview.pro"))))))
     (home-page "https://launchpad.net/qpdfview")
     (synopsis "Tabbed document viewer")
     (description "@command{qpdfview} is a document viewer for PDF, PS and DJVU
