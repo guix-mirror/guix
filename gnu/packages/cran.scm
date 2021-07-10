@@ -6025,20 +6025,19 @@ vectors.")
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
-    (version "4.4.1")
+    (version "4.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "statnet.common" version))
         (sha256
           (base32
-            "1z89an46xcl1d7dacj4irhk6pkajdz7v85b2347vczwdf622pksf"))))
+            "0bw8dwnv568i60xrj6d7gv0hnna1x7rvqaayy5i0827khvdj7nrw"))))
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-coda" ,r-coda)
-       ("r-rle" ,r-rle)))
+     `(("r-coda" ,r-coda)))
     (home-page "https://statnet.org")
     (synopsis "R scripts and utilities used by the Statnet software")
     (description "This package provides non-statistical utilities used by the
