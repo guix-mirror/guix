@@ -22251,18 +22251,19 @@ validation of bicluster solutions.")
 (define-public r-icge
   (package
     (name "r-icge")
-    (version "0.3")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ICGE" version))
        (sha256
         (base32
-         "0xin7zml1nbygyi08hhg3wwr2jr1zcsvrlgia89zp4xanxlzgaqa"))))
+         "0w6hbi3h98q6gsxqbb43p95v6xykgrasxcjivwm8hw9fly4avxyi"))))
     (properties `((upstream-name . "ICGE")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
+       ("r-fastcluster" ,r-fastcluster)
        ("r-mass" ,r-mass)))
     (home-page "https://cran.r-project.org/web/packages/ICGE/")
     (synopsis "Cluster estimation and identification of atypical units")
