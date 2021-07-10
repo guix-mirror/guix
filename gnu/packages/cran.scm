@@ -616,25 +616,26 @@ variables.")
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
-    (version "0.3.9")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggpmisc" version))
               (sha256
                (base32
-                "0nb0lpwqph9334s9sq77mk3nd22icy9d9hywz4awhf6nvp5rcc2v"))))
+                "1vfzhpd4bqskq1sxh60dkab02m51g0dhj9i8mfqqbakhmkqggxa3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-generics" ,r-generics)
        ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpp" ,r-ggpp)
        ("r-gridextra" ,r-gridextra)
        ("r-lubridate" ,r-lubridate)
-       ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-plyr" ,r-plyr)
        ("r-polynom" ,r-polynom)
+       ("r-quantreg" ,r-quantreg)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-splus2r" ,r-splus2r)
