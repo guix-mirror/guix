@@ -15893,6 +15893,37 @@ in R if the information they contain can be accessed in R, for which
 high-performance functions are provided here.")
     (license license:expat)))
 
+(define-public r-s2
+  (package
+    (name "r-s2")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "s2" version))
+       (sha256
+        (base32
+         "1xd42bpbm090dqlldavbn6c1h1mfwhlws9536avan00w3szlxk56"))))
+    (properties `((upstream-name . "s2")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-wk" ,r-wk)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://r-spatial.github.io/s2/")
+    (synopsis "Spherical geometry operators using the S2 geometry library")
+    (description
+     "This package provides R bindings for Google's s2 library for geometric
+calculations on the sphere.  High-performance constructors and exporters
+provide high compatibility with existing spatial packages, transformers
+construct new geometries from existing geometries, predicates provide a means
+to select geometries based on spatial relationships, and accessors extract
+information about geometries.")
+    (license license:asl2.0)))
+
 (define-public r-sf
   (package
     (name "r-sf")
