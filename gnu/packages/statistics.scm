@@ -1596,13 +1596,13 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "3.0.2")
+    (version "3.0.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "03sbk36vrjhzfap6a9czxw93r7h06rh3mb01inbrhrh5r2pd00qq"))))
+                "0iqizv2gpv9fg766qv8hbkmc6c5i9xcfrmq9k5m2550p28zff2w3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brio" ,r-brio)
