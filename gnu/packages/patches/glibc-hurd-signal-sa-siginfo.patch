@@ -1,0 +1,637 @@
+This patch is needed to build e2fsprogs, util-linux.
+
+Taken from https://salsa.debian.org/glibc-team/glibc/-/blob/glibc-2.31/debian/patches/hurd-i386/tg-hurdsig-SA_SIGINFO.diff
+
+From: Jeremie Koenig <jk@jk.fr.eu.org>
+Subject: [PATCH] implement SA_SIGINFO signal handlers.
+
+    52baaca Hurd signals: Copy bits/sigaction.h
+    4232c66 Hurd signals: SA_SIGINFO support
+    1831cfe Hurd signals: Use POSIX sigcodes
+
+---
+ hurd/hurd/signal.h                       |    5 +
+ hurd/hurdfault.c                         |    2 
+ hurd/hurdinit.c                          |    2 
+ hurd/hurdsig.c                           |    6 -
+ sysdeps/mach/hurd/bits/sigaction.h       |   86 +++++++++++++++++++++
+ sysdeps/mach/hurd/i386/bits/sigcontext.h |    4 
+ sysdeps/mach/hurd/i386/exc2signal.c      |  123 +++++++++++++++++++-----------
+ sysdeps/mach/hurd/i386/trampoline.c      |  125 ++++++++++++++++++++++++++++---
+ sysdeps/mach/hurd/kill.c                 |    2 
+ sysdeps/mach/hurd/setitimer.c            |    2 
+ 10 files changed, 293 insertions(+), 64 deletions(-)
+
+Index: glibc-2.31/hurd/hurd/signal.h
+===================================================================
+--- glibc-2.31.orig/hurd/hurd/signal.h
++++ glibc-2.31/hurd/hurd/signal.h
+@@ -290,6 +290,11 @@ extern int _hurd_raise_signal (struct hu
+ extern void _hurd_exception2signal (struct hurd_signal_detail *detail,
+ 				    int *signo);
+ 
++/* Translate a Mach exception into a signal with a legacy sigcode.  */
++
++extern void _hurd_exception2signal_legacy (struct hurd_signal_detail *detail,
++					   int *signo);
++
+ 
+ /* Make the thread described by SS take the signal described by SIGNO and
+    DETAIL.  If the process is traced, this will in fact stop with a SIGNO
+Index: glibc-2.31/hurd/hurdfault.c
+===================================================================
+--- glibc-2.31.orig/hurd/hurdfault.c
++++ glibc-2.31/hurd/hurdfault.c
+@@ -70,7 +70,7 @@ _hurdsig_fault_catch_exception_raise (ma
+      codes into a signal number and subcode.  */
+   _hurd_exception2signal (&d, &signo);
+ 
+-  return HURD_PREEMPT_SIGNAL_P (&_hurdsig_fault_preemptor, signo, d.code)
++  return HURD_PREEMPT_SIGNAL_P (&_hurdsig_fault_preemptor, signo, d.exc_subcode)
+     ? 0 : EGREGIOUS;
+ }
+ 
+Index: glibc-2.31/hurd/hurdinit.c
+===================================================================
+--- glibc-2.31.orig/hurd/hurdinit.c
++++ glibc-2.31/hurd/hurdinit.c
+@@ -177,7 +177,7 @@ _hurd_new_proc_init (char **argv,
+     /* This process is "traced", meaning it should stop on signals or exec.
+        We are all set up now to handle signals.  Stop ourselves, to inform
+        our parent (presumably a debugger) that the exec has completed.  */
+-    __msg_sig_post (_hurd_msgport, SIGTRAP, 0, __mach_task_self ());
++    __msg_sig_post (_hurd_msgport, SIGTRAP, TRAP_TRACE, __mach_task_self ());
+ }
+ 
+ #include <shlib-compat.h>
+Index: glibc-2.31/hurd/hurdsig.c
+===================================================================
+--- glibc-2.31.orig/hurd/hurdsig.c
++++ glibc-2.31/hurd/hurdsig.c
+@@ -730,7 +730,7 @@ post_signal (struct hurd_sigstate *ss,
+       {				/* PE cannot be null.  */
+ 	do
+ 	  {
+-	    if (HURD_PREEMPT_SIGNAL_P (pe, signo, detail->code))
++	    if (HURD_PREEMPT_SIGNAL_P (pe, signo, detail->exc_subcode))
+ 	      {
+ 		if (pe->preemptor)
+ 		  {
+@@ -1374,7 +1374,7 @@ _S_msg_sig_post (mach_port_t me,
+   if (err = signal_allowed (signo, refport))
+     return err;
+ 
+-  d.code = sigcode;
++  d.code = d.exc_subcode = sigcode;
+   d.exc = 0;
+ 
+   /* Post the signal to a global receiver thread (or mark it pending in
+@@ -1403,7 +1403,7 @@ _S_msg_sig_post_untraced (mach_port_t me
+   if (err = signal_allowed (signo, refport))
+     return err;
+ 
+-  d.code = sigcode;
++  d.code = d.exc_subcode = sigcode;
+   d.exc = 0;
+ 
+   /* Post the signal to the designated signal-receiving thread.  This will
+Index: glibc-2.31/sysdeps/mach/hurd/bits/sigaction.h
+===================================================================
+--- /dev/null
++++ glibc-2.31/sysdeps/mach/hurd/bits/sigaction.h
+@@ -0,0 +1,86 @@
++/* Copyright (C) 1991-2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, write to the Free
++   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
++   02111-1307 USA.  */
++
++#ifndef _BITS_SIGACTION_H
++#define _BITS_SIGACTION_H 1
++
++#ifndef _SIGNAL_H
++# error "Never include <bits/sigaction.h> directly; use <signal.h> instead."
++#endif
++
++/* These definitions match those used by the 4.4 BSD kernel.
++   If the operating system has a `sigaction' system call that correctly
++   implements the POSIX.1 behavior, there should be a system-dependent
++   version of this file that defines `struct sigaction' and the `SA_*'
++   constants appropriately.  */
++
++/* Structure describing the action to be taken when a signal arrives.  */
++struct sigaction
++  {
++    /* Signal handler.  */
++#if defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED
++    union
++      {
++	/* Used if SA_SIGINFO is not set.  */
++	__sighandler_t sa_handler;
++	/* Used if SA_SIGINFO is set.  */
++	void (*sa_sigaction) (int, siginfo_t *, void *);
++      }
++    __sigaction_handler;
++# define sa_handler	__sigaction_handler.sa_handler
++# define sa_sigaction	__sigaction_handler.sa_sigaction
++#else
++    __sighandler_t sa_handler;
++#endif
++
++    /* Additional set of signals to be blocked.  */
++    __sigset_t sa_mask;
++
++    /* Special flags.  */
++    int sa_flags;
++  };
++
++/* Bits in `sa_flags'.  */
++#if defined __USE_XOPEN_EXTENDED || defined __USE_MISC
++# define SA_ONSTACK	0x0001	/* Take signal on signal stack.  */
++#endif
++#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
++# define SA_RESTART	0x0002	/* Restart syscall on signal return.  */
++# define SA_NODEFER	0x0010	/* Don't automatically block the signal when
++				    its handler is being executed.  */
++# define SA_RESETHAND	0x0004	/* Reset to SIG_DFL on entry to handler.  */
++#endif
++#define	SA_NOCLDSTOP	0x0008	/* Don't send SIGCHLD when children stop.  */
++#define SA_SIGINFO	0x0040	/* Signal handler with SA_SIGINFO args */
++
++#ifdef __USE_MISC
++# define SA_INTERRUPT	0	/* Historical no-op ("not SA_RESTART").  */
++
++/* Some aliases for the SA_ constants.  */
++# define SA_NOMASK    SA_NODEFER
++# define SA_ONESHOT   SA_RESETHAND
++# define SA_STACK     SA_ONSTACK
++#endif
++
++
++/* Values for the HOW argument to `sigprocmask'.  */
++#define	SIG_BLOCK	1	/* Block signals.  */
++#define	SIG_UNBLOCK	2	/* Unblock signals.  */
++#define	SIG_SETMASK	3	/* Set the set of blocked signals.  */
++
++#endif
+Index: glibc-2.31/sysdeps/mach/hurd/i386/bits/sigcontext.h
+===================================================================
+--- glibc-2.31.orig/sysdeps/mach/hurd/i386/bits/sigcontext.h
++++ glibc-2.31/sysdeps/mach/hurd/i386/bits/sigcontext.h
+@@ -97,6 +97,10 @@ struct sigcontext
+ #define sc_ps	sc_efl
+ 
+ 
++/* The deprecated sigcode values below are passed as an extra, non-portable
++   argument to regular signal handlers.  You should use SA_SIGINFO handlers
++   instead, which use the standard POSIX signal codes.  */
++
+ /* Codes for SIGFPE.  */
+ #define FPE_INTOVF_TRAP		0x1 /* integer overflow */
+ #define FPE_INTDIV_FAULT	0x2 /* integer divide by zero */
+Index: glibc-2.31/sysdeps/mach/hurd/i386/exc2signal.c
+===================================================================
+--- glibc-2.31.orig/sysdeps/mach/hurd/i386/exc2signal.c
++++ glibc-2.31/sysdeps/mach/hurd/i386/exc2signal.c
+@@ -23,8 +23,8 @@
+ /* Translate the Mach exception codes, as received in an `exception_raise' RPC,
+    into a signal number and signal subcode.  */
+ 
+-void
+-_hurd_exception2signal (struct hurd_signal_detail *detail, int *signo)
++static void
++exception2signal (struct hurd_signal_detail *detail, int *signo, int posix)
+ {
+   detail->error = 0;
+ 
+@@ -36,44 +36,62 @@ _hurd_exception2signal (struct hurd_sign
+       break;
+ 
+     case EXC_BAD_ACCESS:
+-      if (detail->exc_code == KERN_INVALID_ADDRESS
+-	  || detail->exc_code == KERN_PROTECTION_FAILURE
+-	  || detail->exc_code == KERN_WRITE_PROTECTION_FAILURE)
+-	*signo = SIGSEGV;
+-      else
+-	*signo = SIGBUS;
+-      detail->code = detail->exc_subcode;
++      switch (detail->exc_code)
++        {
++	case KERN_INVALID_ADDRESS:
++	case KERN_MEMORY_FAILURE:
++	  *signo = SIGSEGV;
++	  detail->code = posix ? SEGV_MAPERR : detail->exc_subcode;
++	  break;
++
++	case KERN_PROTECTION_FAILURE:
++	case KERN_WRITE_PROTECTION_FAILURE:
++	  *signo = SIGSEGV;
++	  detail->code = posix ? SEGV_ACCERR : detail->exc_subcode;
++	  break;
++
++	default:
++	  *signo = SIGBUS;
++	  detail->code = posix ? BUS_ADRERR : detail->exc_subcode;
++	  break;
++	}
+       detail->error = detail->exc_code;
+       break;
+ 
+     case EXC_BAD_INSTRUCTION:
+       *signo = SIGILL;
+-      if (detail->exc_code == EXC_I386_INVOP)
+-	detail->code = ILL_INVOPR_FAULT;
+-      else if (detail->exc_code == EXC_I386_STKFLT)
+-	detail->code = ILL_STACK_FAULT;
+-      else
+-	detail->code = 0;
++      switch (detail->exc_code)
++        {
++	case EXC_I386_INVOP:
++	  detail->code = posix ? ILL_ILLOPC : ILL_INVOPR_FAULT;
++	  break;
++
++	case EXC_I386_STKFLT:
++	  detail->code = posix ? ILL_BADSTK : ILL_STACK_FAULT;
++	  break;
++
++	default:
++	  detail->code = 0;
++	  break;
++	}
+       break;
+ 
+     case EXC_ARITHMETIC:
++      *signo = SIGFPE;
+       switch (detail->exc_code)
+ 	{
+ 	case EXC_I386_DIV:	/* integer divide by zero */
+-	  *signo = SIGFPE;
+-	  detail->code = FPE_INTDIV_FAULT;
++	  detail->code = posix ? FPE_INTDIV : FPE_INTDIV_FAULT;
+ 	  break;
+ 
+ 	case EXC_I386_INTO:	/* integer overflow */
+-	  *signo = SIGFPE;
+-	  detail->code = FPE_INTOVF_TRAP;
++	  detail->code = posix ? FPE_INTOVF : FPE_INTOVF_TRAP;
+ 	  break;
+ 
+ 	  /* These aren't anywhere documented or used in Mach 3.0.  */
+ 	case EXC_I386_NOEXT:
+ 	case EXC_I386_EXTOVR:
+ 	default:
+-	  *signo = SIGFPE;
+ 	  detail->code = 0;
+ 	  break;
+ 
+@@ -82,51 +100,43 @@ _hurd_exception2signal (struct hurd_sign
+ 	     Give an error code corresponding to the first bit set.  */
+ 	  if (detail->exc_subcode & FPS_IE)
+ 	    {
+-	      *signo = SIGILL;
+-	      detail->code = ILL_FPEOPR_FAULT;
++	      /* NB: We used to send SIGILL here but we can't distinguish
++		 POSIX vs. legacy with respect to what signal we send.  */
++	      detail->code = posix ? FPE_FLTINV : 0 /*ILL_FPEOPR_FAULT*/;
+ 	    }
+ 	  else if (detail->exc_subcode & FPS_DE)
+ 	    {
+-	      *signo = SIGFPE;
+-	      detail->code = FPE_FLTDNR_FAULT;
++	      detail->code = posix ? FPE_FLTUND : FPE_FLTDNR_FAULT;
+ 	    }
+ 	  else if (detail->exc_subcode & FPS_ZE)
+ 	    {
+-	      *signo = SIGFPE;
+-	      detail->code = FPE_FLTDIV_FAULT;
++	      detail->code = posix ? FPE_FLTDIV : FPE_FLTDIV_FAULT;
+ 	    }
+ 	  else if (detail->exc_subcode & FPS_OE)
+ 	    {
+-	      *signo = SIGFPE;
+-	      detail->code = FPE_FLTOVF_FAULT;
++	      detail->code = posix ? FPE_FLTOVF : FPE_FLTOVF_FAULT;
+ 	    }
+ 	  else if (detail->exc_subcode & FPS_UE)
+ 	    {
+-	      *signo = SIGFPE;
+-	      detail->code = FPE_FLTUND_FAULT;
++	      detail->code = posix ? FPE_FLTUND : FPE_FLTUND_FAULT;
+ 	    }
+ 	  else if (detail->exc_subcode & FPS_PE)
+ 	    {
+-	      *signo = SIGFPE;
+-	      detail->code = FPE_FLTINX_FAULT;
++	      detail->code = posix ? FPE_FLTRES : FPE_FLTINX_FAULT;
+ 	    }
+ 	  else
+ 	    {
+-	      *signo = SIGFPE;
+ 	      detail->code = 0;
+ 	    }
+ 	  break;
+ 
+ 	  /* These two can only be arithmetic exceptions if we
+-	     are in V86 mode, which sounds like emulation to me.
+-	     (See Mach 3.0 i386/trap.c.)  */
++	     are in V86 mode.  (See Mach 3.0 i386/trap.c.)  */
+ 	case EXC_I386_EMERR:
+-	  *signo = SIGFPE;
+-	  detail->code = FPE_EMERR_FAULT;
++	  detail->code = posix ? 0 : FPE_EMERR_FAULT;
+ 	  break;
+ 	case EXC_I386_BOUND:
+-	  *signo = SIGFPE;
+-	  detail->code = FPE_EMBND_FAULT;
++	  detail->code = posix ? FPE_FLTSUB : FPE_EMBND_FAULT;
+ 	  break;
+ 	}
+       break;
+@@ -143,7 +153,7 @@ _hurd_exception2signal (struct hurd_sign
+       if (detail->exc_code == EXC_I386_BOUND)
+ 	{
+ 	  *signo = SIGFPE;
+-	  detail->code = FPE_SUBRNG_FAULT;
++	  detail->code = posix ? FPE_FLTSUB : FPE_SUBRNG_FAULT;
+ 	}
+       else
+ 	{
+@@ -154,13 +164,34 @@ _hurd_exception2signal (struct hurd_sign
+ 
+     case EXC_BREAKPOINT:
+       *signo = SIGTRAP;
+-      if (detail->exc_code == EXC_I386_SGL)
+-	detail->code = DBG_SINGLE_TRAP;
+-      else if (detail->exc_code == EXC_I386_BPT)
+-	detail->code = DBG_BRKPNT_FAULT;
+-      else
+-	detail->code = 0;
++      switch (detail->exc_code)
++        {
++	case EXC_I386_SGL:
++	  detail->code = posix ? TRAP_BRKPT : DBG_SINGLE_TRAP;
++	  break;
++
++	case EXC_I386_BPT:
++	  detail->code = posix ? TRAP_BRKPT : DBG_BRKPNT_FAULT;
++	  break;
++
++	default:
++	  detail->code = 0;
++	  break;
++	}
+       break;
+     }
+ }
+ libc_hidden_def (_hurd_exception2signal)
++
++void
++_hurd_exception2signal (struct hurd_signal_detail *detail, int *signo)
++{
++  exception2signal (detail, signo, 1);
++}
++
++void
++_hurd_exception2signal_legacy (struct hurd_signal_detail *detail, int *signo)
++{
++  exception2signal (detail, signo, 0);
++}
++
+Index: glibc-2.31/sysdeps/mach/hurd/i386/trampoline.c
+===================================================================
+--- glibc-2.31.orig/sysdeps/mach/hurd/i386/trampoline.c
++++ glibc-2.31/sysdeps/mach/hurd/i386/trampoline.c
+@@ -19,13 +19,66 @@
+ #include <hurd/signal.h>
+ #include <hurd/userlink.h>
+ #include <thread_state.h>
++#include <mach/exception.h>
+ #include <mach/machine/eflags.h>
+ #include <assert.h>
+ #include <errno.h>
+ #include "hurdfault.h"
+ #include <intr-msg.h>
++#include <sys/ucontext.h>
+ 
+ 
++/* Fill in a siginfo_t structure for SA_SIGINFO-enabled handlers.  */
++static void fill_siginfo (siginfo_t *si, int signo,
++			  const struct hurd_signal_detail *detail,
++			  const struct machine_thread_all_state *state)
++{
++  si->si_signo = signo;
++  si->si_errno = detail->error;
++  si->si_code = detail->code;
++
++  /* XXX We would need a protocol change for sig_post to include
++   * this information.  */
++  si->si_pid = -1;
++  si->si_uid = -1;
++
++  /* Address of the faulting instruction or memory access.  */
++  if (detail->exc == EXC_BAD_ACCESS)
++    si->si_addr = (void *) detail->exc_subcode;
++  else
++    si->si_addr = (void *) state->basic.eip;
++
++  /* XXX On SIGCHLD, this should be the exit status of the child
++   * process.  We would need a protocol change for the proc server
++   * to send this information along with the signal.  */
++  si->si_status = 0;
++
++  si->si_band = 0;              /* SIGPOLL is not supported yet.  */
++  si->si_value.sival_int = 0;   /* sigqueue() is not supported yet.  */
++}
++
++/* Fill in a ucontext_t structure SA_SIGINFO-enabled handlers.  */
++static void fill_ucontext (ucontext_t *uc, const struct sigcontext *sc)
++{
++  uc->uc_flags = 0;
++  uc->uc_link = NULL;
++  uc->uc_sigmask = sc->sc_mask;
++  uc->uc_stack.ss_sp = (__ptr_t) sc->sc_esp;
++  uc->uc_stack.ss_size = 0;
++  uc->uc_stack.ss_flags = 0;
++
++  /* Registers.  */
++  memcpy (&uc->uc_mcontext.gregs[REG_GS], &sc->sc_gs,
++	  (REG_TRAPNO - REG_GS) * sizeof (int));
++  uc->uc_mcontext.gregs[REG_TRAPNO] = 0;
++  uc->uc_mcontext.gregs[REG_ERR] = 0;
++  memcpy (&uc->uc_mcontext.gregs[REG_EIP], &sc->sc_eip,
++	  (NGREG - REG_EIP) * sizeof (int));
++
++  /* XXX FPU state.  */
++  memset (&uc->uc_mcontext.fpregs, 0, sizeof (fpregset_t));
++}
++
+ struct sigcontext *
+ _hurd_setup_sighandler (struct hurd_sigstate *ss, __sighandler_t handler,
+ 			int signo, struct hurd_signal_detail *detail,
+@@ -43,15 +96,38 @@ _hurd_setup_sighandler (struct hurd_sigs
+   struct
+     {
+       int signo;
+-      long int sigcode;
+-      struct sigcontext *scp;	/* Points to ctx, below.  */
++      union
++	{
++	  /* Extra arguments for traditional signal handlers */
++	  struct
++	    {
++	      long int sigcode;
++	      struct sigcontext *scp;       /* Points to ctx, below.  */
++	    } legacy;
++
++	  /* Extra arguments for SA_SIGINFO handlers */
++	  struct
++	    {
++	      siginfo_t *siginfop;          /* Points to siginfo, below.  */
++	      ucontext_t *uctxp;            /* Points to uctx, below.  */
++	    } posix;
++	};
+       void *sigreturn_addr;
+       void *sigreturn_returns_here;
+       struct sigcontext *return_scp; /* Same; arg to sigreturn.  */
++
++      /* NB: sigreturn assumes link is next to ctx.  */
+       struct sigcontext ctx;
+       struct hurd_userlink link;
++      ucontext_t ucontext;
++      siginfo_t siginfo;
+     } *stackframe;
+ 
++  /* sigaction for preemptors */
++  static const struct sigaction legacy_sigaction = {
++    .sa_flags = SA_RESTART
++  };
++
+   if (ss->context)
+     {
+       /* We have a previous sigcontext that sigreturn was about
+@@ -94,9 +170,13 @@ _hurd_setup_sighandler (struct hurd_sigs
+      the SP on sigreturn.  */
+     state->basic.uesp = state->basic.ecx;
+ 
+-  /* XXX what if handler != action->handler (for instance, if a signal
+-   * preemptor took over) ? */
+   action = & _hurd_sigstate_actions (ss) [signo];
++  if ( (action->sa_flags & SA_SIGINFO)
++        && handler != (__sighandler_t) action->sa_sigaction
++   || !(action->sa_flags & SA_SIGINFO)
++        && handler != action->sa_handler)
++    /* A signal preemptor took over, use legacy semantic.  */
++    action = &legacy_sigaction;
+ 
+   if ((action->sa_flags & SA_ONSTACK)
+       && !(ss->sigaltstack.ss_flags & (SS_DISABLE|SS_ONSTACK)))
+@@ -140,15 +220,9 @@ _hurd_setup_sighandler (struct hurd_sigs
+ 	  = &stackframe->link.thread.next;
+       ss->active_resources = &stackframe->link;
+ 
+-      /* Set up the arguments for the signal handler.  */
+-      stackframe->signo = signo;
+-      stackframe->sigcode = detail->code;
+-      stackframe->scp = stackframe->return_scp = scp = &stackframe->ctx;
+-      stackframe->sigreturn_addr = &__sigreturn;
+-      stackframe->sigreturn_returns_here = firewall; /* Crash on return.  */
+-
+       /* Set up the sigcontext from the current state of the thread.  */
+ 
++      scp = &stackframe->ctx;
+       scp->sc_onstack = ss->sigaltstack.ss_flags & SS_ONSTACK ? 1 : 0;
+ 
+       /* struct sigcontext is laid out so that starting at sc_gs mimics a
+@@ -162,6 +236,35 @@ _hurd_setup_sighandler (struct hurd_sigs
+ 			      &state->fpu, &scp->sc_i386_float_state,
+ 			      sizeof (state->fpu));
+ 
++      /* Set up the arguments for the signal handler.  */
++      stackframe->signo = signo;
++      if (action->sa_flags & SA_SIGINFO)
++	{
++	  stackframe->posix.siginfop = &stackframe->siginfo;
++	  stackframe->posix.uctxp = &stackframe->ucontext;
++	  fill_siginfo (&stackframe->siginfo, signo, detail, state);
++	  fill_ucontext (&stackframe->ucontext, scp);
++	}
++      else
++	{
++	  if (detail->exc)
++	    {
++	      int nsigno;
++	      _hurd_exception2signal_legacy (detail, &nsigno);
++	      assert (nsigno == signo);
++	    }
++	  else
++	    detail->code = 0;
++
++	  stackframe->legacy.sigcode = detail->code;
++	  stackframe->legacy.scp = &stackframe->ctx;
++	}
++
++      /* Set up the bottom of the stack.  */
++      stackframe->sigreturn_addr = &__sigreturn;
++      stackframe->sigreturn_returns_here = firewall; /* Crash on return.  */
++      stackframe->return_scp = &stackframe->ctx;
++
+       _hurdsig_end_catch_fault ();
+ 
+       if (! ok)
+Index: glibc-2.31/sysdeps/mach/hurd/kill.c
+===================================================================
+--- glibc-2.31.orig/sysdeps/mach/hurd/kill.c
++++ glibc-2.31/sysdeps/mach/hurd/kill.c
+@@ -64,7 +64,7 @@ __kill (pid_t pid, int sig)
+ 	    {
+ 	      if (msgport != MACH_PORT_NULL)
+ 		/* Send a signal message to his message port.  */
+-		return __msg_sig_post (msgport, sig, 0, refport);
++		return __msg_sig_post (msgport, sig, SI_USER, refport);
+ 
+ 	      /* The process has no message port.  Perhaps try direct
+ 		 frobnication of the task.  */
+Index: glibc-2.31/sysdeps/mach/hurd/setitimer.c
+===================================================================
+--- glibc-2.31.orig/sysdeps/mach/hurd/setitimer.c
++++ glibc-2.31/sysdeps/mach/hurd/setitimer.c
+@@ -105,7 +105,7 @@ timer_thread (void)
+ 	  __msg_sig_post_request (_hurd_msgport,
+ 				  _hurd_itimer_port,
+ 				  MACH_MSG_TYPE_MAKE_SEND_ONCE,
+-				  SIGALRM, 0, __mach_task_self ());
++				  SIGALRM, SI_TIMER, __mach_task_self ());
+ 	  break;
+ 
+ 	case MACH_RCV_INTERRUPTED:
+Index: glibc-2.31/sysdeps/mach/hurd/i386/sigcontextinfo.h
+===================================================================
+--- glibc-2.31.orig/sysdeps/mach/hurd/i386/sigcontextinfo.h
++++ glibc-2.31/sysdeps/mach/hurd/i386/sigcontextinfo.h
+@@ -18,11 +18,10 @@
+ #ifndef _SIGCONTEXTINFO_H
+ #define _SIGCONTEXTINFO_H
+ 
+-#define SIGCONTEXT struct sigcontext
+ static inline uintptr_t
+-sigcontext_get_pc (struct sigcontext ctx)
++sigcontext_get_pc (struct ucontext_t *ctx)
+ {
+-  return ctx.sc_eip;
++  return ctx->uc_mcontext.gregs[REG_EIP];
+ }
+ 
+ #endif

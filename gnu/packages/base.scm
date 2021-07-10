@@ -942,7 +942,21 @@ with the Linux kernel.")
               (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
               (sha256
                (base32
-                "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))))))
+                "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))
+              (patches (search-patches
+                        "glibc-ldd-powerpc.patch"
+                        "glibc-ldd-x86_64.patch"
+                        "glibc-dl-cache.patch"
+                        "glibc-hidden-visibility-ldconfig.patch"
+                        "glibc-versioned-locpath.patch"
+                        "glibc-allow-kernel-2.6.32.patch"
+                        "glibc-reinstate-prlimit64-fallback.patch"
+                        "glibc-supported-locales.patch"
+                        "glibc-hurd-clock_t_centiseconds.patch"
+                        "glibc-2.31-hurd-clock_gettime_monotonic.patch"
+                        "glibc-hurd-signal-sa-siginfo.patch"
+                        "glibc-hurd-mach-print.patch"
+                        "glibc-hurd-gettyent.patch"))))))
 
 (define-public glibc-2.30
   (package
