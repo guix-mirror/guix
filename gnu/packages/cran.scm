@@ -25539,16 +25539,19 @@ values.")
 (define-public r-rismed
   (package
     (name "r-rismed")
-    (version "2.2")
+    (version "2.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "RISmed" version))
         (sha256
           (base32
-            "0nwixhngi4r2f73362salivsmsf7l52bm13jqvhdq8mfiigm80vd"))))
+            "0vpi88gzi9r85v6nhjz9jbw671zkrmyazwna2z881346wfyr3l8b"))))
     (properties `((upstream-name . "RISmed")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-xml2" ,r-xml2)))
     (home-page "https://cran.r-project.org/web/packages/RISmed")
     (synopsis "Download content from NCBI databases")
     (description
