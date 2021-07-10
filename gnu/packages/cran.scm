@@ -7358,14 +7358,14 @@ dependency on Java.")
 (define-public r-rio
   (package
     (name "r-rio")
-    (version "0.5.26")
+    (version "0.5.27")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rio" version))
        (sha256
         (base32
-         "1k6zxjb2bb0z6rv7zmkbaz85cbvs84mj602ikkwk60alh8kpdw2d"))))
+         "02nxwg1d2m1h09a6ismhcp71gmq1c8rhbbl98if2v7xsvdn63sz0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
