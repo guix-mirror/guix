@@ -13346,44 +13346,43 @@ Macros and symbol-macros are fully expanded and all special forms, except
   (sbcl-package->ecl-package sbcl-cl-form-types))
 
 (define-public sbcl-generic-cl
-  ;; Latest commit includes a necessary fix for our Guix build.
-  (let ((commit "8e5a81487ee3c13fe5ffdc8bdda161d476639535"))
-    (package
-      (name "sbcl-generic-cl")
-      (version (git-version "0.7.1" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/alex-gutev/generic-cl")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "11w0g79s4wmc78vmfng437rmsgnp5qn246zcyr540fp5nw0ad6ix"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("agutil" ,sbcl-agutil)
-         ("alexandria" ,sbcl-alexandria)
-         ("anaphora" ,sbcl-anaphora)
-         ("arrows" ,sbcl-arrows)
-         ("cl-custom-hash-table" ,sbcl-custom-hash-table)
-         ("static-dispatch" ,sbcl-static-dispatch)
-         ("trivia" ,sbcl-trivia)))
-      (native-inputs
-       `(("prove" ,sbcl-prove)))
-      (arguments
-       ;; Tests fail because SBCL head size is not high enough.
-       ;; https://github.com/alex-gutev/generic-cl/issues/6
-       `(#:tests? #f))
-      (home-page "https://alex-gutev.github.io/generic-cl/")
-      (synopsis "Generic function interface to standard Common Lisp functions")
-      (description "@code{generic-cl} provides a generic function wrapper over
+  (package
+    (name "sbcl-generic-cl")
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex-gutev/generic-cl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c40vqb49g0adfv17jxgk0ds1n6a2dph30cibq01sicmqdgrrbi8"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("agutil" ,sbcl-agutil)
+       ("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("arrows" ,sbcl-arrows)
+       ("cl-custom-hash-table" ,sbcl-custom-hash-table)
+       ("cl-form-types" ,sbcl-cl-form-types)
+       ("static-dispatch" ,sbcl-static-dispatch)
+       ("trivia" ,sbcl-trivia)))
+    (native-inputs
+     `(("prove" ,sbcl-prove)))
+    (arguments
+     ;; Tests fail because SBCL head size is not high enough.
+     ;; https://github.com/alex-gutev/generic-cl/issues/6
+     `(#:tests? #f))
+    (home-page "https://alex-gutev.github.io/generic-cl/")
+    (synopsis "Generic function interface to standard Common Lisp functions")
+    (description "@code{generic-cl} provides a generic function wrapper over
 various functions in the Common Lisp standard, such as equality predicates and
 sequence operations.  The goal of this wrapper is to provide a standard
 interface to common operations, such as testing for the equality of two
 objects, which is extensible to user-defined types.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-generic-cl
   (sbcl-package->cl-source-package sbcl-generic-cl))
