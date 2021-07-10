@@ -10830,20 +10830,21 @@ models.")
 (define-public r-glmmtmb
   (package
     (name "r-glmmtmb")
-    (version "1.0.2.1")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glmmTMB" version))
        (sha256
         (base32
-         "1a35hxcxz1cdm3zd5s7fyjaw2qs00hkacgr7h9130amygc1262ab"))))
+         "1jhq6hvamv05z12s603dsr8g4acajfylj4sdip8dd2qvj41x9xlx"))))
     (properties `((upstream-name . "glmmTMB")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lme4" ,r-lme4)
        ("r-matrix" ,r-matrix)
        ("r-nlme" ,r-nlme)
+       ("r-numderiv" ,r-numderiv)
        ("r-rcppeigen" ,r-rcppeigen)
        ("r-tmb" ,r-tmb)))
     (native-inputs
