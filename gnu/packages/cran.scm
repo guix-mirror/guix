@@ -208,27 +208,31 @@ visualization of their differences.")
 (define-public r-googledrive
   (package
     (name "r-googledrive")
-    (version "1.0.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "googledrive" version))
        (sha256
         (base32
-         "0qbyl0wyrxmwn9jg0d2s7c1kmmvmx61qbyx3qby4js8dks70f1ls"))))
+         "09jsiknzyfgxd0nzdr3wrrjw24allch2x74h96qg8vh8dad4cp30"))))
     (properties `((upstream-name . "googledrive")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-curl" ,r-curl)
+     `(("r-cli" ,r-cli)
        ("r-gargle" ,r-gargle)
        ("r-glue" ,r-glue)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
+       ("r-pillar" ,r-pillar)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
-       ("r-uuid" ,r-uuid)))
+       ("r-uuid" ,r-uuid)
+       ("r-vctrs" ,r-vctrs)
+       ("r-withr" ,r-withr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://googledrive.tidyverse.org")
