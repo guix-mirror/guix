@@ -19773,50 +19773,39 @@ cell free DNA} (cfDNA).")
 (define-public r-rintrojs
   (package
     (name "r-rintrojs")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rintrojs" version))
        (sha256
         (base32
-         "0vyqb3pyrh12saddar71ac9csn2vkd2j8ln6ygpqys8ky1lc3427"))))
+         "00l5mk80gj3xkbf3m1kip566ic98bhd88lh0bg69ybkpk4gifpyw"))
+       (snippet
+        '(delete-file "inst/javascript/introjs/intro.min.js"))))
     (properties `((upstream-name . "rintrojs")))
     (build-system r-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build r-build-system)
-                  (srfi srfi-1)
-                  (ice-9 popen))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'process-javascript
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "inst/javascript/introjs/"
-               (call-with-values
-                   (lambda ()
-                     (unzip2
-                      `((,(assoc-ref inputs "intro.js")
-                         "intro.min.js"))))
-                 (lambda (sources targets)
-                   (for-each (lambda (source target)
-                               (format #t "Processing ~a --> ~a~%"
-                                       source target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
-                                 (call-with-output-file target
-                                   (lambda (port)
-                                     (dump-port minified port)))))
-                             sources targets))))
-             #t)))))
+               (let ((source (assoc-ref inputs "intro.js"))
+                     (target "intro.min.js"))
+                 (format #true "Processing ~a --> ~a~%"
+                         source target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("esbuild" ,esbuild)
        ("intro.js"
         ,(origin
            (method url-fetch)
-           (uri "https://raw.githubusercontent.com/usablica/intro.js/v2.9.3/intro.js")
+           (uri "https://cdn.jsdelivr.net/npm/intro.js@3.2.1/intro.js")
            (sha256
             (base32
-             "1qf8n1sfy9qkiqqnfgg0xbhmfgh0g3mqsjas8qhz230h3zzlzxj8"))))))
+             "0vh5n7hqqyx2pdvlqq6xadfqibcn78h5961rwhpf817kpxfzv8v7"))))))
     (propagated-inputs
      `(("r-jsonlite" ,r-jsonlite)
        ("r-shiny" ,r-shiny)))
@@ -19828,7 +19817,8 @@ Intro.js} library.  This package makes it easy to include step-by-step
 introductions, and clickable hints in a Shiny application.  It supports both
 static introductions in the UI, and programmatic introductions from the
 server-side.")
-    (license license:agpl3+)))
+    ;; The intro.js library is licensed under Expat.
+    (license (list license:agpl3+ license:expat))))
 
 (define-public r-sysfonts
   (package
