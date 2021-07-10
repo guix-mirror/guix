@@ -19170,14 +19170,14 @@ emphasize hidden group structures in networks or focus on specific nodes.")
 (define-public r-terra
   (package
     (name "r-terra")
-    (version "1.2-10")
+    (version "1.3-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "terra" version))
        (sha256
         (base32
-         "0k2rwmfc07c9ipvd15mrfgw7yx61alf0zmyskkgrb0d1rf66n3id"))))
+         "04fcraicr79vrvzqfxqsgzqp6awf2g5qrvpi76dcm3c04i5z3rlc"))))
     (properties `((upstream-name . "terra")))
     (build-system r-build-system)
     (inputs
