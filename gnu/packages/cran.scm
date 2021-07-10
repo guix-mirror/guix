@@ -23408,14 +23408,14 @@ least squares.")
 (define-public r-regsem
   (package
     (name "r-regsem")
-    (version "1.6.2")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "regsem" version))
        (sha256
         (base32
-         "14nrzyrkrijdrr4jwkri5zra2wh36w68wy6xs600l2z1633h2lmn"))))
+         "1v33wkrsawcvaa06cijp8ybwi82a0x34y59hdknwdbywplnirzr8"))))
     (properties `((upstream-name . "regsem")))
     (build-system r-build-system)
     (propagated-inputs
