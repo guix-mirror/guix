@@ -17745,7 +17745,7 @@ Common Lisp based on the hash array-mapped trie data structure.")
 (define-public sbcl-cl-gserver
   (package
     (name "sbcl-cl-gserver")
-    (version "1.7.2")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -17754,7 +17754,7 @@ Common Lisp based on the hash array-mapped trie data structure.")
              (commit version)))
        (file-name (git-file-name "cl-gserver" version))
        (sha256
-        (base32 "1vkxs6ybi1pkpji2crmhq8c71zg0dn2ji0lcwhs0rivphz5jxk24"))))
+        (base32 "1bfz7z8v417dvsp1jz76ir3ihcs8g7zis2d56xx1dpzqzjd95g7z"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("alexandria" ,sbcl-alexandria)
