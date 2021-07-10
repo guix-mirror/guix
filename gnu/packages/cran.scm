@@ -29357,14 +29357,14 @@ Application Program Interfaces (API)}.")
 (define-public r-eyelinker
   (package
     (name "r-eyelinker")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "eyelinker" version))
         (sha256
           (base32
-            "14rfcdxad9iazwd46q6bm8gg1ryh6s8kf7arj00hhb7xz3gvk9c2"))))
+            "0wijd45p6j2qal6wnj7zywks8p9v3m9cmyp7axmk44mrjdjx2i71"))))
     (properties `((upstream-name . "eyelinker")))
     (build-system r-build-system)
     (propagated-inputs
