@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8116,6 +8117,30 @@ axes on top of LaTeX's New Font Selection Scheme (NFSS).  In
 particular, it splits the shape axis into a primary and a secondary
 shape axis and it adds three new axes to deal with the different
 figure versions offered by many professional fonts.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-preprint
+  (package
+    (name "texlive-preprint")
+    (version "1.0e")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "preprint"))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "173ik9xad3zih6gcdwdkzyljarh06ky6c5d2x1yjs22qqi75py5a"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/preprint"))
+    (home-page "http://www.ctan.org/pkg/preprint")
+    (synopsis "Bundle of modules for preprints")
+    (description "The bundle comprises: @code{authblk}, which permits
+footnote style author/affiliation input in the @command{\\author} command,
+@code{balance}, to balance the end of @command{\\twocolumn} pages,
+@code{figcaps}, to send figure captions, etc., to end document,
+@code{fullpage}, to set narrow page margins and set a fixed page style, and
+@code{sublabel}, which permits counters to be subnumbered.")
     (license license:lppl1.3+)))
 
 (define-public texlive-mweights
