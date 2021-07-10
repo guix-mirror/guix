@@ -15982,14 +15982,14 @@ information about geometries.")
 (define-public r-sf
   (package
     (name "r-sf")
-    (version "0.9-8")
+    (version "1.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sf" version))
        (sha256
         (base32
-         "096gg2hbynn6mv3w8n69x987fklg5rrgd0d4nbqaw7vhg1jhlmqi"))))
+         "0c43l2h8i179q4zpgxdzi747i27144wfx3w028zvq13q0ab0brk9"))))
     (build-system r-build-system)
     (inputs
      `(("gdal" ,gdal)
@@ -16002,6 +16002,7 @@ information about geometries.")
        ("r-dbi" ,r-dbi)
        ("r-magrittr" ,r-magrittr)
        ("r-rcpp" ,r-rcpp)
+       ("r-s2" ,r-s2)
        ("r-units" ,r-units)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
