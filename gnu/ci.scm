@@ -69,7 +69,6 @@
   #:export (derivation->job
             image->job
 
-            %bootstrap-packages
             %core-packages
             %cross-targets
             channel-source->package
@@ -149,13 +148,18 @@ SYSTEM."
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
 
-(define %bootstrap-packages
-  ;; Return the list of bootstrap packages from the commencement module.
-  (filter package?
-          (module-map
-           (lambda (sym var)
-             (variable-ref var))
-           (resolve-module '(gnu packages commencement)))))
+(define (commencement-packages system)
+  "Return the list of bootstrap packages from the commencement module for
+SYSTEM."
+  ;; Only include packages supported on SYSTEM.  For example, the Mes
+  ;; bootstrap graph is currently not supported on ARM so it should be
+  ;; excluded.
+  (filter (lambda (obj)
+            (and (package? obj)
+                 (supported-package? obj system)))
+          (module-map (lambda (sym var)
+                        (variable-ref var))
+                      (resolve-module '(gnu packages commencement)))))
 
 (define (packages-to-cross-build target)
   "Return the list of packages to cross-build for TARGET."
@@ -517,7 +521,7 @@ valid."
            (map (lambda (package)
                   (package-job store (job-name package)
                                package system))
-                (append %bootstrap-packages %core-packages))
+                (append (commencement-packages system) %core-packages))
            (cross-jobs store system)))
          ('guix
           ;; Build Guix modules only.
