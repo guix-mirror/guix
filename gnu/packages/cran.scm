@@ -15867,6 +15867,32 @@ tessellations, and summarizes information about the tiles of the
 tessellation.")
     (license license:gpl2+)))
 
+(define-public r-wk
+  (package
+    (name "r-wk")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "wk" version))
+       (sha256
+        (base32
+         "0l49pg1ds02h1qji1fi2m67mncvgd1n905i0jx07frdxy0d3b9ys"))))
+    (properties `((upstream-name . "wk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cpp11" ,r-cpp11)))
+    (home-page "https://paleolimbot.github.io/wk/")
+    (synopsis "Lightweight well-known geometry parsing")
+    (description
+     "This package provides a minimal R and C++ API for parsing well-known
+binary and well-known text representation of geometries to and from R-native
+formats.  Well-known binary is compact and fast to parse; well-known text is
+human-readable and is useful for writing tests.  These formats are only useful
+in R if the information they contain can be accessed in R, for which
+high-performance functions are provided here.")
+    (license license:expat)))
+
 (define-public r-sf
   (package
     (name "r-sf")
