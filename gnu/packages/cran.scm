@@ -560,6 +560,55 @@ multi-dimensional or repeated-measures data with categorical or ordinal
 variables.")
    (license license:gpl3)))
 
+(define-public r-ggpp
+  (package
+    (name "r-ggpp")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggpp" version))
+       (sha256
+        (base32
+         "05gk0jaxv30sgrr8q634cqm0n7z66i2p1zxkzc40azdlcxjp5w3h"))))
+    (properties `((upstream-name . "ggpp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-gridextra" ,r-gridextra)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-plyr" ,r-plyr)
+       ("r-polynom" ,r-polynom)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.r4photobiology.info/ggpp/")
+    (synopsis "Grammar extensions to ggplot2")
+    (description
+     "This package contains extensions to ggplot2.
+
+@enumerate
+@item Geomas: @code{geom_table}, @code{geom_plot} and @code{geom_grob} add
+  insets to plots using native data coordinates, while @code{geom_table_npc},
+  @code{geom_plot_npc} and @code{geom_grob_npc} do the same using @code{npc}
+  coordinates through new aesthetics @code{npcx} and @code{npcy}.
+@item Statistics: select observations based on 2D density.
+@item Positions: radial nudging away from a center point and nudging away from
+  a line or curve.
+@end enumerate
+")
+    (license license:gpl2+)))
+
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
