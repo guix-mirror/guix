@@ -5954,17 +5954,18 @@ features:
 (define-public r-network
   (package
     (name "r-network")
-    (version "1.16.1")
+    (version "1.17.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "network" version))
        (sha256
         (base32
-         "1cgy7vlbinyndl0zkzvnpcmi240wry6iwfb42sz1mj5c9iwkar7b"))))
+         "19q563v5xfkbmr0ws9nhqx4wrxkf9jsck51rqc8mm2gq2h03lg7w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
+       ("r-statnet-common" ,r-statnet-common)
        ("r-tibble" ,r-tibble)))
     (home-page "https://statnet.org/")
     (synopsis "Classes for relational data")
