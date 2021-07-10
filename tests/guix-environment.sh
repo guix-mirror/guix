@@ -192,7 +192,7 @@ then
 
     # Make sure the bootstrap binaries are all listed where they belong.
     grep -E "^export PATH=\"$profile/bin\""         "$tmpdir/a"
-    grep -E "^export CPATH=\"$profile/include\""    "$tmpdir/a"
+    grep -E "^export C_INCLUDE_PATH=\"$profile/include\"" "$tmpdir/a"
     grep -E "^export LIBRARY_PATH=\"$profile/lib\"" "$tmpdir/a"
     for dep in bootstrap-binaries-0 gcc-bootstrap-0 glibc-bootstrap-0
     do
@@ -206,8 +206,8 @@ then
     # as returned by '--search-paths'.
     guix environment --bootstrap --no-substitutes --pure \
          -e '(@ (guix tests) gnu-make-for-tests)' \
-         -- /bin/sh -c 'echo $PATH $CPATH $LIBRARY_PATH' > "$tmpdir/b"
-    ( . "$tmpdir/a" ; echo $PATH $CPATH $LIBRARY_PATH ) > "$tmpdir/c"
+         -- /bin/sh -c 'echo $PATH $C_INCLUDE_PATH $LIBRARY_PATH' > "$tmpdir/b"
+    ( . "$tmpdir/a" ; echo $PATH $C_INCLUDE_PATH $LIBRARY_PATH ) > "$tmpdir/c"
     cmp "$tmpdir/b" "$tmpdir/c"
 
     rm "$tmpdir"/*
@@ -228,7 +228,7 @@ then
 
     # Make sure the bootstrap binaries are all listed where they belong.
     grep -E "^export PATH=\"$profile/bin\""         "$tmpdir/a"
-    grep -E "^export CPATH=\"$profile/include\""    "$tmpdir/a"
+    grep -E "^export C_INCLUDE_PATH=\"$profile/include\"" "$tmpdir/a"
     grep -E "^export LIBRARY_PATH=\"$profile/lib\"" "$tmpdir/a"
     for dep in bootstrap-binaries-0 gcc-bootstrap-0 glibc-bootstrap-0 \
 				    guile-bootstrap
