@@ -4319,14 +4319,14 @@ unmodeled, or latent sources of noise.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.26.2")
+    (version "1.26.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "1apqi5ih06s37v7wpp13ybksiinrwj0ii6mx6vvvfkb6ix0wljws"))))
+         "01l35l5zj87qkarrbal9la6kshk3j7k8hy3iimv3gdnnz4axmvs7"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4334,6 +4334,7 @@ unmodeled, or latent sources of noise.")
        ("r-assertthat" ,r-assertthat)
        ("r-batchtools" ,r-batchtools)
        ("r-biostrings" ,r-biostrings)
+       ("r-crayon" ,r-crayon)
        ("r-deseq2" ,r-deseq2)
        ("r-dot" ,r-dot)
        ("r-edger" ,r-edger)
@@ -4349,6 +4350,7 @@ unmodeled, or latent sources of noise.")
        ("r-rjson" ,r-rjson)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rsvg" ,r-rsvg)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-shortread" ,r-shortread)
        ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
