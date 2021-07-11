@@ -32710,6 +32710,30 @@ UDP.")
      "This package provides a native, synchronous PostgreSQL client.")
     (license license:expat)))
 
+(define-public rust-postgres-derive-0.4
+  (package
+    (name "rust-postgres-derive")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "postgres-derive" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0xqlf1gffy3q8hra3fm0vm9x8i5fkvi0qjl99d0xirxh3hidsmy8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis "Internal crate used by postgres-types")
+    (description
+     "This is an internal crate used by postgres-types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-postgres-protocol-0.3
   (package
     (name "rust-postgres-protocol")
