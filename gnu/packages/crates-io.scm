@@ -10879,8 +10879,35 @@ number ``crunching``.")
 common cryptographic algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crypto-mac-0.11
+  (package
+    (name "rust-crypto-mac")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "crypto-mac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ghh3qmjf7hv580zqdk4yrbg99v57jx773zb7lzi7j4hj24bdyi5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.3)
+        ("rust-cipher" ,rust-cipher-0.3)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-subtle" ,rust-subtle-2))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
+    (description "This package provides trait for @dfn{Message Authentication
+Code} (MAC) algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crypto-mac-0.10
   (package
+    (inherit rust-crypto-mac-0.11)
     (name "rust-crypto-mac")
     (version "0.10.0")
     (source
@@ -10891,19 +10918,13 @@ common cryptographic algorithms.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32 "19iyh7h9qaqrv29dhbd31rm6pq023ry78nw7jwr3qjy3l22zsms8"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-        (("rust-blobby" ,rust-blobby-0.3)
-         ("rust-cipher" ,rust-cipher-0.2)
-         ("rust-generic-array" ,rust-generic-array-0.14)
-         ("rust-subtle" ,rust-subtle-2))))
-    (home-page "https://github.com/RustCrypto/traits")
-    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
-    (description "This package provides trait for @dfn{Message Authentication
-Code} (MAC) algorithms.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-blobby" ,rust-blobby-0.3)
+        ("rust-cipher" ,rust-cipher-0.2)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-subtle" ,rust-subtle-2))))))
 
 (define-public rust-crypto-mac-0.8
   (package
@@ -10927,7 +10948,7 @@ Code} (MAC) algorithms.")
 
 (define-public rust-crypto-mac-0.7
   (package
-    (inherit rust-crypto-mac-0.8)
+    (inherit rust-crypto-mac-0.10)
     (name "rust-crypto-mac")
     (version "0.7.0")
     (source
