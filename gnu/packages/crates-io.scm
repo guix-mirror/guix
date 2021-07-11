@@ -48797,6 +48797,59 @@ OpenSSL.")
        #:cargo-development-inputs
        (("rust-tokio" ,rust-tokio-0.1))))))
 
+(define-public rust-tokio-postgres-0.7
+  (package
+    (name "rust-tokio-postgres")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tokio-postgres" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "12rb390i3af7zb0z2idhaf6l2m6snypwdiwjw84rmyz4qy1i6ard"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.46
+       #:tests? #f                      ;require postgresql
+       #:cargo-inputs
+       (("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-postgres-protocol" ,rust-postgres-protocol-0.6)
+        ("rust-postgres-types" ,rust-postgres-types-0.2)
+        ("rust-socket2" ,rust-socket2-0.4)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-util" ,rust-tokio-util-0.6))
+       #:cargo-development-inputs
+       (("rust-bit-vec" ,rust-bit-vec-0.6)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-eui48" ,rust-eui48-0.4)
+        ("rust-geo-types" ,rust-geo-types-0.7)
+        ("rust-geo-types" ,rust-geo-types-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.2)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-uuid" ,rust-uuid-0.8))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis "Native, asynchronous PostgreSQL client")
+    (description
+     "This package provides a native, asynchronous PostgreSQL client implemented
+in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-process-0.2
   (package
     (name "rust-tokio-process")
