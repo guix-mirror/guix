@@ -291,7 +291,7 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
     (name "java-xz")
     (version "1.6")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/zipbomb)
               (uri (string-append "https://tukaani.org/xz/xz-java-" version ".zip"))
               (sha256
                (base32
@@ -301,12 +301,6 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
      `(#:tests? #f; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _
-             ;; Our build system enters the first directory in the archive, but
-             ;; the package is not contained in a subdirectory
-             (chdir "..")
-             #t))
          (add-before 'install 'generate-pom
            (lambda _
              (copy-file "maven/pom_template.xml" "pom.xml")
