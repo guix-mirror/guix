@@ -20244,8 +20244,39 @@ Derivation Function (HKDF).")
        (("rust-digest" ,rust-digest-0.8)
         ("rust-hmac" ,rust-hmac-0.7))))))
 
+(define-public rust-hmac-0.11
+  (package
+    (name "rust-hmac")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hmac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "16z61aibdg4di40sqi4ks2s4rz6r29w4sx4gvblfph3yxch26aia"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.11)
+        ("rust-digest" ,rust-digest-0.9))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.11)
+        ("rust-md-5" ,rust-md-5-0.9)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-streebog" ,rust-streebog-0.9))))
+    (home-page "https://github.com/RustCrypto/MACs")
+    (synopsis "Generic implementation of Hash-based Message Authentication Code")
+    (description
+     "This package provides a generic implementation of @acronym{HMAC,
+Hash-based Message Authentication Code}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hmac-0.8
   (package
+    (inherit rust-hmac-0.11)
     (name "rust-hmac")
     (version "0.8.1")
     (source
@@ -20257,7 +20288,6 @@ Derivation Function (HKDF).")
         (sha256
          (base32
           "0h48wc7iysh4xd6ci4prh8bb7nszijrh9w3blaaq8a6cilk8hs0j"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-crypto-mac" ,rust-crypto-mac-0.8)
@@ -20265,13 +20295,7 @@ Derivation Function (HKDF).")
        #:cargo-development-inputs
        (("rust-crypto-mac" ,rust-crypto-mac-0.8)
         ("rust-md-5" ,rust-md-5-0.9)
-        ("rust-sha2" ,rust-sha2-0.9))))
-    (home-page "https://github.com/RustCrypto/MACs")
-    (synopsis "Generic implementation of Hash-based Message Authentication Code")
-    (description
-     "This package provides a generic implementation of @acronym{HMAC,
-Hash-based Message Authentication Code}.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-sha2" ,rust-sha2-0.9))))))
 
 (define-public rust-hmac-0.7
   (package
