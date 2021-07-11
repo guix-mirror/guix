@@ -3795,8 +3795,9 @@ devices that can inject events directly into the input subsystem.")
      `(("libevdev" ,libevdev)
        ("yaml-cpp" ,yaml-cpp)))
     (arguments
-     `(#:make-flags (list "CC=gcc" "CXX=g++"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
+                          ,(string-append "CXX=" (cxx-for-target))
+                          (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-libevdev-path
@@ -3807,9 +3808,9 @@ devices that can inject events directly into the input subsystem.")
                   (string-append libevdev "/include/libevdev-1.0")))
                #t)))
          ;; No configure script
-         (delete 'configure)
-         ;; No target 'check'
-         (delete 'check))))
+         (delete 'configure))
+       ;; No tests are included.
+       #:tests? #f))
     (synopsis "Tap for one key, hold for another")
     (description
      "Dual Function Keys is a plugin for @code{interception-tools} that allows
