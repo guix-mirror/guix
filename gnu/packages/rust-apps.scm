@@ -377,6 +377,45 @@ for distinguishing different kinds of bytes such as NULL bytes, printable ASCII
 characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
     (license (list license:expat license:asl2.0))))
 
+(define-public hyperfine
+  (package
+    (name "hyperfine")
+    (version "1.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hyperfine" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0m5lrvx6wwkxqdc5digm1k4diiaqcg5j4pia77s5nw1aam7k51hy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.46
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-colored" ,rust-colored-2)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-indicatif" ,rust-indicatif-0.15)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rust-decimal" ,rust-rust-decimal-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-statistical" ,rust-statistical-1)
+        ("rust-version-check" ,rust-version-check-0.9)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3))))
+    (home-page "https://github.com/sharkdp/hyperfine")
+    (synopsis "Command-line benchmarking tool")
+    (description
+     "This package provides a command-line benchmarking tool.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public ripgrep
   (package
     (name "ripgrep")
