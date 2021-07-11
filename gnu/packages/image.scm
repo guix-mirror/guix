@@ -2186,13 +2186,15 @@ by AOM, including with alpha.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("dav1d" ,dav1d)
-       ("gdk-pixbuf" ,gdk-pixbuf) ;optional
-       ("libaom" ,libaom)
-       ("libde265" ,libde265)
+     `(("gdk-pixbuf" ,gdk-pixbuf) ;optional
        ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("x265" ,x265)))
+       ("libpng" ,libpng)))
+     ;; Propagated to satisfy 'libheif.pc'.
+     (propagated-inputs
+      `(("dav1d" ,dav1d)
+        ("libaom" ,libaom)
+        ("libde265" ,libde265)
+        ("x265" ,x265)))
     (home-page "https://github.com/strukturag/libheif")
     (synopsis "HEIF and AVIF file format decoder and encoder")
     (description
