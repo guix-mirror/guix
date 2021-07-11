@@ -32832,8 +32832,41 @@ overloading without macros in Rust.")
 UDP.")
     (license license:unlicense)))
 
+(define-public rust-postgres-0.19
+  (package
+    (name "rust-postgres")
+    (version "0.19.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "postgres" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hnid1d78zrr8ph12lpvp5b2cpx2fsqqgqs2yn1q23c6g7jix1y7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.46    ; or later
+       #:tests? #f          ; tests require postgres server.
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-postgres" ,rust-tokio-postgres-0.7))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis "Native, synchronous PostgreSQL client")
+    (description
+     "This package provides a native, synchronous PostgreSQL client.")
+    (license license:expat)))
+
 (define-public rust-postgres-0.15
   (package
+    (inherit rust-postgres-0.19)
     (name "rust-postgres")
     (version "0.15.2")
     (source
@@ -32857,12 +32890,7 @@ UDP.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-schannel" ,rust-schannel-0.1)
         ("rust-security-framework" ,rust-security-framework-0.1)
-        ("rust-socket2" ,rust-socket2-0.3))))
-    (home-page "https://github.com/sfackler/rust-postgres")
-    (synopsis "Native, synchronous PostgreSQL client")
-    (description
-     "This package provides a native, synchronous PostgreSQL client.")
-    (license license:expat)))
+        ("rust-socket2" ,rust-socket2-0.3))))))
 
 (define-public rust-postgres-derive-0.4
   (package
