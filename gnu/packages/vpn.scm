@@ -303,14 +303,14 @@ endpoints.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.9.2")
+    (version "5.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0qxhbash2nyh5k2h9zcysgwv61512w1wxk5plyai4b6v3rs2ziv1"))))
+        (base32 "1xy6c9c7bq5a5jmm04r9f9iqn39yrr1dkq81jhvpxsd4l1ban9ck"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
