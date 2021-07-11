@@ -2485,3 +2485,54 @@ elseif(FALSE)"))
        "PPSSPP is a ``high-level'' emulator simulating the PSP operating
 system.")
       (license license:gpl2+))))
+
+(define-public exomizer
+  (package
+    (name "exomizer")
+    (version "3.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://bitbucket.org/magli143/exomizer.git")
+                     (commit "6a152b5605648f7a41eadd4b011a93ec92f74dd8")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1ynhkb5p2dypkikipc3krzif264l9rmx1wnjzzgw8n88i4zkymzg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; No target exists
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (delete-file-recursively "exodecrs")
+             (delete-file-recursively "rawdecrs")
+             (chdir "src")
+             ;; Those will be regenerated.
+             (delete-file "asm.tab.h")
+             (delete-file "asm.tab.c")
+             (delete-file "lex.yy.c")
+             #t))
+         (replace 'configure
+           (lambda _
+             (setenv "CC" ,(cc-for-target))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out-bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "exomizer" out-bin)
+               (install-file "exobasic" out-bin))
+             #t)))))
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (synopsis "Compressor for use on Commodore home computers")
+    (description "This program compresses files in a way that tries to be as
+efficient as possible but still allows them to be decompressed in environments
+where CPU speed and RAM are limited.  It also generate a self-extractor for use
+on a Commodore C64, C128 etc.")
+    (home-page "https://bitbucket.org/magli143/exomizer/wiki/Home")
+    ;; Some files are LGPL 2.1--but we aren't building from or installing those.
+    ;; zlib license with an (non-)advertising clause.
+    (license license:zlib)))
