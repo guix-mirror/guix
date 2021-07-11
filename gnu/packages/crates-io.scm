@@ -32982,6 +32982,42 @@ UDP.")
 @code{postgres-tokio}.")
     (license license:expat)))
 
+(define-public rust-postgres-types-0.2
+  (package
+    (name "rust-postgres-types")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "postgres-types" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0brsqkydz0grfy60nc1d0hxa9jbpim0c7c52v467nrdpw4ql23s3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bit-vec" ,rust-bit-vec-0.6)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-eui48" ,rust-eui48-0.4)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
+        ("rust-geo-types" ,rust-geo-types-0.7)
+        ("rust-geo-types" ,rust-geo-types-0.6)
+        ("rust-postgres-derive" ,rust-postgres-derive-0.4)
+        ("rust-postgres-protocol" ,rust-postgres-protocol-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.2)
+        ("rust-uuid" ,rust-uuid-0.8))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis "Conversions between Rust and Postgres values")
+    (description
+     "This package provides a Rust implementation for conversions between Rust
+and Postgres values.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
