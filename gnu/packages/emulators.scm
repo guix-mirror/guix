@@ -2536,3 +2536,39 @@ on a Commodore C64, C128 etc.")
     ;; Some files are LGPL 2.1--but we aren't building from or installing those.
     ;; zlib license with an (non-)advertising clause.
     (license license:zlib)))
+
+(define-public cc65
+  (package
+    (name "cc65")
+    (version "2.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cc65/cc65.git")
+                     (commit (string-append "V" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "01a15yvs455qp20hri2pbg2wqvcip0d50kb7dibi9427hqk9cnj4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; No target exists.
+       #:make-flags
+       (list "BUILD_ID=V2.18 - Git 55528249"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key source #:allow-other-keys)
+             ;; We include $SOURCE/include in C_INCLUDE_PATH.  Remove it.
+             (setenv "C_INCLUDE_PATH"
+               (string-join
+                (filter (lambda (name)
+                          (not (string=? name (string-append source "/include"))))
+                        (string-split (getenv "C_INCLUDE_PATH") #\:))
+                ":"))
+             #t)))))
+    (synopsis "Development environment for 6502 systems")
+    (description "This package provides a development environment for 6502 systems, including macro assembler, C compiler, linker, librarian and several other tools.")
+    (home-page "https://cc65.github.io/")
+    (license license:zlib)))
