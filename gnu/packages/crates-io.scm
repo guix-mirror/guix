@@ -37133,6 +37133,38 @@ wildcard segments")
 rust.")
     (license license:mpl2.0)))
 
+(define-public rust-rstar-0.9
+  (package
+    (name "rust-rstar")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rstar" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1bdby74j2h7rizs6p81xxilnjsi6w1z2xx2vigaw2gkj5cvlp3km"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heapless" ,rust-heapless-0.6)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pdqselect" ,rust-pdqselect-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-hc" ,rust-rand-hc-0.2)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/georust/rstar")
+    (synopsis "R*-tree library for the rust ecosystem")
+    (description
+     "R*-tree library for the rust ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rpassword-5
   (package
     (name "rust-rpassword")
