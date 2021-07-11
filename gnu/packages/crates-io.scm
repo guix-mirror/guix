@@ -8624,10 +8624,10 @@ diagnostics easy and relatively painless for everyone!")
 colors.")
     (license license:expat)))
 
-(define-public rust-colored-1
+(define-public rust-colored-2
   (package
     (name "rust-colored")
-    (version "1.9.3")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
@@ -8636,7 +8636,7 @@ colors.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0nbc1czs512h1k696y7glv1kjrb2b914zpxraic6q5fgv80wizzl"))))
+          "1gbcijscmznzy42rn213yp9ima7210zakgaqibgg1n441dsnyqdk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
@@ -8659,6 +8659,21 @@ colors.")
     (description
      "The most simple way to add colors in your terminal.")
     (license license:mpl2.0)))
+
+(define-public rust-colored-1
+  (package
+    (inherit rust-colored-2)
+    (name "rust-colored")
+    (version "1.9.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "colored" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nbc1czs512h1k696y7glv1kjrb2b914zpxraic6q5fgv80wizzl"))))))
 
 (define-public rust-colored-1.9.1
   (package
