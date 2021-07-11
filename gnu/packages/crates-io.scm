@@ -31225,6 +31225,27 @@ in pure Rust.")
      "This package provides FFI bindings for PDCurses implementation.")
     (license license:expat)))
 
+(define-public rust-pdqselect-0.1
+  (package
+    (name "rust-pdqselect")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pdqselect" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09vwywzavhgqgr3vi2ycgv2nd0067jirv36fb3jvp860xikigjaf"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/pdqselect")
+    (synopsis "Selects the kth smallest element of a slice")
+    (description
+     "Selects the kth smallest element of a slice, based on Orson Peters's
+pdqsort.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pear-0.1
   (package
     (name "rust-pear")
