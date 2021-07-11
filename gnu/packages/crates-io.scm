@@ -44046,6 +44046,29 @@ are met.")
 map.")
     (license license:expat)))
 
+(define-public rust-statistical-1
+  (package
+    (name "rust-statistical")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "statistical" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0wm35q6p6jcq1r1darczv4if7qss460kd391nlw5x3hjpc17kma9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num" ,rust-num-0.2)
+        ("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/JeffBelgum/statistical")
+    (synopsis "Simple Rust statistics library")
+    (description "This package provides a simple statistics library.")
+    (license license:expat)))
+
 (define-public rust-stb-truetype-0.3
   (package
     (name "rust-stb-truetype")
