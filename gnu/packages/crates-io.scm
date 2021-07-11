@@ -37881,8 +37881,52 @@ password hashing function.")
  Currently the conversion uses the Bitcoin base58 alphabet.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rust-decimal-1
+  (package
+    (name "rust-rust-decimal")
+    (version "1.14.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rust-decimal" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10k58hf367626d4akl7ifyk5qwqphfs5x6z1yay22pkyc6w7q4h1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.46    ; or later
+       #:tests? #f          ; not all test files included.
+       #:cargo-inputs
+       (("rust-arbitrary" ,rust-arbitrary-1)
+        ("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-diesel" ,rust-diesel-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-postgres" ,rust-postgres-0.19)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-tokio-postgres" ,rust-tokio-postgres-0.7))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://github.com/paupino/rust-decimal")
+    (synopsis "Decimal implementation suitable for financial calculations")
+    (description
+     "This package provides a decimal implementation written in pure Rust
+suitable for financial calculations.")
+    (license license:expat)))
+
 (define-public rust-rust-decimal-0.10
   (package
+    (inherit rust-rust-decimal-1)
     (name "rust-rust-decimal")
     (version "0.10.2")
     (source
@@ -37892,7 +37936,6 @@ password hashing function.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1h80xz88f07ifb4i0mfh9j9p67afiy4xm6xswkk9gnf1spirag59"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -37900,13 +37943,7 @@ password hashing function.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-num" ,rust-num-0.2)
         ("rust-postgres" ,rust-postgres-0.15)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://github.com/paupino/rust-decimal")
-    (synopsis "Decimal implementation suitable for financial calculations")
-    (description
-     "This package provides a decimal implementation written in pure Rust
-suitable for financial calculations.")
-    (license license:expat)))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-rust-embed-5
   (package
