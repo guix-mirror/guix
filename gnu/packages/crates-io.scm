@@ -20274,6 +20274,29 @@ Derivation Function (HKDF).")
 Hash-based Message Authentication Code}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-hmac-0.10
+  (package
+    (inherit rust-hmac-0.11)
+    (name "rust-hmac")
+    (version "0.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hmac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "058yxq54x7xn0gk2vy9bl51r32c9z7qlcl2b80bjh3lk3rmiqi61"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.10)
+        ("rust-digest" ,rust-digest-0.9))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.10)
+        ("rust-md-5" ,rust-md-5-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))))
+
 (define-public rust-hmac-0.8
   (package
     (inherit rust-hmac-0.11)
