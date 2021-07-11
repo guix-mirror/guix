@@ -18035,6 +18035,34 @@ API library @code{gdi32}.")
      "This package provides geospatial primitives and algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-geo-types-0.7
+  (package
+    (name "rust-geo-types")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "geo-types" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1fyj8ldl4xirhr8aawwiaslkklkzml2r5var87vqyp4zvnajxgfq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-approx" ,rust-approx-0.4)
+        ("rust-arbitrary" ,rust-arbitrary-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rstar" ,rust-rstar-0.8)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.4))))
+    (home-page "https://github.com/georust/geo")
+    (synopsis "Geospatial primitive data types")
+    (description "This package provides geospatial primitive data types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-getch-0.2
   (package
     (name "rust-getch")
