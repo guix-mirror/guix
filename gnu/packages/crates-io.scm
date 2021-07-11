@@ -18119,6 +18119,29 @@ API library @code{gdi32}.")
     (description "This package provides geospatial primitive data types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-geo-types-0.6
+  (package
+    (inherit rust-geo-types-0.7)
+    (name "rust-geo-types")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "geo-types" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1wivy6r2bzc32gxp5g5j689qz6p9ls5qgq0z8q64aayv3xd950vm"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rstar" ,rust-rstar-0.8)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3))))))
+
 (define-public rust-getch-0.2
   (package
     (name "rust-getch")
