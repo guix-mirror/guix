@@ -43519,8 +43519,36 @@ escaped text to recover the original string.")
 algorithm.  Includes streaming compression and decompression.")
     (license license:bsd-3)))
 
+(define-public rust-socket2-0.4
+  (package
+    (name "rust-socket2")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "socket2" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "18ny6m1gnf6cwp5ax0b5hr36w6yg16z7faj76b31aq2jghhgqgcy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.46    ; or later
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/rust-lang/socket2")
+    (synopsis "Networking sockets in Rust")
+    (description
+     "This package provides utilities for handling networking sockets with a
+maximal amount of configuration possible intended.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-socket2-0.3
   (package
+    (inherit rust-socket2-0.4)
     (name "rust-socket2")
     (version "0.3.19")
     (source
@@ -43530,7 +43558,6 @@ algorithm.  Includes streaming compression and decompression.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32 "0vldz14mxqxnjqb6an2pj7mgclv7nrk45cpscwq7g3fj2c0mfbhj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ; tests require network access
        #:cargo-inputs
@@ -43538,14 +43565,7 @@ algorithm.  Includes streaming compression and decompression.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/alexcrichton/socket2-rs")
-    (synopsis "Networking sockets in Rust")
-    (description
-     "This package provides utilities for handling networking sockets with a
-maximal amount of configuration possible intended.")
-    (license (list license:asl2.0
-                   license:expat))))
+       (("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-socks-0.3
   (package
