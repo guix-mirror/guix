@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2021 Oskar Köök <oskar@maatriks.ee>
+;;; Copyright © 2021 Cees de Groot <cg@evrl.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "23.2.1")
+    (version "24.0.2")
     (source (origin
               (method git-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -53,7 +54,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1p3lw4bcm2dph3pf1h4i0d9pzrcfr83r0iadqanxkwbmm1bl11pm"))
+                "06plnhi1489wqsag5wgm16hb1xd1a8nbnb9gw7635d3fidxyb0wp"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -69,7 +70,7 @@
                                (version-major+minor version) ".tar.gz"))
            (sha256
             (base32
-             "0rq0rw68f02vckgdiwmvx8bvyv00l81s27cq59i3h79j9prfal2n"))))))
+             "1c9ccp93pmm54mmvpiyrmj8v00pq11a60c4xv220k97i965zkwsg"))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -202,13 +203,8 @@
                     (manpages (assoc-ref inputs "erlang-manpages"))
                     (share (string-append out "/share/")))
                (mkdir-p share)
-               (mkdir-p (string-append share "/misc/erlang"))
                (with-directory-excursion share
-                 (invoke "tar" "xvf" manpages)
-                 (rename-file "COPYRIGHT"
-                              (string-append share "/misc/erlang/COPYRIGHT"))
-                 ;; Delete superfluous file.
-                 (delete-file "PR.template"))
+                 (invoke "tar" "xvf" manpages))
                #t))))))
     (home-page "https://www.erlang.org/")
     (synopsis "The Erlang programming language")
