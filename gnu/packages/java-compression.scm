@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -289,16 +290,17 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
 (define-public java-xz
   (package
     (name "java-xz")
-    (version "1.6")
+    (version "1.9")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://tukaani.org/xz/xz-java-" version ".zip"))
               (sha256
                (base32
-                "1z3p1ri1gvl07inxn0agx44ck8n7wrzfmvkz8nbq3njn8r9wba8x"))))
+                "007d9f83277qn70swz9inqhyf0qxq6ygajpq5rqg0xgsyh1sdndi"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f; no tests
+       #:jdk ,openjdk9
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'generate-pom
