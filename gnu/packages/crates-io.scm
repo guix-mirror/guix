@@ -7842,22 +7842,21 @@ coding.")
     (description "This package provides Rust bindings for libclang.")
     (license license:asl2.0)))
 
-(define-public rust-cipher-0.2
+(define-public rust-cipher-0.3
   (package
     (name "rust-cipher")
-    (version "0.2.5")
+    (version "0.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "cipher" version))
         (file-name
-          (string-append name "-" version ".tar.gz"))
+         (string-append name "-" version ".tar.gz"))
         (sha256
-          (base32 "00b8imbmdg7zdrbaczlivmdfdy09xldg95wl4iijl15xgjcfgy0j"))))
+         (base32 "1dyzsv0c84rgz98d5glnhsz4320wl24x3bq511vnyf0mxir21rby"))))
     (build-system cargo-build-system)
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
+     `(#:cargo-inputs
         (("rust-blobby" ,rust-blobby-0.3)
          ("rust-generic-array" ,rust-generic-array-0.14))))
     (home-page "https://docs.rs/cipher/")
@@ -7867,6 +7866,20 @@ of block ciphers and stream ciphers.  See RustCrypto/block-ciphers and
 RustCrypto/stream-ciphers for algorithm implementations which use these
 traits.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-cipher-0.2
+  (package
+    (inherit rust-cipher-0.3)
+    (name "rust-cipher")
+    (version "0.2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cipher" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "00b8imbmdg7zdrbaczlivmdfdy09xldg95wl4iijl15xgjcfgy0j"))))))
 
 (define-public rust-clang-sys-0.29
   (package
