@@ -4143,3 +4143,36 @@ on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
 @acronym{ARP} requests and sniff for replies.")
    (home-page "https://github.com/netdiscover-scanner/netdiscover")
    (license license:gpl3+)))
+
+(define-public putty
+  (package
+    (name "putty")
+    (version "0.75")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.putty.be/" version
+                           "/putty-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xgrr1fbirw79zafspg2b6crzfmlfw910y79md4r7gnxgq1kn5yk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "unix")
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python))) ; for tests
+    (synopsis "Graphical @acronym{SSH} and telnet client")
+    (description "Putty is a terminal client.  It supports @acronym{SSH},
+telnet, and raw socket connections with good terminal emulation.  It supports
+public key authentication and Kerberos single-sign-on.  It also includes
+command-line @acronym{SFTP} and @acronym{SCP} implementations.")
+    (home-page "https://www.chiark.greenend.org.uk/~sgtatham/putty/")
+    (license license:expat)))
