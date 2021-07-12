@@ -814,15 +814,12 @@ another, more sophisticated package (slightly modified from the source):
            (add-after 'unpack 'make-files-writable-for-tests
              (lambda _ (for-each make-file-writable (find-files "." ".*")))))))
       (inputs
-       `(("libssh2" ,libssh2)
-         ("http-parser" ,http-parser)
-         ("python" ,python-wrapper)))
+       (list libssh2 http-parser python-wrapper))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (propagated-inputs
        ;; These two libraries are in 'Requires.private' in libgit2.pc.
-       `(("openssl" ,openssl)
-         ("zlib" ,zlib)))
+       (list openssl zlib))
       (home-page "https://libgit2.github.com/")
       (synopsis "Library providing Git core methods")
       (description
@@ -886,22 +883,6 @@ Snippets might need additional Guile modules which can be imported from the
 
 @subsubsection Inputs
 
-First, a syntactic comment: See the quasi-quote / comma syntax?
-
-@lisp
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-@end lisp
-
-is equivalent to
-
-@lisp
-    (native-inputs
-     (list (list "pkg-config" pkg-config)))
-@end lisp
-
-You'll mostly see the former because it's shorter.
-
 There are 3 different input types.  In short:
 
 @table @asis
@@ -934,6 +915,24 @@ dependencies can be safely garbage-collected.
 It also matters when a substitute is available, in which case only the @emph{inputs}
 and @emph{propagated inputs} will be fetched: the @emph{native inputs} are not required to
 install a package from a substitute.
+
+@quotation Note
+You may see here and there snippets where package inputs are written
+quite differently, like so:
+
+@lisp
+;; The "old style" for inputs.
+(inputs
+ `(("libssh2" ,libssh2)
+   ("http-parser" ,http-parser)
+   ("python" ,python-wrapper)))
+@end lisp
+
+This is the ``old style'', where each input in the list is explicitly
+given a label (a string).  It is still supported but we recommend using
+the style above instead.  @xref{package Reference,,, guix, GNU Guix
+Reference Manual}, for more info.
+@end quotation
 
 @subsubsection Outputs
 
