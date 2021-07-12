@@ -41,6 +41,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
@@ -836,3 +837,65 @@ convert files from one format to another.  Formats such as cgns, h5m,
 gmsh, xdmf and vtk are supported.  The package provides command-line
 tools and a collection of Python modules for programmatic use.")
     (license license:expat)))
+
+(define-public python-pygmsh
+  (package
+    (name "python-pygmsh")
+    (version "7.1.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pygmsh" version))
+        (sha256
+          (base32
+           "1q7nr0cq581wlif537y6awj7vz9jywxg14c8znmsx5ip8x24754j"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (let ((file (open-file "setup.py" "a")))
+              (display "from setuptools import setup\nsetup()" file)
+              (close-port file))
+            ;; setuptools is supplied by the build system.  An extra
+            ;; reference in the original configuration file triggers
+            ;; an attempt to download the package again.  This fails.
+            ;; The extra reference is unnecessary and is removed.
+            (substitute* "setup.cfg"
+              (("^[[:blank:]]+setuptools>=42\n") ""))
+            ;; FIXME: gmsh version 4.7.0 introduces new field option
+            ;; names.  See gmsh commit 6eab8028.  pygmsh needs to use
+            ;; one of the old option names for compatibility with gmsh
+            ;; version 4.6.0.
+            (with-directory-excursion "pygmsh/common"
+              (substitute* "size_field.py"
+                (("NumPointsPerCurve") "NNodesByEdge")))
+            #t))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pytest" ,python-pytest)
+       ("wheel" ,python-wheel)))
+    (propagated-inputs
+     `(("importlib-metadata" ,python-importlib-metadata)
+       ("gmsh" ,gmsh)
+       ("meshio" ,python-meshio)
+       ("numpy" ,python-numpy)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; The readme test is skipped.  It requires the exdown
+               ;; module which is not available.
+               (invoke "python" "-m" "pytest" "-v" "test"
+                       "--ignore" "test/test_readme.py"))
+             #t)))))
+    (home-page "https://github.com/nschloe/pygmsh")
+    (synopsis "Python frontend for Gmsh")
+    (description "The goal of @code{pygmsh} is to combine the power of
+Gmsh with the versatility of Python.  The package generalises many of
+the methods and functions that comprise the Gmsh Python API.  In this
+way the meshing of complex geometries using high-level abstractions is
+made possible.  The package provides a Python library together with a
+command-line utility for mesh optimisation.")
+    (license license:lgpl3)))
