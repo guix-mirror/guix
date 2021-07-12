@@ -18461,3 +18461,64 @@ bound to whatever value was in the same place in the URL (as a string).")
 
 (define-public cl-hunchenissr-routes
   (sbcl-package->cl-source-package sbcl-hunchenissr-routes))
+
+(define-public sbcl-spinneret
+  ;; No release since 2019, no tags.
+  (let ((commit "02451b32648eda4e6e4022bbb7f91d9ea71bebbc"))
+    (package
+      (name "sbcl-spinneret")
+      (version (git-version "3.0" "4" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/spinneret/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jllnsi2ibw0gax9szpdrjxvw9qqibydpdbnkf683yfb1d5jlci1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("global-vars" ,sbcl-global-vars)
+         ("parenscript" ,sbcl-parenscript)
+         ("cl-markdown" ,sbcl-cl-markdown)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("serapeum" ,sbcl-serapeum)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/ruricolist/spinneret")
+      (synopsis "Common Lisp HTML5 generator")
+      (description
+       "In the crowded space of Common Lisp HTML generators, Spinneret
+occupies the following coordinates:
+
+@itemize
+
+@item Modern.  Targets HTML5.  Does not treat XML and HTML as the same
+problem.  Assumes you will be serving your documents as UTF-8.
+
+@item Composable.  Makes it easy to refactor HTML generation into separate
+functions and macros.
+
+@item Pretty.  Treats HTML as a document format, not a serialization.  Output
+is idiomatic and readable, following the coding style of the HTML5
+specification.
+
+@item Aggressive.  If something can be interpreted as HTML, then it will be,
+meaning that some Lisp forms can't be mixed with HTML syntax.  In the
+trade-off between 90% convenience and 10% correctness Spinneret is on the side
+of convenience.
+
+@item Bilingual.  Spinneret (after loading @code{spinneret/ps}) has the same
+semantics in Lisp and Parenscript.
+
+@end itemize\n")
+      (license license:expat))))
+
+(define-public ecl-spinneret
+  (sbcl-package->ecl-package sbcl-spinneret))
+
+(define-public cl-spinneret
+  (sbcl-package->cl-source-package sbcl-spinneret))
