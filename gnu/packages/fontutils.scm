@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -408,6 +408,12 @@ high quality, anti-aliased and subpixel rendered text on a display.")
         `(delete "--disable-docs" ,configure-flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'no-pdf-doc
+             (lambda _
+               ;; Don't build documentation as PDF.
+               (substitute* "doc/Makefile.in"
+                 (("^PDF_FILES = .*")
+                  "PDF_FILES =\n"))))
            (add-after 'install 'move-man-sections
              (lambda* (#:key outputs #:allow-other-keys)
                ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
