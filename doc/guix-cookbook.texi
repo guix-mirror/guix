@@ -792,10 +792,8 @@ another, more sophisticated package (slightly modified from the source):
                   "17pjvprmdrx4h6bb1hhc98w9qi6ki7yl57f090n9kbhswxqfs7s3"))
                 (patches (search-patches "libgit2-mtime-0.patch"))
                 (modules '((guix build utils)))
-                (snippet '(begin
-                            ;; Remove bundled software.
-                            (delete-file-recursively "deps")
-                            #true))))
+                ;; Remove bundled software.
+                (snippet '(delete-file-recursively "deps"))))
       (build-system cmake-build-system)
       (outputs '("out" "debug"))
       (arguments
@@ -809,8 +807,7 @@ another, more sophisticated package (slightly modified from the source):
                  (("#!/bin/sh") (string-append "#!" (which "sh"))))
                (substitute* "tests/clar/fs.h"
                  (("/bin/cp") (which "cp"))
-                 (("/bin/rm") (which "rm")))
-               #true))
+                 (("/bin/rm") (which "rm")))))
            ;; Run checks more verbosely.
            (replace 'check
              (lambda _ (invoke "./libgit2_clar" "-v" "-Q")))
