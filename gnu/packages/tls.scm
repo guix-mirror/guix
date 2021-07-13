@@ -368,7 +368,7 @@ required structures.")
                  #t)))
            '())
         (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
+          (lambda* (#:key outputs configure-flags #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
                    (lib (string-append out "/lib")))
               ;; It's not a shebang so patch-source-shebangs misses it.
@@ -376,24 +376,26 @@ required structures.")
                 (("/usr/bin/env")
                  (string-append (assoc-ref %build-inputs "coreutils")
                                 "/bin/env")))
-              (invoke ,@(if (%current-target-system)
-                          '("./Configure")
-                          '("./config"))
-                      "shared"       ;build shared libraries
-                      "--libdir=lib"
+              (apply
+                invoke ,@(if (%current-target-system)
+                           '("./Configure")
+                           '("./config"))
+                "shared"    ;build shared libraries
+                "--libdir=lib"
 
-                      ;; The default for this catch-all directory is
-                      ;; PREFIX/ssl.  Change that to something more
-                      ;; conventional.
-                      (string-append "--openssldir=" out
-                                     "/share/openssl-"
-                                     ,(package-version this-package))
+                ;; The default for this catch-all directory is
+                ;; PREFIX/ssl.  Change that to something more
+                ;; conventional.
+                (string-append "--openssldir=" out
+                               "/share/openssl-"
+                               ,(package-version this-package))
 
-                      (string-append "--prefix=" out)
-                      (string-append "-Wl,-rpath," lib)
-                      ,@(if (%current-target-system)
-                          '((getenv "CONFIGURE_TARGET_ARCH"))
-                          '())))))
+                (string-append "--prefix=" out)
+                (string-append "-Wl,-rpath," lib)
+                ,@(if (%current-target-system)
+                    '((getenv "CONFIGURE_TARGET_ARCH"))
+                    '())
+                configure-flags))))
         (add-after 'install 'move-static-libraries
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Move static libraries to the "static" output.
