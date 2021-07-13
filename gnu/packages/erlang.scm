@@ -31,7 +31,6 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages ncurses)
@@ -59,8 +58,6 @@
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
 
        ;; Erlang's documentation is distributed in a separate tarball.
        ("erlang-manpages"
@@ -177,18 +174,6 @@
          (add-before 'configure 'set-erl-top
            (lambda _
              (setenv "ERL_TOP" (getcwd))
-             #t))
-         (add-after 'patch-source-env 'autoconf
-           (lambda _
-             (invoke "./otp_build" "autoconf")
-             #t))
-         (add-after 'autoconf 'patch-configure-script-shell
-           (lambda _
-             (substitute* "configure"
-               (("cmd_str=\"./configure")
-                (string-append "cmd_str=\""
-                               (which "sh")
-                               " ./configure")))
              #t))
          (add-after 'install 'patch-erl
            ;; This only works after install.
