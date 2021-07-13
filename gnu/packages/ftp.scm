@@ -176,14 +176,14 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.29.0")
+    (version "0.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/"
                            "libfilezilla/libfilezilla-" version ".tar.bz2"))
        (sha256
-        (base32 "0ax73hb16m4wblz5gq42gc13jwy4rr226z0qmrr1p09gfjci0w11"))))
+        (base32 "0h6wa1dfd14z9ai00a85pahsb4fs3rlb8haiw3vd9pmjrpdgcvf1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -220,14 +220,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.54.1")
+    (version "3.55.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "0smayigsk8hjplk7pm6dd80r1dnhr4f6xzp3n1p1ss5v2ff1jfkh"))))
+        (base32 "10lwmf6cvryw2gja6vj1zh2y55z4i38wsvxdpclvwdnih10ynw5f"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.
