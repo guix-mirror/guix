@@ -393,6 +393,9 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.46
+       #:modules ((guix build cargo-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
@@ -409,7 +412,26 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
         ("rust-version-check" ,rust-version-check-0.9)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-approx" ,rust-approx-0.3))))
+       (("rust-approx" ,rust-approx-0.3))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'install 'install-more
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out   (assoc-ref outputs "out"))
+                   (share (string-append out "/share/"))
+                   (man   (string-append share "man/man1"))
+                   (bash  (string-append share "bash-completion/completions"))
+                   (fish  (string-append share "fish/vendor_completions.d"))
+                   (zsh   (string-append share "zsh/site-functions")))
+              (install-file "doc/hyperfine.1" man)
+              (for-each (cut install-file <> bash)
+                        (find-files "target/release/build" "^hyperfine.bash$"))
+              (rename-file (string-append bash "/hyperfine.bash")
+                           (string-append bash "/hyperfine"))
+              (for-each (cut install-file <> fish)
+                        (find-files "target/release/build" "^hyperfine.fish$"))
+              (for-each (cut install-file <> zsh)
+                        (find-files "target/release/build" "^_hyperfine$"))))))))
     (home-page "https://github.com/sharkdp/hyperfine")
     (synopsis "Command-line benchmarking tool")
     (description
