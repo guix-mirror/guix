@@ -12334,6 +12334,35 @@ GF(2^n).  This trait is implemented for 64, 128 and 256 bit block
 sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-dbus-0.6
+  (package
+    (name "rust-dbus")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dbus" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "068qyxvaam34sjmhjgxz6iikklvylxly7gp6n00yksqydzrz1da8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;it needs display and sockets and launches daemons
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-libdbus-sys" ,rust-libdbus-sys-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)))
+    (home-page "https://github.com/diwic/dbus-rs")
+    (synopsis "Rust bindings to D-Bus")
+    (description "This package provies Rust bindings to D-Bus.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-deadpool-0.7
   (package
     (name "rust-deadpool")
