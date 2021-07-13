@@ -2266,8 +2266,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
             (url "https://gitlab.onelab.info/gmsh/gmsh.git")
             (commit
              (string-append "gmsh_"
-                            (string-map (lambda (x) (if (eq? x #\.) #\_ x))
-                                        version)))))
+                            (string-replace-substring version "." "_")))))
       (file-name (git-file-name name version))
       (sha256
        (base32 "07mi6ja3b9libgcdp2b4dwnkap1b9ha2wi2zdn9mhmwvp3g1pxhp"))
