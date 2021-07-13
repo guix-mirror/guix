@@ -37165,6 +37165,21 @@ rust.")
      "R*-tree library for the rust ecosystem.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rstar-0.8
+  (package
+    (inherit rust-rstar-0.9)
+    (name "rust-rstar")
+    (version "0.8.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rstar" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1b6vjfwvpcgy0q8ywywz548vhxrmhbz2sm6xyhnmj5p5xd1xfqff"))))))
+
 (define-public rust-rpassword-5
   (package
     (name "rust-rpassword")
