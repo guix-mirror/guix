@@ -395,7 +395,9 @@ required structures.")
                 ,@(if (%current-target-system)
                     '((getenv "CONFIGURE_TARGET_ARCH"))
                     '())
-                configure-flags))))
+                configure-flags)
+              ;; Output the configure variables.
+              (invoke "perl" "configdata.pm" "--dump"))))
         (add-after 'install 'move-static-libraries
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Move static libraries to the "static" output.
