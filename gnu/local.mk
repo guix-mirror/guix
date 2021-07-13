@@ -557,6 +557,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tmux.scm				\
   %D%/packages/tor.scm				\
   %D%/packages/tv.scm				\
+  %D%/packages/uglifyjs.scm			\
   %D%/packages/uml.scm				\
   %D%/packages/unicode.scm			\
   %D%/packages/unrtf.scm			\
