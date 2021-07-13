@@ -1602,7 +1602,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.8")
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
@@ -1610,7 +1610,7 @@ compresses it.")
         (string-append "https://www.claws-mail.org/releases/claws-mail-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1byxmz68lnm2m8q1gnp0lpr3qp7dcwabrw5iqflz9mlm960v5dyd"))))
+        (base32 "1fz6xh4va90w69a0b457cy9khcm92vsmi75p9vabpcsbdgk1jn6b"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
