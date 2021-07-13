@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -466,6 +467,32 @@ implications.  These backends were extracted from the main keyring project to
 make them available for those who wish to employ them, but are discouraged for
 general production use.  Include this module and use its backends at your own
 risk.")
+    (license license:expat)))
+
+(define-public python-certauth
+  (package
+    (name "python-certauth")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "certauth" version))
+       (sha256
+        (base32
+         "1yxqfb5131wahjyw9pxz03bq476rcfx62s6k53xx4cqbzzgdaqkq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyopenssl" ,python-pyopenssl)
+       ("python-tldextract" ,python-tldextract)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/ikreymer/certauth")
+    (synopsis "Certificate authority creation tool")
+    (description "This package provides a small library, built on top of
+pyOpenSSL, which allows for creating a custom certificate authority (CA)
+certificate, and generating on-demand dynamic host certs using that CA
+certificate.  It is most useful for use with a man-in-the-middle HTTPS proxy,
+for example, for recording or replaying web content.")
     (license license:expat)))
 
 (define-public python-certifi
