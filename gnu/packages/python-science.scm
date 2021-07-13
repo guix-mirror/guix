@@ -13,6 +13,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -733,3 +734,30 @@ dependencies.")
                    license:silofl1.1
                    license:cc0
                    license:public-domain))))
+
+(define-public python-pandas-flavor
+  (package
+    (name "python-pandas-flavor")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pandas_flavor" version))
+       (sha256
+        (base32
+         "12g4av8gpl6l83yza3h97j3f2jblqv69frlidrvdq8ny2rc6awbq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-xarray" ,python-xarray)))
+    (home-page "https://github.com/Zsailer/pandas_flavor")
+    (synopsis "Write your own flavor of Pandas")
+    (description "Pandas 0.23 added a simple API for registering accessors
+with Pandas objects.  Pandas-flavor extends Pandas' extension API by
+
+@itemize
+@item adding support for registering methods as well
+@item making each of these functions backwards compatible with older versions
+of Pandas
+@end itemize")
+    (license license:expat)))
