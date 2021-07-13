@@ -51,6 +51,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
@@ -23725,6 +23726,31 @@ values of all the exported APIs match the platform that libc is compiled for.")
     (synopsis "Println! and eprintln! without stdlib")
     (description "This package provices @code{println!} and @code{eprintln!}
 macros on libc without stdlib.")
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-libdbus-sys-0.2
+  (package
+    (name "rust-libdbus-sys")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libdbus-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1w06ycq2mw8zfp9j73macgdl8d2881bnxbzdyyxys90ljyya64nw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)))
+    (home-page "https://github.com/diwic/dbus-rs")
+    (synopsis "FFI bindings to libdbus")
+    (description "This package provides FFI bindings to libdbus.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-libflate-1
