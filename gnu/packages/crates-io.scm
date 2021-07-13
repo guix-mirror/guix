@@ -26960,6 +26960,34 @@ checking.")
       "Chaining APIs for both self -> Self and &mut self methods.")
     (license license:expat)))
 
+(define-public rust-mpris-player-0.6
+  (package
+    (name "rust-mpris-player")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mpris-player" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01xvdzac9vwzc0fxpa7qwnn3n62bngrmr5z2n9pf86z3xgbasssg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dbus" ,rust-dbus-0.6)
+        ("rust-glib" ,rust-glib-0.10))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("glib" ,glib)))
+    (home-page "https://gitlab.gnome.org/World/Rust/mpris-player")
+    (synopsis "Library for creating MPRIS2 media players over D-Bus")
+    (description "This package provides a library for creating MPRIS2 media
+players over D-Bus.")
+    (license license:gpl3+)))
+
 (define-public rust-multi-default-trait-impl-0.1
   (package
     (name "rust-multi-default-trait-impl")
