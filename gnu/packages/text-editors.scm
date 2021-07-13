@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -527,28 +528,32 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
        ("ncurses" ,ncurses)))
     (arguments
      ;; No test suite available.
-     '(#:tests? #f
+     `(#:tests? #f
        #:make-flags (list (string-append "prefix=" %output)
-                          "CC=gcc")
+                          (string-append "CC=" ,(cc-for-target)))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ; no configure script
                   (add-before 'build 'correct-location-of-difftool
                     (lambda _
                       (substitute* "buffer.c"
                         (("/usr/bin/diff")
-                         (which "diff")))
-                      #t))
+                         (which "diff")))))
+                  (add-before 'build 'pkg-config-for-cross-compiling-target
+                    (lambda _
+                      (substitute* "GNUmakefile"
+                        (("pkg-config")
+                         (or (which "pkg-config")
+                             (string-append ,(%current-target-system)
+                                            "-pkg-config"))))))
                   (add-before 'install 'patch-tutorial-location
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "mg.1"
-                        (("/usr") (assoc-ref outputs "out")))
-                      #t))
+                        (("/usr") (assoc-ref outputs "out")))))
                   (add-after 'install 'install-tutorial
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (doc (string-append out "/share/doc/mg")))
-                        (install-file "tutorial" doc)
-                        #t))))))
+                        (install-file "tutorial" doc)))))))
     (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
