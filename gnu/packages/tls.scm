@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -48,6 +48,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
@@ -1158,3 +1159,34 @@ default set of preferences.  Remaining on a specific version for backwards
 compatibility is also supported.")
     (home-page "https://github.com/awslabs/s2n")
     (license license:asl2.0)))
+
+(define-public wolfssl
+  (package
+    (name "wolfssl")
+    (version "4.8.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/wolfSSL/wolfssl")
+                     (commit (string-append "v" version "-stable"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w9gs9cq2yhj5s3diz3x1l15pgrc1pbm00jccizvcjyibmwyyf2h"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--enable-reproducible-build")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "SSL/TLS implementation")
+    (description "The wolfSSL embedded SSL library (formerly CyaSSL) is an
+SSL/TLS library written in ANSI C and targeted for embedded, RTOS, and
+resource-constrained environments - primarily because of its small size, speed,
+and feature set.  wolfSSL supports industry standards up to the current TLS 1.3
+and DTLS 1.2, is up to 20 times smaller than OpenSSL, and offers progressive
+ciphers such as ChaCha20, Curve25519, NTRU, and Blake2b.")
+    (home-page "https://www.wolfssl.com/")
+    (license license:gpl2+))) ; Audit
