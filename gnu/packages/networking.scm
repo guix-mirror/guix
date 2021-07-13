@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019 Gábor Boskovits <boskovits@gmail.com>
@@ -3833,22 +3833,31 @@ some traces for unprivileged users.")
                    license:lgpl2.1+)))) ;for the libsupp subdirectory
 
 (define-public vde2
+  (let ((commit "8c65ebc464b2f986d5f1f4e6ae829ef4480c9d5a")
+        (revision "0"))
   (package
     (name "vde2")
-    (version "2.3.2")
+    (version (git-version "2.3.2" revision commit))
     (source
      (origin
-       (method url-fetch)
-       (uri "mirror://sourceforge/vde/vde2/2.3.2/vde2-2.3.2.tar.gz")
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/virtualsquare/vde-2")
+              (commit commit)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14xga0ib6p1wrv3hkl4sa89yzjxv7f1vfqaxsch87j6scdm59pr2"))))
+        (base32 "0l5xf71sv9zm5zw0wg8xgip58c0wh8zck2bazyc2a8gb67gc3s8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f))           ; Build fails if #t.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("python" ,python)
        ("libpcap" ,libpcap)
-       ("openssl" ,openssl-1.0)))       ; Build fails with 1.1.
+       ("wolfssl" ,wolfssl)))
     (home-page "https://github.com/virtualsquare/vde-2")
     (synopsis "Virtual Distributed Ethernet")
     (description "VDE is a set of programs to provide virtual software-defined
@@ -3860,7 +3869,7 @@ cables.")
                    license:lgpl2.1       ; libvdeplug
                    (license:non-copyleft ; slirpvde
                     "file://COPYING.slirpvde"
-                    "See COPYING.slirpvde in the distribution.")))))
+                    "See COPYING.slirpvde in the distribution."))))))
 
 (define-public haproxy
   (package
