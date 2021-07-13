@@ -45988,7 +45988,12 @@ processors, disks, components and networks.")
        (uri (crate-uri "system-deps" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16v4ljmj8sj030mdcc1yk615vciqlyxi7csq6lxka6cs4qbwqghg"))))
+        (base32 "16v4ljmj8sj030mdcc1yk615vciqlyxi7csq6lxka6cs4qbwqghg"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (substitute* "Cargo.toml"
+                  (("0.0.10") "0.0"))
+                #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;source is missing some test files
@@ -46001,13 +46006,7 @@ processors, disks, components and networks.")
         ("rust-toml" ,rust-toml-0.5)
         ("rust-version-compare" ,rust-version-compare-0.0))
        #:cargo-development-inputs
-       (("rust-itertools" ,rust-itertools-0.9))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-version-requirements
-           (lambda _
-             (substitute* "Cargo.toml"
-               (("0.0.10") ,(package-version rust-version-compare-0.0))))))))
+       (("rust-itertools" ,rust-itertools-0.9))))
     (home-page "https://github.com/gdesmott/system-deps")
     (synopsis "Define system dependencies in @file{Cargo.toml}")
     (description
