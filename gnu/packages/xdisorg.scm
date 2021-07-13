@@ -638,7 +638,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.104")
+    (version "2.4.107")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -646,7 +646,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1jqvx9c23hgwhq109zqj6vg3ng40pcvh3r1k2fn1a424qasxhsnn"))))
+                "127qf1rzhaf13vdd75a58v5q34617hvangjlfnlkcdh37gqcwm65"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -661,9 +661,10 @@ rasterisation.")
 
        #:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda _
-                      (invoke "meson" "test" "--timeout-multiplier" "5"))))))
-    (inputs
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "meson" "test" "--timeout-multiplier" "5")))))))
+    (propagated-inputs
      `(("libpciaccess" ,libpciaccess)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
