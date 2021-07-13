@@ -54,6 +54,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ed)
@@ -906,7 +907,7 @@ the HTML documentation of TXR.")
 (define-public txr
   (package
     (name "txr")
-    (version "263")
+    (version "266")
     (source
      (origin
        (method git-fetch)
@@ -915,7 +916,7 @@ the HTML documentation of TXR.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14zaziymnbr2ld79x4h7sf88bzzzj82w3xpavmcx7mhwannb2swh"))))
+        (base32 "1k9mj3zaxdsylgnb8g6cq0cmp6420x7fp3nnsqdmds4gh8ib95wn"))))
     (build-system gnu-build-system)
     (native-inputs
      ;; Required to build the documentation.
@@ -923,7 +924,8 @@ the HTML documentation of TXR.")
        ("groff" ,groff)
        ("man2html" ,man-for-txr)))
     (inputs
-     `(("libffi" ,libffi)))
+     `(("bash" ,bash)
+       ("libffi" ,libffi)))
     (arguments
      `(#:configure-flags
        (list ,(string-append "cc=" (cc-for-target))
@@ -947,14 +949,21 @@ the HTML documentation of TXR.")
                ;; stdlib/doc-syms.tl, which is anyway kept up to date with
                ;; each release (and is already compiled to stdlib/doc-syms.tlo
                ;; when genman.txr is run).
-               (("^@\\(output \"share/txr/stdlib/doc-syms\\.tl\"\\).*" line)
+               (("^@\\(output \"stdlib/doc-syms\\.tl\"\\).*" line)
                 (string-append "@(do (exit))\n" line)))
              #t))
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "stream.c"
+               (("/bin/sh")
+                (string-append (assoc-ref inputs "bash") "/bin/bash")))))
          (add-after 'unpack 'fix-tests
            (lambda _
              (substitute* (list "tests/017/realpath.tl"
                                 "tests/017/realpath.expected")
                (("/usr/bin") "/"))
+             (substitute* "tests/018/path-test.tl"
+               (("/bin") (dirname (which "sh"))))
              #t))
          (replace 'configure
            ;; ./configure is a hand-written script that can't handle standard
