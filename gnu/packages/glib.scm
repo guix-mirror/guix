@@ -252,10 +252,11 @@ shared NFS home directories.")
                                  (package-version python)))))
              #t))
          (add-before 'check 'pre-check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              ;; For tests/gdatetime.c.
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
+                     (string-append (assoc-ref (or native-inputs inputs)
+                                               "tzdata")
                                     "/share/zoneinfo"))
              ;; Some tests want write access there.
              (setenv "HOME" (getcwd))
