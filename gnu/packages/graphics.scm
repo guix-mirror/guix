@@ -1708,8 +1708,7 @@ requirements.")
                   (add-before 'check 'start-xorg-server
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; The test suite requires a running X server.
-                      (system (string-append (assoc-ref inputs "xorg-server")
-                                             "/bin/Xvfb :1 &"))
+                      (system "Xvfb :1 &")
                       (setenv "DISPLAY" ":1")
                       #t)))))
     (native-inputs

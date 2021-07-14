@@ -186,8 +186,7 @@ This package is part of the KDE multimedia module.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test suite requires a running X server, setting
              ;; QT_QPA_PLATFORM=offscreen does not suffice.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (system "Xvfb :1 -screen 0 640x480x24 &")
              (setenv "DISPLAY" ":1")
              #t))
          (replace 'check

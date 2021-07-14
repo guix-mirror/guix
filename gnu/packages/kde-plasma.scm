@@ -154,8 +154,7 @@ call it if it is not associated to a terminal.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                   "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (system "Xvfb :1 -screen 0 640x480x24 &")
              (setenv "DISPLAY" ":1")
              #t))
          (delete 'check)

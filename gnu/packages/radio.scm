@@ -579,8 +579,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
          (add-before 'check 'set-test-environment
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" "/tmp")
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
+             (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1")
              #t))
          (replace 'check
