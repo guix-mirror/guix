@@ -647,7 +647,11 @@ a character other than '@'."
        (not (string-contains target "linux"))))
 
 (define* (target-mingw? #:optional (target (%current-target-system)))
+  "Is the operating system of TARGET Windows?"
   (and target
+       ;; The "-32" doesn't mean TARGET is 32-bit, as "x86_64-w64-mingw32"
+       ;; is a valid triplet (see the (gnu ci) module) and 'w64' and 'x86_64'
+       ;; are 64-bit.
        (string-suffix? "-mingw32" target)))
 
 (define* (target-arm32? #:optional (target (or (%current-target-system)
