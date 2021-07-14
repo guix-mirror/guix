@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1254,6 +1255,14 @@ command.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
+       ;; This consists purely of (architecture-independent) data,
+       ;; so ‘cross-compilation’ is pointless here!
+       ;; (The binaries zic, dump, and tzselect are deleted in the post-install
+       ;; phase.)
+       #:target #f
+       ;; share/zoneinfo/posix is a symlink to share/zoneinfo,
+       ;; so include the package itself in #:allowed-references.
+       #:allowed-references ("out")
        #:make-flags (let ((out (assoc-ref %outputs "out"))
                           (tmp (getenv "TMPDIR")))
                       (list (string-append "TOPDIR=" out)
