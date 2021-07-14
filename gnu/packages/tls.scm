@@ -18,6 +18,7 @@
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -345,7 +346,7 @@ required structures.")
          #$@(if (%current-target-system)
                 #~((add-before
                        'configure 'set-cross-compile
-                     (lambda* (#:key target outputs #:allow-other-keys)
+                     (lambda* (#:key target #:allow-other-keys)
                        (setenv "CROSS_COMPILE" (string-append target "-"))
                        (setenv "CONFIGURE_TARGET_ARCH"
                                (cond
@@ -369,8 +370,8 @@ required structures.")
                                  "linux-ppc"))))))
                 #~())
          (replace 'configure
-           (lambda* (#:key outputs configure-flags #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (let* ((out #$output)
                     (lib (string-append out "/lib")))
                ;; It's not a shebang so patch-source-shebangs misses it.
                (substitute* "config"
@@ -400,23 +401,23 @@ required structures.")
                ;; Output the configure variables.
                (invoke "perl" "configdata.pm" "--dump"))))
          (add-after 'install 'move-static-libraries
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              ;; Move static libraries to the "static" output.
-             (let* ((out    (assoc-ref outputs "out"))
+             (let* ((out    #$output)
                     (lib    (string-append out "/lib"))
-                    (static (assoc-ref outputs "static"))
+                    (static #$output:static)
                     (slib   (string-append static "/lib")))
                (for-each (lambda (file)
                            (install-file file slib)
                            (delete-file file))
                          (find-files lib "\\.a$")))))
          (add-after 'install 'move-extra-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              ;; Move man3 pages and full HTML documentation to "doc".
-             (let* ((out    (assoc-ref outputs "out"))
+             (let* ((out    #$output)
                     (man3   (string-append out "/share/man/man3"))
                     (html (string-append out "/share/doc/openssl"))
-                    (doc    (assoc-ref outputs "doc"))
+                    (doc    #$output:doc)
                     (man-target (string-append doc "/share/man/man3"))
                     (html-target (string-append doc "/share/doc/openssl")))
                (copy-recursively man3 man-target)
@@ -425,13 +426,12 @@ required structures.")
                (delete-file-recursively html))))
          (add-after
              'install 'remove-miscellany
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              ;; The 'misc' directory contains random undocumented shell and Perl
              ;; scripts.  Remove them to avoid retaining a reference on Perl.
-             (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively (string-append out "/share/openssl-"
-                                                       #$(package-version this-package)
-                                                       "/misc"))))))))
+             (delete-file-recursively (string-append #$output "/share/openssl-"
+                                                     #$(package-version this-package)
+                                                     "/misc")))))))
     (native-search-paths
      (list (search-path-specification
             (variable "SSL_CERT_DIR")
