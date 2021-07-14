@@ -420,10 +420,10 @@ required structures.")
                     (doc    #$output:doc)
                     (man-target (string-append doc "/share/man/man3"))
                     (html-target (string-append doc "/share/doc/openssl")))
-               (copy-recursively man3 man-target)
-               (delete-file-recursively man3)
-               (copy-recursively html html-target)
-               (delete-file-recursively html))))
+               (mkdir-p (dirname man3-target))
+               (mkdir-p (dirname html-target))
+               (rename-file man3 man-target)
+               (rename-file html html-target))))
          (add-after
              'install 'remove-miscellany
            (lambda _
