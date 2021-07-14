@@ -364,8 +364,7 @@ required structures.")
                               ((string-prefix? "powerpc64" target)
                                "linux-ppc64")
                               ((string-prefix? "powerpc" target)
-                               "linux-ppc")))
-                     #t)))
+                               "linux-ppc"))))))
                '())
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
@@ -408,8 +407,7 @@ required structures.")
                (for-each (lambda (file)
                            (install-file file slib)
                            (delete-file file))
-                         (find-files lib "\\.a$"))
-               #t)))
+                         (find-files lib "\\.a$")))))
          (add-after 'install 'move-extra-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Move man3 pages and full HTML documentation to "doc".
@@ -422,8 +420,7 @@ required structures.")
                (copy-recursively man3 man-target)
                (delete-file-recursively man3)
                (copy-recursively html html-target)
-               (delete-file-recursively html)
-               #t)))
+               (delete-file-recursively html))))
          (add-after
              'install 'remove-miscellany
            (lambda* (#:key outputs #:allow-other-keys)
@@ -432,8 +429,7 @@ required structures.")
              (let ((out (assoc-ref outputs "out")))
                (delete-file-recursively (string-append out "/share/openssl-"
                                                        ,(package-version this-package)
-                                                       "/misc"))
-               #t))))))
+                                                       "/misc"))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "SSL_CERT_DIR")
