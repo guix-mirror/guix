@@ -4610,40 +4610,75 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "9.2.0")
+    (version "9.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/dealii/dealii/releases/"
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
-        (base32
-         "0fm4xzrnb7dfn4415j24d8v3jkh0lssi86250x2f5wgi83xq4nnh"))
+        (base32 "1f0sqvlxvl0myqcn0q6xrn1vnp5pgx143lai4a4jkh1dmdv4cbx6"))
        (modules '((guix build utils)))
        (snippet
-        ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
         '(begin
+           ;; Remove bundled boost, muparser, TBB and UMFPACK.
            (delete-file-recursively "bundled")
            #t))))
     (build-system cmake-build-system)
+    (outputs '("out" "doc"))
+    (native-inputs
+     ;; Required to build the documentation.
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("perl" ,perl)))
     (inputs
-     `(("tbb" ,tbb)
-       ("zlib" ,zlib)
-       ("boost" ,boost)
-       ("p4est" ,p4est)
+     `(("arpack" ,arpack-ng)
        ("blas" ,openblas)
-       ("lapack" ,lapack)
-       ("arpack" ,arpack-ng)
-       ("muparser" ,muparser)
        ("gfortran" ,gfortran)
-       ("suitesparse" ,suitesparse)))   ;for UMFPACK
+       ("lapack" ,lapack)
+       ("muparser" ,muparser)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     ;; Some scripts are installed into share/deal.II/scripts that require
+     ;; perl and python, but they are not executable (and some are missing the
+     ;; shebang line) and therefore must be explicitly passed to the
+     ;; interpreter.
+     ;; Anyway, they are meant to be used at build time, so rather than adding
+     ;; the interpreters here, any package depending on them should just add
+     ;; the requisite interpreter to its native inputs.
+     `(("boost" ,boost)
+       ("hdf5" ,hdf5)
+       ("suitesparse" ,suitesparse)     ; For UMFPACK.
+       ("tbb" ,tbb)))
     (arguments
-     `(#:build-type "DebugRelease" ;only supports Release, Debug, or DebugRelease
+     `(#:build-type "DebugRelease" ; Supports only Debug, Release and DebugRelease.
+       ;; The tests take too long and must be explicitly enabled with "make
+       ;; setup_tests".
+       ;; See https://www.dealii.org/developer/developers/testsuite.html.
+       ;; (They can also be run for an already installed deal.II.)
+       #:tests? #f
        #:configure-flags
-       ;; Work around a bug in libsuitesparseconfig linking
-       ;; see https://github.com/dealii/dealii/issues/4745
-       '("-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON")))
-    (home-page "https://www.dealii.org")
+       (let ((doc (string-append (assoc-ref %outputs "doc")
+                                 "/share/doc/" ,name "-" ,version)))
+         `("-DDEAL_II_COMPONENT_DOCUMENTATION=ON"
+           ,(string-append "-DDEAL_II_DOCREADME_RELDIR=" doc)
+           ,(string-append "-DDEAL_II_DOCHTML_RELDIR=" doc "/html")
+           ;; Don't compile the examples because the source and CMakeLists.txt
+           ;; are installed anyway, allowing users to do so for themselves.
+           "-DDEAL_II_COMPILE_EXAMPLES=OFF"
+           ,(string-append "-DDEAL_II_EXAMPLES_RELDIR=" doc "/examples")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-build-logs
+           ;; These build logs leak the name of the build directory by storing
+           ;; the values of CMAKE_SOURCE_DIR and CMAKE_BINARY_DIR.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((doc (string-append (assoc-ref outputs "doc")
+                                       "/share/doc/" ,name "-" ,version)))
+               (for-each delete-file (map (lambda (f) (string-append doc "/" f))
+                                          '("detailed.log" "summary.log"))))
+             #t)))))
+    (home-page "https://www.dealii.org/")
     (synopsis "Finite element library")
     (description
      "Deal.II is a C++ program library targeted at the computational solution
@@ -4654,30 +4689,24 @@ in finite element programs.")
     (license license:lgpl2.1+)))
 
 (define-public dealii-openmpi
-  (package (inherit dealii)
+  (package/inherit dealii
     (name "dealii-openmpi")
     (inputs
-     `(("mpi" ,openmpi)
-       ;;Supported only with MPI:
-       ("hdf5" ,hdf5-parallel-openmpi)  ;TODO: have petsc-openmpi propagate?
+     `(("arpack" ,arpack-ng-openmpi)
+       ("metis" ,metis)
+       ("scalapack" ,scalapack)
+       ,@(alist-delete "arpack" (package-inputs dealii))))
+    (propagated-inputs
+     `(("hdf5" ,hdf5-parallel-openmpi)
+       ("mpi" ,openmpi)
        ("p4est" ,p4est-openmpi)
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)
-       ("metis" ,metis)               ;for MUMPS
-       ("scalapack" ,scalapack)       ;for MUMPS
-       ("mumps" ,mumps-metis-openmpi) ;configure supports only metis orderings
-       ("arpack" ,arpack-ng-openmpi)
-       ,@(fold alist-delete (package-inputs dealii)
-               '("p4est" "arpack"))))
+       ,@(alist-delete "hdf5" (package-propagated-inputs dealii))))
     (arguments
      (substitute-keyword-arguments (package-arguments dealii)
-       ((#:configure-flags cf)
-        `(cons "-DDEAL_II_WITH_MPI:BOOL=ON"
-               ,cf))
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-before 'check 'mpi-setup
-             ,%openmpi-setup)))))
+       ((#:configure-flags flags)
+        `(cons "-DDEAL_II_WITH_MPI=ON" ,flags))))
     (synopsis "Finite element library (with MPI support)")))
 
 (define-public flann
