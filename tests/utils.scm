@@ -306,6 +306,29 @@ skip these tests."
        '("i686-linux-gnu" "i686-pc-gnu"
          "i686-w64-mingw32")))
 
+(test-equal "target-x86-32?"
+  '(#f #f #f #t #t #t #t #f)
+  ;; These are (according to Wikipedia) two RISC architectures
+  ;; by Intel and presumably not compatible with the x86-32 series.
+  (map target-x86-32?
+       '("i860-gnu" "i960-gnu"
+         ;; This is a 16-bit architecture
+         "i286-gnu"
+         ;; These are part of the x86-32 series.
+         "i386-gnu" "i486-gnu" "i586-gnu" "i686-gnu"
+         ;; Maybe this one will exist some day, but not yet.
+         "i786-gnu")))
+
+(test-equal "target-x86-64?"
+  '(#t #f #f #f)
+  (map target-x86-64?
+       `("x86_64-linux-gnu" "i386-linux-gnu"
+         ;; Just because it includes "64" doesn't make it 64-bit.
+         "aarch64-linux-gnu"
+         ;; Note that (expt 2 109) in decimal notation starts with 64.
+         ;; However, it isn't 32-bit.
+         ,(format #f "x86_~a-linux-gnu" (expt 2 109)))))
+
 (test-end)
 
 (false-if-exception (delete-file temp-file))
