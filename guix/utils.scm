@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
             %current-system
             %current-target-system
             package-name->name+version
+            target-linux?
             target-mingw?
             target-arm32?
             target-aarch64?
@@ -631,6 +633,11 @@ a character other than '@'."
     (#f  (values spec #f))
     (idx (values (substring spec 0 idx)
                  (substring spec (1+ idx))))))
+
+(define* (target-linux? #:optional (target (or (%current-target-system)
+                                               (%current-system))))
+  "Does the operating system of TARGET use the Linux kernel?"
+  (->bool (string-contains target "linux")))
 
 (define* (target-mingw? #:optional (target (%current-target-system)))
   (and target

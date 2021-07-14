@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -288,6 +289,22 @@ skip these tests."
    (string-closest "hello" '("helo" "hello" "halo"))
    (string-closest "hello" '("kikoo" "helo" "hihihi" "halo"))
    (string-closest "hello" '("aaaaa" "12345" "hellohello" "h"))))
+
+(test-equal "target-linux?"
+  '(#t #f #f #t)
+  (map target-linux?
+       '("i686-linux-gnu" "i686-w64-mingw32"
+         ;; Checking that "gnu" is present is not sufficient,
+         ;; as GNU/Hurd exists.
+         "i686-pc-gnu"
+         ;; Some targets have a suffix.
+         "arm-linux-gnueabihf")))
+
+(test-equal "target-mingw?"
+  '(#f #f #t)
+  (map target-mingw?
+       '("i686-linux-gnu" "i686-pc-gnu"
+         "i686-w64-mingw32")))
 
 (test-end)
 
