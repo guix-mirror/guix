@@ -56,8 +56,8 @@
        ;; to configure script. See bug report and discussion:
        ;; <https://lists.opendylan.org/pipermail/bdwgc/2017-April/006275.html>
        ;; <https://lists.gnu.org/archive/html/bug-hurd/2017-01/msg00008.html>
-       ,@(if (hurd-triplet? (or (%current-system)
-                                (%current-target-system)))
+       ,@(if (target-hurd? (or (%current-system)
+                               (%current-target-system)))
              '("--disable-gcj-support")
              '()))))
    (native-inputs `(("pkg-config" ,pkg-config)))

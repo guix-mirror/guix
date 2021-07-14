@@ -85,6 +85,7 @@
             %current-target-system
             package-name->name+version
             target-linux?
+            target-hurd?
             target-mingw?
             target-arm32?
             target-aarch64?
@@ -638,6 +639,12 @@ a character other than '@'."
                                                (%current-system))))
   "Does the operating system of TARGET use the Linux kernel?"
   (->bool (string-contains target "linux")))
+
+(define* (target-hurd? #:optional (target (or (%current-target-system)
+                                              (%current-system))))
+  "Does TARGET represent the GNU(/Hurd) system?"
+  (and (string-suffix? "-gnu" target)
+       (not (string-contains target "linux"))))
 
 (define* (target-mingw? #:optional (target (%current-target-system)))
   (and target

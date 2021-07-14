@@ -505,7 +505,7 @@ and the cross tool chain."
                ,@(package-arguments libc))
            ((#:configure-flags flags)
             `(cons ,(string-append "--host=" target)
-                   ,(if (hurd-triplet? target)
+                   ,(if (target-hurd? target)
                         `(cons "--disable-werror" ,flags)
                         flags)))
            ((#:phases phases)
@@ -519,7 +519,7 @@ and the cross tool chain."
                      (setenv "CROSS_LIBRARY_PATH"
                              (string-append kernel "/lib")) ; for Hurd's libihash
                      #t)))
-               ,@(if (hurd-triplet? target)
+               ,@(if (target-hurd? target)
                      '((add-after 'install 'augment-libc.so
                          (lambda* (#:key outputs #:allow-other-keys)
                            (let* ((out (assoc-ref outputs "out")))
@@ -536,7 +536,7 @@ and the cross tool chain."
 
         (native-inputs `(("cross-gcc" ,xgcc)
                          ("cross-binutils" ,xbinutils)
-                         ,@(if (hurd-triplet? target)
+                         ,@(if (target-hurd? target)
                                `(("cross-mig"
                                   ,@(assoc-ref (package-native-inputs xheaders)
                                                "cross-mig")))

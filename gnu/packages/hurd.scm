@@ -51,20 +51,16 @@
             hurd-target?
             hurd-triplet?))
 
-(define (hurd-triplet? triplet)
-  (and (string-suffix? "-gnu" triplet)
-       (not (string-contains triplet "linux"))))
-
 (define (hurd-target?)
   "Return true if the cross-compilation target or the current system is
 GNU/Hurd."
-  (or (and=> (%current-target-system) hurd-triplet?)
+  (or (and=> (%current-target-system) target-hurd?)
       (and (not (%current-target-system))
-           (and=> (%current-system) hurd-triplet?))))
+           (and=> (%current-system) target-hurd?))))
 
 (define (hurd-system?)
   "Return true if the current system is the Hurd."
-  (and=> (%current-system) hurd-triplet?))
+  (and=> (%current-system) target-hurd?))
 
 (define (hurd-source-url version)
   (string-append "mirror://gnu/hurd/hurd-"

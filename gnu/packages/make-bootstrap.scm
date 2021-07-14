@@ -439,7 +439,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                (assoc-ref %build-inputs "kernel-headers")))))
       (inputs `(("kernel-headers"
                  ,(if (or (and (%current-target-system)
-                               (hurd-triplet? (%current-target-system)))
+                               (target-hurd? (%current-target-system)))
                           (string-suffix? "-hurd" (%current-system)))
                       gnumach-headers
                       linux-libre-headers))
