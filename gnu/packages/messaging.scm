@@ -580,7 +580,7 @@ identi.ca and status.net).")
 (define-public bitlbee-discord
   (package
     (name "bitlbee-discord")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method git-fetch)
@@ -589,7 +589,7 @@ identi.ca and status.net).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02pigk2vbz0jdz11f96sygdvp1j762yjn62h124fkcsc070g7a2f"))))
+        (base32 "00qgdvrp7hv02n0ns685igp810zxmv3adsama8601122al6x041n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
