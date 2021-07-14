@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Mark Wielaard <mark@klomp.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+ lgpl3+ lgpl2.0+))
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
@@ -205,22 +207,32 @@ static analysis of the ELF binaries at hand.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; This old `configure' script doesn't support
-             ;; variables passed as arguments.
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "CONFIG_SHELL" (which "bash"))
-               (invoke "./configure"
-                       (string-append "--prefix=" out)
-                       ,@(if (string=? "powerpc64le-linux"
-                                       (%current-system))
-                             '("--host=powerpc64le-unknown-linux-gnu")
-                             '())
-                       ,@(if (string=? "aarch64-linux"
-                                       (%current-system))
-                             '("--host=aarch64-unknown-linux-gnu")
-                             '()))))))))
+         ;; This old 'configure' script doesn't support cross-compilation
+         ;; well.  I.e., it fails to find the cross-compiler.  Also,
+         ;; the old `configure' script doesn't support variables passed as
+         ;; arguments.  A third problem is that config.sub is too old to
+         ;; recognise aarch64 and powerpc64le.
+         ;;
+         ;; Solve this by regenerating the configure script and letting
+         ;; autoreconf update 'config.sub'.  While 'config.sub' is updated
+         ;; anyway, update 'config.guess' as well.
+         (add-before 'bootstrap 'delete-configure
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (delete-file "configure")
+             (delete-file "config.sub")
+             (delete-file "config.guess")
+             (for-each (lambda (file)
+                         (install-file
+                          (string-append
+                           (assoc-ref (or native-inputs inputs) "automake")
+                           "/share/automake-"
+                           ,(version-major+minor (package-version automake))
+                           "/" file) "."))
+                       '("config.sub" "config.guess")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ;; For up-to-date 'config.guess' and 'config.sub'
+       ("automake" ,automake)))
     (home-page (string-append "https://web.archive.org/web/20181111033959/"
                               "http://www.mr511.de/software/english.html"))
     (synopsis "ELF object file access library")
