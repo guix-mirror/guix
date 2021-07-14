@@ -79,6 +79,8 @@
             %current-target-system
             package-name->name+version
             target-mingw?
+            target-x86-32?
+            target-x86-64?
             target-arm32?
             target-aarch64?
             target-arm?
@@ -534,6 +536,24 @@ a character other than '@'."
 (define* (target-mingw? #:optional (target (%current-target-system)))
   (and target
        (string-suffix? "-mingw32" target)))
+
+(define* (target-x86-32? #:optional (target (or (%current-target-system)
+                                                (%current-system))))
+  "Is the architecture of TARGET a variant of Intel's 32-bit architecture
+(IA32)?"
+  ;; Intel also has a 16-bit architecture in the iN86 series, i286
+  ;; (see, e.g. https://en.wikipedia.org/wiki/Intel/808286) so this
+  ;; procedure is not named target-x86?.
+  (or (string-prefix? "i386-" target)
+      (string-prefix? "i486-" target)
+      (string-prefix? "i586-" target)
+      (string-prefix? "i686-" target)))
+
+(define* (target-x86-64? #:optional (target (or (%current-target-system)
+                                                 (%current-system))))
+  "Is the architecture of TARGET a variant of Intel/AMD's 64-bit
+architecture (x86_64)?"
+  (string-prefix? "x86_64-" target))
 
 (define* (target-arm32? #:optional (target (or (%current-target-system)
                                                (%current-system))))
