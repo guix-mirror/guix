@@ -46,6 +46,7 @@
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6440,3 +6441,39 @@ to source-code analysis of C software.  The Frama-C analyzers assist you in
 various source-code-related activities, from the navigation through unfamiliar
 projects up to the certification of critical software.")
     (license license:lgpl2.1+)))
+
+(define-public blitz
+  (package
+    (name "blitz")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blitzpp/blitz")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0c88gc72j3zggyk4yrrip6i0v7xkx97l140vpy3xhxs2i7xy1461"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_DOC=ON"
+                           "-DBUILD_TESTING=ON")
+       ;; The default "check" target also includes examples and benchmarks.
+       #:test-target "check-testsuite"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (invoke "make" "-j" (number->string (parallel-job-count))
+                     "blitz-doc"))))))
+    (native-inputs
+     `(("python" ,python)
+       ("texinfo" ,texinfo)))
+    (synopsis "C++ template class library for multidimensional arrays")
+    (description "Blitz++ is a C++ template class library that provides
+high-performance multidimensional array containers for scientific computing.")
+    (home-page "https://github.com/blitzpp/blitz")
+    (license (list license:artistic2.0
+                   license:bsd-3
+                   license:lgpl3+))))
