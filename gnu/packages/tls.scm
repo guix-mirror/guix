@@ -311,75 +311,75 @@ required structures.")
 
 (define-public openssl
   (package
-   (name "openssl")
-   (version "1.1.1k")
-   (source (origin
-             (method url-fetch)
-             (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                       version ".tar.gz")
-                        (string-append "ftp://ftp.openssl.org/source/"
-                                       "openssl-" version ".tar.gz")
-                        (string-append "ftp://ftp.openssl.org/source/old/"
-                                       (string-trim-right version char-set:letter)
-                                       "/openssl-" version ".tar.gz")))
-             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
-             (sha256
-              (base32
-               "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))
-   (build-system gnu-build-system)
-   (outputs '("out"
-              "doc"         ;6.8 MiB of man3 pages and full HTML documentation
-              "static"))    ;6.4 MiB of .a files
-   (native-inputs `(("perl" ,perl)))
-   (arguments
-    `(#:parallel-tests? #f
-      #:test-target "test"
+    (name "openssl")
+    (version "1.1.1k")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        "openssl-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
+              (sha256
+               (base32
+                "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
+               "static"))    ;6.4 MiB of .a files
+    (native-inputs `(("perl" ,perl)))
+    (arguments
+     `(#:parallel-tests? #f
+       #:test-target "test"
 
-      ;; Changes to OpenSSL sometimes cause Perl to "sneak in" to the closure,
-      ;; so we explicitly disallow it here.
-      #:disallowed-references ,(list (canonical-package perl))
-      #:phases
-      (modify-phases %standard-phases
-       ,@(if (%current-target-system)
-           '((add-before
-               'configure 'set-cross-compile
-               (lambda* (#:key target outputs #:allow-other-keys)
-                 (setenv "CROSS_COMPILE" (string-append target "-"))
-                 (setenv "CONFIGURE_TARGET_ARCH"
-                         (cond
-                           ((string-prefix? "i586" target)
-                            "hurd-x86")
-                           ((string-prefix? "i686" target)
-                            "linux-x86")
-                           ((string-prefix? "x86_64" target)
-                            "linux-x86_64")
-                           ((string-prefix? "mips64el" target)
-                            "linux-mips64")
-                           ((string-prefix? "arm" target)
-                            "linux-armv4")
-                           ((string-prefix? "aarch64" target)
-                            "linux-aarch64")
-                           ((string-prefix? "powerpc64le" target)
-                            "linux-ppc64le")
-                           ((string-prefix? "powerpc64" target)
-                            "linux-ppc64")
-                           ((string-prefix? "powerpc" target)
-                            "linux-ppc")))
-                 #t)))
-           '())
-        (replace 'configure
-          (lambda* (#:key outputs configure-flags #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (lib (string-append out "/lib")))
-              ;; It's not a shebang so patch-source-shebangs misses it.
-              (substitute* "config"
-                (("/usr/bin/env")
-                 (string-append (assoc-ref %build-inputs "coreutils")
-                                "/bin/env")))
-              (apply
+       ;; Changes to OpenSSL sometimes cause Perl to "sneak in" to the closure,
+       ;; so we explicitly disallow it here.
+       #:disallowed-references ,(list (canonical-package perl))
+       #:phases
+       (modify-phases %standard-phases
+         ,@(if (%current-target-system)
+               '((add-before
+                     'configure 'set-cross-compile
+                   (lambda* (#:key target outputs #:allow-other-keys)
+                     (setenv "CROSS_COMPILE" (string-append target "-"))
+                     (setenv "CONFIGURE_TARGET_ARCH"
+                             (cond
+                              ((string-prefix? "i586" target)
+                               "hurd-x86")
+                              ((string-prefix? "i686" target)
+                               "linux-x86")
+                              ((string-prefix? "x86_64" target)
+                               "linux-x86_64")
+                              ((string-prefix? "mips64el" target)
+                               "linux-mips64")
+                              ((string-prefix? "arm" target)
+                               "linux-armv4")
+                              ((string-prefix? "aarch64" target)
+                               "linux-aarch64")
+                              ((string-prefix? "powerpc64le" target)
+                               "linux-ppc64le")
+                              ((string-prefix? "powerpc64" target)
+                               "linux-ppc64")
+                              ((string-prefix? "powerpc" target)
+                               "linux-ppc")))
+                     #t)))
+               '())
+         (replace 'configure
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               ;; It's not a shebang so patch-source-shebangs misses it.
+               (substitute* "config"
+                 (("/usr/bin/env")
+                  (string-append (assoc-ref %build-inputs "coreutils")
+                                 "/bin/env")))
+               (apply
                 invoke ,@(if (%current-target-system)
-                           '("./Configure")
-                           '("./config"))
+                             '("./Configure")
+                             '("./config"))
                 "shared"    ;build shared libraries
                 "--libdir=lib"
 
@@ -393,62 +393,62 @@ required structures.")
                 (string-append "--prefix=" out)
                 (string-append "-Wl,-rpath," lib)
                 ,@(if (%current-target-system)
-                    '((getenv "CONFIGURE_TARGET_ARCH"))
-                    '())
+                      '((getenv "CONFIGURE_TARGET_ARCH"))
+                      '())
                 configure-flags)
-              ;; Output the configure variables.
-              (invoke "perl" "configdata.pm" "--dump"))))
-        (add-after 'install 'move-static-libraries
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move static libraries to the "static" output.
-            (let* ((out    (assoc-ref outputs "out"))
-                   (lib    (string-append out "/lib"))
-                   (static (assoc-ref outputs "static"))
-                   (slib   (string-append static "/lib")))
-              (for-each (lambda (file)
-                          (install-file file slib)
-                          (delete-file file))
-                        (find-files lib "\\.a$"))
-              #t)))
-        (add-after 'install 'move-extra-documentation
-          (lambda* (#:key outputs #:allow-other-keys)
-               ;; Move man3 pages and full HTML documentation to "doc".
-               (let* ((out    (assoc-ref outputs "out"))
-                      (man3   (string-append out "/share/man/man3"))
-                      (html (string-append out "/share/doc/openssl"))
-                      (doc    (assoc-ref outputs "doc"))
-                      (man-target (string-append doc "/share/man/man3"))
-                      (html-target (string-append doc "/share/doc/openssl")))
-                 (copy-recursively man3 man-target)
-                 (delete-file-recursively man3)
-                 (copy-recursively html html-target)
-                 (delete-file-recursively html)
-                 #t)))
-        (add-after
-         'install 'remove-miscellany
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; The 'misc' directory contains random undocumented shell and Perl
-           ;; scripts.  Remove them to avoid retaining a reference on Perl.
-           (let ((out (assoc-ref outputs "out")))
-             (delete-file-recursively (string-append out "/share/openssl-"
-                                                     ,(package-version this-package)
-                                                     "/misc"))
-             #t))))))
-   (native-search-paths
-    (list (search-path-specification
-           (variable "SSL_CERT_DIR")
-           (separator #f)                        ;single entry
-           (files '("etc/ssl/certs")))
-          (search-path-specification
-           (variable "SSL_CERT_FILE")
-           (file-type 'regular)
-           (separator #f)                        ;single entry
-           (files '("etc/ssl/certs/ca-certificates.crt")))))
-   (synopsis "SSL/TLS implementation")
-   (description
-    "OpenSSL is an implementation of SSL/TLS.")
-   (license license:openssl)
-   (home-page "https://www.openssl.org/")))
+               ;; Output the configure variables.
+               (invoke "perl" "configdata.pm" "--dump"))))
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t)))
+         (add-after 'install 'move-extra-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move man3 pages and full HTML documentation to "doc".
+             (let* ((out    (assoc-ref outputs "out"))
+                    (man3   (string-append out "/share/man/man3"))
+                    (html (string-append out "/share/doc/openssl"))
+                    (doc    (assoc-ref outputs "doc"))
+                    (man-target (string-append doc "/share/man/man3"))
+                    (html-target (string-append doc "/share/doc/openssl")))
+               (copy-recursively man3 man-target)
+               (delete-file-recursively man3)
+               (copy-recursively html html-target)
+               (delete-file-recursively html)
+               #t)))
+         (add-after
+             'install 'remove-miscellany
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The 'misc' directory contains random undocumented shell and Perl
+             ;; scripts.  Remove them to avoid retaining a reference on Perl.
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively (string-append out "/share/openssl-"
+                                                       ,(package-version this-package)
+                                                       "/misc"))
+               #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "SSL_CERT_DIR")
+            (separator #f)                        ;single entry
+            (files '("etc/ssl/certs")))
+           (search-path-specification
+            (variable "SSL_CERT_FILE")
+            (file-type 'regular)
+            (separator #f)                        ;single entry
+            (files '("etc/ssl/certs/ca-certificates.crt")))))
+    (synopsis "SSL/TLS implementation")
+    (description
+     "OpenSSL is an implementation of SSL/TLS.")
+    (license license:openssl)
+    (home-page "https://www.openssl.org/")))
 
 (define-public openssl-1.0
   (package
