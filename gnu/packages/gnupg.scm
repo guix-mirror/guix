@@ -114,8 +114,7 @@
                            (string-append x "-unknown-linux-gnu")))))
                    (symlink
                     (string-append "lock-obj-pub." triplet ".h")
-                    "src/syscfg/lock-obj-pub.linux-gnu.h"))
-                 #t))))
+                    "src/syscfg/lock-obj-pub.linux-gnu.h"))))))
          '()))
     (native-inputs `(("gettext" ,gettext-minimal)))
     (home-page "https://gnupg.org")
