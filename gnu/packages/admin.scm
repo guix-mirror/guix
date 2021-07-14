@@ -937,6 +937,11 @@ to allow automatic login and starting any app.")
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
+       ;; This package consists solely of architecture-independent
+       ;; tables. Cross-compilation is pointless! Make sure we'll
+       ;; always get the same derivation.
+       #:target #f
+       #:allowed-references ()
        #:builder (begin
                    (use-modules (guix build utils)
                                 (srfi srfi-26))
