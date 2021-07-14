@@ -234,6 +234,7 @@ MODULES =					\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
+  guix/build/meson-configuration.scm		\
   guix/build/maven/java.scm			\
   guix/build/maven/plugin.scm			\
   guix/build/maven/pom.scm			\
