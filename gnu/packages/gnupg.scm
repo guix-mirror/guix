@@ -100,6 +100,13 @@
                       (guix build utils))
            #:phases
            (modify-phases %standard-phases
+             ;; If this is left out, some generated header
+             ;; files will be sprinkled with ‘\c’, which
+             ;; the compiler won't like.
+             (add-after 'unpack 'fix-gen-lock-obj.sh
+               (lambda _
+                 (substitute* "src/gen-lock-obj.sh"
+                   (("if test -n `echo -n`") "if ! test -n `echo -n`"))))
              ;; When cross-compiling, some platform specific properties cannot
              ;; be detected. Create a symlink to the appropriate platform
              ;; file if required. Note that these platform files depend on
