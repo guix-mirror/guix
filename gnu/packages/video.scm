@@ -1598,6 +1598,7 @@ operate properly.")
          "--enable-openal"
          "--enable-opengl"
          "--enable-libdrm"
+         "--enable-vaapi"
 
          "--enable-runtime-cpudetect"
 
