@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019, 2021 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
@@ -2423,3 +2423,43 @@ web services.  @code{geopy} makes it easy for Python developers to locate the
 coordinates of addresses, cities, countries, and landmarks across the globe
 using third-party geocoders and other data sources.")
     (license license:expat)))
+
+(define-public marble-qt
+  (let ((release "17.08")
+        (commit "fc7166eeef784732033c999ba605364f9c82d21c")
+        (revision "1"))
+    (package
+      (name "marble-qt")
+      (version (git-version release revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://anongit.kde.org/marble")
+               (commit commit)))
+         (sha256
+          (base32
+           "0m0sf3sddaib7vc5lhbmh7ziw07p1hahg02f65sgfylyl5f5kj92"))
+         (patches (search-patches
+                   "marble-qt-add-qt-headers.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; libmarblewidget-qt5.so.28 not found
+         #:configure-flags
+         '("-DCMAKE_BUILD_TYPE=Release"
+           "-DWITH_KF5=FALSE")))
+      (native-inputs
+       `(("qttools" ,qttools)))
+      (inputs
+       `(("qtbase" ,qtbase-5)
+         ("qtsvg" ,qtsvg)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtwebkit" ,qtwebkit)
+         ("qtlocation" ,qtlocation)))
+      (home-page "https://marble.kde.org/")
+      (synopsis "Virtual globe and world atlas")
+      (description "Marble is similar to a desktop globe.  At closer scale it
+becomes a world atlas, while OpenStreetMap takes the user to street level.  It
+supports searching for places of interest, viewing Wikipedia articles,
+creating routes by drag and drop and more.")
+      (license license:gpl3))))

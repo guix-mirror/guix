@@ -1,0 +1,189 @@
+Adapted from Debian: https://salsa.debian.org/qt-kde-team/kde/marble/-/blob/debian/4%2517.08.3-3.1/debian/patches/qt5.11.patch
+Upstream status: Probably irrelevant, as this is an old version of this software.
+
+diff --git a/src/lib/marble/MergedLayerDecorator.cpp b/src/lib/marble/MergedLayerDecorator.cpp
+index 40f3ddb..bafff50 100644
+--- a/src/lib/marble/MergedLayerDecorator.cpp
++++ b/src/lib/marble/MergedLayerDecorator.cpp
+@@ -36,6 +36,7 @@
+ 
+ #include <QPointer>
+ #include <QPainter>
++#include <QPainterPath>
+ 
+ using namespace Marble;
+ 
+diff --git a/src/lib/marble/VisiblePlacemark.cpp b/src/lib/marble/VisiblePlacemark.cpp
+index cfe08af..1a84006 100644
+--- a/src/lib/marble/VisiblePlacemark.cpp
++++ b/src/lib/marble/VisiblePlacemark.cpp
+@@ -22,6 +22,7 @@
+ 
+ #include <QApplication>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPalette>
+ #include <QPixmapCache>
+ 
+diff --git a/src/lib/marble/graphicsview/FrameGraphicsItem.cpp b/src/lib/marble/graphicsview/FrameGraphicsItem.cpp
+index 8a90526..065f245 100644
+--- a/src/lib/marble/graphicsview/FrameGraphicsItem.cpp
++++ b/src/lib/marble/graphicsview/FrameGraphicsItem.cpp
+@@ -18,6 +18,7 @@
+ // Qt
+ #include <QSizeF>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPixmapCache>
+ #include <QMargins>
+ #include <qdrawutil.h>
+diff --git a/src/lib/marble/layers/GroundLayer.cpp b/src/lib/marble/layers/GroundLayer.cpp
+index 58d409f..df6d226 100644
+--- a/src/lib/marble/layers/GroundLayer.cpp
++++ b/src/lib/marble/layers/GroundLayer.cpp
+@@ -14,6 +14,9 @@
+ #include "ViewportParams.h"
+ #include "RenderState.h"
+ 
++#include <QPainter>
++#include <QPainterPath>
++
+ namespace Marble
+ {
+ 
+diff --git a/src/plugins/render/compass/CompassFloatItem.cpp b/src/plugins/render/compass/CompassFloatItem.cpp
+index d8dc021..66095cc 100644
+--- a/src/plugins/render/compass/CompassFloatItem.cpp
++++ b/src/plugins/render/compass/CompassFloatItem.cpp
+@@ -19,6 +19,7 @@
+ #include <QRect>
+ #include <QColor>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPushButton>
+ #include <QSvgRenderer>
+ 
+diff --git a/src/plugins/render/elevationprofilefloatitem/ElevationProfileFloatItem.cpp b/src/plugins/render/elevationprofilefloatitem/ElevationProfileFloatItem.cpp
+index a790c16..96f5bed 100644
+--- a/src/plugins/render/elevationprofilefloatitem/ElevationProfileFloatItem.cpp
++++ b/src/plugins/render/elevationprofilefloatitem/ElevationProfileFloatItem.cpp
+@@ -31,6 +31,7 @@
+ #include <QContextMenuEvent>
+ #include <QRect>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPushButton>
+ #include <QMenu>
+ #include <QMouseEvent>
+diff --git a/src/plugins/render/foursquare/FoursquareItem.cpp b/src/plugins/render/foursquare/FoursquareItem.cpp
+index d9e1f57..ef80472 100644
+--- a/src/plugins/render/foursquare/FoursquareItem.cpp
++++ b/src/plugins/render/foursquare/FoursquareItem.cpp
+@@ -13,6 +13,8 @@
+ #include "ViewportParams.h"
+ 
+ #include <QFontMetrics>
++#include <QPainter>
++#include <QPainterPath>
+  
+ namespace Marble
+ {
+diff --git a/src/plugins/render/gpsinfo/GpsInfo.cpp b/src/plugins/render/gpsinfo/GpsInfo.cpp
+index 522e907..20fd75a 100644
+--- a/src/plugins/render/gpsinfo/GpsInfo.cpp
++++ b/src/plugins/render/gpsinfo/GpsInfo.cpp
+@@ -21,6 +21,8 @@
+ #include "ViewportParams.h"
+ #include "GeoDataAccuracy.h"
+ 
++#include <QIcon>
++
+ namespace Marble
+ {
+ 
+diff --git a/src/plugins/render/license/License.cpp b/src/plugins/render/license/License.cpp
+index 511dfc0..9436083 100644
+--- a/src/plugins/render/license/License.cpp
++++ b/src/plugins/render/license/License.cpp
+@@ -23,6 +23,7 @@
+ #include <QCommonStyle>
+ #include <QContextMenuEvent>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QLabel>
+ #include <QMenu>
+ #include <QMouseEvent>
+diff --git a/src/plugins/render/notes/NotesItem.cpp b/src/plugins/render/notes/NotesItem.cpp
+index 9d0961f..0c9fe99 100644
+--- a/src/plugins/render/notes/NotesItem.cpp
++++ b/src/plugins/render/notes/NotesItem.cpp
+@@ -9,6 +9,7 @@
+ #include "MarbleDirs.h"
+ 
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QRect>
+ 
+ using namespace Marble;
+diff --git a/src/plugins/render/postalcode/PostalCodeItem.cpp b/src/plugins/render/postalcode/PostalCodeItem.cpp
+index 772c0b2..0ff7957 100644
+--- a/src/plugins/render/postalcode/PostalCodeItem.cpp
++++ b/src/plugins/render/postalcode/PostalCodeItem.cpp
+@@ -17,6 +17,7 @@
+ // Qt
+ #include <QFontMetrics>
+ #include <QPainter>
++#include <QPainterPath>
+ 
+ using namespace Marble;
+ 
+diff --git a/src/plugins/render/progress/ProgressFloatItem.cpp b/src/plugins/render/progress/ProgressFloatItem.cpp
+index a465857..6e2452c 100644
+--- a/src/plugins/render/progress/ProgressFloatItem.cpp
++++ b/src/plugins/render/progress/ProgressFloatItem.cpp
+@@ -22,6 +22,7 @@
+ #include <QColor>
+ #include <QPaintDevice>
+ #include <QPainter>
++#include <QPainterPath>
+ 
+ namespace Marble
+ {
+diff --git a/src/plugins/render/satellites/SatellitesPlugin.cpp b/src/plugins/render/satellites/SatellitesPlugin.cpp
+index 04d8321..0a43d24 100644
+--- a/src/plugins/render/satellites/SatellitesPlugin.cpp
++++ b/src/plugins/render/satellites/SatellitesPlugin.cpp
+@@ -25,6 +25,7 @@
+ 
+ #include "ui_SatellitesConfigDialog.h"
+ 
++#include <QAction>
+ #include <QUrl>
+ #include <QMouseEvent>
+ 
+diff --git a/src/plugins/render/speedometer/Speedometer.cpp b/src/plugins/render/speedometer/Speedometer.cpp
+index 6e9c532..f40a174 100644
+--- a/src/plugins/render/speedometer/Speedometer.cpp
++++ b/src/plugins/render/speedometer/Speedometer.cpp
+@@ -19,6 +19,8 @@
+ #include "MarbleGraphicsGridLayout.h"
+ #include "ViewportParams.h"
+ 
++#include <QIcon>
++
+ namespace Marble
+ {
+ 
+diff --git a/src/plugins/render/stars/StarsPlugin.cpp b/src/plugins/render/stars/StarsPlugin.cpp
+index 6599545..482680f 100644
+--- a/src/plugins/render/stars/StarsPlugin.cpp
++++ b/src/plugins/render/stars/StarsPlugin.cpp
+@@ -19,6 +19,8 @@
+ #include <QContextMenuEvent>
+ #include <QMenu>
+ #include <QColorDialog>
++#include <QPainter>
++#include <QPainterPath>
+ #include <qmath.h>
+ 
+ #include "MarbleClock.h"
