@@ -110,13 +110,14 @@
 
 (define* (customize-site version)
   "Generate a install-sitecustomize.py phase, using VERSION."
-  `(lambda* (#:key inputs outputs #:allow-other-keys)
+  `(lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
      (let* ((out (assoc-ref outputs "out"))
             (site-packages (string-append
                             out "/lib/python"
                             ,(version-major+minor version)
                             "/site-packages"))
-            (sitecustomize.py (assoc-ref inputs "sitecustomize.py"))
+            (sitecustomize.py (assoc-ref (or native-inputs inputs)
+                                         "sitecustomize.py"))
             (dest (string-append site-packages "/sitecustomize.py")))
        (mkdir-p site-packages)
        (copy-file sitecustomize.py dest)
