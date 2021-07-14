@@ -1570,8 +1570,8 @@ and understanding different BRDFs (and other component functions).")
     (synopsis "High-quality 2D graphics rendering engine for C++")
     (description
      "Anti-Grain Geometry is a high quality rendering engine written in C++.
-It supports sub-pixel resolutions and anti-aliasing.  It is also library for
-rendering SVG graphics.")
+It supports sub-pixel resolutions and anti-aliasing.  It is also a library for
+rendering @acronym{SVG, Scalable Vector Graphics}.")
     (license license:gpl2+)))
 
 (define-public python-pastel
