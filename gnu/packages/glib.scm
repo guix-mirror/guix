@@ -77,6 +77,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
+  #:use-module (srfi srfi-26)
   #:use-module ((srfi srfi-1) #:hide (zip))
 
   ;; Export variables up-front to allow circular dependency with the 'xorg'
@@ -200,7 +202,15 @@ shared NFS home directories.")
                "static"                 ;static libraries
                "bin"))                  ;executables; depends on Python
     (arguments
-     `(#:disallowed-references (,tzdata-for-tests)
+     `(#:disallowed-references
+       (,tzdata-for-tests
+        ;; Verify glib-mkenums, gtester, ... use the cross-compiled
+        ;; python.
+        ,@(if (%current-target-system)
+              (map (cut gexp-input <> #:native? #t)
+                   `(,(this-package-native-input "python")
+                     ,(this-package-native-input "python-wrapper")))
+              '()))
        #:configure-flags '("--default-library=both"
                            "-Dman=true"
                            "-Dselinux=disabled")
