@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Arthur Margerit <ruhtra.mar@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -223,14 +224,19 @@ shared NFS home directories.")
              #t))
          ;; Python references are not being patched in patch-phase of build,
          ;; despite using python-wrapper as input. So we patch them manually.
+         ;;
+         ;; These python scripts are both used during build and installed,
+         ;; so at first, use a python from 'native-inputs', not 'inputs'. When
+         ;; cross-compiling, the 'patch-shebangs' phase will replace
+         ;; the native python with a python from 'inputs'.
          (add-after 'unpack 'patch-python-references
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (substitute* '("gio/gdbus-2.0/codegen/gdbus-codegen.in"
                             "glib/gtester-report.in"
                             "gobject/glib-genmarshal.in"
                             "gobject/glib-mkenums.in")
                (("@PYTHON@")
-                (string-append (assoc-ref inputs "python")
+                (string-append (assoc-ref (or native-inputs inputs) "python")
                                "/bin/python"
                                ,(version-major+minor
                                  (package-version python)))))
@@ -293,6 +299,13 @@ shared NFS home directories.")
        ("xsltproc" ,libxslt)))
     (inputs
      `(("bash-completion" ,bash-completion)
+       ;; "python", "python-wrapper" and "bash-minimal"
+       ;; are for the 'patch-shebangs' phase, to make
+       ;; sure the installed scripts end up with a correct shebang
+       ;; when cross-compiling.
+       ("python" ,python)
+       ("python-wrapper" ,python-wrapper)
+       ("bash-minimal" ,bash-minimal)
        ("dbus" ,dbus)
        ("libelf" ,libelf)))
     (propagated-inputs
