@@ -311,6 +311,31 @@ required structures.")
 (define-public guile3.0-gnutls
   (deprecated-package "guile3.0-gnutls" gnutls))
 
+(define (target->openssl-target target)
+  "Return the value to set CONFIGURE_TARGET_ARCH to when cross-compiling
+OpenSSL for TARGET."
+  ;; Keep this code outside the build code,
+  ;; such that new targets can be added
+  ;; without causing rebuilds for other targets.
+  (cond ((string-prefix? "i586" target)
+         "hurd-x86")
+        ((string-prefix? "i686" target)
+         "linux-x86")
+        ((string-prefix? "x86_64" target)
+         "linux-x86_64")
+        ((string-prefix? "mips64el" target)
+         "linux-mips64")
+        ((string-prefix? "arm" target)
+         "linux-armv4")
+        ((string-prefix? "aarch64" target)
+         "linux-aarch64")
+        ((string-prefix? "powerpc64le" target)
+         "linux-ppc64le")
+        ((string-prefix? "powerpc64" target)
+         "linux-ppc64")
+        ((string-prefix? "powerpc" target)
+         "linux-ppc")))
+
 (define-public openssl
   (package
     (name "openssl")
@@ -349,25 +374,8 @@ required structures.")
                      (lambda* (#:key target #:allow-other-keys)
                        (setenv "CROSS_COMPILE" (string-append target "-"))
                        (setenv "CONFIGURE_TARGET_ARCH"
-                               (cond
-                                ((string-prefix? "i586" target)
-                                 "hurd-x86")
-                                ((string-prefix? "i686" target)
-                                 "linux-x86")
-                                ((string-prefix? "x86_64" target)
-                                 "linux-x86_64")
-                                ((string-prefix? "mips64el" target)
-                                 "linux-mips64")
-                                ((string-prefix? "arm" target)
-                                 "linux-armv4")
-                                ((string-prefix? "aarch64" target)
-                                 "linux-aarch64")
-                                ((string-prefix? "powerpc64le" target)
-                                 "linux-ppc64le")
-                                ((string-prefix? "powerpc64" target)
-                                 "linux-ppc64")
-                                ((string-prefix? "powerpc" target)
-                                 "linux-ppc"))))))
+                               #$(target->openssl-target
+                                  (%current-target-system))))))
                 #~())
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
