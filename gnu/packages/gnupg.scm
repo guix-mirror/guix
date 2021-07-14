@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@posteo.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public libgpg-error
@@ -94,27 +96,37 @@
     (build-system gnu-build-system)
     (arguments
      (if (%current-target-system)
-         `(#:modules ((ice-9 match)
-                      (guix build gnu-build-system)
+         `(#:modules ((guix build gnu-build-system)
                       (guix build utils))
            #:phases
            (modify-phases %standard-phases
              ;; When cross-compiling, some platform specific properties cannot
              ;; be detected. Create a symlink to the appropriate platform
-             ;; file. See Cross-Compiling section at:
+             ;; file if required. Note that these platform files depend on
+             ;; both the operating system and architecture!
+             ;;
+             ;; See Cross-Compiling section at:
              ;; https://github.com/gpg/libgpg-error/blob/master/README
              (add-after 'unpack 'cross-symlinks
-               (lambda* (#:key target inputs #:allow-other-keys)
-                 (let ((triplet
-                        (match (string-take target
-                                            (string-index target #\-))
-                          ("armhf" "arm-unknown-linux-gnueabi")
-                          ("mips64el" "mips-unknown-linux-gnu")
-                          (x
-                           (string-append x "-unknown-linux-gnu")))))
-                   (symlink
-                    (string-append "lock-obj-pub." triplet ".h")
-                    "src/syscfg/lock-obj-pub.linux-gnu.h"))))))
+               (lambda _
+                 (define (link triplet source)
+                   (symlink (string-append "lock-obj-pub." triplet ".h")
+                            (string-append "src/syscfg/lock-obj-pub."
+                                           source ".h")))
+                 ,(let* ((target (%current-target-system))
+                         (architecture
+                          (string-take target (string-index target #\-))))
+                    (cond ((target-linux? target)
+                           (match architecture
+                             ("armhf"
+                              `(link "arm-unknown-linux-gnueabi" "linux-gnu"))
+                             ("mips64el"
+                              `(link "mips-unknown-linux-gnu" "linux-gnu"))
+                             ;; Don't always link to the "linux-gnu"
+                             ;; configuration, as this is not correct for
+                             ;; all architectures.
+                             (_ #t)))
+                          (#t #t)))))))
          '()))
     (native-inputs `(("gettext" ,gettext-minimal)))
     (home-page "https://gnupg.org")
