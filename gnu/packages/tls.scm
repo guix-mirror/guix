@@ -413,16 +413,16 @@ required structures.")
                          (find-files lib "\\.a$")))))
          (add-after 'install 'move-extra-documentation
            (lambda _
-             ;; Move man3 pages and full HTML documentation to "doc".
+             ;; Move man pages and full HTML documentation to "doc".
              (let* ((out    #$output)
-                    (man3   (string-append out "/share/man/man3"))
-                    (html (string-append out "/share/doc/openssl"))
+                    (man    (string-append out "/share/man"))
+                    (html   (string-append out "/share/doc/openssl"))
                     (doc    #$output:doc)
-                    (man-target (string-append doc "/share/man/man3"))
+                    (man-target (string-append doc "/share/man"))
                     (html-target (string-append doc "/share/doc/openssl")))
-               (mkdir-p (dirname man3-target))
+               (mkdir-p (dirname man-target))
                (mkdir-p (dirname html-target))
-               (rename-file man3 man-target)
+               (rename-file man man-target)
                (rename-file html html-target))))
          (add-after
              'install 'remove-miscellany
