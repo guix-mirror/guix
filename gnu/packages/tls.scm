@@ -40,6 +40,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
@@ -339,33 +340,34 @@ required structures.")
        ;; so we explicitly disallow it here.
        #:disallowed-references ,(list (canonical-package perl))
        #:phases
+       ,#~
        (modify-phases %standard-phases
-         ,@(if (%current-target-system)
-               '((add-before
-                     'configure 'set-cross-compile
-                   (lambda* (#:key target outputs #:allow-other-keys)
-                     (setenv "CROSS_COMPILE" (string-append target "-"))
-                     (setenv "CONFIGURE_TARGET_ARCH"
-                             (cond
-                              ((string-prefix? "i586" target)
-                               "hurd-x86")
-                              ((string-prefix? "i686" target)
-                               "linux-x86")
-                              ((string-prefix? "x86_64" target)
-                               "linux-x86_64")
-                              ((string-prefix? "mips64el" target)
-                               "linux-mips64")
-                              ((string-prefix? "arm" target)
-                               "linux-armv4")
-                              ((string-prefix? "aarch64" target)
-                               "linux-aarch64")
-                              ((string-prefix? "powerpc64le" target)
-                               "linux-ppc64le")
-                              ((string-prefix? "powerpc64" target)
-                               "linux-ppc64")
-                              ((string-prefix? "powerpc" target)
-                               "linux-ppc"))))))
-               '())
+         #$@(if (%current-target-system)
+                #~((add-before
+                       'configure 'set-cross-compile
+                     (lambda* (#:key target outputs #:allow-other-keys)
+                       (setenv "CROSS_COMPILE" (string-append target "-"))
+                       (setenv "CONFIGURE_TARGET_ARCH"
+                               (cond
+                                ((string-prefix? "i586" target)
+                                 "hurd-x86")
+                                ((string-prefix? "i686" target)
+                                 "linux-x86")
+                                ((string-prefix? "x86_64" target)
+                                 "linux-x86_64")
+                                ((string-prefix? "mips64el" target)
+                                 "linux-mips64")
+                                ((string-prefix? "arm" target)
+                                 "linux-armv4")
+                                ((string-prefix? "aarch64" target)
+                                 "linux-aarch64")
+                                ((string-prefix? "powerpc64le" target)
+                                 "linux-ppc64le")
+                                ((string-prefix? "powerpc64" target)
+                                 "linux-ppc64")
+                                ((string-prefix? "powerpc" target)
+                                 "linux-ppc"))))))
+                #~())
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -376,9 +378,9 @@ required structures.")
                   (string-append (assoc-ref %build-inputs "coreutils")
                                  "/bin/env")))
                (apply
-                invoke ,@(if (%current-target-system)
-                             '("./Configure")
-                             '("./config"))
+                invoke #$@(if (%current-target-system)
+                              #~("./Configure")
+                              #~("./config"))
                 "shared"    ;build shared libraries
                 "--libdir=lib"
 
@@ -387,13 +389,13 @@ required structures.")
                 ;; conventional.
                 (string-append "--openssldir=" out
                                "/share/openssl-"
-                               ,(package-version this-package))
+                               #$(package-version this-package))
 
                 (string-append "--prefix=" out)
                 (string-append "-Wl,-rpath," lib)
-                ,@(if (%current-target-system)
-                      '((getenv "CONFIGURE_TARGET_ARCH"))
-                      '())
+                #$@(if (%current-target-system)
+                       #~((getenv "CONFIGURE_TARGET_ARCH"))
+                       #~())
                 configure-flags)
                ;; Output the configure variables.
                (invoke "perl" "configdata.pm" "--dump"))))
@@ -428,7 +430,7 @@ required structures.")
              ;; scripts.  Remove them to avoid retaining a reference on Perl.
              (let ((out (assoc-ref outputs "out")))
                (delete-file-recursively (string-append out "/share/openssl-"
-                                                       ,(package-version this-package)
+                                                       #$(package-version this-package)
                                                        "/misc"))))))))
     (native-search-paths
      (list (search-path-specification
@@ -473,7 +475,7 @@ required structures.")
        ;; Parallel build is not supported in 1.0.x.
        ((#:parallel-build? _ #f) #f)
        ((#:phases phases)
-        `(modify-phases ,phases
+       #~(modify-phases #$phases
            (add-before 'patch-source-shebangs 'patch-tests
              (lambda* (#:key inputs native-inputs #:allow-other-keys)
                (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
@@ -496,9 +498,9 @@ required structures.")
 	     ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
 	     (lambda* (#:key outputs #:allow-other-keys)
 	       (let ((out (assoc-ref outputs "out")))
-		 (invoke ,@(if (%current-target-system)
-			       '("./Configure")
-			       '("./config"))
+		 (invoke #$@(if (%current-target-system)
+			        #~("./Configure")
+			        #~("./config"))
 			 "shared"                 ;build shared libraries
 			 "--libdir=lib"
 
@@ -506,12 +508,12 @@ required structures.")
 			 ;; PREFIX/ssl.  Change that to something more
 			 ;; conventional.
 			 (string-append "--openssldir=" out
-					"/share/openssl-" ,version)
+					"/share/openssl-" #$version)
 
 			 (string-append "--prefix=" out)
-			 ,@(if (%current-target-system)
-			       '((getenv "CONFIGURE_TARGET_ARCH"))
-			       '())))))
+			 #$@(if (%current-target-system)
+			        '((getenv "CONFIGURE_TARGET_ARCH"))
+			        '())))))
         (delete 'move-extra-documentation)
         (add-after 'install 'move-man3-pages
           (lambda* (#:key outputs #:allow-other-keys)
@@ -536,7 +538,7 @@ required structures.")
                ;; scripts.  Remove them to avoid retaining a reference on Perl.
                (let ((out (assoc-ref outputs "out")))
                  (delete-file-recursively (string-append out "/share/openssl-"
-                                                         ,version "/misc"))
+                                                         #$version "/misc"))
                  #t)))))))))
 
 (define-public libressl
