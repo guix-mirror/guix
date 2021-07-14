@@ -369,7 +369,7 @@ sys_create_build_user()
 
     if getent group kvm > /dev/null; then
         _msg "${INF}group kvm exists and build users will be added to it"
-	local KVMGROUP=,kvm
+        local KVMGROUP=,kvm
     fi
 
     for i in $(seq -w 1 10); do
