@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1863,6 +1864,39 @@
 (test-equal "specification->location"
   (package-location (specification->package "guile@2"))
   (specification->location "guile@2"))
+
+(test-eq "this-package-input, exists"
+  hello
+  (package-arguments
+   (dummy-package "a"
+     (inputs `(("hello" ,hello)))
+     (arguments (this-package-input "hello")))))
+
+(test-eq "this-package-input, exists in propagated-inputs"
+  hello
+  (package-arguments
+   (dummy-package "a"
+     (propagated-inputs `(("hello" ,hello)))
+     (arguments (this-package-input "hello")))))
+
+(test-eq "this-package-input, does not exist"
+  #f
+  (package-arguments
+   (dummy-package "a"
+     (arguments (this-package-input "hello")))))
+
+(test-eq "this-package-native-input, exists"
+  hello
+  (package-arguments
+   (dummy-package "a"
+     (native-inputs `(("hello" ,hello)))
+     (arguments (this-package-native-input "hello")))))
+
+(test-eq "this-package-native-input, does not exists"
+  #f
+  (package-arguments
+   (dummy-package "a"
+     (arguments (this-package-native-input "hello")))))
 
 (test-end "packages")
 

@@ -109,6 +109,9 @@
             deprecated-package
             package-field-location
 
+            this-package-input
+            this-package-native-input
+
             lookup-package-input
             lookup-package-native-input
             lookup-package-propagated-input
@@ -547,6 +550,32 @@ object."
         #f)))
     (_ #f)))
 
+(define (package-input package name)
+  "Return the package input NAME of PACKAGE--i.e., an input
+from the ‘inputs’ or ‘propagated-inputs’ field.  Native inputs are not
+considered.  If this input does not exist, return #f instead."
+  (and=> (or (assoc-ref (package-inputs package) name)
+             (assoc-ref (package-propagated-inputs package) name))
+         car))
+
+(define (package-native-input package name)
+  "Return the native package input NAME of PACKAGE--i.e., an input
+from the ‘native-inputs’ field. If this native input does not exist,
+return #f instead."
+  (and=> (assoc-ref (package-native-inputs package) name)
+         car))
+
+(define-syntax-rule (this-package-input name)
+  "Return the input NAME of the package being defined--i.e., an input
+from the ‘inputs’ or ‘propagated-inputs’ field.  Native inputs are not
+considered.  If this input does not exist, return #f instead."
+  (package-input this-package name))
+
+(define-syntax-rule (this-package-native-input name)
+  "Return the native package input NAME of the package being defined--i.e.,
+an input from the ‘native-inputs’ field.  If this native input does not
+exist, return #f instead."
+  (package-native-input this-package name))
 
 ;; Error conditions.
 
