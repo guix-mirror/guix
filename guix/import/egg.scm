@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,12 +247,9 @@ not work."
           (let ((name (prettify-name (extract-name name))))
             ;; Dependencies are sometimes specified as symbols and sometimes
             ;; as strings
-            (list (string-append (if system? "" package-name-prefix)
-                                 name)
-                  (list 'unquote
-                        (string->symbol (string-append
-                                         (if system? "" package-name-prefix)
-                                         name))))))
+            (string->symbol (string-append
+                             (if system? "" package-name-prefix)
+                             name))))
 
         (define egg-propagated-inputs
           (let ((dependencies (assoc-ref egg-content 'dependencies)))
@@ -290,7 +288,7 @@ not work."
              '())
             ((inputs ...)
              (list (list input-type
-                         (list 'quasiquote inputs))))))
+                         `(list ,@inputs))))))
 
         (values
          `(package
@@ -318,7 +316,7 @@ not work."
             (license ,egg-licenses))
          (filter (lambda (name)
                    (not (member name '("srfi-4"))))
-                 (map (compose guix-name->egg-name first)
+                 (map (compose guix-name->egg-name symbol->string)
                       (append egg-propagated-inputs
                               egg-native-inputs)))))))
 
