@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -178,9 +179,7 @@ library
         ('base32
          (? string? hash)))))
     ('build-system 'haskell-build-system)
-    ('inputs
-     ('quasiquote
-      (("ghc-http" ('unquote 'ghc-http)))))
+    ('inputs ('list 'ghc-http))
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))
@@ -223,13 +222,8 @@ library
         ('base32
          (? string? hash)))))
     ('build-system 'haskell-build-system)
-    ('inputs
-     ('quasiquote
-      (("ghc-b" ('unquote 'ghc-b))
-       ("ghc-http" ('unquote 'ghc-http)))))
-    ('native-inputs
-     ('quasiquote
-      (("ghc-haskell-gi" ('unquote 'ghc-haskell-gi)))))
+    ('inputs ('list 'ghc-b 'ghc-http))
+    ('native-inputs ('list 'ghc-haskell-gi))
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))
@@ -353,9 +347,7 @@ executable cabal
         ('base32
          (? string? hash)))))
     ('build-system 'haskell-build-system)
-    ('inputs
-     ('quasiquote
-      (("ghc-http" ('unquote 'ghc-http)))))
+    ('inputs ('list 'ghc-http))
     ('arguments
      ('quasiquote
       ('#:cabal-revision
@@ -419,9 +411,7 @@ executable cabal
         ('base32
          (? string? hash)))))
     ('build-system 'haskell-build-system)
-    ('inputs
-     ('quasiquote
-      (("ghc-http" ('unquote 'ghc-http)))))
+    ('inputs ('list 'ghc-http))
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))

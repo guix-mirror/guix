@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -265,14 +266,12 @@ the hash of the Cabal file."
      hackage-dependencies))
 
   (define dependencies
-    (map (lambda (name)
-           (list name (list 'unquote (string->symbol name))))
+    (map string->symbol
          (map hackage-name->package-name
               hackage-dependencies)))
 
   (define native-dependencies
-    (map (lambda (name)
-           (list name (list 'unquote (string->symbol name))))
+    (map string->symbol
          (map hackage-name->package-name
               hackage-native-dependencies)))
   
@@ -282,8 +281,8 @@ the hash of the Cabal file."
        '())
       ((inputs ...)
        (list (list input-type
-                   (list 'quasiquote inputs))))))
-  
+                   `(list ,@inputs))))))
+
   (define (maybe-arguments)
     (match (append (if (not include-test-dependencies?)
                        '(#:tests? #f)
