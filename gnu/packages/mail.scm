@@ -85,6 +85,8 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -113,11 +115,13 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
@@ -1602,7 +1606,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.18.0")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
@@ -1610,15 +1614,12 @@ compresses it.")
         (string-append "https://www.claws-mail.org/releases/claws-mail-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1fz6xh4va90w69a0b457cy9khcm92vsmi75p9vabpcsbdgk1jn6b"))))
+        (base32 "0xg41rxxq2q5vhjzbh8p12s248kcljk6g7y0m6raq7nrllkbvwja"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
        (list
-        "--enable-gnutls"
-        "--enable-pgpmime-plugin"
-        "--enable-enchant"
-        "--enable-ldap")
+        "--disable-static")
        #:make-flags
        ;; Disable updating icon cache since it's done by the profile hook.
        ;; Conflict with other packages in the profile would be inevitable
@@ -1634,30 +1635,54 @@ compresses it.")
                 (string-append (assoc-ref inputs "mime-info")
                                "/share/mime/globs"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext-minimal" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("bogofilter" ,bogofilter)
+       ("cairo" ,cairo)
+       ("compface" ,compface)
        ("curl" ,curl)
+       ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("enchant" ,enchant)
        ("expat" ,expat)
+       ("fontconfig" ,fontconfig)
+       ("gdk-pixbuf+svg" ,gdk-pixbuf+svg)
        ("ghostscript" ,ghostscript)
+       ("glib" ,glib)
        ("gnupg" ,gnupg)
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
-       ("gtk" ,gtk+-2)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("gumbo-parser" ,gumbo-parser)
        ("libarchive" ,libarchive)
        ("libcanberra" ,libcanberra)
        ("libetpan" ,libetpan)
+       ("libgdata" ,libgdata)
        ("libical" ,libical)
+       ("libindicator" ,libindicator)
        ("libnotify" ,libnotify)
+       ("librsvg" ,librsvg)
        ("libsm" ,libsm)
+       ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("mime-info" ,shared-mime-info)
+       ("nettle" ,nettle)
+       ("network-manager" ,network-manager)
+       ("openldap" ,openldap)
        ("perl" ,perl)
-       ("python-2" ,python-2)
-       ("startup-notification" ,startup-notification)))
+       ("poppler" ,poppler)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("startup-notification" ,startup-notification)
+       ("ytnef" ,ytnef)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (synopsis "GTK-based Email client")
     (description "Claws-Mail is an email client (and news reader) based on GTK+.
 The appearance and interface are designed to be familiar to new users coming
