@@ -174,8 +174,7 @@
                        "Lib/test/test_import.py"
                        "Lib/test/test_shutil.py"
                        "Lib/test/test_socket.py"
-                       "Lib/test/test_subprocess.py"))
-           #t))))
+                       "Lib/test/test_subprocess.py"))))))
     (outputs '("out"
                "tk"                     ;tkinter; adds 50 MiB to the closure
                "idle"))                 ;programming environment; weighs 5MB
@@ -243,15 +242,13 @@
                                     "Lib/distutils/tests/test_spawn.py"
                                     "Lib/test/support/__init__.py"
                                     "Lib/test/test_subprocess.py"))
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          ,@(if (hurd-system?)
                `((add-before 'build 'patch-regen-for-hurd
                    (lambda* (#:key inputs #:allow-other-keys)
                      (let ((libc (assoc-ref inputs "libc")))
                        (substitute* "Lib/plat-generic/regen"
-                         (("/usr/include/") (string-append libc "/include/")))
-                       #t))))
+                         (("/usr/include/") (string-append libc "/include/")))))))
                '())
          (add-before 'configure 'do-not-record-configure-flags
            (lambda* (#:key configure-flags #:allow-other-keys)
@@ -267,13 +264,11 @@
                 (format #f "CONFIG_ARGS='~a'\n"
                         (if (member "--with-system-ffi" configure-flags)
                             "--with-system-ffi"
-                            ""))))
-             #t))
+                            ""))))))
          (add-before 'check 'pre-check
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
-             (setenv "HOME" (getcwd))
-             #t))
+             (setenv "HOME" (getcwd))))
          (add-after 'unpack 'set-source-file-times-to-1980
            ;; XXX One of the tests uses a ZIP library to pack up some of the
            ;; source tree, and fails with "ZIP does not support timestamps
@@ -283,8 +278,7 @@
              (let ((circa-1980 (* 10 366 24 60 60)))
                (ftw "." (lambda (file stat flag)
                           (utime file circa-1980 circa-1980)
-                          #t))
-               #t)))
+                          #t)))))
          (add-after 'install 'remove-tests
            ;; Remove 25 MiB of unneeded unit tests.  Keep test_support.*
            ;; because these files are used by some libraries out there.
@@ -339,8 +333,7 @@
                 ;; Python 2 has a single file extension (.pyo) for the chosen
                 ;; level of optimization, so it doesn't make sense to byte
                 ;; compile with more than one level.
-                (list '() '("-OO")))
-               #t)))
+                (list '() '("-OO"))))))
          (add-after 'install 'move-tk-inter
            (lambda* (#:key outputs #:allow-other-keys)
              ;; When Tkinter support is built move it to a separate output so
@@ -360,8 +353,7 @@
                                      len)
                                     "/site-packages")))
                       (install-file tkinter.so target)
-                      (delete-file tkinter.so)))))
-               #t)))
+                      (delete-file tkinter.so))))))))
          (add-after 'install 'move-idle
            (lambda* (#:key outputs #:allow-other-keys)
              ;; when idle is built, move it to a separate output to save some
@@ -460,8 +452,7 @@ data types.")
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
                   ;; Delete windows binaries
                   (for-each delete-file
-                            (find-files "Lib/distutils/command" "\\.exe$"))
-                  #t))))
+                            (find-files "Lib/distutils/command" "\\.exe$"))))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:make-flags _)
@@ -658,8 +649,7 @@ for more information.")))
                     (lambda ()
                       (format #t "#!~a~%" bash)
                       (format #t "exec \"~a\" \"$@\"~%" old)
-                      (chmod new #o755)
-                      #t)))))))
+                      (chmod new #o755))))))))
     (synopsis "Wrapper for the Python 3 commands")
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
