@@ -402,10 +402,11 @@ handling for GTK+-2.x.")
                  (add-after 'configure 'disable-layout-test
                    (lambda _
                      ;; This test requires that fontconfig uses bitmap fonts
-                     ;; such as "gs-fonts"; however providing such a package
-                     ;; alone is not enough, as the requirement comes from
-                     ;; deeper in the font stack.  Since this version of Pango
-                     ;; is only used for librsvg, simply disable the test.
+                     ;; such as "font-ghostscript"; however providing such a
+                     ;; package alone is not enough, as the requirement comes
+                     ;; from deeper in the font stack.  Since this version of
+                     ;; Pango is only used for librsvg, simply disable the
+                     ;; test.
                      (substitute* "tests/Makefile"
                        (("test-layout\\$\\(EXEEXT\\)") ""))
                      #t)))))))

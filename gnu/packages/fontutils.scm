@@ -341,8 +341,9 @@ Font Format (WOFF).")
                           ("freetype" ,freetype)
                           ("libuuid" ,util-linux "lib")))
      (inputs
-      ;; We use to use 'gs-fonts' but they are not recognized by newer versions
-      ;; of Pango, causing many applications to fail to find fonts otherwise.
+      ;; We use to use 'font-ghostscript' but they are not recognized by newer
+      ;; versions of Pango, causing many applications to fail to find fonts
+      ;; otherwise.
       `(("font-dejavu" ,font-dejavu)))
      (native-inputs
       `(("gperf" ,gperf)

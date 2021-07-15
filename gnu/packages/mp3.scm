@@ -480,7 +480,7 @@ use with CD-recording software).")
             (patches (search-patches "ripperx-missing-file.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
-    `(("gs-fonts" ,gs-fonts)
+    `(("font-ghostscript" ,font-ghostscript)
       ("cdparanoia" ,cdparanoia)
       ("flac" ,flac)
       ("lame" ,lame)

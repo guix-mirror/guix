@@ -204,7 +204,7 @@ printing, and psresize, for adjusting page sizes.")
              "--enable-dynamic"
              "--disable-compile-inits"
              (string-append "--with-fontpath="
-                            (assoc-ref %build-inputs "gs-fonts")
+                            (assoc-ref %build-inputs "font-ghostscript")
                             "/share/fonts/type1/ghostscript")
 
              ,@(if (%current-target-system)
@@ -278,7 +278,7 @@ printing, and psresize, for adjusting page sizes.")
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("gs-fonts" ,gs-fonts)
+       ("font-ghostscript" ,font-ghostscript)
        ("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg-turbo)
        ("libpaper" ,libpaper)
@@ -343,9 +343,9 @@ architecture.")
    (license license:expat)
    (home-page (package-home-page ghostscript))))
 
-(define-public gs-fonts
+(define-public font-ghostscript
   (package
-   (name "gs-fonts")
+   (name "font-ghostscript")
    (version "8.11")
    (source (origin
             (method url-fetch)
@@ -383,6 +383,9 @@ architecture.")
 Ghostscript.  It currently includes the 35 standard PostScript fonts.")
    (license license:gpl2)
    (home-page "https://sourceforge.net/projects/gs-fonts/")))
+
+(define-public gs-fonts
+  (deprecated-package "gs-fonts" font-ghostscript))
 
 (define-public libspectre
   (package

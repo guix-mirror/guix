@@ -1893,12 +1893,12 @@ themselves.
 @subsection X11 Fonts
 
 @cindex fonts
-The majority of graphical applications use Fontconfig to locate and
-load fonts and perform X11-client-side rendering.  The @code{fontconfig}
-package in Guix looks for fonts in @file{$HOME/.guix-profile}
-by default.  Thus, to allow graphical applications installed with Guix
-to display fonts, you have to install fonts with Guix as well.
-Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
+The majority of graphical applications use Fontconfig to locate and load
+fonts and perform X11-client-side rendering.  The @code{fontconfig}
+package in Guix looks for fonts in @file{$HOME/.guix-profile} by
+default.  Thus, to allow graphical applications installed with Guix to
+display fonts, you have to install fonts with Guix as well.  Essential
+font packages include @code{font-ghostscript}, @code{font-dejavu}, and
 @code{font-gnu-freefont}.
 
 @cindex @code{fc-cache}
