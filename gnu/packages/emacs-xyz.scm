@@ -12297,6 +12297,34 @@ a visual interface, reduce overhead of completion by using statistic method,
 extensibility.")
     (license license:gpl3+)))
 
+(define-public emacs-autocrypt
+  (let ((commit "5b55f8d37545e9c441788627c17e350d7edf4055")
+        (revision "0"))
+    (package
+      (name "emacs-autocrypt")
+      (version (git-version "0.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~zge/autocrypt")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0b06xnjkgwjpxl96mdi674pmvdaiwncifi1a30wxhl1dwr7kr084"))))
+      (build-system emacs-build-system)
+      (home-page "https://git.sr.ht/~zge/autocrypt")
+      (synopsis "Autocrypt implementation for Emacs")
+      (description "@code{emacs-autocrypt} is an implementation of
+Autocrypt (@url{https://autocrypt.org/}) for various Emacs MUAs.  Autocrypt is
+a cryptographic protocol for email clients aiming to simplify key exchange and
+encryption.
+
+Run @code{M-x autocrypt-create-account} to initialize an autocrypt key, and
+add @code{autocrypt-mode} to your MUA's hooks (@code{gnus-mode-hook},
+@code{message-mode-hook}, ...) to activate its usage.")
+      (license license:cc0))))
+
 (define-public emacs-nginx-mode
   (package
     (name "emacs-nginx-mode")
