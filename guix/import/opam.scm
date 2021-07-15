@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -269,10 +270,8 @@ path to the repository."
     (map dependency->native-input depends)))
 
 (define (dependency-list->inputs lst)
-  (map
-    (lambda (dependency)
-      (list dependency (list 'unquote (string->symbol dependency))))
-    (ocaml-names->guix-names lst)))
+  (map string->symbol
+       (ocaml-names->guix-names lst)))
 
 (define* (opam-fetch name #:optional (repository (get-opam-repository)))
   (and-let* ((repository repository)
@@ -325,10 +324,10 @@ or #f on failure."
                                           'ocaml-build-system))
                        ,@(if (null? inputs)
                            '()
-                           `((propagated-inputs ,(list 'quasiquote inputs))))
+                           `((propagated-inputs (list ,@inputs))))
                        ,@(if (null? native-inputs)
                            '()
-                           `((native-inputs ,(list 'quasiquote native-inputs))))
+                           `((native-inputs (list ,@native-inputs))))
                        ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
                            '()
                            `((properties
