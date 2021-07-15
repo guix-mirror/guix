@@ -10227,7 +10227,7 @@ Similarly, the following command builds all the available packages:
 
 @example
 guix build --quiet --keep-going \
-  $(guix package -A | cut -f1,2 --output-delimiter=@@)
+  $(guix package -A | awk '@{ print $1 "@@" $2 @}')
 @end example
 
 @var{package-or-derivation} may be either the name of a package found in
