@@ -690,7 +690,6 @@ the store.")
             (patches (search-patches "glibc-ldd-powerpc.patch"
                                      "glibc-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
-                                     "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
