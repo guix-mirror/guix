@@ -1619,7 +1619,8 @@ compresses it.")
     (arguments
      `(#:configure-flags
        (list
-        "--disable-static")
+        "--disable-static"
+        "--enable-demo-plugin")
        #:make-flags
        ;; Disable updating icon cache since it's done by the profile hook.
        ;; Conflict with other packages in the profile would be inevitable
@@ -1636,6 +1637,7 @@ compresses it.")
                                "/share/mime/globs"))))))))
     (native-inputs
      `(("bison" ,bison)
+       ;;("docbook-utils" ,docbook-utils)
        ("flex" ,flex)
        ("gettext-minimal" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
@@ -1660,6 +1662,7 @@ compresses it.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("gumbo-parser" ,gumbo-parser)
+       ;;("j-pilot" ,j-pilot)
        ("libarchive" ,libarchive)
        ("libcanberra" ,libcanberra)
        ("libetpan" ,libetpan)
@@ -1680,6 +1683,7 @@ compresses it.")
        ("python-pygobject" ,python-pygobject)
        ("shared-mime-info" ,shared-mime-info)
        ("startup-notification" ,startup-notification)
+       ;;("webkitgtk" ,webkitgtk)
        ("ytnef" ,ytnef)))
     (propagated-inputs
      `(("dconf" ,dconf)))
