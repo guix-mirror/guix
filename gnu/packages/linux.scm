@@ -1651,6 +1651,31 @@ at login.  Local and dynamic reconfiguration are its key features.")
 ;;; Miscellaneous.
 ;;;
 
+(define-public powercap
+  (package
+    (name "powercap")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/powercap/powercap")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hp2i1d195v0n4jgvgaymkxlpgyhn07ic273gkda95lz65cdfcgm"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (home-page "https://github.com/powercap/powercap")
+    (synopsis "Utilities for accessing the powercap Linux kernel feature")
+    (description "This package contains utilities for accessing the powercap
+Linux kernel feature through sysfs.  It includes an implementation for working
+with Intel @acronym{RAPL, Running Average Power Limit}.
+It provides the commands @code{powercap-info} and @code{powercap-set}.")
+    (license license:bsd-3)))
+
 (define-public powerstat
   (package
     (name "powerstat")
