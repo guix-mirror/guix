@@ -126,12 +126,9 @@
              (let ((gcc (assoc-ref inputs  "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
-                                              "/include/c++/v1")
-                               (string-append (assoc-ref inputs "catch2")
-                                              "/include/catch2")
-                               (string-append (assoc-ref inputs "json")
-                                              "/include/nlohmann")
+                        (cons* (search-input-directory inputs "/include/c++/v1")
+                               (search-input-directory inputs "/include/catch2")
+                               (search-input-directory inputs "/include/nlohmann")
                                ;; Hide GCC's C++ headers so that they do not interfere with
                                ;; the Clang headers.
                                (delete (string-append gcc "/include/c++")
@@ -231,10 +228,10 @@ stored.")
              (let ((gcc (assoc-ref inputs  "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
-                                              "/include/c++/v1")
-                               (string-append (assoc-ref inputs "json")
-                                              "/include/nlohmann")
+                        (cons* (search-input-directory inputs
+                                                       "include/c++/v1")
+                               (search-input-directory inputs
+                                                       "include/nlohmann")
                                ;; Hide GCC's C++ headers so that they do not interfere with
                                ;; the Clang headers.
                                (delete (string-append gcc "/include/c++")

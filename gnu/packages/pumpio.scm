@@ -50,11 +50,9 @@
              ;; Fix dependency tests.
              (substitute* "pumpa.pro"
                (("/usr/include/tidy\\.h")
-                (string-append (assoc-ref inputs "tidy")
-                               "/include/tidy.h"))
+                (search-input-file inputs "/include/tidy.h"))
                (("/usr/include/aspell.h")
-                (string-append (assoc-ref inputs "aspell")
-                               "/include/aspell.h")))
+                (search-input-file inputs "/include/aspell.h")))
              ;; Run qmake with proper installation prefix.
              (let ((prefix (string-append "PREFIX="
                                           (assoc-ref outputs "out"))))

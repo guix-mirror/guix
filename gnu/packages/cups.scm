@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -600,8 +600,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                  ;; FIXME Use beginning-of-word in regexp.
                  (("[[:blank:]]plugin\\.py[[:blank:]]") " ")
                  (("/usr/include/libusb-1.0")
-                  (string-append (assoc-ref inputs "libusb")
-                                 "/include/libusb-1.0"))
+                  (search-input-directory inputs "/include/libusb-1.0"))
                  (("hplip_statedir =.*$")
                   ;; Don't bail out while trying to create
                   ;; /var/lib/hplip.  We can safely change its value

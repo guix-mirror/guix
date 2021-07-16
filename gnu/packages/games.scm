@@ -12256,8 +12256,7 @@ game.")  ;thanks to Debian for description
                (("/opt/gsasl")
                 (assoc-ref inputs "gsasl"))
                (("\\$\\$\\{PREFIX\\}/include/libircclient")
-                (string-append (assoc-ref inputs "libircclient")
-                               "/include/libircclient"))
+                (search-input-directory inputs "/include/libircclient"))
                (("LIB_DIRS =")
                 (string-append "LIB_DIRS = "
                                (assoc-ref inputs "boost") "/lib")))

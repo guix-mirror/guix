@@ -397,9 +397,9 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
                             "setfiles/Makefile"
                             "run_init/Makefile")
                (("/usr(/include/security/pam_appl.h)" _ file)
-                (string-append (assoc-ref inputs "pam") file))
+                (search-input-file inputs file))
                (("/usr(/include/libaudit.h)" _ file)
-                (string-append (assoc-ref inputs "audit") file))))))))
+                (search-input-file inputs file))))))))
     (inputs
      `(("audit" ,audit)
        ("pam" ,linux-pam)

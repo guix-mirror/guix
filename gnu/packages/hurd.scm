@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -374,9 +374,10 @@ Hurd-minimal package which are needed for both glibc and GCC.")
            (lambda* (#:key inputs #:allow-other-keys)
              (for-each (lambda (var)
                          (setenv var
-                                 (string-append (assoc-ref inputs "libtirpc")
-                                                "/include/tirpc:"
-                                                (or (getenv var) ""))))
+                                 (string-append
+                                  (search-input-directory inputs
+                                                          "include/tirpc")
+                                  ":" (or (getenv var) ""))))
                        '("CROSS_C_INCLUDE_PATH" "C_INCLUDE_PATH"
                          "CROSS_CPATH" "CPATH"))
              #t))

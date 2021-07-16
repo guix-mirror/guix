@@ -107,8 +107,7 @@ implement RPC protocols.")
              (let ((gcc (assoc-ref inputs  "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
-                                              "/include/c++/v1")
+                        (cons* (search-input-directory inputs "include/c++/v1")
                                ;; Hide GCC's C++ headers so that they do not interfere with
                                ;; the Clang headers.
                                (delete (string-append gcc "/include/c++")

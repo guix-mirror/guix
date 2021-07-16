@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -217,8 +217,7 @@ to @code{IOStreams}.")
              (let ((gcc (assoc-ref inputs "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons (string-append (assoc-ref inputs "libcxx")
-                                             "/include/c++/v1")
+                        (cons (search-input-directory inputs "/include/c++/v1")
                               ;; Hide GCC's C++ headers so that they do not interfere with
                               ;; the Clang headers.
                               (delete (string-append gcc "/include/c++")

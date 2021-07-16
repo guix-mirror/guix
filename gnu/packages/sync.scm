@@ -156,9 +156,8 @@
                (("ON CACHE") "OFF CACHE"))
              (substitute* "src/gui/CMakeLists.txt"
                (("@kwidgetsaddons@")
-                (string-append (assoc-ref inputs "kwidgetsaddons")
-                               "/include/KF5/KWidgetsAddons/")))
-             #t))
+                (search-input-directory inputs
+                                        "/include/KF5/KWidgetsAddons/")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests write to $HOME.

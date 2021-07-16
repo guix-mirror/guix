@@ -238,8 +238,7 @@ across a broad spectrum of applications.")
              (let ((gcc (assoc-ref (or native-inputs inputs) "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons (string-append (assoc-ref inputs "libcxx")
-                                             "/include/c++/v1")
+                        (cons (search-input-directory inputs "/include/c++/v1")
                               ;; Hide GCC's C++ headers so that they do not interfere with
                               ;; the Clang headers.
                               (delete (string-append gcc "/include/c++")

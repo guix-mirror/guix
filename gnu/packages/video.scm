@@ -977,10 +977,8 @@ H.264 (MPEG-4 AVC) video streams.")
              #t)))
          (add-before 'configure 'add-googletest
            (lambda* (#:key inputs #:allow-other-keys)
-             (symlink
-               (string-append (assoc-ref inputs "googletest")
-                              "/include/gtest") "lib/gtest")
-             #t))
+             (symlink (search-input-file inputs "/include/gtest")
+                      "lib/gtest")))
          (replace 'build
            (lambda _
              (let ((-j (list "-j" (number->string (parallel-job-count)))))
@@ -4597,9 +4595,8 @@ create smoother and stable videos.")
              (setenv "ZMQDIR"
                      (assoc-ref inputs "zeromq"))
              (setenv "UNITTEST_DIR"
-                     (string-append (assoc-ref inputs "unittest++")
-                                    "/include/UnitTest++"))
-             #t)))))
+                     (search-input-directory inputs
+                                             "include/UnitTest++")))))))
     (home-page "https://openshot.org")
     (synopsis "Video-editing, animation, and playback library")
     (description "OpenShot Library (libopenshot) is a powerful C++ video

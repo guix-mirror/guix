@@ -855,14 +855,13 @@ of programming tools as well as libraries with equivalent functionality.")
              (add-after 'unpack 'find-rpc-includes
                (lambda* (#:key inputs #:allow-other-keys)
                  (setenv "CPATH"
-                         (string-append (assoc-ref inputs "libtirpc")
-                                        "/include/tirpc/:"
-                                        (or (getenv "CPATH") "")))
+                         (string-append
+                          (search-input-directory inputs "/include/tirpc")
+                          ":" (or (getenv "CPATH") "")))
                  (setenv "CPLUS_INCLUDE_PATH"
-                         (string-append (assoc-ref inputs "libtirpc")
-                                        "/include/tirpc/:"
-                                        (or (getenv "CPLUS_INCLUDE_PATH") "")))
-                 #t))))))
+                         (string-append
+                          (search-input-directory inputs "/include/tirpc")
+                          ":" (or (getenv "CPLUS_INCLUDE_PATH") "")))))))))
       (inputs
        `(("libtirpc" ,libtirpc)
          ("llvm" ,llvm-3.5))))))

@@ -2053,8 +2053,7 @@ emulator.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "cmake/FindCdio.cmake"
                  (("/usr/include/cdio")
-                  (string-append (assoc-ref inputs "libcdio") "/include/cdio")))
-               #t))
+                  (search-input-directory inputs "/include/cdio")))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (wrap-program (string-append (assoc-ref outputs "out")

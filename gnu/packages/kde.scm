@@ -7,7 +7,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
@@ -721,11 +721,9 @@ different notification systems.")
                       ;; FIXME: <kcmutils_version.h> is not found during one
                       ;; of the compilation steps without this hack.
                       (setenv "CPLUS_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "kcmutils")
-                                             "/include/KF5:"
-                                             (or (getenv "CPLUS_INCLUDE_PATH")
-                                                 "")))
-                      #t)))
+                              (string-append
+                               (search-input-directory inputs "include/KF5")
+                               ":" (or (getenv "CPLUS_INCLUDE_PATH") ""))))))
        #:tests? #f)) ; tests fail hard in our build environment
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

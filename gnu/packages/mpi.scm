@@ -263,12 +263,11 @@ bind processes, and much more.")
                   (add-after 'unpack 'find-opensm-headers
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "C_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "opensm")
-                                             "/include/infiniband"))
+                              (search-input-directory inputs
+                                                      "/include/infiniband"))
                       (setenv "CPLUS_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "opensm")
-                                             "/include/infiniband"))
-                      #t))
+                              (search-input-directory inputs
+                                                      "/include/infiniband"))))
                   (add-before 'build 'remove-absolute
                     (lambda _
                       ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE

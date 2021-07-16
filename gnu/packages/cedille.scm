@@ -89,8 +89,7 @@
          (add-after 'unpack 'copy-ial
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively
-              (string-append (assoc-ref inputs "agda-ial")
-                             "/include/agda/ial")
+              (search-input-directory inputs "/include/agda/ial")
               "ial")
              ;; Ambiguous module if main is included from ial
              (delete-file "ial/main.agda")

@@ -1199,9 +1199,7 @@ developed mainly for Ren'py.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "module/setup.py"
                (("/usr/include/fribidi")
-                (string-append (assoc-ref inputs "fribidi")
-                               "/include/fribidi")))
-             #t))
+                (search-input-directory inputs "include/fribidi")))))
          (add-after 'set-paths 'set-build-vars
            (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (setenv "RENPY_CYTHON"

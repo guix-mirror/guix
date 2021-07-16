@@ -312,9 +312,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 
              (substitute* "base/Makefile"
                (("\\$\\(build_includedir\\)/uv/errno.h")
-                (string-append (assoc-ref inputs "libuv")
-                               "/include/uv/errno.h")))
-             #t))
+                (search-input-file inputs "/include/uv/errno.h")))))
          (add-before 'build 'replace-default-shell
            (lambda _
              (substitute* "base/client.jl"

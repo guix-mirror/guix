@@ -75,12 +75,10 @@
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/platform/cmake/modules/FindGBMKMS.cmake"
                  (("/usr/local/include/libdrm")
-                  (string-append (assoc-ref inputs "libdrm")
-                                 "/include/libdrm")))
+                  (search-input-directory inputs "include/libdrm")))
                (substitute* "src/platform/cmake/modules/FindAPR.cmake"
                  (("/usr/local/apr/include/apr-1")
-                  (string-append (assoc-ref inputs "apr")
-                                 "/include/apr-1")))
+                  (search-input-directory inputs "include/apr-1")))
                #t))
            ;; Normally, it tries to fetch patched openal with git
            ;; but copying files manually in the right place seems to work too.

@@ -9477,8 +9477,9 @@ dependency like SeqAn.")
                (("#include \"jellyfish/config.h\"") ""))
              (substitute* "src/CMakeLists.txt"
                (("\\$\\{GAT_SOURCE_DIR\\}/external/install/include/jellyfish-2.2..")
-                (string-append (assoc-ref inputs "jellyfish")
-                               "/include/jellyfish-" ,(package-version jellyfish)))
+                (search-input-directory
+                 inputs
+                 (string-append "/include/jellyfish-" ,(package-version jellyfish))))
                (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libjellyfish-2.0.a")
                 (string-append (assoc-ref inputs "jellyfish")
                                "/lib/libjellyfish-2.0.a"))

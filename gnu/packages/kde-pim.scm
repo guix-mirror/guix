@@ -757,10 +757,9 @@ for KDE PIM.")
                       ;; found during one of the compilation steps without
                       ;; this hack.
                       (setenv "CPLUS_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "akonadi-mime")
-                                             "/include/KF5:"
-                                             (or (getenv "CPLUS_INCLUDE_PATH") "")))
-                      #t)))))
+                              (string-append
+                               (search-input-directory inputs "include/KF5")
+                               ":" (or (getenv "CPLUS_INCLUDE_PATH") ""))))))))
     (home-page "https://invent.kde.org/pim/kdepim-runtime")
     (synopsis "Runtime components for Akonadi KDE")
     (description "This package contains Akonadi agents written using KDE
@@ -1369,10 +1368,9 @@ using a Qt/KMime C++ API.")
                       ;; FIXME: One of the compilation steps fail to find
                       ;; <Libkdepim/MultiplyingLine> without this hack.
                       (setenv "CPLUS_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "libkdepim")
-                                             "/include/KF5:"
-                                             (or (getenv "CPLUS_INCLUDE_PATH") "")))
-                      #t)))))
+                              (string-append
+                               (search-input-directory inputs "include/KF5")
+                               ":" (or (getenv "CPLUS_INCLUDE_PATH") ""))))))))
     (home-page "https://invent.kde.org/pim/messagelib")
     (synopsis "KDE PIM messaging libraries")
     (description "This package provides several libraries for messages,

@@ -1347,10 +1347,9 @@ domains, their live performance and resource utilization statistics.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The includes for libnl are located in a sub-directory.
              (setenv "C_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "libnl")
-                                    "/include/libnl3:"
-                                    (or (getenv "C_INCLUDE_PATH") "")))
-             #t))
+                     (string-append
+                      (search-input-directory inputs "/include/libnl3")
+                      ":" (or (getenv "C_INCLUDE_PATH") "")))))
          (add-after 'configure 'fix-documentation
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Documentation/Makefile"
@@ -1381,8 +1380,9 @@ domains, their live performance and resource utilization statistics.")
              ;; /usr/include/..., which obviously does not exist.
              (let* ((file "google/protobuf/descriptor.proto")
                     (target (string-append "images/" file))
-                    (source (string-append (assoc-ref inputs "protobuf")
-                                           "/include/" file)))
+                    (source (search-input-file
+                             inputs
+                             (string-append "include/" file))))
                (delete-file target)
                (symlink source target)
                #t)))
