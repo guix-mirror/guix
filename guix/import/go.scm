@@ -460,17 +460,21 @@ Optionally include a VERSION string to append to the name."
   "Retrieve the module meta-data from its landing page.  This is necessary
 because goproxy servers don't currently provide all the information needed to
 build a package."
+  (define (go-import->module-meta content-text)
+    (match (string-split content-text #\space)
+      ((root-path vcs repo-url)
+       (make-module-meta root-path (string->symbol vcs)
+                         (strip-.git-suffix/maybe repo-url)))))
   ;; <meta name="go-import" content="import-prefix vcs repo-root">
   (let* ((meta-data (http-fetch* (format #f "https://~a?go-get=1" module-path)))
          (select (sxpath `(// head (meta (@ (equal? (name "go-import"))))
                               // content))))
     (match (select (html->sxml meta-data #:strict? #t))
       (() #f)                           ;nothing selected
-      (((content content-text))
-       (match (string-split content-text #\space)
-         ((root-path vcs repo-url)
-          (make-module-meta root-path (string->symbol vcs)
-                            (strip-.git-suffix/maybe repo-url))))))))
+      ((('content content-text) ..1)
+       (find (lambda (meta)
+               (string-prefix? (module-meta-import-prefix meta) module-path))
+             (map go-import->module-meta content-text))))))
 
 (define (module-meta-data-repo-url meta-data goproxy)
   "Return the URL where the fetcher which will be used can download the
