@@ -15634,7 +15634,7 @@ related C functions to get information about the mounted file system.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/unix/cl-diskspace-list-all-disks-with-df.lisp"
                  (("grep")
-                  (string-append (assoc-ref inputs "grep") "/bin/grep")))
+                  (search-input-file inputs "/bin/grep")))
                (substitute* "src/unix/cl-diskspace-list-all-disks-with-df.lisp"
                  (("/bin/df")
                   (which "df")))

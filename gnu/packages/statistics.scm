@@ -216,8 +216,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
              #t))
          (add-before 'configure 'patch-uname
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((uname-bin (string-append (assoc-ref inputs "coreutils")
-                                             "/bin/uname")))
+             (let ((uname-bin (search-input-file inputs "/bin/uname")))
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin)))
              #t))

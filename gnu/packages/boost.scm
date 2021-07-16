@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -252,7 +252,7 @@ across a broad spectrum of applications.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((icu (assoc-ref inputs "icu4c"))
                    (out (assoc-ref outputs "out"))
-                   (sh  (string-append (assoc-ref inputs "bash") "/bin/sh")))
+                   (sh  (search-input-file inputs "/bin/sh")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
                               "tools/build/src/engine/execunix.c"

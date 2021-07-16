@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
@@ -169,10 +169,9 @@
                (format #t "configure flags: ~s~%" flags)
                ;; Node's configure script expects the CC environment variable to
                ;; be set.
-               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               (setenv "CC" (search-input-file inputs "/bin/gcc"))
                (apply invoke
-                      (string-append (assoc-ref inputs "python")
-                                     "/bin/python")
+                      (search-input-file inputs "/bin/python")
                       "configure" flags))))
          (add-after 'patch-shebangs 'patch-npm-shebang
            (lambda* (#:key outputs #:allow-other-keys)
@@ -387,8 +386,7 @@ Node.js and web browsers.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=lib/builder.js"
@@ -443,8 +441,7 @@ Node.js and web browsers.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=lib/frontend.js"
@@ -498,8 +495,7 @@ Node.js and web browsers.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=lib/api.js"
@@ -552,8 +548,7 @@ parser definition into a C output.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=bin/generate.js"
@@ -639,8 +634,7 @@ source files.")
                  ;; be set.
                  (setenv "CC" ,(cc-for-target))
                  (apply invoke
-                        (string-append (assoc-ref inputs "python")
-                                       "/bin/python3")
+                        (search-input-file inputs "/bin/python3")
                         "configure" flags))))
            (replace 'patch-files
              (lambda* (#:key inputs #:allow-other-keys)

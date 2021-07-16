@@ -1390,11 +1390,9 @@ extremely large and complex data collections.")
                               "test/hdf5lib/junit.sh.in"
                               "examples/runExample.sh.in")
                  (("/usr/bin/test")
-                  (string-append (assoc-ref inputs "coreutils")
-                                 "/bin/test"))
+                  (search-input-file inputs "/bin/test"))
                  (("/usr/bin/uname")
-                  (string-append (assoc-ref inputs "coreutils")
-                                 "/bin/uname"))
+                  (search-input-file inputs "/bin/uname"))
                  (("CLASSPATH=[^\n]*")
                   (string-append "CLASSPATH=" class-path)))
                (setenv "CLASSPATH" class-path))
@@ -3630,13 +3628,12 @@ to BMP, JPEG or PNG image formats.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((sed (string-append (assoc-ref inputs "sed") "/bin/sed"))
+             (let* ((sed (search-input-file inputs "/bin/sed"))
                     (coreutils (assoc-ref inputs "coreutils"))
                     (dirname (string-append coreutils "/bin/dirname"))
                     (head (string-append coreutils "/bin/head"))
-                    (perl (string-append (assoc-ref inputs "perl") "/bin/perl"))
-                    (python (string-append (assoc-ref inputs "python")
-                                           "/bin/python3")))
+                    (perl (search-input-file inputs "/bin/perl"))
+                    (python (search-input-file inputs "/bin/python3")))
                (substitute* "src/maxima.in"
                  (("sed ") (string-append sed " "))
                  (("dirname") dirname)
@@ -3670,8 +3667,7 @@ to BMP, JPEG or PNG image formats.")
              (let* ((gnuplot (assoc-ref inputs "gnuplot"))
                     (out (assoc-ref outputs "out"))
                     (datadir (string-append out "/share/maxima/" ,version))
-                    (binutils (string-append (assoc-ref inputs "binutils")
-                                             "/bin")))
+                    (binutils (dirname (search-input-file inputs "/bin/as"))))
                (with-directory-excursion out
                  (mkdir-p "share/emacs")
                  (mkdir-p "share/doc")
@@ -6438,9 +6434,8 @@ of C, Java, or Ada programs.")
        (modify-phases %standard-phases
          (add-before 'configure 'export-shell
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
-                                                   "/bin/sh"))
-             #t)))))
+             (setenv "CONFIG_SHELL"
+                     (search-input-file inputs "/bin/sh")))))))
     (inputs
      `(("gmp" ,gmp)))
     (propagated-inputs

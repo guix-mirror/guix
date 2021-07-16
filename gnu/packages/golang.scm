@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
@@ -1140,7 +1140,7 @@ your Go binary to be later served from an http.FileSystem.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((output (assoc-ref outputs "out"))
                     (doc_out (assoc-ref outputs "doc"))
-                    (bash (string-append (assoc-ref inputs "bash") "bin/bash"))
+                    (bash (search-input-file inputs "bin/bash"))
                     (docs (string-append doc_out "/share/doc/" ,name "-" ,version))
                     (tests (string-append
                             (assoc-ref outputs "tests") "/share/" ,name "-" ,version)))

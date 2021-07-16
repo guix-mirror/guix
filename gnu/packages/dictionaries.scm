@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -178,8 +178,7 @@ work, such as sentence length and other readability measures.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((bindir (string-append
                             (assoc-ref %outputs "out") "/bin"))
-                   (wish (string-append (assoc-ref inputs "tk")
-                          "/bin/wish8.6"))
+                   (wish (search-input-file inputs "/bin/wish8.6"))
                    (sharedir (string-append
                               (assoc-ref %outputs "out")
                               "/share/applications"))

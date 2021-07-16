@@ -69,8 +69,7 @@
           'unpack 'patch-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
-                  (gnuplot (string-append (assoc-ref inputs "gnuplot")
-                                          "/bin/gnuplot")))
+                  (gnuplot (search-input-file inputs "/bin/gnuplot")))
               (substitute* "tools/plot/fio2gnuplot"
                 (("/usr/share/fio") (string-append out "/share/fio"))
                 ;; FIXME (upstream): The 'gnuplot' executable is used inline

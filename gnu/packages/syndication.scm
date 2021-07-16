@@ -599,7 +599,7 @@ that aims to be quite fast and comfortable to its user.")
          (add-after 'unpack 'patch-mpv-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "gfeeds/confManager.py"
-               (("mpv") (string-append (assoc-ref inputs "mpv") "/bin/mpv")))
+               (("mpv") (search-input-file inputs "/bin/mpv")))
              #t))
          (add-after 'install 'wrap-gfeeds
            (lambda* (#:key outputs #:allow-other-keys)

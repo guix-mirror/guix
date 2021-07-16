@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -1228,10 +1228,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
              (substitute* '("shell/source/unix/exec/shellexec.cxx"
                             "shell/source/unix/misc/senddoc.sh")
                (("/usr/bin/xdg-open")
-                (string-append (assoc-ref inputs "xdg-utils")
-                               "/bin/xdg-open")))
-
-             #t))
+                (search-input-file inputs "/bin/xdg-open")))))
          (add-after 'install 'reset-zip-timestamps
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

@@ -282,9 +282,7 @@ user interfaces in a fast and easy way.  It is based on GLib and ncurses.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "protobufgen.sh"
                (("/bin/sh")
-                (string-append (assoc-ref inputs "bash")
-                               "/bin/sh")))
-             #t)))))
+                (search-input-file inputs "/bin/sh"))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

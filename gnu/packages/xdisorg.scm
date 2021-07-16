@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -231,8 +231,7 @@ program.")
        (modify-phases %standard-phases
          (add-before 'build 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((xrandr (string-append (assoc-ref inputs "xrandr")
-                                          "/bin/xrandr")))
+             (let ((xrandr (search-input-file inputs "/bin/xrandr")))
                (substitute* "contrib/etc/xdg/autostart/autorandr.desktop"
                  (("/usr") (assoc-ref outputs "out")))
                (substitute* "autorandr.py"

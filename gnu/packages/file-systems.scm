@@ -868,7 +868,8 @@ All of this is accomplished without a centralized metadata server.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (list "eatmydata.in" "eatmydata.sh.in")
                (("basename|readlink|uname" command)
-                (string-append (assoc-ref inputs "coreutils") "/bin/" command)))))
+                (search-input-file inputs
+                                   (string-append "bin/" command))))))
          (add-before 'patch-file-names 'tighten-symlink-mode
            ;; When the ‘eatmydata’ helper detects that it's a symlink, it will
            ;; transparently invoke the command of the same name.  However, it's
@@ -1046,11 +1047,9 @@ APFS.")
                                              (assoc-ref inputs "bash")
                                              match))
                              (("/bin/(rm|true)" match)
-                              (string-append (assoc-ref inputs "coreutils")
-                                             match))
+                              (search-input-file inputs match))
                              (("/usr(/bin/time)" _ match)
-                              (string-append (assoc-ref inputs "time")
-                                             match))))
+                              (search-input-file inputs match))))
                          (append (find-files "common" ".*")
                                  (find-files "tests" ".*")
                                  (find-files "tools" ".*")
@@ -1097,8 +1096,7 @@ APFS.")
                  (with-output-to-file helper
                    (lambda _
                      (format #t "#!~a --no-auto-compile\n!#\n"
-                             (string-append (assoc-ref inputs "guile")
-                                            "/bin/guile"))
+                             (search-input-file inputs "/bin/guile"))
                      (write
                       `(begin
                          (define (try proc dir)
@@ -1407,8 +1405,9 @@ On Guix System, you will need to invoke the included shell scripts as
              (substitute* '("libfuse/lib/mount_util.c"
                             "libfuse/util/mount_util.c")
                (("/bin/(u?)mount" _ maybe-u)
-                (string-append (assoc-ref inputs "util-linux")
-                               "/bin/" maybe-u "mount")))
+                (search-input-file inputs
+                                   (string-append "bin/" maybe-u
+                                                  "mount"))))
              (substitute* '("libfuse/util/mount.mergerfs.c")
                (("/bin/sh" command)
                 (string-append (assoc-ref inputs "bash-minimal") command))))))))
@@ -1461,10 +1460,9 @@ is similar to mhddfs, unionfs, and aufs.")
                   (string-append "'" (assoc-ref inputs "coreutils") "/bin/rm'")))
                (substitute* "src/mergerfs.mktrash"
                  (("xattr")
-                  (string-append (assoc-ref inputs "python-xattr") "/bin/xattr"))
+                  (search-input-file inputs "/bin/xattr"))
                  (("mkdir")
-                  (string-append (assoc-ref inputs "coreutils") "/bin/mkdir")))
-               #t)))))
+                  (search-input-file inputs "/bin/mkdir"))))))))
       (synopsis "Tools to help manage data in a mergerfs pool")
       (description "mergerfs-tools is a suite of programs that can audit
 permissions and ownership of files and directories on a mergerfs volume,

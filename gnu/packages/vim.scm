@@ -771,8 +771,7 @@ refactor Vim in order to:
        (modify-phases %standard-phases
          (add-after 'configure 'reference-nvim
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((nvim (string-append (assoc-ref inputs "neovim")
-                                        "/bin/nvim")))
+             (let ((nvim (search-input-file inputs "/bin/nvim")))
                ;; This substitution should change one line, and replaces the default
                ;; value in the struct of options with an absolute store reference.
                (substitute* "../source/src/main.c"

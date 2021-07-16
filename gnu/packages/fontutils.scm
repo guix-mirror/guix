@@ -696,7 +696,8 @@ definitions.")
         (add-after 'install 'set-library-path
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
-                  (potrace (string-append (assoc-ref inputs "potrace") "/bin")))
+                  (potrace (dirname
+                            (search-input-file inputs "bin/potrace"))))
               (wrap-program (string-append out "/bin/fontforge")
                 ;; Fontforge dynamically opens libraries.
                 `("LD_LIBRARY_PATH" ":" prefix

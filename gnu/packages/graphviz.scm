@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -359,8 +359,7 @@ Graphviz and LaTeX.")
                     ":" (assoc-ref inputs "gdk-pixbuf") "/lib/girepository-1.0"
                     ":" (assoc-ref inputs "atk") "/lib/girepository-1.0")))
                `("PATH" ":" prefix
-                 (,(string-append (assoc-ref inputs "graphviz") "/bin"))))
-             #t)))))
+                 (,(dirname (search-input-file inputs "bin/dot"))))))))))
     (inputs
      `(("atk" ,atk)
        ("gdk-pixbuf" ,gdk-pixbuf+svg)

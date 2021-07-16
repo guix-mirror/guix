@@ -723,9 +723,7 @@ to access different radio hardware.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "git-version-gen"
                (("/bin/sh")
-                (string-append (assoc-ref inputs "bash")
-                               "/bin/bash")))
-             #t)))))
+                (search-input-file inputs "/bin/bash"))))))))
     (synopsis "DSP primitives for SDR")
     (description
      "This a C-language library for common DSP (Digital Signal Processing)

@@ -3143,11 +3143,12 @@ processes currently causing I/O.")
              ;; it refers to the right ones.
              (substitute* '("lib/mount_util.c" "util/mount_util.c")
                (("/bin/(u?)mount" _ maybe-u)
-                (string-append (assoc-ref inputs "util-linux")
-                               "/bin/" maybe-u "mount")))
-             (substitute* "util/mount.fuse.c"
-               (("/bin/sh" command)
-                (string-append (assoc-ref inputs "bash-minimal") command)))
+                (search-input-file inputs
+                                   (string-append "bin/"
+                                                  maybe-u "mount"))))
+             (substitute* '("util/mount.fuse.c")
+               (("/bin/sh")
+                (search-input-file inputs "/bin/sh")))
 
              ;; This hack leads libfuse to search for 'fusermount' in
              ;; $PATH, where it may find a setuid-root binary, instead of
@@ -4234,27 +4235,28 @@ country-specific regulations for the wireless spectrum.")
              (substitute* '("prog/pwm/pwmconfig"
                             "prog/pwm/fancontrol")
                (("gnuplot")
-                (string-append (assoc-ref inputs "gnuplot")
-                               "/bin/gnuplot"))
+                (search-input-file inputs "/bin/gnuplot"))
                (("cat ")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cat "))
+                (string-append (search-input-file inputs "/bin/cat")
+                               " "))
                (("e?grep " match)
-                (string-append (assoc-ref inputs "grep")
-                               "/bin/" match))
+                (string-append (search-input-file inputs
+                                                  (string-append
+                                                   "/bin/"
+                                                   (string-trim-right match)))
+                               " "))
                (("sed -e")
-                (string-append (assoc-ref inputs "sed")
-                               "/bin/sed -e"))
+                (string-append (search-input-file inputs "/bin/sed")
+                               " -e"))
                (("cut -d")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cut -d"))
+                (string-append (search-input-file inputs "/bin/cut")
+                               " -d"))
                (("sleep ")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/sleep "))
+                (string-append (search-input-file inputs "/bin/sleep")
+                               " "))
                (("readlink -f")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/readlink -f")))
-             #t)))))
+                (string-append (search-input-file inputs "/bin/readlink")
+                               " -f"))))))))
     (home-page "https://hwmon.wiki.kernel.org/lm_sensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
@@ -5152,7 +5154,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                  (("hid2hci --method")
                   (string-append out "/lib/udev/hid2hci --method"))
                  (("/sbin/udevadm")
-                  (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
+                  (search-input-file inputs "/bin/udevadm")))
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -7686,15 +7688,11 @@ the superuser to make device nodes.")
           (lambda*  (#:key inputs #:allow-other-keys)
             (substitute* "scripts/fakeroot.in"
              (("getopt")
-              (string-append (assoc-ref inputs "util-linux")
-                             "/bin/getopt"))
+              (search-input-file inputs "/bin/getopt"))
              (("sed")
-              (string-append (assoc-ref inputs "sed")
-                             "/bin/sed"))
+              (search-input-file inputs "/bin/sed"))
              (("cut")
-              (string-append (assoc-ref inputs "coreutils")
-                             "/bin/cut")) )
-            #t))
+              (search-input-file inputs "/bin/cut")) )))
         (add-before 'configure 'setenv
           (lambda _
             (setenv "LIBS" "-lacl")
@@ -7795,10 +7793,8 @@ set as @code{LD_PRELOAD} to override the C library file system functions.")
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "inputattach"
-               (invoke (string-append (assoc-ref inputs "gcc")
-                                      "/bin/gcc")
-                       "-O2" "-o" "inputattach" "inputattach.c"))
-             #t))
+               (invoke "gcc" "-O2" "-o" "inputattach"
+                       "inputattach.c"))))
          (delete 'check)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

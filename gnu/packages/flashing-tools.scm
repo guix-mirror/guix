@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -83,9 +83,7 @@
              (substitute* "dmi.c"
                (("\"dmidecode\"")
                 (format #f "~S"
-                        (string-append (assoc-ref inputs "dmidecode")
-                                       "/sbin/dmidecode"))))
-             #t)))))
+                        (search-input-file inputs "/sbin/dmidecode")))))))))
     (home-page "https://flashrom.org/")
     (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
     (description

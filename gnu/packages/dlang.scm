@@ -261,7 +261,7 @@ bootstrapping more recent compilers written in D.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; some tests call into gdb binary which needs SHELL and CC set
                (setenv "SHELL" (which "sh"))
-               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               (setenv "CC" (search-input-file inputs "/bin/gcc"))
                (invoke "make" "test" "-j" (number->string (parallel-job-count))))))))
       (native-inputs
        `(("llvm" ,llvm-6)

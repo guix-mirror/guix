@@ -822,7 +822,7 @@ ease from the desktop to a microcontroller or embedded system.")
                       (substitute* '("lib-python/3/subprocess.py")
                         ;; Fix shell path
                         (("/bin/sh")
-                         (string-append (assoc-ref inputs "bash-minimal") "/bin/sh")))
+                         (search-input-file inputs "/bin/sh")))
                       (substitute* '("lib-python/3/distutils/unixccompiler.py")
                         ;; gcc-toolchain does not provide symlink cc -> gcc
                         (("\"cc\"") "\"gcc\""))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -139,9 +139,9 @@
                      ;; Give the absolute file name of 'ckbcomp'.
                      (substitute* "util/grub-kbdcomp.in"
                        (("^ckbcomp ")
-                        (string-append (assoc-ref inputs "console-setup")
-                                       "/bin/ckbcomp ")))
-                     #t))
+                        (string-append
+                         (search-input-file inputs "/bin/ckbcomp")
+                         " ")))))
                   (add-after 'unpack 'set-freetype-variables
                     ;; These variables need to be set to the native versions
                     ;; of the dependencies because they are used to build
@@ -315,9 +315,8 @@ menu to select one of the installed operating systems.")
                  (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "grub-core/osdep/unix/platform.c"
                      (("efibootmgr")
-                      (string-append (assoc-ref inputs "efibootmgr")
-                                     "/sbin/efibootmgr")))
-                   #t))
+                      (search-input-file inputs
+                                         "/sbin/efibootmgr")))))
                (add-after 'patch-stuff 'use-absolute-mtools-path
                  (lambda* (#:key inputs #:allow-other-keys)
                    (let ((mtools (assoc-ref inputs "mtools")))

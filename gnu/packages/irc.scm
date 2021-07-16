@@ -119,7 +119,7 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-inxi-reference
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((inxi (string-append (assoc-ref inputs "inxi") "/bin/inxi")))
+             (let ((inxi (search-input-file inputs "/bin/inxi")))
                (symlink inxi "data/scripts/inxi")
                #t))))
        #:tests? #f)) ; no test target

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -484,8 +484,7 @@ system.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "hypb.el"
                (("/bin/domainname")
-                (string-append (assoc-ref inputs "inetutils")
-                               "/bin/dnsdomainname")))
+                (search-input-file inputs "bin/dnsdomainname")))
              (substitute* "hyperbole.el"
                (("\\(hyperb:check-dir-user\\)") ""))))
          (add-after 'install 'install-images
@@ -1413,7 +1412,7 @@ replacement.")
                  ((f1 f2 ...) (dirname f1))
                  (_ "")))
 
-             (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
+             (let ((sh (search-input-file inputs "/bin/sh")))
                (define emacs-prefix? (cut string-prefix? "emacs-" <>))
 
                (setenv "SHELL" "sh")
@@ -2568,7 +2567,7 @@ as a library for other Emacs packages.")
            (lambda* (#:key inputs #:allow-other-keys)
              (emacs-substitute-variables "preview.el"
                ("preview-gs-command"
-                (string-append (assoc-ref inputs "ghostscript") "/bin/gs")))
+                (search-input-file inputs "/bin/gs")))
              (substitute* "preview.el"
                (("\"dvipng ")
                 (string-append "\"" (assoc-ref inputs "texlive")
@@ -2932,8 +2931,7 @@ into mode hooks and is intended to be used that way.")
              (chmod "ggtags.el" #o644)
              (emacs-substitute-variables "ggtags.el"
                ("ggtags-executable-directory"
-                (string-append (assoc-ref inputs "global") "/bin")))
-             #t)))))
+                (dirname (search-input-file inputs "bin/global")))))))))
     (home-page "https://github.com/leoliu/ggtags")
     (synopsis "Frontend to the GNU Global source code tagging system")
     (description "@code{ggtags} provides a frontend to the GNU Global source
@@ -3039,7 +3037,7 @@ directly inside Emacs.  It requires a Google Map Static API key to function.")
              (with-directory-excursion "texinfo"
                (substitute* "Makefile"
                  (("\\/usr\\/bin\\/gzip")
-                  (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
+                  (search-input-file inputs "/bin/gzip")))
                (invoke "make"
                        "clean"
                        "info"
@@ -5503,8 +5501,7 @@ for Flow files.")
          (add-after 'unpack 'specify-python-location
            ;; Hard-code python3 executable location in the library.
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((python3 (string-append (assoc-ref inputs "python")
-                                           "/bin/python3")))
+             (let ((python3 (search-input-file inputs "/bin/python3")))
                (substitute* "flycheck-grammalecte.el"
                  (("\"python3") (string-append "\"" python3)))
                (substitute* '("conjugueur.py" "flycheck-grammalecte.py")
@@ -9276,9 +9273,7 @@ queries using counsel.")
                (make-file-writable "counsel-notmuch.el")
                (emacs-substitute-variables "counsel-notmuch.el"
                  ("counsel-notmuch-path"
-                  (string-append (assoc-ref inputs "notmuch")
-                                 "/bin/notmuch")))
-               #t)))))
+                  (search-input-file inputs "/bin/notmuch"))))))))
       (inputs
        `(("emacs-counsel" ,emacs-counsel)
          ("notmuch" ,notmuch)
@@ -12973,8 +12968,7 @@ highlights quasi-quoted expressions.")
                     (bin (string-append out "/bin"))
                     (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
                     (info (string-append out "/share/info"))
-                    (emacs (string-append (assoc-ref inputs "emacs")
-                                          "/bin/emacs")))
+                    (emacs (search-input-file inputs "/bin/emacs")))
                ;; According to etc/install.org, the Emacspeak directory should
                ;; be copied to its installation destination.
                (for-each
@@ -13700,10 +13694,10 @@ It should enable you to implement low-level X11 applications.")
                    (format #t "#!~a ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
-                           (string-append (assoc-ref inputs "bash") "/bin/sh")
-                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
-                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
-                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           (search-input-file inputs "/bin/sh")
+                           (search-input-file inputs "/bin/xhost")
+                           (search-input-file inputs "/bin/dbus-launch")
+                           (search-input-file inputs "/bin/emacs")
                            '(cond
                              ((file-exists-p "~/.exwm")
                               (load-file "~/.exwm"))
@@ -13816,10 +13810,10 @@ other operations.")
                    (format #t "#!~a ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
-                           (string-append (assoc-ref inputs "bash") "/bin/sh")
-                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
-                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
-                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           (search-input-file inputs "/bin/sh")
+                           (search-input-file inputs "/bin/xhost")
+                           (search-input-file inputs "/bin/dbus-launch")
+                           (search-input-file inputs "/bin/emacs")
                            '(require 'exwmx-loader))))
                (chmod exwm-executable #o555)
                #t))))))
@@ -23332,7 +23326,7 @@ processes for Emacs")
                (chmod "src/elisp/treemacs-customization.el" #o644)
                (emacs-substitute-variables "src/elisp/treemacs-customization.el"
                  ("treemacs-python-executable"
-                  (string-append (assoc-ref inputs "python") "/bin/python3")))
+                  (search-input-file inputs "/bin/python3")))
                (chmod "src/elisp/treemacs-async.el" #o644)
                (substitute* "src/elisp/treemacs-async.el"
                  (("src/scripts") (string-append "share/" ,name "/scripts"))))
@@ -26285,14 +26279,14 @@ service, and connect it with Emacs via inter-process communication.")
          (add-after 'unpack 'patch-sources
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Hard-code paths to `ffplay` and `ffmpeg`.
-             (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
-                    (ffmpeg-bin (string-append ffmpeg "/bin/ffmpeg"))
-                    (ffplay-bin (string-append ffmpeg "/bin/ffplay")))
+             (let* ((ffplay-bin (search-input-file inputs "/bin/ffplay"))
+                    (ffmpeg-bin (search-input-file inputs "/bin/ffmpeg")))
                (substitute* '("telega-ffplay.el" "telega-vvnote.el")
                  (("(shell-command-to-string\|concat) \"(ffmpeg\|ffprobe)"
                    all func cmd)
-                  (string-append func " \"" (assoc-ref inputs "ffmpeg")
-                                 "/bin/" cmd))
+                  (string-append func " \""
+                                 (search-input-file
+                                  inputs (string-append "/bin/" cmd))))
                  (("\\(executable-find \"ffplay\"\\)")
                   (string-append "(and (file-executable-p \"" ffplay-bin "\")"
                                  "\"" ffplay-bin "\")"))
@@ -26303,8 +26297,7 @@ service, and connect it with Emacs via inter-process communication.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "telega-server.el"
                (("@TELEGA_SERVER_BIN@")
-                (string-append (assoc-ref inputs "emacs-telega-server")
-                               "/bin/telega-server")))
+                (search-input-file inputs "/bin/telega-server")))
              (substitute* "telega-util.el"
                (("@TELEGA_SHARE@")
                 (string-append (assoc-ref outputs "out")
@@ -27596,9 +27589,7 @@ emoji.")
              (make-file-writable "exiftool.el")
              (emacs-substitute-variables "exiftool.el"
                ("exiftool-executable"
-                (string-append (assoc-ref inputs "perl-image-exiftool")
-                               "/bin/exiftool")))
-             #t)))))
+                (search-input-file inputs "/bin/exiftool"))))))))
     (inputs
      `(("perl-image-exiftool" ,perl-image-exiftool)))
     (home-page "https://git.systemreboot.net/exiftool.el/about/")

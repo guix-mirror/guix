@@ -143,8 +143,7 @@
                (("\"%s/gs\"")
                 "\"%s/gsc\"")
                (("/usr/bin/gs")
-                (string-append (assoc-ref inputs "ghostscript") "/bin/gsc"))))
-           #t))
+                (search-input-file inputs "/bin/gsc"))))))
        (add-before 'check 'setup-check
          (lambda _
            ;; install temporarily into /tmp/netpbm

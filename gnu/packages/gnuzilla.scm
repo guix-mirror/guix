@@ -1460,8 +1460,7 @@ standards of the IceCat project.")
                (setenv "CC" "gcc")
                (setenv "MOZ_NOSPAM" "1")
                (setenv "PYTHON"
-                       (string-append (assoc-ref inputs "python2")
-                                      "/bin/python"))
+                       (search-input-file inputs "/bin/python"))
                (setenv "MOZ_BUILD_DATE" ,%icedove-build-id) ; avoid timestamp
                (setenv "LDFLAGS" (string-append "-Wl,-rpath="
                                                 (assoc-ref outputs "out")

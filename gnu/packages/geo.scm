@@ -1964,8 +1964,7 @@ track your position right from your laptop.")
          (modify-phases %standard-phases
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((shell (string-append (assoc-ref inputs "bash")
-                                           "/bin/bash")))
+               (let ((shell (search-input-file inputs "/bin/bash")))
                  (setenv "SHELL" shell)
                  (setenv "CONFIG_SHELL" shell)
                  (setenv "LDFLAGS" (string-append "-Wl,-rpath -Wl,"

@@ -198,7 +198,7 @@ and binary format defined in The Java Virtual Machine Specification.")
            (delete 'configure)
            (add-before 'install 'fix-wrapper
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((jps (string-append (assoc-ref inputs "jdk") "/bin/jps")))
+               (let ((jps (search-input-file inputs "/bin/jps")))
                  (substitute* "bin/drip"
                    (("jps") jps)
                    (("brew update && brew upgrade drip") "guix pull && guix install drip")
@@ -378,11 +378,9 @@ JNI.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "JAVA_HOME" (assoc-ref inputs "jamvm"))
              (setenv "JAVACMD"
-                     (string-append (assoc-ref inputs "jamvm")
-                                    "/bin/jamvm"))
+                     (search-input-file inputs "/bin/jamvm"))
              (setenv "JAVAC"
-                     (string-append (assoc-ref inputs "jikes")
-                                    "/bin/jikes"))
+                     (search-input-file inputs "/bin/jikes"))
              (setenv "CLASSPATH"
                      (string-append (assoc-ref inputs "jamvm")
                                     "/lib/rt.jar"))
@@ -14163,8 +14161,7 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                                             "/dist/" jar-name))
                         (java-cp (string-append share "/" jar-name))
                         (bin (string-append %output "/bin"))
-                        (java (string-append (assoc-ref inputs "jdk")
-                                             "/bin/java")))
+                        (java (search-input-file inputs "/bin/java")))
                    (install-file jar share)
                    (mkdir-p bin)
                    ;; Generate wrapper scripts for bin/, which invoke common

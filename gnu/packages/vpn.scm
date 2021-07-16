@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -323,7 +323,7 @@ endpoints.")
                                "/bin/" command)))
              (substitute* "src/libstrongswan/utils/process.c"
                (("/bin/sh")
-                (string-append (assoc-ref inputs "bash") "/bin/sh")))
+                (search-input-file inputs "/bin/sh")))
 
              (substitute* "src/libstrongswan/tests/suites/test_process.c"
                (("/bin/sh") (which "sh"))
@@ -1115,8 +1115,7 @@ public keys and can roam across IP addresses.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "l2tp.h"
                         (("/usr/sbin/pppd")
-                         (string-append (assoc-ref inputs "ppp")
-                                        "/sbin/pppd")))
+                         (search-input-file inputs "/sbin/pppd")))
                       (setenv "KERNELSRC"
                               (assoc-ref inputs "linux-libre-headers"))
                       #t)))

@@ -4120,7 +4120,7 @@ Git and exports them in maildir format or to an MDA through a pipe.")
                     ;; 'git' is invoked in various files of the PublicInbox
                     ;; perl module.
                     `("PATH" ":" prefix
-                      (,(string-append (assoc-ref inputs "git") "/bin")))))
+                      (,(dirname (search-input-file inputs "/bin/git"))))))
                 (find-files (string-append out "/bin"))))
              #t)))))
     (native-inputs

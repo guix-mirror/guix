@@ -1129,15 +1129,10 @@ freedesktop.org desktop notification specification.")
          (add-after 'unpack 'patch
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "util/mm-common-prepare.in"
-              (("ln") (string-append (assoc-ref inputs "coreutils")
-                                     "/bin/ln"))
-              (("cp") (string-append (assoc-ref inputs "coreutils")
-                                     "/bin/cp"))
-              (("sed") (string-append (assoc-ref inputs "sed")
-                                      "/bin/sed"))
-              (("cat") (string-append (assoc-ref inputs "coreutils")
-                                      "/bin/cat")))
-             #t)))))
+               (("ln") (search-input-file inputs "/bin/ln"))
+               (("cp") (search-input-file inputs "/bin/cp"))
+               (("sed") (search-input-file inputs "/bin/sed"))
+               (("cat") (search-input-file inputs "/bin/cat"))))))))
     (native-inputs
      `(("coreutils" ,coreutils)
        ("gettext" ,gettext-minimal)
@@ -7833,10 +7828,8 @@ services.")
        (modify-phases %standard-phases
          (add-after 'configure 'patch-path
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-             (let* ((ovpn (string-append (assoc-ref inputs "openvpn")
-                                         "/sbin/openvpn"))
-                    (modprobe (string-append (assoc-ref inputs "kmod")
-                                             "/bin/modprobe"))
+             (let* ((ovpn (search-input-file inputs "/sbin/openvpn"))
+                    (modprobe (search-input-file inputs "/bin/modprobe"))
                     (pretty-ovpn (string-append "\"" ovpn "\"")))
                (for-each
                 (lambda (file)
@@ -7889,10 +7882,8 @@ to virtual private networks (VPNs) via OpenVPN.")
        (modify-phases %standard-phases
          (add-after 'configure 'patch-path
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-             (let* ((vpnc (string-append (assoc-ref inputs "vpnc")
-                                         "/sbin/vpnc"))
-                    (modprobe (string-append (assoc-ref inputs "kmod")
-                                             "/bin/modprobe"))
+             (let* ((vpnc (search-input-file inputs "/sbin/vpnc"))
+                    (modprobe (search-input-file inputs "/bin/modprobe"))
                     (pretty-ovpn (string-append "\"" vpnc "\"")))
                (substitute* "src/nm-vpnc-service.c"
                     (("\"/usr/local/sbin/vpnc\"") pretty-ovpn)
@@ -7938,10 +7929,9 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
        (modify-phases %standard-phases
          (add-after 'configure 'patch-path
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-             (let* ((openconnect (string-append (assoc-ref inputs "openconnect")
-                                         "/sbin/openconnect"))
-                    (modprobe (string-append (assoc-ref inputs "kmod")
-                                             "/bin/modprobe"))
+             (let* ((openconnect (search-input-file inputs
+                                                    "/sbin/openconnect"))
+                    (modprobe (search-input-file inputs "/bin/modprobe"))
                     (pretty-ovpn (string-append "\"" openconnect "\"")))
                (substitute* "src/nm-openconnect-service.c"
                  (("\"/usr(/local)?/s?bin/openconnect\"") pretty-ovpn)
@@ -11611,9 +11601,9 @@ GTK+.  It integrates well with the GNOME desktop environment.")
                (wrap-program prog
                  `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
-                 `("PATH" prefix (,(string-append (assoc-ref inputs "pandoc")
-                                                  "/bin"))))
-               #t))))))
+                 `("PATH" prefix (,(dirname
+                                    (search-input-file inputs
+                                                       "/bin/pandoc")))))))))))
     (inputs
      `(("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)

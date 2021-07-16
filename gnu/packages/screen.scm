@@ -132,8 +132,7 @@ controlling terminal and attach to it later.")
          (add-after
           'install 'wrap-python-scripts
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((python (string-append (assoc-ref inputs "python")
-                                          "/bin/python"))
+            (let* ((python (search-input-file inputs "/bin/python"))
                    (out    (assoc-ref outputs "out"))
                    (config (string-append out "/bin/byobu-config"))
                    (select (string-append out "/bin/byobu-select-session")))

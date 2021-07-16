@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -2343,9 +2343,7 @@ Wacom-style graphics tablets.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (list "src/dependency.py" "src/exif.py")
                (("exiftool")
-                (string-append (assoc-ref inputs "perl-image-exiftool")
-                               "/bin/exiftool")))
-             #t))
+                (search-input-file inputs "/bin/exiftool")))))
          (add-before 'install 'check
            (lambda _
              (invoke "pytest")))

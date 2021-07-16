@@ -246,11 +246,11 @@ shared NFS home directories.")
                             "gobject/glib-genmarshal.in"
                             "gobject/glib-mkenums.in")
                (("@PYTHON@")
-                (string-append (assoc-ref (or native-inputs inputs) "python")
-                               "/bin/python"
-                               ,(version-major+minor
-                                 (package-version python)))))
-             #t))
+                (search-input-file (or native-inputs inputs)
+                                   (string-append
+                                    "/bin/python"
+                                    ,(version-major+minor
+                                      (package-version python))))))))
          (add-before 'check 'pre-check
            (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              ;; For tests/gdatetime.c.

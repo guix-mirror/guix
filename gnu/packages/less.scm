@@ -85,12 +85,11 @@ text editors.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "lesspipe.sh"
                         (("tput colors")
-                         (string-append (assoc-ref inputs "ncurses")
-                                        "/bin/tput colors"))
+                         (string-append (search-input-file inputs "/bin/tput")
+                                        " colors"))
                         (("file -")
-                         (string-append (assoc-ref inputs "file")
-                                        "/bin/file -")))
-                      #t)))))
+                         (string-append (search-input-file inputs "/bin/file")
+                                        " -"))))))))
     (inputs
      `(("file" ,file)
        ("ncurses" ,ncurses)))  ; for tput

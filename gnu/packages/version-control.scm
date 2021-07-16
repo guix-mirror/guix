@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -1035,9 +1035,8 @@ a built-in cache to decrease server I/O pressure.")
                                (assoc-ref inputs "git") "/bin/git"
                                "'"))
                (("/usr/sbin/sendmail")
-                (string-append (assoc-ref inputs "sendmail")
-                               "/usr/sbin/sendmail")))
-             #t)))))
+                (search-input-file inputs
+                                   "/usr/sbin/sendmail"))))))))
     (inputs
      `(("git" ,git)
        ("sendmail" ,sendmail)))
@@ -1424,8 +1423,7 @@ also walk each side of a merge and test those changes individually.")
                   (delete 'build)
                   (add-before 'install 'patch-scripts
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((perl (string-append (assoc-ref inputs "perl")
-                                                 "/bin/perl")))
+                      (let ((perl (search-input-file inputs "/bin/perl")))
                         ;; This seems to take care of every shell script that
                         ;; invokes Perl.
                         (substitute* (find-files "." ".*")
@@ -1462,8 +1460,7 @@ also walk each side of a merge and test those changes individually.")
                       (substitute* '("src/lib/Gitolite/Hooks/PostUpdate.pm"
                                      "src/lib/Gitolite/Hooks/Update.pm")
                         (("/usr/bin/perl")
-                         (string-append (assoc-ref inputs "perl")
-                                        "/bin/perl")))
+                         (search-input-file inputs "/bin/perl")))
 
                       (substitute* "src/lib/Gitolite/Common.pm"
                         (("\"ssh-keygen")
@@ -1759,10 +1756,8 @@ history.  It implements the changeset evolution concept for Mercurial.")
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gpg (string-append (assoc-ref inputs "gnupg")
-                                       "/bin/gpg"))
-                   (openssl (string-append (assoc-ref inputs "openssl")
-                                           "/bin/openssl")))
+             (let ((gpg (search-input-file inputs "/bin/gpg"))
+                   (openssl (search-input-file inputs "/bin/openssl")))
                (substitute* "commitsigs.py"
                  (("b'gpg',") (string-append "b'" gpg "',"))
                  (("b'openssl',") (string-append "b'" openssl "',")))))))
@@ -2707,8 +2702,7 @@ directory full of HOWTOs.")
                #t))
            (add-before 'install 'patch-git
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((git (string-append (assoc-ref inputs "git")
-                                         "/bin/git")))
+               (let ((git (search-input-file inputs "/bin/git")))
                  (substitute* "bin/git-when-merged"
                    (("'git'") (string-append "'" git "'")))
                  #t)))
@@ -2752,8 +2746,7 @@ how information about the merge is displayed.")
          (delete 'configure)
          (add-before 'install 'patch-git
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((git (string-append (assoc-ref inputs "git")
-                                       "/bin/git")))
+             (let ((git (search-input-file inputs "/bin/git")))
                (substitute* "git-imerge"
                  (("'git'") (string-append "'" git "'")))
                #t)))
@@ -3045,11 +3038,10 @@ defects faster.")
                (substitute* "tests/test_main.py"
                  (("'gita\\\\n'") "'source\\n'")
                  (("'gita'") "'source'"))
-               (invoke (string-append (assoc-ref inputs "git") "/bin/git")
+               (invoke (search-input-file inputs "/bin/git")
                        "init")
                (add-installed-pythonpath inputs outputs)
-               (invoke (string-append (assoc-ref inputs "python-pytest")
-                                      "/bin/pytest")
+               (invoke (search-input-file inputs "/bin/pytest")
                        "-vv" "tests")))
            (add-after 'install 'install-shell-completions
              (lambda* (#:key outputs #:allow-other-keys)

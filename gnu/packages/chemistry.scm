@@ -192,8 +192,7 @@ only with Python 2 and NumPy < 1.9.")
                     (include-dir (string-append out "/include/inchi"))
                     (lib (string-append out "/lib/inchi"))
                     (inchi-doc (assoc-ref inputs "inchi-doc"))
-                    (unzip (string-append (assoc-ref inputs "unzip")
-                                          "/bin/unzip")))
+                    (unzip (search-input-file inputs "/bin/unzip")))
                (chdir "../../..")
                ;; Install binary.
                (with-directory-excursion "INCHI_EXE/bin/Linux"

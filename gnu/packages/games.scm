@@ -1555,8 +1555,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
              ;; Look for xdg-open in the store.
              (substitute* "src/core/web.c"
                (("/usr(/bin/xdg-open)" _ bin)
-                (string-append (assoc-ref inputs "xdg-utils") bin)))
-             #t))
+                (search-input-file inputs bin)))))
          (add-after 'unpack 'unbundle-fonts
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Replace bundled Roboto fonts with links to the store.
@@ -3353,7 +3352,8 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "xboard.conf"
                (("aplay -q")
-                (string-append (assoc-ref inputs "alsa-utils") "/bin/aplay -q")))))
+                (string-append (search-input-file inputs "/bin/aplay")
+                               " -q")))))
          ;; Fixes https://issues.guix.gnu.org/45236.
          (add-after 'unpack 'patch-default-engine
            (lambda* (#:key inputs #:allow-other-keys)
@@ -5848,7 +5848,7 @@ throwing people around in pseudo-randomly generated buildings.")
              (let* ((data (assoc-ref inputs "hyperrogue-data"))
                     (out (assoc-ref outputs "out"))
                     (sounds (string-append out "/share/hyperrogue/sounds"))
-                    (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
+                    (unzip (search-input-file inputs "/bin/unzip")))
                ;; Extract media license information into sounds directory.
                (invoke unzip "-j" data
                        (string-append
@@ -9045,10 +9045,8 @@ action RPGs.")
            ;; parameters.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bash (string-append (assoc-ref inputs "bash")
-                                         "/bin/bash"))
-                    (flare (string-append (assoc-ref inputs "flare-engine")
-                                          "/bin/flare"))
+                    (bash (search-input-file inputs "/bin/bash"))
+                    (flare (search-input-file inputs "/bin/flare"))
                     (script (string-append out "/bin/flare-game")))
                (mkdir-p (dirname script))
                (call-with-output-file script
@@ -11919,8 +11917,7 @@ and chess engines.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "chessx.pro"
                (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
-             #t))
+                (search-input-file inputs "/bin/lrelease")))))
          (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")

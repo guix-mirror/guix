@@ -823,8 +823,7 @@ the Monero command line client and daemon.")
            ;; The monerod program must be available so that monero-wallet-gui
            ;; can start a Monero daemon if necessary.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (symlink (string-append (assoc-ref inputs "monero")
-                                     "/bin/monerod")
+             (symlink (search-input-file inputs "/bin/monerod")
                       (string-append (assoc-ref outputs "out")
                                      "/bin/monerod")))))))
     (home-page "https://web.getmonero.org/")

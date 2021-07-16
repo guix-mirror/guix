@@ -135,11 +135,14 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/ibusenginesimple.c"
                (("/usr/share/X11/locale")
-                (string-append (assoc-ref inputs "libx11")
-                               "/share/X11/locale")))
+                (search-input-directory inputs
+                                        "share/X11/locale")))
              (substitute* "ui/gtk3/xkblayout.vala"
                (("\"(setxkbmap|xmodmap)\"" _ prog)
-                (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))))
+                (string-append "\""
+                               (search-input-file inputs
+                                                  (string-append "bin/" prog))
+                               "\"")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests write to $HOME.

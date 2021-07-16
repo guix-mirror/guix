@@ -1193,7 +1193,7 @@ enabled.")
          (delete 'configure)
          (add-before 'build 'patch-lua-calls
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((lua (string-append (assoc-ref inputs "lua") "/bin/lua")))
+             (let ((lua (search-input-file inputs "/bin/lua")))
                (setenv "LUA" lua)
                (substitute* "old/launcher.lua"
                  (("/usr/bin/env lua") lua))
@@ -1202,7 +1202,7 @@ enabled.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "fennel"
                (("/usr/bin/env .*lua")
-                (string-append (assoc-ref inputs "lua") "/bin/lua")))
+                (search-input-file inputs "/bin/lua")))
              #t))
          (delete 'check)
          (add-after 'install 'check

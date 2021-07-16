@@ -556,8 +556,8 @@ address of one of the participants.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (invoke "qmake" "main.pro" "QMAKE_LRELEASE=lrelease"
                      (string-append "MUMBLE_PYTHON="
-                                    (string-append (assoc-ref inputs "python")
-                                                   "/bin/python3"))
+                                    (search-input-file inputs
+                                                       "/bin/python3"))
                      (string-append "CONFIG+="
                                     (string-join
                                      ;; Options used are listed in the same order

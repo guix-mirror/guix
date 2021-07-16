@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018. 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -247,7 +247,7 @@
          ;; Configure, build and install QEMU user-emulation static binaries.
          (add-after 'configure 'configure-user-static
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((gcc (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+             (let* ((gcc (search-input-file inputs "/bin/gcc"))
                     (static (assoc-ref outputs "static"))
                     ;; This is the common set of configure flags; it is
                     ;; duplicated here to isolate this phase from manipulations
@@ -1239,8 +1239,8 @@ virtualization library.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Xen is not available for now - so only patch qemu.
              (substitute* "virtManager/createconn.py"
-               (("/usr(/bin/qemu-system)" _ suffix)
-                (string-append (assoc-ref inputs "qemu") suffix)))
+               (("/usr(/bin/qemu-system-[a-zA-Z0-9_-]+)" _ suffix)
+                (search-input-file inputs suffix)))
              #t))
          (add-before 'wrap 'wrap-with-GI_TYPELIB_PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1371,9 +1371,7 @@ domains, their live performance and resource utilization statistics.")
                (("\\$\\(PYTHON\\)") "python2"))
              (substitute* "lib/Makefile"
                (("\\$\\(PYTHON\\)")
-                (string-append (assoc-ref inputs "python")
-                               "/bin/python")))
-             #t))
+                (search-input-file inputs "/bin/python")))))
          (add-before 'build 'fix-symlink
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The file 'images/google/protobuf/descriptor.proto' points to

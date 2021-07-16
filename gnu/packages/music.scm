@@ -17,7 +17,7 @@
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
@@ -625,7 +625,7 @@ many input formats and provides a customisable Vi-style user interface.")
              ;; Replace hard-coded diff file name.
              (substitute* "tests/integration.c"
                (("/usr/bin/diff")
-                (string-append (assoc-ref inputs "diffutils") "/bin/diff")))
+                (search-input-file inputs "/bin/diff")))
              ;; Denemo's documentation says to use this command to run its
              ;; test suite.
              (invoke "make" "-C" "tests" "check")))
@@ -633,8 +633,7 @@ many input formats and provides a customisable Vi-style user interface.")
            ;; This phase sets the default path for lilypond to its current
            ;; location in the store.
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((lilypond (string-append (assoc-ref inputs "lilypond")
-                                             "/bin/lilypond")))
+             (let* ((lilypond (search-input-file inputs "/bin/lilypond")))
                (substitute* "src/core/prefops.c"
                  (("g_string_new \\(\"lilypond\"\\);")
                   (string-append "g_string_new (\""
@@ -3316,8 +3315,7 @@ socket or command line.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "curseradio/curseradio.py"
                (("/usr/bin/mpv")
-                (string-append (assoc-ref inputs "mpv") "/bin/mpv")))
-             #t)))))
+                (search-input-file inputs "/bin/mpv"))))))))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-requests" ,python-requests)

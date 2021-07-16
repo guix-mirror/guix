@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
@@ -643,11 +643,12 @@ systems with no further dependencies.")
                               "blueman-manager.in" "blueman-mechanism.in"
                               "blueman-rfcomm-watcher.in" "blueman-sendto.in"
                               "blueman-services.in" "blueman-tray.in")
-                 (("@PYTHON@") (string-append (assoc-ref inputs "python")
-                                              "/bin/python"
-                                              ,(version-major+minor
-                                                (package-version python))))))
-             #t))
+                 (("@PYTHON@")
+                  (search-input-file inputs
+                                     (string-append
+                                      "/bin/python"
+                                      ,(version-major+minor
+                                        (package-version python)))))))))
          ;; Fix loading of external programs.
          (add-after 'unpack 'patch-external-programs
            (lambda* (#:key inputs #:allow-other-keys)
@@ -657,12 +658,9 @@ systems with no further dependencies.")
                 (string-append (assoc-ref inputs "bluez")
                                "/libexec/bluetooth/bluetoothd"))
                (("/sbin/iptables")
-                (string-append (assoc-ref inputs "iptables")
-                               "/sbin/iptables"))
+                (search-input-file inputs "/sbin/iptables"))
                (("/usr/sbin/pppd")
-                (string-append (assoc-ref inputs "ppp")
-                               "/sbin/pppd")))
-             #t))
+                (search-input-file inputs "/sbin/pppd")))))
          ;; Fix loading of pulseaudio libraries.
          (add-after 'unpack 'patch-pulseaudio-libraries
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1740,9 +1738,7 @@ TCP connection, TLS handshake and so on) in the terminal.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "test-suite/testheaders.sh"
                (("/bin/true")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/true")))
-             #t)))))
+                (search-input-file inputs "/bin/true"))))))))
     (inputs
      `(("perl" ,perl)
        ("openldap" ,openldap)
@@ -1837,8 +1833,8 @@ live network and disk I/O bandwidth monitor.")
                       #t))
                   (add-after 'build 'absolutize-tools
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((ethtool (string-append (assoc-ref inputs "ethtool")
-                                                    "/sbin/ethtool")))
+                      (let ((ethtool (search-input-file inputs
+                                                        "/sbin/ethtool")))
                         (substitute* "scripts/airmon-ng"
                           (("ethtool ")
                            (string-append ethtool " ")))

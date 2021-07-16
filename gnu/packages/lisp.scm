@@ -1106,12 +1106,11 @@ assembler, PEG) is less than 1MB.")
        (modify-phases %standard-phases
          (add-before 'install 'fix-utils-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((coreutils (string-append (assoc-ref inputs "coreutils") "/bin/"))
-                    (cat (string-append coreutils "cat"))
-                    (paste (string-append coreutils "paste"))
-                    (sort (string-append coreutils "sort"))
-                    (basename (string-append coreutils "basename"))
-                    (sed (string-append (assoc-ref inputs "sed") "/bin/sed")))
+             (let* ((cat (search-input-file inputs "/bin/cat"))
+                    (paste (search-input-file inputs "/bin/paste"))
+                    (sort (search-input-file inputs "/bin/sort"))
+                    (basename (search-input-file inputs "/bin/basename"))
+                    (sed (search-input-file inputs "/bin/sed")))
                (substitute* "lisp-repl-core-dumper"
                  (("\\$\\(basename") (string-append "$(" basename))
                  (("\\<cat\\>") cat)

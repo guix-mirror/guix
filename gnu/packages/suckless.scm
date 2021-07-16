@@ -353,8 +353,8 @@ drawing.")
          (add-before 'build 'set-dmenu-and-xprop-file-name
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "config.def.h"
-               (("dmenu") (string-append (assoc-ref inputs "dmenu") "/bin/dmenu"))
-               (("xprop") (string-append (assoc-ref inputs "xprop") "/bin/xprop")))
+               (("dmenu") (search-input-file inputs "/bin/dmenu"))
+               (("xprop") (search-input-file inputs "/bin/xprop")))
              #t)))))
     (inputs
      `(("dmenu" ,dmenu)

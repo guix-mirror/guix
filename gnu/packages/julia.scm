@@ -286,7 +286,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              ;; call our version
              (substitute* "base/Makefile"
                (("\\$\\$\\(build_depsbindir\\)/libwhich")
-                (string-append (assoc-ref inputs "libwhich") "/bin/libwhich")))
+                (search-input-file inputs "/bin/libwhich")))
              #t))
          (add-before 'check 'set-home
            ;; Some tests require a home directory to be set.

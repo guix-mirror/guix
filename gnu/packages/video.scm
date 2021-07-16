@@ -2435,8 +2435,7 @@ other site that youtube-dl supports.")
            ;; Explicitly invoke the input ffmpeg, instead of whichever one
            ;; happens to be in the user's $PATH at run time.
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((ffmpeg (string-append (assoc-ref inputs "ffmpeg")
-                                          "/bin/ffmpeg")))
+             (let ((ffmpeg (search-input-file inputs "/bin/ffmpeg")))
                (substitute* "src/you_get/processor/ffmpeg.py"
                  ;; Don't blindly replace all occurrences of ‘'ffmpeg'’: the
                  ;; same string is also used when sniffing ffmpeg's output.

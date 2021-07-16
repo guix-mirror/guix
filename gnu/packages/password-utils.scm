@@ -523,11 +523,11 @@ any X11 window.")
              (substitute* "contrib/dmenu/passmenu"
                (("dmenu=dmenu\n")
                 (string-append "dmenu="
-                               (assoc-ref inputs "dmenu") "/bin/dmenu\n"))
+                               (search-input-file inputs "/bin/dmenu")
+                               "\n"))
                (("xdotool=\"xdotool")
                 (string-append "xdotool=\""
-                               (assoc-ref inputs "xdotool") "/bin/xdotool")))
-             #t))
+                               (search-input-file inputs "/bin/xdotool"))))))
          (add-after 'install 'install-passmenu
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

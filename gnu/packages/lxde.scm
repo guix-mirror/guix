@@ -398,9 +398,7 @@ with freedesktop.org standard.")
                 "terminal_su=/run/setuid-programs/su")
                (("#graphical_su=/usr/bin/gksu")
                 (string-append "graphical_su="
-                               (string-append (assoc-ref inputs "ktsuss")
-                                              "/bin/ktsuss"))))
-             #t)))
+                               (search-input-file inputs "/bin/ktsuss")))))))
        #:configure-flags (list
                           (string-append "--with-preferable-sudo="
                                          (assoc-ref %build-inputs "ktsuss")

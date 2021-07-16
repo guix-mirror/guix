@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -1203,9 +1203,8 @@ developed mainly for Ren'py.")
          (add-after 'set-paths 'set-build-vars
            (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (setenv "RENPY_CYTHON"
-                     (string-append (assoc-ref (or native-inputs inputs)
-                                               "python2-cython")
-                                    "/bin/cython"))
+                     (search-input-file (or native-inputs inputs)
+                                        "/bin/cython"))
              (setenv "RENPY_DEPS_INSTALL" (string-join (map cdr inputs) ":"))
              #t))
          (replace 'build

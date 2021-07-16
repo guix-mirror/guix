@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -5895,8 +5895,7 @@ descriptions.")
              (let* ((out   (assoc-ref outputs "out"))
                     (elisp-file "elisp/hindent.el")
                     (dest  (string-append out "/share/emacs/site-lisp"))
-                    (emacs (string-append (assoc-ref inputs "emacs")
-                                          "/bin/emacs")))
+                    (emacs (search-input-file inputs "/bin/emacs")))
                (make-file-writable elisp-file)
                (emacs-substitute-variables elisp-file
                  ("hindent-process-path"

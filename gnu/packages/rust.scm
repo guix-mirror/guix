@@ -325,7 +325,7 @@ safety and thread safety guarantees.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SHELL" (which "sh"))
              (setenv "CONFIG_SHELL" (which "sh"))
-             (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+             (setenv "CC" (search-input-file inputs "/bin/gcc"))
              ;; The Guix LLVM package installs only shared libraries.
              (setenv "LLVM_LINK_SHARED" "1")))
          (add-after 'unpack 'neuter-tidy

@@ -210,8 +210,7 @@ This package produces a native @command{ocamlc} and a bytecode @command{ocamllex
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh-references
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((sh (string-append (assoc-ref inputs "bash")
-                                       "/bin/sh"))
+             (let* ((sh (search-input-file inputs "/bin/sh"))
                     (quoted-sh (string-append "\"" sh "\"")))
                (with-fluids ((%default-port-encoding #f))
                  (for-each
@@ -805,8 +804,7 @@ the opam file format.")
                  (add-before 'build 'pre-build
                    (lambda* (#:key inputs make-flags #:allow-other-keys)
                      (let ((bash (assoc-ref inputs "bash"))
-                           (bwrap (string-append (assoc-ref inputs "bubblewrap")
-                                                 "/bin/bwrap")))
+                           (bwrap (search-input-file inputs "/bin/bwrap")))
                        (substitute* "src/core/opamSystem.ml"
                          (("\"/bin/sh\"")
                           (string-append "\"" bash "/bin/sh\""))
@@ -3674,8 +3672,8 @@ and 4 (random based) according to RFC 4122.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-shell
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
-                                                   "/bin/sh")))))))
+             (setenv "CONFIG_SHELL"
+                     (search-input-file inputs "/bin/sh")))))))
     (inputs `(("lablgtk" ,lablgtk)))
     (properties `((upstream-name . "ocamlgraph")))
     (home-page "http://ocamlgraph.lri.fr/")

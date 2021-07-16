@@ -469,8 +469,10 @@ gpgpme starting with version 1.7.")
                ;; When cross-compiling, the bash script 'libgcrypt-config'
                ;; must be accessible during the configure phase.
                (setenv "PATH"
-                       (string-append (assoc-ref inputs "libgcrypt")
-                                      "/bin:" (getenv "PATH")))))))))
+                       (string-append
+                        (dirname
+                         (search-input-file inputs "bin/libgcrypt-config"))
+                        ":" (getenv "PATH")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
@@ -684,8 +686,7 @@ signing, decryption, verification, and key-listing parsing.")
         (add-before
          'build 'set-gpg-file-name
          (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((gpg (string-append (assoc-ref inputs "gpg")
-                                      "/bin/gpg")))
+           (let* ((gpg (search-input-file inputs "/bin/gpg")))
              (substitute* "libpius/constants.py"
                (("/usr/bin/gpg2") gpg))
              #t))))))
@@ -1213,8 +1214,7 @@ over.")
          (delete 'configure) ; no configure script
          (add-before 'install 'hardlink-gnupg
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gpg (string-append (assoc-ref inputs "gnupg")
-                                       "/bin/gpg")))
+             (let ((gpg (search-input-file inputs "/bin/gpg")))
                (substitute* (find-files "." "jetring-[[:alpha:]]+$")
                  (("gpg -") (string-append gpg " -"))
                  (("\\\"gpg\\\"") (string-append "\"" gpg "\"")))

@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2017, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -2289,8 +2289,7 @@ X server: @code{handhelds}, @code{redglass} and @code{whiteglass}.")
            (delete 'configure)
            (add-before 'build 'set-inkscape-environment-variable
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((inkscape (string-append (assoc-ref inputs "inkscape")
-                                              "/bin/inkscape")))
+               (let ((inkscape (search-input-file inputs "/bin/inkscape")))
                  (setenv "INKSCAPE" inkscape)
                  #t)))
            (add-before 'build 'placate-inkscape-warnings
@@ -3593,8 +3592,7 @@ X server.")
                (format #t "decompressing x86emu source code~%")
                (with-directory-excursion "libs"
                  (let ((srcs (assoc-ref inputs "xorg-server-sources"))
-                       (tar-binary (string-append (assoc-ref inputs "tar")
-                                                  "/bin/tar")))
+                       (tar-binary (search-input-file inputs "/bin/tar")))
                    (invoke tar-binary "xvf" srcs "--strip-components=3"
                            "--wildcards" "*/hw/xfree86/x86emu/")
                    ;; extract license:
@@ -4991,9 +4989,8 @@ protocol and arbitrary X extension protocol.")
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/bin/mkfontdir")
                `("PATH" ":" prefix
-                 (,(string-append (assoc-ref inputs "mkfontscale")
-                                  "/bin"))))
-             #t)))))
+                 (,(dirname
+                    (search-input-file inputs "/bin/mkfontscale"))))))))))
     (inputs
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
@@ -6430,7 +6427,8 @@ basic eye-candy effects.")
                ;; The trailing -- is intentional, so we only replace it inside
                ;; a command line.
                (("dbus-launch --")
-                (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch --")))
+                (string-append (search-input-file inputs "/bin/dbus-launch")
+                               " --")))
              ;; /run/user does not exist on guix system
              (substitute* "./xpra/scripts/config.py"
                (("socket-dir.*: \"\",")

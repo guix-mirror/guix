@@ -5223,11 +5223,10 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((python (string-append (assoc-ref inputs "python")
-                                          "/bin/python3"))
-                   (run-tests (string-append "../ableton-link-"
-                                             ,version
-                                             "-checkout/ci/run-tests.py")))
+             (let* ((python (search-input-file inputs "/bin/python3"))
+                    (run-tests (string-append "../ableton-link-"
+                                              ,version
+                                              "-checkout/ci/run-tests.py")))
                (invoke python run-tests "--target" "LinkCoreTest")
                (invoke python run-tests "--target" "LinkDiscoveryTest"))))
          (add-before 'install 'patch-cmake

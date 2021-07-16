@@ -1350,7 +1350,7 @@ basic input/output.")
                     (bin   (string-append out "/bin"))
                     (share (string-append out "/share"))
                     (icons (string-append share "/icons/hicolor/scalable/apps"))
-                    (tic   (string-append (assoc-ref inputs "ncurses") "/bin/tic"))
+                    (tic   (search-input-file inputs "/bin/tic"))
                     (man   (string-append share "/man/man1"))
                     (alacritty-bin "target/release/alacritty"))
                ;; Install the executable.

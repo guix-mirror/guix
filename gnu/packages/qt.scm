@@ -168,9 +168,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "qt5ct.pro"
                (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools")
-                               "/bin/lrelease")))
-             #t))
+                (search-input-file inputs "/bin/lrelease")))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))

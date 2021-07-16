@@ -216,7 +216,7 @@ and many other languages.")
              (setenv "WXWIN" (assoc-ref inputs "wxwidgets"))
              ;; Copy the waf executable to the source directory since it needs
              ;; to be in a writable directory.
-             (copy-file (string-append (assoc-ref inputs "python-waf") "/bin/waf")
+             (copy-file (search-input-file inputs "/bin/waf")
                         "bin/waf")
              (setenv "WAF" "bin/waf")
              ;; The build script tries to copy license files from the
@@ -306,8 +306,9 @@ provide a 100% native look and feel for the application.")
              (setenv "WXWIN" (assoc-ref inputs "wxwidgets"))
              (use-modules (ice-9 popen) (ice-9 rdelim))
              (let ((port (open-pipe* OPEN_READ
-                                     (string-append (assoc-ref inputs "wxwidgets")
-                                                    "/bin/wx-config") "--cppflags")))
+                                     (search-input-file inputs
+                                                        "/bin/wx-config")
+                                     "--cppflags")))
                (setenv "CPPFLAGS" (read-string port))
                (close-pipe port))
              #t)))))

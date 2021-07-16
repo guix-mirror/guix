@@ -466,8 +466,8 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                                              (cut member <> '("." ".."))))))
                     (tlpkg-src (string-append tl-extra-root "/" tl-extra-dir
                                               "/tlpkg"))
-                    (config.guess (string-append (assoc-ref inputs "config")
-                                                 "/bin/config.guess")))
+                    (config.guess (search-input-file inputs
+                                                     "/bin/config.guess")))
 
                ;; Create symbolic links for the latex variants and their
                ;; man pages.

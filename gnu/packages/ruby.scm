@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -1175,8 +1175,7 @@ structure.  Supports custom object formatting via plugins.")
              #t))
          (add-after 'unpack 'patch-pandoc-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((pandoc (string-append (assoc-ref inputs "pandoc")
-                                          "/bin/pandoc")))
+             (let ((pandoc (search-input-file inputs "/bin/pandoc")))
                (substitute* "lib/pandoc-ruby.rb"
                  (("@@pandoc_path = 'pandoc'")
                   (format #f "@@pandoc_path = '~a'" pandoc)))
@@ -4850,8 +4849,7 @@ you to merge elements inside a hash together recursively.")
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Make the default git binary an absolute path to the
                       ;; store.
-                      (let ((git    (string-append (assoc-ref inputs "git")
-                                                   "/bin/git"))
+                      (let ((git    (search-input-file inputs "/bin/git"))
                             (config (string-append
                                      (assoc-ref outputs "out")
                                      "/lib/ruby/vendor_ruby/gems/git-"

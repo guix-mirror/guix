@@ -1126,9 +1126,7 @@ messaging library.")
                         ;; command.
                         (substitute* "src/hmac.scm"
                           (("openssl")
-                           (string-append (assoc-ref inputs "openssl")
-                                          "/bin/openssl")))
-                        #t))
+                           (search-input-file inputs "/bin/openssl")))))
 
                     ;; XXX: The code uses 'include' to include its own source
                     ;; files, and "-L src" isn't enough in this case.

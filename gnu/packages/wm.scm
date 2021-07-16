@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
@@ -613,14 +613,10 @@ Features include:
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (icons (string-append out "/share/i3lock-fancy/icons/"))
-                    (wmctrl (string-append (assoc-ref inputs "wmctrl")
-                                           "/bin/wmctrl"))
-                    (mconvert (string-append (assoc-ref inputs "imagemagick")
-                                             "/bin/convert"))
-                    (mimport (string-append (assoc-ref inputs "imagemagick")
-                                            "/bin/import"))
-                    (awk (string-append (assoc-ref inputs "gawk")
-                                        "/bin/gawk")))
+                    (wmctrl (search-input-file inputs "/bin/wmctrl"))
+                    (mconvert (search-input-file inputs "/bin/convert"))
+                    (mimport (search-input-file inputs "/bin/import"))
+                    (awk (search-input-file inputs "/bin/gawk")))
 
                (substitute* "lock"
                  (("\\$\\(command -V wmctrl\\)") wmctrl)

@@ -1964,19 +1964,14 @@ parallel computing platforms.  It also supports serial execution.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "freehdl/freehdl-config"
                (("pkg-config")
-                (string-append (assoc-ref inputs "pkg-config")
-                               "/bin/pkg-config"))
+                (search-input-file inputs "/bin/pkg-config"))
                (("cat")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cat")))
-             #t))
+                (search-input-file inputs "/bin/cat")))))
          (add-after 'patch-pkg-config 'setenv
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CXX" (string-append (assoc-ref inputs "gcc")
-                                          "/bin/g++"))
-             (setenv "SYSTEM_LIBTOOL" (string-append (assoc-ref inputs "libtool")
-                                                     "/bin/libtool"))
-             #t))
+             (setenv "CXX" (search-input-file inputs "/bin/g++"))
+             (setenv "SYSTEM_LIBTOOL"
+                     (search-input-file inputs "/bin/libtool"))))
          (add-after 'setenv 'patch-gvhdl
            (lambda _
              (substitute* "v2cc/gvhdl.in"
@@ -1987,7 +1982,7 @@ parallel computing platforms.  It also supports serial execution.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "freehdl/freehdl-gennodes.in"
                (("guile")
-                (string-append (assoc-ref inputs "guile") "/bin/guile"))
+                (search-input-file inputs "/bin/guile"))
                (("\\(debug") ";(debug")
                (("\\(@ ") "(apply-emit")
                (("\\(@@ ") "(apply-mini-format"))
@@ -2066,8 +2061,7 @@ parallel computing platforms.  It also supports serial execution.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (mkdir-p "build")
              (chdir "build")
-             (let ((lrelease (string-append (assoc-ref inputs "qttools")
-                                            "/bin/lrelease"))
+             (let ((lrelease (search-input-file inputs "/bin/lrelease"))
                    (out (assoc-ref outputs "out")))
                (invoke "qmake"
                        (string-append "QMAKE_LRELEASE=" lrelease)

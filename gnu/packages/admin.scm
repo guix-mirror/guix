@@ -1259,8 +1259,7 @@ connection alive.")
                       (sed       (assoc-ref inputs "sed*")))
                  (substitute* "client/scripts/linux"
                    (("/sbin/ip")
-                    (string-append (assoc-ref inputs "iproute")
-                                   "/sbin/ip")))
+                    (search-input-file inputs "/sbin/ip")))
 
                  (mkdir-p libexec)
                  (copy-file "client/scripts/linux"
@@ -1561,8 +1560,7 @@ at once based on a Perl regular expression.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "rc/rc"
                         (("/usr/sbin/sendmail")
-                         (string-append (assoc-ref inputs "mailutils")
-                                        "/bin/mail")))
+                         (search-input-file inputs "/bin/mail")))
                       #t))
                   (add-after 'unpack 'fix-configure
                     (lambda* (#:key inputs native-inputs #:allow-other-keys)
