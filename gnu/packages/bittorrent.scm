@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -45,6 +47,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -137,6 +140,35 @@ DHT, µTP, PEX and Magnet Links.")
     ;;
     ;; A few files files carry an MIT/X11 license header.
     (license (list l:gpl2 l:gpl3))))
+
+(define-public transmission-remote-gtk
+  (package
+    (name "transmission-remote-gtk")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/transmission-remote-gtk/"
+                           "transmission-remote-gtk/releases/download/"
+                           version "/transmission-remote-gtk-" version
+                           ".tar.xz"))
+       (patches (search-patches "transmission-remote-gtk-fix-appstream.patch"))
+       (sha256
+        (base32 "1aqjl5rgamgcgqvcldd1gzyfh2xci0m7070924d6vz2qln0q75sr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("curl" ,curl)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)))
+    (synopsis "Gtk frontend to the Transmission daemon")
+    (description "transmission-remote-gtk is a GTK client for remote management
+of the Transmission BitTorrent client, using its HTTP RPC protocol.")
+    (home-page "https://github.com/transmission-remote-gtk/transmission-remote-gtk")
+    (license l:gpl2+)))
 
 (define-public libtorrent
   (package
