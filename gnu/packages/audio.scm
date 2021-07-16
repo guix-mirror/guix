@@ -3360,8 +3360,10 @@ analysis plugins or audio feature extraction plugins.")
             ;; Originally a symlink to '/usr/local/share/automake-1.12/ar-lib'.
             (delete-file "ar-lib")
             (symlink
-             (string-append (assoc-ref inputs "automake") "/share/automake-"
-                            ,(package-version automake) "/ar-lib")
+             (search-input-file inputs
+                                (string-append "/share/automake-"
+                                               ,(package-version automake)
+                                               "/ar-lib"))
              "ar-lib")
             #t)))))
     (home-page "http://sbsms.sourceforge.net/")

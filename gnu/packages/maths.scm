@@ -1353,10 +1353,12 @@ extremely large and complex data collections.")
              (with-directory-excursion "config"
                (for-each (lambda (file)
                            (install-file
-                            (string-append (assoc-ref inputs "automake")
-                                           "/share/automake-"
-                                           ,(version-major+minor (package-version automake))
-                                           "/" file) "."))
+                            (search-input-file inputs
+                                               (string-append
+                                                "/share/automake-"
+                                                ,(version-major+minor (package-version automake))
+                                                "/" file))
+                            "."))
                          '("config.sub" "config.guess")))
 
              ;; Fix embedded version number
