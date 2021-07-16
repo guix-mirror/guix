@@ -1159,10 +1159,9 @@ characters and lines resulting in a rainbow effect.")
              ;; Set correct environment for SDL.
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "sdl")
-                                      "/include/SDL:"
-                                      (or (getenv "CPATH") "")))
-               #t))
+                       (string-append
+                        (search-input-directory inputs "include/SDL")
+                        ":" (or (getenv "CPATH") "")))))
            (add-before 'build 'fix-settings-directory
              ;; Hide foobillardplus settings directory in $HOME.
              (lambda _
@@ -1863,10 +1862,9 @@ Chess).  It is similar to standard chess but this variant is far more complicate
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-directory inputs "include/SDL")
+                      ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
     (home-page "http://lgames.sourceforge.net/LTris/")
@@ -2077,10 +2075,9 @@ Every puzzle has a complete solution, although there may be more than one.")
         (add-after 'set-paths 'set-sdl'paths
           (lambda* (#:key inputs #:allow-other-keys)
             (setenv "CPATH"
-                    (string-append (assoc-ref inputs "sdl-union")
-                                   "/include/SDL:"
-                                   (or (getenv "CPATH") "")))
-            #t)))))
+                    (string-append
+                     (search-input-file inputs "/include/SDL")
+                     ":" (or (getenv "CPATH") ""))))))))
    (inputs
     `(("fluidsynth" ,fluidsynth)
       ("glu" ,glu)
@@ -2920,9 +2917,9 @@ properly.")
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
-                              (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL:"
-                                             (or (getenv "CPATH") "")))))
+                              (string-append
+                               (search-input-file inputs "include/SDL")
+                               ":" (or (getenv "CPATH") "")))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -4868,10 +4865,9 @@ http://lavachat.symlynx.com/unix/")
            (add-after 'set-paths 'set-sdl-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "sdl-union")
-                                      "/include/SDL2:"
-                                      (or (getenv "CPATH") "")))
-               #t))
+                       (string-append
+                        (search-input-file inputs "/include/SDL2")
+                        ":" (or (getenv "CPATH") "")))))
            (add-after 'install 'copy-data
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -6218,11 +6214,10 @@ over 100 user-created campaigns.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL:"
-                                    (assoc-ref inputs "python")
-                                    "/include/python2.7:"
-                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
+                     (string-append
+                      (search-input-directory inputs "include/SDL") ":"
+                      (search-input-directory inputs "include/python2.7")
+                      ":" (or (getenv "CPLUS_INCLUDE_PATH") "")))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
@@ -6953,10 +6948,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
-                              (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL2:"
-                                             (or (getenv "CPATH") "")))
-                      #t))
+                              (string-append
+                               (search-input-directory inputs "/include/SDL2")
+                               ":" (or (getenv "CPATH") "")))))
                   (delete 'check)
                   ;; premake doesn't provide install target
                   (replace 'install
@@ -8591,10 +8585,9 @@ download and unpack them separately.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t))
+                     (string-append
+                      (search-input-file inputs "/include/SDL")
+                      ":" (or (getenv "CPATH") "")))))
          (add-after 'unpack 'fix-compilation-errors
            (lambda _
              (substitute* "mrt/base_file.h"
@@ -8741,10 +8734,9 @@ affected by the gravity of the planets.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-file inputs "/include/SDL")
+                      ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freeglut" ,freeglut)
@@ -8860,10 +8852,9 @@ where the player draws runes in real time to effect the desired spell.")
                    (add-before 'build 'fix-env
                      (lambda* (#:key inputs #:allow-other-keys)
                        (setenv "CPATH"
-                               (string-append (assoc-ref inputs "sdl2-union")
-                                              "/include/SDL2:"
-                                              (or (getenv "CPATH") "")))
-                       #t)))))
+                               (string-append
+                                (search-input-file inputs "/include/SDL2")
+                                ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
        ("zlib" ,zlib)))

@@ -101,10 +101,9 @@
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-mixer")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-directory inputs "include/SDL")
+                      ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)
@@ -949,9 +948,10 @@ endless.  For example:
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
-                                            "/include/SDL:"
-                                            (or (getenv "CPATH") "")))))
+             (setenv "CPATH"
+                     (string-append
+                      (search-input-directory inputs "/include/SDL")
+                      ":" (or (getenv "CPATH") "")))))
          (add-after 'unpack 'fix-andika-font-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/t4k_sdl.c"
@@ -1000,10 +1000,10 @@ TuxMath and TuxType.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t))
+                     (string-append
+                      (search-input-directory inputs "/include/SDL")
+                      ":"
+                      (or (getenv "CPATH") "")))))
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

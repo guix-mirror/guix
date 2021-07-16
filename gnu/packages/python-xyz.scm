@@ -15480,9 +15480,7 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
          (add-after 'patch-generated-file-shebangs 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "KIVY_SDL2_PATH"
-                     (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL2"))
-             #t)))))
+                     (search-input-directory inputs "/include/SDL2")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))

@@ -2599,10 +2599,9 @@ support.")
            (add-before 'build 'fix-env
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "sdl2-union")
-                                      "/include/SDL2:"
-                                      (or (getenv "CPATH") "")))
-               #t))
+                       (string-append
+                        (search-input-directory inputs "include/SDL2")
+                        ":" (or (getenv "CPATH") "")))))
            (add-after 'install 'really-install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
