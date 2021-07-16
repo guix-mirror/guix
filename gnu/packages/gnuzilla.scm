@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -337,8 +337,7 @@ in C/C++.")
                (let ((out (assoc-ref outputs "out")))
                  (setenv "SHELL" (which "sh"))
                  (setenv "CONFIG_SHELL" (which "sh"))
-                 (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
-                                                   "/bin/autoconf"))
+                 (setenv "AUTOCONF" (which "autoconf"))
                  (apply invoke "./configure"
                         (cons (string-append "--prefix=" out)
                               configure-flags))))))))
@@ -394,8 +393,7 @@ in C/C++.")
                (chdir "run-configure-from-here")
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
-                                                 "/bin/autoconf"))
+               (setenv "AUTOCONF" (which "autoconf"))
                (apply invoke "../js/src/configure"
                       (cons (string-append "--prefix=" out)
                             configure-flags))
@@ -476,8 +474,7 @@ in C/C++.")
                (chdir "run-configure-from-here")
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
-                                                 "/bin/autoconf"))
+               (setenv "AUTOCONF" (which "autoconf"))
                (apply invoke "../js/src/configure"
                       (cons (string-append "--prefix=" out)
                             configure-flags))
