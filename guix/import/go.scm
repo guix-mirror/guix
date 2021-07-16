@@ -146,7 +146,7 @@ name (e.g. \"github.com/golang/protobuf/proto\")."
          ;; Extract the text contained in a h2 child node of any
          ;; element marked with a "License" class attribute.
          (select (sxpath `(// (* (@ (equal? (class "License"))))
-                              h2 // *text*))))
+                              h2 // div // *text*))))
     (select (html->sxml body #:strict? #t))))
 
 (define (sxml->texi sxml-node)
