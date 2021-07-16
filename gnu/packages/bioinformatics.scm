@@ -9499,10 +9499,10 @@ dependency like SeqAn.")
 
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "eigen")
-                                    "/include/eigen3:"
-                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
-             #t)))))
+                     (string-append (search-input-directory
+                                     inputs "/include/eigen3")
+                                    ":"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") ""))))))))
     (inputs
      `(("boost" ,boost)
        ("eigen" ,eigen)
@@ -12456,10 +12456,9 @@ choosing which reads pass the filter.")
            (add-after 'unpack 'find-eigen
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "eigen")
-                                      "/include/eigen3:"
-                                      (or (getenv "CPATH") "")))
-               #t))
+                       (string-append
+                        (search-input-directory inputs "/include/eigen3")
+                        ":" (or (getenv "CPATH") "")))))
            (delete 'configure)
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)

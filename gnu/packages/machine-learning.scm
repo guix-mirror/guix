@@ -1732,7 +1732,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                 (string-append (getcwd) "/eigen-src/"))
                ;; Take Eigen headers from our own package.
                (("\\$\\{CMAKE_CURRENT_BINARY_DIR\\}/external/eigen_archive")
-                (string-append (assoc-ref inputs "eigen") "/include/eigen3")))
+                (search-input-directory inputs "/include/eigen3")))
 
              ;; Correct the RUNPATH of ops libraries generated for Python.
              ;; TODO: this doesn't work :(
