@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -621,8 +621,7 @@ utility functions for all standard Scheme implementations.")
          (replace 'build
                   (lambda* (#:key inputs outputs #:allow-other-keys)
                     (setenv "SCHEME_LIBRARY_PATH"
-                            (string-append (assoc-ref inputs "slib")
-                                           "/lib/slib/"))
+                            (search-input-directory inputs "lib/slib"))
                     (invoke "make" "scmlit" "CC=gcc")
                     (invoke "make" "all")))
          (add-after 'install 'post-install
@@ -632,8 +631,7 @@ utility functions for all standard Scheme implementations.")
                         (delete-file req)
                         (format (open req (logior O_WRONLY O_CREAT))
                                 "(define (library-vicinity) ~s)\n"
-                                (string-append (assoc-ref inputs "slib")
-                                               "/lib/slib/"))
+                                (search-input-directory inputs "lib/slib"))
 
                         ;; We must generate the slibcat file.
                         (invoke (string-append out "/bin/scm")

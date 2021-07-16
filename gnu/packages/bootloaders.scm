@@ -351,8 +351,8 @@ menu to select one of the installed operating systems.")
         `(modify-phases ,phases
            (add-after 'install 'install-non-efi
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((input-dir (string-append (assoc-ref inputs "grub")
-                                               "/lib/grub"))
+               (let ((input-dir (search-input-directory inputs
+                                                        "/lib/grub"))
                      (output-dir (string-append (assoc-ref outputs "out")
                                                 "/lib/grub")))
                  (for-each
@@ -852,9 +852,8 @@ to Novena upstream, does not load u-boot.img from the first partition.")
            `(modify-phases ,phases
               (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
-                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
-                                                "/bl31.elf"))
-                  #t))
+                  (setenv "BL31"
+                          (search-input-file inputs "/bl31.elf"))))
               ;; Phases do not succeed on the bl31 ELF.
               (delete 'strip)
               (delete 'validate-runpath)))))
@@ -894,10 +893,8 @@ to Novena upstream, does not load u-boot.img from the first partition.")
           `(modify-phases ,phases
              (add-after 'unpack 'set-environment
                (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((bl31 (string-append (assoc-ref inputs "firmware")
-                                            "/bl31.elf")))
-                   (setenv "BL31" bl31))
-                 #t))))))
+                 (let ((bl31 (search-input-file inputs "/bl31.elf")))
+                   (setenv "BL31" bl31))))))))
       (native-inputs
        `(("firmware" ,arm-trusted-firmware-rk3328)
          ,@(package-native-inputs base))))))
@@ -912,9 +909,7 @@ to Novena upstream, does not load u-boot.img from the first partition.")
            `(modify-phases ,phases
               (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
-                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
-                                                "/bl31.elf"))
-                  #t))
+                  (setenv "BL31" (search-input-file inputs "/bl31.elf"))))
               ;; Phases do not succeed on the bl31 ELF.
               (delete 'strip)
               (delete 'validate-runpath)))))
@@ -932,9 +927,8 @@ to Novena upstream, does not load u-boot.img from the first partition.")
            `(modify-phases ,phases
               (add-after 'patch-rockpro64-config 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
-                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
-                                                "/bl31.elf"))
-                  #t))
+                  (setenv "BL31"
+                          (search-input-file inputs "/bl31.elf"))))
               ;; Phases do not succeed on the bl31 ELF.
               (delete 'strip)
               (delete 'validate-runpath)))))
@@ -954,9 +948,8 @@ to Novena upstream, does not load u-boot.img from the first partition.")
            `(modify-phases ,phases
               (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
-                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
-                                                "/bl31.elf"))
-                  #t))
+                  (setenv "BL31"
+                          (search-input-file inputs "/bl31.elf"))))
               ;; Phases do not succeed on the bl31 ELF.
               (delete 'strip)
               (delete 'validate-runpath)))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -367,8 +367,8 @@ that is extensible via a plugin system.")
          (replace 'configure
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "tmppkgconfig")
-             (copy-file (string-append (assoc-ref inputs "gegl")
-                                       "/lib/pkgconfig/gegl-0.4.pc")
+             (copy-file (search-input-file inputs
+                                           "/lib/pkgconfig/gegl-0.4.pc")
                         "tmppkgconfig/gegl-0.3.pc")
              (setenv "PKG_CONFIG_PATH"
                      (string-append "tmppkgconfig:"

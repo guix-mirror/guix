@@ -5512,11 +5512,11 @@ for Flow files.")
              (make-file-writable "flycheck-grammalecte.el")
              (emacs-substitute-variables "flycheck-grammalecte.el"
                ("flycheck-grammalecte-grammalecte-directory"
-                (string-append (assoc-ref inputs "grammalecte")
-                               "/lib/python"
-                               ,(version-major+minor (package-version python))
-                               "/site-packages/grammalecte")))
-             #t))
+                (search-input-directory
+                 inputs
+                 (string-append "lib/python"
+                                ,(version-major+minor (package-version python))
+                                "/site-packages/grammalecte"))))))
          (add-after 'unpack 'do-not-phone-home
            ;; The package wants to check upstream Grammalecte version to
            ;; decide if an update is in order.  Always return version
@@ -26613,9 +26613,8 @@ REPL appropriate to the current major mode.")
              (make-file-writable "rime.el")
              (emacs-substitute-variables "rime.el"
                ("rime-share-data-dir"
-                (string-append (assoc-ref inputs "rime-data")
-                               "/share/rime-data")))
-             #t))
+                (search-input-directory inputs
+                                        "share/rime-data")))))
          (add-before 'install 'build-emacs-module
            (lambda _
              (invoke "make" "lib"))))))

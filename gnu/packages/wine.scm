@@ -417,10 +417,10 @@ integrate Windows applications into your desktop.")
                     (let* ((out (assoc-ref outputs "out"))
                            (icd (string-append out "/share/vulkan/icd.d")))
                       (mkdir-p icd)
-                      (copy-file (string-append (assoc-ref inputs "mesa")
+                      (copy-file (search-input-file inputs
                                  "/share/vulkan/icd.d/radeon_icd.i686.json")
                                  (string-append icd "/radeon_icd.i686.json"))
-                      (copy-file (string-append (assoc-ref inputs "mesa")
+                      (copy-file (search-input-file inputs
                                  "/share/vulkan/icd.d/intel_icd.i686.json")
                                  (string-append icd "/intel_icd.i686.json"))
                       (wrap-program (string-append out "/bin/wine-preloader")

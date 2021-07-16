@@ -100,8 +100,7 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-inputs
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((mime (string-append (assoc-ref inputs "shared-mime-info")
-                                         "/share/mime")))
+             (let* ((mime (search-input-directory inputs "/share/mime")))
                (substitute* "src/unix/utilsx11.cpp"
                  (("wxExecute\\(xdg_open \\+")
                   (string-append "wxExecute(\"" (which "xdg-open") "\"")))

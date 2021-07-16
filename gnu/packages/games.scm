@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
-;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -678,8 +678,7 @@ possible, while battling many vicious aliens.")
                     (bin (string-append out "/bin"))
                     (doc (string-append out "/share/doc/bsd-games-" ,version))
                     (man (string-append out "/share/man"))
-                    (word-list (string-append (assoc-ref inputs "miscfiles")
-                                              "/share/web2"))
+                    (word-list (search-input-file inputs "/share/web2"))
                     (static-data (string-append out "/share/games/bsd-games"))
                     ;; Not a "./" because of substitute* in 'patch-install
                     ;; below.  The .// allow us not to mess with the games'
@@ -2346,8 +2345,8 @@ can be explored and changed freely.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (data (string-append out "/share/seahorse-adventures"))
-                    (vera (string-append (assoc-ref inputs "font-bitstream-vera")
-                                         "/share/fonts/truetype/Vera.ttf")))
+                    (vera (search-input-file
+                           inputs "/share/fonts/truetype/Vera.ttf")))
                (let ((themes-dir (string-append data "/data/themes/")))
                  (for-each
                   (lambda (theme)
@@ -4772,8 +4771,8 @@ players.")
           (replace 'configure
           (lambda* (#:key outputs inputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
-                  (dejavu (string-append (assoc-ref inputs "font-dejavu")
-                                         "/share/fonts/truetype/DejaVuSans.ttf")))
+                  (dejavu (search-input-file
+                           inputs "/share/fonts/truetype/DejaVuSans.ttf")))
               (substitute* "Makefile"
                 (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
               ;; The patch above registers a free font for use by the binary,

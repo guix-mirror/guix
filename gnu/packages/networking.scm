@@ -655,8 +655,8 @@ systems with no further dependencies.")
              (substitute* '("blueman/main/NetConf.py"
                             "blueman/main/PPPConnection.py")
                (("/usr/sbin/bluetoothd")
-                (string-append (assoc-ref inputs "bluez")
-                               "/libexec/bluetooth/bluetoothd"))
+                (search-input-directory inputs
+                                        "/libexec/bluetooth/bluetoothd"))
                (("/sbin/iptables")
                 (search-input-file inputs "/sbin/iptables"))
                (("/usr/sbin/pppd")

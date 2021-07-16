@@ -1986,17 +1986,17 @@ previewing themes in real time.")
                ;; replace them.
                (with-directory-excursion "inst/www/shared"
                  (replace-file "strftime/strftime-min.js"
-                               (string-append (assoc-ref inputs "js-strftime")
-                                              "/share/javascript/strftime.min.js"))
+                               (search-input-file inputs
+                                                  "/share/javascript/strftime.min.js"))
                  (replace-file "highlight/highlight.pack.js"
-                               (string-append (assoc-ref inputs "js-highlight")
-                                              "/share/javascript/highlight.min.js"))
+                               (search-input-file inputs
+                                                  "/share/javascript/highlight.min.js"))
                  (replace-file "datatables/js/jquery.dataTables.min.js"
-                               (string-append (assoc-ref inputs "js-datatables")
-                                              "/share/javascript/jquery.dataTables.min.js"))
+                               (search-input-file inputs
+                                                  "/share/javascript/jquery.dataTables.min.js"))
                  (replace-file "selectize/js/selectize.min.js"
-                               (string-append (assoc-ref inputs "js-selectize")
-                                              "/share/javascript/selectize.min.js"))
+                               (search-input-file inputs
+                                                  "/share/javascript/selectize.min.js"))
                  (for-each (match-lambda
                              ((source . target)
                               (minify source #:target target)))
@@ -2100,8 +2100,8 @@ responsive, and powerful applications with minimal effort.")
          (add-after 'unpack 'replace-minified-javascript
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "inst/www/jsTree-3.3.7/"
-               (symlink (string-append (assoc-ref inputs "js-requirejs")
-                                       "/share/javascript/require.min.js")
+               (symlink (search-input-file inputs
+                                           "/share/javascript/require.min.js")
                         "libs/require.js")
                (call-with-values
                    (lambda ()

@@ -10196,9 +10196,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
              ;; Allow Enchant and its Aspell backend to find the en_US
              ;; dictionary.
              (setenv "ASPELL_DICT_DIR"
-                     (string-append (assoc-ref inputs "aspell-dict-en")
-                                    "/lib/aspell"))
-             #t)))))
+                     (search-input-directory inputs "/lib/aspell")))))))
     (inputs
      `(("gtk+" ,gtk+)
        ("glib" ,glib)

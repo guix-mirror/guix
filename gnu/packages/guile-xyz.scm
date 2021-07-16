@@ -4671,8 +4671,8 @@ schedulers.")
                            "yaml/libyaml.scm"
                            ;; This file is mismatched with the generated FFI code.
                            "yaml/ffi-help-rt.scm"))
-               (copy-file (string-append (assoc-ref inputs "nyacc")
-                                         "/share/guile/site/3.0/system/ffi-help-rt.scm")
+               (copy-file (search-input-file
+                           inputs "/share/guile/site/3.0/system/ffi-help-rt.scm")
                           "yaml/ffi-help-rt.scm")
                (substitute* "yaml/ffi-help-rt.scm"
                  (("system ffi-help-rt") "yaml ffi-help-rt"))

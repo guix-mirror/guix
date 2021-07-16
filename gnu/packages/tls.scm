@@ -867,8 +867,7 @@ number generator")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((pem (string-append (assoc-ref inputs "libressl")
-                                       "/etc/ssl/cert.pem")))
+             (let ((pem (search-input-file inputs "/etc/ssl/cert.pem")))
                (substitute* "http.c"
                  (("/etc/ssl/cert.pem") pem))
                #t)))

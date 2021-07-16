@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ison <ison@airmail.cc>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
@@ -370,8 +370,7 @@ with freedesktop.org standard.")
                #t)))
          (add-after 'patch-share-dirs 'patch-mime-dirs
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((mime (string-append (assoc-ref inputs "shared-mime-info")
-                                         "/share/mime")))
+             (let* ((mime (search-input-directory inputs "/share/mime")))
                (with-directory-excursion "src"
                  (substitute* '("mime-type/mime-type.c" "ptk/ptk-file-menu.c")
                    (("/usr(/local)?/share/mime") mime)))

@@ -434,9 +434,8 @@ a simple interface that makes it easy to organize and browse feeds.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" (getcwd))
              (setenv "TERM" "linux")
-             (setenv "TERMINFO" (string-append (assoc-ref inputs "ncurses")
-                                               "/share/terminfo"))
-             #t)))
+             (setenv "TERMINFO"
+                     (search-input-directory inputs "share/terminfo")))))
        #:tests? #f)) ; tests fail: _curses.error: nocbreak() returned ERR
     (propagated-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)

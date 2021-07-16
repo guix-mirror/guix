@@ -867,8 +867,8 @@ stored and user can review his performance in any time.")
                                     (string-prefix? "python-" label)))
                                  inputs)))
                    (qtwebengineprocess
-                    (string-append (assoc-ref inputs "qtwebengine")
-                                   "/lib/qt5/libexec/QtWebEngineProcess")))
+                    (search-input-file inputs
+                                       "lib/qt5/libexec/QtWebEngineProcess")))
                ;; The program fails to find the QtWebEngineProcess program, so
                ;; we set QTWEBENGINEPROCESS_PATH to help it.  PYTHONPATH is
                ;; wrapped to avoid declaring Python libraries as propagated

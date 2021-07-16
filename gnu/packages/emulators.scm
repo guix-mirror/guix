@@ -283,8 +283,8 @@ console.")
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
-                      (string-append (assoc-ref inputs "font-wqy-microhei")
-                                     "/share/fonts/truetype/wqy-microhei.ttc"))
+                      (search-input-file inputs
+                                         "/share/fonts/truetype/wqy-microhei.ttc"))
                      (libvulkan
                       (search-input-file inputs "/lib/libvulkan.so")))
                  (chdir "docs")

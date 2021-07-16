@@ -4222,9 +4222,8 @@ manipulating HTS data.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
                (("\\$\\{htsjdk\\}/lib")
-                (string-append (assoc-ref inputs "java-htsjdk")
-                               "/share/java/htsjdk/")))
-             #t))
+                (search-input-directory inputs
+                                        "share/java/htsjdk")))))
          (add-after 'unpack 'make-test-target-independent
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"

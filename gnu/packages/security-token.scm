@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
@@ -614,10 +614,11 @@ your existing infrastructure.")
          (add-after 'unpack 'install-public-suffix-list
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-file
-              (string-append (assoc-ref inputs "public-suffix-list")
-                             "/share/public-suffix-list-"
-                             ,(package-version public-suffix-list)
-                             "/public_suffix_list.dat")
+              (search-input-file inputs
+                                 (string-append
+                                  "/share/public-suffix-list-"
+                                  ,(package-version public-suffix-list)
+                                  "/public_suffix_list.dat"))
               "fido2/public_suffix_list.dat")
              #t)))))
     (propagated-inputs

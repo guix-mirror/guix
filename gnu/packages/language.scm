@@ -130,8 +130,7 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "configure.ac"
                (("/usr/share/anthy/anthy.dic")
-                (string-append (assoc-ref inputs "anthy")
-                               "/share/anthy/anthy.dic")))
+                (search-input-file inputs "/share/anthy/anthy.dic")))
              (substitute* "configure.ac"
                (("/usr/bin:\\$GTK3_LIBDIR/libgtk-3-0")
                 (string-append (assoc-ref inputs "gtk+:bin")

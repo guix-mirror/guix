@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -1632,8 +1632,8 @@ compresses it.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/procmime.c"
                (("/usr/share/mime/globs")
-                (string-append (assoc-ref inputs "shared-mime-info")
-                               "/share/mime/globs"))))))))
+                (search-input-directory inputs
+                                        "/share/mime/globs"))))))))
     (native-inputs
      `(("bison" ,bison)
        ;;("docbook-utils" ,docbook-utils)

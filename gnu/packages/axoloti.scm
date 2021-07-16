@@ -318,8 +318,8 @@ runtime.")
                    (lambda ()
                      (let* ((dir       (string-append (assoc-ref outputs "out")
                                                       "/share/axoloti"))
-                            (runtime   (string-append (assoc-ref inputs "axoloti-runtime")
-                                                      "/share/axoloti"))
+                            (runtime   (search-input-directory inputs
+                                                               "share/axoloti"))
                             (toolchain (assoc-ref inputs "cross-toolchain"))
                             (includes  (string-append
                                         toolchain
@@ -530,8 +530,8 @@ patcher application.")))
                ;; Install old firmware
                (let ((target (string-append share "/old_firmware/firmware-1.0.12"))
                      (old-firmware
-                      (string-append (assoc-ref inputs "axoloti-runtime")
-                                     "/share/axoloti/firmware/")))
+                      (search-input-directory inputs
+                                              "share/axoloti/firmware")))
                  (mkdir-p target)
                  (install-file (string-append old-firmware
                                               "flasher/flasher_build/flasher.bin")

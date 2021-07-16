@@ -1569,8 +1569,8 @@ bootstrapping purposes.")
            (add-after 'install 'install-keystore
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((keystore  "cacerts")
-                      (certs-dir (string-append (assoc-ref inputs "nss-certs")
-                                                "/etc/ssl/certs"))
+                      (certs-dir (search-input-directory inputs
+                                                         "etc/ssl/certs"))
                       (keytool   (string-append (assoc-ref outputs "jdk")
                                                 "/bin/keytool")))
                  (define (extract-cert file target)

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -5725,7 +5725,7 @@ w3c webidl files and a binding configuration file.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("test/bloom.c" "test/hashtable.c")
                (("/usr/share/dict/words")
-                (string-append (assoc-ref inputs "miscfiles") "/share/web2")))
+                (search-input-file inputs "/share/web2")))
              #t))
          (add-after 'install 'install-more
            (lambda* (#:key outputs #:allow-other-keys)
