@@ -2187,9 +2187,8 @@ offline sources, providing a centralized place for managing your contacts.")
              (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1")
              (setenv "GUIX_LOCPATH"
-                     (string-append (assoc-ref inputs "glibc-locales")
-                                    "/lib/locale"))
-             #t)))))
+                     (search-input-directory inputs
+                                             "lib/locale")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen
        ("glibc-locales" ,glibc-locales) ; for tests
@@ -5321,9 +5320,7 @@ permission from user.")
          (add-before 'check 'set-locales
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "GUIX_LOCPATH"
-                     (string-append (assoc-ref inputs "glibc-locales")
-                                    "/lib/locale"))
-             #t)))))
+                     (search-input-directory inputs "lib/locale")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("glibc-locales" ,glibc-locales) ; for tests

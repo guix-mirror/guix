@@ -1386,8 +1386,8 @@ the boot loader configuration.")
         (add-after 'unpack 'fix-tests
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-recursively
-             (string-append (assoc-ref inputs "glibc-utf8-locales")
-                            "/lib/locale/") "/tmp/locale")
+             (search-input-directory inputs "lib/locale")
+             "/tmp/locale")
             (for-each make-file-writable (find-files "/tmp"))
             (substitute* "tests/make-test-runtime.sh"
               (("cp `which.*") "echo guix\n")
