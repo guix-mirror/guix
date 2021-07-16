@@ -6,7 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -3123,48 +3123,38 @@ memoized as a function of '%current-system'."
     (arguments
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile
-
-       ,@(substitute-keyword-arguments (package-arguments python-minimal)
-           ;; Disable features that cannot be built at this stage.
-           ((#:configure-flags _ ''())
-            `(list "--without-ensurepip"
-                   "--without-threads"))
-           ;; Clear #:make-flags, such that changes to the regular
-           ;; Python package won't interfere with this one.
-           ((#:make-flags _ ''()) ''())
-           ((#:phases phases)
-            ;; Remove the 'apply-alignment-patch' phase if present to avoid
-            ;; rebuilding this package.  TODO: for the next rebuild cycle,
-            ;; consider inlining all the arguments instead of inheriting to
-            ;; make it easier to patch Python without risking a full rebuild.
-            ;; Or better yet, change to 'python-on-guile'.
-            `(modify-phases ,@(list (match phases
-                                      (('modify-phases original-phases
-                                         changes ...
-                                         ('add-after unpack apply-alignment-patch _))
-                                       `(modify-phases ,original-phases ,@changes))
-                                      (_ phases)))
-               (delete 'remove-windows-binaries)
-               (add-before 'configure 'disable-modules
-                 (lambda _
-                   (substitute* "setup.py"
-                     ;; Disable ctypes, since it requires libffi.
-                     (("extensions\\.append\\(ctypes\\)") "")
-                     ;; Prevent the 'ossaudiodev' extension from being
-                     ;; built, since it requires Linux headers.
-                     (("'linux', ") ""))))
-               (delete 'set-TZDIR)
-               ,@(if (hurd-system?)
-                     `((add-before 'build 'fix-regen
-                         (lambda* (#:key inputs #:allow-other-keys)
-                           (let ((libc (assoc-ref inputs "libc")))
-                             (substitute* "Lib/plat-generic/regen"
-                               (("/usr/include/")
-                                (string-append libc "/include/")))))))
-                     '())
-               (replace 'install-sitecustomize.py
-                 ,(customize-site version))))
-           ((#:tests? _ #f) #f))))
+       ;; Running the tests won't work because we lack several required
+       ;; modules (OpenSSL, etc).
+       #:tests? #f
+       ;; Disable features that cannot be built at this stage.
+       #:configure-flags '("--without-ensurepip" "--without-threads")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-lib-shells
+           (lambda _
+             (substitute* '("Lib/subprocess.py"
+                            "Lib/distutils/tests/test_spawn.py"
+                            "Lib/test/support/__init__.py"
+                            "Lib/test/test_subprocess.py")
+               (("/bin/sh") (which "sh")))))
+         (add-before 'configure 'disable-modules
+           (lambda _
+             (substitute* "setup.py"
+               ;; Disable ctypes, since it requires libffi.
+               (("extensions\\.append\\(ctypes\\)") "")
+               ;; Prevent the 'ossaudiodev' extension from being
+               ;; built, since it requires Linux headers.
+               (("'linux', ") ""))))
+         ,@(if (hurd-system?)
+               `((add-before 'build 'fix-regen
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((libc (assoc-ref inputs "libc")))
+                       (substitute* "Lib/plat-generic/regen"
+                         (("/usr/include/")
+                          (string-append libc "/include/")))))))
+               '())
+         (add-after 'install 'install-sitecustomize.py
+           ,(customize-site version)))))
     (native-search-paths
      (list (guix-pythonpath-search-path version)))))
 
