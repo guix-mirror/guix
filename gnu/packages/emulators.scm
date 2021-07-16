@@ -286,8 +286,7 @@ console.")
                       (string-append (assoc-ref inputs "font-wqy-microhei")
                                      "/share/fonts/truetype/wqy-microhei.ttc"))
                      (libvulkan
-                      (string-append (assoc-ref inputs "vulkan-loader")
-                                     "/lib/libvulkan.so")))
+                      (search-input-file inputs "/lib/libvulkan.so")))
                  (chdir "docs")
                  (invoke "bash" "-c" "g++ -O2 $(freetype-config \
 --cflags --libs) gc-font-tool.cpp -o gc-font-tool")

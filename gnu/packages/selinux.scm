@@ -329,8 +329,7 @@ based on required access.")
          (add-after 'unpack 'set-SEPOL-variable
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SEPOL"
-                     (string-append (assoc-ref inputs "libsepol")
-                                    "/lib/libsepol.a"))))
+                     (search-input-file inputs "/lib/libsepol.a"))))
          (add-after 'unpack 'remove-Werror
            (lambda _
              (substitute* "setup.py"

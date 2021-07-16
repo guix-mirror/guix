@@ -120,7 +120,7 @@
                (("'usr', 'lib', 'irods'") "'lib', 'irods'"))
              (substitute* "scripts/irods/pypyodbc.py"
                (("\"/usr/lib/libodbc.so\"")
-                (string-append (assoc-ref inputs "unixodbc") "/lib/libodbc.so")))))
+                (search-input-file inputs "/lib/libodbc.so")))))
          (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((gcc (assoc-ref inputs  "gcc")))

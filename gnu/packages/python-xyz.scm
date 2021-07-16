@@ -6926,22 +6926,16 @@ support for Python 3 and PyPy.  It is based on cffi.")
                (("filenames = \\(library_filename,\\) \\+ filenames")
                 "pass")
                (("libcairo.so.2")
-                (string-append (assoc-ref inputs "cairo")
-                               "/lib/libcairo.so.2")))
+                (search-input-file inputs "/lib/libcairo.so.2")))
              (substitute* "cairocffi/pixbuf.py"
                (("libgdk_pixbuf-2.0.so.0")
-                (string-append (assoc-ref inputs "gdk-pixbuf")
-                               "/lib/libgdk_pixbuf-2.0.so.0"))
+                (search-input-file inputs "/lib/libgdk_pixbuf-2.0.so.0"))
                (("libgobject-2.0.so.0")
-                (string-append (assoc-ref inputs "glib")
-                               "/lib/libgobject-2.0.so.0"))
+                (search-input-file inputs "/lib/libgobject-2.0.so.0"))
                (("libglib-2.0.so.0")
-                (string-append (assoc-ref inputs "glib")
-                               "/lib/libglib-2.0.so.0"))
+                (search-input-file inputs "/lib/libglib-2.0.so.0"))
                (("libgdk-3.so.0")
-                (string-append (assoc-ref inputs "gtk+")
-                               "/lib/libgdk-3.so.0")))
-             #t))
+                (search-input-file inputs "/lib/libgdk-3.so.0")))))
          (add-after 'unpack 'disable-linters
            ;; Their check fails; none of our business.
            (lambda _
@@ -16131,8 +16125,7 @@ Record Format (DWARF).")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libev (string-append (assoc-ref inputs "libev")
-                                         "/lib/libev.so.4")))
+             (let ((libev (search-input-file inputs "/lib/libev.so.4")))
                (substitute* "setup.py"
                  (("libev_dll_name = find_library\\(\\\"ev\\\"\\)")
                   (string-append "libev_dll_name = \"" libev "\"")))))))))
@@ -24284,8 +24277,7 @@ be necessary when using @code{cmd}.")
        (modify-phases %standard-phases
          (add-before 'build 'qualify-libtidy
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libtidy (string-append (assoc-ref inputs "tidy")
-                                           "/lib/libtidy.so")))
+             (let ((libtidy (search-input-file inputs "/lib/libtidy.so")))
                (substitute* "tidylib/tidy.py"
                  (("ctypes\\.util\\.find_library\\('tidy'\\)")
                   (format #f "'~a'" libtidy)))

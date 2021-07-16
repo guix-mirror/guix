@@ -356,8 +356,8 @@ resolution scaling on graphical console window resize.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "tests/setup-softhsm2.sh"
                (("\\/usr\\/lib64\\/pkcs11\\/libsofthsm2\\.so")
-                (string-append (assoc-ref inputs "softhsm")
-                               "/lib/softhsm/libsofthsm2.so"))))))))
+                (search-input-file inputs
+                                   "/lib/softhsm/libsofthsm2.so"))))))))
     (propagated-inputs
      `(("glib" ,glib)                   ; Requires: in the pkg-config file
        ("nss" ,nss)))                   ; Requires.private: in the pkg-config

@@ -7248,7 +7248,7 @@ cl-plumbing libraries.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/lzlib.lisp"
                  (("liblz\\.so")
-                  (string-append (assoc-ref inputs "lzlib") "/lib/liblz.so")))
+                  (search-input-file inputs "/lib/liblz.so")))
                #t)))))
       (synopsis "Common Lisp library for lzip (de)compression")
       (description
@@ -7403,11 +7403,10 @@ function.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/init.lisp"
                  (("libgobject-2\\.0\\.so")
-                  (string-append (assoc-ref inputs "glib") "/lib/libgobject-2.0.so"))
+                  (search-input-file inputs "/lib/libgobject-2.0.so"))
                  (("libgirepository-1\\.0\\.so")
-                  (string-append (assoc-ref inputs "gobject-introspection")
-                                 "/lib/libgirepository-1.0.so")))
-               #t)))))
+                  (search-input-file inputs
+                                     "/lib/libgirepository-1.0.so"))))))))
       (synopsis "Common Lisp bindings to GObject Introspection")
       (description
        "This library is a bridge between Common Lisp and GObject
@@ -8565,8 +8564,7 @@ sacrificing much in the way of power.")
             (lambda* (#:key inputs #:allow-other-keys)
               (substitute* "hdf-cffi/hdf-cffi.lisp"
                 (("/usr/lib/i386-linux-gnu/hdf5/serial/libhdf5.so")
-                 (string-append (assoc-ref inputs "hdf5")
-                                "/lib/libhdf5.so")))
+                 (search-input-file inputs "/lib/libhdf5.so")))
               (substitute* "gsl-cffi/gsl-cffi.lisp"
                 (("define-foreign-library gsl-cffi" all)
                  (string-append all " (:unix "
@@ -8896,9 +8894,7 @@ has a small codebase that's easy to understand and use.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "lib.lisp"
                  (("/usr/lib/libuv.so")
-                  (string-append (assoc-ref inputs "libuv")
-                                 "/lib/libuv.so")))
-               #t))
+                  (search-input-file inputs "/lib/libuv.so")))))
            (add-after 'fix-paths 'fix-system-definition
              (lambda _
                (substitute* "cl-libuv.asd"
@@ -8956,12 +8952,9 @@ has a small codebase that's easy to understand and use.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/ssl/package.lisp"
                  (("libcrypto\\.so")
-                  (string-append (assoc-ref inputs "openssl")
-                                 "/lib/libcrypto.so"))
+                  (search-input-file inputs "/lib/libcrypto.so"))
                  (("libssl\\.so")
-                  (string-append (assoc-ref inputs "openssl")
-                                 "/lib/libssl.so")))
-               #t)))))
+                  (search-input-file inputs "/lib/libssl.so"))))))))
       (synopsis "Asynchronous operations for Common Lisp")
       (description
        "Cl-async is a library for general purpose, non-blocking programming in
@@ -12261,13 +12254,10 @@ and saving 2-dimensional pixel-based images.")
                                  "/share/fonts/truetype/")))
                (substitute* "Extensions/fontconfig/src/functions.lisp"
                  (("libfontconfig\\.so")
-                  (string-append (assoc-ref inputs "fontconfig")
-                                 "/lib/libfontconfig.so")))
+                  (search-input-file inputs "/lib/libfontconfig.so")))
                (substitute* "Extensions/harfbuzz/src/functions.lisp"
                  (("libharfbuzz\\.so")
-                  (string-append (assoc-ref inputs "harfbuzz")
-                                 "/lib/libharfbuzz.so")))
-               #t))
+                  (search-input-file inputs "/lib/libharfbuzz.so")))))
            (add-after 'unpack 'fix-build
              (lambda _
                ;; The cffi-grovel system does not get loaded automatically,
@@ -14418,9 +14408,7 @@ library are feedforward neural networks trained using backpropagation.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/libzstd.lisp"
                  (("libzstd\\.so")
-                  (string-append (assoc-ref inputs "zstd-lib")
-                                 "/lib/libzstd.so")))
-               #t)))))
+                  (search-input-file inputs "/lib/libzstd.so"))))))))
       (synopsis "Common Lisp library for Zstandard (de)compression")
       (description
        "This Common Lisp library provides functions for Zstandard
@@ -15986,14 +15974,13 @@ compiled foreign library collection.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "gl/library.lisp"
                  (("libGL.so" all)
-                  (string-append (assoc-ref inputs "mesa") "/lib/" all)))
+                  (search-input-file inputs "/lib/libGL.so")))
                (substitute* "glu/library.lisp"
                  (("libGLU.so" all)
-                  (string-append (assoc-ref inputs "glu") "/lib/" all)))
+                  (search-input-file inputs "/lib/libGLU.so")))
                (substitute* "glut/library.lisp"
                  (("libglut.so" all)
-                  (string-append (assoc-ref inputs "freeglut") "/lib/" all)))
-               #t)))))
+                  (search-input-file inputs "/lib/libglut.so"))))))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)
@@ -16926,9 +16913,8 @@ Common Lisp.")
            (add-after 'unpack 'patch-libev-lib-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/lev.lisp"
-                 (("libev.so" all)
-                  (string-append (assoc-ref inputs "libev")
-                                        "/lib/" all))))))))
+                 (("libev.so" _)
+                  (search-input-file inputs "/lib/libev.so"))))))))
       (inputs
        `(("cffi" ,sbcl-cffi)
          ("libev" ,libev)))
@@ -17503,8 +17489,8 @@ and even allows the generic visualisation of graphs in this format.")
            (add-after 'unpack 'patch-glfw-lib-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "glfw-bindings.lisp"
-                 (("libglfw.so.3" all)
-                  (string-append (assoc-ref inputs "glfw") "/lib/" all))))))))
+                 (("libglfw.so.3" _)
+                  (search-input-file inputs "/lib/libglfw.so.3"))))))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)

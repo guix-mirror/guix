@@ -1651,8 +1651,7 @@ methods:
                 "-lncurses"))
              (substitute* "src/libcw/libcw_pa.c"
                (("libpulse-simple.so" all)
-                (string-append (assoc-ref inputs "pulseaudio")
-                               "/lib/" all))))))))
+                (search-input-file inputs "/lib/libpulse-simple.so"))))))))
     (home-page "http://unixcw.sourceforge.net/")
     (synopsis "Morse code library and programs")
     (description

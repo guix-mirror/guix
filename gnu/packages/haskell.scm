@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -246,9 +246,8 @@ top of CLISP.")
                      (gmp-lib (string-append gmp "/lib"))
                      (gmp-include (string-append gmp "/include"))
                      (ncurses-lib
-                      (string-append (assoc-ref inputs "ncurses") "/lib"))
-                     (ld-so (string-append (assoc-ref inputs "libc")
-                                           ,(glibc-dynamic-linker)))
+                      (dirname (search-input-file inputs "/lib/libncurses.so")))
+                     (ld-so (search-input-file inputs ,(glibc-dynamic-linker)))
                      (libtinfo-dir
                       (string-append ghc-bootstrap-prefix
                                      "/lib/ghc-7.8.4/terminfo-0.4.0.0")))

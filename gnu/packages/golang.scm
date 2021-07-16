@@ -1060,7 +1060,7 @@ your Go binary to be later served from an http.FileSystem.")
          (add-before 'build 'prebuild
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
-                    (ld (string-append (assoc-ref inputs "libc") "/lib"))
+                    (ld (dirname (search-input-file inputs "/lib/libc.so")))
                     (loader (car (find-files ld "^ld-linux.+")))
                     (net-base (assoc-ref inputs "net-base"))
                     (tzdata-path
@@ -1208,7 +1208,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
            (replace 'prebuild
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
-                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
+                      (ld (dirname (search-input-file inputs "/lib/libc.so")))
                       (loader (car (find-files ld "^ld-linux.+")))
                       (net-base (assoc-ref inputs "net-base"))
                       (tzdata-path

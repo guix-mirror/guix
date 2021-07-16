@@ -3045,9 +3045,7 @@ can connect to any JACK port and record the output into a stereo WAV file.")
              ;; Fix reference to dlopened libraries.
              (substitute* "jackselect/alsainfo.py"
                (("libasound.so.2")
-                (string-append (assoc-ref inputs "alsa-lib")
-                               "/lib/libasound.so.2")))
-             #t))
+                (search-input-file inputs "/lib/libasound.so.2")))))
          (replace 'build
            (assoc-ref python:%standard-phases 'build))
          (add-after 'install 'wrap

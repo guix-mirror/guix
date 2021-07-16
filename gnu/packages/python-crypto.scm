@@ -1177,9 +1177,7 @@ none of them have everything that I'd like, so here's one more.  It uses
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "libnacl/__init__.py"
                (("/usr/local/lib/libsodium.so")
-                (string-append (assoc-ref inputs "libsodium")
-                               "/lib/libsodium.so")))
-             #t)))))
+                (search-input-file inputs "/lib/libsodium.so"))))))))
     (native-inputs
      `(("python-pyhamcrest" ,python-pyhamcrest)))
     (inputs

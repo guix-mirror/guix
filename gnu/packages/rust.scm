@@ -509,8 +509,8 @@ safety and thread safety guarantees.")
                    (("^jemalloc =.*$") "")
                    (("[[]rust[]]") "\n[rust]\njemalloc=true\n"))
                  (setenv "JEMALLOC_OVERRIDE"
-                         (string-append (assoc-ref inputs "jemalloc")
-                                        "/lib/libjemalloc_pic.a")))))))))))
+                         (search-input-file inputs
+                                            "/lib/libjemalloc_pic.a")))))))))))
 
 (define-public rust-1.33
   (let ((base-rust (rust-bootstrapped-package

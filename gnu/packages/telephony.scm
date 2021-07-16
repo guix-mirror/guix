@@ -894,14 +894,11 @@ Initiation Protocol (SIP) and a multimedia framework.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "os/linux/AudioPulse.cpp"
                (("libpulse\\.so")
-                (string-append (assoc-ref inputs "pulseaudio")
-                              "/lib/libpulse.so")))
+                (search-input-file inputs "/lib/libpulse.so")))
              (substitute* '("os/linux/AudioInputALSA.cpp"
                             "os/linux/AudioOutputALSA.cpp")
                (("libasound\\.so")
-                (string-append (assoc-ref inputs "alsa-lib")
-                               "/lib/libasound.so")))
-             #t)))))
+                (search-input-file inputs "/lib/libasound.so"))))))))
     (synopsis "VoIP library for Telegram clients")
     (description "A collection of libraries and header files for implementing
 telephony functionality into custom Telegram clients.")

@@ -1588,36 +1588,31 @@ Python.")
                  ;; Sqlite
                  (("include\\(sqlite\\)") "")
                  (("\\$\\{sqlite_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "sqlite")
-                                 "/lib/libsqlite3.so"))
+                  (search-input-file inputs "/lib/libsqlite3.so"))
                  (("sqlite_copy_headers_to_destination") "")
 
                  ;; PNG
                  (("include\\(png\\)") "")
                  (("\\$\\{png_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "libpng")
-                                 "/lib/libpng16.so"))
+                  (search-input-file inputs "/lib/libpng16.so"))
                  (("png_copy_headers_to_destination") "")
 
                  ;; JPEG
                  (("include\\(jpeg\\)") "")
                  (("\\$\\{jpeg_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "libjpeg")
-                                 "/lib/libjpeg.so"))
+                  (search-input-file inputs "/lib/libjpeg.so"))
                  (("jpeg_copy_headers_to_destination") "")
 
                  ;; GIF
                  (("include\\(gif\\)") "")
                  (("\\$\\{gif_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "giflib")
-                                 "/lib/libgif.so"))
+                  (search-input-file inputs "/lib/libgif.so"))
                  (("gif_copy_headers_to_destination") "")
 
                  ;; lmdb
                  (("include\\(lmdb\\)") "")
                  (("\\$\\{lmdb_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "lmdb")
-                                 "/lib/liblmdb.so"))
+                  (search-input-file inputs "/lib/liblmdb.so"))
                  (("lmdb_copy_headers_to_destination") "")
 
                  ;; Protobuf

@@ -348,8 +348,7 @@ software vendors, application developers and computer science researchers.")
                  (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "ompi/mpi/java/c/Makefile.in"
                      (("\\$\\(top_builddir\\)/ompi/lib@OMPI_LIBMPI_NAME@.la")
-                      (string-append (assoc-ref inputs "openmpi") "/lib/libmpi.la")))
-                   #t))
+                      (search-input-file inputs "/lib/libmpi.la")))))
                (add-after 'install 'strip-jar-timestamps
                  (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
     (synopsis "Java bindings for MPI")))

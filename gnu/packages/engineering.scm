@@ -335,12 +335,10 @@ utilities.")
              (substitute* '("libleptongui/scheme/schematic/ffi/gtk.scm.in"
                             "utils/attrib/lepton-attrib.scm")
                (("@LIBGTK@")
-                (string-append (assoc-ref inputs "gtk")
-                               "/lib/libgtk-3.so")))
+                (search-input-file inputs "/lib/libgtk-3.so")))
              (substitute* '("libleptongui/scheme/schematic/ffi/gobject.scm.in")
                (("@LIBGOBJECT@")
-                (string-append (assoc-ref inputs "glib")
-                               "/lib/libgobject-2.0.so")))
+                (search-input-file inputs "/lib/libgobject-2.0.so")))
              (substitute* "liblepton/scheme/lepton/ffi.scm.in"
                (("@LIBLEPTON@")
                 (string-append (assoc-ref outputs "out")
@@ -351,8 +349,7 @@ utilities.")
                                "/lib/libleptonattrib.so")))
              (substitute* "liblepton/scheme/lepton/log.scm.in"
                (("@LIBGLIB@")
-                (string-append (assoc-ref inputs "glib")
-                               "/lib/libglib-2.0.so")))
+                (search-input-file inputs "/lib/libglib-2.0.so")))
 
              ;; For finding libraries when running tests before installation.
              (setenv "LIBLEPTONGUI"
@@ -437,7 +434,8 @@ features.")))
              ;; fix of the mesa package we wrap the pcb executable such that
              ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
              (let* ((out (assoc-ref outputs "out"))
-                    (path (string-append (assoc-ref inputs "udev") "/lib")))
+                    (path (dirname
+                           (search-input-file inputs "/lib/libudev.so"))))
                (wrap-program (string-append out "/bin/pcb")
                  `("LD_LIBRARY_PATH" ":" prefix (,path))))
              #t))

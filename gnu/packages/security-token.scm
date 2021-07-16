@@ -303,8 +303,8 @@ website for more information about Yubico and the YubiKey.")
          ;; configuration file at runtime.
          (add-after 'unpack 'set-default-libpcsclite.so.1-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libpcsclite (string-append (assoc-ref inputs "pcsc-lite")
-                                               "/lib/libpcsclite.so.1")))
+             (let ((libpcsclite (search-input-file inputs
+                                                   "/lib/libpcsclite.so.1")))
                (substitute* "configure"
                  (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
                   (string-append
@@ -442,8 +442,8 @@ retrieve a YubiKey's serial number, and so forth.")
                (("lib = \"libpcsclite\\.so\\.1\";")
                 (simple-format #f
                                "lib = \"~a\";"
-                               (string-append (assoc-ref inputs "pcsc-lite")
-                                              "/lib/libpcsclite.so.1"))))
+                               (search-input-file inputs
+                                                  "/lib/libpcsclite.so.1"))))
              #t)))))
     (inputs
      `(("pcsc-lite" ,pcsc-lite)))

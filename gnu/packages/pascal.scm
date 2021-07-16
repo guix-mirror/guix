@@ -150,11 +150,9 @@
                (substitute* "fpcsrc/compiler/systems/t_linux.pas"
                  ;; Point to the current glibc dynamic linker.
                  (("/lib/ld-linux.so.2")
-                  (string-append (assoc-ref inputs "libc")
-                                 ,(glibc-dynamic-linker)))
+                  (search-input-file inputs ,(glibc-dynamic-linker)))
                  (("/lib64/ld-linux-x86-64.so.2")
-                  (string-append (assoc-ref inputs "libc")
-                                 ,(glibc-dynamic-linker)))
+                  (search-input-file inputs ,(glibc-dynamic-linker)))
                  ; TODO: /lib/ld-linux-armhf.so.3
                  ; TODO: /lib/ld-linux-aarch64.so.1
                  ; TODO: /lib64/ld64.so.2

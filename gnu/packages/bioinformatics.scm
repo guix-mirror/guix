@@ -9481,14 +9481,14 @@ dependency like SeqAn.")
                  inputs
                  (string-append "/include/jellyfish-" ,(package-version jellyfish))))
                (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libjellyfish-2.0.a")
-                (string-append (assoc-ref inputs "jellyfish")
-                               "/lib/libjellyfish-2.0.a"))
+                (search-input-file inputs
+                                   "/lib/libjellyfish-2.0.a"))
                (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort.a")
-                (string-append (assoc-ref inputs "libdivsufsort")
-                               "/lib/libdivsufsort.so"))
+                (search-input-file inputs
+                                   "/lib/libdivsufsort.so"))
                (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort64.a")
-                (string-append (assoc-ref inputs "libdivsufsort")
-                               "/lib/libdivsufsort64.so")))
+                (search-input-file inputs
+                                   "/lib/libdivsufsort64.so")))
              (substitute* "CMakeLists.txt"
                ;; Don't prefer static libs
                (("SET\\(CMAKE_FIND_LIBRARY_SUFFIXES.*") "")

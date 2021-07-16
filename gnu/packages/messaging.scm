@@ -1537,8 +1537,7 @@ messenger protocol.")
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (substitute* "../source/src/xlib/gtk.c"
                          (("libgtk-3.so")
-                         (string-append (assoc-ref inputs "gtk+")
-                                        "/lib/libgtk-3.so")))))
+                          (search-input-file inputs "/lib/libgtk-3.so")))))
         (add-after 'install 'wrap-program
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (wrap-program (string-append (assoc-ref outputs "out")

@@ -975,10 +975,11 @@ suitable for both the desktop and mobile devices.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "tegakigtk/fakekey.py"
                  (("libX11.so.6" so)
-                  (string-append (assoc-ref inputs "libx11") "/lib/" so))
+                  (search-input-file inputs
+                                     (string-append "/lib/" so)))
                  (("libXtst.so.6" so)
-                  (string-append (assoc-ref inputs "libxtst") "/lib/" so)))
-               #t))))))
+                  (search-input-file inputs
+                                     (string-append "/lib/" so))))))))))
     (inputs ; required for sending key strokes
      `(("libx11" ,libx11)
        ("libxtst" ,libxtst)))
