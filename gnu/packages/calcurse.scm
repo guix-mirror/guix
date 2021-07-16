@@ -64,8 +64,8 @@
                   (add-before 'check 'check-setup
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "TZDIR"   ; for test/ical-007.sh
-                              (string-append (assoc-ref inputs "tzdata")
-                                             "/share/zoneinfo")))))))
+                              (search-input-directory inputs
+                                                      "share/zoneinfo")))))))
     (home-page "https://www.calcurse.org")
     (synopsis "Text-based calendar and scheduling")
     (description

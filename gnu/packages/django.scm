@@ -64,8 +64,7 @@
              ;; The test-suite tests timezone-dependent functions, thus tzdata
              ;; needs to be available.
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs "share/zoneinfo"))
 
              ;; Disable test for incorrect timezone: it only raises the
              ;; expected error when /usr/share/zoneinfo exists, even though

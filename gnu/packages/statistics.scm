@@ -297,9 +297,8 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "UTC+1")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t))
+                     (search-input-directory inputs
+                                             "share/zoneinfo"))))
          (add-after 'build 'make-info
           (lambda _ (invoke "make" "info")))
          (add-after 'build 'install-info

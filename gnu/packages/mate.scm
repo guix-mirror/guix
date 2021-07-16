@@ -277,9 +277,7 @@ desktop and the mate-about program.")
           (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "data/check-timezones.sh"
               (("/usr/share/zoneinfo/zone.tab")
-               (string-append (assoc-ref inputs "tzdata")
-                              "/share/zoneinfo/zone.tab")))
-            #t)))))
+               (search-input-file inputs "/share/zoneinfo/zone.tab"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)

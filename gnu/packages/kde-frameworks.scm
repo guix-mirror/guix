@@ -451,9 +451,8 @@ GZip format, via a subclass of QIODevice.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "Europe/Prague")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t)))))
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library for interfacing with calendars")
     (description "This library provides access to and handling of calendar
@@ -3689,8 +3688,8 @@ workspace.")
            (lambda* (#:key inputs tests? #:allow-other-keys)
              (setenv "HOME" (getcwd))
              (setenv "TZDIR"    ; KDateTimeTestsome needs TZDIR
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs
+                                             "share/zoneinfo"))
              ;; Make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              ;; enable debug output

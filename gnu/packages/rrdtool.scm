@@ -73,9 +73,7 @@
          (add-before 'check 'prepare-test-environment
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t))
+                     (search-input-directory inputs "share/zoneinfo"))))
          (add-after 'install 'remove-native-input-references
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

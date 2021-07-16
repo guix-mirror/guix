@@ -348,8 +348,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
 
              (substitute* "xbmc/platform/linux/LinuxTimezone.cpp"
                (("/usr/share/zoneinfo")
-                (string-append (assoc-ref inputs "tzdata")
-                               "/share/zoneinfo")))
+                (search-input-directory inputs "share/zoneinfo")))
 
              ;; Don't phone home to check for updates.
              (substitute* "system/addon-manifest.xml"

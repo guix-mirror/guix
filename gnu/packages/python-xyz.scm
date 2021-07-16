@@ -4310,8 +4310,7 @@ ecosystem, but can naturally be used also by other projects.")
                       ;;
                       ;; OverflowError: mktime argument out of range
                       (setenv "TZDIR"
-                              (string-append (assoc-ref inputs "tzdata")
-                                             "/share/zoneinfo"))
+                              (search-input-directory inputs "share/zoneinfo"))
                       (setenv "TZ" "Europe/Paris")
 
                       (invoke "python" "utest/run.py"))))))
@@ -24674,9 +24673,8 @@ It adds a simple and readable way to print stuff during development.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "UTC")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t)))))
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (home-page "https://github.com/scrapinghub/dateparser")
     (synopsis
      "Date parsing library designed to parse dates from HTML pages")

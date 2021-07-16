@@ -598,8 +598,7 @@ server and embedded PowerPC, and S390 guests.")
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Set TZDIR so that time zones are found.
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
+             (setenv "TZDIR" (search-input-directory inputs "share/zoneinfo"))
 
              (substitute* "test/py/ganeti.utils.process_unittest.py"
                ;; This test attempts to run an executable with

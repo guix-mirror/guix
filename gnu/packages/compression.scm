@@ -544,9 +544,9 @@ than gzip and 15 % smaller output than bzip2.")
        (modify-phases %standard-phases
          (add-before 'check 'set-up-test-environment
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))))
+             (setenv "TZDIR"
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)))
     (home-page "https://fragglet.github.com/lhasa/")

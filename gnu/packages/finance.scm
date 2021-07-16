@@ -343,8 +343,8 @@ and dynamically with report tools based on filtering and graphical charts.")
            ;; One test fails if it can't set the timezone.
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs
+                                             "share/zoneinfo"))
              ;; Skip failing test BaselineTest_cmd-org.
              ;; This is a known upstream issue. See
              ;; https://github.com/ledger/ledger/issues/550

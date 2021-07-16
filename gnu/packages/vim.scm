@@ -109,8 +109,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              ;; One of the tests tests timezone-dependent functions.
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs "share/zoneinfo"))
 
              ;; Make sure the TERM environment variable is set for the tests
              (setenv "TERM" "xterm")

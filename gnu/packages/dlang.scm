@@ -125,7 +125,7 @@ and freshness without requiring additional information from the user.")
                  (("echo") (which "echo")))
                (substitute* "runtime/phobos/std/datetime.d"
                  (("/usr/share/zoneinfo/")
-                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                  (search-input-directory inputs "share/zoneinfo"))
                  (("tzName == \"[+]VERSION\"")
                   "(tzName == \"+VERSION\" || std.algorithm.endsWith(tzName, \"/leapseconds\"))"))
                (substitute* "tests/d2/dmd-testsuite/Makefile"

@@ -11810,9 +11810,8 @@ prop, vhea, vmtx and the reading and writing of all other table types.")
          ;; This is needed for tests
          (add-after 'unpack 'set-TZDIR
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))))
+             (setenv "TZDIR"
+                     (search-input-directory inputs "share/zoneinfo")))))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("tzdata" ,tzdata-for-tests)))

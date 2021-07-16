@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
@@ -255,9 +255,8 @@ shared NFS home directories.")
            (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              ;; For tests/gdatetime.c.
              (setenv "TZDIR"
-                     (string-append (assoc-ref (or native-inputs inputs)
-                                               "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory (or native-inputs inputs)
+                                             "share/zoneinfo"))
              ;; Some tests want write access there.
              (setenv "HOME" (getcwd))
              (setenv "XDG_CACHE_HOME" (getcwd))

@@ -24171,9 +24171,8 @@ techniques to average Bayesian predictive distributions.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "UTC+1")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t)))))
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
        ("pandoc" ,pandoc)

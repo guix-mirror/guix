@@ -1064,7 +1064,7 @@ your Go binary to be later served from an http.FileSystem.")
                     (loader (car (find-files ld "^ld-linux.+")))
                     (net-base (assoc-ref inputs "net-base"))
                     (tzdata-path
-                     (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                     (search-input-directory inputs "share/zoneinfo"))
                     (output (assoc-ref outputs "out")))
 
                ;; Removing net/ tests, which fail when attempting to access
@@ -1212,7 +1212,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                       (loader (car (find-files ld "^ld-linux.+")))
                       (net-base (assoc-ref inputs "net-base"))
                       (tzdata-path
-                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                       (search-input-directory inputs "share/zoneinfo"))
                       (output (assoc-ref outputs "out")))
 
                  ;; Having the patch in the 'patches' field of <origin> breaks

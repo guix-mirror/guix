@@ -96,8 +96,8 @@
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/tz.cpp"
                  (("/usr/share/zoneinfo")
-                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
-               #t))
+                  (search-input-directory inputs
+                                          "share/zoneinfo")))))
            (replace 'check
              (lambda _
                ;; Disable test that requires checking timezone that

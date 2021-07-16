@@ -136,8 +136,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
              (setenv "TZDIR"            ; some timestamp checks need TZDIR
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs "share/zoneinfo"))
              ;; Some things respect TMPDIR, others hard-code /tmp, and the
              ;; defaults don't match up, breaking test_restart.  Fix it.
              (setenv "TMPDIR" "/tmp")

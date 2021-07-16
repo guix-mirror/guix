@@ -332,9 +332,8 @@ endpoints.")
              #t))
          (add-before 'check 'set-up-test-environment
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))
+             (setenv "TZDIR"
+                     (search-input-directory inputs "share/zoneinfo")))))
        #:configure-flags
        (list
         "--disable-ldap"

@@ -1209,9 +1209,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; For mu/test/test-mu-query.c
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t))
+                     (search-input-directory inputs "share/zoneinfo"))))
          (add-after 'install 'install-emacs-autoloads
            (lambda* (#:key outputs #:allow-other-keys)
              (emacs-generate-autoloads

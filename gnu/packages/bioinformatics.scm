@@ -10324,8 +10324,8 @@ once.  This package provides tools to perform Drop-seq analyses.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "UTC+1")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo")))))))
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (inputs
      `(("coreutils" ,coreutils)
        ("sed" ,sed)
@@ -10475,8 +10475,8 @@ in an easily configurable manner.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "UTC+1")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo")))))))
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (native-inputs
      `(("tzdata" ,tzdata)))
     (inputs
