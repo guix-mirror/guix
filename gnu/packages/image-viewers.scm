@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -556,10 +556,9 @@ It supports JPEG, PNG and GIF formats.")
              ;; not use 'OpenEXR.pc'.  Thus, we need to add
              ;; "$ilmbase/include/OpenEXR/" to the CPATH.
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "ilmbase")
-                                    "/include/OpenEXR"
-                                    ":" (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-directory inputs "include/OpenEXR")
+                      ":" (or (getenv "CPATH") ""))))))))
     (home-page "http://qtpfsgui.sourceforge.net")
     (synopsis "High dynamic range (HDR) imaging application")
     (description

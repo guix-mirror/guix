@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -556,10 +556,9 @@ typically encountered in feature film production.")
                ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
                ;; the CPATH to satisfy the dependency on "half.h".
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "ilmbase")
-                                      "/include/OpenEXR"
-                                      ":" (or (getenv "CPATH") "")))
-               #t))))))
+                       (string-append
+                        (search-input-directory inputs "include/OpenEXR")
+                        ":" (or (getenv "CPATH") "")))))))))
     (inputs
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
@@ -658,10 +657,9 @@ application can be customized via its API for Python scripting.")
                ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
                ;; the CPATH to satisfy the dependency on "half.h".
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "ilmbase")
-                                      "/include/OpenEXR"
-                                      ":" (or (getenv "CPATH") "")))
-               #t))))))
+                       (string-append
+                        (search-input-directory inputs "include/OpenEXR")
+                        ":" (or (getenv "CPATH") "")))))))))
     (inputs
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)

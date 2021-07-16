@@ -589,10 +589,9 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
            ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
            ;; the CPATH to satisfy the dependency on "ImathVec.h".
            (setenv "CPATH"
-                   (string-append (assoc-ref inputs "ilmbase")
-                                  "/include/OpenEXR"
-                                  ":" (or (getenv "CPATH") "")))
-           #t))
+                   (string-append
+                    (search-input-directory inputs "include/OpenEXR")
+                    ":" (or (getenv "CPATH") "")))))
        (add-before 'check 'start-xserver
          (lambda* (#:key inputs #:allow-other-keys)
            (let ((xorg-server (assoc-ref inputs "xorg-server"))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -506,9 +506,9 @@ photographic equipment.")
 
              ;; Ensure the OpenEXR headers are found.
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "ilmbase")
-                                    "/include/OpenEXR:" (or (getenv "CPATH") "")))
-             #t))
+                     (string-append
+                      (search-input-directory inputs "include/OpenEXR")
+                      ":" (or (getenv "CPATH") "")))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
