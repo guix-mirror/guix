@@ -382,8 +382,7 @@ JNI.")
              (setenv "JAVAC"
                      (search-input-file inputs "/bin/jikes"))
              (setenv "CLASSPATH"
-                     (string-append (assoc-ref inputs "jamvm")
-                                    "/lib/rt.jar"))
+                     (search-input-file inputs "/lib/rt.jar"))
 
              ;; Ant complains if this file doesn't exist.
              (setenv "HOME" "/tmp")
@@ -486,8 +485,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CLASSPATH"
                      (string-join
-                      (cons (string-append (assoc-ref inputs "jamvm")
-                                           "/lib/rt.jar")
+                      (cons (search-input-file inputs "/lib/rt.jar")
                             (find-files (string-append
                                          (assoc-ref inputs "ant-bootstrap")
                                          "/lib")
@@ -3221,19 +3219,22 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "build/build.xml"
                  (("\\$\\{lib\\}/testng/testng-jdk15.jar")
-                  (string-append (assoc-ref inputs "java-testng")
-                                 "/share/java/java-testng.jar"))
+                  (search-input-file inputs
+                                     "/share/java/java-testng.jar"))
                  (("\\$\\{lib\\}/commons-lang/commons-lang.jar")
-                  (string-append (assoc-ref inputs "java-commons-lang")
-                                 "/share/java/commons-lang-"
-                                 ,(package-version java-commons-lang) ".jar"))
+                  (search-input-file inputs
+                                     (string-append
+                                      "/share/java/commons-lang-"
+                                      ,(package-version java-commons-lang)
+                                      ".jar")))
                  (("\\$\\{lib\\}/commons-io/commons-io.jar")
-                  (string-append (assoc-ref inputs "java-commons-io")
-                                 "/lib/m2/commons-io/commons-io/"
-                                 ,(package-version java-commons-io)
-                                 "/commons-io-"
-                                 ,(package-version java-commons-io)
-                                 ".jar"))
+                  (search-input-file inputs
+                                     (string-append
+                                      "/lib/m2/commons-io/commons-io/"
+                                      ,(package-version java-commons-io)
+                                      "/commons-io-"
+                                      ,(package-version java-commons-io)
+                                      ".jar")))
                  ;; Remove dependency on svn
                  (("<build-info.*") "")
                  (("\\$\\{revision.number\\}")
@@ -3406,8 +3407,7 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
                  (rename-file "build-common.xml.new" "build-common.xml"))
                (substitute* "build/build.xml"
                  (("\\$\\{lib\\}/cisd-base/cisd-base.jar")
-                  (string-append (assoc-ref inputs "java-cisd-base")
-                                 "/share/java/sis-base.jar"))
+                  (search-input-file inputs "/share/java/sis-base.jar"))
                  ;; Remove dependency on svn
                  (("<build-info.*") "")
                  (("\\$\\{revision.number\\}")
@@ -3509,29 +3509,32 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "../build_resources/ant/build-common.xml"
                  (("../libraries/testng/testng-jdk15.jar")
-                  (string-append (assoc-ref inputs "java-testng")
-                                 "/share/java/java-testng.jar")))
+                  (search-input-file inputs
+                                     "/share/java/java-testng.jar")))
                (substitute* "build/build.xml"
                  (("\\$\\{lib\\}/sis-base/sis-base.jar")
-                  (string-append (assoc-ref inputs "java-cisd-base")
-                                 "/share/java/sis-base.jar"))
+                  (search-input-file inputs
+                                     "/share/java/sis-base.jar"))
                  (("\\$\\{lib\\}/cisd-args4j/cisd-args4j.jar")
-                  (string-append (assoc-ref inputs "java-cisd-args4j")
-                                 "/share/java/cisd-args4j.jar"))
+                  (search-input-file inputs
+                                     "/share/java/cisd-args4j.jar"))
                  (("\\$\\{lib\\}/commons-lang/commons-lang.jar")
-                  (string-append (assoc-ref inputs "java-commons-lang")
-                                 "/share/java/commons-lang-"
-                                 ,(package-version java-commons-lang) ".jar"))
+                  (search-input-file inputs
+                                     (string-append
+                                      "/share/java/commons-lang-"
+                                      ,(package-version java-commons-lang)
+                                      ".jar")))
                  (("\\$\\{lib\\}/commons-io/commons-io.jar")
-                  (string-append (assoc-ref inputs "java-commons-io")
-                                 "/lib/m2/commons-io/commons-io/"
-                                 ,(package-version java-commons-io)
-                                 "/commons-io-"
-                                 ,(package-version java-commons-io)
-                                 ".jar"))
+                  (search-input-file inputs
+                                     (string-append
+                                      "/lib/m2/commons-io/commons-io/"
+                                      ,(package-version java-commons-io)
+                                      "/commons-io-"
+                                      ,(package-version java-commons-io)
+                                      ".jar")))
                  (("\\$\\{lib\\}/testng/testng-jdk15.jar")
-                  (string-append (assoc-ref inputs "java-testng")
-                                 "/share/java/java-testng.jar"))
+                  (search-input-file inputs
+                                     "/share/java/java-testng.jar"))
                  (("\\$\\{lib\\}/junit4/junit.jar")
                   (car (find-files (assoc-ref inputs "java-junit") "jar$")))
                  (("\\$\\{lib\\}/jmock/hamcrest/hamcrest-core.jar")
@@ -12916,7 +12919,7 @@ from ORO, Inc.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
                ;; Since we removed the bundled ant.jar, give the correct path
-               (("lib/ant.jar") (string-append (assoc-ref inputs "ant") "/lib/ant.jar"))
+               (("lib/ant.jar") (search-input-file inputs "/lib/ant.jar"))
                ;; We removed generated native libraries. We can only rebuild one
                ;; so don't fail if we can't find a native library for another architecture.
                (("zipfileset") "zipfileset erroronmissingarchive=\"false\""))
@@ -12970,8 +12973,7 @@ Java method invocation.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "nbproject/project.properties"
                (("../../build/jna.jar")
-                (string-append (assoc-ref inputs "java-native-access")
-                               "/share/java/jna.jar"))
+                (search-input-file inputs "/share/java/jna.jar"))
                (("../../lib/hamcrest-core-.*.jar")
                 (car (find-files (assoc-ref inputs "java-hamcrest-core")
                                  "jar$")))

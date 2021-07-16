@@ -827,7 +827,7 @@ and modify groovy's @dfn{Abstract Syntax Tree} (AST)."))))
                      "java-jansi" "java-jline-2"))
                  ;; antlr.jar is present twice in antlr2.  Symlink doesn't like
                  ;; it, so we symlink it here.
-                 (symlink (string-append (assoc-ref inputs "antlr2") "/lib/antlr.jar")
+                 (symlink (search-input-file inputs "/lib/antlr.jar")
                           (string-append out-lib "/antlr.jar"))
                  (for-each
                    (lambda (tool)

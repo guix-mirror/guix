@@ -1347,8 +1347,7 @@ extremely large and complex data collections.")
                             "hdf/hdf5lib/exceptions/Makefile.in"
                             "hdf/hdflib/Makefile.in")
                (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
-                (string-append (assoc-ref inputs "slf4j-api")
-                               "/share/java/slf4j-api.jar")))
+                (search-input-file inputs "/share/java/slf4j-api.jar")))
              ;; Replace outdated config.sub and config.guess:
              (with-directory-excursion "config"
                (for-each (lambda (file)

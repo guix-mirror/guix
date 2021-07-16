@@ -4379,9 +4379,7 @@ VCF.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
                (("\\$\\{lib\\}/apache-ant-1.8.2-bzip2.jar")
-                (string-append (assoc-ref inputs "ant")
-                               "/lib/ant.jar")))
-             #t))
+                (search-input-file inputs "/lib/ant.jar")))))
          (add-after 'unpack 'make-test-target-independent
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
@@ -4478,15 +4476,13 @@ VCF.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
                (("jbzip2-0.9.jar")
-                (string-append (assoc-ref inputs "java-jbzip2")
-                               "/share/java/jbzip2.jar"))
+                (search-input-file inputs "/share/java/jbzip2.jar"))
                (("sam-1.103.jar")
-                (string-append (assoc-ref inputs "java-picard-1.113")
-                               "/share/java/sam-1.112.jar"))
+                (search-input-file inputs
+                                   "/share/java/sam-1.112.jar"))
                (("cisd-jhdf5.jar")
-                (string-append (assoc-ref inputs "java-cisd-jhdf5")
-                               "/share/java/sis-jhdf5.jar")))
-             #t))
+                (search-input-file inputs
+                                   "/share/java/sis-jhdf5.jar")))))
          ;; There is no installation target
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -9137,8 +9133,8 @@ browser.")
                  (substitute* "bin/linux/fseq"
                    (("java") (which "java"))
                    (("\\$REALDIR/../lib/commons-cli-1.1.jar")
-                    (string-append (assoc-ref inputs "java-commons-cli")
-                                   "/share/java/commons-cli.jar"))
+                    (search-input-file inputs
+                                       "/share/java/commons-cli.jar"))
                    (("REALDIR=.*")
                     (string-append "REALDIR=" bin "\n")))
                  (install-file "README.txt" doc)
