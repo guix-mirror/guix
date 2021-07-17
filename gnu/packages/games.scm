@@ -8771,7 +8771,7 @@ game field is extended to 4D space, which has to filled up by the gamer with
 (define-public arx-libertatis
   (package
     (name "arx-libertatis")
-    (version "1.1.2")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -8779,7 +8779,7 @@ game field is extended to 4D space, which has to filled up by the gamer with
                            version ".tar.xz"))
        (sha256
         (base32
-         "0hjfxlsmp8wwqr06snv2dlly2s79ra0d9aw49gkp6rn8m50b9bc2"))))
+         "035dflxffa98bxmxkrqfizmhvnr09wyhhmzaqxk92772qil7gkxs"))))
     (build-system cmake-build-system)
     (outputs '("out" "installer"))
     (arguments
@@ -8824,8 +8824,8 @@ game field is extended to 4D space, which has to filled up by the gamer with
                (rename-file (string-append out "/bin/arx-install-data")
                             (string-append installer "/bin/arx-install-data"))))))))
     (inputs
-     `(("sdl" ,sdl)                     ; Switch to sdl2 in >1.1.2.
-       ("mesa" ,mesa)                   ; Switch to libepoxy in >1.1.2.
+     `(("sdl2" ,sdl2)
+       ("libepoxy" ,libepoxy)
        ("glew" ,glew)
        ("openal" ,openal)
        ("zlib" ,zlib)
