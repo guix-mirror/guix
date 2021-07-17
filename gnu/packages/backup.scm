@@ -529,8 +529,8 @@ rdiff-backup is easy to use and settings have sensible defaults.")
              (substitute* '("t/cmd-post_pre-exec/conf/pre-true-post-true.conf"
                             "t/backup_exec/conf/backup_exec_fail.conf"
                             "t/backup_exec/conf/backup_exec.conf")
-               (("/bin/true") (which "true"))
-               (("/bin/false") (which "false")))
+               (("/usr/bin/true") (which "true"))
+               (("/usr/bin/false") (which "false")))
 
              ;; Disable a test that tries to connect to localhost on port 22.
              (delete-file "t/ssh_args/ssh_args.t.in")
