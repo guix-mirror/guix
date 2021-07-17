@@ -892,7 +892,7 @@ BLAKE.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -901,7 +901,7 @@ BLAKE.")
        (file-name (string-append "rhash-" version ".tar.gz"))
        (sha256
         (base32
-         "15x28khy4k3sa0cfcyi13vj50d2nd7dha2p3gkq7i6z66ckq2323"))))
+         "0qpc1fq7gdxxl11zya1gqhl9628jjk3x60q9sna43w0yz7sh03b0"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags
