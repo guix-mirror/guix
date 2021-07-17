@@ -1297,6 +1297,36 @@ replacement for the OpenDWG libraries.")
     (description "@code{minicom} is a serial terminal emulator.")
     (license license:gpl2+)))
 
+(define-public sterm
+  (package
+    (name "sterm")
+    (version "20200306")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wentasah/sterm")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "031pd8yz2bfzqbari6za1c3xcqmw94ap4vbrjzb3v6izjcrca58c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases (delete 'configure))))
+    (synopsis "Simple serial terminal")
+    (description "This is a minimalist terminal program like minicom or cu.
+The only thing it does is creating a bidirectional connection between
+stdin/stdout and a terminal device (e.g. serial line).
+It can also set serial line baudrate, manipulate DTR/RTS modem lines,
+send break and throttle transmission speed.")
+    (home-page "https://github.com/wentasah/sterm")
+    (license license:gpl3+)))
+
 (define-public harminv
   (package
     (name "harminv")
