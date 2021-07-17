@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 François Joulaud <francois.joulaud@radiofrance.com>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,9 @@
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-64)
   #:use-module (web response))
+
+(define go.mod-requirements
+  (@@ (guix import go) go.mod-requirements))
 
 (define parse-go.mod
   (@@ (guix import go) parse-go.mod))
@@ -93,6 +97,41 @@ replace (
 	golang.org/x/tools => golang.org/x/tools v0.0.0-20190821162956-65e3620a7ae7 // pinned to release-branch.go1.13
 )
 
+")
+
+(define fixture-go-mod-unparseable
+  "module my/thing
+go 1.12 // avoid feature X
+require other/thing v1.0.2
+// Security issue: CVE-XXXXX
+exclude old/thing v1.2.3
+new-directive another/thing yet-another/thing
+replace (
+        bad/thing v1.4.5 => good/thing v1.4.5
+        // Unparseable
+        bad/thing [v1.4.5, v1.9.7] => good/thing v2.0.0
+)
+")
+
+(define fixture-go-mod-retract
+  "retract v0.9.1
+
+retract (
+	v1.9.2
+	[v1.0.0, v1.7.9]
+)
+")
+
+(define fixture-go-mod-strings
+  "require `example.com/\"some-repo\"` v1.9.3
+require (
+        `example.com/\"another.repo\"` v1.0.0
+        \"example.com/special!repo\" v9.3.1
+)
+replace \"example.com/\\\"some-repo\\\"\" => `launchpad.net/some-repo` v1.9.3
+replace (
+        \"example.com/\\\"another.repo\\\"\" => launchpad.net/another-repo v1.0.0
+)
 ")
 
 (define fixtures-go-check-test
@@ -178,7 +217,7 @@ require github.com/kr/pretty v0.2.1
     (string<? (car p1) (car p2)))
   (test-equal name
     (sort expected inf?)
-    (sort ((@@ (guix import go) parse-go.mod) input) inf?)))
+    (sort (go.mod-requirements (parse-go.mod input)) inf?)))
 
 (testing-parse-mod "parse-go.mod-simple"
                    '(("good/thing" "v1.4.5")
@@ -213,6 +252,98 @@ require github.com/kr/pretty v0.2.1
    ("github.com/user/project" "v1.1.11")
    ("github.com/go-check/check" "v0.0.0-20140225173054-eb6ee6f84d0a"))
  fixture-go-mod-complete)
+
+(test-equal "parse-go.mod: simple"
+  `((module (module-path "my/thing"))
+    (go (version "1.12"))
+    (require (module-path "other/thing") (version "v1.0.2"))
+    (require (module-path "new/thing/v2") (version "v2.3.4"))
+    (exclude (module-path "old/thing") (version "v1.2.3"))
+    (replace (original (module-path "bad/thing") (version "v1.4.5"))
+      (with (module-path "good/thing") (version "v1.4.5"))))
+  (parse-go.mod fixture-go-mod-simple))
+
+(test-equal "parse-go.mod: comments and unparseable lines"
+  `((module (module-path "my/thing"))
+    (go (version "1.12") (comment "avoid feature X"))
+    (require (module-path "other/thing") (version "v1.0.2"))
+    (comment "Security issue: CVE-XXXXX")
+    (exclude (module-path "old/thing") (version "v1.2.3"))
+    (unknown "new-directive another/thing yet-another/thing")
+    (replace (original (module-path "bad/thing") (version "v1.4.5"))
+      (with (module-path "good/thing") (version "v1.4.5")))
+    (comment "Unparseable")
+    (unknown "bad/thing [v1.4.5, v1.9.7] => good/thing v2.0.0"))
+  (parse-go.mod fixture-go-mod-unparseable))
+
+(test-equal "parse-go.mod: retract"
+  `((retract (version "v0.9.1"))
+    (retract (version "v1.9.2"))
+    (retract (range (version "v1.0.0") (version "v1.7.9"))))
+  (parse-go.mod fixture-go-mod-retract))
+
+(test-equal "parse-go.mod: raw strings and quoted strings"
+  `((require (module-path "example.com/\"some-repo\"") (version "v1.9.3"))
+    (require (module-path "example.com/\"another.repo\"") (version "v1.0.0"))
+    (require (module-path "example.com/special!repo") (version "v9.3.1"))
+    (replace (original (module-path "example.com/\"some-repo\""))
+      (with (module-path "launchpad.net/some-repo") (version "v1.9.3")))
+    (replace (original (module-path "example.com/\"another.repo\""))
+      (with (module-path "launchpad.net/another-repo") (version "v1.0.0"))))
+  (parse-go.mod fixture-go-mod-strings))
+
+(test-equal "parse-go.mod: complete"
+  `((module (module-path "M"))
+    (go (version "1.13"))
+    (replace (original (module-path "github.com/myname/myproject/myapi"))
+      (with (file-path "./api")))
+    (replace (original (module-path "github.com/mymname/myproject/thissdk"))
+      (with (file-path "../sdk")))
+    (replace (original (module-path "launchpad.net/gocheck"))
+      (with (module-path "github.com/go-check/check")
+            (version "v0.0.0-20140225173054-eb6ee6f84d0a")))
+    (require (module-path "github.com/user/project")
+             (version "v1.1.11"))
+    (require (module-path "github.com/user/project/sub/directory")
+             (version "v1.1.12"))
+    (require (module-path "bitbucket.org/user/project")
+             (version "v1.11.20"))
+    (require (module-path "bitbucket.org/user/project/sub/directory")
+             (version "v1.11.21"))
+    (require (module-path "launchpad.net/project")
+             (version "v1.1.13"))
+    (require (module-path "launchpad.net/project/series")
+             (version "v1.1.14"))
+    (require (module-path "launchpad.net/project/series/sub/directory")
+             (version "v1.1.15"))
+    (require (module-path "launchpad.net/~user/project/branch")
+             (version "v1.1.16"))
+    (require (module-path "launchpad.net/~user/project/branch/sub/directory")
+             (version "v1.1.17"))
+    (require (module-path "hub.jazz.net/git/user/project")
+             (version "v1.1.18"))
+    (require (module-path "hub.jazz.net/git/user/project/sub/directory")
+             (version "v1.1.19"))
+    (require (module-path "k8s.io/kubernetes/subproject")
+             (version "v1.1.101"))
+    (require (module-path "one.example.com/abitrary/repo")
+             (version "v1.1.111"))
+    (require (module-path "two.example.com/abitrary/repo")
+             (version "v0.0.2"))
+    (require (module-path "quoted.example.com/abitrary/repo")
+             (version "v0.0.2"))
+    (replace (original (module-path "two.example.com/abitrary/repo"))
+      (with (module-path "github.com/corp/arbitrary-repo")
+            (version "v0.0.2")))
+    (replace (original (module-path "golang.org/x/sys"))
+      (with (module-path "golang.org/x/sys")
+            (version "v0.0.0-20190813064441-fde4db37ae7a"))
+      (comment "pinned to release-branch.go1.13"))
+    (replace (original (module-path "golang.org/x/tools"))
+      (with (module-path "golang.org/x/tools")
+            (version "v0.0.0-20190821162956-65e3620a7ae7"))
+      (comment "pinned to release-branch.go1.13")))
+  (parse-go.mod fixture-go-mod-complete))
 
 ;;; End-to-end tests for (guix import go)
 (define (mock-http-fetch testcase)
