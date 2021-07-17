@@ -81,6 +81,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
@@ -903,37 +904,37 @@ BLAKE.")
          "15x28khy4k3sa0cfcyi13vj50d2nd7dha2p3gkq7i6z66ckq2323"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
-             ,@(let ((target (%current-target-system)))
-                 (if target
-                     `((string-append "--target=" ,target)
-                       (string-append "--cc="
-                                      (assoc-ref %build-inputs "cross-gcc")
-                                      "/bin/" ,target "-gcc"))
-                     '())))
-       #:make-flags
-       ;; The binaries in /bin need some help finding librhash.so.0.
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
-       #:test-target "test"             ; ‘make check’ just checks the sources
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           ;; ./configure is not GNU autotools' and doesn't gracefully handle
-           ;; unrecognized options, so we must call it manually.
-           (lambda* (#:key configure-flags #:allow-other-keys)
-             (apply invoke "./configure" configure-flags)))
-         (add-before 'check 'patch-/bin/sh
-           (lambda _
-             (substitute* "Makefile"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (add-after 'install 'install-library-extras
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke
-                    "make" "-C" "librhash"
-                    "install-lib-headers" "install-so-link"
-                    make-flags))))))
+     (list #:configure-flags
+           #~(list (string-append "--prefix=" #$output)
+                   #$@(let ((target (%current-target-system)))
+                        (if target
+                            #~((string-append "--target=" #$target)
+                               (string-append "--cc="
+                                              (assoc-ref %build-inputs "cross-gcc")
+                                              "/bin/" #$target "-gcc"))
+                            #~())))
+           #:make-flags
+           ;; The binaries in /bin need some help finding librhash.so.0.
+           #~(list (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib"))
+           #:test-target "test"         ; ‘make check’ just checks the sources
+           #:phases
+           #~(modify-phases %standard-phases
+              (delete 'configure)
+              (add-before 'build 'configure
+                ;; ./configure is not GNU autotools' and doesn't gracefully handle
+                ;; unrecognized options, so we must call it manually.
+                (lambda* (#:key configure-flags #:allow-other-keys)
+                  (apply invoke "./configure" configure-flags)))
+              (add-before 'check 'patch-/bin/sh
+                (lambda _
+                  (substitute* "Makefile"
+                    (("/bin/sh") (which "sh")))))
+              (add-after 'install 'install-library-extras
+                (lambda* (#:key make-flags #:allow-other-keys)
+                  (apply invoke
+                         "make" "-C" "librhash"
+                         "install-lib-headers" "install-so-link"
+                         make-flags))))))
     (home-page "https://sourceforge.net/projects/rhash/")
     (synopsis "Utility for computing hash sums")
     (description "RHash is a console utility for calculation and verification
