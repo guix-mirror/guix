@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -526,15 +527,6 @@ rdiff-backup is easy to use and settings have sensible defaults.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (substitute* '("t/cmd-post_pre-exec/conf/pre-true-post-true.conf"
-                            "t/backup_exec/conf/backup_exec_fail.conf"
-                            "t/backup_exec/conf/backup_exec.conf")
-               (("/usr/bin/true") (which "true"))
-               (("/usr/bin/false") (which "false")))
-
-             ;; Disable a test that tries to connect to localhost on port 22.
-             (delete-file "t/ssh_args/ssh_args.t.in")
-
              (invoke "make" "test"))))))
     (inputs
      `(("perl" ,perl)
