@@ -15912,7 +15912,7 @@ the format.")
 (define-public emacs-nov-el
   (package
     (name "emacs-nov-el")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method git-fetch)
@@ -15922,10 +15922,11 @@ the format.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "116klnjyggwfwvs9nqhpv97m00k63q6lg41ph41kywsqkfy42dlk"))))
+         "0va9xjrq30cv5kb59a4rq5mcm83ggnv774r8spmskff3hj8012wf"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
+     `(#:emacs ,emacs                   ;need libxml
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'embed-path-to-unzip
            (lambda _
