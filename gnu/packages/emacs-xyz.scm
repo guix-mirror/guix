@@ -28985,3 +28985,31 @@ to the @url{https://multitran.com} online dictionary.")
      "Kibit Helper provides functions to work with the Kibit Leiningen plugin
 for detecting and improve non-idiomatic Clojure source code.")
     (license license:gpl3+)))
+
+(define-public emacs-seeing-is-believing
+  (let ((version "1.2.0") ; from .el file
+        (commit "fbbe246c0fda87bb26227bb826eebadb418a220f")
+        (revision "0"))
+    (package
+      (name "emacs-seeing-is-believing")
+      (home-page "https://github.com/jcinnamond/seeing-is-believing")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1h1b48s2iirswdlvfz41jbflm4x09ksc2lycrc1awzlwd6r8hdhg"))))
+      (build-system emacs-build-system)
+      (synopsis
+       "Minor mode for running the seeing-is-believing Ruby gem")
+      (description
+       "@uref{https://github.com/JoshCheek/seeing_is_believing,Seeing Is
+Believing} is a ruby gem to evaluate Ruby code, recording the results of each
+line.  This minor mode provides an easy way to run it from Emacs on the
+current region or entire buffer.")
+      (license license:gpl3+))))
