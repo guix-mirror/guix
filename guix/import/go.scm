@@ -154,13 +154,13 @@ name (e.g. \"github.com/golang/protobuf/proto\")."
   "A very basic SXML to Texinfo converter which attempts to preserve HTML
 formatting and links as text."
   (sxml-match sxml-node
-    ((strong ,text)
-     (format #f "@strong{~a}" text))
-    ((a (@ (href ,url)) ,text)
-     (format #f "@url{~a,~a}" url text))
-    ((code ,text)
-     (format #f "@code{~a}" text))
-    (,something-else something-else)))
+              ((strong ,text)
+               (format #f "@strong{~a}" text))
+              ((a (@ (href ,url)) ,text)
+               (format #f "@url{~a,~a}" url text))
+              ((code ,text)
+               (format #f "@code{~a}" text))
+              (,something-else something-else)))
 
 (define (go-package-description name)
   "Retrieve a short description for NAME, a Go package name,
@@ -269,7 +269,7 @@ comment, or unknown) and is followed by the indicated data."
   (define-peg-pattern identifier body
     (+ (and (not-followed-by (or NL WS punctuation)) peg-any)))
   (define-peg-pattern string-raw body
-     (and (ignore "`") (+ (and (not-followed-by "`") peg-any)) (ignore "`")))
+    (and (ignore "`") (+ (and (not-followed-by "`") peg-any)) (ignore "`")))
   (define-peg-pattern string-quoted body
     (and (ignore "\"")
          (+ (or (and (ignore "\\") peg-any)
@@ -391,28 +391,28 @@ DIRECTIVE."
 (define known-vcs
   ;; See the following URL for the official Go equivalent:
   ;; https://github.com/golang/go/blob/846dce9d05f19a1f53465e62a304dea21b99f910/src/cmd/go/internal/vcs/vcs.go#L1026-L1087
-    (list
-     (make-vcs
-      "github.com"
-      "^(github\\.com/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
-      'git)
-     (make-vcs
-      "bitbucket.org"
-      "^(bitbucket\\.org/([A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+))(/[A-Za-z0-9_.\\-]+)*$"
-      'unknown)
-     (make-vcs
-      "hub.jazz.net/git/"
-      "^(hub\\.jazz\\.net/git/[a-z0-9]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
-      'git)
-     (make-vcs
-      "git.apache.org"
-      "^(git\\.apache\\.org/[a-z0-9_.\\-]+\\.git)(/[A-Za-z0-9_.\\-]+)*$"
-      'git)
-     (make-vcs
-      "git.openstack.org"
-      "^(git\\.openstack\\.org/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(\\.git)?\
+  (list
+   (make-vcs
+    "github.com"
+    "^(github\\.com/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
+    'git)
+   (make-vcs
+    "bitbucket.org"
+    "^(bitbucket\\.org/([A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+))(/[A-Za-z0-9_.\\-]+)*$"
+    'unknown)
+   (make-vcs
+    "hub.jazz.net/git/"
+    "^(hub\\.jazz\\.net/git/[a-z0-9]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
+    'git)
+   (make-vcs
+    "git.apache.org"
+    "^(git\\.apache\\.org/[a-z0-9_.\\-]+\\.git)(/[A-Za-z0-9_.\\-]+)*$"
+    'git)
+   (make-vcs
+    "git.openstack.org"
+    "^(git\\.openstack\\.org/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(\\.git)?\
 (/[A-Za-z0-9_.\\-]+)*$"
-      'git)))
+    'git)))
 
 (define (module-path->repository-root module-path)
   "Infer the repository root from a module path.  Go modules can be
