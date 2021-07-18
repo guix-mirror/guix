@@ -3094,6 +3094,136 @@ the Cauchy-Schwarz inequality, Stirling's formula, etc.  See the Metamath
 book.")
     (license license:gpl2+)))
 
+(define-public minizinc
+  (package
+    (name "minizinc")
+    (version "2.5.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/MiniZinc/libminizinc")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10b2hsl1fx9psh0iagmp8ki3f60f3qg5hmvra5aczjlfmbl88ggp"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (srfi srfi-1)))
+              (snippet
+               '(begin
+                  ;; Do not advertise proprietary solvers
+                  (with-directory-excursion "cmake/targets"
+                    (let ((targets '("libminizinc_fzn.cmake"
+                                     "libminizinc_gecode.cmake"
+                                     "libminizinc_mip.cmake"
+                                     "libminizinc_nl.cmake"
+                                     "libminizinc_osicbc.cmake"
+                                     "libminizinc_parser.cmake"
+                                     "libmzn.cmake"
+                                     "minizinc.cmake"
+                                     "mzn2doc.cmake")))
+                     (for-each delete-file
+                              (remove
+                               (lambda (file)
+                                 (member file (cons* "." ".." targets)))
+                               (scandir ".")))
+                    (substitute* "libmzn.cmake"
+                      (("include\\(cmake/targets/(.*)\\)" all target)
+                       (if (member target targets) all "")))))
+                  (with-directory-excursion "include/minizinc/solvers/MIP"
+                    (for-each delete-file
+                              (remove
+                               (lambda (file)
+                                 (member file '("." ".."
+                                                "MIP_osicbc_solverfactory.hh"
+                                                "MIP_osicbc_wrap.hh"
+                                                "MIP_solverinstance.hh"
+                                                "MIP_solverinstance.hpp"
+                                                "MIP_wrap.hh")))
+                               (scandir "."))))
+                  (with-directory-excursion "solvers/MIP"
+                    (for-each delete-file
+                              (remove
+                               (lambda (file)
+                                 (member file '("." ".."
+                                                "MIP_osicbc_solverfactory.cpp"
+                                                "MIP_osicbc_wrap.cpp"
+                                                "MIP_solverinstance.cpp"
+                                                "MIP_wrap.cpp")))
+                               (scandir "."))))
+                  (substitute* "CMakeLists.txt"
+                    (("find_package\\(([^ ]*).*\\)" all pkg)
+                     (if (member pkg '("Gecode" "OsiCBC" "Threads"))
+                         all
+                         "")))
+                  ;; TODO: swap out miniz for zlib
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no ‘check’ target
+       #:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-solver-configs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((gecode (assoc-ref inputs "gecode"))
+                   (pkgdatadir (string-append (assoc-ref outputs "out")
+                                                  "/share/minizinc")))
+               (call-with-output-file (string-append pkgdatadir
+                                                     "/Preferences.json")
+                 (lambda (port)
+                   (display "\
+{
+  \"tagDefaults\": [
+    [\"\", \"org.gecode.gecode\"],
+    [\"gecode\", \"org.gecode.gecode\"]
+  ],
+  \"solverDefaults\": []
+}"
+                            port)
+                   (newline port)))
+
+               (mkdir-p (string-append pkgdatadir "/solvers"))
+               (call-with-output-file (string-append pkgdatadir
+                                                     "/solvers/gecode.msc")
+                 (lambda (port)
+                   (format port
+                    "\
+{
+  \"id\": \"org.gecode.gecode\",
+  \"name\": \"Gecode\",
+  \"description\": \"Gecode FlatZinc executable\",
+  \"version\": ~s,
+  \"mznlib\": ~s,
+  \"executable\": ~s,
+  \"supportsMzn\": false,
+  \"supportsFzn\": true,
+  \"needsSolns2Out\": true,
+  \"needsMznExecutable\": false,
+  \"needsStdlibDir\": false,
+  \"isGUIApplication\": false
+}"
+                    (last (string-split gecode #\-))
+                    (string-append gecode "/share/gecode/mznlib")
+                    (string-append gecode "/bin/fzn-gecode"))
+                   (newline port)))))))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("cbc" ,cbc)
+       ("gecode" ,gecode)
+       ("zlib" ,zlib)))
+    (home-page "https://www.minizinc.org")
+    (synopsis "High-level constraint modeling language")
+    (description "MiniZinc is a high-level modeling language for constraint
+satisfaction and optimization problems.  Models are compiled to FlatZinc, a
+language understood by many solvers.")
+    (license license:mpl2.0)))
+
 (define-public mumps
   (package
     (name "mumps")
