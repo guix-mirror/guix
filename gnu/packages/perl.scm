@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017, 2018, 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -141,14 +141,10 @@
                `((add-after 'unpack 'unpack-cross
                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
                      (let ((cross-checkout
-                            (assoc-ref native-inputs "perl-cross"))
-                           (cross-patch
-                            (assoc-ref native-inputs "perl-cross-patch")))
+                            (assoc-ref native-inputs "perl-cross")))
                        (rename-file "Artistic" "Artistic.perl")
                        (rename-file "Copying" "Copying.perl")
-                       (copy-recursively cross-checkout ".")
-                       (format #t "Applying ~a\n" cross-patch)
-                       (invoke "patch" "-p1" "-i" cross-patch))
+                       (copy-recursively cross-checkout "."))
                      (let ((bash (assoc-ref inputs "bash")))
                        (substitute* '("Makefile.config.SH"
                                       "cnf/config.guess"
@@ -251,11 +247,10 @@
                (method git-fetch)
                (uri (git-reference
                      (url "https://github.com/arsv/perl-cross")
-                     (commit "1.3.3")))
-               (file-name (git-file-name "perl-cross" "1.3.3"))
+                     (commit "1.3.6")))
+               (file-name (git-file-name "perl-cross" "1.3.6"))
                (sha256
-                (base32 "065qbl1x44maykaj8p8za0b6qxj74bz7fi2zsrlydir1mqb1js3d"))))
-           ("perl-cross-patch" ,@(search-patches "perl-cross.patch")))
+                (base32 "0k5vyj40czbkfl7r3dcwxpc7dvdlp2xliaav358bviq3dq9vq9bb")))))
          '()))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
