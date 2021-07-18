@@ -1371,7 +1371,7 @@ gain and standing wave ratio.")
 (define-public dump1090
   (package
     (name "dump1090")
-    (version "4.0")
+    (version "5.0")
     (source
      (origin
        (method git-fetch)
@@ -1380,12 +1380,13 @@ gain and standing wave ratio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zacsqaqsiapljhzw31dwc4nld2rp98jm3ivkyznrhzk9n156p42"))))
+        (base32 "1fckfcgypmplzl1lidd04jxiabczlfx9mv21d6rbsfknghsjpn03"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb" ,libusb)
+     `(("hackrf" ,hackrf)
+       ("libusb" ,libusb)
        ("ncurses" ,ncurses)
        ("rtl-sdr" ,rtl-sdr)))
     (arguments
