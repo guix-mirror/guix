@@ -123,20 +123,19 @@
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setup-configure
-           (lambda _
-             ;; Use the right path for `pwd'.
-             ;; TODO: use coreutils from INPUTS instead of 'which'
-             ;; in next rebuild cycle, see fixup below.
-             (substitute* "dist/PathTools/Cwd.pm"
-               (("/bin/pwd")
-                (which "pwd")))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (or (assoc-ref inputs "coreutils-minimal")
+                                  (assoc-ref inputs "coreutils"))))
+               ;; Use the right path for `pwd'.
+               (substitute* "dist/PathTools/Cwd.pm"
+                 (("'/bin/pwd'")
+                  (string-append "'" coreutils "/bin/pwd'")))
 
-             ;; Build in GNU89 mode to tolerate C++-style comment in libc's
-             ;; <bits/string3.h>.
-             (substitute* "cflags.SH"
-               (("-std=c89")
-                "-std=gnu89"))
-             #t))
+               ;; Build in GNU89 mode to tolerate C++-style comment in libc's
+               ;; <bits/string3.h>.
+               (substitute* "cflags.SH"
+                 (("-std=c89")
+                  "-std=gnu89")))))
          ,@(if (%current-target-system)
                `((add-after 'unpack 'unpack-cross
                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
@@ -155,8 +154,7 @@
                          (("! */bin/sh") (string-append "! " bash "/bin/bash"))
                          ((" /bin/sh") (string-append bash "/bin/bash")))
                        (substitute* '("ext/Errno/Errno_pm.PL")
-                         (("\\$cpp < errno.c") "$Config{cc} -E errno.c")))
-                       #t))
+                         (("\\$cpp < errno.c") "$Config{cc} -E errno.c")))))
                  (replace 'configure
                    (lambda* (#:key configure-flags outputs inputs #:allow-other-keys)
                      (let* ((out (assoc-ref outputs "out"))
@@ -172,22 +170,18 @@
                                        (lambda (x) (or (string-prefix? "-d" x)
                                                        (string-prefix? "-Dcc=" x))))
                                       configure-flags)))
-                            (bash (assoc-ref inputs "bash"))
-                            (coreutils (assoc-ref inputs "coreutils")))
+                            (bash (assoc-ref inputs "bash")))
                        (format (current-error-port)
-                               "running ./configure ~a\n" (string-join configure-flags))
+                               "running ./configure ~a\n"
+                               (string-join configure-flags))
                        (apply invoke (cons "./configure" configure-flags))
                        (substitute* "config.sh"
                          (((string-append store-directory "/[^/]*-bash-[^/]*"))
                           bash))
                        (substitute* '("config.h")
                          (("^#define SH_PATH .*")
-                          (string-append  "#define SH_PATH \"" bash "/bin/bash\"\n")))
-                       ;;TODO: fix this in setup-configure next rebuild cycle
-                       (substitute* "dist/PathTools/Cwd.pm"
-                         (((string-append store-directory "/[^/]*-coreutils-[^/]*"))
-                          coreutils))
-                       #t)))
+                          (string-append  "#define SH_PATH \""
+                                          bash "/bin/bash\"\n"))))))
                  (add-after 'build 'touch-non-built-files-for-install
                    (lambda _
                      ;; `make install' wants to install these although they do
@@ -201,8 +195,7 @@
                                  '("Pod-Usage/blib/script/pod2text"
                                    "Pod-Usage/blib/script/pod2usage"
                                    "Pod-Checker/blib/script/podchecker"
-                                   "Pod-Parser/blib/script/podselect")))
-                     #t)))
+                                   "Pod-Parser/blib/script/podselect"))))))
                `((replace 'configure
                    (lambda* (#:key configure-flags #:allow-other-keys)
                      (format #t "Perl configure flags: ~s~%" configure-flags)
@@ -233,13 +226,12 @@
                              (("libpth => .*$")
                               (string-append "libpth => '" libc
                                              "/lib',\n"))))
-                         config2)
-               #t))))))
+                         config2)))))))
     (inputs
-     (if (%current-target-system)
-         `(("bash" ,bash-minimal)
-           ("coreutils" ,coreutils))
-         '()))
+     (append (list coreutils-minimal)
+             (if (%current-target-system)
+                 (list bash-minimal)
+                 '())))
     (native-inputs
      (if (%current-target-system)
          `(("perl-cross"
