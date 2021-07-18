@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,17 +49,20 @@
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (supported-systems (list "i686-linux" "x86_64-linux"
-                             "armhf-linux" "aarch64-linux"))
+                             "armhf-linux" "aarch64-linux"
+                             "powerpc-linux"))
     (outputs (list "out" "debug"))
     (arguments
      `(#:system
        ,@(match (%current-system)
            ;; This package predates 64-bit PCs: a ‘64-bit’ adaexec segfaults.
            ;; Force a 32-bit build targeting a similar architecture.
-           ((or "armhf-linux" "aarch64-linux")
+           ("aarch64-linux"
             `("armhf-linux"))
+           ("x86_64-linux"
+            `("i686-linux"))
            (_
-            `("i686-linux")))
+            (list (%current-system))))
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append
