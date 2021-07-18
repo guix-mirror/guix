@@ -85,6 +85,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
@@ -857,7 +858,7 @@ time for compression ratio.")
 (define-public squashfs-tools
   (package
     (name "squashfs-tools")
-    (version "4.4")
+    (version "4.4-git.1")               ; ‘A point release of […] 4.4’
     (source
      (origin
        (method git-fetch)
@@ -866,15 +867,7 @@ time for compression ratio.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0697fv8n6739mcyn57jclzwwbbqwpvjdfkv1qh9s56lvyqnplwaw"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Fix build with -fno-common (default in GCC 10).
-           ;; Remove for squashfs-tools > 4.4.
-           (substitute* "squashfs-tools/mksquashfs.h"
-             (("struct cache \\*bwriter_buffer" all)
-              (string-append "extern " all)))))))
+        (base32 "1hb95iy445hs2p3f7hg51jkrpkfi3bphddk60p2la0qmcdjkgbbm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -905,13 +898,86 @@ time for compression ratio.")
     (home-page "https://github.com/plougher/squashfs-tools")
     (synopsis "Tools to create and extract squashfs file systems")
     (description
-     "Squashfs is a highly compressed read-only file system for Linux.  It uses
-zlib to compress files, inodes, and directories.  All blocks are packed to
-minimize the data overhead, and block sizes of between 4K and 1M are supported.
-It is intended to be used for archival use, for live CDs, and for embedded
-systems where low overhead is needed.  This package allows you to create and
-extract such file systems.")
+     "Squashfs is a highly compressed read-only file system for Linux.  It
+compresses files, inodes, and directories with one of several compressors.
+All blocks are packed to minimize the data overhead, and block sizes of
+between 4K and 1M are supported.  It is intended to be used for archival use,
+for live media, and for embedded systems where low overhead is needed.
+This package allows you to create and extract such file systems.")
     (license license:gpl2+)))
+
+(define-public squashfs-tools-ng
+  (package
+    (name "squashfs-tools-ng")
+    (version "1.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AgentD/squashfs-tools-ng")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13gx6mc57wjjnrpnkb74zi2wiqazz2q715y1zz7rff02wh1vb5k9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled third-party libraries.
+           (for-each (lambda (directory)
+                       (substitute* "Makefile.am"
+                         (((format #f "^include ~a.*" directory)) ""))
+                       (delete-file-recursively directory))
+                     (list "lib/lz4"
+                           "lib/zlib"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libselinux" ,libselinux)
+
+       ;; Compression algorithms.
+       ("bzip2" ,bzip2)
+       ("lz4" ,lz4)
+       ("lzo" ,lzo)
+       ("xz" ,xz)
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
+    (home-page "https://github.com/AgentD/squashfs-tools-ng")
+    (synopsis "Tools to create and extract squashfs file systems")
+    (description
+     "Squashfs is a highly compressed read-only file system for Linux.  It
+compresses files, inodes, and directories with one of several compressors.
+All blocks are packed to minimize the data overhead, and block sizes of
+between 4K and 1M are supported.  It is intended to be used for archival use,
+for live media, and for embedded systems where low overhead is needed.
+
+The squashfs-tools-ng package offers alternative tooling to create and extract
+such file systems.  It is not based on the older squashfs-tools package and
+its tools have different names:
+
+@enumerate
+@item @command{gensquashfs} produces SquashFS images from a directory or
+@command{gen_init_cpio}-like file listings and can generate SELinux labels.
+@item @command{rdsquashfs} inspects and unpacks SquashFS images.
+@item @command{sqfs2tar} and @command{tar2sqfs} convert between SquashFS and
+tarballs.
+@item @command{sqfsdiff} compares the contents of two SquashFS images.
+@end enumerate
+
+These commands are largely command-line wrappers around the included
+@code{libsquashfs} library that intends to make SquashFS available to other
+applications as an embeddable, extensible archive format.
+
+Both the library and tools operate deterministically: same input will produce
+byte-for-byte identical output.")
+    ;; Upstream goes to some lengths to ensure that libsquashfs is LGPL3+.
+    (license license:gpl3+)))
 
 (define-public pigz
   (package
@@ -1836,21 +1902,23 @@ timestamps in the file header with a fixed time (1 January 2008).
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.7.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "0ck1dk7zn5qzpgxklg0r26nfsf04xb6c46gsig060hkvvgzp6156"))))
+                "0zn9vaiwy2izj8cnm8i7c2mbdn38n328grqb8f07x55s4kd3nxph"))))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
        ("liblzma" ,xz)
        ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
     (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
@@ -2464,14 +2532,14 @@ to their original, binary CD format.")
 (define-public tarlz
   (package
     (name "tarlz")
-    (version "0.19")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/tarlz/"
                            "tarlz-" version ".tar.lz"))
        (sha256
-        (base32 "09xal55973ivzpaja93jcc1pfla8gb3vrk8dx7pj9qvvz5aynf9n"))))
+        (base32 "1x5dw03lcwfigcv97cg70gkbkfycjmv1012s9lwnl4izvl9235qg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("lzip" ,lzip)))

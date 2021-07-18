@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -79,6 +82,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (ice-9 match)
+  #:use-module (guix build-system meson)
   #:use-module (srfi srfi-1))
 
 (define-public libgpg-error
@@ -962,6 +966,33 @@ passphrase or PIN when required by @code{gpg} or other software.  It is using
 the Rofi application launcher as the user interface.  Which makes it combined
 with @code{rofi-pass} a good front end for @code{password-store}.")
     (home-page "https://github.com/plattfot/pinentry-rofi/")
+    (license license:gpl3+)))
+
+(define-public pinentry-bemenu
+  (package
+    (name "pinentry-bemenu")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/t-8ch/pinentry-bemenu")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1faxaydhc9lr97b2r3sylcy320bn54g4a5p727y3227mz3gg1mn1"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bemenu" ,bemenu)
+       ("libassuan" ,libassuan)
+       ("libgpg-error" ,libgpg-error)
+       ("popt" ,popt)))
+    (home-page "https://github.com/t-8ch/pinentry-bemenu")
+    (synopsis "Pinentry implementation based on @code{bemenu}")
+    (description
+     "This package provides a Pinentry implementation based on Bemenu.")
     (license license:gpl3+)))
 
 (define-public pinentry

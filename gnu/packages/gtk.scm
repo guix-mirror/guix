@@ -87,6 +87,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
@@ -1844,13 +1845,37 @@ write GNOME applications.")
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
-    (inputs
+    (propagated-inputs
      `(("cairo" ,cairo)))
     (home-page "https://metacpan.org/release/Cairo")
     (synopsis "Perl interface to the cairo 2d vector graphics library")
     (description "Cairo provides Perl bindings for the vector graphics library
 cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
 produces identical output on all those targets.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-cairo-gobject
+  (package
+    (name "perl-cairo-gobject")
+    (version "1.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
+                           "Cairo-GObject-" version ".tar.gz"))
+       (sha256
+        (base32 "0l2wcz77ndmbgvxx34gdm919a3dxh9fixqr47p50n78ysx2692cd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (propagated-inputs
+     `(("perl-cairo" ,perl-cairo)
+       ("perl-glib" ,perl-glib)))
+    (home-page "https://metacpan.org/dist/Cairo-GObject")
+    (synopsis "Integrate Cairo into the Glib type system")
+    (description "Cairo::GObject registers Cairo's types with Glib's type systems,
+so that they can be used normally in signals and properties.")
     (license license:lgpl2.1+)))
 
 (define-public perl-gtk2
@@ -1885,6 +1910,48 @@ produces identical output on all those targets.")
     (home-page "https://metacpan.org/release/Gtk2")
     (synopsis "Perl interface to the 2.x series of the Gimp Toolkit library")
     (description "Perl bindings to the 2.x series of the Gtk+ widget set.
+This module allows you to write graphical user interfaces in a Perlish and
+object-oriented way, freeing you from the casting and memory management in C,
+yet remaining very close in spirit to original API.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-gtk3
+  (package
+    (name "perl-gtk3")
+    (version "0.038")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Gtk3-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1k3sfcvxxx7ir7ail7w1lkmr4np0k3criljzw5wir63lmbr4pp3h"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1"))))))
+    (native-inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
+       ("perl-test-simple" ,perl-test-simple)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("perl-cairo-gobject" ,perl-cairo-gobject)
+       ("perl-carp" ,perl-carp)
+       ("perl-exporter" ,perl-exporter)
+       ("perl-glib-object-introspection" ,perl-glib-object-introspection)))
+    (home-page "https://metacpan.org/dist/Gtk3")
+    (synopsis "Perl interface to the 3.x series of the gtk+ toolkit")
+    (description "Perl bindings to the 3.x series of the gtk+ toolkit.
 This module allows you to write graphical user interfaces in a Perlish and
 object-oriented way, freeing you from the casting and memory management in C,
 yet remaining very close in spirit to original API.")

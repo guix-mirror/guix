@@ -242,7 +242,7 @@ browser for easy news reading.")
          ("frei0r-plugins" ,frei0r-plugins)
          ("ffmpeg" ,ffmpeg)
          ("rttr" ,rttr)
-         ("mlt" ,mlt)
+         ("mlt" ,mlt-6)
          ("qtbase" ,qtbase-5)
          ("qtscript" ,qtscript)
          ("qtsvg" ,qtsvg)
@@ -461,7 +461,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.4.3")
+    (version "4.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -469,7 +469,7 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "0rwghzci2wn2jmisvnzs23yxc2z3d4dcx2qbbhcvjyi3q8ij61nl"))))
+                "0s3mzgkxb316y1wncrr8l3w5nnqszhvdh8qi1nh6040dhy075zab"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -754,7 +754,6 @@ different notification systems.")
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtwayland" ,qtwayland)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/KDEConnect")
     (synopsis "Enable your devices to communicate with each other")

@@ -20,7 +20,7 @@
 export GUIX_LOCPATH=@localstatedir@/guix/profiles/per-user/root/guix-profile/lib/locale
 export LC_ALL=en_US.utf8
 command="@localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix-daemon"
-command_args="--build-users-group=guixbuild"
+command_args="--build-users-group=guixbuild --discover=no"
 command_background="yes"
 pidfile="/var/run/guix-daemon.pid"
 

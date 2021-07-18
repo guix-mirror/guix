@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3985,6 +3986,28 @@ very platform-dependent, so correct use of these functions requires
 the programmer to be mindfulof the space of platform variations.")
     (license license:perl-license)))
 
+(define-public perl-encode
+  (package
+    (name "perl-encode")
+    (version "3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DANKOGAI/"
+                           "Encode-" version ".tar.gz"))
+       (sha256
+        (base32 "1a8rwcrxxhq81jcdvdwns05c65jwr5r6bxvby6vdcr3ny5m91my2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-exporter" ,perl-exporter)
+       ("perl-storable" ,perl-storable)
+       ("perl-parent" ,perl-parent)))
+    (home-page "https://metacpan.org/dist/Encode")
+    (synopsis "Character encodings in Perl")
+    (description "Encode module provides the interface between Perl strings and
+the rest of the system.  Perl strings are sequences of characters.")
+    (license (package-license perl))))
+
 (define-public perl-encode-detect
   (package
     (name "perl-encode-detect")
@@ -4201,6 +4224,31 @@ command, which can be used as a minimal Perl read-eval-print loop (REPL).")
     (synopsis "Allows you to declare real exception classes in Perl")
     (description "Exception::Class allows you to declare exception hierarchies
 in your modules in a \"Java-esque\" manner.")
+    (license (package-license perl))))
+
+(define-public perl-exporter
+  (package
+    (name "perl-exporter")
+    (version "5.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/"
+                           "Exporter-" version ".tar.gz"))
+       (sha256
+        (base32 "1f25k5iaygiizlrkbbl6wxd647pwfmynykxalq6r9bbkysg8inza"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)))
+    (propagated-inputs
+     `(("perl-carp" ,perl-carp)))
+    (home-page "https://metacpan.org/dist/Exporter")
+    (synopsis "Default import method for modules")
+    (description "Exporter implements an import method which allows a module to
+export functions and variables to its users' namespaces.  Many modules use
+Exporter rather than implementing their own import method because Exporter
+provides a highly flexible interface, with an implementation optimised for the
+common case.")
     (license (package-license perl))))
 
 (define-public perl-exporter-lite
@@ -6379,6 +6427,31 @@ return values, trading space for time.")
     (description "This module implements an expiry policy for Memoize that
 follows LRU semantics, that is, the last n results, where n is specified as
 the argument to the CACHESIZE parameter, will be cached.")
+    (license (package-license perl))))
+
+(define-public perl-mime-base64
+  (package
+    (name "perl-mime-base64")
+    (version "3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
+                           "MIME-Base64-" version ".tar.gz"))
+       (sha256
+        (base32 "05v04kjaz2ya0zaj4m64gzxpfv4vgxhw5n5h12z373gbg9pkvxvp"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-exporter" ,perl-exporter)
+       ("perl-xsloader" ,perl-xsloader)))
+    (home-page "https://metacpan.org/dist/MIME-Base64")
+    (synopsis "Encoding and decoding of base64 strings")
+    (description "MIME::Base64 module provides functions to encode and decode
+strings into and from the base64 encoding specified in RFC 2045 - MIME
+(Multipurpose Internet Mail Extensions).  The base64 encoding is designed to
+represent arbitrary sequences of octets in a form that need not be humanly
+readable.  A 65-character subset ([A-Za-z0-9+/=]) of US-ASCII is used, enabling
+6 bits to be represented per printable character.")
     (license (package-license perl))))
 
 (define-public perl-mime-charset
@@ -9224,6 +9297,27 @@ which it is called.")
 implementation of @dfn{Principal Component Analysis} (PCA).")
     (license license:perl-license)))
 
+(define-public perl-storable
+  (package
+    (name "perl-storable")
+    (version "3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+                           "Storable-" version ".tar.gz"))
+       (sha256
+        (base32 "1nkln4fm4962b5jk1dp6lf635nnrj5a5pg1a5xmchvrfrc3asggw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xsloader" ,perl-xsloader)))
+    (home-page "https://metacpan.org/dist/Storable")
+    (synopsis "Persistence for Perl data structures")
+    (description "Storable brings persistence to your Perl data structures
+containing SCALAR, ARRAY, HASH or REF objects, i.e. anything that can be
+conveniently stored to disk and retrieved at a later time.")
+    (license (package-license perl))))
+
 (define-public perl-stream-buffered
   (package
     (name "perl-stream-buffered")
@@ -9855,6 +9949,30 @@ situations, where you may need to upgrade to the full feature set in the
 future, or if you want the retain the familiarity of TT-style templates.")
     (license license:perl-license)))
 
+(define-public perl-term-ansicolor
+  (package
+    (name "perl-term-ansicolor")
+    (version "5.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RR/RRA/"
+                           "Term-ANSIColor-" version ".tar.gz"))
+       (sha256
+        (base32 "0zgj329kfrwcyqn491v04x65yjydwfc4845a71f8hypdrj3vv0b2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warn" ,perl-test-warn)))
+    (home-page "https://metacpan.org/dist/Term-ANSIColor")
+    (synopsis "Interface to the ANSI terminal escape sequences for color")
+    (description "Term::ANSIColor provides constants and simple functions for
+setting ANSI text attributes, most notably colors.  It can be used to set the
+current text attributes or to apply a set of attributes to a string and reset
+the current text attributes at the end of that string.  Eight-color,
+sixteen-color, 256-color, and true color (24-bit color) escape sequences are all
+supported.")
+    (license (package-license perl))))
+
 (define-public perl-term-encoding
   (package
     (name "perl-term-encoding")
@@ -10269,6 +10387,24 @@ template engine, for when you need speed rather than complex features,
 yet need more features than simple variable substitution.")
     (license (package-license perl))))
 
+(define-public perl-text-parsewords
+  (package
+    (name "perl-text-parsewords")
+    (version "3.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+                           "Text-ParseWords-" version ".tar.gz"))
+       (sha256
+        (base32 "1s7mmznk4chdvfi2jl2h6gawfaqq24bdasy6b1z9jhyxg60j7q45"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/dist/Text-ParseWords")
+    (synopsis "Parse text into an array of tokens or array of arrays")
+    (description "Text::ParseWords module is used to parse text into an array of
+tokens or array of arrays.")
+    (license (package-license perl))))
+
 (define-public perl-text-patch
   (package
     (name "perl-text-patch")
@@ -10349,6 +10485,24 @@ algorism to indicate multiplication by 1000.")
     (synopsis "Organize Data in Tables")
     (description "Text::Table renders plaintext tables.")
     (license license:x11)))
+
+(define-public perl-text-tabs+wrap
+  (package
+    (name "perl-text-tabs+wrap")
+    (version "2013.0523")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MU/MUIR/modules/"
+                           "Text-Tabs+Wrap-" version ".tar.gz"))
+       (sha256
+        (base32 "0pv5dympvrba6lslklwzb4glpazl5farn2b2530vjdxpzxphbjxr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/dist/Text-Tabs+Wrap")
+    (synopsis "Text::Tabs and Text::Wrap Modules")
+    (description "Text::Tabs will add or remove tabs from a document.
+Text::Wrap will reformat lines into paragraphs.")
+    (license (package-license perl))))
 
 (define-public perl-text-template
   (package
@@ -11131,6 +11285,30 @@ attribute names.")
     ;; Redistribution and use in source and compiled forms, with or without
     ;; modification, are permitted under any circumstances.  No warranty.
     (license license:public-domain)))
+
+(define-public perl-xsloader
+  (package
+    (name "perl-xsloader")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SAPER/"
+                           "XSLoader-" version ".tar.gz"))
+       (sha256
+        (base32 "0pyqr12jsqagna75fm2gijfzw06wy1hrh5chn9hwnmcfddda66g8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-distribution" ,perl-test-distribution)
+       ("perl-text-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-portability-files" ,perl-test-portability-files)))
+    (home-page "https://metacpan.org/dist/XSLoader")
+    (synopsis "Dynamically load C libraries into Perl code")
+    (description "XSLoader module defines a standard simplified interface to the
+dynamic linking mechanisms available on many platforms.  Its primary purpose is
+to implement cheap automatic dynamic loading of Perl modules.")
+    (license (package-license perl))))
 
 (define-public perl-xs-object-magic
   (package

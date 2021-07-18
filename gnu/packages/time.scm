@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
@@ -411,23 +411,24 @@ timestamps.")
 (define-public python-arrow
   (package
     (name "python-arrow")
-    (version "0.17.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "arrow" version))
               (sha256
                (base32
-                "1m3fpz96w3g08i9x9cpqh3cr795y9zbj1bfnay3ccdhxv86d227z"))))
+                "0fl24gv7jc6b9pqxwlcgrf465i8v8h0y7dcm018yrqv0dhpn1ryy"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv" "tests"
-                     ;; python-dateutil doesn't recognize America/Nuuk.
-                     ;; Remove when python-dateutil > 2.8.1.
-                     "-k" "not test_parse_tz_name_zzz"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "tests"
+                       ;; python-dateutil doesn't recognize America/Nuuk.
+                       ;; Remove when python-dateutil > 2.8.1.
+                       "-k" "not test_parse_tz_name_zzz")))))))
     (native-inputs
      `(;; For testing
        ("python-chai" ,python-chai)

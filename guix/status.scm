@@ -558,7 +558,8 @@ substitutes being downloaded."
        ;; If there are no jobs running, we already reported download completion
        ;; so there's nothing left to do.
        (unless (zero? (simultaneous-jobs status))
-         (format port (success (G_ "substitution of ~a complete")) item))
+         (format port (success (G_ "substitution of ~a complete")) item)
+         (newline port))
 
        (when (and print-urls? (zero? (simultaneous-jobs status)))
          ;; Leave a blank line after the "downloading ..." line and the

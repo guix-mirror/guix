@@ -898,7 +898,7 @@ provides a number of utilities to make coding with expected cleaner.")
 (define-public magic-enum
   (package
     (name "magic-enum")
-    (version "0.7.2")
+    (version "0.7.3")
     (home-page "https://github.com/Neargye/magic_enum")
     (source (origin
               (method git-fetch)
@@ -908,7 +908,7 @@ provides a number of utilities to make coding with expected cleaner.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07j5zdf3vkliwrcv6k663k35akn7qp23794sz2mnvkj9hbv9s8cx"))))
+                "1x47radgsifgz3vn2561mlvf4cq46ii33cpyqf01znm56iirwq89"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gcc" ,gcc-9)))

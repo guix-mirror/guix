@@ -997,6 +997,31 @@ good at identifying feature interactions that are normally overlooked by
 standard feature selection algorithms.")
     (license license:expat)))
 
+(define-public python-cmaes
+  (package
+    (name "python-cmaes")
+    (version "0.8.2")
+    (source
+     (origin
+       (method git-fetch) ;no tests in PyPI
+       (uri (git-reference
+             (url "https://github.com/CyberAgent/cmaes")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1jyckaifir528dz6m95nvky8hvqmz5gz6dlp65baahhbca0danzb"))
+       (file-name (git-file-name name version))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools) ;build fails without this
+       ("python-wheel" ,python-wheel)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/CyberAgent/cmaes")
+    (synopsis "CMA-ES implementation for Python")
+    (description "This package provides provides an implementation of the
+Covariance Matrix Adaptation Evolution Strategy (CMA-ES) for Python.")
+    (license license:expat)))
+
 (define-public python-autograd
   (let* ((commit "442205dfefe407beffb33550846434baa90c4de7")
          (revision "0")

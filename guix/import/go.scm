@@ -5,6 +5,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:autoload   (guix base32) (bytevector->nix-base32-string)
   #:autoload   (guix build utils) (mkdir-p)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 peg)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
   #:use-module (ice-9 regex)
@@ -145,20 +147,20 @@ name (e.g. \"github.com/golang/protobuf/proto\")."
          ;; Extract the text contained in a h2 child node of any
          ;; element marked with a "License" class attribute.
          (select (sxpath `(// (* (@ (equal? (class "License"))))
-                              h2 // *text*))))
+                              h2 // div // *text*))))
     (select (html->sxml body #:strict? #t))))
 
 (define (sxml->texi sxml-node)
   "A very basic SXML to Texinfo converter which attempts to preserve HTML
 formatting and links as text."
   (sxml-match sxml-node
-    ((strong ,text)
-     (format #f "@strong{~a}" text))
-    ((a (@ (href ,url)) ,text)
-     (format #f "@url{~a,~a}" url text))
-    ((code ,text)
-     (format #f "@code{~a}" text))
-    (,something-else something-else)))
+              ((strong ,text)
+               (format #f "@strong{~a}" text))
+              ((a (@ (href ,url)) ,text)
+               (format #f "@url{~a,~a}" url text))
+              ((code ,text)
+               (format #f "@code{~a}" text))
+              (,something-else something-else)))
 
 (define (go-package-description name)
   "Retrieve a short description for NAME, a Go package name,
@@ -186,8 +188,9 @@ e.g. \"google.golang.org/protobuf/proto\"."
          (description (if (not (null? overview))
                           overview
                           (select-content sxml)))
-         (description* (and (not (null? description))
-                            (first description))))
+         (description* (if (not (null? description))
+                           (first description)
+                           description)))
     (match description*
       (() #f)                           ;nothing selected
       ((p elements ...)
@@ -242,128 +245,138 @@ and VERSION and return an input port."
                      (go-path-escape version))))
     (http-fetch* url)))
 
-(define %go.mod-require-directive-rx
-  ;; A line in a require directive is composed of a module path and
-  ;; a version separated by whitespace and an optionnal '//' comment at
-  ;; the end.
-  (make-regexp
-   (string-append
-    "^[[:blank:]]*([^[:blank:]]+)[[:blank:]]+" ;the module path
-    "([^[:blank:]]+)"                          ;the version
-    "([[:blank:]]+//.*)?")))                   ;an optional comment
-
-(define %go.mod-replace-directive-rx
-  ;; ReplaceSpec = ModulePath [ Version ] "=>" FilePath newline
-  ;;             | ModulePath [ Version ] "=>" ModulePath Version newline .
-  (make-regexp
-   (string-append
-    "([^[:blank:]]+)"                   ;the module path
-    "([[:blank:]]+([^[:blank:]]+))?"    ;optional version
-    "[[:blank:]]+=>[[:blank:]]+"
-    "([^[:blank:]]+)"                   ;the file or module path
-    "([[:blank:]]+([^[:blank:]]+))?"))) ;the version (if a module path)
 
 (define (parse-go.mod content)
-  "Parse the go.mod file CONTENT, returning a list of requirements."
-  ;; We parse only a subset of https://golang.org/ref/mod#go-mod-file-grammar
-  ;; which we think necessary for our use case.
-  (define (toplevel requirements replaced)
-    "This is the main parser.  The results are accumulated in THE REQUIREMENTS
-and REPLACED lists."
-    (let ((line (read-line)))
-      (cond
-       ((eof-object? line)
-        ;; parsing ended, give back the result
-        (values requirements replaced))
-       ((string=? line "require (")
-        ;; a require block begins, delegate parsing to IN-REQUIRE
-        (in-require requirements replaced))
-       ((string=? line "replace (")
-        ;; a replace block begins, delegate parsing to IN-REPLACE
-        (in-replace requirements replaced))
-       ((string-prefix? "require " line)
-        ;; a require directive by itself
-        (let* ((stripped-line (string-drop line 8)))
-          (call-with-values
-              (lambda ()
-                (require-directive requirements replaced stripped-line))
-            toplevel)))
-       ((string-prefix? "replace " line)
-        ;; a replace directive by itself
-        (let* ((stripped-line (string-drop line 8)))
-          (call-with-values
-              (lambda ()
-                (replace-directive requirements replaced stripped-line))
-            toplevel)))
-       (#t
-        ;; unrecognised line, ignore silently
-        (toplevel requirements replaced)))))
+  "Parse the go.mod file CONTENT, returning a list of directives, comments,
+and unknown lines.  Each sublist begins with a symbol (go, module, require,
+replace, exclude, retract, comment, or unknown) and is followed by one or more
+sublists.  Each sublist begins with a symbol (module-path, version, file-path,
+comment, or unknown) and is followed by the indicated data."
+  ;; https://golang.org/ref/mod#go-mod-file-grammar
+  (define-peg-pattern NL none "\n")
+  (define-peg-pattern WS none (or " " "\t" "\r"))
+  (define-peg-pattern => none (and (* WS) "=>"))
+  (define-peg-pattern punctuation none (or "," "=>" "[" "]" "(" ")"))
+  (define-peg-pattern comment all
+    (and (ignore "//") (* WS) (* (and (not-followed-by NL) peg-any))))
+  (define-peg-pattern EOL body (and (* WS) (? comment) NL))
+  (define-peg-pattern block-start none (and (* WS) "(" EOL))
+  (define-peg-pattern block-end none (and (* WS) ")" EOL))
+  (define-peg-pattern any-line body
+    (and (* WS) (* (and (not-followed-by NL) peg-any)) EOL))
 
-  (define (in-require requirements replaced)
-    (let ((line (read-line)))
-      (cond
-       ((eof-object? line)
-        ;; this should never happen here but we ignore silently
-        (values requirements replaced))
-       ((string=? line ")")
-        ;; end of block, coming back to toplevel
-        (toplevel requirements replaced))
-       (#t
-        (call-with-values (lambda ()
-                            (require-directive requirements replaced line))
-          in-require)))))
+  ;; Strings and identifiers
+  (define-peg-pattern identifier body
+    (+ (and (not-followed-by (or NL WS punctuation)) peg-any)))
+  (define-peg-pattern string-raw body
+    (and (ignore "`") (+ (and (not-followed-by "`") peg-any)) (ignore "`")))
+  (define-peg-pattern string-quoted body
+    (and (ignore "\"")
+         (+ (or (and (ignore "\\") peg-any)
+                (and (not-followed-by "\"") peg-any)))
+         (ignore "\"")))
+  (define-peg-pattern string-or-ident body
+    (and (* WS) (or string-raw string-quoted identifier)))
 
-  (define (in-replace requirements replaced)
-    (let ((line (read-line)))
-      (cond
-       ((eof-object? line)
-        ;; this should never happen here but we ignore silently
-        (values requirements replaced))
-       ((string=? line ")")
-        ;; end of block, coming back to toplevel
-        (toplevel requirements replaced))
-       (#t
-        (call-with-values (lambda ()
-                            (replace-directive requirements replaced line))
-          in-replace)))))
+  (define-peg-pattern version all string-or-ident)
+  (define-peg-pattern module-path all string-or-ident)
+  (define-peg-pattern file-path all string-or-ident)
 
-  (define (replace-directive requirements replaced line)
-    "Extract replaced modules and new requirements from the replace directive
-in LINE and add them to the REQUIREMENTS and REPLACED lists."
-    (let* ((rx-match (regexp-exec %go.mod-replace-directive-rx line))
-           (module-path (match:substring rx-match 1))
-           (version (match:substring rx-match 3))
-           (new-module-path (match:substring rx-match 4))
-           (new-version (match:substring rx-match 6))
-           (new-replaced (cons (list module-path version) replaced))
-           (new-requirements
-            (if (string-match "^\\.?\\./" new-module-path)
-                requirements
-                (cons (list new-module-path new-version) requirements))))
-      (values new-requirements new-replaced)))
+  ;; Non-directive lines
+  (define-peg-pattern unknown all any-line)
+  (define-peg-pattern block-line body
+    (or EOL (and (not-followed-by block-end) unknown)))
 
-  (define (require-directive requirements replaced line)
-    "Extract requirement from LINE and augment the REQUIREMENTS and REPLACED
-lists."
-    (let* ((rx-match (regexp-exec %go.mod-require-directive-rx line))
-           (module-path (match:substring rx-match 1))
-           ;; Double-quoted strings were seen in the wild without escape
-           ;; sequences; trim the quotes to be on the safe side.
-           (module-path (string-trim-both module-path #\"))
-           (version (match:substring rx-match 2)))
-      (values (cons (list module-path version) requirements) replaced)))
+  ;; GoDirective = "go" GoVersion newline .
+  (define-peg-pattern go all (and (ignore "go") version EOL))
 
-  (with-input-from-string content
-    (lambda ()
-      (receive (requirements replaced)
-          (toplevel '() '())
-        ;; At last remove the replaced modules from the requirements list.
-        (remove (lambda (r)
-                  (assoc (car r) replaced))
-                requirements)))))
+  ;; ModuleDirective = "module" ( ModulePath | "(" newline ModulePath newline ")" ) newline .
+  (define-peg-pattern module all
+    (and (ignore "module") (or (and block-start module-path EOL block-end)
+                               (and module-path EOL))))
+
+  ;; The following directives may all be used solo or in a block
+  ;; RequireSpec = ModulePath Version newline .
+  (define-peg-pattern require all (and module-path version EOL))
+  (define-peg-pattern require-top body
+    (and (ignore "require")
+         (or (and block-start (* (or require block-line)) block-end) require)))
+
+  ;; ExcludeSpec = ModulePath Version newline .
+  (define-peg-pattern exclude all (and module-path version EOL))
+  (define-peg-pattern exclude-top body
+    (and (ignore "exclude")
+         (or (and block-start (* (or exclude block-line)) block-end) exclude)))
+
+  ;; ReplaceSpec = ModulePath [ Version ] "=>" FilePath newline
+  ;;             | ModulePath [ Version ] "=>" ModulePath Version newline .
+  (define-peg-pattern original all (or (and module-path version) module-path))
+  (define-peg-pattern with all (or (and module-path version) file-path))
+  (define-peg-pattern replace all (and original => with EOL))
+  (define-peg-pattern replace-top body
+    (and (ignore "replace") 
+         (or (and block-start (* (or replace block-line)) block-end) replace)))
+
+  ;; RetractSpec = ( Version | "[" Version "," Version "]" ) newline .
+  (define-peg-pattern range all
+    (and (* WS) (ignore "[") version
+         (* WS) (ignore ",") version (* WS) (ignore "]")))
+  (define-peg-pattern retract all (and (or range version) EOL))
+  (define-peg-pattern retract-top body
+    (and (ignore "retract")
+         (or (and block-start (* (or retract block-line)) block-end) retract)))
+
+  (define-peg-pattern go-mod body
+    (* (and (* WS) (or go module require-top exclude-top replace-top
+                       retract-top EOL unknown))))
+
+  (let ((tree (peg:tree (match-pattern go-mod content)))
+        (keywords '(go module require replace exclude retract comment unknown)))
+    (keyword-flatten keywords tree)))
 
 ;; Prevent inlining of this procedure, which is accessed by unit tests.
 (set! parse-go.mod parse-go.mod)
+
+(define (go.mod-directives go.mod directive)
+  "Return the list of top-level directive bodies in GO.MOD matching the symbol
+DIRECTIVE."
+  (filter-map (match-lambda
+                (((? (cut eq? <> directive) head) . rest) rest)
+                (_ #f))
+              go.mod))
+
+(define (go.mod-requirements go.mod)
+  "Compute and return the list of requirements specified by GO.MOD."
+  (define (replace directive requirements)
+    (define (maybe-replace module-path new-requirement)
+      ;; Do not allow version updates for indirect dependencies (see:
+      ;; https://golang.org/ref/mod#go-mod-file-replace).
+      (if (and (equal? module-path (first new-requirement))
+               (not (assoc-ref requirements module-path)))
+          requirements
+          (cons new-requirement (alist-delete module-path requirements))))
+
+    (match directive
+      ((('original ('module-path module-path) . _) with . _)
+       (match with
+         (('with ('file-path _) . _)
+          (alist-delete module-path requirements))
+         (('with ('module-path new-module-path) ('version new-version) . _)
+          (maybe-replace module-path
+                         (list new-module-path new-version)))))))
+
+  (define (require directive requirements)
+    (match directive
+      ((('module-path module-path) ('version version) . _)
+       (cons (list module-path version) requirements))))
+
+  (let* ((requires (go.mod-directives go.mod 'require))
+         (replaces (go.mod-directives go.mod 'replace))
+         (requirements (fold require '() requires)))
+    (fold replace requirements replaces)))
+
+;; Prevent inlining of this procedure, which is accessed by unit tests.
+(set! go.mod-requirements go.mod-requirements)
 
 (define-record-type <vcs>
   (%make-vcs url-prefix root-regex type)
@@ -378,28 +391,28 @@ lists."
 (define known-vcs
   ;; See the following URL for the official Go equivalent:
   ;; https://github.com/golang/go/blob/846dce9d05f19a1f53465e62a304dea21b99f910/src/cmd/go/internal/vcs/vcs.go#L1026-L1087
-    (list
-     (make-vcs
-      "github.com"
-      "^(github\\.com/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
-      'git)
-     (make-vcs
-      "bitbucket.org"
-      "^(bitbucket\\.org/([A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+))(/[A-Za-z0-9_.\\-]+)*$"
-      'unknown)
-     (make-vcs
-      "hub.jazz.net/git/"
-      "^(hub\\.jazz\\.net/git/[a-z0-9]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
-      'git)
-     (make-vcs
-      "git.apache.org"
-      "^(git\\.apache\\.org/[a-z0-9_.\\-]+\\.git)(/[A-Za-z0-9_.\\-]+)*$"
-      'git)
-     (make-vcs
-      "git.openstack.org"
-      "^(git\\.openstack\\.org/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(\\.git)?\
+  (list
+   (make-vcs
+    "github.com"
+    "^(github\\.com/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
+    'git)
+   (make-vcs
+    "bitbucket.org"
+    "^(bitbucket\\.org/([A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+))(/[A-Za-z0-9_.\\-]+)*$"
+    'unknown)
+   (make-vcs
+    "hub.jazz.net/git/"
+    "^(hub\\.jazz\\.net/git/[a-z0-9]+/[A-Za-z0-9_.\\-]+)(/[A-Za-z0-9_.\\-]+)*$"
+    'git)
+   (make-vcs
+    "git.apache.org"
+    "^(git\\.apache\\.org/[a-z0-9_.\\-]+\\.git)(/[A-Za-z0-9_.\\-]+)*$"
+    'git)
+   (make-vcs
+    "git.openstack.org"
+    "^(git\\.openstack\\.org/[A-Za-z0-9_.\\-]+/[A-Za-z0-9_.\\-]+)(\\.git)?\
 (/[A-Za-z0-9_.\\-]+)*$"
-      'git)))
+    'git)))
 
 (define (module-path->repository-root module-path)
   "Infer the repository root from a module path.  Go modules can be
@@ -428,9 +441,9 @@ hence the need to derive this information."
 (define* (go-module->guix-package-name module-path #:optional version)
   "Converts a module's path to the canonical Guix format for Go packages.
 Optionally include a VERSION string to append to the name."
-  ;; Map dot, slash and underscore characters to hyphens.
+  ;; Map dot, slash, underscore and tilde characters to hyphens.
   (let ((module-path* (string-map (lambda (c)
-                                    (if (member c '(#\. #\/ #\_))
+                                    (if (member c '(#\. #\/ #\_ #\~))
                                         #\-
                                         c))
                                   module-path)))
@@ -458,17 +471,21 @@ Optionally include a VERSION string to append to the name."
   "Retrieve the module meta-data from its landing page.  This is necessary
 because goproxy servers don't currently provide all the information needed to
 build a package."
+  (define (go-import->module-meta content-text)
+    (match (string-split content-text #\space)
+      ((root-path vcs repo-url)
+       (make-module-meta root-path (string->symbol vcs)
+                         (strip-.git-suffix/maybe repo-url)))))
   ;; <meta name="go-import" content="import-prefix vcs repo-root">
   (let* ((meta-data (http-fetch* (format #f "https://~a?go-get=1" module-path)))
          (select (sxpath `(// head (meta (@ (equal? (name "go-import"))))
                               // content))))
     (match (select (html->sxml meta-data #:strict? #t))
       (() #f)                           ;nothing selected
-      (((content content-text))
-       (match (string-split content-text #\space)
-         ((root-path vcs repo-url)
-          (make-module-meta root-path (string->symbol vcs)
-                            (strip-.git-suffix/maybe repo-url))))))))
+      ((('content content-text) ..1)
+       (find (lambda (meta)
+               (string-prefix? (module-meta-import-prefix meta) module-path))
+             (map go-import->module-meta content-text))))))
 
 (define (module-meta-data-repo-url meta-data goproxy)
   "Return the URL where the fetcher which will be used can download the
@@ -586,7 +603,7 @@ When VERSION is unspecified, the latest version available is used."
 hint: use one of the following available versions ~a\n"
                              version* available-versions))))
          (content (fetch-go.mod goproxy module-path version*))
-         (dependencies+versions (parse-go.mod content))
+         (dependencies+versions (go.mod-requirements (parse-go.mod content)))
          (dependencies (if pin-versions?
                            dependencies+versions
                            (map car dependencies+versions)))

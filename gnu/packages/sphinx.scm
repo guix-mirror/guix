@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,9 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages time))
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages python-science)
+  #:use-module (gnu packages graph))
 
 (define-public python-sphinx
   (package
@@ -783,3 +786,93 @@ executed during the Sphinx build process.")
     (synopsis "Sphinx cross-reference tool")
     (description "Sphinx objects.inv inspection/manipulation tool.")
     (license license:expat)))
+
+(define-public python-jupyter-sphinx
+  (package
+    (name "python-jupyter-sphinx")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_sphinx" version))
+       (sha256
+        (base32
+         "1wma60787m2451nn4bc4jw7bzqksplplb84wqxm34iaw70499z1p"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-nbformat" ,python-nbformat)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/jupyter/jupyter-sphinx/")
+    (synopsis "Jupyter Sphinx Extensions")
+    (description
+     "Jupyter-sphinx is a Sphinx extension that executes embedded code in a
+Jupyter kernel, and embeds outputs of that code in the document.  It has
+support for rich output such as images, LaTeX math and even JavaScript
+widgets, and supports thebelab for live code execution with minimal effort.")
+    (license license:bsd-3)))
+
+(define-public python-sphinxcontrib-autoprogram
+  (package
+    (name "python-sphinxcontrib-autoprogram")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinxcontrib-autoprogram" version))
+       (sha256
+        (base32
+         "06hzim0d3fd72kf30fyjbbm5n8ibyybic0kf62gm79qp50zjwr5w"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/sphinx-contrib/autoprogram")
+    (synopsis "Documenting CLI programs")
+    (description
+     "This Sphinx extension, @code{sphinxcontrib.autoprogram}, provides an
+automated way to document command-line programs.  It scans
+@code{argparse.ArgumentParser} object, and then expands it into a set of
+@code{.. program::} and @code{.. option::} directives.")
+    (license license:bsd-2)))
+
+(define-public python-pydata-sphinx-theme
+  (package
+    (name "python-pydata-sphinx-theme")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydata-sphinx-theme" version))
+       (sha256
+        (base32
+         "055bh3hyh72pafiylvgpsjlk18wm15gg4azc5rjlsww5z475iq1j"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)))
+    (native-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-docutils" ,python-docutils)
+       ("python-jupyter-sphinx" ,python-jupyter-sphinx)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-pandas" ,python-pandas)
+       ("python-plotly" ,python-plotly)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-regressions"
+        ,python-pytest-regressions)
+       ("python-recommonmark" ,python-recommonmark)
+       ("python-sphinx" ,python-sphinx)
+       ("python-xarray" ,python-xarray)
+       ("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/pydata/pydata-sphinx-theme")
+    (synopsis "Bootstrap-based Sphinx theme")
+    (description
+     "This package provides a Bootstrap-based Sphinx theme from the PyData
+community.")
+    (license license:bsd-3)))

@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -826,9 +827,10 @@ follow links and submit forms.  It doesn’t do JavaScript.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "test"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/python-hyper/hyperframe")
@@ -858,12 +860,13 @@ into HTTP/2 frames.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "test" "-k"
-                     ;; This test will be fixed in the next version. See:
-                     ;; https://github.com/python-hyper/hpack/issues/168.
-                     "not test_get_by_index_out_of_range"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "test" "-k"
+                       ;; This test will be fixed in the next version. See:
+                       ;; https://github.com/python-hyper/hpack/issues/168.
+                       "not test_get_by_index_out_of_range")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://hyper.rtfd.org")
@@ -888,8 +891,9 @@ for use in Python programs that implement HTTP/2.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/python-hyper/h11")
@@ -916,9 +920,10 @@ and that could be anything you want.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "test"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
@@ -1752,17 +1757,7 @@ web framework, either via the basic or digest authentication schemes.")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
 term.js Javascript terminal emulator library.")
-    (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-terminado))))))
-
-(define-public python2-terminado
-  (let ((terminado (package-with-python2 (strip-python2-variant python-terminado))))
-    (package/inherit terminado
-      (propagated-inputs
-       `(("python2-backport-ssl-match-hostname"
-          ,python2-backport-ssl-match-hostname)
-         ("python2-futures" ,python2-futures)
-          ,@(package-propagated-inputs terminado))))))
+    (license license:bsd-2)))
 
 (define-public python-wsgi-intercept
   (package
@@ -2848,9 +2843,6 @@ WSGIProxy turns WSGI function calls into HTTP requests.
 It also includes code to sign requests and pass private data,
 and to spawn subprocesses to handle requests.")
     (license license:expat)))
-
-(define-public python2-wsgiproxy2
- (package-with-python2 python-wsgiproxy2))
 
 (define-public python-pastedeploy
   (package
@@ -5267,6 +5259,90 @@ Plus all the standard features of requests:
 @item Chunked Requests
 @end itemize")
     (license license:bsd-3)))
+
+(define-public python-wsgiprox
+  (package
+    (name "python-wsgiprox")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wsgiprox" version))
+       (sha256
+        (base32
+         "11fsm199pvwbmqx2lccznvws65aam1rqqv0w79gal8hispwgd5rs"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The test suite hangs (see:
+     ;; https://github.com/webrecorder/wsgiprox/issues/6).
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pytest-argument
+           (lambda _
+             ;; See: https://github.com/webrecorder/wsgiprox/issues/7.
+             (substitute* "setup.py"
+               (("--doctest-module")
+                "--doctest-modules")))))))
+    (propagated-inputs
+     `(("python-certauth" ,python-certauth)
+       ("python-gevent" ,python-gevent)
+       ("python-websocket-client" ,python-websocket-client)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-waitress" ,python-waitress)))
+    (home-page "https://github.com/webrecorder/wsgiprox")
+    (synopsis "HTTP/S proxy with WebSockets over WSGI")
+    (description "@code{wsgiprox} is a Python WSGI (Web Server Gateway
+Interface) middle-ware for adding HTTP and HTTPS proxy support to a WSGI
+application.  The library accepts HTTP and HTTPS proxy connections, and routes
+them to a designated prefix.")
+    (license license:asl2.0)))
+
+(define-public python-warcio
+  ;; The PyPI release is missing some test support files (see:
+  ;; https://github.com/webrecorder/warcio/issues/132).
+  (let ((revision "0")
+        (commit "aa702cb321621b233c6e5d2a4780151282a778be"))
+    (package
+      (name "python-warcio")
+      (version (git-version "1.7.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/webrecorder/warcio")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11afr6zy3r6rda81010iq496dazg4xid0izg3smg6ighpmvsnzf2"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'skip-problematic-tests
+             (lambda _
+               ;; These tests fail due to networking requirements.
+               (substitute* "setup.py"
+                 (("pytest.main\\(\\[" all)
+                  (string-append all "'-k', '"
+                                 (string-append "not test_post_chunked and "
+                                                "not test_remote") "'"))))))))
+      (native-inputs
+       ;; These inputs are required for the test suite.
+       `(("python-httpbin" ,python-httpbin)
+         ("python-pytest-cov" ,python-pytest-cov)
+         ("python-requests" ,python-requests)
+         ("python-wsgiprox" ,python-wsgiprox)))
+      (home-page "https://github.com/webrecorder/warcio")
+      (synopsis "Streaming web archival archive (WARC) library")
+      (description "warcio is a Python library to read and write the WARC format
+commonly used in Web archives. It is designed for fast, low-level access to
+web archival content, oriented around a stream of WARC records rather than
+files.")
+      (license license:asl2.0))))
 
 (define-public python-websockets
   (package

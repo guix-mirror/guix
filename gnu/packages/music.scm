@@ -39,6 +39,7 @@
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2729,14 +2730,14 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "2.1.1")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "06lz4kzpgg5lalcjb14pi35jxca5f4j6ckqf6mdxs1k42dfhjpjp"))))
+                "12haksnf91ra5w5dwnlc3rcw4js8wj4hsl6kzyqrx4q4fnpvjahk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no test target
@@ -2776,14 +2777,14 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public vmpk
   (package
     (name "vmpk")
-    (version "0.8.2")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
                                   version "/vmpk-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kv256j13adk4ib7r464gsl4vjhih820bq37ddhqfyfd07wh53a2"))))
+                "0kh8pns9pla9c47y2nwckjpiihczg6rpg96aignsdsd7vkql69s9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target
@@ -4832,12 +4833,7 @@ sample library.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "src") #t))
-         (add-after 'chdir 'fix-include
-           (lambda _
-             (substitute* "muse/driver/rtaudio.h"
-               (("rtaudio/RtAudio.h") "RtAudio.h"))
-             #t)))))
+           (lambda _ (chdir "src"))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dssi" ,dssi)
@@ -4877,7 +4873,7 @@ studio.")
 (define-public gsequencer
   (package
     (name "gsequencer")
-    (version "3.7.48")
+    (version "3.8.13")
     (source
      (origin
        (method git-fetch)
@@ -4886,16 +4882,15 @@ studio.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pqaj09x3lzcj0zbbkqpyaky9i1w462bhhvg1akh73nzwvyy46zd"))))
-    (build-system gnu-build-system)
+        (base32 "1gwy7fhbxgrd5n6afq1hnxc6p873wsh4qs63yhkkdfzyl7s412z4"))))
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'prepare-x-for-test
            (lambda _
              (system "Xvfb &")
-             (setenv "DISPLAY" ":0")
-             #t)))))
+             (setenv "DISPLAY" ":0"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -6675,3 +6670,45 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
   framework.")
       (home-page "http://shiru.untergrund.net/software.shtml")
       (license license:wtfpl2))))
+
+(define-public a2jmidid
+  (package
+    (name "a2jmidid")
+    (version "9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jackaudio/a2jmidid")
+                    (commit version)))
+              (sha256
+               (base32 "1x6rcl3f4nklnx4p5jln9a7fpj9y7agjxs9rw7cccmwnski7pnsq"))
+              (file-name (git-file-name name version))))
+    (arguments
+     `(#:tests? #f      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/")))
+               (substitute* (string-append bin "a2j")
+                 (("a2j_control") (string-append bin "a2j_control")))
+               (wrap-program (string-append bin "a2j_control")
+                `("PYTHONPATH" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (build-system meson-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("bash-minimal" ,bash-minimal)   ; for wrap-program
+       ("dbus" ,dbus)
+       ("jack" ,jack-1)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "ALSA sequencer to JACK MIDI bridging")
+    (description
+     "@code{a2jmidid} is a daemon that implements automatic bridging of ALSA
+midi devices to JACK midi devices.")
+    (home-page "https://github.com/jackaudio/a2jmidid")
+    (license license:gpl2)))

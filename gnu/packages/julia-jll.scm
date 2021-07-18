@@ -1217,9 +1217,7 @@ from util-linux.")
 (define-public julia-mbedtls-jll
   (package
     (name "julia-mbedtls-jll")
-    ;; version 2.25.0+0 is not compatible with current mbedtls 2.23.0,
-    ;; upgrade this when mbedtls is updated in guix
-    (version "2.24.0+1")
+    (version "2.26.0+0")
     (source
      (origin
        (method git-fetch)
@@ -1228,7 +1226,7 @@ from util-linux.")
              (commit (string-append "MbedTLS-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kk9dlxdh7yms21npgrdfmjbj8q8ng6kdhrzw3jr2d7rp696kp99"))))
+        (base32 "171bbz39k3w81h03098aj70vay28354awi9gmhj0l8s72xfdigi6"))))
     (build-system julia-build-system)
     (arguments
      '(#:tests? #f                      ; No runtests.jl

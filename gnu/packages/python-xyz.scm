@@ -77,7 +77,7 @@
 ;;; Copyright © 2020, 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
-;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
+;;; Copyright © 2020 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
@@ -100,6 +100,11 @@
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,6 +223,115 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-ueberzug
+  (package
+    (name "python-ueberzug")
+    (version "18.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ueberzug" version))
+       (sha256
+        (base32
+         "1hxd45dnwa9yv908acarr98n2drmar66wzq9z2qd3irj24srzr3w"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-docopt" ,python-docopt)
+       ("python-pillow" ,python-pillow)
+       ("python-xlib" ,python-xlib)))
+    (home-page "https://github.com/seebye/ueberzug")
+    (synopsis "Command line util to display images in combination with X11")
+    (description "Überzug is a command line util which allows to draw images on
+terminals by using child windows.  The advantages of using Überzug are:
+@itemize
+@item No race conditions as a new window is created to display images.
+@item Expose events will be processed, so images will be redrawn on switch
+workspaces.
+@item Tmux support (excluding multi pane windows).
+@item Terminals without the WINDOWID environment variable are supported.
+@item Chars are used as position - and size unit.
+@item No memory leak (/ unlimited cache).
+@end itemize")
+    (license license:gpl3+)))
+
+(define-public python-fire
+  (package
+    (name "python-fire")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fire" version))
+       (sha256
+        (base32
+         "0qka44n88y3qcj7xz0k0f3qb4phcg4z0wvd4jcii9lcr6rvbiqn5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest", python-pytest)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (inputs
+     `(("python-six", python-six)
+       ("python-termcolor", python-termcolor)))
+    (synopsis "Library for automatically generating command line interfaces")
+    (description
+     "Fire is a library for automatically generating command line interfaces
+from absolutely any Python object.  The following are the advantages:
+@itemize
+@item A simple way to create a CLI in Python.
+@item A helpful tool for developing and debugging Python code.
+@item Helps with exploring existing code or turning other people's code into a
+command line interface.
+@item Makes transitioning between Bash and Python easier.
+@item Makes using a Python REPL easier by setting up the REPL with the modules
+and variables you'll need already imported and created.
+@end itemize")
+    (home-page "https://github.com/google/python-fire")
+    (license license:asl2.0)))
+
+(define-public python-twodict
+  (package
+    (name "python-twodict")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "twodict" version))
+       (sha256
+        (base32 "0ifv7dv18jn2lg0a3l6zdlvmmlda2ivixfjbsda58a2ay6kxznr0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/MrS0m30n3/twodict")
+    (synopsis "Two way ordered dictionary for Python")
+    (description "TwoDict is a custom dictionary in which you can get the
+key:value relationship but you can also get the value:key relationship.  It also
+remembers the order in which the items were inserted and supports almost all the
+features of the Python's built-in dict.")
+    (license license:unlicense)))
+
+(define-public python2-twodict
+  (package
+    (inherit python-twodict)
+    (name "python2-twodict")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "twodict" version))
+       (sha256
+        (base32 "0ifv7dv18jn2lg0a3l6zdlvmmlda2ivixfjbsda58a2ay6kxznr0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))))
 
 (define-public python-argopt
   (package
@@ -740,9 +854,14 @@ to CommonMark.")
                                "/lib/libmediainfo.so.0")))
              #t))
          (replace 'check
-           (lambda _
-             ;; Skip the only failing test "test_parse_url"
-             (invoke "pytest" "-vv" "-k" "not test_parse_url"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Extend PYTHONPATH so the built package will be found.
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) "/build/lib:"
+                                      (getenv "PYTHONPATH")))
+               ;; Skip the only failing test "test_parse_url"
+               (invoke "pytest" "-vv" "-k" "not test_parse_url")))))))
     (home-page
      "https://github.com/sbraz/pymediainfo")
     (synopsis
@@ -4877,29 +4996,6 @@ writing C extensions for Python as easy as Python itself.")
                     ""))
                  #t)))))))))
 
-;; The RPython toolchain currently does not support Python 3.
-(define-public python2-rpython
-  (package
-    (name "python2-rpython")
-    (version "0.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "rpython" version))
-       (sha256
-        (base32
-         "02z9cvxf0y41dcvwnvf2zn0albhhw1drvjjbq27m6i1piw1k6fc0"))))
-    (build-system python-build-system)
-    (arguments `(#:python ,python-2))
-    (native-inputs
-     `(("python2-pytest" ,python2-pytest))) ; needed for running tests
-    (home-page "https://rpython.readthedocs.org")
-    (synopsis "Framework for implementing interpreters and virtual machines")
-    (description "RPython is a translation and support framework for
-producing implementations of dynamic languages, emphasizing a clean separation
-between language specification and implementation aspects.")
-    (license license:expat)))
-
 ;; NOTE: when upgrading numpy please make sure that python-pandas and
 ;; python-scipy still build, as these three packages are often used together.
 (define-public python-numpy
@@ -6226,13 +6322,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.13.0")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "1di5bbh2mr8m1aydky8ix12pkybrd0cvs8xqf5s2y1xa349r514l"))))
+        (base32 "01f173af5j0fmrzg6czfr92d331bqdbs3dkch7p41ykyv4fsv6kn"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
@@ -7788,9 +7884,6 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
             ,@(package-arguments base)))
         (native-inputs `())))))
 
-(define-public python2-jupyter-client
-  (package-with-python2 python-jupyter-client))
-
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
@@ -7971,70 +8064,6 @@ callback signature using a prototype function.")
              (delete-file "IPython/core/tests/test_display.py")
              ;; AttributeError: module 'IPython.core' has no attribute 'formatters'
              (delete-file "IPython/core/tests/test_interactiveshell.py")
-             #t)))))
-    (home-page "https://ipython.org")
-    (synopsis "IPython is a tool for interactive computing in Python")
-    (description
-     "IPython provides a rich architecture for interactive computing with:
-Powerful interactive shells, a browser-based notebook, support for interactive
-data visualization, embeddable interpreters and tools for parallel
-computing.")
-    (properties `((python2-variant . ,(delay python2-ipython))))
-    (license license:bsd-3)))
-
-;; This is the latest release of the LTS version of ipython with support for
-;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
-;; dropped support for Python 2.7.
-(define-public python2-ipython
-  (package
-    (name "python2-ipython")
-    (version "5.8.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ipython" version ".tar.gz"))
-       (sha256
-        (base32 "01l93i4hspf0lvhmycvc8j378bslm9rw30mwfspsl6v1ayc69b2b"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python2-backports-shutil-get-terminal-size"
-        ,python2-backports-shutil-get-terminal-size)
-       ("python2-pathlib2" ,python2-pathlib2)
-       ("python2-pyzmq" ,python2-pyzmq)
-       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
-       ("python2-terminado" ,python2-terminado)
-       ("python2-matplotlib" ,python2-matplotlib)
-       ("python2-numpy" ,python2-numpy)
-       ("python2-numpydoc" ,python2-numpydoc)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-mistune" ,python2-mistune)
-       ("python2-pexpect" ,python2-pexpect)
-       ("python2-pickleshare" ,python2-pickleshare)
-       ("python2-simplegeneric" ,python2-simplegeneric)
-       ("python2-jsonschema" ,python2-jsonschema)
-       ("python2-traitlets" ,python2-traitlets)
-       ("python2-nbformat" ,python2-nbformat)
-       ("python2-pygments" ,python2-pygments)))
-    (inputs
-     `(("readline" ,readline)
-       ("which" ,which)))
-    (native-inputs
-     `(("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
-       ("python2-requests" ,python2-requests) ;; for tests
-       ("python2-testpath" ,python2-testpath)
-       ("python2-mock" ,python2-mock)
-       ("python2-nose" ,python2-nose)))
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'delete-broken-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; These tests throw errors for unknown reasons.
-             (delete-file "IPython/core/tests/test_displayhook.py")
-             (delete-file "IPython/core/tests/test_magic_terminal.py")
-             (delete-file "IPython/core/tests/test_profile.py")
              #t)))))
     (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
@@ -8729,26 +8758,28 @@ SVG, EPS, PNG and terminal output.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.10.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "1ffbms4kllihfycf6j57dziq4imgdjw03sqgifh5wzcd2d743zjr"))))
+        (base32 "1b81p9s6li3b606ivgbynrh102fclwlw74m8qxzsii9pv6p8xrs4"))
+       (patches (search-patches "python-seaborn-kde-test.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xserver
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server")))
-               ;; There must be a running X server and make check doesn't
-               ;; start one.  Therefore we must do it.
-               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
-               (setenv "DISPLAY" ":1")
-               #t)))
-         (replace 'check (lambda _ (invoke "pytest" "seaborn") #t)))))
+           (lambda _
+             ;; There must be a running X server and make check doesn't
+             ;; start one.  Therefore we must do it.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "seaborn")))))))
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
        ("python-matplotlib" ,python-matplotlib)
@@ -9112,9 +9143,6 @@ applications.")
     (description
      "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
     (license license:bsd-4)))
-
-(define-public python2-pyzmq
-  (package-with-python2 python-pyzmq))
 
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
@@ -10910,22 +10938,7 @@ drafts 04, 06 and 07.")
     (synopsis "Jupyter Notebook format")
     (description "This package provides the reference implementation of the
 Jupyter Notebook format and Python APIs for working with notebooks.")
-    (properties `((python2-variant . ,(delay python2-nbformat))))
     (license license:bsd-3)))
-
-(define-public python2-nbformat
-  (let ((parent (package-with-python2
-                 (strip-python2-variant python-nbformat))))
-    (package
-      (inherit parent)
-      (version "4.4.0")
-      (source
-       (origin
-         (method url-fetch)
-         (uri (pypi-uri "nbformat" version))
-         (sha256
-          (base32
-           "00nlf08h8yc4q73nphfvfhxrcnilaqanb8z0mdy6nxk0vzq4wjgp")))))))
 
 (define-public python-bleach
   (package
@@ -11201,38 +11214,7 @@ convert an @code{.ipynb} notebook file into various static formats including:
 @item ReStructured Text (rst)
 @item executable script
 @end enumerate\n")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-nbconvert))))))
-
-(define-public python2-nbconvert
-  (let ((parent
-         (package-with-python2
-          (strip-python2-variant python-nbconvert))))
-    (package
-      (inherit parent)
-      (version "5.0.0b1")
-      (source
-       (origin
-         (method url-fetch)
-         (uri (pypi-uri "nbconvert" version))
-         (sha256
-          (base32
-           "0brclbb18l4nmd5qy3dl9wn05rjdh1fz4rmzdlfqacj12rcdvdgp"))))
-      (arguments
-       `(;; The "bdist_egg" target is disabled by default, causing the installation
-         ;; to fail.
-         #:configure-flags (list "bdist_egg")
-         ;; FIXME: 5 failures, 40 errors.
-         #:tests? #f))
-      (propagated-inputs
-       `(("python-bleach" ,python-bleach)
-         ("python-entrypoints" ,python-entrypoints)
-         ("python-jinja2" ,python-jinja2)
-         ("python-jupyter-core" ,python-jupyter-core)
-         ("python-mistune" ,python-mistune)
-         ("python-nbformat" ,python-nbformat)
-         ("python-pygments" ,python-pygments)
-         ("python-traitlets" ,python-traitlets))))))
+    (license license:bsd-3)))
 
 (define-public python-notebook
   (package
@@ -17050,50 +17032,6 @@ matters when code is run in production mode.  The actual logging still
 happens using the @code{logging} library.")
     (license license:gpl3+)))
 
-(define-public python2-larch
-  (package
-    (name "python2-larch")
-    (version "1.20151025")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/larch/snapshot/larch-"
-             version ".tar.gz"))
-       (patches (search-patches
-                 "python2-larch-coverage-4.0a6-compatibility.patch"))
-       (sha256
-        (base32
-         "1p4knkkavlqymgciz2wbcnfrdgdbafhg14maplnk4vbw0q8xs663"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; check phase needs to be run before the build phase. If not,
-         ;; coverage-test-runner looks for tests for the built source files,
-         ;; and fails.
-         (delete 'check)
-         (add-before 'build 'check
-           (lambda _ (invoke "make" "check"))))))
-    (native-inputs
-     `(("cmdtest" ,cmdtest)
-       ("python2-coverage-test-runner" ,python2-coverage-test-runner)))
-    (propagated-inputs
-     `(("python2-tracing" ,python2-tracing)))
-    (home-page "https://liw.fi/larch/")
-    (synopsis "Python copy-on-write B-tree library")
-    (description "@code{python2-larch} is an implementation of
-particular kind of B-tree, based on research by Ohad Rodeh.  See
-@url{http://liw.fi/larch/ohad-btrees-shadowing-clones.pdf} for details
-on the data structure.
-
-The distinctive feature of this B-tree is that a node is never
-(conceptually) modified.  Instead, all updates are done by
-copy-on-write.  This makes it easy to clone a tree, and modify only the
-clone, while other processes access the original tree.")
-    (license license:gpl3+)))
-
 (define-public python-astroid
   (let ((revision "1")
         (commit "5f67396894c79c4661e357ec8bb03aa134a51109"))
@@ -21244,9 +21182,6 @@ library's @code{threading} module.")
 functions, and dictionaries.")
     (license license:bsd-3)))
 
-(define-public python2-toolz
-  (package-with-python2 python-toolz))
-
 (define-public python-cytoolz
   (package
     (name "python-cytoolz")
@@ -23151,10 +23086,13 @@ and cuts down boilerplate code when testing libraries for asyncio.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-paths
+         (add-after 'unpack 'apply-upstream-fixes
            (lambda* _
              (substitute* "k5test/realm.py"
-               (("'kadmin_local'") "'kadmin.local'")))))))
+               ;; Upstream commit f6b302d94dbdce37a1b81cc3faeeac4dc637b0e9.
+               (("'kadmin_local'") "'kadmin.local'")
+               ;; Upstream commit 3aef84515cf3d1a171c66856c898d0a5cbbd03ea.
+               (("\\.stop_daemon") "._stop_daemon")))))))
     (home-page "https://github.com/pythongssapi/k5test")
     (synopsis "Library for setting up self-contained Kerberos 5 environments")
     (description
@@ -23292,8 +23230,9 @@ but portable.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-docutils" ,python-docutils)
@@ -25901,4 +25840,53 @@ is the cythonized version of @code{fractions.Fraction}.")
     (description
      "@code{pathvalidate} is a Python library to sanitize/validate strings
 representing paths or filenames.")
+    (license license:expat)))
+
+(define-public python-escapism
+  (package
+    (name "python-escapism")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "escapism" version))
+       (sha256
+        (base32
+         "1v74243wifcwhj5zkdiispxc9kb1xvnfzilg8bq308pjnkgnn9bk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/minrk/escapism")
+    (synopsis "Simple, generic library for escaping strings")
+    (description
+     "This Python library provides a programming interface to, given a set of
+safe characters and an escape character, escape safe strings and unescape the
+result.")
+    (license license:expat)))
+
+(define-public python-recommonmark
+  (package
+    (name "python-recommonmark")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "recommonmark" version))
+       (sha256
+        (base32
+         "0rvdd2ikdr0yg6cx6594fdzn53cmdc0g0i6qsbcdq8i2kxjdpd5x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-commonmark" ,python-commonmark)
+       ("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-test-sphinx
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (delete-file "tests/test_sphinx.py")))))))
+    (home-page "https://github.com/readthedocs/recommonmark")
+    (synopsis "Docutils-compatibility bridge to CommonMark")
+    (description
+     "This packages provides a docutils-compatibility bridge to CommonMark,
+enabling you to write CommonMark inside of Docutils & Sphinx projects.")
     (license license:expat)))

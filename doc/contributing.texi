@@ -26,7 +26,7 @@ choice.
 * Packaging Guidelines::        Growing the distribution.
 * Coding Style::                Hygiene of the contributor.
 * Submitting Patches::          Share your work.
-* Tracking Bugs and Patches::   Using Debbugs.
+* Tracking Bugs and Patches::   Keeping it all organized.
 * Commit Access::               Pushing to the official repository.
 * Updating the Guix Package::   Updating the Guix package definition.
 * Translating Guix::            Make Guix speak your native language.
@@ -1223,6 +1223,18 @@ for more information.  You can install @command{git send-email} with
 @node Tracking Bugs and Patches
 @section Tracking Bugs and Patches
 
+This section describes how the Guix project tracks its bug reports and
+patch submissions.
+
+@menu
+* The Issue Tracker::           The official bug and patch tracker.
+* Debbugs User Interfaces::     Ways to interact with Debbugs.
+* Debbugs Usertags::            Tag reports with custom labels.
+@end menu
+
+@node The Issue Tracker
+@subsection The Issue Tracker
+
 @cindex bug reports, tracking
 @cindex patch submissions, tracking
 @cindex issue tracking
@@ -1233,6 +1245,9 @@ against the @code{guix} ``package'' (in Debbugs parlance), by sending
 email to @email{bug-guix@@gnu.org}, while patch submissions are filed
 against the @code{guix-patches} package by sending email to
 @email{guix-patches@@gnu.org} (@pxref{Submitting Patches}).
+
+@node Debbugs User Interfaces
+@subsection Debbugs User Interfaces
 
 A web interface (actually @emph{two} web interfaces!) are available to
 browse issues:
@@ -1270,6 +1285,55 @@ For example, to list all open issues on @code{guix-patches}, hit:
 
 @xref{Top,,, debbugs-ug, Debbugs User Guide}, for more information on
 this nifty tool!
+
+@node Debbugs Usertags
+@subsection Debbugs Usertags
+
+@cindex usertags, for debbugs
+@cindex Debbugs usertags
+Debbugs provides a feature called @dfn{usertags} that allows any user to
+tag any bug with an arbitrary label.  Bugs can be searched by usertag,
+so this is a handy way to organize bugs@footnote{The list of usertags is
+public information, and anyone can modify any user's list of usertags,
+so keep that in mind if you choose to use this feature.}.
+
+For example, to view all the bug reports (or patches, in the case of
+@code{guix-patches}) tagged with the usertag @code{powerpc64le-linux}
+for the user @code{guix}, open a URL like the following in a web
+browser:
+@url{https://debbugs.gnu.org/cgi-bin/pkgreport.cgi?tag=powerpc64le-linux;users=guix}.
+
+For more information on how to use usertags, please refer to the
+documentation for Debbugs or the documentation for whatever tool you use
+to interact with Debbugs.
+
+In Guix, we are experimenting with usertags to keep track of
+architecture-specific issues.  To facilitate collaboration, all our
+usertags are associated with the single user @code{guix}.  The following
+usertags currently exist for that user:
+
+@table @code
+
+@item powerpc64le-linux
+The purpose of this usertag is to make it easy to find the issues that
+matter most for the @code{powerpc64le-linux} system type.  Please assign
+this usertag to bugs or patches that affect @code{powerpc64le-linux} but
+not other system types.  In addition, you may use it to identify issues
+that for some reason are particularly important for the
+@code{powerpc64le-linux} system type, even if the issue affects other
+system types, too.
+
+@item reproducibility
+For issues related to reproducibility.  For example, it would be
+appropriate to assign this usertag to a bug report for a package that
+fails to build reproducibly.
+
+@end table
+
+If you're a committer and you want to add a usertag, just start using it
+with the @code{guix} user.  If the usertag proves useful to you,
+consider updating this section of the manual so that others will know
+what your usertag means.
 
 @node Commit Access
 @section Commit Access

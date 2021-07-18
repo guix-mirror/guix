@@ -86,6 +86,8 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -114,11 +116,13 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
@@ -163,6 +167,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system guile)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -529,7 +534,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.0.7")
+    (version "2.1.0")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -539,7 +544,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "14fc4vfsfx74q1hn0b04q33cffdjzvwprwpjsj91jmi1lp38hxlm"))
+               "0dqd6gg1wwhxjgdfl8j0kf93mw43kvd6wrwrzkscq2wjrsy5p0w0"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1332,14 +1337,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.32.1")
+    (version "0.32.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0586d13ssygapjdri4cl25wzywivwsbxpjm6xlgxj6f9ii7clix7"))))
+                "1myylb19hj5nb1vriqng252vfjwwkgbi3gxj93pi2q1fzyw7w2lf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1602,7 +1607,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.8")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
@@ -1610,15 +1615,13 @@ compresses it.")
         (string-append "https://www.claws-mail.org/releases/claws-mail-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1byxmz68lnm2m8q1gnp0lpr3qp7dcwabrw5iqflz9mlm960v5dyd"))))
+        (base32 "0xg41rxxq2q5vhjzbh8p12s248kcljk6g7y0m6raq7nrllkbvwja"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
        (list
-        "--enable-gnutls"
-        "--enable-pgpmime-plugin"
-        "--enable-enchant"
-        "--enable-ldap")
+        "--disable-static"
+        "--enable-demo-plugin")
        #:make-flags
        ;; Disable updating icon cache since it's done by the profile hook.
        ;; Conflict with other packages in the profile would be inevitable
@@ -1631,33 +1634,60 @@ compresses it.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/procmime.c"
                (("/usr/share/mime/globs")
-                (string-append (assoc-ref inputs "mime-info")
+                (string-append (assoc-ref inputs "shared-mime-info")
                                "/share/mime/globs"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("bison" ,bison)
+       ;;("docbook-utils" ,docbook-utils)
+       ("flex" ,flex)
+       ("gettext-minimal" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("bogofilter" ,bogofilter)
+       ("cairo" ,cairo)
+       ("compface" ,compface)
        ("curl" ,curl)
+       ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("enchant" ,enchant)
        ("expat" ,expat)
+       ("fontconfig" ,fontconfig)
+       ("gdk-pixbuf+svg" ,gdk-pixbuf+svg)
        ("ghostscript" ,ghostscript)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("glib" ,glib)
        ("gnupg" ,gnupg)
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
-       ("gtk" ,gtk+-2)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("gumbo-parser" ,gumbo-parser)
+       ;;("j-pilot" ,j-pilot)
        ("libarchive" ,libarchive)
        ("libcanberra" ,libcanberra)
        ("libetpan" ,libetpan)
+       ("libgdata" ,libgdata)
        ("libical" ,libical)
+       ("libindicator" ,libindicator)
        ("libnotify" ,libnotify)
+       ("librsvg" ,librsvg)
        ("libsm" ,libsm)
+       ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
+       ("nettle" ,nettle)
+       ("network-manager" ,network-manager)
+       ("openldap" ,openldap)
        ("perl" ,perl)
-       ("python-2" ,python-2)
-       ("mime-info" ,shared-mime-info)
-       ("startup-notification" ,startup-notification)))
+       ("poppler" ,poppler)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("shared-mime-info" ,shared-mime-info)
+       ("startup-notification" ,startup-notification)
+       ;;("webkitgtk" ,webkitgtk)
+       ("ytnef" ,ytnef)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (synopsis "GTK-based Email client")
     (description "Claws-Mail is an email client (and news reader) based on GTK+.
 The appearance and interface are designed to be familiar to new users coming
@@ -2091,15 +2121,14 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
 (define-public perl-email-abstract
   (package
     (name "perl-email-abstract")
-    (version "3.008")
+    (version "3.009")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Abstract-" version ".tar.gz"))
        (sha256
-        (base32
-         "0h42rhvp769wb421cpbbg6v6xjp8iv86mvz70pqgfgf4nsn6jwgw"))))
+        (base32 "1z01wbflg49nbgzl81x260cp8x6qr7xdpz3dkrg82m1fwa9742q4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-simple" ,perl-email-simple)
@@ -2315,31 +2344,35 @@ format and headers.")
 (define-public libesmtp
   (package
     (name "libesmtp")
-    (version "1.0.6")
+    (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (list (string-append "https://pkgs.fedoraproject.org/repo/pkgs/"
-                                 "libesmtp/libesmtp-" version ".tar.bz2/"
-                                 "bf3915e627fd8f35524a8fdfeed979c8/libesmtp-"
-                                 version ".tar.bz2")
-                  ;; XXX This site is offline, so we fetch Fedora's cached copy
-                  ;; of the source tarball.
-                  (string-append "http://www.stafford.uklinux.net/libesmtp/libesmtp-"
-                                 version ".tar.bz2")))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libesmtp/libESMTP")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "02zbniyz7qys1jmx3ghx21kxmns1wc3hmv80gp7ag7yra9f1m9nh"))))
-    (build-system gnu-build-system)
+        (base32 "1bhh8hlsl9597x0bnfl563k2c09b61qnkb9mfyqcmzlq63m1zw5y"))))
+    (build-system meson-build-system)
     (propagated-inputs
      `(("openssl" ,openssl)))
     (home-page "http://www.stafford.uklinux.net/libesmtp/")
     (synopsis "Library for sending mail via remote hosts using SMTP")
-    (description "libESMTP is an SMTP client which manages posting (or
-submission of) electronic mail via a preconfigured Mail Transport Agent (MTA).
-It may be used as part of a Mail User Agent (MUA) or other program that must
-be able to post electronic mail where mail functionality may not be that
-program's primary purpose.")
+    (description
+     "libESMTP is an @acronym{SMTP, Simple Mail Transfer Protocol} client that
+manages posting (or submission of) electronic mail via a preconfigured
+@acronym{MTA, Mail Transport Agent}.
+
+It may be used as part of a @acronym{MUA, Mail User Agent}, or other program
+that must be able to post electronic mail where mail functionality may not be
+that program's primary purpose.
+
+libESMTP's high-level API shields developers from the complexity of SMTP.  It
+transparently handles many SMTP extensions including authentication,
+@acronym{TLS, Transport-Level Security}, and PIPELINING for performance.  Even
+without a pipelining server, libESMTP offers much better performance than would
+be expected from a simple client.")
     (license (list license:lgpl2.1+ license:gpl2+))))
 
 (define-public esmtp
@@ -3621,7 +3654,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.24.1")
+    (version "2.24.2")
     (source
      (origin
        (method git-fetch)
@@ -3634,7 +3667,7 @@ operators and scripters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dvp6m9xdxycc2lh4cbp6wvq0bkqmmkzs4c4aqsa321p7y03vs9q"))
+        (base32 "0ibwss04j4qbhpd3jcw3d4xjf8jnmb9fi3sz58a99xw3awkfjabd"))
        (modules '((guix build utils)))
        (snippet
         '(begin

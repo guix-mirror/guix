@@ -643,8 +643,10 @@ edit it."
              default-result))))
        ((partition? item)
         (if (freespace-partition? item)
-            (run-error-page (G_ "You cannot delete a free space area.")
-                            (G_ "Delete partition"))
+            (begin
+              (run-error-page (G_ "You cannot delete a free space area.")
+                              (G_ "Delete partition"))
+              default-result)
             (let* ((disk (partition-disk item))
                    (number-str (partition-print-number item))
                    (info-text

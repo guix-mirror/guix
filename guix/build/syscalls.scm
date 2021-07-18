@@ -2236,8 +2236,8 @@ correspond to a terminal, return the value returned by FALL-BACK."
         ;; would return EINVAL instead in some cases:
         ;; <https://bugs.ruby-lang.org/issues/10494>.
         ;; Furthermore, some FUSE file systems like unionfs return ENOSYS for
-        ;; that ioctl, and bcachefs returns EPERM.
-        (if (memv errno (list ENOTTY EINVAL ENOSYS EPERM))
+        ;; that ioctl.
+        (if (memv errno (list ENOTTY EINVAL ENOSYS))
             (fall-back)
             (apply throw args))))))
 

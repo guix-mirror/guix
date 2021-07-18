@@ -1150,7 +1150,7 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                 (lambda (port)
                   (write
                    `(normal-top-level-add-to-load-path
-                     (list ,@subdirs))
+                     (list ,@(delete-duplicates subdirs)))
                    port)
                   (newline port)
                   #t)))))))

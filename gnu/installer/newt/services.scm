@@ -68,6 +68,28 @@ system.")
         (condition
          (&installer-step-abort)))))))
 
+(define (run-other-services-cbt-page)
+  "Run a page allowing the user to select other services."
+  (let ((items (filter (lambda (service)
+                         (not (member (system-service-type service)
+                                      '(desktop
+                                        network-management
+                                        networking))))
+                       %system-services)))
+    (run-checkbox-tree-page
+     #:info-text (G_ "You can now select other services to run on your \
+system.")
+     #:title (G_ "Other services")
+     #:items items
+     #:selection (map system-service-recommended? items)
+     #:item->text (compose G_ system-service-name)
+     #:checkbox-tree-height 9
+     #:exit-button-callback-procedure
+     (lambda ()
+       (raise
+        (condition
+         (&installer-step-abort)))))))
+
 (define (run-network-management-page)
   "Run a page to select among several network management methods."
   (let ((title (G_ "Network management")))
@@ -100,4 +122,5 @@ client may be enough for a server.")
             (run-networking-cbt-page)
             (if (null? desktop)
                 (list (run-network-management-page))
-                '()))))
+                '())
+            (run-other-services-cbt-page))))

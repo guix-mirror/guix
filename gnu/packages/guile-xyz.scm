@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2019, 2020, 2021 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
-;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
+;;; Copyright © 2016, 2021 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
@@ -888,14 +888,23 @@ using Guile's foreign function interface.")
      '(#:source-directory "src"
        #:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'move-files-around
+                  (add-after 'unpack 'patch-sources
+                    ;; Initially reported here:
+                    ;; https://github.com/ijp/pfds/pull/6, and merged into
+                    ;; other projects such as IronScheme (see:
+                    ;; https://github.com/IronScheme/pfds/pull/1).
+                    (lambda _
+                      (substitute* "hamts.sls"
+                        (("subtrie-vector vector")
+                         "subtrie-vector trie"))))
+                  (add-after 'patch-sources 'move-files-around
                     (lambda _
                       ;; Move files under a pfds/ directory to reflect the
                       ;; module hierarchy.
                       (mkdir-p "src/pfds")
                       (for-each (lambda (file)
-                                  (rename-file file
-                                    (string-append "src/pfds/" file)))
+                                  (rename-file
+                                   file (string-append "src/pfds/" file)))
                                 '("bbtrees.sls"
                                   "deques"
                                   "deques.sls"
@@ -908,8 +917,7 @@ using Guile's foreign function interface.")
                                   "queues"
                                   "queues.sls"
                                   "sequences.sls"
-                                  "sets.sls"))
-                      #t)))))
+                                  "sets.sls")))))))
     (native-inputs
      `(("guile" ,guile-3.0)))
     (synopsis "Purely functional data structures for Guile")
@@ -2305,7 +2313,36 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
      "Guile-Lib is intended as an accumulation place for pure-scheme Guile
 modules, allowing for people to cooperate integrating their generic Guile
 modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN
-for Guile\".")
+for Guile\".  It provides the following modules:
++@itemize
++@item (apicheck) Describe and verify library programming interfaces.
++@item (config load) Loading configuration files.
++@item (container async-queue) A thread-safe message queue.
++@item (container nodal-tree) A tree consisting of nodes with attributes.
++@item (container delay-tree) A nodal tree with lazily evaluated fields.
++@item (debugging assert) Helpful assert macro.
++@item (debugging time) A simple macro to time the execution of an expression.
++@item (graph topological-sort) Routines to perform topological sorts.
++@item (htmlprag) Neil Van Dyke's permissive (\"pragmatic\") HTML parser.
++@item (io string) SLIB's IO routines dealing with strings.
++@item (logging logger) A flexible logging system.
++@item (logging port-log) A logger that outputs to a port.
++@item (logging rotating-log) A logger that rotates its output files.
++@item (match-bind) Nifty and concise regular expression routines.
++@item (math minima) A golden-section minimum finder.
++@item (math primes) Functions related to prime numbers and factorization.
++@item (os process) Spawning processes and capturing their output.
++@item (scheme documentation) Macros to define different kinds of variables
++with documentation.
++@item (scheme kwargs) Defining functions with flexible keyword arguments.
++@item (search basic) Classic search functions.
++@item (string completion) Building blocks for tab completion.
++@item (string soundex) The SOUNDEX string categorization algorithm.
++@item (string transform) Beyond SRFI-13.
++@item (string wrap) A versatile string formatter.
++@item (term ansi-color) Generate ANSI color escape sequences.
++@item (unit-test) A JUnit-style unit testing framework.
++@end itemize")
     ;; The whole is under GPLv3+, but some modules are under laxer
     ;; distribution terms such as LGPL and public domain.  See `COPYING' for
     ;; details.

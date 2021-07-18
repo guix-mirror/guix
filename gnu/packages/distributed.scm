@@ -44,7 +44,7 @@
 (define-public boinc-client
   (package
     (name "boinc-client")
-    (version "7.16.6")
+    (version "7.16.17")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -55,7 +55,7 @@
               (file-name (git-file-name "boinc" version))
               (sha256
                (base32
-                "00xpzxxnki9hsf2vg9p67dk9ilw9ychpgm09fp3c41zyylb33ml5"))))
+                "1p8y3mnf5yfhavhqxwf9v68prg1601h8q1pllm5z89zh661di3mj"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-server")))
     (inputs `(("openssl" ,openssl)
@@ -82,13 +82,12 @@ resources).  It supports virtualized, parallel, and GPU-based applications.")
     (license (list license:lgpl3+ license:gpl3+))))
 
 (define-public boinc-server
+  ;; XXX The server and client packages duplicate many files such as /lib.
+  ;; TODO: consolidate them?
   (package (inherit boinc-client)
     (name "boinc-server")
     (arguments '(#:configure-flags '("--disable-client" "--disable-manager")
-                 #:parallel-build? #f
-                 #:tests? #f)) ; FIXME: Looks like bad test syntax in the
-                               ; source package, 2 tests fail.  Disable for
-                               ; now.
+                 #:parallel-build? #f))
     (inputs `(("openssl" ,openssl)
               ("curl" ,curl)
               ("mariadb:dev" ,mariadb "dev")

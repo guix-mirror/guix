@@ -492,7 +492,8 @@ restrict source notrap nomodify noquery\n"))
                                 "-c" #$ntpd.conf "-u" "ntpd"
                                 #$@(if allow-large-adjustment?
                                        '("-g")
-                                       '()))))
+                                       '()))
+                          #:log-file "/var/log/ntpd.log"))
                 (stop #~(make-kill-destructor)))))))))
 
 (define %ntp-accounts
@@ -960,6 +961,7 @@ HiddenServicePort ~a ~a~%"
                 (start #~(make-forkexec-constructor/container
                           (list #$(file-append tor "/bin/tor") "-f" #$torrc)
 
+                          #:log-file "/var/log/tor.log"
                           #:mappings (list (file-system-mapping
                                             (source "/var/lib/tor")
                                             (target source)

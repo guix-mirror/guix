@@ -172,18 +172,16 @@ application-facing EGL functions.")
 (define-public egl-wayland
   (package
     (name "egl-wayland")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/NVIDIA/egl-wayland")
-         (commit version)))
-       (file-name
-        (git-file-name name version))
+       (uri (git-reference
+             (url "https://github.com/NVIDIA/egl-wayland")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1n9lg8hpjgxlf7dpddkjhbslsfd0symla2wk6jjmnl9n9jv2gmzk"))))
+        (base32 "0xcx1132zwyp4qps074m72ngjlfmysi1jc2d0lp1ml1r9bllkam6"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -761,7 +759,7 @@ more.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "5.2.1")
+    (version "5.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -769,10 +767,15 @@ more.")
                     "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "1rhrpjsp4081nn2q215h78kc4msrj0081zg65k1gfp5hl88bg03y"))))
+                "0yjzq12ivizp23y7zqm30x20psv9gzwbcdrhyd3f7h0ds94m1c40"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ; no test target
+     `(#:configure-flags
+       ;; Prevent two mostly-duplicate directories.  Use Guix's versioned
+       ;; default for licences instead of CGAL's unversioned one.
+       (list (string-append "-DCGAL_INSTALL_DOC_DIR=share/doc/"
+                            ,name "-" ,version))
+       #:tests? #f))                    ; no test target
     (inputs
      `(("mpfr" ,mpfr)
        ("gmp" ,gmp)
@@ -1567,8 +1570,8 @@ and understanding different BRDFs (and other component functions).")
     (synopsis "High-quality 2D graphics rendering engine for C++")
     (description
      "Anti-Grain Geometry is a high quality rendering engine written in C++.
-It supports sub-pixel resolutions and anti-aliasing.  It is also library for
-rendering SVG graphics.")
+It supports sub-pixel resolutions and anti-aliasing.  It is also a library for
+rendering @acronym{SVG, Scalable Vector Graphics}.")
     (license license:gpl2+)))
 
 (define-public python-pastel

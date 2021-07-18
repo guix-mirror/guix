@@ -82,7 +82,7 @@
 (define-public cl-asdf
   (package
     (name "cl-asdf")
-    (version "3.3.4")
+    (version "3.3.5")
     (source
      (origin
        (method url-fetch)
@@ -90,7 +90,7 @@
         (string-append "https://common-lisp.net/project/asdf/archives/asdf-"
                        version ".lisp"))
        (sha256
-        (base32 "1hpx30f6yrak15nw992k7x3pn75ahvjs04n4f134k68mhgs62km2"))))
+        (base32 "1mydyrii3f0aig1q5admj6hyf59vjn4a5x1q8hqgh483987ilz6h"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("config-patch" ,@(search-patches "cl-asdf-config-directories.patch"))
@@ -400,14 +400,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.1.5")
+    (version "2.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1id8r2y8hiz34lmvszikdqgrmr778jshim0fibb915assvn0fn4n"))))
+        (base32 "1vydq6mmssla2vn0plpsrm50n3b42a464zxw72j6qihas9fhq8cb"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -845,7 +845,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "259")
+    (version "263")
     (source
      (origin
        (method git-fetch)
@@ -854,7 +854,7 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1awg6l458pl2y340l0vja2j5q636vh2mx2mllxqydg36j89lfniz"))))
+        (base32 "14zaziymnbr2ld79x4h7sf88bzzzj82w3xpavmcx7mhwannb2swh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

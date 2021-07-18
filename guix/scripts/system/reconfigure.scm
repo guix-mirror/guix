@@ -308,12 +308,11 @@ ancestor of COMMIT, unless CHANNEL specifies a commit."
     ('self #t)
     (_
      (raise (make-compound-condition
-             (condition
-              (&message (message
-                         (format #f (G_ "\
+             (formatted-message (G_ "\
 aborting reconfiguration because commit ~a of channel '~a' is not a descendant of ~a")
-                                 commit (channel-name channel)
-                                 start)))
+                                commit (channel-name channel)
+                                start)
+             (condition
               (&fix-hint
                (hint (G_ "Use @option{--allow-downgrades} to force
 this downgrade.")))))))))

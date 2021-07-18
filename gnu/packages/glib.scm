@@ -873,7 +873,7 @@ useful for C++.")
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
-    (inputs
+    (propagated-inputs
      `(("glib" ,glib)))
     (home-page "https://metacpan.org/release/Glib")
     (synopsis "Perl wrappers for the GLib utility and Object libraries")
@@ -882,6 +882,32 @@ libraries.  GLib is a portability and utility library; GObject provides a
 generic type system with inheritance and a powerful signal system.  Together
 these libraries are used as the foundation for many of the libraries that make
 up the Gnome environment, and are used in many unrelated projects.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-glib-object-introspection
+  (package
+    (name "perl-glib-object-introspection")
+    (version "0.049")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
+                           "Glib-Object-Introspection-" version ".tar.gz"))
+       (sha256
+        (base32 "0mxg6pz8qfyipw0ypr54alij0c4adzg94f62702b2a6hkp5jhij6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (propagated-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("perl-cairo-gobject" ,perl-cairo-gobject)
+       ("perl-glib" ,perl-glib)))
+    (home-page "https://metacpan.org/dist/Glib-Object-Introspection")
+    (synopsis "Dynamically create Perl language bindings")
+    (description "Glib::Object::Introspection uses the gobject-introspection and
+libffi projects to dynamically create Perl bindings for a wide variety of
+libraries.  Examples include gtk+, webkit, libsoup and many more.")
     (license license:lgpl2.1+)))
 
 (define telepathy-glib

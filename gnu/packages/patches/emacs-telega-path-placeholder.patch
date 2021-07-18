@@ -1,0 +1,44 @@
+From 865b8c553722a971c68742c2e849e41eb0e2360c Mon Sep 17 00:00:00 2001
+From: Zhu Zihao <all_but_last@163.com>
+Date: Thu, 24 Jun 2021 23:43:50 +0800
+Subject: [PATCH] Replace code that search path with placeholder for
+ configuration.
+
+---
+ telega-server.el | 6 +-----
+ telega-util.el   | 2 +-
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/telega-server.el b/telega-server.el
+index 999125d..0fa0817 100644
+--- a/telega-server.el
++++ b/telega-server.el
+@@ -142,11 +142,7 @@ Otherwise query user about building flags."
+ (defun telega-server--find-bin ()
+   "Find telega-server executable.
+ Raise error if not found."
+-  (let ((exec-path (cons telega-directory exec-path)))
+-    (or (executable-find "telega-server")
+-        (progn (telega-server-build)
+-               (executable-find "telega-server"))
+-        (error "`telega-server' not found in exec-path"))))
++  "@TELEGA_SERVER_BIN@")
+ 
+ (defun telega-server-version ()
+   "Return telega-server version."
+diff --git a/telega-util.el b/telega-util.el
+index 73a46b1..f53e20a 100644
+--- a/telega-util.el
++++ b/telega-util.el
+@@ -464,7 +464,7 @@ N can't be 0."
+ 
+ (defun telega-etc-file (filename)
+   "Return absolute path to FILENAME from etc/ directory in telega."
+-  (expand-file-name (concat "etc/" filename) telega--lib-directory))
++  (concat "@TELEGA_SHARE@" "/" filename))
+ 
+ (defun telega-link-props (link-type link-to &optional face)
+   "Generate props for link button openable with `telega-link--button-action'."
+-- 
+2.32.0
+

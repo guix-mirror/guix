@@ -20,9 +20,12 @@
 (define-module (guix ci)
   #:use-module (guix http-client)
   #:use-module (guix utils)
+  #:use-module ((guix build download)
+                #:select (resolve-uri-reference))
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
+  #:use-module (web uri)
   #:use-module (guix i18n)
   #:use-module (guix diagnostics)
   #:autoload   (guix channels) (channel)
@@ -51,10 +54,18 @@
             evaluation-complete?
             evaluation-checkouts
 
+            job?
+            job-build-id
+            job-status
+            job-name
+
             %query-limit
             queued-builds
             latest-builds
             evaluation
+            evaluation-jobs
+            build
+            job-build
             latest-evaluations
             evaluations-for-commit
 
@@ -75,13 +86,31 @@
   (file-size   build-product-file-size)           ;integer
   (path        build-product-path))               ;string
 
+(define-syntax-rule (define-enumeration-mapping proc
+                      (names integers) ...)
+  (define (proc value)
+    (match value
+      (integers 'names) ...)))
+
+(define-enumeration-mapping integer->build-status
+  ;; Copied from 'build-status' in Cuirass.
+  (submitted        -3)
+  (scheduled        -2)
+  (started          -1)
+  (succeeded         0)
+  (failed            1)
+  (failed-dependency 2)
+  (failed-other      3)
+  (canceled          4))
+
 (define-json-mapping <build> make-build build?
   json->build
   (id          build-id "id")                     ;integer
   (derivation  build-derivation)                  ;string | #f
   (evaluation  build-evaluation)                  ;integer
   (system      build-system)                      ;string
-  (status      build-status "buildstatus" )       ;integer
+  (status      build-status "buildstatus"         ;symbol
+               integer->build-status)
   (timestamp   build-timestamp)                   ;integer
   (products    build-products "buildproducts"     ;<build-product>*
                (lambda (products)
@@ -90,6 +119,13 @@
                       (if (vector? products)
                           (vector->list products)
                           '())))))
+
+(define-json-mapping <job> make-job job?
+  json->job
+  (build-id    job-build-id "build")              ;integer
+  (status      job-status "status"                ;symbol
+               integer->build-status)
+  (name        job-name))                         ;string
 
 (define-json-mapping <checkout> make-checkout checkout?
   json->checkout
@@ -113,16 +149,44 @@
   ;; Max number of builds requested in queries.
   1000)
 
+(define* (api-url base-url path #:rest query)
+  "Build a proper API url, taking into account BASE-URL's trailing slashes.
+QUERY takes any number of '(\"name\" value) 2-element lists, with VALUE being
+either a string or a number (which will be converted to a string).  If VALUE
+is #f, the respective element will not be added to the query parameters.
+Other types of VALUE will raise an error since this low-level function is
+api-agnostic."
+
+  (define (build-query-string query)
+    (let lp ((query (or (reverse query) '())) (acc '()))
+      (match query
+        (() (string-concatenate acc))
+        (((_ #f) . rest) (lp rest acc))
+        (((name val) . rest)
+         (lp rest (cons*
+                   name "="
+                   (if (string? val) (uri-encode val) (number->string val))
+                   (if (null? acc) "" "&")
+                   acc))))))
+
+  (let* ((query-string (build-query-string query))
+         (base (string->uri base-url))
+         (ref (build-relative-ref #:path path #:query query-string)))
+    (resolve-uri-reference ref base)))
+
 (define (json-fetch url)
   (let* ((port (http-fetch url))
          (json (json->scm port)))
     (close-port port)
     json))
 
+(define* (json-api-fetch base-url path #:rest query)
+  (json-fetch (apply api-url base-url path query)))
+
 (define* (queued-builds url #:optional (limit %query-limit))
   "Return the list of queued derivations on URL."
-  (let ((queue (json-fetch (string-append url "/api/queue?nr="
-                                          (number->string limit)))))
+  (let ((queue
+         (json-api-fetch url "/api/queue" `("nr" ,limit))))
     (map json->build (vector->list queue))))
 
 (define* (latest-builds url #:optional (limit %query-limit)
@@ -130,28 +194,21 @@
   "Return the latest builds performed by the CI server at URL.  If EVALUATION
 is an integer, restrict to builds of EVALUATION.  If SYSTEM is true (a system
 string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
-  (define* (option name value #:optional (->string identity))
-    (if value
-        (string-append "&" name "=" (->string value))
-        ""))
-
-  (let ((latest (json-fetch (string-append url "/api/latestbuilds?nr="
-                                           (number->string limit)
-                                           (option "evaluation" evaluation
-                                                   number->string)
-                                           (option "system" system)
-                                           (option "job" job)
-                                           (option "status" status
-                                                   number->string)))))
+  (let ((latest (json-api-fetch
+                 url "/api/latestbuilds"
+                 `("nr" ,limit)
+                 `("evaluation" ,evaluation)
+                 `("system" ,system)
+                 `("job" ,job)
+                 `("status" ,status))))
     ;; Note: Hydra does not provide a "derivation" field for entries in
     ;; 'latestbuilds', but Cuirass does.
     (map json->build (vector->list latest))))
 
 (define (evaluation url evaluation)
   "Return the given EVALUATION performed by the CI server at URL."
-  (let ((evaluation (json-fetch
-                     (string-append url "/api/evaluation?id="
-                                    (number->string evaluation)))))
+  (let ((evaluation
+         (json-api-fetch url "/api/evaluation" `("id" ,evaluation))))
     (json->evaluation evaluation)))
 
 (define* (latest-evaluations url
@@ -159,16 +216,10 @@ string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
                              #:key spec)
   "Return the latest evaluations performed by the CI server at URL.  If SPEC
 is passed, only consider the evaluations for the given SPEC specification."
-  (let ((spec (if spec
-                  (format #f "&spec=~a" spec)
-                  "")))
-    (map json->evaluation
-         (vector->list
-          (json->scm
-           (http-fetch
-            (string-append url "/api/evaluations?nr="
-                           (number->string limit)
-                           spec)))))))
+  (map json->evaluation
+       (vector->list
+        (json-api-fetch
+         url "/api/evaluations" `("nr" ,limit) `("spec" ,spec)))))
 
 (define* (evaluations-for-commit url commit #:optional (limit %query-limit))
   "Return the evaluations among the latest LIMIT evaluations that have COMMIT
@@ -178,6 +229,26 @@ as one of their inputs."
                     (string=? (checkout-commit checkout) commit))
                   (evaluation-checkouts evaluation)))
           (latest-evaluations url limit)))
+
+(define (evaluation-jobs url evaluation-id)
+  "Return the list of jobs of evaluation EVALUATION-ID."
+  (map json->job
+       (vector->list
+        (json-api-fetch url "/api/jobs" `("evaluation" ,evaluation-id)))))
+
+(define (build url id)
+  "Look up build ID at URL and return it.  Raise &http-get-error if it is not
+found (404)."
+  (json->build
+   (http-fetch (api-url url (string-append "/build/"    ;note: no "/api" here
+                                           (number->string id))))))
+
+(define (job-build url job)
+  "Return the build associated with JOB."
+  (build url (job-build-id job)))
+
+;; TODO: job history:
+;; https://ci.guix.gnu.org/api/jobs/history?spec=master&names=coreutils.x86_64-linux&nr=10
 
 (define (find-latest-commit-with-substitutes url)
   "Return the latest commit with available substitutes for the Guix package

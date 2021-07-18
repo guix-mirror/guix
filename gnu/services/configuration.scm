@@ -109,14 +109,18 @@ does not have a default value" field kind)))
   "Assemble PARTS into a raw (unhygienic) identifier."
   (datum->syntax ctx (symbol-append (syntax->datum parts) ...)))
 
-(define (define-maybe-helper serialize? syn)
+(define (define-maybe-helper serialize? prefix syn)
   (syntax-case syn ()
     ((_ stem)
      (with-syntax
          ((stem?            (id #'stem #'stem #'?))
           (maybe-stem?      (id #'stem #'maybe- #'stem #'?))
-          (serialize-stem   (id #'stem #'serialize- #'stem))
-          (serialize-maybe-stem (id #'stem #'serialize-maybe- #'stem)))
+          (serialize-stem   (if prefix
+                                (id #'stem prefix #'serialize- #'stem)
+                                (id #'stem #'serialize- #'stem)))
+          (serialize-maybe-stem (if prefix
+                                    (id #'stem prefix #'serialize-maybe- #'stem)
+                                    (id #'stem #'serialize-maybe- #'stem))))
        #`(begin
            (define (maybe-stem? val)
              (or (eq? val 'disabled) (stem? val)))
@@ -129,16 +133,18 @@ does not have a default value" field kind)))
 
 (define-syntax define-maybe
   (lambda (x)
-    (syntax-case x (no-serialization)
+    (syntax-case x (no-serialization prefix)
       ((_ stem (no-serialization))
-       (define-maybe-helper #f #'(_ stem)))
+       (define-maybe-helper #f #f #'(_ stem)))
+      ((_ stem (prefix serializer-prefix))
+       (define-maybe-helper #t #'serializer-prefix #'(_ stem)))
       ((_ stem)
-       (define-maybe-helper #t #'(_ stem))))))
+       (define-maybe-helper #t #f #'(_ stem))))))
 
 (define-syntax-rule (define-maybe/no-serialization stem)
   (define-maybe stem (no-serialization)))
 
-(define (define-configuration-helper serialize? syn)
+(define (define-configuration-helper serialize? serializer-prefix syn)
   (syntax-case syn ()
     ((_ stem (field (field-type def ...) doc custom-serializer ...) ...)
      (with-syntax (((field-getter ...)
@@ -165,7 +171,11 @@ does not have a default value" field kind)))
                                   ((serializer)
                                    serializer)
                                   (()
-                                  (id #'stem #'serialize- type)))))
+                                   (if serializer-prefix
+                                       (id #'stem
+                                           serializer-prefix
+                                           #'serialize- type)
+                                       (id #'stem #'serialize- type))))))
                          #'(field-type ...)
                          #'((custom-serializer ...) ...))))
        #`(begin
@@ -212,15 +222,21 @@ does not have a default value" field kind)))
 
 (define-syntax define-configuration
   (lambda (s)
-    (syntax-case s (no-serialization)
+    (syntax-case s (no-serialization prefix)
       ((_ stem (field (field-type def ...) doc custom-serializer ...) ...
           (no-serialization))
        (define-configuration-helper
-         #f #'(_ stem (field (field-type def ...) doc custom-serializer ...)
+         #f #f #'(_ stem (field (field-type def ...) doc custom-serializer ...)
+                 ...)))
+      ((_ stem  (field (field-type def ...) doc custom-serializer ...) ...
+          (prefix serializer-prefix))
+       (define-configuration-helper
+         #t #'serializer-prefix #'(_ stem (field (field-type def ...)
+                                                 doc custom-serializer ...)
                  ...)))
       ((_ stem (field (field-type def ...) doc custom-serializer ...) ...)
        (define-configuration-helper
-         #t #'(_ stem (field (field-type def ...) doc custom-serializer ...)
+         #t #f #'(_ stem (field (field-type def ...) doc custom-serializer ...)
                  ...))))))
 
 (define-syntax-rule (define-configuration/no-serialization

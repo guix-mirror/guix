@@ -4,6 +4,7 @@
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,6 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages cmake)
-  #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
@@ -61,7 +61,7 @@
 (define-public remmina
   (package
     (name "remmina")
-    (version "1.4.18")
+    (version "1.4.19")
     (source
      (origin
        (method git-fetch)
@@ -71,7 +71,7 @@
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s4ry2vacn4pw4whfkq6vgg7p5jsj4nyvx1h1cp60ihqg0grx99v"))))
+        (base32 "1d0yxhrnkmj2wzsj1njw32sqkarmgqkzamwks6dl8pdi20x69br2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No target
@@ -223,7 +223,6 @@ application which is needed to connect to VNC servers.")
        ("gettext-minimal" ,gettext-minimal)
        ("font-util" ,font-util)
        ("cmake" ,cmake)
-       ("gcc-toolchain" ,gcc-toolchain)
        ("perl" ,perl)
        ,@(package-native-inputs tigervnc-client)
        ,@(package-inputs tigervnc-client)

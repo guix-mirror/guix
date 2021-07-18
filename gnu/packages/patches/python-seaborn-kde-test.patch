@@ -1,0 +1,36 @@
+This patch is an excerpt of this upstream commit:
+
+  commit 0a24478a550132f1882e5be5f5dbc0fc446a8a6c
+  Author: Michael Waskom <mwaskom@users.noreply.github.com>
+  Date:   Mon Dec 21 18:44:58 2020 -0500
+
+      Raise minimal supported Python to 3.7 and bump requirements (#2396)
+
+It fixes the failure of 'test_weights'.
+
+--- a/seaborn/tests/test_distributions.py
++++ b/seaborn/tests/test_distributions.py
+@@ -709,21 +708,17 @@ class TestKDEPlotUnivariate:
+         integral = integrate.trapz(ydata, np.log10(xdata))
+         assert integral == pytest.approx(1)
+ 
+-    @pytest.mark.skipif(
+-        LooseVersion(scipy.__version__) < "1.2.0",
+-        reason="Weights require scipy >= 1.2.0"
+-    )
+     def test_weights(self):
+ 
+         x = [1, 2]
+         weights = [2, 1]
+ 
+-        ax = kdeplot(x=x, weights=weights)
++        ax = kdeplot(x=x, weights=weights, bw_method=.1)
+ 
+         xdata, ydata = ax.lines[0].get_xydata().T
+ 
+-        y1 = ydata[np.argwhere(np.abs(xdata - 1).min())]
+-        y2 = ydata[np.argwhere(np.abs(xdata - 2).min())]
++        y1 = ydata[np.abs(xdata - 1).argmin()]
++        y2 = ydata[np.abs(xdata - 2).argmin()]
+ 
+         assert y1 == pytest.approx(2 * y2)

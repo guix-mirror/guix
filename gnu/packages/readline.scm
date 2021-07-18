@@ -141,7 +141,7 @@ comfortable for anyone.")
 (define-public rlwrap
   (package
     (name "rlwrap")
-    (version "0.45.1")
+    (version "0.45.2")
     (source
      (origin
        (method git-fetch)
@@ -150,7 +150,7 @@ comfortable for anyone.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0shf59mkql584a0p449psnbr26bfik5pizg4vsa75g4gbi6mn4r7"))))
+        (base32 "1irlcdvj1ddxkfzwa7l2djxgp5xbqch9vaajk2s32x1h5cxl1f5r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

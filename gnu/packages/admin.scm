@@ -724,7 +724,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
 (define-public pies
   (package
     (name "pies")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -732,7 +732,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
                            version ".tar.bz2"))
        (sha256
         (base32
-         "11j168qljsinaj5dwmg7nkm2z1aghi6gc3d0wf0pikflnh2q2wqf"))))
+         "0ad5bg1czwmr4qw33aszxzc6ll99a9lfs32lyfb1wl5x9s1cc7az"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1311,21 +1311,29 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07ibr6zzfh1wk5gqcbnlyh6v0dfmhpfd0fqj5y3yxvzf4ckb84ld"))))
+                "1m5x26vlbymp90k1qh0w3nj2nxzyvfrmfmwpj17k81dgri55ya7d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
     (arguments
      ;; There are some tests in testprogs/, but no automated test suite.
-     '(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'omit-static-library
+           ;; Neither build nor install libpcap.a.
+           (lambda _
+             (substitute* "Makefile.in"
+               ((" libpcap\\.a") "")
+               ((" install-archive ") " ")))))))
     (home-page "https://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description
@@ -2082,15 +2090,15 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20210331")
+    (version "20210604")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://acpica.org/sites/acpica/files/acpica-unix2-"
-                    version ".tar.gz"))
+                    version ".tar_0.gz"))
               (sha256
                (base32
-                "1h98pvc9iy1c49cid0ppjwk5zsy2m1xbvfqb72pkwkrd4rn35arx"))))
+                "1wsgg6fx7bhbpfzhbpbq2r7jpmv4c4n7v0zidbh25swrz7kfgpwz"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2860,14 +2868,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.80")
+    (version "7.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1aizfys6l9f9grm82bk878w56mg0zpkfns3spzj157h98875mypw"))
+                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2943,6 +2951,7 @@ tool.  It is also useful for tasks such as network inventory, managing service
 upgrade schedules, and monitoring host or service uptime.  It also provides an
 advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
+    ;; See <https://github.com/nmap/nmap/issues/2199#issuecomment-792048244>.
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
     (license (list license:nmap license:bsd-3))))
@@ -4100,7 +4109,7 @@ Logitech Unifying Receiver.")
   (package
     (name "lynis")
     ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
        (method git-fetch)
@@ -4109,7 +4118,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i556d8xpas6k5k3ad0xvc6ihxnw27nzrjkf14759jkcqrbpb4gy"))
+        (base32 "11kl54hbvjl7q2i1jz8a726vlkdmknvbp4zac3j4fgljg27qp410"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4126,10 +4135,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "a4087770b7ee794901c5135673e006e8f84bfd3d")))
+                 (commit "99f79c4deb4cb2221d7fccfe82baf58c0a55b9e7")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32 "00wikqydhrjcn0ampgr4qjg30y12as1gm23z94bs72ff035lhcpw"))))))
+            (base32 "1nc2rhzj6l08d2mnjrzkm4mxla1mjkddcxl8n05c1kdz9ycn6cpl"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

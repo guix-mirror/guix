@@ -51,7 +51,16 @@
   (@@ (guix self) file-append*))
 
 (define translated-texi-manuals
-  (@@ (guix self) translate-texi-manuals))
+  (let ((translated (@@ (guix self) translate-texi-manuals)))
+    (lambda (source)
+      (let ((result (translated source)))
+        ;; Build with 'guile-3.0-latest', which is linked against
+        ;; 'libgc/disable-munmap', to avoid the dreaded "mmap(PROT_NONE)
+        ;; failed" crash: <https://bugs.gnu.org/47428>.
+        (computed-file (computed-file-name result)
+                       (computed-file-gexp result)
+                       #:options (computed-file-options result)
+                       #:guile guile-3.0-latest)))))
 
 (define info-manual
   (@@ (guix self) info-manual))

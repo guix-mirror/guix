@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -44,20 +44,18 @@
                 #:select (with-file-lock/no-wait))
   #:use-module (guix git)
   #:use-module (git)
-  #:use-module (gnu packages)
-  #:use-module ((guix scripts package) #:select (build-and-use-profile
-                                                 delete-matching-generations))
-  #:use-module ((gnu packages base) #:select (canonical-package))
-  #:use-module (gnu packages guile)
-  #:use-module ((gnu packages bootstrap)
-                #:select (%bootstrap-guile))
-  #:use-module ((gnu packages certs) #:select (le-certs))
+  #:autoload   (gnu packages) (fold-available-packages)
+  #:autoload   (guix scripts package) (build-and-use-profile
+                                       delete-matching-generations)
+  #:autoload   (gnu packages base) (canonical-package)
+  #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
+  #:autoload   (gnu packages certs) (le-certs)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -603,7 +601,7 @@ Return true when there is more package info to display."
               (string-join lst ", ")))
         (cut string-join <> ", ")))
 
-  (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
+  (let ((new upgraded (new/upgraded-packages alist1 alist2)))
     (define new-count (length new))
     (define upgraded-count (length upgraded))
 

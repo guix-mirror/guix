@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2021 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,16 +145,17 @@ installation of Haskell libraries and programs.")
    (license license:bsd-3)))
 
 (define-public corrode
-  (let ((commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
+  (let ((revision "0")
+        (commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
     (package
       (name "corrode")
-      (version (string-append "0.0.1-" (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/jameysharp/corrode")
-               (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
+               (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
@@ -342,14 +344,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20210428")
+    (version "8.20210630")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "0xpvhpnl600874sa392wjfd2yd9s6ps2cq2qfkzyxxf90p9fcwg8"))))
+        (base32 "0mxzddaf7ra807aazx9gd4rl5565xzky0hwiyby0a06yqnf02266"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -857,6 +859,19 @@ too slow and you'll get wound up in the scroll and crushed.")
         (base32 "06m4wh891nah3y0br4wh3adpsb16zawkb2ijgf1vcz61fznj6ps1"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-man-page
+           (lambda _
+             (invoke "./manpage")))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "shellcheck.1"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/man/man1/")))))))
+    (native-inputs
+     `(("pandoc" ,pandoc)))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-diff" ,ghc-diff)
@@ -876,6 +891,8 @@ that cause a shell to behave strangely and counter-intuitively.
 @item Point out subtle caveats, corner cases and pitfalls that may cause an
 advanced user's otherwise working script to fail under future circumstances.
 @end enumerate")
+    ;; CVE-2021-28794 is for a completely different, unofficial add-on.
+    (properties `((lint-hidden-cve . ("CVE-2021-28794"))))
     (license license:gpl3+)))
 
 (define-public shelltestrunner

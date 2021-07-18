@@ -50,6 +50,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -318,7 +319,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method git-fetch)
@@ -327,7 +328,7 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rz0b1fvyn94s4izzzrxyijwzc0np80qgmbwvg983nnzpzfr33ai"))))
+        (base32 "1pj4wnsw5a4ys79sqw68ib6zimaqlkplb89x6yncg949a6hj8516"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -343,8 +344,7 @@ Interface} specification.")
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-assert-cmd" ,rust-assert-cmd-1)
-        ("rust-tempfile" ,rust-tempfile-3))))
+       (("rust-assert-cmd" ,rust-assert-cmd-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -3878,7 +3878,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.49")
+    (version "6.55")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3886,7 +3886,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "19k0cg4j4qz005a4ngy48z4r8dc99dxlpq8kvj7qnk15mvgd1r63"))))
+               "0869hn711d6fd6yil8p88wij6p1zdrbnycy7p9p176q39ajd7l61"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -5828,14 +5828,14 @@ config files---you only have to specify the www root.")
 (define-public goaccess
   (package
     (name "goaccess")
-    (version "1.5")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://tar.goaccess.io/goaccess-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qf1mbri1ypfnsi7cz4yll229zpfnkhig70h6hz2h0wpz1fns8ln"))
+                "03wp75n1krv8g643q00gcv1ikmzwwh8jjqmph0wxww1bwrw7whc8"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "src/error.h"
@@ -8006,7 +8006,7 @@ solution for any project's interface needs:
 (define-public libzim
   (package
     (name "libzim")
-    (version "6.3.0")
+    (version "6.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8014,7 +8014,7 @@ solution for any project's interface needs:
                     (commit version)))
               (sha256
                (base32
-                "0iy0f1clhihq277x218ccx3mszgpr3h9l0by48b9ykr115nffw3s"))
+                "00kc4qc0a69jh1jwk5xhi567b7ffpc3p38ffrf2xaax4hvpjwmn6"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (arguments

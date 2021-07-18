@@ -8,7 +8,9 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +40,7 @@
   #:use-module (guix lint)
   #:use-module (guix ui)
   #:use-module (guix swh)
-  #:use-module ((guix gexp) #:select (local-file))
+  #:use-module ((guix gexp) #:select (gexp local-file gexp?))
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module ((guix import hackage) #:select (%hackage-url))
   #:use-module ((guix import stackage) #:select (%stackage-url))
@@ -46,6 +48,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
+  #:use-module ((gnu packages bash) #:select (bash bash-minimal))
   #:use-module (web uri)
   #:use-module (web server)
   #:use-module (web server http)
@@ -158,6 +161,13 @@
   (single-lint-warning-message
    (let ((pkg (dummy-package "x"
                              (description "This is a 'quoted' thing."))))
+     (check-description-style pkg))))
+
+(test-equal "description: leading whitespace"
+  "description contains leading whitespace"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                              (description " Whitespace."))))
      (check-description-style pkg))))
 
 (test-equal "description: trailing whitespace"
@@ -369,6 +379,92 @@
                 (inputs `(("glib" ,glib)
                           ("pkgkonfig" ,pkg-config))))))
      (check-input-labels pkg))))
+
+(test-equal "explicit #:sh argument to 'wrap-program' is acceptable"
+  '()
+  (let* ((phases
+          ;; Loosely based on the "catfish" package
+          `(modify-phases %standard-phases
+             (add-after 'install 'wrap
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (define catfish (string-append (assoc-ref outputs "out")
+                                                "/bin/catfish"))
+                 (define hsab (string-append (assoc-ref inputs "hsab")
+                                             "/bin/hsab"))
+                 (wrap-program catfish #:sh hsab
+                               `("PYTHONPATH" = (,"blabla")))))))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases)))))
+    (check-wrapper-inputs pkg)))
+
+(test-equal
+    "'check-wrapper-inputs' detects 'wrap-program' without \"bash\" in inputs"
+  "\"bash-minimal\" should be in 'inputs' when 'wrap-program' is used"
+  (let* ((phases
+          `(modify-phases %standard-phases
+             (add-after 'install 'wrap
+               (lambda _
+                 (wrap-program the-binary bla-bla)))))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases)))))
+    (single-lint-warning-message (check-wrapper-inputs pkg))))
+
+(test-equal
+    "'check-wrapper-inputs' detects 'wrap-qt-program' without \"bash\" in inputs"
+  "\"bash-minimal\" should be in 'inputs' when 'wrap-qt-program' is used"
+  (let* ((phases
+          `(modify-phases %standard-phases
+             (add-after 'install 'qtwrap
+               (lambda _
+                 (wrap-qt-program the-binary bla-bla)))))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases)))))
+    (single-lint-warning-message (check-wrapper-inputs pkg))))
+
+(test-equal "\"bash\" in 'inputs' satisfies 'check-wrapper-inputs'"
+  '()
+  (let* ((phases
+          `(modify-phases %standard-phases
+             (add-after 'install 'wrap
+               (lambda _
+                 (wrap-program the-binary bla-bla)))))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases))
+                             (inputs `(("bash" ,bash))))))
+    (check-wrapper-inputs pkg)))
+
+(test-equal "\"bash-minimal\" in 'inputs' satisfies 'check-wrapper-inputs'"
+  '()
+  (let* ((phases
+          `(modify-phases %standard-phases
+             (add-after 'install 'wrap
+               (lambda _
+                 (wrap-program THE-BINARY bla-bla)))))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases))
+                             (inputs `(("bash-minimal" ,bash-minimal))))))
+    (check-wrapper-inputs pkg)))
+
+(test-equal "'cut' doesn't hide bad usages of 'wrap-program'"
+  "\"bash-minimal\" should be in 'inputs' when 'wrap-program' is used"
+  (let* ((phases
+          ;; Taken from the "straw-viewer" package
+          `(modify-phases %standard-phases
+             (add-after 'install 'wrap-program
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (bin-dir (string-append out "/bin/"))
+                        (site-dir (string-append out "/lib/perl5/site_perl/"))
+                        (lib-path (getenv "PERL5LIB")))
+                   (for-each (cut wrap-program <>
+                                  `("PERL5LIB" ":" prefix
+                                    (,lib-path ,site-dir)))
+                             (find-files bin-dir)))))))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases)))))
+    (single-lint-warning-message (check-wrapper-inputs pkg))))
+
+(test-equal "bogus phase specifications don't crash the linter"
+  "invalid phase clause"
+  (let* ((phases
+          `(modify-phases %standard-phases
+             (add-invalid)))
+         (pkg (dummy-package "x" (arguments `(#:phases ,phases)))))
+    (single-lint-warning-message (check-wrapper-inputs pkg))))
 
 (test-equal "file patches: different file name -> warning"
   "file names of patches should start with the package name"
@@ -757,6 +853,80 @@
                                      (commit "0")))
                                (sha256 %null-sha256))))))
     (check-source-unstable-tarball pkg)))
+
+(define (package-with-phase-changes changes)
+  (dummy-package "x"
+                 (arguments `(#:phases
+                              ,(if (gexp? changes)
+                                   #~(modify-phases %standard-phases
+                                       #$@changes)
+                                   `(modify-phases %standard-phases
+                                      ,@changes))))))
+
+(test-equal "optional-tests: no check phase"
+  '()
+  (let ((pkg (package-with-phase-changes '())))
+    (check-optional-tests pkg)))
+
+(test-equal "optional-tests: check phase respects #:tests?"
+  '()
+  (let ((pkg (package-with-phase-changes
+              '((replace 'check
+                  (lambda* (#:key tests? #:allow-other-keys?)
+                    (when tests?
+                      (invoke "./the-test-suite"))))))))
+    (check-optional-tests pkg)))
+
+(test-equal "optional-tests: check phase ignores #:tests?"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              '((replace 'check
+                  (lambda _
+                    (invoke "./the-test-suite")))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: do not crash when #:phases is invalid"
+  "incorrect call to ‘modify-phases’"
+  (let ((pkg (package-with-phase-changes 'this-is-not-a-list)))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: allow G-exps (no warning)"
+  '()
+  (let ((pkg (package-with-phase-changes #~())))
+    (check-optional-tests pkg)))
+
+(test-equal "optional-tests: allow G-exps (warning)"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              #~((replace 'check
+                   (lambda _
+                     (invoke "/the-test-suite")))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: complicated 'check' phase"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              '((replace 'check
+                  (lambda* (#:key inputs tests? #:allow-other-keys)
+                    (let ((something (stuff from inputs or native-inputs)))
+                      (delete-file "dateutil/test/test_utils.py")
+                      (invoke "pytest" "-vv"))))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
+
+(test-equal "optional-tests: 'check' phase is not first phase"
+  "the 'check' phase should respect #:tests?"
+  (let ((pkg (package-with-phase-changes
+              '((add-after 'unpack
+                    (lambda _
+                      (chdir "libtestcase-0.0.0")))
+                (replace 'check
+                  (lambda _ (invoke "./test-suite")))))))
+    (single-lint-warning-message
+     (check-optional-tests pkg))))
 
 (test-equal "source: 200"
   '()

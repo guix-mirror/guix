@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -377,10 +377,12 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                      (%current-system))
                  ("x86_64-linux" "MARCH=x86-64")
                  ("i686-linux" "MARCH=pentium4")
-                 ("aarch64-linux" "MARCH=armv8-a")
+                 ("armhf-linux" "JULIA_CPU_TARGET=armv7-a,neon")
+                 ("powerpc64le-linux" "JULIA_CPU_TARGET=pwr8")
                  ;; Prevent errors when querying this package on unsupported
                  ;; platforms, e.g. when running "guix package --search="
-                 (_ "MARCH=UNSUPPORTED"))
+                 ;; and also of targeting the builder's architecture.
+                 (_ "JULIA_CPU_TARGET=generic"))
 
          "CONFIG_SHELL=bash"     ;needed to build bundled libraries
          ;; list of "USE_SYSTEM_*" is here:

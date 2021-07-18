@@ -141,6 +141,11 @@
                ((".*Test_popup_drag_termwin.*" line)
                 (string-append line "return\n")))
              #t))
+         (add-before 'install 'fix-installman.sh
+           (lambda _
+             (substitute* "src/installman.sh"
+               (("/bin/sh")
+                (which "sh")))))
          (add-after 'install 'install-guix.vim
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((vimdir (string-append (assoc-ref outputs "out") "/share/vim")))
@@ -896,7 +901,7 @@ through its msgpack-rpc API.")
 (define-public vim-guix-vim
   (package
     (name "vim-guix-vim")
-    (version "0.1.1")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -905,15 +910,17 @@ through its msgpack-rpc API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10bfy0dgwizxr56b4272b7sqajpr6lnz332pzx055dis2zzjap8z"))))
+                "1fyfwsvv787al88lqjgqcgykav8pcf4xgj5d4i0j7wjcfb3mh1vw"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
-       '(("compiler" "share/vim/vimfiles/")
+       '(("autoload" "share/vim/vimfiles/")
+         ("compiler" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("indent" "share/vim/vimfiles/")
          ("ftdetect" "share/vim/vimfiles/")
          ("ftplugin" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
          ("syntax" "share/vim/vimfiles/"))))
     (home-page "https://gitlab.com/Efraim/guix.vim")
     (synopsis "Guix integration in Vim")

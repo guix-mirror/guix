@@ -30,19 +30,19 @@
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019, 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
-;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -619,14 +619,14 @@ systems with no further dependencies.")
 (define-public blueman
   (package
     (name "blueman")
-    (version "2.1.4")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/blueman-project/blueman/releases"
                            "/download/" version "/blueman-" version ".tar.xz"))
        (sha256
-        (base32 "1nk46s1s8yrlqv37sc7la05nnn7sdgqhkrcdm98qin34llwkv70x"))))
+        (base32 "0whs1bqnn1fgzrq7y2w1d06ldvfafq6h2xzmcfncbwmyb4i0mhgw"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
@@ -640,8 +640,7 @@ systems with no further dependencies.")
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "apps"
                (substitute* '("blueman-adapters.in" "blueman-applet.in"
-                              "blueman-assistant.in" "blueman-manager.in"
-                              "blueman-mechanism.in" "blueman-report.in"
+                              "blueman-manager.in" "blueman-mechanism.in"
                               "blueman-rfcomm-watcher.in" "blueman-sendto.in"
                               "blueman-services.in" "blueman-tray.in")
                  (("@PYTHON@") (string-append (assoc-ref inputs "python")
@@ -652,7 +651,7 @@ systems with no further dependencies.")
          ;; Fix loading of external programs.
          (add-after 'unpack 'patch-external-programs
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("apps/blueman-report.in" "blueman/main/NetConf.py"
+             (substitute* '("blueman/main/NetConf.py"
                             "blueman/main/PPPConnection.py")
                (("/usr/sbin/bluetoothd")
                 (string-append (assoc-ref inputs "bluez")
@@ -693,7 +692,7 @@ systems with no further dependencies.")
                     `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
                 (append
                  (map (lambda (prog) (string-append bin prog))
-                      '("adapters" "applet" "assistant" "manager" "report"
+                      '("adapters" "applet" "manager"
                         "sendto" "services" "tray"))
                  (map (lambda (prog) (string-append libexec prog))
                       '("mechanism" "rfcomm-watcher"))))
@@ -3542,7 +3541,7 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
 (define-public iwd
   (package
     (name "iwd")
-    (version "1.14")
+    (version "1.15")
     (source (origin
               ;; FIXME: We're using the bootstrapped sources because
               ;; otherwise using an external ell library is impossible.
@@ -3552,7 +3551,7 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
                                   "/wireless/iwd-" version ".tar.xz"))
               (sha256
                (base32
-                "02vz4lyd6vq3vcii357ljqprnas78zb8j670a0gblrm6kganmgi1"))))
+                "0ngng9a9ra5w0mp2813yy2ihfibyx10ns6v5icdcp99db608xax7"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
@@ -3785,6 +3784,49 @@ simulation, and a number of other applications.")
     (description "Tool to send a magic packet to wake another host on the
 network.  This must be enabled on the target host, usually in the BIOS.")
     (license license:gpl2)))
+
+(define-public traceroute
+  (package
+    (name "traceroute")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/traceroute/traceroute/"
+                           "traceroute-" version "/traceroute-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1dh32vcfawkl1p9g4ral1p0camds4paqr8db1kaqxwyk6hmd4s9n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:make-flags
+       (list (string-append "LIBRARY_PATH="
+                            (assoc-ref %build-inputs "libc") "/lib")
+             (string-append "CFLAGS=-I"
+                            (assoc-ref %build-inputs "kernel-headers")
+                            "/include")
+             "LDFLAGS=-lm -L../libsupp"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-make
+           (lambda _
+             (substitute* "default.rules"
+               ((" \\$\\(LIBDEPS\\)") "$(filter-out -l%,$(LIBDEPS))"))))
+         (delete 'bootstrap)            ;no configure.ac file
+         (delete 'configure))))         ;no configure script
+    (home-page "http://traceroute.sourceforge.net/")
+    (synopsis "Tracks the route taken by packets over an IP network")
+    (description "This package provides a modern, but Linux-specific
+implementation of the @command{traceroute} command that can be used to follow
+the route taken by packets on an IP network on their way to a given host.  It
+utilizes the IP protocol's time to live (TTL) field and attempts to elicit an
+ICMP TIME_EXCEEDED response from each gateway along the path to the host.
+Compared to other implementations, this @command{traceroute} command allows
+some traces for unprivileged users.")
+    (license (list license:gpl2+
+                   license:lgpl2.1+)))) ;for the libsupp subdirectory
 
 (define-public vde2
   (package
@@ -4068,3 +4110,66 @@ IPv6 Internet connectivity - it also works over IPv4.")
      ;; version. This exception does not (and cannot) modify any license terms
      ;; which apply to the Application, with which you must still comply
      license:lgpl3)))
+
+(define-public netdiscover
+  (package
+   (name "netdiscover")
+   (version "0.7")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/netdiscover-scanner/netdiscover")
+            (commit version)))
+      (sha256
+       (base32 "0g8w8rlg16dsibxi4dnyn7v7r8wwi5ypd51c4w59j0ps2id0w8yj"))
+      (file-name (string-append "netdiscover-" version))))
+   (arguments
+    `(#:tests? #f)) ;; no tests
+   (build-system gnu-build-system)
+   (inputs
+    `(("libnet" ,libnet)
+      ("libpcap" ,libpcap)))
+   (native-inputs
+    `(("autoconf" ,autoconf)
+      ("automake" ,automake)))
+   (synopsis "Network address discovery tool")
+   (description "Netdiscover is a network address discovery tool developed
+mainly for wireless networks without a @acronym{DHCP} server.  It also works
+on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
+@acronym{ARP} requests and sniff for replies.")
+   (home-page "https://github.com/netdiscover-scanner/netdiscover")
+   (license license:gpl3+)))
+
+(define-public putty
+  (package
+    (name "putty")
+    (version "0.75")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.putty.be/" version
+                           "/putty-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xgrr1fbirw79zafspg2b6crzfmlfw910y79md4r7gnxgq1kn5yk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "unix")
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python))) ; for tests
+    (synopsis "Graphical @acronym{SSH} and telnet client")
+    (description "Putty is a terminal client.  It supports @acronym{SSH},
+telnet, and raw socket connections with good terminal emulation.  It supports
+public key authentication and Kerberos single-sign-on.  It also includes
+command-line @acronym{SFTP} and @acronym{SCP} implementations.")
+    (home-page "https://www.chiark.greenend.org.uk/~sgtatham/putty/")
+    (license license:expat)))

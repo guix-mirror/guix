@@ -1046,23 +1046,17 @@ translations for KiCad.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_FORMATS=html")
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'build)
-         (add-before 'install 'set-perl-env
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "PERL5LIB"
-                     (string-append (assoc-ref inputs "perl-unicode-linebreak")
-                                    "/lib/perl5/site_perl" ":"
-                                    (getenv "PERL5LIB")))
-             #t))
-         (delete 'check))))
+         (delete 'build))))
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("gettext" ,gettext-minimal)
        ("git" ,git-minimal)
        ("perl" ,perl)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("po4a" ,po4a)
        ("source-highlight" ,source-highlight)))
     (home-page "https://kicad.org")
@@ -1233,14 +1227,14 @@ use on a given system.")
 (define-public libredwg
   (package
     (name "libredwg")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/libredwg/libredwg-"
              version ".tar.xz"))
        (sha256
-        (base32 "1vhm3r3zr8hh0jbvv6qdykh1x14r4c1arl1qj48i4cx2dd3366mk"))))
+        (base32 "05v5k8fkx4z1p81x9kna7nlzmyx09dn686rj2zprnkf337qmg24i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bindings")))
@@ -1302,6 +1296,36 @@ replacement for the OpenDWG libraries.")
     (synopsis "Serial terminal emulator")
     (description "@code{minicom} is a serial terminal emulator.")
     (license license:gpl2+)))
+
+(define-public sterm
+  (package
+    (name "sterm")
+    (version "20200306")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wentasah/sterm")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "031pd8yz2bfzqbari6za1c3xcqmw94ap4vbrjzb3v6izjcrca58c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases (delete 'configure))))
+    (synopsis "Simple serial terminal")
+    (description "This is a minimalist terminal program like minicom or cu.
+The only thing it does is creating a bidirectional connection between
+stdin/stdout and a terminal device (e.g. serial line).
+It can also set serial line baudrate, manipulate DTR/RTS modem lines,
+send break and throttle transmission speed.")
+    (home-page "https://github.com/wentasah/sterm")
+    (license license:gpl3+)))
 
 (define-public harminv
   (package

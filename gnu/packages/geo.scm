@@ -10,7 +10,7 @@
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
@@ -210,7 +210,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.34.2")
+    (version "3.36.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -218,7 +218,7 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00xslcnhhwslqglgfv2im7vq3awa49y2jxzr8wsby7f713k28vf5"))))
+                "09rgw8hq3ligap1zzjhx25q354ficpbiw1z9ramghhcqbpylsxdh"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -639,78 +639,6 @@ development.")
                    ;; deps/agg
                    (license:non-copyleft "file://deps/agg/copying")))))
 
-(define-public python2-mapnik
-  (package
-    (name "python2-mapnik")
-    (version "3.0.16")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mapnik/python-mapnik/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0w7wg72gnwmbjani9sqk42p2jwqkrl9hsdkawahni5m05xsifcb4"))))
-    (build-system python-build-system)
-    (inputs
-     `(("boost" ,boost)
-       ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
-       ("mapnik" ,mapnik)
-       ("proj.4" ,proj.4)
-       ("python2-pycairo" ,python2-pycairo)))
-    (native-inputs
-     (let ((test-data-input
-            (lambda (repository version hash)
-              (origin
-                (method url-fetch)
-                (uri (string-append "https://github.com/mapnik/" repository
-                                    "/archive/v" version ".tar.gz"))
-                (file-name (string-append "python-mapnik-" repository
-                                          "-" version ".tar.gz"))
-                (sha256 (base32 hash))))))
-       `(("python2-nose" ,python2-nose)
-         ;; Test data is released as separate tarballs
-         ("test-data"
-          ,(test-data-input "test-data" "3.0.18"
-                            "10cvgn5gxn8ldrszj24zr1vzm5w76kqk4s7bl2zzp5yvkhh8lj1n"))
-         ("test-data-visual"
-          ,(test-data-input "test-data-visual" "3.0.18"
-                            "1cb9ghy8sis0w5fkp0dvwxdqqx44rhs9a9w8g9r9i7md1c40r80i")))))
-    (arguments
-     `(#:python ,python-2 ; Python 3 support is incomplete, and the build fails
-       #:phases
-       (modify-phases %standard-phases
-         ;; Unpack test data into the source tree
-         (add-after 'unpack 'unpack-submodules
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((unpack (lambda (source target)
-                             (with-directory-excursion target
-                               (invoke "tar" "xvf" (assoc-ref inputs source)
-                                       "--strip-components=1")))))
-               (unpack "test-data" "test/data")
-               (unpack "test-data-visual" "test/data-visual"))))
-         ;; Skip failing tests
-         (add-after 'unpack 'skip-tests
-           (lambda _
-             (let ((skipped-tests (list "test_vrt_referring_to_missing_files"
-                                        "test_unicode_regex_replace"
-                                        "test_proj_antimeridian_bbox"
-                                        "test_render_with_scale_factor")))
-               (substitute* "setup.cfg"
-                 (("\\[nosetests\\]" all)
-                  (string-append all "\nexclude=^("
-                                 (string-join skipped-tests "|") ")$")))))))))
-    (home-page "https://github.com/mapnik/python-mapnik")
-    (synopsis "Python bindings for Mapnik")
-    (description "This package provides Python bindings for Mapnik.")
-    (license license:lgpl2.1+)))
-
 (define-public spatialite-gui
   (package
     (name "spatialite-gui")
@@ -973,14 +901,14 @@ Shapely capabilities
 (define-public postgis
   (package
     (name "postgis")
-    (version "3.1.1")
+    (version "3.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0z9a39243fv37mansbbjq5mmxpnhr7xzn8pv92fr7dkdb3psz5hf"))))
+                "0ch7gry8a1i9114mlhklxryn7ja3flsz6pxj9r5p09k92xh3gp9c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -2313,8 +2241,9 @@ growing set of geoscientific methods.")
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap))
          (add-after 'wrap-python 'wrap-qt
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out") "qgis")
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program "qgis" #:output out #:inputs inputs))
              #t))
          (add-after 'wrap-qt 'wrap-gis
            (lambda* (#:key inputs outputs #:allow-other-keys)

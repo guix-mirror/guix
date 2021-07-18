@@ -1418,7 +1418,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.27")
+    (version "2.0.32")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1427,7 +1427,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mrnazk8qla7nn59xad86gmrf5fzqcv74j5xhcdrxbgfw67l17zd"))))
+                "0hhggh2jxp1wn7nwzvbx2z1vi1ih8wmz4av17bljyn0c3mxjs22k"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)))
@@ -1885,14 +1885,14 @@ stdout.")
 (define-public gifsicle
   (package
    (name "gifsicle")
-   (version "1.92")
+   (version "1.93")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lcdf.org/gifsicle/gifsicle-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas"))))
+        (base32 "0irljjm76anicsm5rfkpqxd6x105aa8f0sky13dc3x1bfdwp1xlj"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -2136,7 +2136,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
 (define-public libavif
   (package
     (name "libavif")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2145,7 +2145,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h1gf4cbrff73f8s4avkph2sbr4d3s71kifipskzcmrqjbjc2qsx"))))
+                "1yxmgjlxm1srm98zyj79bj8r8vmg67daqnq0ggcvxknq54plkznk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
@@ -2196,13 +2196,15 @@ by AOM, including with alpha.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("dav1d" ,dav1d)
-       ("gdk-pixbuf" ,gdk-pixbuf) ;optional
-       ("libaom" ,libaom)
-       ("libde265" ,libde265)
+     `(("gdk-pixbuf" ,gdk-pixbuf) ;optional
        ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("x265" ,x265)))
+       ("libpng" ,libpng)))
+     ;; Propagated to satisfy 'libheif.pc'.
+     (propagated-inputs
+      `(("dav1d" ,dav1d)
+        ("libaom" ,libaom)
+        ("libde265" ,libde265)
+        ("x265" ,x265)))
     (home-page "https://github.com/strukturag/libheif")
     (synopsis "HEIF and AVIF file format decoder and encoder")
     (description

@@ -30,6 +30,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3991,6 +3992,32 @@ make keyboards more accessible to people with physical impairments.")
 requested commands if they occur.")
     (license license:x11)))
 
+(define-public xkbprint
+  (package
+    (name "xkbprint")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append  "mirror://xorg/individual/app/"
+                             "xkbprint-" version ".tar.bz2"))
+        (sha256
+          (base32 "1yi3232g25hhp241irncd8znv3090k2gm0yjcdnz08h89y1zwn2v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxkbfile" ,libxkbfile)
+        ("xorgproto" ,xorgproto)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Visualise an XKB keyboard layout description")
+    (description
+     "The @command{xkbprint} utility visualises (``prints'') an XKB keyboard
+description as printable or encapsulated PostScript.  It accepts any compiled
+keymap (@file{.xkm}) file that includes a geometry description, or can obtain
+one from a running X server.")
+    (license license:x11)))
 
 (define-public xkbutils
   (package
@@ -6855,7 +6882,7 @@ box, and a calendar.  It uses GTK+, and will match your desktop theme.")
            (lambda _
              (chmod "xvfb-run" #o755)
              (substitute* "xvfb-run"
-               (("(\\(| )(fmt|stty|awk|kill|getopt|mktemp|touch|rm|mcookie)"
+               (("(\\(| )(fmt|stty|awk|cat|kill|getopt|mktemp|touch|rm|mcookie)"
                  _ prefix command)
                 (string-append prefix (which command)))
                ;; These also feature in UI messages, so be more strict.
@@ -6864,13 +6891,15 @@ box, and a calendar.  It uses GTK+, and will match your desktop theme.")
                 (string-append prefix (which command))))))
          (replace 'check
            ;; There are no tests included.  Here we test whether we can run
-           ;; a simple client without xvfb-run itself relying on $PATH.
+           ;; a simple client and whether xvfb-run --help succeeds
+           ;; without xvfb-run itself relying on $PATH.
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (let ((old-PATH (getenv "PATH"))
                      (xterm (which "xterm")))
                  (unsetenv "PATH")
                  (invoke "./xvfb-run" xterm "-e" "true")
+                 (invoke "./xvfb-run" "--help")
                  (setenv "PATH" old-PATH)))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

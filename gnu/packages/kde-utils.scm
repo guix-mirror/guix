@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,9 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages backup)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages imagemagick)
@@ -32,6 +36,82 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages xorg))
+
+(define-public ark
+  (package
+    (name "ark")
+    (version "20.04.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/release-service/" version
+                                  "/src/ark-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0g5bfa1lc7mhrc2ngd4ldf33dpwr7gqrj95kp897pf632wwj23iw"))
+              ;; The libarchive package in Guix does not support
+              ;; xar; disable related tests.
+              (patches (search-patches "ark-skip-xar-test.patch"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           ;; adddialogtest requires DISPLAY.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (setenv "HOME" (getcwd))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1"))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lrzip (assoc-ref inputs "lrzip"))
+                    (lzop  (assoc-ref inputs "lzop"))
+                    (p7zip (assoc-ref inputs "p7zip"))
+                    (unzip (assoc-ref inputs "unzip"))
+                    (zip   (assoc-ref inputs "zip"))
+                    (zstd  (assoc-ref inputs "zstd")))
+               (wrap-program (string-append out "/bin/ark")
+                 `("PATH" suffix
+                   ,(map (lambda (p)
+                           (string-append p "/bin"))
+                         (list lrzip lzop p7zip unzip zip zstd))))))))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("breeze-icons" ,breeze-icons)
+       ("karchive" ,karchive)
+       ("kconfig" ,kconfig)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("khtml" ,khtml)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kparts" ,kparts)
+       ("kpty" ,kpty)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("libarchive" ,libarchive)
+       ("libzip" ,libzip)
+       ("qtbase" ,qtbase-5)
+       ("zlib" ,zlib)
+       ;; Command line tools used by Ark.
+       ("lrzip" ,lrzip)
+       ("lzop" ,lzop)
+       ("p7zip" ,p7zip)
+       ("unzip" ,unzip)
+       ("zip" ,zip)
+       ("zstd" ,zstd)))
+    (home-page "https://apps.kde.org/en/ark")
+    (synopsis "Graphical archiving tool")
+    (description "Ark is a graphical file compression/decompression utility
+with support for multiple formats, including tar, gzip, bzip2, rar and zip, as
+well as CD-ROM images.")
+    (license license:gpl2+)))
 
 (define-public kate
   (package
@@ -393,14 +473,14 @@ redone.")
 (define-public rsibreak
   (package
     (name "rsibreak")
-    (version "0.12.13")
+    (version "0.12.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde//stable/rsibreak/0.12/"
                            "rsibreak-" version ".tar.xz"))
        (sha256
-        (base32 "06kzyj5jzmzvhw6jy6p7ldrq719bys0yg0nll9rawziwpxzvwh1p"))))
+        (base32 "0yjv5awngi2hk6xzlwzmj92i6qppnfc0inqdp16rd8gzfpw7xqqw"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

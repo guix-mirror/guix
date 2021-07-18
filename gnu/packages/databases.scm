@@ -981,7 +981,7 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.12")
+    (version "3.1.13")
     (source
      (origin
        (method url-fetch)
@@ -991,7 +991,7 @@ as a drop-in replacement of MySQL.")
              "/from/https%3A//mirrors.ukfast.co.uk/sites/mariadb/?serve"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0qzyahr8x9l1xz0l79wz3iahxz7648n1azc5yr7kx0dl113y2nig"))))
+        (base32 "0xb8fiissblxb319y5ifqqp86zblwis789ipb753pcb4zpnsaw82"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
@@ -2000,18 +2000,19 @@ your data changes, as this module figures it out.")
 (define-public perl-sql-splitstatement
   (package
     (name "perl-sql-splitstatement")
-    (version "1.00020")
+    (version "1.00023")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/EM/EMAZEP/"
+       (uri (string-append "mirror://cpan/authors/id/V/VE/VEESH/"
                            "SQL-SplitStatement-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bqg45k4c9qkb2ypynlwhpvzsl4ssfagmsalys18s5c79ps30z7p"))))
+        (base32 "0ppkx46nydzlnsxf9a8pkyb74wggfrdiiwafab143lrarlh88x0s"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-test-differences" ,perl-test-differences)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-script" ,perl-test-script)))
     (propagated-inputs
      `(("perl-class-accessor" ,perl-class-accessor)
        ("perl-list-moreutils" ,perl-list-moreutils)
@@ -2381,14 +2382,14 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.855")
+  (version "1.856")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
                           version ".tar.gz"))
       (sha256
-        (base32 "0q599h7g4jkzks5dxf1zifx9k7l9vif26r2dlgkzxkg6bfif5zyr"))))
+        (base32 "1ab6rm2b8lz0g3gc8k9y79gkgajyby0zpybkdg9mk4g35y9bmyfd"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -2822,15 +2823,14 @@ implementation for Python.")
 (define-public virtuoso-ose
   (package
     (name "virtuoso-ose")
-    (version "7.2.5")
+    (version "7.2.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/openlink/virtuoso-opensource/releases/"
-             "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/virtuoso/virtuoso/" version "/"
+                           "virtuoso-opensource-" version ".tar.gz"))
        (sha256
-        (base32 "0r1xakclkfi69pzh8z2k16z3x0m49pxp764icj0ad4w4bb97fr42"))))
+        (base32 "0ly7s7a3w2a2zhhi9rq9k2qlnzapqbbc1rcdqb3zqqpgg81krz9q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.
@@ -2851,7 +2851,7 @@ implementation for Python.")
                          '("libvirtuoso-t.a"
                            "libvirtuoso-t.la"))))))))
     (inputs
-     `(("openssl" ,openssl-1.0)
+     `(("openssl" ,openssl)
        ("net-tools" ,net-tools)
        ("readline" ,readline)
        ("zlib" ,zlib)))
@@ -3589,9 +3589,6 @@ is designed to have a low barrier to entry.")
     (description "Sqlparse is a non-validating SQL parser for Python.  It
 provides support for parsing, splitting and formatting SQL statements.")
     (license license:bsd-3)))
-
-(define-public python2-sqlparse
-  (package-with-python2 python-sqlparse))
 
 (define-public python-sql
   (package

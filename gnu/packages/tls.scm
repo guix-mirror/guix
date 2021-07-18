@@ -19,6 +19,7 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -592,13 +593,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.15.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0kgf1d3gl7dg1rz3q4093kf8g0p2d0m40c7qmn96ihz2224wa307"))))
+                "0mvqc8z30sxgr1m4p3yi3rm76sndnvl5khv4ybwx6zyq42403y51"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -646,7 +647,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1qcznszgqdgx1nhk4vdi896gknvx8rg4w8iw15lwqg6byhiyazyv"))))
+                "0z90pcndbks8f62f47m5nkqcmkabb8r526by29lp30x4gjc0xs04"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -894,7 +895,7 @@ then ported to the GNU / Linux environment.")
     (name "mbedtls-apache")
     ;; XXX Check whether ‘-Wformat-signedness’ still breaks mbedtls-for-hiawatha
     ;; when updating.
-    (version "2.23.0")
+    (version "2.26.0")
     (source
      (origin
        (method git-fetch)
@@ -902,8 +903,17 @@ then ported to the GNU / Linux environment.")
              (url "https://github.com/ARMmbed/mbedtls")
              (commit (string-append "mbedtls-" version))))
        (sha256
-        (base32 "13fa9h2i989cbf8n8c0j019mshv6wg213va18my1s787lhcq2d62"))
-       (file-name (git-file-name name version))))
+        (base32 "0scwpmrgvg6q7rvqkc352d2fqlsx0aylcbyibcp1f1rsn8iiif2m"))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Can be removed with the next version.
+           ;; Reduce level of format truncation warnings due to false positives.
+           ;; https://github.com/ARMmbed/mbedtls/commit/2065a8d8af27c6cb1e40c9462b5933336dca7434
+           (substitute* "CMakeLists.txt"
+             (("Wformat-truncation=2") "Wformat-truncation"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -924,7 +934,7 @@ then ported to the GNU / Linux environment.")
 for developers to include cryptographic and SSL/TLS capabilities in their
 (embedded) products, facilitating this functionality with a minimal
 coding footprint.")
-    (home-page "https://tls.mbed.org")
+    (home-page "https://www.trustedfirmware.org/projects/mbed-tls/")
     (license license:asl2.0)))
 
 ;; The Hiawatha Web server requires some specific features to be enabled.
@@ -1058,7 +1068,7 @@ derived from Mozilla's collection.")
 (define-public s2n
   (package
     (name "s2n")
-    (version "1.0.0")
+    (version "1.0.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1067,7 +1077,7 @@ derived from Mozilla's collection.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q6kmgwb8jxmc4ijzk9pkqzz8lsbfsv9hyzqvy944w7306zx1r5h"))))
+                "0ampvh2n235hhd9nabgjjvja7d5r5kj45q56ass1k8g52a6xg0jq"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; tests fail to build for static library
@@ -1077,7 +1087,15 @@ derived from Mozilla's collection.")
     (propagated-inputs
      `(("openssl" ,openssl)
        ("openssl:static" ,openssl "static")))
-    (synopsis "SSL/TLS implementation")
-    (description "This library provides a C99 implementation of SSL/TLS.")
+    (synopsis "SSL/TLS implementation in C99")
+    (description
+     "This library provides a C99 implementation of SSL/TLS.  It is designed to
+be familiar to users of the widely-used POSIX I/O APIs.  It supports blocking,
+non-blocking, and full-duplex I/O.  There are no locks or mutexes.
+
+As it can be difficult to keep track of which encryption algorithms and
+protocols are best to use, s2n-tls features a simple API to use the latest
+default set of preferences.  Remaining on a specific version for backwards
+compatibility is also supported.")
     (home-page "https://github.com/awslabs/s2n")
     (license license:asl2.0)))

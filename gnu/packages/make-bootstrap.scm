@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -56,8 +56,7 @@
             %mes-bootstrap-tarball
             %bootstrap-tarballs
 
-            %guile-static-stripped
-            %guile-3.0-static-stripped))
+            %guile-static-stripped))
 
 ;;; Commentary:
 ;;;
@@ -95,13 +94,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (mlambdaq (glibc)
     "Return a variant of GCC that uses the bootstrap variant of GLIBC."
     (package
-      (inherit gcc-5)
+      (inherit gcc-7)
       (outputs '("out")) ;all in one so libgcc_s is easily found
       (inputs
        `( ;; Distinguish the name so we can refer to it below.
          ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
          ("libc:static" ,(glibc-for-bootstrap glibc) "static")
-         ,@(package-inputs gcc-5))))))
+         ,@(package-inputs gcc-7))))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -140,7 +139,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                              (cons (search-path-specification
                                     (variable "CROSS_CPLUS_INCLUDE_PATH")
                                     (files '("include")))
-                                   (package-search-paths gcc-5)))))
+                                   (package-search-paths gcc-7)))))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap glibc))
@@ -458,11 +457,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc-5)
+   (package (inherit gcc-7)
      (name "gcc-static")
      (outputs '("out"))                           ; all in one
      (arguments
-      (substitute-keyword-arguments (package-arguments gcc-5)
+      (substitute-keyword-arguments (package-arguments gcc-7)
         ((#:modules modules %gnu-build-system-modules)
          `((srfi srfi-1)
            (srfi srfi-26)
@@ -512,8 +511,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                 #t))))))
      (inputs
       `(("zlib:static" ,zlib "static")
-        ("isl:static" ,isl-0.18 "static")
-        ,@(package-inputs gcc-5)))
+        ("isl:static" ,isl "static")
+        ,@(package-inputs gcc-7)))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
@@ -526,12 +525,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("gmp-native" ,gmp)
             ("mpfr-native" ,mpfr)
             ("mpc-native" ,mpc)
-            ,@(package-native-inputs gcc-5))
-          (package-native-inputs gcc-5))))))
+            ,@(package-native-inputs gcc-7))
+          (package-native-inputs gcc-7))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
-  (package (inherit gcc-5)
+  (package (inherit gcc-7)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
@@ -793,11 +792,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (synopsis "Minimal statically-linked and relocatable Guile")))
 
 (define %guile-static-stripped
-  ;; A stripped static Guile binary, for use during bootstrap.
-  (make-guile-static-stripped %guile-static))
-
-(define %guile-3.0-static-stripped
-  ;; A stripped static Guile 3.0 binary, for use in initrds.
+  ;; A stripped static Guile 3.0 binary, for use in initrds
+  ;; and during bootstrap.
   (make-guile-static-stripped
    (make-guile-static guile-3.0
                       '("guile-2.2-default-utf8.patch"

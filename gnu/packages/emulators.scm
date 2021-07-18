@@ -39,6 +39,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -140,6 +141,72 @@ VIC20, practically all PET models, the PLUS4 and the CBM-II (aka
 C610/C510).  An extra emulator is provided for C64 expanded with the CMD
 SuperCPU.")
     (license license:gpl2+)))
+
+(define-public blastem
+  (package
+    (name "blastem")
+    (version "0.6.2")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                    (url "https://www.retrodev.com/repos/blastem")
+                    (changeset (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "08ycfisivh9rb9vmijlrpdryaw8spd81ck48960p15cnf8h2535q"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; TODO: Separately package and unbundle nuklear
+                  (delete-file-recursively "zlib")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          "HOST_ZLIB=1"
+                          "HAS_PROC=-DHAS_PROC"
+                          (string-append "CONFIG_PATH="
+                                         %output "/share/blastem")
+                          (string-append "DATA_PATH="
+                                         %output "/share/blastem"))
+       #:tests? #f ; No check target and custom tests don't seem to build
+       #:imported-modules
+       ((guix build copy-build-system)
+        ,@%gnu-build-system-modules)
+       #:modules
+       (((guix build copy-build-system)
+         #:prefix copy:)
+        (guix build gnu-build-system)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-source
+           (lambda _
+             (substitute* (find-files "." ".*\\.[ch]")
+               (("\"zlib/zlib.h\"") "<zlib.h>"))))
+         (delete 'configure)
+         (replace 'install
+           (lambda* args
+             (apply (assoc-ref copy:%standard-phases 'install)
+                    #:install-plan
+                    '(("." "bin" #:include ("blastem" "vgmplay"))
+                      ("." "share/blastem"
+                       #:include ("default.cfg" "rom.db")
+                       #:exclude ("android"))
+                      ("shaders" "share/blastem/shaders"))
+                    args))))))
+    (inputs
+     `(("glew" ,glew)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.retrodev.com/blastem/")
+    (synopsis "Genesis/Mega Drive emulator")
+    (description "Blastem is an emulator for the Sega Genesis/Mega Drive
+console.")
+    (license license:gpl3+)))
 
 (define-public desmume
   (package
@@ -325,6 +392,78 @@ FileSystem/XMS/EMS, Tandy/Hercules/CGA/EGA/VGA/VESA graphics, a
 SoundBlaster/Gravis Ultra Sound card for excellent sound compatibility with
 older games.")
     (license license:gpl2+)))
+
+(define-public dosbox-staging
+  ;; This is not a patch staging area for DOSBox, but an unaffiliated fork.
+  (package
+    (name "dosbox-staging")
+    (version "0.76.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dosbox-staging/dosbox-staging")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14zlkm9qmaq2x4zdiadczsxvdnrf35w13ccvkxzd8cwrzxv84fvd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (let* ((flags (list "-O3"
+                           ;; From scripts/automator/build/gcc-defaults.
+                           "-fstrict-aliasing"
+                           "-fno-signed-zeros"
+                           "-fno-trapping-math"
+                           "-fassociative-math"
+                           "-frename-registers"
+                           "-ffunction-sections"
+                           "-fdata-sections"))
+              (CFLAGS (string-join flags " ")))
+         ;; Several files #include <SDL_net.h> instead of <SDL2/SDL_net.h>,
+         ;; including configure.ac itself.
+         (list (string-append "CPPFLAGS=-I" (assoc-ref %build-inputs "sdl2")
+                              "/include/SDL2")
+               (string-append "CFLAGS=" CFLAGS)
+               (string-append "CXXFLAGS=-DNDEBUG " CFLAGS)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fluidsynth" ,fluidsynth)
+       ("libpng" ,libpng)
+       ("opusfile" ,opusfile)
+       ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
+       ("zlib" ,zlib)))
+    (home-page "https://dosbox-staging.github.io")
+    (synopsis "DOS/x86 PC emulator focusing on ease of use")
+    (description
+     "The DOSBox Staging project attempts to modernize DOSBox.
+
+DOSBox emulates an Intel x86 personal computer running an IBM PC compatible disk
+operating system (@dfn{DOS}) in both real and protected modes.  It was primarily
+designed to run old DOS games, but aims to be fully compatible with all DOS
+programs and replicate the experience as accurately as possible.
+
+This fork fixes some perceived issues with DOSBox and adds new features such as
+Wayland support, PowerPC/POWER dynamic recompilation, and FluidSynth MIDI.
+Other features may be removed: for example, physical CDs can no longer be
+played, only emulated media.
+
+Graphical emulation includes contemporary text mode, Hercules, CGA, EGA, VGA,
+VESA, S3@tie{}Trio@tie{}64, and Tandy hardware.
+
+Emulated legacy sound devices range from a rudimentary `PC speaker' buzzer to
+the once state-of-the-art Gravis Utrasound sampling sound card.  The default is
+a SoundBlaster 16 providing 16-bit stereo sound.  MIDI is forwarded to the host
+through an emulated MPU-401.
+
+An emulated hardware modem is also included, letting one host or dial a
+@acronym{BBS, Bulletin Board System} across the Internet, network over IPX, and
+emulate a serial nullmodem over TCP/IP.")
+    (license license:gpl3+)))
 
 (define-public qtmips
   (package
@@ -1632,7 +1771,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.232")
+    (version "0.233")
     (source
      (origin
        (method git-fetch)
@@ -1641,7 +1780,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1v6qka8k4smah08rp62kgjmc84hwsg1iqhms0369rhdh722bgpn7"))
+        (base32 "1zq7hvss004mwczk3jvyalkj9c5v6npswhkc2wj7dxyxz770clb3"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -2335,3 +2474,90 @@ elseif(FALSE)"))
        "PPSSPP is a ``high-level'' emulator simulating the PSP operating
 system.")
       (license license:gpl2+))))
+
+(define-public exomizer
+  (package
+    (name "exomizer")
+    (version "3.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://bitbucket.org/magli143/exomizer.git")
+                     (commit "6a152b5605648f7a41eadd4b011a93ec92f74dd8")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1ynhkb5p2dypkikipc3krzif264l9rmx1wnjzzgw8n88i4zkymzg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; No target exists
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (delete-file-recursively "exodecrs")
+             (delete-file-recursively "rawdecrs")
+             (chdir "src")
+             ;; Those will be regenerated.
+             (delete-file "asm.tab.h")
+             (delete-file "asm.tab.c")
+             (delete-file "lex.yy.c")
+             #t))
+         (replace 'configure
+           (lambda _
+             (setenv "CC" ,(cc-for-target))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out-bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "exomizer" out-bin)
+               (install-file "exobasic" out-bin))
+             #t)))))
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (synopsis "Compressor for use on Commodore home computers")
+    (description "This program compresses files in a way that tries to be as
+efficient as possible but still allows them to be decompressed in environments
+where CPU speed and RAM are limited.  It also generate a self-extractor for use
+on a Commodore C64, C128 etc.")
+    (home-page "https://bitbucket.org/magli143/exomizer/wiki/Home")
+    ;; Some files are LGPL 2.1--but we aren't building from or installing those.
+    ;; zlib license with an (non-)advertising clause.
+    (license license:zlib)))
+
+(define-public cc65
+  (package
+    (name "cc65")
+    (version "2.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cc65/cc65.git")
+                     (commit (string-append "V" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "01a15yvs455qp20hri2pbg2wqvcip0d50kb7dibi9427hqk9cnj4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; No target exists.
+       #:make-flags
+       (list "BUILD_ID=V2.18 - Git 55528249"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key source #:allow-other-keys)
+             ;; We include $SOURCE/include in C_INCLUDE_PATH.  Remove it.
+             (setenv "C_INCLUDE_PATH"
+               (string-join
+                (filter (lambda (name)
+                          (not (string=? name (string-append source "/include"))))
+                        (string-split (getenv "C_INCLUDE_PATH") #\:))
+                ":"))
+             #t)))))
+    (synopsis "Development environment for 6502 systems")
+    (description "This package provides a development environment for 6502 systems, including macro assembler, C compiler, linker, librarian and several other tools.")
+    (home-page "https://cc65.github.io/")
+    (license license:zlib)))

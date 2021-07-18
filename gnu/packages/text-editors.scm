@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -250,6 +251,40 @@ competitive (as in keystroke count) with Vim.")
      "kak-lsp is a Language Server Protocol client for Kakoune implemented in
 Rust.")
     (license license:unlicense)))
+
+(define-public parinfer-rust
+  (package
+    (name "parinfer-rust")
+    (version "0.4.3")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eraserhd/parinfer-rust")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0hj5in5h7pj72m4ag80ing513fh65q8xlsf341qzm3vmxm3y3jgd"))
+       (file-name (git-file-name name version))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-emacs" ,rust-emacs-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (inputs
+     `(("clang" ,clang)))
+    (home-page "https://github.com/justinbarclay/parinfer-rust")
+    (synopsis "Infer parantheses for Clojure, Lisp and Scheme")
+    (description
+     "Parinfer is a plugin for Kakoune, Vim, Neovim and Emacs that infers
+paretheses and indentation.  This library can be called from other editors that
+can load dynamic libraries.")
+    (license license:expat)))
 
 (define-public joe
   (package
@@ -493,28 +528,32 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
        ("ncurses" ,ncurses)))
     (arguments
      ;; No test suite available.
-     '(#:tests? #f
+     `(#:tests? #f
        #:make-flags (list (string-append "prefix=" %output)
-                          "CC=gcc")
+                          (string-append "CC=" ,(cc-for-target)))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ; no configure script
                   (add-before 'build 'correct-location-of-difftool
                     (lambda _
                       (substitute* "buffer.c"
                         (("/usr/bin/diff")
-                         (which "diff")))
-                      #t))
+                         (which "diff")))))
+                  (add-before 'build 'pkg-config-for-cross-compiling-target
+                    (lambda _
+                      (substitute* "GNUmakefile"
+                        (("pkg-config")
+                         (or (which "pkg-config")
+                             (string-append ,(%current-target-system)
+                                            "-pkg-config"))))))
                   (add-before 'install 'patch-tutorial-location
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "mg.1"
-                        (("/usr") (assoc-ref outputs "out")))
-                      #t))
+                        (("/usr") (assoc-ref outputs "out")))))
                   (add-after 'install 'install-tutorial
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (doc (string-append out "/share/doc/mg")))
-                        (install-file "tutorial" doc)
-                        #t))))))
+                        (install-file "tutorial" doc)))))))
     (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
@@ -634,7 +673,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -643,7 +682,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07jrsh6549zypdnyy7g6yvggrz5mlya9jm7zmkjmvl7s0min3mbc"))))
+                "19cf55b86yj2b5hdazbyw4iyp6xq155243aiyg4m0vhwh0h79nwh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -789,7 +828,7 @@ in plain text file format.")
 (define-public editorconfig-core-c
   (package
     (name "editorconfig-core-c")
-    (version "0.12.4")
+    (version "0.12.5")
     (source
       (origin
         (method git-fetch)
@@ -798,7 +837,7 @@ in plain text file format.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1311fhh2jfsja2hhk3nwb6nijlq03jw8dk35cwbrac0p9jvy03jx"))))
+         (base32 "073sh18y0v8wm10iphaia54pkdmwylalccpn1k5i9dwyfjzgj7yg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -893,14 +932,14 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "5.0.1")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "0w5550fijkhmzvdydd8770qq9dgnbq1sd0a8rn4g6mwyfpcyhbfy"))))
+        (base32 "0figd543inpi00yr6han73qd2fzx99r099vzcbg9mhpzsgxfwz4f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -917,8 +956,7 @@ Octave.  TeXmacs is completely extensible via Guile.")
                (for-each (lambda (f) (install-file f lib))
                          (find-files "bin/" "\\.so$"))
                (for-each (lambda (f) (install-file f include))
-                         (find-files "include/" "."))
-               #t))))))
+                         (find-files "include/" "."))))))))
     (native-inputs
      `(("gcc" ,gcc-9)                   ;Code has C++17 requirements
        ("pkg-config" ,pkg-config)

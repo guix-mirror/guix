@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (guix utils)
@@ -1372,9 +1374,6 @@ interactive command-line applications.  With it you can run a script in a
 subprocess and see the output as well as any file modifications.")
     (license license:expat)))
 
-(define-public python2-scripttest
-  (package-with-python2 python-scripttest))
-
 (define-public python-testtools-bootstrap
   (package
     (name "python-testtools-bootstrap")
@@ -1787,9 +1786,6 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
 and commands.  It contains functions to check things on the file system, and
 tools for mocking system commands and recording calls to those.")
     (license license:expat)))
-
-(define-public python2-testpath
-  (package-with-python2 python-testpath))
 
 (define-public python-testlib
   (package
@@ -2838,16 +2834,13 @@ under test to interact with a fake file system instead of the real file
 system.  The code under test requires no modification to work with pyfakefs.")
     (license license:asl2.0)))
 
-(define-public python2-pyfakefs
-  (package-with-python2 python-pyfakefs))
-
 ;; This minimal variant is used to avoid a circular dependency between
 ;; python2-importlib-metadata, which requires pyfakefs for its tests, and
 ;; python2-pytest, which requires python2-importlib-metadata.
 (define-public python2-pyfakefs-bootstrap
   (hidden-package
    (package
-     (inherit python2-pyfakefs)
+     (inherit (package-with-python2 python-pyfakefs))
      (name "python2-pyfakefs-bootstrap")
      (native-inputs '())
      (arguments
@@ -2910,3 +2903,60 @@ to mark some tests as dependent from other tests.  These tests will then be
 skipped if any of the dependencies did fail or has been skipped.")
     (license license:asl2.0)))
 
+(define-public python-pytest-datadir
+  (package
+    (name "python-pytest-datadir")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-datadir" version))
+       (sha256
+        (base32
+         "066bg6wlzgq2pqnjp73dfrcmk8951xw3aqcxa3p1axgqimrixbyk"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/gabrielcnr/pytest-datadir")
+    (synopsis "Pytest plugin for manipulating test data directories and files")
+    (description
+     "This package provides a Pytest plugin for manipulating test data
+directories and files.")
+    (license license:expat)))
+
+(define-public python-pytest-regressions
+  (package
+    (name "python-pytest-regressions")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-regressions" version))
+       (sha256
+        (base32
+         "05jpsvv8rj8i4x24fphpnar5dl4s6d6bw6ikjk5d8v96rdviz9qm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest-datadir" ,python-pytest-datadir)
+       ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pillow" ,python-pillow)
+       ("python-pre-commit" ,python-pre-commit)
+       ("python-restructuredtext-lint"
+        ,python-restructuredtext-lint)
+       ("python-tox" ,python-tox)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ESSS/pytest-regressions")
+    (synopsis "Easy to use fixtures to write regression tests")
+    (description
+     "This plugin makes it simple to test general data, images, files, and numeric
+tables by saving expected data in a data directory (courtesy of pytest-datadir)
+that can be used to verify that future runs produce the same data.")
+    (license license:expat)))

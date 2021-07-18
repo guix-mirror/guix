@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
@@ -42,7 +42,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages regex)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (srfi srfi-1))
 
 (define-public grpc
   (package
@@ -152,7 +153,10 @@ browsers to backend services.")
                               "src/core/lib/iomgr/ev_epollex_linux.cc")
                  (("gettid\\(")
                   "sys_gettid("))
-               #t))))))))
+               #t))))))
+    (native-inputs
+     `(("protobuf" ,protobuf-3.6)
+       ,@(alist-delete "protobuf" (package-native-inputs grpc))))))
 
 (define-public python-grpcio
   (package
@@ -209,7 +213,7 @@ with the HTTP/2-based RPC framework gRPC.")
 (define-public apache-thrift
   (package
     (name "apache-thrift")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
@@ -218,7 +222,7 @@ with the HTTP/2-based RPC framework gRPC.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mj3c5jhjbg2sfkx9k9jqg88h1c5rswr9b606s02ny9ydf3akcny"))))
+        (base32 "0wmnb3h0xq8qc5a9g9lliszh6qg254f5856h72viab46bizmdd4a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f

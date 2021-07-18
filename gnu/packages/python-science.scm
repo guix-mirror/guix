@@ -13,6 +13,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image-processing)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
@@ -47,6 +49,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages simulation)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -733,3 +736,102 @@ dependencies.")
                    license:silofl1.1
                    license:cc0
                    license:public-domain))))
+
+(define-public python-pandas-flavor
+  (package
+    (name "python-pandas-flavor")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pandas_flavor" version))
+       (sha256
+        (base32
+         "12g4av8gpl6l83yza3h97j3f2jblqv69frlidrvdq8ny2rc6awbq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-xarray" ,python-xarray)))
+    (home-page "https://github.com/Zsailer/pandas_flavor")
+    (synopsis "Write your own flavor of Pandas")
+    (description "Pandas 0.23 added a simple API for registering accessors
+with Pandas objects.  Pandas-flavor extends Pandas' extension API by
+
+@itemize
+@item adding support for registering methods as well
+@item making each of these functions backwards compatible with older versions
+of Pandas
+@end itemize")
+    (license license:expat)))
+
+(define-public python-pingouin
+  (package
+    (name "python-pingouin")
+    (version "0.3.12")
+    (source
+     ;; The PyPI tarball does not contain the tests.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raphaelvallat/pingouin")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ap29x54kdr19vi8qxj9g6cz2r1q4f0z7dcf6g77zwav7hf7r61a"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; On loading, Pingouin uses the outdated package to check if a newer
+         ;; version is available on PyPI. This check adds an extra dependency
+         ;; and is irrelevant to Guix users. So, disable it.
+         (add-after 'unpack 'remove-outdated-check
+           (lambda _
+             (substitute* "setup.py"
+               (("'outdated',") ""))
+             (substitute* "pingouin/__init__.py"
+               (("^from outdated[^\n]*") "")
+               (("^warn_if_outdated[^\n]*") ""))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-mpmath" ,python-mpmath)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pandas-flavor" ,python-pandas-flavor)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)
+       ("python-seaborn" ,python-seaborn)
+       ("python-statsmodels" ,python-statsmodels)
+       ("python-tabulate" ,python-tabulate)))
+    (home-page "https://pingouin-stats.org/")
+    (synopsis "Statistical package for Python")
+    (description "Pingouin is a statistical package written in Python 3 and
+based mostly on Pandas and NumPy.  Its features include
+
+@itemize
+@item ANOVAs: N-ways, repeated measures, mixed, ancova
+@item Pairwise post-hocs tests (parametric and non-parametric) and pairwise
+correlations
+@item Robust, partial, distance and repeated measures correlations
+@item Linear/logistic regression and mediation analysis
+@item Bayes Factors
+@item Multivariate tests
+@item Reliability and consistency
+@item Effect sizes and power analysis
+@item Parametric/bootstrapped confidence intervals around an effect size or a
+correlation coefficient
+@item Circular statistics
+@item Chi-squared tests
+@item Plotting: Bland-Altman plot, Q-Q plot, paired plot, robust correlation,
+and more
+@end itemize")
+    (license license:gpl3)))
+

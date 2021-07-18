@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,8 @@
   #:use-module (guix packages)
   #:use-module (guix i18n)
   #:use-module ((guix gexp)
-                #:select (local-file? local-file-absolute-file-name))
+                #:select (gexp? local-file? local-file-absolute-file-name
+                                gexp->approximate-sexp))
   #:use-module (guix licenses)
   #:use-module (guix records)
   #:use-module (guix grafts)
@@ -68,6 +70,7 @@
                            . guix:open-connection-for-uri)))
   #:use-module (web request)
   #:use-module (web response)
+  #:autoload   (gnutls) (error->string)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-6)                      ;Unicode string ports
   #:use-module (srfi srfi-9)
@@ -80,6 +83,7 @@
             check-inputs-should-be-native
             check-inputs-should-not-be-an-input-at-all
             check-input-labels
+            check-wrapper-inputs
             check-patch-file-names
             check-patch-headers
             check-synopsis-style
@@ -89,6 +93,7 @@
             check-source
             check-source-file-name
             check-source-unstable-tarball
+            check-optional-tests
             check-mirror-url
             check-github-url
             check-license
@@ -158,6 +163,78 @@
   (syntax-rules (G_)
     ((_ package (G_ message) rest ...)
      (%make-warning package message rest ...))))
+
+
+;;;
+;;; Procedures for analysing Scheme code in package definitions
+;;;
+
+(define* (find-procedure-body expression found
+                              #:key (not-found (const '())))
+  "Try to find the body of the procedure defined inline by EXPRESSION.
+If it was found, call FOUND with its body. If it wasn't, call
+the thunk NOT-FOUND."
+  (match expression
+    (`(,(or 'let 'let*) . ,_)
+     (find-procedure-body (car (last-pair expression)) found
+                          #:not-found not-found))
+    (`(,(or 'lambda 'lambda*) ,_ . ,code)
+     (found code))
+    (_ (not-found))))
+
+(define* (report-bogus-phase-deltas package bogus-deltas)
+  "Report a bogus invocation of ‘modify-phases’."
+  (list (make-warning package
+                      ;; TRANSLATORS: 'modify-phases' is a Scheme syntax
+                      ;; and should not be translated.
+                      (G_ "incorrect call to ‘modify-phases’")
+                      #:field 'arguments)))
+
+(define* (find-phase-deltas package found
+                            #:key (not-found (const '()))
+                            (bogus
+                             (cut report-bogus-phase-deltas package <>)))
+  "Try to find the clauses of the ‘modify-phases’ form in the phases
+specification of PACKAGE.  If they were found, all FOUND with a list
+of the clauses.  If they weren't (e.g. because ‘modify-phases’ wasn't
+used at all), call the thunk NOT-FOUND instead.  If ‘modify-phases’
+was used, but the clauses don't form a list, call BOGUS with the
+not-a-list."
+  (apply (lambda* (#:key phases #:allow-other-keys)
+           (define phases/sexp
+             (if (gexp? phases)
+                 (gexp->approximate-sexp phases)
+                 phases))
+           (match phases/sexp
+             (`(modify-phases ,_ . ,changes)
+              ((if (list? changes) found bogus) changes))
+             (_ (not-found))))
+         (package-arguments package)))
+
+(define (report-bogus-phase-procedure package)
+  "Report a syntactically-invalid phase clause."
+  (list (make-warning package
+                      ;; TRANSLATORS: See ‘modify-phases’ in the manual.
+                      (G_ "invalid phase clause")
+                      #:field 'arguments)))
+
+(define* (find-phase-procedure package expression found
+                               #:key (not-found (const '()))
+                               (bogus (cut report-bogus-phase-procedure
+                                           package)))
+  "Try to find the procedure in the phase clause EXPRESSION. If it was
+found, call FOUND with the procedure expression. If EXPRESSION isn't
+actually a phase clause, call the thunk BOGUS. If the phase form doesn't
+have a procedure, call the thunk NOT-FOUND."
+  (match expression
+    (('add-after before after proc-expr)
+     (found proc-expr))
+    (('add-before after before proc-expr)
+     (found proc-expr))
+    (('replace _ proc-expr)
+     (found proc-expr))
+    (('delete _) (not-found))
+    (_ (bogus))))
 
 
 ;;;
@@ -301,6 +378,15 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
                                infractions)
                          #:field 'description)))))
 
+  (define (check-no-leading-whitespace description)
+    "Check that DESCRIPTION doesn't have trailing whitespace."
+    (if (string-prefix? " " description)
+        (list
+         (make-warning package
+                       (G_ "description contains leading whitespace")
+                       #:field 'description))
+        '()))
+
   (define (check-no-trailing-whitespace description)
     "Check that DESCRIPTION doesn't have trailing whitespace."
     (if (string-suffix? " " description)
@@ -319,6 +405,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
          ;; Use raw description for this because Texinfo rendering
          ;; automatically fixes end of sentence space.
          (check-end-of-sentence-space description)
+         (check-no-leading-whitespace description)
          (check-no-trailing-whitespace description)
          (match (check-texinfo-markup description)
            ((and warning (? lint-warning?)) (list warning))
@@ -447,6 +534,49 @@ of a package, and INPUT-NAMES, a list of package specifications such as
               `((native-inputs ,package-native-inputs)
                 (inputs ,package-inputs)
                 (propagated-inputs ,package-propagated-inputs))))
+
+(define (report-wrap-program-error package wrapper-name)
+  "Warn that \"bash-minimal\" is missing from 'inputs', while WRAPPER-NAME
+requires it."
+  (make-warning package
+                (G_ "\"bash-minimal\" should be in 'inputs' when '~a' is used")
+                (list wrapper-name)))
+
+(define (check-wrapper-inputs package)
+  "Emit a warning if PACKAGE uses 'wrap-program' or similar, but \"bash\"
+or \"bash-minimal\" is not in its inputs. 'wrap-script' is not supported."
+  (define input-names '("bash" "bash-minimal"))
+  (define has-bash-input?
+    (pair? (package-input-intersection (package-inputs package)
+                                       input-names)))
+  (define (check-procedure-body body)
+    (match body
+      ;; Explicitely setting an interpreter is acceptable,
+      ;; #:sh support is added on 'core-updates'.
+      ;; TODO(core-updates): remove mention of core-updates.
+      (('wrap-program _ '#:sh . _) '())
+      (('wrap-program _ . _)
+       (list (report-wrap-program-error package 'wrap-program)))
+      ;; Wrapper of 'wrap-program' for Qt programs.
+      ;; TODO #:sh is not yet supported but probably will be.
+      (('wrap-qt-program _ '#:sh . _) '())
+      (('wrap-qt-program _ . _)
+       (list (report-wrap-program-error package 'wrap-qt-program)))
+      ((x . y)
+       (append (check-procedure-body x) (check-procedure-body y)))
+      (_ '())))
+  (define (check-phase-procedure expression)
+    (find-procedure-body expression check-procedure-body))
+  (define (check-delta expression)
+    (find-phase-procedure package expression check-phase-procedure))
+  (define (check-deltas deltas)
+    (append-map check-delta deltas))
+  (if has-bash-input?
+      ;; "bash" (or "bash-minimal") is in 'inputs', so everything seems ok.
+      '()
+      ;; "bash" is not in 'inputs'.  Verify 'wrap-program' and friends
+      ;; are unused
+      (find-phase-deltas package check-deltas)))
 
 (define (package-name-regexp package)
   "Return a regexp that matches PACKAGE's name as a word at the beginning of a
@@ -647,6 +777,51 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
               (apply throw key args))))))
       (_
        (values 'unknown-protocol #f)))))
+
+(define (call-with-networking-fail-safe message error-value proc)
+  "Call PROC catching any network-related errors.  Upon a networking error,
+display a message including MESSAGE and return ERROR-VALUE."
+  (guard (c ((http-get-error? c)
+             (warning (G_ "~a: HTTP GET error for ~a: ~a (~s)~%")
+                      message
+                      (uri->string (http-get-error-uri c))
+                      (http-get-error-code c)
+                      (http-get-error-reason c))
+             error-value))
+    (catch #t
+      proc
+      (match-lambda*
+        (('getaddrinfo-error errcode)
+         (warning (G_ "~a: host lookup failure: ~a~%")
+                  message
+                  (gai-strerror errcode))
+         error-value)
+        (('tls-certificate-error args ...)
+         (warning (G_ "~a: TLS certificate error: ~a")
+                  message
+                  (tls-certificate-error-string args))
+         error-value)
+        (('gnutls-error error function _ ...)
+         (warning (G_ "~a: TLS error in '~a': ~a~%")
+                  message
+                  function (error->string error))
+         error-value)
+        ((and ('system-error _ ...) args)
+         (let ((errno (system-error-errno args)))
+           (if (member errno (list ECONNRESET ECONNABORTED ECONNREFUSED))
+               (let ((details (call-with-output-string
+                                (lambda (port)
+                                  (print-exception port #f (car args)
+                                                   (cdr args))))))
+                 (warning (G_ "~a: ~a~%") message details)
+                 error-value)
+               (apply throw args))))
+        (args
+         (apply throw args))))))
+
+(define-syntax-rule (with-networking-fail-safe message error-value exp ...)
+  (call-with-networking-fail-safe message error-value
+                                  (lambda () exp ...)))
 
 (define (tls-certificate-error-string args)
   "Return a string explaining the 'tls-certificate-error' arguments ARGS."
@@ -1066,21 +1241,54 @@ descriptions maintained upstream."
              (eqv? (origin-method origin) url-fetch))
         (filter-map
          (lambda (uri)
-           (and=> (follow-redirects-to-github uri)
+           (and=> (with-networking-fail-safe
+                   (format #f (G_ "while accessing '~a'") uri)
+                   #f
+                   (follow-redirects-to-github uri))
                   (lambda (github-uri)
-                    (if (string=? github-uri uri)
-                        #f
-                        (make-warning
-                         package
-                         (G_ "URL should be '~a'")
-                         (list github-uri)
-                         #:field 'source)))))
+                    (and (not (string=? github-uri uri))
+                         (make-warning
+                          package
+                          (G_ "URL should be '~a'")
+                          (list github-uri)
+                          #:field 'source)))))
          (origin-uris origin))
         '())))
 
 ;; Guile 3.0.0 does not export this predicate.
 (define exception-with-kind-and-args?
   (exception-predicate &exception-with-kind-and-args))
+
+(define (check-optional-tests package)
+  "Emit a warning if the test suite is run unconditionally."
+  (define (sexp-contains-atom? sexp atom)
+    "Test if SEXP contains ATOM."
+    (if (pair? sexp)
+        (or (sexp-contains-atom? (car sexp) atom)
+            (sexp-contains-atom? (cdr sexp) atom))
+        (eq? sexp atom)))
+  (define (sexp-uses-tests?? sexp)
+    "Test if SEXP contains the symbol 'tests?'."
+    (sexp-contains-atom? sexp 'tests?))
+  (define (check-procedure-body code)
+    (if (sexp-uses-tests?? code)
+        '()
+        (list (make-warning package
+                            ;; TRANSLATORS: check and #:tests? are a
+                            ;; Scheme symbol and keyword respectively
+                            ;; and should not be translated.
+                            (G_ "the 'check' phase should respect #:tests?")
+                            #:field 'arguments))))
+  (define (check-check-procedure expression)
+    (find-procedure-body expression check-procedure-body))
+  (define (check-phases-delta delta)
+    (match delta
+      (`(replace 'check ,expression)
+       (check-check-procedure expression))
+      (_ '())))
+  (define (check-phases-deltas deltas)
+    (append-map check-phases-delta deltas))
+  (find-phase-deltas package check-phases-deltas))
 
 (define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
@@ -1170,46 +1378,6 @@ of the propagated inputs it pulls in."
      (list
       (make-warning package (G_ "invalid license field")
                     #:field 'license)))))
-
-(define (call-with-networking-fail-safe message error-value proc)
-  "Call PROC catching any network-related errors.  Upon a networking error,
-display a message including MESSAGE and return ERROR-VALUE."
-  (guard (c ((http-get-error? c)
-             (warning (G_ "~a: HTTP GET error for ~a: ~a (~s)~%")
-                      message
-                      (uri->string (http-get-error-uri c))
-                      (http-get-error-code c)
-                      (http-get-error-reason c))
-             error-value))
-    (catch #t
-      proc
-      (match-lambda*
-        (('getaddrinfo-error errcode)
-         (warning (G_ "~a: host lookup failure: ~a~%")
-                  message
-                  (gai-strerror errcode))
-         error-value)
-        (('tls-certificate-error args ...)
-         (warning (G_ "~a: TLS certificate error: ~a")
-                  message
-                  (tls-certificate-error-string args))
-         error-value)
-        ((and ('system-error _ ...) args)
-         (let ((errno (system-error-errno args)))
-           (if (member errno (list ECONNRESET ECONNABORTED ECONNREFUSED))
-               (let ((details (call-with-output-string
-                                (lambda (port)
-                                  (print-exception port #f (car args)
-                                                   (cdr args))))))
-                 (warning (G_ "~a: ~a~%") message details)
-                 error-value)
-               (apply throw args))))
-        (args
-         (apply throw args))))))
-
-(define-syntax-rule (with-networking-fail-safe message error-value exp ...)
-  (call-with-networking-fail-safe message error-value
-                                  (lambda () exp ...)))
 
 (define (current-vulnerabilities*)
   "Like 'current-vulnerabilities', but return the empty list upon networking
@@ -1620,12 +1788,20 @@ them for PACKAGE."
      (description "Identify input labels that do not match package names")
      (check       check-input-labels))
    (lint-checker
+     (name        'wrapper-inputs)
+     (description "Make sure 'wrap-program' can finds its interpreter.")
+     (check       check-wrapper-inputs))
+   (lint-checker
      (name        'license)
      ;; TRANSLATORS: <license> is the name of a data type and must not be
      ;; translated.
      (description "Make sure the 'license' field is a <license> \
 or a list thereof")
      (check       check-license))
+   (lint-checker
+     (name        'optional-tests)
+     (description "Make sure tests are only run when requested")
+     (check       check-optional-tests))
    (lint-checker
      (name        'mirror-url)
      (description "Suggest 'mirror://' URLs")

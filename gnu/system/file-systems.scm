@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Google LLC
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,8 +231,11 @@
   (char-set-complement (char-set #\/)))
 
 (define (file-prefix? file1 file2)
-  "Return #t if FILE1 denotes the name of a file that is a parent of FILE2,
-where both FILE1 and FILE2 are absolute file name.  For example:
+  "Return #t if FILE1 denotes the name of a file that is a parent of FILE2.
+FILE1 and FILE2 must both be either absolute or relative file names, else #f
+is returned.
+
+For example:
 
   (file-prefix? \"/gnu\" \"/gnu/store\")
   => #t
@@ -240,19 +243,27 @@ where both FILE1 and FILE2 are absolute file name.  For example:
   (file-prefix? \"/gn\" \"/gnu/store\")
   => #f
 "
-  (and (string-prefix? "/" file1)
-       (string-prefix? "/" file2)
-       (let loop ((file1 (string-tokenize file1 %not-slash))
-                  (file2 (string-tokenize file2 %not-slash)))
-         (match file1
-           (()
-            #t)
-           ((head1 tail1 ...)
-            (match file2
-              ((head2 tail2 ...)
-               (and (string=? head1 head2) (loop tail1 tail2)))
-              (()
-               #f)))))))
+  (define (absolute? file)
+    (string-prefix? "/" file))
+
+  (if (or (every absolute? (list file1 file2))
+          (every (negate absolute?) (list file1 file2)))
+      (let loop ((file1 (string-tokenize file1 %not-slash))
+                 (file2 (string-tokenize file2 %not-slash)))
+        (match file1
+          (()
+           #t)
+          ((head1 tail1 ...)
+           (match file2
+             ((head2 tail2 ...)
+              (and (string=? head1 head2) (loop tail1 tail2)))
+             (()
+              #f)))))
+      ;; FILE1 and FILE2 are a mix of absolute and relative file names.
+      #f))
+
+(define (file-name-depth file-name)
+  (length (string-tokenize file-name %not-slash)))
 
 (define* (file-system-device->string device #:key uuid-type)
   "Return the string representations of the DEVICE field of a <file-system>
@@ -623,9 +634,6 @@ store is located, else #f."
     (if (string=? "/" (string-take s 1))
         s
         (string-append "/" s)))
-
-  (define (file-name-depth file-name)
-    (length (string-tokenize file-name %not-slash)))
 
   (and-let* ((btrfs-subvolume-fs (filter btrfs-subvolume? file-systems))
              (btrfs-subvolume-fs*

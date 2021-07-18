@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -48,7 +48,7 @@
 (define-public abiword
   (package
     (name "abiword")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
       (origin
         (method url-fetch)
@@ -56,7 +56,7 @@
           (string-append "https://www.abisource.com/downloads/abiword/" version
                          "/source/abiword-" version ".tar.gz"))
         (sha256
-         (base32 "1mx5l716n0z5788i19qmad30cck4v9ggr071cafw2nrf375rcc79"))
+         (base32 "1d1179pnslijpjhz1q155fsc828rrlqf7lsn2inqsl3hk5z28mqj"))
         (patches
          (search-patches "abiword-explictly-cast-bools.patch"))))
 

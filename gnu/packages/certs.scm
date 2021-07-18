@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,12 +28,63 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tls))
+
+(define-public desec-certbot-hook
+  (let ((commit "68da7abc0793602fd336962a7e2348b57c5d6fd6")
+        (revision "0"))
+    (package
+      (name "desec-certbot-hook")
+      (version
+       (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/desec-io/desec-certbot-hook")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qjqk6i85b1y7fgzcx74r4gn2i4dkjza34hkzp6kyn9hrb8f2gv2"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-script
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "hook.sh"
+                 ;; The hook-script look for '.dedynauth' file in $PWD.
+                 ;; But users cannot create or edit files in store.
+                 ;; So we patch the hook-script to look for '.dedynauth' file,
+                 ;; in /etc/desec.
+                 (("\\$\\(pwd\\)")
+                  "/etc/desec")
+                 ;; Make absolute reference to curl program.
+                 (("curl")
+                  (string-append (assoc-ref inputs "curl")
+                                 "/bin/curl"))))))
+         #:install-plan
+         '(("." "etc/desec" #:include ("hook.sh")))))
+      (inputs
+       `(("curl" ,curl)))
+      (synopsis "Certbot DNS challenge automatization for deSEC")
+      (description "The deSEC can be used to obtain certificates with certbot
+DNS ownership verification.  With the help of this hook script, you can obtain
+your Let's Encrypt certificate using certbot with authorization provided by the
+DNS challenge mechanism, that is, you will not need a running web server or any
+port forwarding to your local machine.")
+      (home-page "https://desec.io")
+      (license license:expat))))
 
 (define certdata2pem
   (let ((revision "1")

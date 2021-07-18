@@ -1,3 +1,8 @@
+From 27ae011b31d831752b97eb209bc2b2206fcf40f7 Mon Sep 17 00:00:00 2001
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Mon, 28 Jun 2021 11:58:47 +0200
+Subject: [PATCH] gnu: upower: Fix build directory.
+
 Remove explicit set of UPOWER_CONF_FILE_NAME in up-self-test.c;
 instead the harness should set it.  In Guix we set it explicitly; the
 right thing is to use AM_TEST_ENVIRONMENT and regenerate the
@@ -6,13 +11,17 @@ some things, so we patch the Makefile.in instead.
 
 Also fix to not try to create /var/lib/upower if /var isn't writable.
 
-Patch by Andy Wingo <wingo@igalia.com>
-Reduced to upower 0.99.10 by Tobias Geerinckx-Rice <me@tobias.gr>
+Based on a patch by Andy Wingo <wingo@igalia.com>
+---
+ src/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- upower-0.99.2.orig/src/Makefile.in	2014-12-18 10:32:01.000000000 +0100
-+++ upower-0.99.2/src/Makefile.in	2015-04-04 19:49:28.020843678 +0200
-@@ -1789,7 +1790,7 @@
- @HAVE_SYSTEMDSYSTEMUNITDIR_TRUE@	@sed -e "s|\@libexecdir\@|$(libexecdir)|" $< > $@
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 3400139..f51ee89 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -181,7 +181,7 @@ $(systemdservice_DATA): $(systemdservice_in_files) Makefile
+ endif
  
  install-data-hook:
 -	if test -w $(DESTDIR)$(prefix)/; then \
@@ -20,3 +29,6 @@ Reduced to upower 0.99.10 by Tobias Geerinckx-Rice <me@tobias.gr>
  		mkdir -p $(DESTDIR)$(historydir); \
  	fi
  
+-- 
+2.32.0
+

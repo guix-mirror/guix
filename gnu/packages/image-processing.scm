@@ -42,6 +42,7 @@
   #:use-module (guix build-system qt)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
@@ -72,6 +73,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
@@ -356,7 +358,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
 
 ;; freecad needs an old version of VTK, because VTK's API changed from 8 to 9
 (define-public vtk-8
-  (package (inherit vtk)
+  (package
+    (name "vtk")
     (version "8.2.0")
     (source (origin
               (method url-fetch)
@@ -365,10 +368,84 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+              (patches
+               (search-patches "vtk-8-fix-freetypetools-build-failure.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each
+                    (lambda (dir)
+                      (delete-file-recursively
+                        (string-append "ThirdParty/" dir "/vtk" dir)))
+                    ;; ogg, pugixml depended upon unconditionally
+                    '("doubleconversion" "eigen" "expat" "freetype" "gl2ps"
+                      "glew" "hdf5" "jpeg" "jsoncpp" "libproj" "libxml2" "lz4"
+                      "netcdf" "png" "sqlite" "theora" "tiff" "zlib"))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:build-type "Release"           ;Build without '-g' to save space.
+       #:configure-flags '(;"-DBUILD_TESTING:BOOL=TRUE"
+                           ;"-DVTK_MODULE_USE_EXTERNAL_vtkogg:BOOL=TRUE"    ; not honored
+                           "-DVTK_USE_SYSTEM_DOUBLECONVERSION:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EIGEN:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GL2PS:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GLEW:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBPROJ:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LZ4:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
+                           ;"-DVTK_USE_SYSTEM_PUGIXML:BOOL=TRUE"    ; breaks IO/CityGML
+                           "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
+       #:tests? #f))        ;XXX: test data not included
     (inputs
-     `(("jsoncpp" ,jsoncpp-for-tensorflow)
-       ,@(alist-delete "jsoncpp" (package-inputs vtk))))))
+     `(("double-conversion" ,double-conversion)
+       ("eigen" ,eigen)
+       ("expat" ,expat)
+       ("freetype" ,freetype)
+       ("gl2ps" ,gl2ps)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("hdf5" ,hdf5)
+       ("jpeg" ,libjpeg-turbo)
+       ("jsoncpp" ,jsoncpp)
+       ;("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("libX11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libXt" ,libxt)
+       ("lz4" ,lz4)
+       ("mesa" ,mesa)
+       ("netcdf" ,netcdf)
+       ("png" ,libpng)
+       ("proj" ,proj.4)
+       ;("pugixml" ,pugixml)
+       ("sqlite" ,sqlite)
+       ("tiff" ,libtiff)
+       ("xorgproto" ,xorgproto)
+       ("zlib" ,zlib)))
+    (home-page "https://vtk.org/")
+    (synopsis "Libraries for 3D computer graphics")
+    (description
+     "The Visualization Toolkit (VTK) is a C++ library for 3D computer graphics,
+image processing and visualization.  It supports a wide variety of
+visualization algorithms including: scalar, vector, tensor, texture, and
+volumetric methods; and advanced modeling techniques such as: implicit
+modeling, polygon reduction, mesh smoothing, cutting, contouring, and Delaunay
+triangulation.  VTK has an extensive information visualization framework, has
+a suite of 3D interaction widgets, supports parallel processing, and
+integrates with various databases on GUI toolkits such as Qt and Tk.")
+    (license license:bsd-3)))
 
 ;; itksnap needs an older variant of VTK.
 (define-public vtk-6
@@ -1208,4 +1285,98 @@ and Scan Tailor Enhanced versions as well as including many more bug fixes.")
      "STIFF is a program that converts scientific @acronym{FITS, Flexible Image
 Transport System} images to the more popular TIFF format for illustration
 purposes.")
+    (license license:gpl3+)))
+
+(define-public python-imgviz
+  (package
+    (name "python-imgviz")
+    (version "1.2.6")
+    (source
+     (origin
+       ;; PyPi tarball lacks tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wkentaro/imgviz.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bm0wdv5p26i8nl4kx3145cz553v401sgbpgc96sddzjfmfiydcw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v" "tests"))
+             #t)))))
+    (propagated-inputs
+      `(("python-matplotlib" ,python-matplotlib)
+        ("python-numpy" ,python-numpy)
+        ("python-pillow" ,python-pillow)
+        ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "http://github.com/wkentaro/imgviz")
+    (synopsis "Image Visualization Tools")
+    (description "Python library for object detection, semantic and instance
+segmentation.")
+    (license license:expat)))
+
+(define-public labelme
+  (package
+    (name "labelme")
+    (version "4.5.9")
+    (source
+     (origin
+       ;; PyPi tarball lacks tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wkentaro/labelme.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12wn291516kdv0wqngz4l04j95g3rwc6cvkcb0gw8rrv4wgc7c66"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               ;; Options taken from CI workflow.
+               (system (string-append xorg-server "/bin/Xvfb :99 -screen 0 "
+                                      "1920x1200x24 -ac +extension GLX +render "
+                                      "-noreset &"))
+               (setenv "DISPLAY" ":99.0"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Fails when invoking help2man for unknown reason.
+               (delete-file "tests/docs_tests/man_tests/test_labelme_1.py")
+               ;; One test hangs.
+               (delete-file "tests/labelme_tests/widgets_tests/test_label_dialog.py")
+               ;; Calls incompatible function signatures.
+               (delete-file "tests/labelme_tests/widgets_tests/test_label_list_widget.py")
+               (setenv "MPLBACKEND" "agg")
+               (invoke "pytest" "-v" "tests" "-m" "not gpu")))))))
+    (propagated-inputs
+      `(("python-imgviz" ,python-imgviz)
+        ("python-matplotlib" ,python-matplotlib)
+        ("python-numpy" ,python-numpy)
+        ("python-pillow" ,python-pillow)
+        ("python-pyyaml" ,python-pyyaml)
+        ("python-qtpy" ,python-qtpy)
+        ("python-termcolor" ,python-termcolor)))
+    (native-inputs
+      `(("python-pytest" ,python-pytest)
+        ("python-pytest-qt" ,python-pytest-qt)
+        ("xorg-server" ,xorg-server-for-tests)))
+    (home-page "https://github.com/wkentaro/labelme")
+    (synopsis
+      "Image Polygonal Annotation")
+    (description
+      "Image and video labeling tool supporting different shapes like
+polygons, rectangles, circles, lines, points and VOC/COCO export.")
     (license license:gpl3+)))

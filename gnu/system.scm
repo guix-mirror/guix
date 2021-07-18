@@ -63,8 +63,8 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu packages wget)
-  #:use-module (gnu packages zile)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services base)
@@ -775,7 +775,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
 
 (define %base-packages-interactive
   ;; Default set of common interactive packages.
-  (list less zile nano
+  (list less mg nano
         nvi
         man-db
         info-reader                     ;the standalone Info reader (no Perl)

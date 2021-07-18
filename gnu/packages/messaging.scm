@@ -580,7 +580,7 @@ identi.ca and status.net).")
 (define-public bitlbee-discord
   (package
     (name "bitlbee-discord")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method git-fetch)
@@ -589,23 +589,20 @@ identi.ca and status.net).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02pigk2vbz0jdz11f96sygdvp1j762yjn62h124fkcsc070g7a2f"))))
+        (base32 "00qgdvrp7hv02n0ns685igp810zxmv3adsama8601122al6x041n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--with-bdatadir=" out "/share/bitlbee/")
+               (string-append "--with-plugindir=" out "/lib/bitlbee/")))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-autogen
            (lambda _
              (let ((sh (which "sh")))
                (substitute* "autogen.sh" (("/bin/sh") sh))
-               (setenv "CONFIG_SHELL" sh))
-             #t))
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (invoke "./configure"
-                     (string-append "--with-plugindir="
-                                    (assoc-ref outputs "out")
-                                    "/lib/bitlbee/")))))))
+               (setenv "CONFIG_SHELL" sh)))))))
     (inputs `(("glib" ,glib)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("autoconf" ,autoconf)

@@ -55,7 +55,7 @@
 (define-public fpc
   (package
     (name "fpc")
-    (version "3.2.0")                   ; Update release date below!
+    (version "3.2.2")                   ; Update release date below!
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/freepascal/Source/"
@@ -63,7 +63,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0f38glyn3ffmqww432snhx2b8wyrq0yj1njkp4zh56lqrvm19fgr"))
+                "07qna2pvlpa7j0i2wdixjxpizdvffv51nbr1waczk0xv8cq9kvw5"))
               (patches (search-patches "fpc-reproducibility.patch"))
               (modules '((guix build utils)))
               (snippet

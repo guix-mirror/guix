@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2021 Oskar Köök <oskar@maatriks.ee>
+;;; Copyright © 2021 Cees de Groot <cg@evrl.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.11.4")
+    (version "1.12.0")
     (source
      (origin
        (method git-fetch)
@@ -43,7 +44,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y8fbhli29agf84ja0fwz6gf22a46738b50nwy26yvcl2n2zl9d8"))
+        (base32 "0nx0ajbpib0hxpxz33p1kr3rqgvf35vkx91sh427qcjqy7964z16"))
        (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments

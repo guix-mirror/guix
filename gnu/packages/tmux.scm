@@ -146,7 +146,7 @@ windows.")
 (define-public python-libtmux
   (package
     (name "python-libtmux")
-    (version "0.8.5")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -156,7 +156,7 @@ windows.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vrd99kl2gsk49mvbp6k7l1k7r96vf1fczsqclb62yd4hdpp7zaa"))))
+        (base32 "068vy92f2668vrjvd3laqvxd48cmna66f2msdmwk2hm9qxklgf51"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("procps" ,procps)))             ;tests need top

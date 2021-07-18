@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -2592,6 +2592,44 @@ a very thin wrapper around the
 interface}.")
     (license license:expat)))
 
+(define-public ghc-config-ini
+  (package
+    (name "ghc-config-ini")
+    (version "0.2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "config-ini/config-ini-" version ".tar.gz"))
+       (sha256
+        (base32 "0dfm4xb1sd713rcqzplzdgw68fyhj24i6lj8j3q8kldpmkl98lbf"))))
+    (build-system haskell-build-system)
+    (arguments
+     ;; XXX The tests fail to compile: “The constructor ‘I1.Ini’ should have 2
+     ;; arguments, but has been given 1”.
+     `(#:tests? #f
+       #:cabal-revision
+       ("2" "0iwraaa0y1b3xdsg760j1wpylkqshky0k2djcg0k4s97lrwqpbcz")))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-hedgehog" ,ghc-hedgehog)
+       ("ghc-ini" ,ghc-ini)
+       ("ghc-microlens" ,ghc-microlens)))
+    (inputs
+     `(("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/aisamanra/config-ini")
+    (synopsis "Monadic Haskell DSL for parsing simple INI configuration files")
+    (description
+     "The @code{config-ini} Haskell library exports some simple monadic
+functions to ease the parsing of @file{.ini}-style configuration files, and
+to write and update them in an efficient @i{diff-minimal} way.  This means that
+if you parse a file, update a single field, and reserialize, that file should
+differ only in the field we changed and @emph{that's it}: field order, comments,
+and incidental whitespace will remain unchanged.  The library aims to produce
+human-readable error messages when things go wrong.")
+    (license license:bsd-3)))
+
 (define-public ghc-configurator
   (package
     (name "ghc-configurator")
@@ -2866,6 +2904,32 @@ manipulating fields of records.")
     (synopsis "Use Accessor to access state in transformers State monad")
     (description "This package provides Haskell modules to allow use of
 Accessor to access state in transformers State monad.")
+    (license license:bsd-3)))
+
+(define-public ghc-data-clist
+  (package
+    (name "ghc-data-clist")
+    (version "0.1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/data-clist/"
+                           "data-clist-" version ".tar.gz"))
+       (sha256
+        (base32 "1mwfhnmvi3vicyjzl33m6pcipi2v887zazyqxygq258ndd010s9m"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "13hg7a3d4ky8b765dl03ryxg28lq8iaqj5ky3j51r0i1i4f2a9hy")))
+    (home-page "https://github.com/sw17ch/data-clist")
+    (synopsis "Simple, functional, bidirectional circular list type")
+    (description
+     "This Haskell library provides a simple purely functional circular list,
+or ring, data type: a circular data structure such that if you continue rotating
+the ring in either direction, you'll eventually return to the element you first
+observed.")
     (license license:bsd-3)))
 
 (define-public ghc-data-default
@@ -4509,6 +4573,26 @@ representation with arbitrary annotations, for use as a base for
 implementations of various collection types.  It includes examples, as
 described in section 4 of Ralf Hinze and Ross Paterson, \"Finger trees: a
 simple general-purpose data structure\".")
+    (license license:bsd-3)))
+
+(define-public ghc-finite-typelits
+  (package
+    (name "ghc-finite-typelits")
+    (version "0.1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "finite-typelits/"
+                           "finite-typelits-" version ".tar.gz"))
+       (sha256
+        (base32 "0iyp9fyd2ki9qcmk9infz9p6rjhsx9jrs3f5yz0yqs8vj5na81yj"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/mniip/finite-typelits")
+    (synopsis "Finitely many values, indexed by type-level naturals")
+    (description
+     "This package provides a Haskell type inhabited by finitely many values
+and indexed by type-level naturals.")
     (license license:bsd-3)))
 
 (define-public ghc-fixed
@@ -6463,6 +6547,30 @@ lines continued at an indented level below.")
     (description "This library provides tools to infer a software
 license from a given license file.")
     (license license:expat)))
+
+(define-public ghc-ini
+  (package
+    (name "ghc-ini")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "ini/ini-" version ".tar.gz"))
+       (sha256
+        (base32 "0mvwii8jbh2ll54qb9dij5m66c6324s2y4vrwz1qr4wz40m3qa8l"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/chrisdone/ini")
+    (synopsis
+     "Haskell library to easily handle configuration files in the INI format")
+    (description
+     "The @code{ghc-ini} Haskell library lets programmers quickly and easily
+read and write configuration files in the simple INI format.")
+    (license license:bsd-3)))
 
 (define-public ghc-inline-c
   (package
@@ -9194,6 +9302,36 @@ The main difference between @code{Text} and @code{ShortText} is that
 support zero-copy slicing (thereby saving 2 words).  Consequently, the memory
 footprint of a (boxed) @{ShortText} value is 4 words (2 words when unboxed)
 plus the length of the UTF-8 encoded payload.")
+    (license license:bsd-3)))
+
+(define-public ghc-text-zipper
+  (package
+    (name "ghc-text-zipper")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/text-zipper/"
+                           "text-zipper-" version ".tar.gz"))
+       (sha256
+        (base32 "0jxicjp0ak1fyl1n3yspxq6hv9l90zzy75glsv8bc2svsn9ypyls"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("hspec-discover" ,hspec-discover)))
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/jtdaugherty/text-zipper/")
+    (synopsis "Text editor zipper library")
+    (description
+     "This Haskell library provides a two-dimensional zipper data structure for
+editing text.  The structure represents the body of text and an editing cursor
+which can be moved through it, along with a set of editing transformations.
+
+Text zippers are generalized over the set of data types that might be used to
+store lists of characters (e.g., @code{String}, @code{T.Text}, etc.).
+Implementations using both of these examples are provided.")
     (license license:bsd-3)))
 
 (define-public ghc-doclayout
@@ -15159,6 +15297,28 @@ modernized interface.")
     (synopsis "Wadler/Leijen Pretty Printer for Text values")
     (description
      "A clone of wl-pprint for use with the text library.")
+    (license license:bsd-3)))
+
+(define-public ghc-word-wrap
+  (package
+    (name "ghc-word-wrap")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "word-wrap/word-wrap-" version ".tar.gz"))
+       (sha256
+        (base32 "15rcqhg9vb7qisk9ryjnyhhfgigxksnkrczycaw2rin08wczjwpb"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1k4w4g053vhmpp08542hrqaw81p3p35i567xgdarqmpghfrk68pp")))
+    (home-page "https://github.com/jtdaugherty/word-wrap/")
+    (synopsis "Haskell library for word-wrapping text")
+    (description
+     "The @code{word-wrap} Haskell library wraps long lines of text.")
     (license license:bsd-3)))
 
 (define-public ghc-word8

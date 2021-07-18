@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
+;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -54,15 +56,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.6.5")
+    (version "0.4.6.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1yacd7h7wg8n6wwrjmx2g9xjj24kj08j5sai9g7fm4cp1m73avbv"))
-             (patches (search-patches "tor-fix-build-with-gcc-7.patch"))))
+               "04ifi18cj4cw5lhfzgfrrc42j7qqdmbvxq24xlhj0dsmljdih8rl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -423,4 +424,48 @@ statistics and status reports on:
 @end enumerate
 
 Potential client and exit connections are scrubbed of sensitive information.")
+    (license license:gpl3+)))
+
+(define-public tractor
+  (package
+    (name "tractor")
+    (version "3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "traxtor" version))
+       (sha256
+        (base32
+         "0cysxfynsnf5p61m7n6kb58bn1cf81n68clxh5irp44kjshi0q6l"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")))       ; for glib-compile-schemas.
+    (inputs
+     `(("python-fire" ,python-fire)
+       ("python-psutil" ,python-psutil)
+       ("python-pygobject" ,python-pygobject)
+       ("python-requests" ,python-requests)
+       ("python-stem" ,python-stem)
+       ("python-termcolor" ,python-termcolor)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (install-file "tractor/man/tractor.1" man1)
+               #t)))
+         (add-after 'install 'install-gschema
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (schemas (string-append out "/share/glib-2.0/schemas")))
+               (install-file "tractor/tractor.gschema.xml" schemas)
+               #t))))))
+    (home-page "https://framagit.org/tractor")
+    (synopsis "Setup an onion routing proxy")
+    (description
+     "This package uses Python stem library to provide a connection through
+the onion proxy and sets up proxy in user session, so you don't have to mess
+up with TOR on your system anymore.")
     (license license:gpl3+)))

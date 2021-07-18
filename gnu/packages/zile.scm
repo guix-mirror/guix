@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,9 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
@@ -42,14 +45,14 @@
 (define-public zile
   (package
     (name "zile")
-    (version "2.4.15")
+    (version "2.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/zile/zile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0ph3wd0cz3ysdyka6ds2w5l5b89mb5l79kwkfyk7phvq9yih1hrr"))))
+               "0hf788zadmwx0xp1dhrgqcfvhwnarh6h9b51va4dr2y9yfppvsvp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -58,7 +61,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((bash (assoc-ref inputs "bash")))
                ;; Refer to the actual shell.
-               (substitute* '("lib/spawni.c" "src/funcs.c")
+               (substitute* '("src/shell.c")
                  (("/bin/sh")
                   (string-append bash "/bin/sh")))
                #t)))
@@ -76,7 +79,9 @@
     (inputs
      `(("boehm-gc" ,libgc)
        ("ncurses" ,ncurses)
-       ("bash" ,bash)))
+       ("bash" ,bash)
+       ("gee" ,libgee)
+       ("glib" ,glib)))
     (native-inputs
      `(("perl" ,perl)
        ("help2man" ,help2man)
@@ -144,6 +149,14 @@ default Emacs configuration, but it carries a much lighter feature set.")
                          "--gnulib-srcdir=gnulib"
                          "--skip-git" "--skip-po"
                          "--verbose")))
+             (replace 'patch-/bin/sh
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   ;; Refer to the actual shell.
+                   (substitute* '("lib/spawni.c" "src/funcs.c")
+                     (("/bin/sh")
+                      (string-append bash "/bin/sh")))
+                   #t)))
              (add-after 'install 'wrap-command
                (lambda* (#:key outputs #:allow-other-keys)
                  ;; Add zile.scm to the search path.

@@ -16,6 +16,9 @@
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -531,6 +534,39 @@ This package contains the binaries.")
     (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
     (home-page "https://www.tug.org/texlive/")))
 
+(define-public texlive-libkpathsea
+  (package/inherit texlive-bin
+    (name "texlive-libkpathsea")
+    (source
+     (origin
+       (inherit (package-source texlive-bin))
+       (snippet
+        `(begin
+           ,(origin-snippet (package-source texlive-bin))
+           (with-directory-excursion "texk"
+             (let ((preserved-directories '("." ".." "kpathsea")))
+               (for-each
+                delete-file-recursively
+                (scandir "."
+                         (lambda (file)
+                           (and (not (member file preserved-directories))
+                                (eq? 'directory (stat:type (stat file)))))))))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments texlive-bin)
+       ((#:configure-flags flags)
+        `(cons* "--disable-all-pkgs" "--enable-kpathsea"
+                "--enable-shared" ,flags))
+       ((#:phases phases)
+        `(modify-phases %standard-phases
+           (add-after 'install 'post-install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (with-directory-excursion "texk/kpathsea"
+                 (invoke "make" "install"))))))))
+    (inputs '())
+    (synopsis "Path searching library")
+    (description "kpathsea is a library, whose purpose is to return a filename
+from a list of user-specified directories similar to how shells look up
+executables.  It is maintained as a part of TeX Live.")))
 
 (define texlive-docstrip
   (package
@@ -8869,6 +8905,30 @@ shape axis and it adds three new axes to deal with the different
 figure versions offered by many professional fonts.")
     (license license:lppl1.3+)))
 
+(define-public texlive-preprint
+  (package
+    (name "texlive-preprint")
+    (version "1.0e")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "preprint"))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "173ik9xad3zih6gcdwdkzyljarh06ky6c5d2x1yjs22qqi75py5a"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/preprint"))
+    (home-page "http://www.ctan.org/pkg/preprint")
+    (synopsis "Bundle of modules for preprints")
+    (description "The bundle comprises: @code{authblk}, which permits
+footnote style author/affiliation input in the @command{\\author} command,
+@code{balance}, to balance the end of @command{\\twocolumn} pages,
+@code{figcaps}, to send figure captions, etc., to end document,
+@code{fullpage}, to set narrow page margins and set a fixed page style, and
+@code{sublabel}, which permits counters to be subnumbered.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-mweights
   (package
     (inherit (simple-texlive-package
@@ -9299,6 +9359,35 @@ theorems.  The package supports saving and reuse of source code and text
 parts.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-latex-ebproof
+  (package
+    (name "texlive-latex-ebproof")
+    (version "2.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://framagit.org/manu/ebproof")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1zkrfaf343js0yc1x7m3d8hzbh5izn0lb01jrmdpjm51kdbh30xq"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/ebproof"))
+    (propagated-inputs
+     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
+    (home-page "http://www.ctan.org/pkg/ebproof")
+    (synopsis
+     "Formal proofs in the style of sequent calculus")
+    (description
+     "This package provides commands to typeset proof trees in the style of
+sequent calculus and related systems.  The commands allow for writing
+inferences with any number of premises and alignment of successive formulas on
+an arbitrary point.  Various options allow complete control over spacing,
+styles of inference rules, placement of labels, etc.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-eurosym
   (let ((template (simple-texlive-package
                    "texlive-eurosym"
@@ -9352,3 +9441,33 @@ constructs TeX accepts as arguments to its @code{\\number} primitive
 are valid as arguments for the macros.  The package may be used under
 LaTeX and plain TeX.")
     (license (license:fsf-free "file:/binhex.dtx"))))
+
+(define-public bibtool
+  (package
+    (name "bibtool")
+    (version "2.68")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ge-ne/bibtool")
+         (commit (string-append
+                  "BibTool_"
+                  (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                              version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0grnmqj8w5018nd7r6drnq2yvfhf22gj9i3rj8ilhzm7zmz3zn0g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://www.gerd-neugebauer.de/software/TeX/BibTool/en")
+    (synopsis "Tool for manipulating BibTeX databases")
+    (description
+     "BibTool manipulates BibTeX files.  The possibilities of BibTool include
+sorting and merging of BibTeX databases, generation of uniform reference keys,
+and selecting references used in a publication.")
+    (license license:gpl2+)))

@@ -349,7 +349,7 @@ FOSS FPGA place and route tool.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.109")
+    (version "3.3.110")
     (source
      (origin
        (method url-fetch)
@@ -359,7 +359,7 @@ FOSS FPGA place and route tool.")
                   (string-append "http://gtkwave.sourceforge.net/"
                                  "gtkwave-" version ".tar.gz")))
        (sha256
-        (base32 "0pf0qf40wggn03v3w5hm35vsg5n0src10n769nx8d03jkdg7wj6a"))))
+        (base32 "1hslmg39j9rays0cyash8zvrrbfyc55jdpq7hwc47ksr7bayvip4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
@@ -501,7 +501,7 @@ using different abstraction levels.")
 (define-public verilator
   (package
     (name "verilator")
-    (version "4.110")
+    (version "4.204")
     (source
      (origin
        (method git-fetch)
@@ -510,7 +510,7 @@ using different abstraction levels.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lm2nyn7wzxj5y0ffwazhb4ygnmqf4d61sl937vmnmrpvdihsrrq"))))
+        (base32 "0cji5c8870h895l2vxnz8g6z7msv23dzbjaf98va7kva0qlfy2fz"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

@@ -1086,6 +1086,8 @@ and to return information on pronunciations, meanings and synonyms.")
 converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
     (license license:mpl2.0)))
 
+;; When updating libreoffice, also make sure to update the
+;; hunspell dictionaries! They use the libreoffice version.
 (define-public libreoffice
   (package
     (name "libreoffice")

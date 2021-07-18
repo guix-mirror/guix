@@ -303,7 +303,11 @@ menu to select one of the installed operating systems.")
            ((#:tests? _ #f) #f)
            ((#:configure-flags flags ''())
             `(cons* "--with-platform=efi"
-                    "--enable-stack-protector" ; EFI-only for now
+                    ,@(if (string-prefix? "x86_64"
+                                          (or (%current-target-system)
+                                              (%current-system)))
+                          '("--enable-stack-protector") ; EFI-only for now
+                          '())
                     ,flags))
            ((#:phases phases)
             `(modify-phases ,phases

@@ -1,0 +1,44 @@
+Guix libarchive no support xar.
+
+--- ark-20.04.1.orig/autotests/kerfuffle/loadtest.cpp	2020-12-23 08:46:15.780782601 +0800
++++ ark-20.04.1/autotests/kerfuffle/loadtest.cpp	2020-12-23 11:13:17.101724042 +0800
+@@ -181,13 +181,6 @@
+         qDebug() << "lz4 executable not found in path. Skipping lz4 test.";
+     }
+ 
+-    QTest::newRow("xar archive")
+-            << QFINDTESTDATA("data/simplearchive.xar")
+-            << QStringLiteral("simplearchive")
+-            << true << false << false << false << false << 0 << Archive::Unencrypted
+-            << QStringLiteral("simplearchive")
+-            << QString();
+-
+     QTest::newRow("mimetype child of application/zip")
+             << QFINDTESTDATA("data/test.odt")
+             << QStringLiteral("test")
+--- ark-20.04.1.orig/autotests/kerfuffle/extracttest.cpp	2020-12-23 08:46:15.780782601 +0800
++++ ark-20.04.1/autotests/kerfuffle/extracttest.cpp	2020-12-23 11:14:02.801809620 +0800
+@@ -350,23 +350,6 @@
+         qDebug() << "lz4 executable not found in path. Skipping lz4 test.";
+     }
+ 
+-    archivePath = QFINDTESTDATA("data/simplearchive.xar");
+-    QTest::newRow("extract selected entries from a xar archive without path")
+-            << archivePath
+-            << QVector<Archive::Entry*> {
+-                   new Archive::Entry(this, QStringLiteral("dir1/file11.txt"), QString()),
+-                   new Archive::Entry(this, QStringLiteral("file4.txt"), QString())
+-               }
+-            << optionsNoPaths
+-            << 2;
+-
+-    archivePath = QFINDTESTDATA("data/simplearchive.xar");
+-    QTest::newRow("extract all entries from a xar archive with path")
+-            << archivePath
+-            << QVector<Archive::Entry*>()
+-            << optionsPreservePaths
+-            << 6;
+-
+     archivePath = QFINDTESTDATA("data/hello-1.0-x86_64.AppImage");
+     QTest::newRow("extract all entries from an AppImage with path")
+             << archivePath

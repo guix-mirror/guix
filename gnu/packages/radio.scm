@@ -75,6 +75,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
@@ -478,14 +479,16 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
 (define-public gnuradio
   (package
     (name "gnuradio")
-    (version "3.9.0.0")
+    (version "3.9.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.gnuradio.org/releases/gnuradio/"
-                           "gnuradio-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnuradio/gnuradio")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1jvm9xd0l2pz1fww4zii6hl7ccnvy256nrf70ljb594n7j9j49ha"))))
+        (base32 "01wyqazrpphmb0fl69j93k0w4vm4d1l4177m1fyg7qx8hzia0aaq"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -550,6 +553,11 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                             "/share/javascript/mathjax"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-writable
+           (lambda _
+             ;; The test_add and test_newmod open(sources, "w") for some reason.
+             (for-each make-file-writable
+                       (find-files "." ".*"))))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((qwt (assoc-ref inputs "qwt")))
@@ -771,6 +779,59 @@ to the fix block above.
       (license license:gpl3+))))
 (deprecated-package "gnuradio-iqbalance" gr-iqbal)
 
+(define-public gr-satellites
+  (package
+    (name "gr-satellites")
+    (version "4.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/daniestevez/gr-satellites")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01p9cnwjxas3pkqr9m5fnrgm45cji0sfdqqa51hzy7izx9vgzaf8"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("pybind11" ,pybind11)
+       ("python-six" ,python-six)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmp" ,gmp)
+       ("gnuradio" ,gnuradio)
+       ("log4cpp" ,log4cpp)
+       ("python" ,python)
+       ("python-construct" ,python-construct)
+       ("python-numpy" ,python-numpy)
+       ("python-pyaml" ,python-pyaml)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-requests" ,python-requests)
+       ("volk" ,volk)))
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:prefix python:)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-test-environment
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (add-after 'install 'wrap-python
+           (assoc-ref python:%standard-phases 'wrap)))))
+    (synopsis "GNU Radio decoders for several Amateur satellites")
+    (description
+     "@code{gr-satellites} is a GNU Radio out-of-tree module encompassing
+a collection of telemetry decoders that supports many different Amateur
+satellites.")
+    (home-page "https://github.com/daniestevez/gr-satellites")
+    (license (list license:asl2.0
+                   license:gpl3+
+                   license:lgpl2.1))))
+
 (define-public gqrx
   (package
     (name "gqrx")
@@ -814,7 +875,7 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.18")
+    (version "4.1.19")
     (source
      (origin
        (method git-fetch)
@@ -823,7 +884,7 @@ using GNU Radio and the Qt GUI toolkit.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "177qnl1bxy46rqwdxizfy2i3mxk5bzz733cp445rfzl7b6yf6zrn"))))
+        (base32 "08rmc7vb2irb67g3sry7md653n9ac0x0b44az729lj6sljqvw3bv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -833,6 +894,7 @@ using GNU Radio and the Qt GUI toolkit.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fltk" ,fltk)
+       ("eudev" ,eudev)
        ("hamlib" ,hamlib)
        ("libpng" ,libpng)
        ("libsamplerate" ,libsamplerate)
@@ -1309,7 +1371,7 @@ gain and standing wave ratio.")
 (define-public dump1090
   (package
     (name "dump1090")
-    (version "4.0")
+    (version "5.0")
     (source
      (origin
        (method git-fetch)
@@ -1318,12 +1380,13 @@ gain and standing wave ratio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zacsqaqsiapljhzw31dwc4nld2rp98jm3ivkyznrhzk9n156p42"))))
+        (base32 "1fckfcgypmplzl1lidd04jxiabczlfx9mv21d6rbsfknghsjpn03"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb" ,libusb)
+     `(("hackrf" ,hackrf)
+       ("libusb" ,libusb)
        ("ncurses" ,ncurses)
        ("rtl-sdr" ,rtl-sdr)))
     (arguments
@@ -1417,7 +1480,7 @@ modes:
 (define-public nanovna-saver
   (package
     (name "nanovna-saver")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method git-fetch)
@@ -1426,7 +1489,7 @@ modes:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0z83rwpnbbs1n74mx8dgh1d1crp90mannj9vfy161dmy4wzc5kpv"))))
+        (base32 "1h5k402wjlj7xjniggwf0x7a5srlgglc2x4hy6lz6c30zwa7z8fm"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)))
@@ -1978,7 +2041,7 @@ voice formats.")
 (define-public sdrangel
   (package
     (name "sdrangel")
-    (version "6.10.3")
+    (version "6.16.1")
     (source
      (origin
        (method git-fetch)
@@ -1987,7 +2050,7 @@ voice formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dpymjpg1x7yyrlhh8sdmf5l7il9ymx32zcpm78wwrw3df4q1w3m"))))
+        (base32 "0g9h4cy8k9dqlwkfk4lkk2d2s003bckzskm3vra87ndmgq1nfbzv"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)

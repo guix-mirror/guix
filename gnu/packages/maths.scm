@@ -15,14 +15,14 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
@@ -46,6 +46,7 @@
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -960,14 +961,14 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.4.1")
+    (version "5.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
                                   version "/gnuplot-"
                                   version ".tar.gz"))
        (sha256
-        (base32 "03jrqs5lvxmbbz2c4g17dn2hrxqwd3hfadk9q8wbkbkyas2h8sbb"))))
+        (base32 "1fp7rbhjmz2w63r72kicf8lfszzimz2csfx868fracw167hpaz75"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
@@ -2262,7 +2263,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "4.6.0")
+    (version "4.8.4")
     (source
      (origin
       (method git-fetch)
@@ -2270,11 +2271,10 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
             (url "https://gitlab.onelab.info/gmsh/gmsh.git")
             (commit
              (string-append "gmsh_"
-                            (string-map (lambda (x) (if (eq? x #\.) #\_ x))
-                                        version)))))
+                            (string-replace-substring version "." "_")))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0m0pjxcy1bnr7a20i11lh0ih159pphq9wsvfjr3sfx4y3lginz5y"))
+       (base32 "07mi6ja3b9libgcdp2b4dwnkap1b9ha2wi2zdn9mhmwvp3g1pxhp"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -2284,22 +2284,48 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
     (propagated-inputs
      `(("fltk" ,fltk)
        ("gfortran" ,gfortran)
+       ("glu" ,glu)
        ("gmp" ,gmp)
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("metis" ,metis)
-       ("opencascade-occt" ,opencascade-occt)
        ("libx11" ,libx11)
-       ("libxext" ,libxext)))
+       ("libxext" ,libxext)
+       ("mesa" ,mesa)
+       ("metis" ,metis)
+       ("opencascade-occt" ,opencascade-occt)))
     (inputs
      `(("fontconfig" ,fontconfig)
-       ("libxft" ,libxft)))
+       ("libxft" ,libxft)
+       ("python" ,python)))
     (arguments
      `(#:configure-flags `("-DENABLE_SYSTEM_CONTRIB:BOOL=ON"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
-                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
+                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:modules (((guix build python-build-system) #:select (site-packages))
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Use the standard Guix site-package path for
+             ;; installation of the Python API.
+             (substitute* "CMakeLists.txt"
+               (("include\\(GNUInstallDirs\\)\n")
+                (string-append "include(GNUInstallDirs)\n"
+                               "  set(GMSH_PY_LIB "
+                               (site-packages inputs outputs) ")\n"))
+               (("\\$\\{GMSH\\_PY\\} DESTINATION \\$\\{GMSH\\_LIB\\}")
+                "${GMSH_PY} DESTINATION ${GMSH_PY_LIB}"))
+             ;; Find the shared library.
+             (let ((libgmsh (string-append (assoc-ref outputs "out")
+                                           "/lib/libgmsh.so")))
+               (substitute* "api/gmsh.py"
+                 (("find_library\\(\"gmsh\"\\)")
+                  (simple-format #f "\"~a\"" libgmsh))))
+             #t)))))
     (home-page "http://gmsh.info/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
@@ -3172,14 +3198,14 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.1.0")
+    (version "6.1.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "1184fcv4wa2df8szb5lan6pjh0raarr45pk8ilpvbz23naikzg53"))
+       (base32 "04dkz24a2g20wq703fnyi4440ac4mwycy9gwrrllljj7zxcjy19r"))
       (patches (search-patches "scotch-build-parallelism.patch"
                                "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
@@ -3187,7 +3213,8 @@ implemented in ANSI C, and MPI for communications.")
      `(("zlib" ,zlib)))
     (native-inputs
      `(("flex" ,flex)
-       ("bison" ,bison)))
+       ("bison" ,bison)
+       ("gfortran" ,gfortran)))
     (outputs '("out" "metis"))
     (arguments
      `(#:make-flags (list (string-append "prefix=" %output))
@@ -3212,6 +3239,7 @@ CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
+FC = gfortran
 CPPFLAGS =~{ -D~a~}
 CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
 LDFLAGS = -lz -lm -lrt -lpthread
@@ -3255,6 +3283,8 @@ YACC = bison -pscotchyy -y -b y
                          (find-files "../lib/" ".*metis\\..*"))
                #t))))))
     (home-page "https://www.labri.fr/perso/pelegrin/scotch/")
+    (properties
+     `((release-monitoring-url . "https://gforge.inria.fr/frs/?group_id=248")))
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
 the static mapping and sparse matrix reordering algorithms developed within
@@ -3291,6 +3321,7 @@ CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
+FC = gfortran
 CPPFLAGS =~{ -D~a~}
 CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
 LDFLAGS = -lz -lm -lrt -lpthread
@@ -3345,6 +3376,7 @@ CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
+FC = gfortran
 CPPFLAGS =~{ -D~a~}
 CFLAGS = -O2 -g -fPIC $(CPPFLAGS) $(RPATHFLAGS)
 CLIBFLAGS = -shared -fPIC
@@ -3559,7 +3591,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.45.0")
+    (version "5.45.1")
     (source
      (origin
        (method url-fetch)
@@ -3567,7 +3599,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1n6hc2d07d93hgc4yf3yqb9aqjqw6fskmvxggfxww1a8chr1yqy7"))
+         "1p77nk5sz1qfkn5zr97szpbi8ib4b22k8i52l4ag5gkhd4kid47y"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -3658,7 +3690,7 @@ to BMP, JPEG or PNG image formats.")
                (wrap-program (string-append out "/bin/maxima")
                  `("PATH" prefix (,binutils))))
              #t)))))
-    (home-page "http://maxima.sourceforge.net")
+    (home-page "https://maxima.sourceforge.io")
     (synopsis "Numeric and symbolic expression manipulation")
     (description "Maxima is a system for the manipulation of symbolic and
 numerical expressions.  It yields high precision numeric results by using
@@ -3842,13 +3874,17 @@ parts of it.")
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
-             ;; Unfortunately, this is not supported on non-x86 architectures,
+             ;; Unfortunately, this is not supported on all architectures,
              ;; where it leads to failed builds.
              ,@(let ((system (or (%current-target-system) (%current-system))))
                  (cond
                   ((or (string-prefix? "x86_64" system)
                        (string-prefix? "i686" system))
                    '("DYNAMIC_ARCH=1"))
+                  ;; On some of these architectures the CPU can't be detected.
+                  ((string-prefix? "powerpc64le" system)
+                   '("DYNAMIC_ARCH=1"
+                     "TARGET=GENERIC"))
                   ;; On MIPS we force the "SICORTEX" TARGET, as for the other
                   ;; two available MIPS targets special extended instructions
                   ;; for Loongson cores are used.
@@ -3857,6 +3893,9 @@ parts of it.")
                   ;; On aarch64 force the generic 'armv8-a' target
                   ((string-prefix? "aarch64" system)
                    '("TARGET=ARMV8"))
+                  ;; Failed to detect CPU.
+                  ((string-prefix? "armhf" system)
+                   '("TARGET=ARMV7"))
                   (else '()))))
        ;; no configure script
        #:phases
@@ -4078,7 +4117,7 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "5.9.0")
+    (version "5.10.1")
     (source
      (origin
        (method git-fetch)
@@ -4088,7 +4127,7 @@ Fresnel integrals, and similar related functions as well.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zhkix58afw92s7p291prljdm3yi0pjg1kbi3lczdb8rb14jkz5n"))
+         "19gx5wlgqnqpgz6mvam9lalyzpbfwgqhppps8z3np9sh0mgaiyw9"))
        (patches (search-patches "suitesparse-mongoose-cmake.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -4103,6 +4142,11 @@ Fresnel integrals, and similar related functions as well.")
        (list (string-append "CC=" ,(cc-for-target))
              "TBB=-ltbb"
              "MY_METIS_LIB=-lmetis"
+
+             ;; The default is to link against netlib lapack.  Use OpenBLAS
+             ;; instead.
+             "BLAS=-lopenblas" "LAPACK=-lopenblas"
+
              ;; Flags for cmake (required to build GraphBLAS and Mongoose)
              (string-append "CMAKE_OPTIONS=-DCMAKE_INSTALL_PREFIX="
                             (assoc-ref %outputs "out")
@@ -4122,7 +4166,7 @@ Fresnel integrals, and similar related functions as well.")
          (delete 'configure))))         ;no configure script
     (inputs
      `(("tbb" ,tbb)
-       ("lapack" ,lapack)
+       ("openblas" ,openblas)
        ("gmp" ,gmp)
        ("mpfr" ,mpfr)
        ("metis" ,metis)))
@@ -4268,6 +4312,9 @@ done in the BIOS, or, on GNU/Linux, with the following command:
 @end example
 
 Failure to do so will result in a library with poor performance.")
+    ;; The test suite is notoriously lengthy and routinely exceeds the default
+    ;; timeout of 21600 seconds on the not unbeefy berlin build nodes.
+    (properties '((timeout . 86400)))        ; 1 day
     (license license:bsd-3)))
 
 (define-public cglm
@@ -5180,7 +5227,7 @@ reduction.")
 (define-public mcrl2
   (package
     (name "mcrl2")
-    (version "202006.0")
+    (version "202106.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5188,7 +5235,7 @@ reduction.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "167ryrzk1a2j53c2j198jlxa98amcaym070gkcj730619gymv5zl"))))
+                "0db9wgy9spwm76mgfisnifrlg69y9cadjgxjr4gdwzfgg6wgqf6d"))))
     (inputs
      `(("boost" ,boost)
        ("glu" ,glu)
@@ -6419,3 +6466,39 @@ to source-code analysis of C software.  The Frama-C analyzers assist you in
 various source-code-related activities, from the navigation through unfamiliar
 projects up to the certification of critical software.")
     (license license:lgpl2.1+)))
+
+(define-public blitz
+  (package
+    (name "blitz")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blitzpp/blitz")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0c88gc72j3zggyk4yrrip6i0v7xkx97l140vpy3xhxs2i7xy1461"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_DOC=ON"
+                           "-DBUILD_TESTING=ON")
+       ;; The default "check" target also includes examples and benchmarks.
+       #:test-target "check-testsuite"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (invoke "make" "-j" (number->string (parallel-job-count))
+                     "blitz-doc"))))))
+    (native-inputs
+     `(("python" ,python)
+       ("texinfo" ,texinfo)))
+    (synopsis "C++ template class library for multidimensional arrays")
+    (description "Blitz++ is a C++ template class library that provides
+high-performance multidimensional array containers for scientific computing.")
+    (home-page "https://github.com/blitzpp/blitz")
+    (license (list license:artistic2.0
+                   license:bsd-3
+                   license:lgpl3+))))

@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
             with-imported-modules
             with-extensions
             let-system
+            gexp->approximate-sexp
 
             gexp-input
             gexp-input?
@@ -162,6 +164,23 @@
 (define (gexp-location gexp)
   "Return the source code location of GEXP."
   (and=> (%gexp-location gexp) source-properties->location))
+
+(define* (gexp->approximate-sexp gexp)
+  "Return the S-expression corresponding to GEXP, but do not lower anything.
+As a result, the S-expression will be approximate if GEXP has references."
+  (define (gexp-like? thing)
+    (or (gexp? thing) (gexp-input? thing)))
+  (apply (gexp-proc gexp)
+         (map (lambda (reference)
+                (match reference
+                  (($ <gexp-input> thing output native)
+                   (if (gexp-like? thing)
+                       (gexp->approximate-sexp thing)
+                       ;; Simply returning 'thing' won't work in some
+                       ;; situations; see 'write-gexp' below.
+                       '(*approximate*)))
+                  (_ '(*approximate*))))
+              (gexp-references gexp))))
 
 (define (write-gexp gexp port)
   "Write GEXP on PORT."
@@ -2065,6 +2084,7 @@ This is the declarative counterpart of 'text-file*'."
   (define build
     (gexp (call-with-output-file (ungexp output "out")
             (lambda (port)
+              (set-port-encoding! port "UTF-8")
               (display (string-append (ungexp-splicing text)) port)))))
 
   (computed-file name build))

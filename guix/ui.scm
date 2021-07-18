@@ -16,6 +16,7 @@
 ;;; Copyright © 2019, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Steve Sprang <scs@stevesprang.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1889,10 +1890,10 @@ DURATION-RELATION with the current time."
   (define (equal-entry? first second)
     (string= (manifest-entry-item first) (manifest-entry-item second)))
 
-  (define (display-entry entry prefix)
+  (define (make-row entry prefix)
     (match entry
       (($ <manifest-entry> name version output location _)
-       (format #t " ~a ~a\t~a\t~a\t~a~%" prefix name version output location))))
+       (list (format #f " ~a ~a" prefix name) version output location))))
 
   (define (list-entries number)
     (manifest-entries (profile-manifest (generation-file-name profile number))))
@@ -1903,8 +1904,8 @@ DURATION-RELATION with the current time."
                   equal-entry? (list-entries new) (list-entries old)))
           (removed (lset-difference
                     equal-entry? (list-entries old) (list-entries new))))
-      (for-each (cut display-entry <> "+") added)
-      (for-each (cut display-entry <> "-") removed)
+      (pretty-print-table (append (map (cut make-row <> "+") added)
+                                  (map (cut make-row <> "-") removed)))
       (newline)))
 
   (display-diff profile gen1 gen2))
@@ -1932,15 +1933,17 @@ already taken."
 (define (display-profile-content profile number)
   "Display the packages in PROFILE, generation NUMBER, in a human-readable
 way."
-  (for-each (match-lambda
-              (($ <manifest-entry> name version output location _)
-               (format #t "  ~a\t~a\t~a\t~a~%"
-                       name version output location)))
 
-            ;; Show most recently installed packages last.
-            (reverse
-             (manifest-entries
-              (profile-manifest (generation-file-name profile number))))))
+  (define entry->row
+    (match-lambda
+      (($ <manifest-entry> name version output location _)
+       (list (string-append "  " name) version output location))))
+
+  (let* ((manifest (profile-manifest (generation-file-name profile number)))
+         (entries  (manifest-entries manifest))
+         (rows     (map entry->row entries)))
+    ;; Show most recently installed packages last.
+    (pretty-print-table (reverse rows))))
 
 (define (display-generation-change previous current)
   (format #t (G_ "switched from generation ~a to ~a~%") previous current))
@@ -2139,16 +2142,14 @@ found."
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))
     (parameterize ((program-name command))
-      ;; Disable canonicalization so we don't don't stat unreasonably.
-      (with-fluids ((%file-port-name-canonicalization #f))
-        (dynamic-wind
-          (const #f)
-          (lambda ()
-            (apply command-main args))
-          (lambda ()
-            ;; Abuse 'exit-hook' (which is normally meant to be used by the
-            ;; REPL) to run things like profiling hooks upon completion.
-            (run-hook exit-hook)))))))
+      (dynamic-wind
+        (const #f)
+        (lambda ()
+          (apply command-main args))
+        (lambda ()
+          ;; Abuse 'exit-hook' (which is normally meant to be used by the
+          ;; REPL) to run things like profiling hooks upon completion.
+          (run-hook exit-hook))))))
 
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.
@@ -2160,28 +2161,30 @@ and signal handling have already been set up."
   ;; number of 'stat' calls per entry in %LOAD-PATH.  Shamelessly remove it.
   (set! %load-extensions '(".scm"))
 
-  (match args
-    (()
-     (format (current-error-port)
-             (G_ "guix: missing command name~%"))
-     (show-guix-usage))
-    ((or ("-h") ("--help"))
-     (leave-on-EPIPE (show-guix-help)))
-    ((or ("-V") ("--version"))
-     (show-version-and-exit "guix"))
-    (((? option? o) args ...)
-     (format (current-error-port)
-             (G_ "guix: unrecognized option '~a'~%") o)
-     (show-guix-usage))
-    (("help" command)
-     (apply run-guix-command (string->symbol command)
-            '("--help")))
-    (("help" args ...)
-     (leave-on-EPIPE (show-guix-help)))
-    ((command args ...)
-     (apply run-guix-command
-            (string->symbol command)
-            args))))
+  ;; Disable canonicalization so we don't don't stat unreasonably.
+  (with-fluids ((%file-port-name-canonicalization #f))
+    (match args
+      (()
+       (format (current-error-port)
+               (G_ "guix: missing command name~%"))
+       (show-guix-usage))
+      ((or ("-h") ("--help"))
+       (leave-on-EPIPE (show-guix-help)))
+      ((or ("-V") ("--version"))
+       (show-version-and-exit "guix"))
+      (((? option? o) args ...)
+       (format (current-error-port)
+               (G_ "guix: unrecognized option '~a'~%") o)
+       (show-guix-usage))
+      (("help" command)
+       (apply run-guix-command (string->symbol command)
+              '("--help")))
+      (("help" args ...)
+       (leave-on-EPIPE (show-guix-help)))
+      ((command args ...)
+       (apply run-guix-command
+              (string->symbol command)
+              args)))))
 
 (define (guix-main arg0 . args)
   (initialize-guix)

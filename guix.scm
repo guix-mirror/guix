@@ -27,7 +27,6 @@
         build-system
         derivations
         download
-        ftp-client
         gexp
         monads
         monad-repl

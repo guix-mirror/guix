@@ -33,7 +33,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020, 2021 Brice Waegeneire <brice@waegenei.re>
@@ -47,7 +47,6 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
@@ -164,7 +163,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -355,15 +355,28 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.12-version "5.12.12")
+(define-public linux-libre-5.13-version "5.13.2")
+(define deblob-scripts-5.13
+  (linux-libre-deblob-scripts
+   linux-libre-5.13-version
+   (base32 "1mhc215a1y8bxip2f0sqmyl0rf7cgw22cmg26hg9x0pfm9li2c95")
+   (base32 "1hkbkyy3myraczaj982z72m0p1yxjwigqhsz2kx9g74qkap0xy9d")))
+(define-public linux-libre-5.13-pristine-source
+  (let ((version linux-libre-5.13-version)
+        (hash (base32 "0dx9khk7fh003xyb3xix0kc0rmjncg7ric5p830zhadnrw4hv563")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.13)))
+
+(define-public linux-libre-5.12-version "5.12.17")
 (define deblob-scripts-5.12
   (linux-libre-deblob-scripts
    linux-libre-5.12-version
    (base32 "1vdsr9y4gckknrbqcjyfakwva3k0vb5zcivzk3k1s9mh7qp9dils")
-   (base32 "1p1jzrci97sipjdx3h0vmdnw35z2vyvczinxmp65xi1ja7ww0g14")))
+   (base32 "1kb98sbn6lgf5cpd2f8mav93hxh0aywybfjzxx35294ipll1264y")))
 (define-public linux-libre-5.12-pristine-source
   (let ((version linux-libre-5.12-version)
-        (hash (base32 "1a1ymbgkp8ngrkf7cfjrn56zb9qz1mm1j1pmd60g85ln7nyb4ai1")))
+        (hash (base32 "1ghyqxfxslxzr7273vj2yn14pkdnkja3wk50xxhavpvf87i8c40j")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.12)))
@@ -371,20 +384,20 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.45")
+(define-public linux-libre-5.10-version "5.10.50")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
    (base32 "1rmnx1px4sizs2lq831yd2g9dyflg0vmykz3cv9443x2a2vwy81f")
-   (base32 "1zsr02zmpx3968277sy8pfs2mdlgh86ifymwyj0r56wnhzf5q6hk")))
+   (base32 "1fdvjhc048nk8v27bgir0fdjqm8hn4yfdgd3mdjird4ary80ywb2")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "01rmw5rnxyybr8sh0v9rgamrg71ign2nr7m0ilrq9704k6dj9dzj")))
+        (hash (base32 "0dmlpy9k7am99495bxcm46i4y6g34d1fzdkzz3wgzb4mgmx35nlb")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.127")
+(define-public linux-libre-5.4-version "5.4.132")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -392,12 +405,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1gr89x1ymxaslp9fqcchaa7939yvhxy67z3pgskmx6z2vrd9pgd0")))
+        (hash (base32 "1vq0dmrn7gl2vprm08l8by5ja3xjgggrcd38vqg7b7jpnfzssrl4")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.195")
+(define-public linux-libre-4.19-version "4.19.197")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -405,12 +418,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "02rdy5mdmwxli0cin5n7ab492y9fs01hhqxrjq6b4idwv5baa42m")))
+        (hash (base32 "10kj442qaky6rpl65k5rrvd3p6mdgz4p321zvf4s312ixfdja0g6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.237")
+(define-public linux-libre-4.14-version "4.14.239")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -418,12 +431,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0kib9p61hhwjbr8zhir9aw86qik7k6bm95503n3k09ayyachajpq")))
+        (hash (base32 "167zwm3giizv42m0xjz71xnb2swlwiaw0xw0dg8j8mb74hz1drx0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.273")
+(define-public linux-libre-4.9-version "4.9.275")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -431,12 +444,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0jjarv3xfkc21j1xhgch53w8wm6rq3xw1i03rjw9fv5i9k4x6qsw")))
+        (hash (base32 "08mz7mzmhk5n1gwadrc5fw8s40jk0rayvdpjcricl4sv56574lb6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.273")
+(define-public linux-libre-4.4-version "4.4.275")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -444,7 +457,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1pd39cak0zhda3m9nvn9yxgd070wxvckaha5wl8pi7c8i6jfpclb")))
+        (hash (base32 "1aiwq6019sibsw5smj6ii28cr64dv24c19k4n8c09nakhmhcg94i")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -476,6 +489,14 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.13-source
+  (source-with-patches linux-libre-5.13-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.12-source
   (source-with-patches linux-libre-5.12-pristine-source
@@ -594,6 +615,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.13
+  (make-linux-libre-headers* linux-libre-5.13-version
+                             linux-libre-5.13-source))
 
 (define-public linux-libre-headers-5.12
   (make-linux-libre-headers* linux-libre-5.12-version
@@ -894,6 +919,12 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.13
+  (make-linux-libre* linux-libre-5.13-version
+                     linux-libre-5.13-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
 (define-public linux-libre-5.12
   (make-linux-libre* linux-libre-5.12-version
                      linux-libre-5.12-source
@@ -1185,6 +1216,120 @@ It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
+(define-public corefreq
+  (package
+    (name "corefreq")
+    (version "1.86.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cyring/CoreFreq")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k8pyxcahc78kcc8q1h76dr91i1r33jciqhgkajkz3xa28qx8mhn"))))
+    (build-system linux-module-build-system)
+    (outputs (list "out" "linux-module"))
+    (arguments
+     `(#:imported-modules ((guix build gnu-build-system)
+                           ,@%linux-module-build-system-modules)
+       #:modules ((guix build linux-module-build-system)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  (guix build utils))
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "OPTIM_LVL=3"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'untangle-module-targets
+           ;; Having to build everything in one pass would complicate the
+           ;; definition.  Let each build system handle what it's good at.
+           (lambda _
+             (substitute* "Makefile"
+               ((".*MAKE.*KERNELDIR.*") ""))))
+         (add-after 'build 'gnu:build
+           (assoc-ref gnu:%standard-phases 'build))
+         (add-after 'install 'gnu:install
+           (assoc-ref gnu:%standard-phases 'install))
+         (add-after 'install 'separate-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Adding INSTALL_MOD_PATH= to #:make-flags would still create an
+             ;; empty <out>/lib/modules directory, so just do it all by hand.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (module (assoc-ref outputs "linux-module")))
+               (mkdir-p (string-append module "/lib"))
+               (rename-file (string-append out    "/lib/modules")
+                            (string-append module "/lib/modules")))))
+         (add-after 'install 'install-README
+           ;; There is no proper documentation.  Provide something.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/"
+                                        ,name "-" ,version)))
+               (install-file "README.md" doc)))))))
+    (home-page "https://github.com/cyring/CoreFreq")
+    (synopsis
+     "Measure performance data & tweak low-level settings on x86-64 CPUs")
+    (description
+     "CoreFreq is a CPU monitor that reports low-level processor settings and
+performance data with notably high precision by using a loadable Linux kernel
+module.  Unlike most similar tools, it can be used to modify some settings if
+supported by the hardware and at your own risk.  It's designed for 64-bit x86
+Intel processors (Atom, Core2, Nehalem, SandyBridge, and newer) and compatible
+architectures like AMD@tie{}Zen and Hygon@tie{}Dhyana.
+
+Supported processor features include:
+@enumerate
+@item time spent in C-states, including C1/C3 Auto- and UnDemotion;
+@item core temperatures, voltage, and tweaking thermal limits;
+@item core frequencies, ratios, and base clock rate;
+@item enabling, disabling, and testing SpeedStep (EIST), Turbo Boost, and
+Hyper-Threading or SMT;
+@item enabling or disabling data cache prefetching;
+@item kernel assembly code to keep as near as possible readings of performance
+counters such as the @acronym{TSC, Time Stamp Counter}, @acronym{UCC, Unhalted
+Core Cycles}, and @acronym{URC, Unhalted Reference Cycles};
+@item the number of instructions per cycle or second (IPS, IPC, and CPI);
+@item memory controller geometry and RAM timings;
+@item running processes' CPU affinity.
+@end enumerate
+
+This package provides the @command{corefreqd} data collection daemon, the
+@command{corefreq-cli} client to visualise and control it in real time, and the
+@code{corefreqk} kernel module in its own separate output.  Read the included
+@file{README.md} before loading it.")
+    (supported-systems (list "x86_64-linux"))
+    (license license:gpl2)))
+
+(define-public librem-ec-acpi-linux-module
+  (package
+    (name "librem-ec-acpi-linux-module")
+    (version "0.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://source.puri.sm/nicole.faerber/librem-ec-acpi-dkms")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qnbfj60i8nn2ahgj2zp5ixd79bb0wl1ld36x3igws2f3c0f5pfi"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no test suite
+    (home-page "https://source.puri.sm/nicole.faerber/librem-ec-acpi-dkms")
+    (synopsis "Linux kernel module to control the Librem Embedded Controller")
+    (description
+     "This is the Linux kernel @acronym{ACPI, Advanced Configuration and Power
+Interface} platform driver for the @acronym{EC, Embedded Controller} firmware
+on Purism Librem laptop computers.  It allows user-space control over the
+battery charging thresholds, keyboard backlight, fans and thermal monitors,
+and the notification, WiFi, and Bluetooth LED.")
+    (license license:gpl2)))
+
 (define-public rtl8812au-aircrack-ng-linux-module
   (let ((commit "059e06a51be025fde5b2bec6565540b3d9981b0b")
         (revision "4"))
@@ -1269,23 +1414,26 @@ network adapters.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20200106")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "10rlvsfj0fw6n0qmwcnvhimqnsnhi7n55lyl7fq1pkwggf5218sr"))))
+    (version "20210418")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "119zgav6caialmf3hr096wkf72l9h76sqc9w5dhx26kj4yp85g8q"))))
     (build-system linux-module-build-system)
     (arguments
-     ;; TODO: No tests?
-     `(#:tests? #f))
+     `(#:tests? #f))                    ; no test suite
     (home-page "https://cdemu.sourceforge.io/")
-    (synopsis "Kernel module that emulates SCSI devices")
-    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
-between the CDemu userspace daemon and linux kernel.")
+    (synopsis "Linux kernel module that emulates SCSI devices")
+    (description
+     "The @acronym{VHBA, Virtual SCSI Host Bus Adapter} module is the link
+between the CDemu user-space daemon and the kernel Linux.  It acts as a
+low-level SCSI driver that emulates a virtual SCSI adapter which can have
+multiple virtual devices attached to it.  Its typical use with CDEmu is to
+emulate optical devices such as DVD and CD-ROM drives.")
     (license license:gpl2+)))
 
 (define-public bbswitch-module
@@ -1509,14 +1657,14 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public powerstat
   (package
     (name "powerstat")
-    (version "0.02.25")
+    (version "0.02.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://kernel.ubuntu.com/~cking/tarballs/"
                            "powerstat/powerstat-" version ".tar.gz"))
        (sha256
-        (base32 "0dmixbxm4qd08ds26i0wvxwyy8nrjzfjj2q9ylx35564g4wh58qb"))))
+        (base32 "18m85k83hryj05vix63fay1hh0sb9h87hy5r7g1dqg2y9i8lzgxk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1525,12 +1673,6 @@ at login.  Local and dynamic reconfiguration are its key features.")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'respect-$prefix
-           ;; https://bugs.launchpad.net/ubuntu/+source/powerstat/+bug/1877744
-           (lambda _
-             (substitute* "Makefile"
-               (("DIR=/usr/") "DIR=$(prefix)/"))
-             #t))
          (delete 'configure))))         ; no configure script
     (home-page "https://kernel.ubuntu.com/~cking/powerstat/")
     (synopsis "Measure system power consumption")
@@ -2501,7 +2643,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.12.0")
+    (version "5.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2509,7 +2651,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0vrjbzhwzcvaxyyhkr2ii89w2vznzwp2pfgk7w72mviniawqs9lx"))))
+                "0dhvdybfm33q9lz73sfnc24pxy2r42xywzb1gdgydjfafhvyb8kj"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
@@ -2978,7 +3120,9 @@ processes currently causing I/O.")
                 "1ddlq6kzxilccgbvxjfx80jx6kamgw4sv49phks2zhlcc1frvrnh"))
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux)))
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("util-linux" ,util-linux)))
     (arguments
      '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
                                               (assoc-ref %outputs "out")
@@ -3001,9 +3145,9 @@ processes currently causing I/O.")
                (("/bin/(u?)mount" _ maybe-u)
                 (string-append (assoc-ref inputs "util-linux")
                                "/bin/" maybe-u "mount")))
-             (substitute* '("util/mount.fuse.c")
-               (("/bin/sh")
-                (which "sh")))
+             (substitute* "util/mount.fuse.c"
+               (("/bin/sh" command)
+                (string-append (assoc-ref inputs "bash-minimal") command)))
 
              ;; This hack leads libfuse to search for 'fusermount' in
              ;; $PATH, where it may find a setuid-root binary, instead of
@@ -3011,8 +3155,7 @@ processes currently causing I/O.")
              ;; it's not setuid.
              (substitute* "lib/Makefile"
                (("-DFUSERMOUNT_DIR=[[:graph:]]+")
-                "-DFUSERMOUNT_DIR=\\\"/var/empty\\\""))
-             #t)))))
+                "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))))))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
@@ -3602,7 +3745,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public interception-tools
   (package
     (name "interception-tools")
-    (version "0.6.4")
+    (version "0.6.6")
     (home-page "https://gitlab.com/interception/linux/tools")
     (source (origin
               (method git-fetch)
@@ -3612,7 +3755,7 @@ devices that can inject events directly into the input subsystem.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "121jy40ynkbzlqnx7g0dqwvkb7dm2ahcy6vwrz6ylsyd0jmi6s5a"))))
+                "0k9h14a9d65nwvv7pj0kigjgzfv453mm3r4svnxfg1h5lccmy8jj"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost)
@@ -5134,7 +5277,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.12.1")
+    (version "5.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5142,7 +5285,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0n9p8zaz4nrkgc20cp6zj7gp4ib4hd4lbyph74f4pysllkz4c24m"))))
+                "0hsqbv7kvw5j2669xmp226cf7mgdfyq6xg8vjhm5w9ix43922aaf"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5855,7 +5998,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.12")
+    (version "6.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -5863,7 +6006,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z4j3kqh9k3zsrx6257hwh4fa51vqg79c6dnfrj6lhpcll0wh0hm"))))
+                "0m4895f44a668r0z7md5ifq7syndsb2by2dfhk794vmhprsk1406"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Disable support for various hardware entropy sources as they need
@@ -6486,6 +6629,8 @@ set the screen to be pitch black at a value of 0 (or higher).
          (delete 'configure)
          (add-after 'unpack 'adjust-udev-rules
            (lambda _
+             (substitute* "Makefile"
+               (("INSTALL_UDEV_RULES=0") "INSTALL_UDEV_RULES=1"))
              (substitute* "90-brightnessctl.rules"
                (("/bin/") "/run/current-system/profile/bin/"))
              #t)))))
@@ -6738,7 +6883,9 @@ userspace queueing component and the logging subsystem.")
 (define-public proot
   (package
     (name "proot")
-    (version "5.1.0")
+    ;; The last stable release was made in 2015, and fails to build for
+    ;; the aarch64 platform.
+    (version "5.2.0-alpha")
     (source
      (origin
        (method git-fetch)
@@ -6747,32 +6894,33 @@ userspace queueing component and the logging subsystem.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0azsqis99gxldmbcg43girch85ysg4hwzf0h1b44bmapnsm89fbz"))
-       (patches (search-patches "proot-test-fhs.patch"))))
+        (base32 "09vp806y4hqfq2fn2hpi873rh4j6a3c572ph4mkirx1n32wj8srl"))))
     (build-system gnu-build-system)
+    ;; The powerpc64le-linux and mips64el-linux architectures are not
+    ;; supported (see:
+    ;; https://github.com/proot-me/proot/blob/master/src/arch.h#L51).
+    (supported-systems '("x86_64-linux" "i686-linux"
+                         "armhf-linux" "aarch64-linux" "i586-gnu"))
     (arguments
-     '(#:make-flags '("-C" "src")
-
+     ;; Disable the test suite on ARM platforms, as there are too many
+     ;; failures to keep track of (see for example:
+     ;; https://github.com/proot-me/proot/issues/263).
+     `(#:tests? ,(not (string-match "^(arm|aarch64)"
+                                    (or (%current-target-system)
+                                        (%current-system))))
+       #:make-flags '("-C" "src")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'set-shell-file-name
+                  (add-after 'unpack 'patch-sources
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* (find-files "src" "\\.[ch]$")
                         (("\"/bin/sh\"")
-                         (string-append "\""
-                                        (assoc-ref inputs "bash")
+                         (string-append "\"" (assoc-ref inputs "bash")
                                         "/bin/sh\"")))
-                      #t))
-                  (add-before 'check 'fix-fhs-assumptions-in-tests
-                    (lambda _
-                      (substitute* "tests/test-c6b77b77.mk"
-                        (("/bin/bash") (which "bash"))
-                        (("/usr/bin/test") (which "test")))
-                      (substitute* '("tests/test-16573e73.c")
-                        (("/bin/([a-z-]+)" _ program)
-                         (which program)))
 
-                      (substitute* (find-files "tests" "\\.sh$")
+                      (substitute* "src/GNUmakefile"
+                        (("/bin/echo") (which "echo")))
+
+                      (substitute* (find-files "test" "\\.sh$")
                         ;; Some of the tests try to "bind-mount" /bin/true.
                         (("-b /bin/true:")
                          (string-append "-b " (which "true") ":"))
@@ -6782,30 +6930,65 @@ userspace queueing component and the logging subsystem.")
                         (("/bin/sh") (which "sh"))
                         ;; Others assume /etc/fstab exists.
                         (("/etc/fstab") "/etc/passwd"))
-
-                      (substitute* "tests/GNUmakefile"
+                      (substitute* "test/GNUmakefile"
                         (("-b /bin:") "-b /gnu:"))
+                      (substitute* "test/test-c6b77b77.mk"
+                        (("/bin/bash") (which "bash"))
+                        (("/usr/bin/test") (which "test")))
+                      (substitute* "test/test-16573e73.c"
+                        (("/bin/([a-z-]+)" _ program)
+                         (which program)))
+                      (substitute* "test/test-d2175fc3.sh"
+                        (("\\^/bin/true\\$") "$(which true)"))
+                      (substitute* "test/test-5467b986.sh"
+                        (("-w /usr") "-w /gnu")
+                        (("-w usr") "-w gnu")
+                        (("/usr/share") "/gnu/store")
+                        (("share") "store"))
+                      (substitute* "test/test-092c5e26.sh"
+                        (("-q echo ")
+                         "-q $(which echo) "))
+
+                      ;; The following tests are known to fail (see:
+                      ;; https://github.com/proot-me/proot/issues/184).
+                      (delete-file "test/test-0228fbe7.sh")
+                      (delete-file "test/test-2db65cd2.sh")
+
+                      ;; This one fails with "bind: Address already in use"
+                      ;; (see: https://github.com/proot-me/proot/issues/260).
+                      (delete-file "test/test-ssssssss.c")
+
+                      ;; This one fails on a waitpid call that returns 1 (see:
+                      ;; https://github.com/proot-me/proot/issues/261).
+                      (delete-file "test/test-ptrace01.c")
 
                       ;; XXX: This test fails in an obscure corner case, just
                       ;; skip it.
-                      (delete-file "tests/test-kkkkkkkk.c")
+                      (delete-file "test/test-kkkkkkkk.c")
 
-                      #t))
-                  (replace 'check
+                      ;; The socket tests requires networking.
+                      (for-each delete-file
+                                (find-files "test" "test-socket.*\\.sh$"))))
+                  (delete 'configure)
+                  (add-after 'build 'build-manpage
                     (lambda _
-                      (let ((n (parallel-job-count)))
-                        ;; For some reason we get lots of segfaults with
-                        ;; seccomp support (x86_64, Linux-libre 4.11.0).
-                        (setenv "PROOT_NO_SECCOMP" "1")
-
-                        ;; Most of the tests expect "/bin" to be in $PATH so
-                        ;; they can run things that live in $ROOTFS/bin.
-                        (setenv "PATH"
-                                (string-append (getenv "PATH") ":/bin"))
-
-                        (invoke "make" "check" "-C" "tests"
-                                ;;"V=1"
-                                "-j" (number->string n)))))
+                      (with-directory-excursion "doc"
+                        (invoke "make" "proot/man.1" "SUFFIX=.py"))))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (let ((n (parallel-job-count)))
+                          ;; There are lots of segfaults with seccomp support
+                          ;; (x86_64, Linux-libre 4.11.0) (see:
+                          ;; https://github.com/proot-me/proot/issues/106).
+                          (setenv "PROOT_NO_SECCOMP" "1")
+                          ;; Most of the tests expect "/bin" to be in $PATH so
+                          ;; they can run things that live in $ROOTFS/bin.
+                          (setenv "PATH"
+                                  (string-append (getenv "PATH") ":/bin"))
+                          (invoke "make" "check" "-C" "test"
+                                  ;;"V=1"
+                                  "-j" (number->string n))))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; The 'install' rule does nearly nothing.
@@ -6815,25 +6998,22 @@ userspace queueing component and the logging subsystem.")
                         ;; build currently.)
                         (invoke "make" "-C" "src" "install"
                                 (string-append "PREFIX=" out))
-
                         (mkdir-p man1)
                         (copy-file "doc/proot/man.1"
-                                   (string-append man1 "/proot.1"))
-                        #t))))))
+                                   (string-append man1 "/proot.1"))))))))
     (native-inputs `(("which" ,which)
-
                      ;; For 'mcookie', used by some of the tests.
                      ("util-linux" ,util-linux)
-
                      ;; XXX: Choose the old coreutils because its 'stat'
                      ;; program does not use statx(2) when running 'stat -c
-                     ;; %a' or similar, which PRoot doesn't properly support.
+                     ;; %a' or similar, which PRoot doesn't properly support
+                     ;; (see: https://github.com/proot-me/proot/issues/262).
                      ("coreutils-old" ,coreutils-8.30)
-
-                     ;; XXX: 'test-c6b77b77.sh' runs 'make' and that leads
-                     ;; make 4.3 to segfault.
-                     ("make-old" ,gnu-make-4.2)))
-    (inputs `(("talloc" ,talloc)))
+                     ("pkg-config" ,pkg-config)
+                     ;; For rst2man, used to generate the manual page.
+                     ("python-docutils" ,python-docutils)))
+    (inputs `(("libarchive" ,libarchive)
+              ("talloc" ,talloc)))
     (home-page "https://github.com/proot-me/PRoot")
     (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
     (description
@@ -6938,7 +7118,7 @@ the MTP device as a file system.")
 (define-public procenv
   (package
    (name "procenv")
-   (version "0.55")
+   (version "0.58")
    (source
     (origin
      (method git-fetch)
@@ -6947,7 +7127,7 @@ the MTP device as a file system.")
             (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "13fnr4gfj2xlxghw93m5gsxzlwzv3s6jv9hja0w0pb23hlncbmhy"))))
+      (base32 "137n630qzml4yraqzp2fij8nzn8341nf8d58yzfhk8ddlzi60sfm"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
@@ -6960,7 +7140,8 @@ the MTP device as a file system.")
       ("libcap" ,libcap)
       ("libselinux" ,libselinux)))
    (synopsis "Utility to show process environment")
-   (description "Procenv is a command-line tool that displays as much detail about
+   (description
+    "Procenv is a command-line tool that displays as much detail about
 itself and its environment as possible.  It can be used as a test
 tool, to understand the type of environment a process runs in, and for
 comparing system environments.")
@@ -7710,7 +7891,7 @@ of Linux application development.")
 (define-public ell
   (package
     (name "ell")
-    (version "0.40")
+    (version "0.41")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7719,7 +7900,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zzpbfdpmfldd7w0h7mwbq0mfqgqwz54nqbq0rmbqlqqpwlkrgb2"))))
+                "14scs8vqpcf2810gvabsplg9yzh9y4sz47407bjy6vd604z3w8ah"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -7750,14 +7931,14 @@ platforms, it is not limited to resource-constrained systems.")
 (define-public lttng-ust
   (package
     (name "lttng-ust")
-    (version "2.11.0")
+    (version "2.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-ust/"
                                   "lttng-ust-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n646yz7882svf5a4ay3vqiiz3qjn3pgkkij9kk22871wp7q0ck8"))))
+                "1iwz6p79zvibj8sl8qqw84lcir9a8z1ylq77hhnwg26anrjg1l5w"))))
     (build-system gnu-build-system)
     (inputs
      `(("liburcu" ,liburcu)
@@ -8101,7 +8282,7 @@ kernel side implementation.")
 (define-public erofs-utils
   (package
     (name "erofs-utils")
-    (version "1.2.1")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -8110,7 +8291,7 @@ kernel side implementation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vb4mxsb59g29x7l22cffsqa8x743sra4j5zbmx89hjwpwm9vvcg"))))
+        (base32 "0sqiw05zbxr6l0g9gn3whkc4qc5km2qvfg4lnm08nppwskm8yaw8"))))
     (build-system gnu-build-system)
     (inputs
      `(("lz4" ,lz4)
@@ -8121,8 +8302,9 @@ kernel side implementation.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
-    (synopsis "User-space tools for EROFS file system")
-    (description "EROFS (Enhanced Read-Only File System) is a compressed,
+    (synopsis "User-space tools for the EROFS file system")
+    (description
+     "@acronym{EROFS, The Enhanced Read-Only File System} is a compressed,
 read-only file system optimized for resource-scarce devices.  This package
 provides user-space tools for creating EROFS file systems.")
     (license license:gpl2+)))

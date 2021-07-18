@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,9 +34,13 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages docker))
 
 (define-public python-jupyter-protocol
   (package
@@ -309,4 +314,71 @@ are interactive HTML widgets for Jupyter notebooks and the IPython kernel.")
     (description
      "This package provides a client library for executing notebooks. Formerly
 nbconvert's @code{ExecutePreprocessor.}")
+    (license license:bsd-3)))
+
+(define-public repo2docker
+  (package
+    (name "repo2docker")
+    (version "2021.03.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jupyterhub/repo2docker/")
+                    (commit "2021.03.0")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18w8rgf7fpf79kx36y2c3xi3d52i41z112l3sz719d8kg0bir16m"))))
+    (outputs '("out" "doc"))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'patch-shebangs 'fix-install-miniforge
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (substitute* (find-files
+                                      out "^(install-miniforge|install-nix|\
+nix-shell-wrapper|repo2docker-entrypoint)")
+                          (("^#!(.*)/bin/bash")
+                           "#!/bin/bash"))
+                        (substitute* (find-files out "^freeze\\.py$")
+                          (("^#!(.*)/bin/python3")
+                           "#!/bin/python3\n")))))
+                  (add-after 'install 'make-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "doc"))
+                             (doc (string-append out "/share/doc/"
+                                                 ,name)))
+                        (setenv "PYTHONPATH"
+                                (string-append (getcwd) ":"
+                                               (getenv "PYTHONPATH")))
+                        (with-directory-excursion "docs"
+                          (invoke  "make" "html")
+                          (copy-recursively "build/html"
+                                            (string-append doc "/html")))))))))
+    (inputs
+     `(("python-traitlets" ,python-traitlets)
+       ("python-toml" ,python-toml)
+       ("python-semver" ,python-semver)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-requests" ,python-requests)
+       ("python-json-logger" ,python-json-logger)
+       ("python-jinja2" ,python-jinja2)
+       ("python-escapism" ,python-escapism)
+       ("python-docker" ,python-docker)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("python-recommonmark" ,python-recommonmark)
+       ("python-sphinxcontrib-autoprogram" ,python-sphinxcontrib-autoprogram)
+       ("python-pydata-sphinx-theme" ,python-pydata-sphinx-theme)))
+    (home-page "https://repo2docker.readthedocs.io/en/latest/index.html#")
+    (synopsis "Generate docker images from repositories")
+    (description
+     "repo2docker fetches a repository (from GitHub, GitLab, Zenodo, Figshare,
+Dataverse installations, a Git repository or a local directory) and builds a
+container image in which the code can be executed.  The image build process is
+based on the configuration files found in the repository.  repo2docker can be
+used to explore a repository locally by building and executing the constructed
+image of the repository, or as a means of building images that are pushed to a
+Docker registry.")
     (license license:bsd-3)))

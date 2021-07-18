@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -185,9 +186,12 @@ or #f if it could not be determined."
                                  #:key display-missing?)
   "Report the subset of ITEMS available as substitutes on SERVER.
 When DISPLAY-MISSING? is true, display the list of missing substitutes.
-Return the coverage ratio, an exact number between 0 and 1."
+Return the coverage ratio, an exact number between 0 and 1.
+In case ITEMS is an empty list, return 1 instead."
   (define MiB (* (expt 2 20) 1.))
 
+  ;; TRANSLATORS: it is quite possible zero store items are
+  ;; looked for.
   (format #t (G_ "looking for ~h store items on ~a...~%")
           (length items) server)
 
@@ -208,9 +212,10 @@ Return the coverage ratio, an exact number between 0 and 1."
                                  narinfos))
           (time      (+ (time-second time)
                         (/ (time-nanosecond time) 1e9))))
-      (format #t (G_ "  ~,1f% substitutes available (~h out of ~h)~%")
-              (* 100. (/ obtained requested 1.))
-              obtained requested)
+      (when (> requested 0)
+        (format #t (G_ "  ~,1f% substitutes available (~h out of ~h)~%")
+                (* 100. (/ obtained requested 1.))
+                obtained requested))
       (let ((total (/ (reduce + 0 sizes) MiB)))
         (match (length sizes)
           ((? zero?)
@@ -299,7 +304,9 @@ are queued~%")
 
       ;; Return the coverage ratio.
       (let ((total (length items)))
-        (/ (- total (length missing)) total)))))
+        (if (> total 0)
+            (/ (- total (length missing)) total)
+            1)))))
 
 
 ;;;

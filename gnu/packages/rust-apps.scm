@@ -377,6 +377,67 @@ for distinguishing different kinds of bytes such as NULL bytes, printable ASCII
 characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
     (license (list license:expat license:asl2.0))))
 
+(define-public hyperfine
+  (package
+    (name "hyperfine")
+    (version "1.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hyperfine" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0m5lrvx6wwkxqdc5digm1k4diiaqcg5j4pia77s5nw1aam7k51hy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.46
+       #:modules ((guix build cargo-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-colored" ,rust-colored-2)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-indicatif" ,rust-indicatif-0.15)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rust-decimal" ,rust-rust-decimal-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-statistical" ,rust-statistical-1)
+        ("rust-version-check" ,rust-version-check-0.9)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'install 'install-more
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out   (assoc-ref outputs "out"))
+                   (share (string-append out "/share/"))
+                   (man   (string-append share "man/man1"))
+                   (bash  (string-append share "bash-completion/completions"))
+                   (fish  (string-append share "fish/vendor_completions.d"))
+                   (zsh   (string-append share "zsh/site-functions")))
+              (install-file "doc/hyperfine.1" man)
+              (for-each (cut install-file <> bash)
+                        (find-files "target/release/build" "^hyperfine.bash$"))
+              (rename-file (string-append bash "/hyperfine.bash")
+                           (string-append bash "/hyperfine"))
+              (for-each (cut install-file <> fish)
+                        (find-files "target/release/build" "^hyperfine.fish$"))
+              (for-each (cut install-file <> zsh)
+                        (find-files "target/release/build" "^_hyperfine$"))))))))
+    (home-page "https://github.com/sharkdp/hyperfine")
+    (synopsis "Command-line benchmarking tool")
+    (description
+     "This package provides a command-line benchmarking tool.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public ripgrep
   (package
     (name "ripgrep")
@@ -587,14 +648,14 @@ gitignore rules.")
 (define-public tectonic
   (package
     (name "tectonic")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1x6i97dl28y6wxpq2r4dcsa853sa4yw5vhl79qdb44q5wsd6ba1f"))))
+        (base32 "0rjkfmbam81anpdqs2qafcmd5bf7y898c8a7iqqqwkbl1hfw4sqs"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.52
@@ -610,6 +671,7 @@ gitignore rules.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-md-5" ,rust-md-5-0.9)
         ("rust-open" ,rust-open-1)
+        ("rust-quick-xml" ,rust-quick-xml-0.22)
         ("rust-serde" ,rust-serde-1)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-structopt" ,rust-structopt-0.3)

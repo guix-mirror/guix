@@ -44,6 +44,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages nfs)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -200,6 +202,53 @@ another location, similar to @command{mount --bind}.  It can be used for:
 @end itemize ")
     (license license:gpl2+)))
 
+(define-public cachefilesd-inotify
+  (package
+    (name "cachefilesd-inotify")
+    (version "0.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/tomalok/cachefilesd-inotify")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qkrpz69ql6fb3fwh0l35hhf9znnqyxhgv5fzd1gl2a2kz13rq5a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             ;; The Makefile doesn't support prefix= or similar.
+             (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             "MANDIR=/share/man")
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://gitlab.com/tomalok/cachefilesd-inotify")
+    (synopsis
+     "CacheFiles file system cache management daemon (using @code{inotify})")
+    (description
+     "This package provides the user space component of CacheFiles, a caching
+back end that uses a directory on a locally mounted file system (such as ext4)
+as a cache to speed up (by reducing) access to a slower file system and make it
+appear more reliable.
+
+The cached file system is often a network file system such as NFS or CIFS, but
+can also be a local file system like ISO 9660 on a slow optical drive.
+
+CacheFiles itself is part of the kernel but relies on this user space
+@command{cachefilesd} daemon to perform maintenance tasks like culling and
+reaping stale nodes.  Only one such daemon can be running at a time, and
+communicates with the kernel through the @file{/dev/cachefiles} character
+device.
+
+This version modifies David Howells original cachefilesd---which appears
+unmaintained---to use the @code{inotify} API instead of the deprecated
+@code{dnotify} to monitor file changes.")
+    (license license:gpl2+)))
+
 (define-public davfs2
   (package
     (name "davfs2")
@@ -272,6 +321,27 @@ and the WebDAV protocol are quite different.  Translating between the two is not
 always possible.")
     (license (list license:bsd-2        ; src/fuse_kernel.h
                    license:gpl3+))))    ; everything else
+
+(define-public exfat-utils
+  (package
+    (name "exfat-utils")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/relan/exfat/releases/download/v"
+             version "/exfat-utils-" version ".tar.gz"))
+       (sha256
+        (base32 "0da8f8mm1sbwqp7prh78qk33xm0b8kk2d5is7mh2szlhgdxd1syz"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/relan/exfat")
+    (synopsis "Utilities to manipulate exFAT file systems")
+    (description
+     "This package provides an implementation of the exFAT file system,
+including command-line tools to validate exFAT file systems and to create new
+ones.")
+    (license license:gpl2+)))
 
 (define-public fsarchiver
   (package
@@ -1101,7 +1171,7 @@ with the included @command{xfstests-check} helper.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.0.4")
+    (version "2.0.5")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -1110,7 +1180,7 @@ with the included @command{xfstests-check} helper.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0v2zshimz5miyj8mbskb52pnzyl1s4rhpr6208zq549v8g2l84vx"))))
+           (base32 "1jbfm18hh9x4a9s5d7si8lapmq2aniphyriif9flrgsff26lj5rs"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -1308,41 +1378,44 @@ On Guix System, you will need to invoke the included shell scripts as
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.32.4")
+    (version "2.32.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/trapexit/mergerfs/releases/download/"
-                           version "/mergerfs-" version ".tar.gz"))
+       (uri (string-append "https://github.com/trapexit/mergerfs/"
+                           "releases/download/" version "/"
+                           "mergerfs-" version ".tar.gz"))
        (sha256
-        (base32
-         "0yz7nljx6axcj6hb09sgc0waspgfhp535228rjqvqgyd8y74jc3s"))))
+        (base32 "08gwi094ll0b7nf2i44fyjxiyvr45rp766npbdyw0yzyigas8a2f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; No tests exist.
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "CXX=" ,(cxx-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                     ; all require a kernel with FUSE loaded
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'fix-paths
+         (delete 'configure)            ; no configure script
+         (add-after 'unpack 'set-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
-             ;; These were copied from the package libfuse.
-             (substitute* '("libfuse/lib/mount_util.c" "libfuse/util/mount_util.c")
+             (substitute* "libfuse/Makefile"
+               (("/sbin") "$(EXEC_PREFIX)/sbin")
+               (("chown") "true")  ; disallowed in the build environment
+               (("strip") "true")) ; breaks cross-compilation
+             ;; These were copied from the fuse package.
+             (substitute* '("libfuse/lib/mount_util.c"
+                            "libfuse/util/mount_util.c")
                (("/bin/(u?)mount" _ maybe-u)
                 (string-append (assoc-ref inputs "util-linux")
                                "/bin/" maybe-u "mount")))
              (substitute* '("libfuse/util/mount.mergerfs.c")
-               (("/bin/sh")
-                (which "sh")))
-             ;; The Makefile does not allow overriding PREFIX via make variables.
-             (substitute* '("Makefile" "libfuse/Makefile")
-               (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
-               (("= /sbin") "= $(EXEC_PREFIX)/sbin")
-               ;; cannot chown as build user
-               (("chown root(:root)?") "true"))
-             #t)))))
-    ;; mergerfs bundles a heavily modified copy of libfuse.
-    (inputs `(("util-linux" ,util-linux)))
+               (("/bin/sh" command)
+                (string-append (assoc-ref inputs "bash-minimal") command))))))))
+    ;; Mergerfs bundles a heavily modified copy of fuse.
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("util-linux" ,util-linux)))
     (home-page "https://github.com/trapexit/mergerfs")
     (synopsis "Featureful union file system")
     (description "mergerfs is a union file system geared towards simplifying
@@ -1354,12 +1427,12 @@ is similar to mhddfs, unionfs, and aufs.")
               ))))
 
 (define-public mergerfs-tools
-  (let ((commit "480296ed03d1c3c7909697d7ef96d35840ee26b8")
-        (revision "2"))
+  (let ((commit "3b6fe008517aeda715c306eaf4914f6f537da88d")
+        (revision "3"))
     (package
       (name "mergerfs-tools")
       ;; No released version exists.
-      (version (git-version "0.0" revision commit))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1368,8 +1441,7 @@ is similar to mhddfs, unionfs, and aufs.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0xr06gi4xcr832rzy0hkp5c1n231s7w5iq1nkjvx9kvm0dl7chpq"))))
+          (base32 "15pgym6c4viy57ccgp28dnqwh12f3gr02axg86y578aqa2yaa0ad"))))
       (build-system copy-build-system)
       (inputs
        `(("python" ,python)
@@ -1486,6 +1558,56 @@ local file system using FUSE.")
     (description
      "This package provides Go native bindings for the FUSE kernel module.")
     (license license:bsd-3)))
+
+(define-public rewritefs
+  (let ((revision "0")
+        ;; This is the last commit supporting our fuse@2.
+        (commit "31e2810b596028a12e49a08664567755f4b387b2"))
+    (package
+      (name "rewritefs")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sloonz/rewritefs")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0k1aas2bdq2l3a6q3fvmngpakcxiws8qny2w6z7ffngyqxh33fv7"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((srfi srfi-26)
+                    ,@%gnu-build-system-modules)
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:test-target "test"
+         #:tests? #f                   ; all require a kernel with FUSE loaded
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no configure script
+           (add-after 'install 'install-examples
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (string-append out "/share/doc/" ,name "-" ,version)))
+                 (for-each (cut install-file <> (string-append doc "/examples"))
+                           (find-files "." "^config\\."))))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("fuse" ,fuse)
+         ("pcre" ,pcre)))
+      (home-page "https://github.com/sloonz/rewritefs")
+      (synopsis "FUSE file system that changes particular file names")
+      (description
+       "RewriteFS is a @acronym{FUSE, File system in USEr space} to change the
+name of accessed files on the fly based on any number of regular expressions.
+It's like the @code{rewrite} action of many Web servers, but for your file
+system.  For example, it can help keep your home directory tidy by transparently
+rewriting the location of configuration files of software that doesn't follow
+the XDG directory specification from @file{~/.@var{name}} to
+@file{~/.config/@var{name}}.")
+      (license license:gpl2+))))
 
 (define-public tmsu
   (package

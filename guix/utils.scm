@@ -12,6 +12,8 @@
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2018 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,7 +137,9 @@
             canonical-newline-port
 
             string-distance
-            string-closest))
+            string-closest
+
+            pretty-print-table))
 
 
 ;;;
@@ -1061,6 +1065,33 @@ according to THRESHOLD, then #f is returned."
                    (values closest minimal))))
            #f +inf.0
            tests)))
+
+
+;;;
+;;; Prettified output.
+;;;
+
+(define* (pretty-print-table rows #:key (max-column-width 20))
+  "Print ROWS in neat columns.  All rows should be lists of strings and each
+row should have the same length.  The columns are separated by a tab
+character, and aligned using spaces.  The maximum width of each column is
+bound by MAX-COLUMN-WIDTH."
+  (let* ((number-of-columns-to-pad (if (null? rows)
+                                       0
+                                       (1- (length (first rows)))))
+         ;; Ignore the last column as it is left aligned and doesn't need
+         ;; padding; this prevents printing extraneous trailing spaces.
+         (column-widths (fold (lambda (row maximums)
+                                (map max (map string-length row) maximums))
+                              ;; Initial max width is 0 for each column.
+                              (make-list number-of-columns-to-pad 0)
+                              (map (cut drop-right <> 1) rows)))
+         (column-formats (map (cut format #f "~~~da" <>)
+                              (map (cut min <> max-column-width)
+                                   column-widths)))
+         (fmt (string-append (string-join column-formats "\t") "\t~a")))
+    (setvbuf (current-output-port) 'block) ;for better performance
+    (for-each (cut format #t "~?~%" fmt <>) rows)))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-progress-reporter 'scheme-indent-function 1)

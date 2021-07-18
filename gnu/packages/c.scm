@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 David Dashyan <mail@davie.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -693,3 +694,22 @@ event-driven, asynchronous network application protocols.")
 cryptographic primitives for the @acronym{AWS,Amazon Web Services} SDK.")
     (home-page "https://github.com/awslabs/aws-c-cal")
     (license license:asl2.0)))
+
+(define-public pcl
+  (package
+    (name "pcl")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+              "http://www.xmailserver.org/pcl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06ly65rq4iyj2p4704i215c8y4rgspwl8sxfaifmf4ahfr30bcz7"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.xmailserver.org/libpcl.html")
+    (synopsis "Portable Coroutine Library")
+    (description "The @acronym{PCL, Portable Coroutine Library} implements the
+low level functionality for coroutines.")
+    (license license:gpl2+)))

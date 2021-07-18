@@ -21,6 +21,7 @@
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -933,14 +934,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.34")
+    (version "2.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   "hevea-" version ".tar.gz"))
               (sha256
                (base32
-                "1pzyszxw90klpcmhjqrjfc8cw6c0gm4w2blim8ydyxb6rq6qml1s"))))
+                "1jwydkb9ldb1sx815c364dxgr569f2rbbzgxbn2kanrybpdbm2gi"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -1959,10 +1960,10 @@ to operate on the result type available from OCaml 4.03 in the standard
 library.")
     (license license:isc)))
 
-(define-public ocaml4.07-sqlite3
+(define-public ocaml-sqlite3
   (package
-    (name "ocaml4.07-sqlite3")
-    (version "4.4.1")
+    (name "ocaml-sqlite3")
+    (version "5.0.2")
     (source
      (origin
        (method git-fetch)
@@ -1972,18 +1973,16 @@ library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1536agm5fgcqysszhpd3kmw7lkc5n5ni7gmlyglrbvmnmrwf3av2"))))
+         "15mmq7ak5facpfawfrc6hjz211gli7jab52iqdsihfvh790xm55f"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-sqlite3))))
+    (propagated-inputs
+     `(("dune-configurator" ,dune-configurator)
+       ("ocaml-odoc" ,ocaml-odoc)))
     (native-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("sqlite" ,sqlite)))
+     `(("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("pkg-config" ,pkg-config)
+       ("sqlite" ,sqlite)))
     (home-page "https://mmottl.github.io/sqlite3-ocaml")
     (synopsis "SQLite3 Bindings for OCaml")
     (description
@@ -1994,6 +1993,21 @@ cases.  These bindings are written in a way that enables a friendly
 coexistence with the old (version 2) SQLite and its OCaml wrapper
 @code{ocaml-sqlite}.")
     (license license:expat)))
+
+(define-public ocaml4.07-sqlite3
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-sqlite3)
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+         (add-before 'build 'chmod
+           (lambda _
+             (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
+             #t)))))
+     (propagated-inputs
+      `(("ocaml-odoc" ,ocaml-odoc)))
+     (properties '()))))
 
 (define-public ocaml-csv
   (package
@@ -3452,7 +3466,7 @@ JSON.")
 (define-public ocaml-uri
   (package
     (name "ocaml-uri")
-    (version "4.1.0")
+    (version "4.2.0")
     (home-page "https://github.com/mirage/ocaml-uri")
     (source
      (origin
@@ -3463,7 +3477,7 @@ JSON.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10bf28my1yhj8a2d7bkgbna9j20wq0ghp92k926y29bmjj2qh0l7"))))
+         "1bgkc66cq00mgnkz3i535srwzwc4cpdsv0mly5dzvvq33451xwf0"))))
     (build-system dune-build-system)
     (arguments '(#:package "uri"
                  #:test-target "."))
@@ -4368,10 +4382,10 @@ for programming languages, but also for manipulating terms of the λ-calculus
 or quantified formulas.")
     (license license:gpl3+)))
 
-(define-public ocaml4.07-earley
+(define-public ocaml-earley
   (package
-    (name "ocaml4.07-earley")
-    (version "2.0.0")
+    (name "ocaml-earley")
+    (version "3.0.0")
     (home-page "https://github.com/rlepigre/ocaml-earley")
     (source
      (origin
@@ -4382,13 +4396,12 @@ or quantified formulas.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "18k7bi7krc4bvqnhijz1q0pfr0nfahghfjifci8rh1q4i5zd0xz5"))))
+         "1vi58zdxchpw6ai0bz9h2ggcmg8kv57yk6qbx82lh47s5wb3mz5y"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
+    (propagated-inputs
+     `(("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (synopsis "Parsing library based on Earley Algorithm")
     (description "Earley is a parser combinator library base on Earley's
 algorithm.  It is intended to be used in conjunction with an OCaml syntax
@@ -7071,6 +7084,59 @@ Graphics.open_graph is called.  This library used to be distributed with OCaml
 up to OCaml 4.08.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml-uri-sexp
+  (package
+    (inherit ocaml-uri)
+    (name "ocaml-uri-sexp")
+    (arguments
+     '(#:package "uri-sexp"
+       #:test-target "."))
+    (propagated-inputs
+      `(("ocaml-uri" ,ocaml-uri)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
+    (synopsis "RFC3986 URI/URL parsing library")
+    (description "This package adds S-exp support to @code{ocaml-uri}.")))
+
+(define-public ocaml-cohttp
+  (package
+    (name "ocaml-cohttp")
+    (version "4.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/mirage/ocaml-cohttp")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "02d7417yy1i62by368w3wyw3756047pbrw69spcvz3cd1z7vqaci"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:package "cohttp"
+       #:test-target "cohttp_test/src"))
+    (propagated-inputs
+      `(("ocaml-re" ,ocaml-re)
+        ("ocaml-uri" ,ocaml-uri)
+        ("ocaml-uri-sexp" ,ocaml-uri-sexp)
+        ("ocaml-sexplib0" ,ocaml-sexplib0)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-stringext" ,ocaml-stringext)
+        ("ocaml-base64" ,ocaml-base64)))
+    (native-inputs
+      `(("ocaml-fmt" ,ocaml-fmt)
+        ("ocaml-jsonm" ,ocaml-jsonm)
+        ("ocaml-alcotest" ,ocaml-alcotest)))
+    (home-page "https://github.com/mirage/ocaml-cohttp")
+    (synopsis "OCaml library for HTTP clients and servers")
+    (description
+      "Cohttp is an OCaml library for creating HTTP daemons.  It has a portable
+HTTP parser, and implementations using various asynchronous programming
+libraries.")
+    (license license:isc)))
+
 (define-public js-of-ocaml
   (package
     (name "js-of-ocaml")
@@ -7110,3 +7176,34 @@ up to OCaml 4.08.")
 It makes it possible to run pure OCaml programs in JavaScript environment like
 browsers and Node.js.")
     (license license:lgpl2.1+)))
+
+(define-public ocaml-bibtex2html
+  (package
+    (name "ocaml-bibtex2html")
+    (version "1.99")
+    (source
+      (origin
+        (method url-fetch)
+        (uri "https://www.lri.fr/~filliatr/ftp/bibtex2html/bibtex2html-1.99.tar.gz")
+        (sha256 (base32 "07gzrs4lfrkvbn48cgn2gn6c7cx3jsanakkrb2irj0gmjzfxl96j"))))
+    (build-system ocaml-build-system)
+    (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'patch-/bin/sh
+            (lambda _
+              (substitute* "configure" (("/bin/sh") (which "bash")))
+              (setenv "HOME" (getcwd)) ;; mktexfmt needs writable home directory
+              #t)))))
+    (native-inputs
+     `(("which" ,which)
+       ("texlive" ,(texlive-updmap.cfg
+                    (list texlive-fonts-ec texlive-preprint
+                          texlive-latex-hyperref texlive-bibtex)))))
+    (propagated-inputs
+     `(("hevea" ,hevea)))
+    (home-page "https://www.lri.fr/~filliatr/bibtex2html/")
+    (synopsis "BibTeX to HTML translator")
+    (description "This package allows you to produce, from a set of
+bibliography files in BibTeX format, a bibliography in HTML format.")
+    (license license:gpl2)))

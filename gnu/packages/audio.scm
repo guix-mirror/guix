@@ -32,7 +32,7 @@
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -984,21 +984,18 @@ tools (analyzer, mono/stereo tools, crossovers).")
 (define-public caps-plugins-lv2
   (package
     (name "caps-plugins-lv2")
-    (version "0.9.24") ; version that has been ported.
+    (version "0.9.26")
     (source
      (origin
        ;; The Github project hasn't tagged a release.
        (method git-fetch)
        (uri (git-reference
-             ;; Actually https://github.com/moddevices/caps-lv2.git, but it's
-             ;; missing fixes for newer glibc, so using the origin of a pull
-             ;; request regarding this issue:
-             (url "https://github.com/jujudusud/caps-lv2")
-             (commit "9c9478b7fbd8f9714f552ebe2a6866398b0babfb")))
+             (url "https://github.com/moddevices/caps-lv2.git")
+             (commit "5d52a0c6e8863c058c2aab2dea9f901a90d96eb9")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1idfnazin3cca41zw1a8vwgnxjnkrap7bxxjamjqvgpmvydgcam1"))))
+         "0hdl7n3ra5gqgwkdfqkw8dj9gb1cgb76bn1v91w06d2w4lj9s8xa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2348,6 +2345,18 @@ implementation of the Open Sound Control (@dfn{OSC}) protocol.")
        (sha256
         (base32 "156c2dgh6jrsyfn1y89nslvaxm4yifmxridsb708yvkaym02w2l8"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The header that pkg-config expects is include/rtaudio/RtAudio.h,
+         ;; but this package installs it as include/RtAudio.h by default.
+         (add-after 'install 'fix-inc-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (inc (string-append out "/include")))
+               (mkdir-p (string-append inc "/rtaudio"))
+               (rename-file (string-append inc "/RtAudio.h")
+                            (string-append inc "/rtaudio/RtAudio.h"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -2490,6 +2499,7 @@ files.")
         (uri (git-reference
               (url "https://github.com/NFJones/audio-to-midi")
               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
           (base32
             "12wf17abn3psbsg2r2lk0xdnk8n5cd5rrvjlpxjnjfhd09n7qqgm"))))
@@ -4566,7 +4576,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "21.06")
+    (version "21.07")
     (source
      (origin
        (method git-fetch)
@@ -4575,7 +4585,7 @@ library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1nnx4l1r5hwdaw824d4fmd558qsqa22qzpvnkhs8nkjr40cnidkr"))))
+        (base32 "0v76pvsna7dx8nb53s7x2vfpws27wi3p34l7af5niqvyh0gl4mzr"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DGSTREAMER=ON")))
@@ -5367,3 +5377,35 @@ Icecast server.")
 generator, generating audio signals out of Linux's /dev/dsp audio
 device.  There is support for mono and/or stereo and 8 or 16 bit samples.")
     (license license:gpl2)))
+
+(define-public mda-lv2
+  (package
+    (name "mda-lv2")
+    (version "1.2.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://download.drobilla.net/mda-lv2-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32 "1nspk2j11l65m5r9z5isw8j749vh9a89wgx8mkrrq15f4iq12rnd"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f  ; There are no tests.
+       #:configure-flags
+       (list (string-append "--prefix="
+                            (assoc-ref %outputs "out")))))
+    (inputs
+     `(("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "https://drobilla.net/software/mda-lv2")
+    (synopsis "Audio plug-in pack for LV2")
+    (description
+     "MDA-LV2 is an LV2 port of the MDA plugins.  It includes effects and a few
+instrument plugins.")
+    (license license:gpl3+)))

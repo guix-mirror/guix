@@ -88,7 +88,8 @@
      `(#:imported-modules
        (,@%glib-or-gtk-build-system-modules
         (guix build cmake-build-system)
-        (guix build qt-build-system))
+        (guix build qt-build-system)
+        (guix build qt-utils))
        #:modules
        ((guix build glib-or-gtk-build-system)
         ((guix build qt-build-system)
@@ -223,7 +224,8 @@ focuses especially on Korean input (Hangul, Hanja, ...).")
        #:imported-modules
        (,@%glib-or-gtk-build-system-modules
         (guix build cmake-build-system)
-        (guix build qt-build-system))
+        (guix build qt-build-system)
+        (guix build qt-utils))
        #:modules
        ((guix build glib-or-gtk-build-system)
         ((guix build qt-build-system)

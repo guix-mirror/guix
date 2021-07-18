@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
             %compressors
             lookup-compressor
             self-contained-tarball
+            debian-archive
             docker-image
             squashfs-image
 
@@ -179,22 +181,40 @@ dependencies are registered."
   (computed-file "store-database" build
                  #:options `(#:references-graphs ,(zip labels items))))
 
-(define* (self-contained-tarball name profile
-                                 #:key target
-                                 (profile-name "guix-profile")
-                                 deduplicate?
-                                 entry-point
-                                 (compressor (first %compressors))
-                                 localstatedir?
-                                 (symlinks '())
-                                 (archiver tar))
-  "Return a self-contained tarball containing a store initialized with the
-closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
-LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
-with a properly initialized store database.
+(define-syntax-rule (define-with-source (variable args ...) body body* ...)
+  "Bind VARIABLE to a procedure accepting ARGS defined as BODY, also setting
+its source property."
+  (begin
+    (define (variable args ...)
+      body body* ...)
+    (eval-when (load eval)
+      (set-procedure-property! variable 'source
+                               '(define (variable args ...) body body* ...)))))
 
-SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
-added to the pack."
+(define-with-source (manifest->friendly-name manifest)
+  "Return a friendly name computed from the entries in MANIFEST, a
+<manifest> object."
+  (let loop ((names (map manifest-entry-name
+                         (manifest-entries manifest))))
+    (define str (string-join names "-"))
+    (if (< (string-length str) 40)
+        str
+        (match names
+          ((_) str)
+          ((names ... _) (loop names))))))
+
+
+;;;
+;;; Tarball format.
+;;;
+(define* (self-contained-tarball/builder profile
+                                         #:key (profile-name "guix-profile")
+                                         (compressor (first %compressors))
+                                         localstatedir?
+                                         (symlinks '())
+                                         (archiver tar)
+                                         (extra-options '()))
+  "Return the G-Expression of the builder used for self-contained-tarball."
   (define database
     (and localstatedir?
          (file-append (store-database (list profile))
@@ -216,126 +236,114 @@ added to the pack."
     (and (not-config? module)
          (not (equal? '(guix store deduplication) module))))
 
-  (define build
-    (with-imported-modules (source-module-closure
-                            `((guix build utils)
-                              (guix build union)
-                              (gnu build install))
-                            #:select? import-module?)
-      #~(begin
-          (use-modules (guix build utils)
-                       ((guix build union) #:select (relative-file-name))
-                       (gnu build install)
-                       (srfi srfi-1)
-                       (srfi srfi-26)
-                       (ice-9 match))
+  (with-imported-modules (source-module-closure
+                          `((guix build pack)
+                            (guix build store-copy)
+                            (guix build utils)
+                            (guix build union)
+                            (gnu build install))
+                          #:select? import-module?)
+    #~(begin
+        (use-modules (guix build pack)
+                     (guix build store-copy)
+                     (guix build utils)
+                     ((guix build union) #:select (relative-file-name))
+                     (gnu build install)
+                     (srfi srfi-1)
+                     (srfi srfi-26)
+                     (ice-9 match))
 
-          (define %root "root")
+        (define %root "root")
 
-          (define symlink->directives
-            ;; Return "populate directives" to make the given symlink and its
-            ;; parent directories.
-            (match-lambda
-              ((source '-> target)
-               (let ((target (string-append #$profile "/" target))
-                     (parent (dirname source)))
-                 ;; Never add a 'directory' directive for "/" so as to
-                 ;; preserve its ownnership when extracting the archive (see
-                 ;; below), and also because this would lead to adding the
-                 ;; same entries twice in the tarball.
-                 `(,@(if (string=? parent "/")
-                         '()
-                         `((directory ,parent)))
-                   (,source
-                    -> ,(relative-file-name parent target)))))))
+        (define symlink->directives
+          ;; Return "populate directives" to make the given symlink and its
+          ;; parent directories.
+          (match-lambda
+            ((source '-> target)
+             (let ((target (string-append #$profile "/" target))
+                   (parent (dirname source)))
+               ;; Never add a 'directory' directive for "/" so as to
+               ;; preserve its ownership when extracting the archive (see
+               ;; below), and also because this would lead to adding the
+               ;; same entries twice in the tarball.
+               `(,@(if (string=? parent "/")
+                       '()
+                       `((directory ,parent)))
+                 (,source
+                  -> ,(relative-file-name parent target)))))))
 
-          (define directives
-            ;; Fully-qualified symlinks.
-            (append-map symlink->directives '#$symlinks))
+        (define directives
+          ;; Fully-qualified symlinks.
+          (append-map symlink->directives '#$symlinks))
 
-          ;; The --sort option was added to GNU tar in version 1.28, released
-          ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
-          ;; older and doesn't support it.
-          (define tar-supports-sort?
-            (zero? (system* (string-append #+archiver "/bin/tar")
-                            "cf" "/dev/null" "--files-from=/dev/null"
-                            "--sort=name")))
+        ;; Make sure non-ASCII file names are properly handled.
+        #+set-utf8-locale
 
-          ;; Make sure non-ASCII file names are properly handled.
-          #+set-utf8-locale
+        (define tar #+(file-append archiver "/bin/tar"))
 
-          ;; Add 'tar' to the search path.
-          (setenv "PATH" #+(file-append archiver "/bin"))
+        ;; Note: there is not much to gain here with deduplication and there
+        ;; is the overhead of the '.links' directory, so turn it off.
+        ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
+        ;; with hard links:
+        ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
+        (populate-store (list "profile") %root #:deduplicate? #f)
 
-          ;; Note: there is not much to gain here with deduplication and there
-          ;; is the overhead of the '.links' directory, so turn it off.
-          ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
-          ;; with hard links:
-          ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
-          (populate-single-profile-directory %root
-                                             #:profile #$profile
-                                             #:profile-name #$profile-name
-                                             #:closure "profile"
-                                             #:database #+database)
+        (when #+localstatedir?
+          (install-database-and-gc-roots %root #+database #$profile
+                                         #:profile-name #$profile-name))
 
-          ;; Create SYMLINKS.
-          (for-each (cut evaluate-populate-directive <> %root)
-                    directives)
+        ;; Create SYMLINKS.
+        (for-each (cut evaluate-populate-directive <> %root)
+                  directives)
 
-          ;; Create the tarball.  Use GNU format so there's no file name
-          ;; length limitation.
-          (with-directory-excursion %root
-            (exit
-             (zero? (apply system* "tar"
-                           #+@(if (compressor-command compressor)
-                                  #~("-I"
-                                     (string-join
-                                      #+(compressor-command compressor)))
-                                  #~())
-                           "--format=gnu"
+        ;; Create the tarball.
+        (with-directory-excursion %root
+          ;; GNU Tar recurses directories by default.  Simply add the whole
+          ;; current directory, which contains all the generated files so far.
+          ;; This avoids creating duplicate files in the archives that would
+          ;; be stored as hard links by GNU Tar.
+          (apply invoke tar "-cvf" #$output "."
+                 (tar-base-options
+                  #:tar tar
+                  #:compressor #+(and=> compressor compressor-command)))))))
 
-                           ;; Avoid non-determinism in the archive.  Use
-                           ;; mtime = 1, not zero, because that is what the
-                           ;; daemon does for files in the store (see the
-                           ;; 'mtimeStore' constant in local-store.cc.)
-                           (if tar-supports-sort? "--sort=name" "--mtime=@1")
-                           "--mtime=@1"           ;for files in /var/guix
-                           "--owner=root:0"
-                           "--group=root:0"
+(define* (self-contained-tarball name profile
+                                 #:key target
+                                 (profile-name "guix-profile")
+                                 deduplicate?
+                                 entry-point
+                                 (compressor (first %compressors))
+                                 localstatedir?
+                                 (symlinks '())
+                                 (archiver tar)
+                                 (extra-options '()))
+  "Return a self-contained tarball containing a store initialized with the
+closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
+LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
+with a properly initialized store database.
 
-                           "--check-links"
-                           "-cvf" #$output
-                           ;; Avoid adding / and /var to the tarball, so
-                           ;; that the ownership and permissions of those
-                           ;; directories will not be overwritten when
-                           ;; extracting the archive.  Do not include /root
-                           ;; because the root account might have a
-                           ;; different home directory.
-                           #$@(if localstatedir?
-                                  '("./var/guix")
-                                  '())
-
-                           (string-append "." (%store-directory))
-
-                           (delete-duplicates
-                            (filter-map (match-lambda
-                                          (('directory directory)
-                                           (string-append "." directory))
-                                          ((source '-> _)
-                                           (string-append "." source))
-                                          (_ #f))
-                                        directives)))))))))
-
+SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
+added to the pack."
   (when entry-point
     (warning (G_ "entry point not supported in the '~a' format~%")
              'tarball))
 
-  (gexp->derivation (string-append name ".tar"
-                                   (compressor-extension compressor))
-                    build
-                    #:target target
-                    #:references-graphs `(("profile" ,profile))))
+  (gexp->derivation
+   (string-append name ".tar"
+                  (compressor-extension compressor))
+   (self-contained-tarball/builder profile
+                                   #:profile-name profile-name
+                                   #:compressor compressor
+                                   #:localstatedir? localstatedir?
+                                   #:symlinks symlinks
+                                   #:archiver archiver)
+   #:target target
+   #:references-graphs `(("profile" ,profile))))
 
+
+;;;
+;;; Singularity.
+;;;
 (define (singularity-environment-file profile)
   "Return a shell script that defines the environment variables corresponding
 to the search paths of PROFILE."
@@ -362,6 +370,10 @@ to the search paths of PROFILE."
 
   (computed-file "singularity-environment.sh" build))
 
+
+;;;
+;;; SquashFS image format.
+;;;
 (define* (squashfs-image name profile
                          #:key target
                          (profile-name "guix-profile")
@@ -369,7 +381,8 @@ to the search paths of PROFILE."
                          entry-point
                          localstatedir?
                          (symlinks '())
-                         (archiver squashfs-tools))
+                         (archiver squashfs-tools)
+                         (extra-options '()))
   "Return a squashfs image containing a store initialized with the closure of
 PROFILE, a derivation.  The image contains a subset of /gnu/store, empty mount
 points for virtual file systems (like procfs), and optional symlinks.
@@ -536,6 +549,10 @@ added to the pack."
                     #:target target
                     #:references-graphs `(("profile" ,profile))))
 
+
+;;;
+;;; Docker image format.
+;;;
 (define* (docker-image name profile
                        #:key target
                        (profile-name "guix-profile")
@@ -543,7 +560,8 @@ added to the pack."
                        entry-point
                        localstatedir?
                        (symlinks '())
-                       (archiver tar))
+                       (archiver tar)
+                       (extra-options '()))
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
@@ -554,7 +572,7 @@ the image."
          (file-append (store-database (list profile))
                       "/db/db.sqlite")))
 
-  (define defmod 'define-module)                  ;trick Geiser
+  (define defmod 'define-module)        ;trick Geiser
 
   (define build
     ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
@@ -573,6 +591,8 @@ the image."
                          (guix profiles) (guix search-paths)
                          (srfi srfi-1) (srfi srfi-19)
                          (ice-9 match))
+
+            #$(procedure-source manifest->friendly-name)
 
             (define environment
               (map (match-lambda
@@ -597,19 +617,6 @@ the image."
               `((directory "/tmp" ,(getuid) ,(getgid) #o1777)
                 ,@(append-map symlink->directives '#$symlinks)))
 
-            (define tag
-              ;; Compute a meaningful "repository" name, which will show up in
-              ;; the output of "docker images".
-              (let ((manifest (profile-manifest #$profile)))
-                (let loop ((names (map manifest-entry-name
-                                       (manifest-entries manifest))))
-                  (define str (string-join names "-"))
-                  (if (< (string-length str) 40)
-                      str
-                      (match names
-                        ((_) str)
-                        ((names ... _) (loop names))))))) ;drop one entry
-
             (setenv "PATH" #+(file-append archiver "/bin"))
 
             (build-docker-image #$output
@@ -617,7 +624,8 @@ the image."
                                      (call-with-input-file "profile"
                                        read-reference-graph))
                                 #$profile
-                                #:repository tag
+                                #:repository (manifest->friendly-name
+                                              (profile-manifest #$profile))
                                 #:database #+database
                                 #:system (or #$target %host-type)
                                 #:environment environment
@@ -634,6 +642,192 @@ the image."
                     build
                     #:target target
                     #:references-graphs `(("profile" ,profile))))
+
+
+;;;
+;;; Debian archive format.
+;;;
+;;; TODO: When relocatable option is selected, install to a unique prefix.
+;;; This would enable installation of multiple deb packs with conflicting
+;;; files at the same time.
+(define* (debian-archive name profile
+                         #:key target
+                         (profile-name "guix-profile")
+                         deduplicate?
+                         entry-point
+                         (compressor (first %compressors))
+                         localstatedir?
+                         (symlinks '())
+                         (archiver tar)
+                         (extra-options '()))
+  "Return a Debian archive (.deb) containing a store initialized with the
+closure of PROFILE, a derivation.  The archive contains /gnu/store; if
+LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
+with a properly initialized store database.  The supported compressors are
+\"none\", \"gz\" or \"xz\".
+
+SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
+added to the pack.  EXTRA-OPTIONS may contain the CONFIG-FILE, POSTINST-FILE
+or TRIGGERS-FILE keyword arguments."
+  ;; For simplicity, limit the supported compressors to the superset of
+  ;; compressors able to compress both the control file (gz or xz) and the
+  ;; data tarball (gz, bz2 or xz).
+  (define %valid-compressors '("gzip" "xz" "none"))
+
+  (let ((compressor-name (compressor-name compressor)))
+    (unless (member compressor-name %valid-compressors)
+      (leave (G_ "~a is not a valid Debian archive compressor.  \
+Valid compressors are: ~a~%") compressor-name %valid-compressors)))
+
+  (when entry-point
+    (warning (G_ "entry point not supported in the '~a' format~%")
+             'deb))
+
+  (define data-tarball
+    (computed-file (string-append "data.tar"
+                                  (compressor-extension compressor))
+                   (self-contained-tarball/builder
+                    profile
+                    #:profile-name profile-name
+                    #:compressor compressor
+                    #:localstatedir? localstatedir?
+                    #:symlinks symlinks
+                    #:archiver archiver)
+                   #:local-build? #f    ;allow offloading
+                   #:options (list #:references-graphs `(("profile" ,profile))
+                                   #:target target)))
+
+  (define build
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  `((guix build pack)
+                                    (guix build utils)
+                                    (guix profiles))
+                                  #:select? not-config?))
+        #~(begin
+            (use-modules (guix build pack)
+                         (guix build utils)
+                         (guix profiles)
+                         (ice-9 match)
+                         ((oop goops) #:select (get-keyword))
+                         (srfi srfi-1))
+
+            (define machine-type
+              ;; Extract the machine type from the specified target, else from the
+              ;; current system.
+              (and=> (or #$target %host-type)
+                     (lambda (triplet)
+                       (first (string-split triplet #\-)))))
+
+            (define (gnu-machine-type->debian-machine-type type)
+              "Translate machine TYPE from the GNU to Debian terminology."
+              ;; Debian has its own jargon, different from the one used in GNU, for
+              ;; machine types (see data/cputable in the sources of dpkg).
+              (match type
+                ("i486" "i386")
+                ("i586" "i386")
+                ("i686" "i386")
+                ("x86_64" "amd64")
+                ("aarch64" "arm64")
+                ("mipsisa32r6" "mipsr6")
+                ("mipsisa32r6el" "mipsr6el")
+                ("mipsisa64r6" "mips64r6")
+                ("mipsisa64r6el" "mips64r6el")
+                ("powerpcle" "powerpcel")
+                ("powerpc64" "ppc64")
+                ("powerpc64le" "ppc64el")
+                (machine machine)))
+
+            (define architecture
+              (gnu-machine-type->debian-machine-type machine-type))
+
+            #$(procedure-source manifest->friendly-name)
+
+            (define manifest (profile-manifest #$profile))
+
+            (define single-entry        ;manifest entry
+              (match (manifest-entries manifest)
+                ((entry)
+                 entry)
+                (() #f)))
+
+            (define package-name (or (and=> single-entry manifest-entry-name)
+                                     (manifest->friendly-name manifest)))
+
+            (define package-version
+              (or (and=> single-entry manifest-entry-version)
+                  "0.0.0"))
+
+            (define debian-format-version "2.0")
+
+            ;; Generate the debian-binary file.
+            (call-with-output-file "debian-binary"
+              (lambda (port)
+                (format port "~a~%" debian-format-version)))
+
+            (define data-tarball-file-name (strip-store-file-name
+                                            #+data-tarball))
+
+            (copy-file #+data-tarball data-tarball-file-name)
+
+            ;; Generate the control archive.
+            (define control-file
+              (get-keyword #:control-file '#$extra-options))
+
+            (define postinst-file
+              (get-keyword #:postinst-file '#$extra-options))
+
+            (define triggers-file
+              (get-keyword #:triggers-file '#$extra-options))
+
+            (define control-tarball-file-name
+              (string-append "control.tar"
+                             #$(compressor-extension compressor)))
+
+            ;; Write the compressed control tarball.  Only the control file is
+            ;; mandatory (see: 'man deb' and 'man deb-control').
+            (if control-file
+                (copy-file control-file "control")
+                (call-with-output-file "control"
+                  (lambda (port)
+                    (format port "\
+Package: ~a
+Version: ~a
+Description: Debian archive generated by GNU Guix.
+Maintainer: GNU Guix
+Architecture: ~a
+Priority: optional
+Section: misc
+~%" package-name package-version architecture))))
+
+            (when postinst-file
+              (copy-file postinst-file "postinst")
+              (chmod "postinst" #o755))
+
+            (when triggers-file
+              (copy-file triggers-file "triggers"))
+
+            (define tar (string-append #+archiver "/bin/tar"))
+
+            (apply invoke tar
+                   `(,@(tar-base-options
+                        #:tar tar
+                        #:compressor #+(and=> compressor compressor-command))
+                     "-cvf" ,control-tarball-file-name
+                     "control"
+                     ,@(if postinst-file '("postinst") '())
+                     ,@(if triggers-file '("triggers") '())))
+
+            ;; Create the .deb archive using GNU ar.
+            (invoke (string-append #+binutils "/bin/ar") "-rv" #$output
+                    "debian-binary"
+                    control-tarball-file-name data-tarball-file-name)))))
+
+  (gexp->derivation (string-append name ".deb")
+    build
+    #:target target
+    #:references-graphs `(("profile" ,profile))))
 
 
 ;;;
@@ -967,7 +1161,8 @@ last resort for relocation."
   ;; Supported pack formats.
   `((tarball . ,self-contained-tarball)
     (squashfs . ,squashfs-image)
-    (docker  . ,docker-image)))
+    (docker  . ,docker-image)
+    (deb . ,debian-archive)))
 
 (define (show-formats)
   ;; Print the supported pack formats.
@@ -979,7 +1174,37 @@ last resort for relocation."
   squashfs      Squashfs image suitable for Singularity"))
   (display (G_ "
   docker        Tarball ready for 'docker load'"))
+  (display (G_ "
+  deb           Debian archive installable via dpkg/apt"))
   (newline))
+
+(define %deb-format-options
+  (let ((required-option (lambda (symbol)
+                           (option (list (symbol->string symbol)) #t #f
+                                   (lambda (opt name arg result . rest)
+                                     (apply values
+                                            (alist-cons symbol arg result)
+                                            rest))))))
+    (list (required-option 'control-file)
+          (required-option 'postinst-file)
+          (required-option 'triggers-file))))
+
+(define (show-deb-format-options)
+  (display (G_ "
+      --help-deb-format  list options specific to the deb format")))
+
+(define (show-deb-format-options/detailed)
+  (display (G_ "
+      --control-file=FILE
+                         Embed the provided control FILE"))
+  (display (G_ "
+      --postinst-file=FILE
+                         Embed the provided postinst script"))
+  (display (G_ "
+      --triggers-file=FILE
+                         Embed the provided triggers FILE"))
+  (newline)
+  (exit 0))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -1074,7 +1299,12 @@ last resort for relocation."
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
 
-         (append %transformation-options
+         (option '("help-deb-format") #f #f
+                 (lambda args
+                   (show-deb-format-options/detailed)))
+
+         (append %deb-format-options
+                 %transformation-options
                  %standard-build-options)))
 
 (define (show-help)
@@ -1083,6 +1313,8 @@ Create a bundle of PACKAGE.\n"))
   (show-build-options-help)
   (newline)
   (show-transformation-options-help)
+  (newline)
+  (show-deb-format-options)
   (newline)
   (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
@@ -1193,6 +1425,18 @@ Create a bundle of PACKAGE.\n"))
         (else
          (packages->manifest packages))))))
 
+  (define (process-file-arg opts name)
+    ;; Validate that the file exists and return it as a <local-file> object,
+    ;; else #f.
+    (let ((value (assoc-ref opts name)))
+      (match value
+        ((and (? string?) (not (? file-exists?)))
+         (leave (G_ "file provided with option ~a does not exist: ~a~%")
+                (string-append "--" (symbol->string name)) value))
+        ((? string?)
+         (local-file value))
+        (#f #f))))
+
   (with-error-handling
     (with-store store
       (with-status-verbosity (assoc-ref opts 'verbosity)
@@ -1225,8 +1469,15 @@ Create a bundle of PACKAGE.\n"))
                                        manifest)
                                       manifest)))
                    (pack-format (assoc-ref opts 'format))
-                   (name        (string-append (symbol->string pack-format)
-                                               "-pack"))
+                   (extra-options (match pack-format
+                                    ('deb
+                                     (list #:control-file
+                                           (process-file-arg opts 'control-file)
+                                           #:postinst-file
+                                           (process-file-arg opts 'postinst-file)
+                                           #:triggers-file
+                                           (process-file-arg opts 'triggers-file)))
+                                    (_ '())))
                    (target      (assoc-ref opts 'target))
                    (bootstrap?  (assoc-ref opts 'bootstrap?))
                    (compressor  (if bootstrap?
@@ -1260,7 +1511,10 @@ Create a bundle of PACKAGE.\n"))
                                     (hooks (if bootstrap?
                                                '()
                                                %default-profile-hooks))
-                                    (locales? (not bootstrap?)))))
+                                    (locales? (not bootstrap?))))
+                   (name (string-append (manifest->friendly-name manifest)
+                                        "-" (symbol->string pack-format)
+                                        "-pack")))
               (define (lookup-package package)
                 (manifest-lookup manifest (manifest-pattern (name package))))
 
@@ -1288,7 +1542,9 @@ to your package list.")))
                                                        #:profile-name
                                                        profile-name
                                                        #:archiver
-                                                       archiver)))
+                                                       archiver
+                                                       #:extra-options
+                                                       extra-options)))
                   (mbegin %store-monad
                     (mwhen derivation?
                       (return (format #t "~a~%"

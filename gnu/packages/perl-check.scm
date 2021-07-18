@@ -1157,6 +1157,31 @@ Pod::Simple to do the heavy lifting.")
 checks for pod coverage of all appropriate files.")
     (license artistic2.0)))
 
+(define-public perl-test-portability-files
+  (package
+    (name "perl-test-portability-files")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AB/ABRAXXA/"
+                           "Test-Portability-Files-" version ".tar.gz"))
+       (sha256
+        (base32 "05hs80gljkd6mhb8zvilyk3pjqxp5samgnymam5v9h9d94rb9r08"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-simple" ,perl-test-simple)))
+    (propagated-inputs
+     `(("perl-pathtools" ,perl-pathtools)))
+    (home-page "https://metacpan.org/dist/Test-Portability-Files")
+    (synopsis "Check file names portability")
+    (description "Test::Portability::Files module is used to check the
+portability across operating systems of the names of the files present in the
+distribution of a module.  The tests use the advices given in 'Files and
+Filesystems' in perlport.  The author of a distribution can select which tests
+to execute.")
+    (license perl-license)))
+
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Benoit Joly <benoit@benoitj.ca>
 ;;; Copyright © 2021 Alexander Krotov <krotov@iitp.ru>
+;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
@@ -448,9 +450,9 @@ access.")
                    "/share/fonts/truetype/NotoColorEmoji")))
                #t))
            (add-after 'install 'wrap-program
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key outputs inputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
-                 (wrap-qt-program out "kristall"))
+                 (wrap-qt-program "kristall" #:output out #:inputs inputs))
                #t)))))
       (native-inputs
        `(("breeze-stylesheet"
@@ -604,7 +606,7 @@ driven and does not detract you from your daily work.")
 (define-public nyxt
   (package
     (name "nyxt")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -615,7 +617,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0f2c029213apppj6ziky3wsrpsi2gpx9s55wnfriy6hp33j241gd"))
+         "0kzm05swhyb197cjfd3iglf60b997sx7v95yxzyq483jxqbcxm0r"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -734,7 +736,8 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (base32 "0gqaipgs16kw711ijhshmbhhvlyjvh37wxdz059p4vvjhfrxbr1v"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #false))                ;no tests
+     `(#:tests? #false                  ;no tests
+       #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -835,7 +838,7 @@ http, and https via third-party applications.")
 (define-public tinmop
   (package
     (name "tinmop")
-    (version "0.8.1")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -844,7 +847,7 @@ http, and https via third-party applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lv1nckvzyhpn8cs6m40f2np15b3a8071kh7sy1216q2345s2ckc"))))
+        (base32 "117p1wxi5swmqw429qrswxz2zvp1dcaw2145gk6zxlgwln48qxl8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("curl" ,curl)
@@ -909,20 +912,21 @@ interface.")
 (define-public telescope
   (package
     (name "telescope")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://git.omarpolo.com/telescope/snapshot/"
                            "telescope-" version ".tar.gz"))
        (sha256
-        (base32 "1j7cj7fmvl11dvyhb23jx20k4r7m310qnyq0pwz3ijdpm5s88rf1"))))
+        (base32 "1wg5x04n9iri7jx1lzhmd79j41grhjm3mpxn9qq9nf8n102wlvm3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("bison"   ,bison)
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("libevent"  ,libevent)

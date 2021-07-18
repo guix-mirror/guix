@@ -96,7 +96,7 @@ _debug()
 # $1: The prompt question.
 prompt_yes_no() {
     while true; do
-        read -rp "$1" yn
+        read -rp "$1 " yn
         case $yn in
             [Yy]*) return 0;;
             [Nn]*) return 1;;
@@ -249,6 +249,16 @@ chk_sys_nscd()
     fi
 }
 
+# Configure substitute discovery according to user's preferences.
+# $1 is the installed service file to edit.
+configure_substitute_discovery() {
+    if grep -q -- '--discover=no' "$1" && \
+            prompt_yes_no "Would you like the Guix daemon to automatically \
+discover substitute servers on the local network? (yes/no)"; then
+        sed -i 's/--discover=no/--discover=yes/' "$1"
+    fi
+}
+
 # ------------------------------------------------------------------------------
 #+MAIN
 
@@ -359,7 +369,7 @@ sys_create_build_user()
 
     if getent group kvm > /dev/null; then
         _msg "${INF}group kvm exists and build users will be added to it"
-	local KVMGROUP=,kvm
+        local KVMGROUP=,kvm
     fi
 
     for i in $(seq -w 1 10); do
@@ -397,6 +407,7 @@ sys_enable_guix_daemon()
             { initctl reload-configuration;
               cp "~root/.config/guix/current/lib/upstart/system/guix-daemon.conf" \
                  /etc/init/ &&
+                  configure_substitute_discovery /etc/init/guix-daemon.conf &&
                   start guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via upstart"
             ;;
@@ -426,6 +437,9 @@ sys_enable_guix_daemon()
                        -e 's/^Environment=\(.*\)$/Environment=\1 LC_ALL=en_US.UTF-8';
               fi;
 
+              configure_substitute_discovery \
+                  /etc/systemd/system/guix-daemon.service
+
               systemctl daemon-reload &&
                   systemctl enable guix-daemon &&
                   systemctl start  guix-daemon; } &&
@@ -437,6 +451,8 @@ sys_enable_guix_daemon()
                  /etc/init.d/guix-daemon;
               chmod 775 /etc/init.d/guix-daemon;
 
+              configure_substitute_discovery /etc/init.d/guix-daemon
+
               update-rc.d guix-daemon defaults &&
                   update-rc.d guix-daemon enable &&
                   service guix-daemon start; } &&
@@ -447,6 +463,8 @@ sys_enable_guix_daemon()
               cp "~root/.config/guix/current/etc/openrc/guix-daemon" \
                  /etc/init.d/guix-daemon;
               chmod 775 /etc/init.d/guix-daemon;
+
+              configure_substitute_discovery /etc/init.d/guix-daemon
 
               rc-update add guix-daemon default &&
                   rc-service guix-daemon start; } &&
@@ -472,7 +490,7 @@ sys_enable_guix_daemon()
 sys_authorize_build_farms()
 { # authorize the public key of the build farm
     if prompt_yes_no "Permit downloading pre-built package binaries from the \
-project's build farm? (yes/no) "; then
+project's build farm? (yes/no)"; then
         guix archive --authorize \
              < "~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub" \
             && _msg "${PAS}Authorized public key for ci.guix.gnu.org"
@@ -499,7 +517,7 @@ export INFOPATH="$_GUIX_PROFILE/share/info:$INFOPATH"
 GUIX_PROFILE="$HOME/.guix-profile"
 [ -L $GUIX_PROFILE ] || return
 GUIX_LOCPATH="$GUIX_PROFILE/lib/locale"
-export GUIX_PROFILE GUIX_LOCPATH
+export GUIX_LOCPATH
 
 [ -f "$GUIX_PROFILE/etc/profile" ] && . "$GUIX_PROFILE/etc/profile"
 

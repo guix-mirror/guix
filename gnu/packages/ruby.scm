@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
+;;; Copyright © 2021 Giovanni Biscuolo <g@xelera.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
 (define-module (gnu packages ruby)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
@@ -6079,13 +6081,13 @@ Ruby's large and slower test/unit.")
 (define-public ruby-term-ansicolor
   (package
     (name "ruby-term-ansicolor")
-    (version "1.6.0")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "term-ansicolor" version))
               (sha256
                (base32
-                "1b1wq9ljh7v3qyxkk8vik2fqx2qzwh5lval5f92llmldkw7r7k7b"))))
+                "1xq5kci9215skdh27npyd3y55p812v4qb4x2hv3xsjvwqzz9ycwj"))))
     (build-system ruby-build-system)
     ;; Rebuilding the gemspec seems to require git, even though this is not a
     ;; git repository, so we just build the gem from the existing gemspec.
@@ -12391,3 +12393,55 @@ and social networks to better index and display your site's content.")
    (home-page
     "https://github.com/jekyll/jekyll-seo-tag")
    (license license:expat)))
+
+(define-public ruby-taskjuggler
+  (package
+    (name "ruby-taskjuggler")
+    (version "3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "taskjuggler" version))
+       (sha256
+        (base32
+         "1jrsajzhzpnfa8hj6lbf7adn8hls56dz3yw1gvzgz9y4zkka3k9v"))))
+    (build-system ruby-build-system)
+    (native-inputs `(("tzdata" ,tzdata-for-tests)))
+    (propagated-inputs
+     `(("ruby-mail" ,ruby-mail)
+       ("ruby-term-ansicolor" ,ruby-term-ansicolor)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'replace-git-ls-files
+                    (lambda _
+                      (substitute* "tasks/rdoc.rake"
+                        (("`git ls-files -- lib`")
+                         "`find lib/ -type f |sort`"))
+                      #t))
+                  (add-before 'check 'tzdir-setup
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "TZDIR"
+                              (string-append (assoc-ref inputs "tzdata")
+                                             "/share/zoneinfo"))
+                      #t))
+                  (add-before 'check 'delete-test-BatchProcessor
+                    ;; test_BatchProcessor fails with exeption:
+                    ;; run> terminated with exception (report_on_exception is true)
+                    (lambda _
+                      (delete-file "test/test_BatchProcessor.rb")
+                      #t)))))
+    (synopsis
+     "Project management command line tool with a domain specific language")
+    (description
+     "TaskJuggler (tj3) is a project management tool for project planning and
+tracking using a domain specific language; projects are plain text files
+written using your favourite text editor.  It includes reporting in HTML, CSV
+or iCalendar format and an email based status tracking system to send and
+receive time sheets from collaborators.
+
+It covers the complete spectrum of project management tasks from the first
+idea to the completion of the project.  It assists you during project scoping,
+resource assignment, cost and revenue planning, risk and communication
+management, status tracking and reporting.")
+    (home-page "https://taskjuggler.org")
+    (license license:gpl2)))

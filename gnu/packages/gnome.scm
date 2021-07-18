@@ -393,7 +393,9 @@ services.")
                        (version-major+minor version) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1nalslgyglvhpva3px06fj6lv5zgfg0qmj0sbxyyl5d963vc02b7"))))
+        (base32 "1nalslgyglvhpva3px06fj6lv5zgfg0qmj0sbxyyl5d963vc02b7"))
+       (patches
+        (search-patches "libgrss-CVE-2016-2001.patch"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -1167,13 +1169,19 @@ Library reference documentation.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'fix-udev-rules-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out   (assoc-ref outputs "out"))
+                   (rules (string-append out "/lib/udev/rules.d")))
+              (substitute* "data/meson.build"
+                (("udev\\.get_pkgconfig_variable\\('udevdir'\\)")
+                 (format #f "'~a'" rules))))))
         (add-before 'check 'start-virtual-dir-server
           ;; The same server when started by tests/virtual-dir returns an
           ;; unexpected status (4 instead of 200) and fails a test.  It is
           ;; unclear why starting it manually here makes it pass.
           (lambda _
-            (system "tests/virtual-dir-server &")
-            #t)))))
+            (system "tests/virtual-dir-server &"))))))
    (native-inputs
     `(("docbook-xml" ,docbook-xml-4.3)
       ("gettext" ,gettext-minimal)
@@ -2595,9 +2603,7 @@ forgotten when the session ends.")
        ("ghostscript" ,ghostscript)
        ("poppler" ,poppler)
        ("libtiff" ,libtiff)
-       ;; TODO:
-       ;;   Build libkpathsea as a shared library for DVI support.
-       ;; ("libkpathsea" ,texlive-bin)
+       ("texlive-libkpathsea" ,texlive-libkpathsea) ; for DVI support
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gspell" ,gspell)
@@ -4213,7 +4219,7 @@ engineering.")
 (define-public drawing
   (package
     (name "drawing")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -4222,7 +4228,7 @@ engineering.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03cx6acb0ph7b3difshjfddi8ld79wp8d12bdp7dp1q1820j5mz0"))))
+        (base32 "0lpszd8276rp5chn84rkvwmnflxc3pqlg4cz53gfxkqdb3gn02zz"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -5343,28 +5349,33 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://upower.freedesktop.org/releases/"
-                                  "upower-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1vxxvmz2cxb1qy6ibszaz5bskqdy9nd9fxspj9fv3gfmrjzzzdb4"))
-              (patches (search-patches "upower-builddir.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Upstream commit
-                  ;; <https://cgit.freedesktop.org/upower/commit/?id=18457c99b68786cd729b315723d680e6860d9cfa>
-                  ;; moved 'dbus-1/system.d' from etc/ to share/.  However,
-                  ;; 'dbus-configuration-directory' in (gnu services dbus)
-                  ;; expects it in etc/.  Thus, move it back to its previous
-                  ;; location.
-                  (substitute* "src/Makefile.in"
-                    (("^dbusconfdir =.*$")
-                     "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
-                  #t))))
+    (version "0.99.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/upower/upower")
+             (commit (string-append "UPOWER_"
+                                    (string-map (match-lambda (#\. #\_)
+                                                              (chr chr))
+                                                version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00q63yc8vp5cq05vhpwq3qglapdm8hg0lrqkzdwkphk30qzb6hv6"))
+       (patches (search-patches "upower-builddir.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Upstream commit
+           ;; <https://cgit.freedesktop.org/upower/commit/?id=18457c99b68786cd729b315723d680e6860d9cfa>
+           ;; moved 'dbus-1/system.d' from etc/ to share/.  However,
+           ;; 'dbus-configuration-directory' in (gnu services dbus)
+           ;; expects it in etc/.  Thus, move it back to its previous
+           ;; location.
+           (substitute* "src/Makefile.am"
+             (("^dbusconfdir =.*$")
+              "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
+           #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5380,10 +5391,15 @@ faster results and to avoid unnecessary server load.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
        ("python" ,python)
+       ("which" ,which)                 ; for ./autogen.sh
 
        ;; For tests.
        ("python-dbus" ,python-dbus)
@@ -5392,9 +5408,9 @@ faster results and to avoid unnecessary server load.")
        ("umockdev" ,umockdev)
 
        ;; For man pages.
-       ("libxslt" ,libxslt)                       ;for 'xsltproc'
-       ("libxml2" ,libxml2)                       ;for 'XML_CATALOG_FILES'
-       ("docbook-xsl" ,docbook-xsl)))
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxslt" ,libxslt)             ; for 'xsltproc'
+       ("libxml2" ,libxml2)))           ; for 'XML_CATALOG_FILES'
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
@@ -5543,7 +5559,7 @@ settings, themes, mouse settings, and startup of other daemons.")
 (define-public totem-pl-parser
  (package
    (name "totem-pl-parser")
-   (version "3.26.5")
+   (version "3.26.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/totem-pl-parser/"
@@ -5551,7 +5567,7 @@ settings, themes, mouse settings, and startup of other daemons.")
                                 "totem-pl-parser-" version ".tar.xz"))
             (sha256
              (base32
-              "132jihnf51zs98yjkc6jxyqib4f3dawpjm17g4bj4j78y93dww2k"))))
+              "075csd5x0frgf93jvhlqiwv5i0qm24zz3iw17jj7v7fgsml0zpy0"))))
    (build-system meson-build-system)
    (arguments
     ;; FIXME: Tests require gvfs.
@@ -6120,7 +6136,7 @@ discovery protocols.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.38.0")
+    (version "3.38.1")
     (source
      (origin
        (method url-fetch)
@@ -6128,8 +6144,7 @@ discovery protocols.")
                            (version-major+minor version) "/"
                            "totem-" version ".tar.xz"))
        (sha256
-        (base32
-         "0bs33ijvxbr2prb9yj4dxglsszslsn9k258n311sld84masz4ad8"))))
+        (base32 "02510lvzvxvmpcs64k6sqix8ysl7sihhhwvp0vmfv7521ryczylg"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -6190,14 +6205,6 @@ discovery protocols.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t))
-         (add-after 'unpack 'patch-failing-test
-           (lambda _
-             ;; Work around test failure with GStreamer 1.18, because the test
-             ;; relies on "und" not being mapped to a particular language:
-             ;; https://gitlab.gnome.org/GNOME/totem/-/issues/450
-            (substitute* "src/test-totem.c"
-              (("und") "nosuchlang"))
-            #t))
          (add-before
           'install 'disable-cache-generation
           (lambda _
@@ -6426,25 +6433,22 @@ side panel;
 (define-public libgudev
   (package
     (name "libgudev")
-    (version "232")
+    (version "236")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0q3qki451zzgdjazlgshsfzbbm0in40lyx7dyrag7kbkqnwv4k7f"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags
-       ;; umockdev depends on libgudev.
-       (list "--disable-umockdev")))
+                "094mgjmwgsgqrr1i0vd20ynvlkihvs3vgbmpbrhswjsrdp86j0z5"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by gudev-1.0.pc
+     `(("glib" ,glib)                   ; in Requires of gudev-1.0.pc
+       ("eudev" ,eudev)))               ; in Requires.private of gudev-1.0.pc
     (inputs
      `(("udev" ,eudev)))
     (home-page "https://wiki.gnome.org/Projects/libgudev")
@@ -8663,7 +8667,7 @@ core C library, and bindings for Python (PyGTK).")
 (define-public gnome-autoar
   (package
     (name "gnome-autoar")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -8671,7 +8675,7 @@ core C library, and bindings for Python (PyGTK).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wkwix44yg126xn1v4f2j60bv9yiyadfpzf8ifx0bvd9x5f4v354"))))
+                "012w7rhhpxvlrnnhqy01vwzg1wxqpy8jbqgizn47wnip7bvh0917"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)

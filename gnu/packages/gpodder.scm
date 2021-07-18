@@ -47,7 +47,7 @@
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.19")
+    (version "3.10.20")
     (source
      (origin
        (method git-fetch)
@@ -55,7 +55,7 @@
              (url "https://github.com/gpodder/gpodder")
              (commit version)))
        (sha256
-        (base32 "1nx1cdwij9zy01s97aciqbkd63h4alzyvjdzdvr6wrl6hh42amrx"))
+        (base32 "0lwf1lm20q6i8xbbva1g4arbinyxca10865dn19p5kr1b3gvmxqh"))
        (file-name (git-file-name name version))
        (patches (search-patches "gpodder-disable-updater.patch"))))
     (build-system python-build-system)

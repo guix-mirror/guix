@@ -470,7 +470,7 @@ character-by-character.
 (define-public libconfig
   (package
     (name "libconfig")
-    (version "1.7.2")
+    (version "1.7.3")
     (home-page "https://hyperrealm.github.io/libconfig/")
     (source (origin
               (method url-fetch)
@@ -478,7 +478,7 @@ character-by-character.
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ngs2qx3cx5cbwinc5mvadly0b5n7s86zsc68c404czzfff7lg3w"))))
+                "1rqynfxl1zxwk4b42sniz9xlw285aidcrsfih51p8dy0rbb6clal"))))
     (build-system gnu-build-system)
     (synopsis "C/C++ configuration file library")
     (description

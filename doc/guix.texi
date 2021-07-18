@@ -91,6 +91,9 @@ Copyright @copyright{} 2020 Edgar Vincent@*
 Copyright @copyright{} 2021 Maxime Devos@*
 Copyright @copyright{} 2021 B. Wilson@*
 Copyright @copyright{} 2021 Xinglu Chen@*
+Copyright @copyright{} 2021 Raghav Gururajan@*
+Copyright @copyright{} 2021 Domagoj Stolfa@*
+Copyright @copyright{} 2021 Hui Lu@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2541,7 +2544,7 @@ provide the declaration of the operating system to be installed.  To
 that end, the installation system comes with three text editors.  We
 recommend GNU nano (@pxref{Top,,, nano, GNU nano Manual}), which
 supports syntax highlighting and parentheses matching; other editors
-include GNU Zile (an Emacs clone), and
+include mg (an Emacs clone), and
 nvi (a clone of the original BSD @command{vi} editor).
 We strongly recommend storing that file on the target root file system, say,
 as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
@@ -6042,6 +6045,35 @@ If you forget the @code{bash} (or similar) package, @command{singularity
 run} and @command{singularity exec} will fail with an unhelpful ``no
 such file or directory'' message.
 @end quotation
+
+@item deb
+This produces a Debian archive (a package with the @samp{.deb} file
+extension) containing all the specified binaries and symbolic links,
+that can be installed on top of any dpkg-based GNU(/Linux) distribution.
+Advanced options can be revealed via the @option{--help-deb-format}
+option.  They allow embedding control files for more fine-grained
+control, such as activating specific triggers or providing a maintainer
+configure script to run arbitrary setup code upon installation.
+
+@example
+guix pack -f deb -C xz -S /usr/bin/hello=bin/hello hello
+@end example
+
+@quotation Note
+Because archives produced with @command{guix pack} contain a collection
+of store items and because each @command{dpkg} package must not have
+conflicting files, in practice that means you likely won't be able to
+install more than one such archive on a given system.
+@end quotation
+
+@quotation Warning
+@command{dpkg} will assume ownership of any files contained in the pack
+that it does @emph{not} know about.  It is unwise to install
+Guix-produced @samp{.deb} files on a system where @file{/gnu/store} is
+shared by other software, such as a Guix installation or other, non-deb
+packs.
+@end quotation
+
 @end table
 
 @cindex relocatable binaries
@@ -7423,7 +7455,7 @@ the @code{RUNPATH} of ELF binaries (@code{.so} shared libraries as well
 as executables) previously installed by the @code{install} phase.
 
 This validation step consists in making sure that all the shared
-libraries needed by an ELF binaries, which are listed as
+libraries needed by an ELF binary, which are listed as
 @code{DT_NEEDED} entries in its @code{PT_DYNAMIC} segment, appear in the
 @code{DT_RUNPATH} entry of that binary.  In other words, it ensures that
 running or using those binaries will not result in a ``file not found''
@@ -10141,6 +10173,16 @@ corresponding to @var{obj} for @var{system}, cross-compiling for
 has an associated gexp compiler, such as a @code{<package>}.
 @end deffn
 
+@deffn {Procedure} gexp->approximate-sexp @var{gexp}
+Sometimes, it may be useful to convert a G-exp into a S-exp.  For
+example, some linters (@pxref{Invoking guix lint}) peek into the build
+phases of a package to detect potential problems.  This conversion can
+be achieved with this procedure.  However, some information can be lost
+in the process.  More specifically, lowerable objects will be silently
+replaced with some arbitrary object -- currently the list
+@code{(*approximate*)}, but this may change.
+@end deffn
+
 @node Invoking guix repl
 @section Invoking @command{guix repl}
 
@@ -10297,7 +10339,7 @@ Similarly, the following command builds all the available packages:
 
 @example
 guix build --quiet --keep-going \
-  $(guix package -A | cut -f1,2 --output-delimiter=@@)
+  $(guix package -A | awk '@{ print $1 "@@" $2 @}')
 @end example
 
 @var{package-or-derivation} may be either the name of a package found in
@@ -13654,7 +13696,7 @@ environment variable---in addition to the per-user profiles
 (@pxref{Invoking guix package}).  The @code{%base-packages} variable
 provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
-the GNU Zile lightweight text editor, @command{find}, @command{grep},
+the @command{mg} lightweight text editor, @command{find}, @command{grep},
 etc.  The example above adds GNU@tie{}Screen to those,
 taken from the @code{(gnu packages screen)}
 module (@pxref{Package Modules}).  The
@@ -13711,10 +13753,11 @@ Occasionally, instead of using the base services as is, you will want to
 customize them.  To do this, use @code{modify-services} (@pxref{Service
 Reference, @code{modify-services}}) to modify the list.
 
-For example, suppose you want to modify @code{guix-daemon} and Mingetty
-(the console log-in) in the @code{%base-services} list (@pxref{Base
-Services, @code{%base-services}}).  To do that, you can write the
-following in your operating system declaration:
+@anchor{auto-login to TTY} For example, suppose you want to modify
+@code{guix-daemon} and Mingetty (the console log-in) in the
+@code{%base-services} list (@pxref{Base Services,
+@code{%base-services}}).  To do that, you can write the following in
+your operating system declaration:
 
 @lisp
 (define %my-services
@@ -13740,7 +13783,9 @@ following in your operating system declaration:
 
 This changes the configuration---i.e., the service parameters---of the
 @code{guix-service-type} instance, and that of all the
-@code{mingetty-service-type} instances in the @code{%base-services} list.
+@code{mingetty-service-type} instances in the @code{%base-services} list
+(@pxref{Auto-Login to a Specific TTY, see the cookbook for how to
+auto-login one user to a specific TTY,, guix-cookbook, GNU Guix Cookbook})).
 Observe how this is accomplished: first, we arrange for the original
 configuration to be bound to the identifier @code{config} in the
 @var{body}, and then we write the @var{body} so that it evaluates to the
@@ -15482,6 +15527,14 @@ Font engine used in Kmscon.
 
 @item @code{font-size} (default: @code{12})
 Font size used in Kmscon.
+
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, Kmscon uses the default keyboard layout---usually US
+English (``qwerty'') for a 105-key PC keyboard.
+
+Otherwise this must be a @code{keyboard-layout} object specifying the
+keyboard layout.  @xref{Keyboard Layout}, for more information on how to
+specify the keyboard layout.
 
 @item @code{kmscon} (default: @var{kmscon})
 The Kmscon package to use.
@@ -26143,6 +26196,14 @@ the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}),
 and gives Let's Encrypt permission to log the public IP address of the
 requesting machine.
 
+@item @code{csr} (default: @code{#f})
+File name of Certificate Signing Request (CSR) in DER or PEM format.
+If @code{#f} is specified, this argument will not be passed to certbot.
+If a value is specified, certbot will use it to obtain a certificate, instead of
+using a self-generated CSR.
+The domain-name(s) mentioned in @code{domains}, must be consistent with the
+domain-name(s) mentioned in CSR file.
+
 @item @code{authentication-hook} (default: @code{#f})
 Command to be run in a shell once for each certificate challenge to be
 answered.  For this command, the shell variable @code{$CERTBOT_DOMAIN}
@@ -26928,6 +26989,15 @@ Defaults to @samp{()}.
 The @code{(gnu services vpn)} module provides services related to
 @dfn{virtual private networks} (VPNs).
 
+@subsubheading Bitmask
+
+@defvr {Scheme Variable} bitmask-service-type
+A service type for the @uref{https://bitmask.net, Bitmask} VPN client.  It makes
+the client available in the system and loads its polkit policy.  Please note that
+the client expects an active polkit-agent, which is either run by your
+desktop-environment or should be run manually.
+@end defvr
+
 @subsubheading OpenVPN
 
 It provides a @emph{client} service for your machine to connect to a
@@ -27307,8 +27377,44 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-
 @c %end of automatic openvpn-server documentation
+
+@subheading strongSwan
+
+Currently, the strongSwan service only provides legacy-style configuration with
+@file{ipsec.conf} and @file{ipsec.secrets} files.
+
+@defvr {Scheme Variable} strongswan-service-type
+A service type for configuring strongSwan for IPsec @acronym{VPN,
+Virtual Private Networking}.  Its value must be a
+@code{strongswan-configuration} record as in this example:
+
+@lisp
+(service strongswan-service-type
+         (strongswan-configuration
+          (ipsec-conf "/etc/ipsec.conf")
+          (ipsec-secrets "/etc/ipsec.secrets")))
+@end lisp
+
+@end defvr
+
+@deftp {Data Type} strongswan-configuration
+Data type representing the configuration of the StrongSwan service.
+
+@table @asis
+@item @code{strongswan}
+The strongSwan package to use for this service.
+
+@item @code{ipsec-conf} (default: @code{#f})
+The file name of your @file{ipsec.conf}.  If not @code{#f}, then this and
+@code{ipsec-secrets} must both be strings.
+
+@item @code{ipsec-secrets} (default @code{#f})
+The file name of your @file{ipsec.secrets}.  If not @code{#f}, then this and
+@code{ipsec-conf} must both be strings.
+
+@end table
+@end deftp
 
 @subsubheading Wireguard
 
@@ -32265,10 +32371,10 @@ This is the data type representing the configuration of Docker and Containerd.
 
 @table @asis
 
-@item @code{package} (default: @code{docker})
+@item @code{docker} (default: @code{docker})
 The Docker daemon package to use.
 
-@item @code{package} (default: @code{docker-cli})
+@item @code{docker-cli} (default: @code{docker-cli})
 The Docker client package to use.
 
 @item @code{containerd} (default: @var{containerd})
@@ -32886,7 +32992,7 @@ program.  That gives a lot of flexibility.  The
 program to run in that initrd.
 
 @deffn {Scheme Procedure} expression->initrd @var{exp} @
-       [#:guile %guile-3.0-static-stripped] [#:name "guile-initrd"]
+       [#:guile %guile-static-stripped] [#:name "guile-initrd"]
 Return as a file-like object a Linux initrd (a gzipped cpio archive)
 containing @var{guile} and that evaluates @var{exp}, a G-expression,
 upon booting.  All the derivations referenced by @var{exp} are

@@ -26,6 +26,9 @@
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@mgail.com>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +48,7 @@
 (define-module (gnu packages golang)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
@@ -54,6 +58,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
+  #:use-module ((gnu packages bootstrap) #:select (glibc-dynamic-linker))
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages lua)
@@ -62,11 +67,953 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public go-0xacab-org-leap-shapeshifter
+  (let ((commit "0aa6226582efb8e563540ec1d3c5cfcd19200474")
+        (revision "12"))
+    (package
+      (name "go-0xacab-org-leap-shapeshifter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://0xacab.org/leap/shapeshifter")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0m4fla9ppl53k9syms4dsad92wakr74cdvids3xxv3amdh4d1w4i"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "0xacab.org/leap/shapeshifter"))
+      (propagated-inputs
+       `(("go-github-com-operatorfoundation-obfs4"
+          ,go-github-com-operatorfoundation-obfs4)
+         ("go-github-com-operatorfoundation-shapeshifter-transports"
+          ,go-github-com-operatorfoundation-shapeshifter-transports)
+         ("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (home-page "https://0xacab.org/leap/shapeshifter")
+      (synopsis "Shapeshifter Dispatcher Library")
+      (description "Shapeshifter provides network protocol shapeshifting
+technology.  The purpose of this technology is to change the characteristics of
+network traffic so that it is not identified and subsequently blocked by network
+filtering devices.")
+      (license license:bsd-2))))
+
+(define-public go-github-com-operatorfoundation-shapeshifter-transports
+  (package
+    (name "go-github-com-operatorfoundation-shapeshifter-transports")
+    (version "3.0.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/shapeshifter-transports")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0f1hzhk3q2fgqdg14zlg3z0s0ib1y9xwj89qnjk95b37zbgqjgsb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/OperatorFoundation/shapeshifter-transports"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* (find-files "." "\\.go$")
+               ;; To drop '.git' suffix in import path of goptlib.
+               (("goptlib\\.git") "goptlib"))))
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v3"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               ;;; ERROR: invalid memory address or nil pointer dereference.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v3"
+               ;;; ERROR: failed with status 1.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v3"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v3"
+               ;;; ERROR: bind: permission denied.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v3"))))
+               ;;; ERROR: failed with status 1.
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v3"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v2"
+               ;;"github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v3"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Dust/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Optimizer/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meeklite/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/meekserver/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs2/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/obfs4/v3"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v2"
+               "github.com/OperatorFoundation/shapeshifter-transports/transports/shadow/v3")))))))
+    (native-inputs
+     `(("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)))
+    (propagated-inputs
+     `(("go-github-com-aead-chacha20"
+        ,go-github-com-aead-chacha20)
+       ("go-github-com-blanu-dust"
+        ,go-github-com-blanu-dust)
+       ("go-github-com-deckarep-golang-set"
+        ,go-github-com-deckarep-golang-set)
+       ("go-github-com-kataras-golog"
+        ,go-github-com-kataras-golog)
+       ("go-github-com-mufti1-interconv"
+        ,go-github-com-mufti1-interconv)
+       ("go-github-com-opentracing-opentracing-go"
+        ,go-github-com-opentracing-opentracing-go)
+       ("go-github-com-operatorfoundation-monolith-go"
+        ,go-github-com-operatorfoundation-monolith-go)
+       ("go-github-com-operatorfoundation-obfs4"
+        ,go-github-com-operatorfoundation-obfs4)
+       ("go-github-com-operatorfoundation-shapeshifter-ipc"
+        ,go-github-com-operatorfoundation-shapeshifter-ipc)
+       ("go-github-com-shadowsocks-go-shadowsocks2"
+        ,go-github-com-shadowsocks-go-shadowsocks2)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-torproject-org-pluggable-transports-goptlib"
+        ,go-torproject-org-pluggable-transports-goptlib)))
+    (home-page "https://github.com/OperatorFoundation/shapeshifter-transports")
+    (synopsis "Go implementation of Pluggable Transports")
+    (description "Shapeshifter-Transports is a set of Pluggable Transports
+implementing the Go API from the Pluggable Transports 2.0 specification.
+Each transport implements a different method of shapeshifting network traffic.
+The goal is for application traffic to be sent over the network in a shapeshifted
+form that bypasses network filtering, allowing the application to work on
+networks where it would otherwise be blocked or heavily throttled.")
+    (license license:expat)))
+
+(define-public go-github-com-kataras-golog
+  (package
+    (name "go-github-com-kataras-golog")
+    (version "0.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/kataras/golog")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ll24g50j48wqikzf67cyaq0m0f57v1ap24nbz3cmv3yzqi6wdl9"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/kataras/golog"))
+    (propagated-inputs
+     `(("go-github-com-kataras-pio"
+        ,go-github-com-kataras-pio)))
+    (home-page "https://github.com/kataras/golog")
+    (synopsis "Logging foundation for Go applications")
+    (description "GoLog is a level-based logger written in Go.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-kataras-pio
+  (package
+    (name "go-github-com-kataras-pio")
+    (version "0.0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/kataras/pio")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11d2jy9xz4airicgmjcy4nb80kwv22jp140wzn2l5412jdr4jmkp"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/kataras/pio"))
+    (home-page "https://github.com/kataras/pio")
+    (synopsis "Pill for Input/Output")
+    (description "PIO is a low-level package that provides a way to centralize
+different output targets.  Supports colors and text decoration to all popular
+terminals.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-shadowsocks-go-shadowsocks2
+  (package
+    (name "go-github-com-shadowsocks-go-shadowsocks2")
+    ;; Version > 0.1.3 requires go-toolchain v1.16.
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/shadowsocks/go-shadowsocks2")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wzy3ml4ld83iawcl6p313bskzs6zjhz8vlg8kpwgn71cnbv4pvi"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/shadowsocks/go-shadowsocks2"))
+    (propagated-inputs
+     `(("go-github-com-riobard-go-bloom"
+        ,go-github-com-riobard-go-bloom)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)))
+    (home-page "https://github.com/shadowsocks/go-shadowsocks2")
+    (synopsis "Shadowsocks tunnel proxy")
+    (description "Go-ShadowSocks is a Go implementation of the Shadowsocks tunnel
+proxy protocol.")
+    (license license:asl2.0)))
+
+(define-public go-github-com-riobard-go-bloom
+  (let ((commit "cdc8013cb5b3eb0efebec85f0e904efccac42df9")
+        (revision "0"))
+    (package
+      (name "go-github-com-riobard-go-bloom")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/riobard/go-bloom")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10a8ixh6zw52df2imxrzgxi82zc1j5hqnv5smjp818qwdn1a1rhj"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/riobard/go-bloom"))
+      (home-page "https://github.com/riobard/go-bloom")
+      (synopsis "Bloom filter in Go")
+      (description "Go-Bloom implements bloom filter using double hashing.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-aead-chacha20
+  (let ((commit "8b13a72661dae6e9e5dea04f344f0dc95ea29547")
+        (revision "0"))
+    (package
+      (name "go-github-com-aead-chacha20")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/aead/chacha20")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0gbmgq5kbqmbyrsav57ql4jzbvqvp1q7yvcd5fl3wf5g94iyv56r"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/aead/chacha20"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+      (home-page "https://github.com/aead/chacha20")
+      (synopsis "ChaCha20 and XChaCha20 stream ciphers")
+      (description "ChaCha is a stream cipher family created by Daniel Bernstein.
+The most common ChaCha variant is ChaCha20 (20 rounds).  ChaCha20 is
+standardized in RFC 7539.")
+      (license license:expat))))
+
+(define-public go-github-com-mufti1-interconv
+  (let ((commit "d7c72925c6568d60d361757bb9f2d252dcca745c")
+        (revision "0"))
+    (package
+      (name "go-github-com-mufti1-interconv")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/mufti1/interconv")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13f5pvr74afa28pbpmgvjzjx68vv5zmrwlvxp7hr5bl5625zlxmy"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:unpack-path "github.com/mufti1/interconv"
+         #:import-path "github.com/mufti1/interconv/package"))
+      (home-page "https://github.com/mufti1/interconv")
+      (synopsis "Data type converter")
+      (description "InterConv converts interfaces into any data type.")
+      (license license:expat))))
+
+(define-public go-github-com-opentracing-opentracing-go
+  (package
+    (name "go-github-com-opentracing-opentracing-go")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/opentracing/opentracing-go")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04rgdwl29kimp2wnm4dycnzp7941hvpj6wym85x23c6fclacm94h"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/opentracing/opentracing-go"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/opentracing/opentracing-go")
+    (synopsis "OpenTracing API for Go")
+    (description "OpenTracing-Go is a Go implementation of the OpenTracing API.")
+    (license license:asl2.0)))
+
+(define-public go-github-com-operatorfoundation-monolith-go
+  (package
+    (name "go-github-com-operatorfoundation-monolith-go")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/monolith-go")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "066bqlgw5h7a3kxswqlv734asb7nw2y6snsn09yqk0ixj23qw22s"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ; ERROR: Generated bytes do not match correct answer.
+       #:unpack-path "github.com/OperatorFoundation/monolith-go"
+       #:import-path "github.com/OperatorFoundation/monolith-go/monolith"))
+    (propagated-inputs
+     `(("go-github-com-deckarep-golang-set"
+        ,go-github-com-deckarep-golang-set)))
+    (home-page "https://github.com/OperatorFoundation/monolith-go")
+    (synopsis "Byte sequences library")
+    (description "Monolith-Go is a Go library for working with byte sequences.")
+    (license license:expat)))
+
+(define-public go-github-com-deckarep-golang-set
+  (package
+    (name "go-github-com-deckarep-golang-set")
+    (version "1.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/deckarep/golang-set")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y64c0p6a7ww5jp6adm6fm97vsni86njw8wkwxfmciy466vhl0lf"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/deckarep/golang-set"))
+    (home-page "https://github.com/deckarep/golang-set")
+    (synopsis "Set type for Go")
+    (description "Set is the set collection for the Go language.")
+    (license license:expat)))
+
+(define-public go-github-com-blanu-dust
+  (package
+    (name "go-github-com-blanu-dust")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/blanu/Dust")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lya21w06ramq37af5hdiafbrv5k1csjm7k7m00v0bfxg3ni01bs"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/blanu/Dust"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/blanu/Dust/go/buf"
+               "github.com/blanu/Dust/go/dist"
+               "github.com/blanu/Dust/go/huffman"
+               "github.com/blanu/Dust/go/model1"
+               "github.com/blanu/Dust/go/prim1"
+               "github.com/blanu/Dust/go/proc"
+               "github.com/blanu/Dust/go/sillyHex"
+               "github.com/blanu/Dust/go/skein"
+               "github.com/blanu/Dust/go/v2/Dust2_proxy"
+               "github.com/blanu/Dust/go/v2/Dust2_tool"
+               "github.com/blanu/Dust/go/v2/crypting"
+               "github.com/blanu/Dust/go/v2/interface"
+               "github.com/blanu/Dust/go/v2/shaping"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/blanu/Dust/go/buf"
+               "github.com/blanu/Dust/go/dist"
+               ;; Repository is missing test files directory.
+               ;;"github.com/blanu/Dust/go/huffman"
+               "github.com/blanu/Dust/go/model1"
+               "github.com/blanu/Dust/go/prim1"
+               "github.com/blanu/Dust/go/proc"
+               "github.com/blanu/Dust/go/sillyHex"
+               "github.com/blanu/Dust/go/skein"
+               "github.com/blanu/Dust/go/v2/Dust2_proxy"
+               "github.com/blanu/Dust/go/v2/Dust2_tool"
+               "github.com/blanu/Dust/go/v2/crypting"
+               "github.com/blanu/Dust/go/v2/interface"
+               "github.com/blanu/Dust/go/v2/shaping"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/blanu/Dust/go/buf"
+               "github.com/blanu/Dust/go/dist"
+               "github.com/blanu/Dust/go/huffman"
+               "github.com/blanu/Dust/go/model1"
+               "github.com/blanu/Dust/go/prim1"
+               "github.com/blanu/Dust/go/proc"
+               "github.com/blanu/Dust/go/sillyHex"
+               "github.com/blanu/Dust/go/skein"
+               "github.com/blanu/Dust/go/v2/Dust2_proxy"
+               "github.com/blanu/Dust/go/v2/Dust2_tool"
+               "github.com/blanu/Dust/go/v2/crypting"
+               "github.com/blanu/Dust/go/v2/interface"
+               "github.com/blanu/Dust/go/v2/shaping")))))))
+    (propagated-inputs
+     `(("go-github-com-operatorfoundation-ed25519"
+        ,go-github-com-operatorfoundation-ed25519)
+       ("go-github-com-op-go-logging"
+        ,go-github-com-op-go-logging)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (home-page "https://github.com/blanu/Dust")
+    (synopsis "Censorship-resistant internet transport protocol")
+    (description "Dust is an Internet protocol designed to resist a number of
+attacks currently in active use to censor Internet communication.  While
+adherence to the theoretical maxims of cryptographic security is observed where
+possible, the focus of Dust is on real solutions to real attacks.")
+    (license
+     (list
+      ;; Skein.
+      license:bsd-2
+      ;; Others.
+      license:expat))))
+
+(define-public go-github-com-op-go-logging
+  (package
+    (name "go-github-com-op-go-logging")
+    (version "1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/op/go-logging")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01a6lkpj5p82gplddh55az194s9y3014p4j8x4zc8yv886z9c8gn"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ; ERROR: incorrect callpath: String.rec...a.b.c.Info.
+       #:import-path "github.com/op/go-logging"))
+    (home-page "https://github.com/op/go-logging")
+    (synopsis "Go logging library")
+    (description "Go-Logging implements a logging infrastructure for Go.  Its
+output format is customizable and supports different logging backends like
+syslog, file and memory.  Multiple backends can be utilized with different log
+levels per backend and logger.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-operatorfoundation-shapeshifter-ipc
+  (package
+    (name "go-github-com-operatorfoundation-shapeshifter-ipc")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/shapeshifter-ipc")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1q1fcnllg462nfca16s5mr0n2jh92x3hj946qnaqc682phjz04lg"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f                      ; ERROR: undefined: Args.
+       #:unpack-path "github.com/OperatorFoundation/shapeshifter-ipc"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-ipc/v2"
+               "github.com/OperatorFoundation/shapeshifter-ipc/v3"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-ipc/v2"
+               "github.com/OperatorFoundation/shapeshifter-ipc/v3"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/shapeshifter-ipc/v2"
+               "github.com/OperatorFoundation/shapeshifter-ipc/v3")))))))
+    (home-page "https://github.com/OperatorFoundation/shapeshifter-ipc")
+    (synopsis "Go implementation of the Pluggable Transports IPC protocol")
+    (description "Shapeshifter-IPC is a library for Go implementing the IPC
+protocol from the Pluggable Transports 2.0 specification.")
+    (license license:expat)))
+
+(define-public go-github-com-operatorfoundation-obfs4
+  (package
+    (name "go-github-com-operatorfoundation-obfs4")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OperatorFoundation/obfs4")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s730xagdxs66wfh65hb5v9a5h01q5ncic3pyij0a043scagizgr"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/OperatorFoundation/obfs4"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* (find-files "." "\\.go$")
+               ;; To drop '.git' suffix in import path of goptlib.
+               (("goptlib\\.git") "goptlib"))))
+         (replace 'build
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'build)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/obfs4/common/csrand"
+               "github.com/OperatorFoundation/obfs4/common/drbg"
+               "github.com/OperatorFoundation/obfs4/common/log"
+               "github.com/OperatorFoundation/obfs4/common/ntor"
+               "github.com/OperatorFoundation/obfs4/common/probdist"
+               "github.com/OperatorFoundation/obfs4/common/pt_extras"
+               "github.com/OperatorFoundation/obfs4/common/replayfilter"
+               "github.com/OperatorFoundation/obfs4/common/socks5"
+               "github.com/OperatorFoundation/obfs4/common/termmon"
+               "github.com/OperatorFoundation/obfs4/common/uniformdh"
+               "github.com/OperatorFoundation/obfs4/modes/pt_socks5"
+               "github.com/OperatorFoundation/obfs4/modes/stun_udp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_tcp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_udp"
+               "github.com/OperatorFoundation/obfs4/obfs4proxy"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_http"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_socks4"
+               "github.com/OperatorFoundation/obfs4/transports"))))
+         (replace 'check
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'check)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/obfs4/common/csrand"
+               "github.com/OperatorFoundation/obfs4/common/drbg"
+               "github.com/OperatorFoundation/obfs4/common/log"
+               "github.com/OperatorFoundation/obfs4/common/ntor"
+               "github.com/OperatorFoundation/obfs4/common/probdist"
+               "github.com/OperatorFoundation/obfs4/common/pt_extras"
+               "github.com/OperatorFoundation/obfs4/common/replayfilter"
+               "github.com/OperatorFoundation/obfs4/common/socks5"
+               "github.com/OperatorFoundation/obfs4/common/termmon"
+               "github.com/OperatorFoundation/obfs4/common/uniformdh"
+               ;; ERROR: Println arg dialFn is a func value, not called.
+               ;;"github.com/OperatorFoundation/obfs4/modes/pt_socks5"
+               ;; ERROR: Infof format %s has arg ln of wrong type *net.UDPConn.
+               ;;"github.com/OperatorFoundation/obfs4/modes/stun_udp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_tcp"
+               ;; ERROR: Infof format %s has arg ln of wrong type *net.UDPConn
+               ;;"github.com/OperatorFoundation/obfs4/modes/transparent_udp"
+               ;; ERROR: Println call has possible formatting directive %s.
+               ;;"github.com/OperatorFoundation/obfs4/obfs4proxy"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_http"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_socks4"
+               "github.com/OperatorFoundation/obfs4/transports"))))
+         (replace 'install
+           (lambda arguments
+             (for-each
+              (lambda (directory)
+                (apply (assoc-ref %standard-phases 'install)
+                       `(,@arguments #:import-path ,directory)))
+              (list
+               "github.com/OperatorFoundation/obfs4/common/csrand"
+               "github.com/OperatorFoundation/obfs4/common/drbg"
+               "github.com/OperatorFoundation/obfs4/common/log"
+               "github.com/OperatorFoundation/obfs4/common/ntor"
+               "github.com/OperatorFoundation/obfs4/common/probdist"
+               "github.com/OperatorFoundation/obfs4/common/pt_extras"
+               "github.com/OperatorFoundation/obfs4/common/replayfilter"
+               "github.com/OperatorFoundation/obfs4/common/socks5"
+               "github.com/OperatorFoundation/obfs4/common/termmon"
+               "github.com/OperatorFoundation/obfs4/common/uniformdh"
+               "github.com/OperatorFoundation/obfs4/modes/pt_socks5"
+               "github.com/OperatorFoundation/obfs4/modes/stun_udp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_tcp"
+               "github.com/OperatorFoundation/obfs4/modes/transparent_udp"
+               "github.com/OperatorFoundation/obfs4/obfs4proxy"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_http"
+               "github.com/OperatorFoundation/obfs4/proxy_dialers/proxy_socks4"
+               "github.com/OperatorFoundation/obfs4/transports")))))))
+    (propagated-inputs
+     `(("go-github-com-dchest-siphash"
+        ,go-github-com-dchest-siphash)
+       ("go-github-com-operatorfoundation-ed25519"
+        ,go-github-com-operatorfoundation-ed25519)
+       ("go-github-com-willscott-goturn"
+        ,go-github-com-willscott-goturn)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-torproject-org-pluggable-transports-goptlib"
+        ,go-torproject-org-pluggable-transports-goptlib)))
+    (home-page "https://github.com/OperatorFoundation/obfs4")
+    (synopsis "Network obfourscator to scramble network traffic")
+    (description "Obfs4 is a look-like nothing obfuscation protocol that
+incorporates ideas and concepts from Philipp Winter's ScrambleSuit protocol.
+The notable differences between ScrambleSuit and obfs4 are:
+@itemize
+@item The handshake always does a full key exchange (no such thing as a Session
+Ticket Handshake).
+@item The handshake uses the Tor Project's ntor handshake with public keys
+obfuscated via the Elligator 2 mapping.
+@item The link layer encryption uses NaCl secret boxes (Poly1305/XSalsa20).
+@end itemize")
+    (license license:bsd-2)))
+
+(define-public go-github-com-willscott-goturn
+  (let ((commit "19f41278d0c9251d64e0ee29f37d51e87a24a97b")
+        (revision "0"))
+    (package
+      (name "go-github-com-willscott-goturn")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/willscott/goturn")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zwvhfznr84ayzknn9flh65nvqjsixisgy9fkhz2jlahl1ldqcq7"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/willscott/goturn"))
+      (home-page "https://github.com/willscott/goturn")
+      (synopsis "Go TURN dialer")
+      (description "GoTURN is a library providing a Go interface compatible with
+the golang proxy package which connects through a TURN relay.  It provides
+parsing and encoding support for STUN and TURN protocols.")
+      (license license:bsd-3))))
+
+(define-public go-torproject-org-pluggable-transports-goptlib
+  (package
+    (name "go-torproject-org-pluggable-transports-goptlib")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://git.torproject.org/pluggable-transports/goptlib")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lh938194hvkf8pqgnxwf6hvjv9rv0j3kasi07r2ckrj8sxzk4jc"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "git.torproject.org/pluggable-transports/goptlib"))
+    (home-page "https://gitweb.torproject.org/pluggable-transports/goptlib.git/")
+    (synopsis "Go pluggable transports library")
+    (description "GoPtLib is a library for writing Tor pluggable transports in
+Go.")
+    (license license:cc0)))
+
+(define-public go-github-com-sevlyar-go-daemon
+  (package
+    (name "go-github-com-sevlyar-go-daemon")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/sevlyar/go-daemon")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y3gnxaifykcjcbzx91lz9bc93b95w3xj4rjxjbii26pm3j7gqyk"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/sevlyar/go-daemon"))
+    (propagated-inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (home-page "https://github.com/sevlyar/go-daemon")
+    (synopsis "Library for writing system daemons")
+    (description "Go-Daemon is a library for writing system daemons in Go.")
+    (license license:expat)))
+
+(define-public go-github-com-keybase-go-ps
+  (let ((commit "91aafc93ba19d1988cff338c1929d35b6c6f5b50")
+        (revision "0"))
+    (package
+      (name "go-github-com-keybase-go-ps")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/keybase/go-ps")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1la7m9pd1rrij727g34k9d2iapqwrkwdkqwpkbsbcq8ig0fg634h"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/keybase/go-ps"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (substitute* (find-files "." "test\\.go")
+                 (("/bin/sleep" command)
+                  (string-append
+                   (assoc-ref (or native-inputs inputs) "coreutils")
+                   command))))))))
+      (native-inputs
+       `(("coreutils" ,coreutils)
+         ("go-github-com-stretchr-testify"
+          ,go-github-com-stretchr-testify)))
+      (home-page "https://github.com/keybase/go-ps")
+      (synopsis "Process list library for Go")
+      (description "Go-Ps is a library for Go that implements OS-specific APIs
+to list and manipulate processes in a safe way.")
+      (license license:expat))))
+
+(define-public go-github-com-apparentlymart-go-openvpn-mgmt
+  (let ((commit "4d2ce95ae600ee04eeb020ee0997aabb82752210")
+        (revision "0"))
+    (package
+      (name "go-github-com-apparentlymart-go-openvpn-mgmt")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/apparentlymart/go-openvpn-mgmt")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dn431jnswg5ns1ah10wswnw6wiv48zq21zr5xp1178l4waswj7k"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:unpack-path "github.com/apparentlymart/go-openvpn-mgmt"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda arguments
+               (for-each
+                (lambda (directory)
+                  (apply (assoc-ref %standard-phases 'build)
+                         `(,@arguments #:import-path ,directory)))
+                (list
+                 "github.com/apparentlymart/go-openvpn-mgmt/demux"
+                 "github.com/apparentlymart/go-openvpn-mgmt/openvpn"))))
+           (replace 'check
+             (lambda arguments
+               (for-each
+                (lambda (directory)
+                  (apply (assoc-ref %standard-phases 'check)
+                         `(,@arguments #:import-path ,directory)))
+                (list
+                 "github.com/apparentlymart/go-openvpn-mgmt/demux"
+                 "github.com/apparentlymart/go-openvpn-mgmt/openvpn"))))
+           (replace 'install
+             (lambda arguments
+               (for-each
+                (lambda (directory)
+                  (apply (assoc-ref %standard-phases 'install)
+                         `(,@arguments #:import-path ,directory)))
+                (list
+                 "github.com/apparentlymart/go-openvpn-mgmt/demux"
+                 "github.com/apparentlymart/go-openvpn-mgmt/openvpn")))))))
+      (home-page "https://github.com/apparentlymart/go-openvpn-mgmt")
+      (synopsis "Go client library for OpenVPN's management protocol")
+      (description "Go-OpenVPN-Mgmt implements a client for the OpenVPN
+management interface.  It can be used to monitor and control an OpenVPN process
+running with its management port enabled.")
+      (license license:expat))))
+
+(define-public go-github-com-emersion-go-autostart
+  (let ((commit "00ed301c8e9ae79e82878c6361c709983ac5dd2c")
+        (revision "0"))
+    (package
+      (name "go-github-com-emersion-go-autostart")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/emersion/go-autostart")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0cqqvbzn32xv5lknfygrx01rx2sc6pi833k7008nlk9lsfgry06v"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/emersion/go-autostart"))
+      (home-page "https://github.com/emersion/go-autostart")
+      (synopsis "Autostart library in Go")
+      (description "Go-Autostart is a Go library to run a command after login.")
+      (license license:expat))))
+
+(define-public go-github-com-dchest-siphash
+  (package
+    (name "go-github-com-dchest-siphash")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/dchest/siphash")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08s076y7vmjqnq7jz0762hkm896r6r31v8b31a3gy0n8rfa01k8k"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/dchest/siphash"))
+    (home-page "https://github.com/dchest/siphash")
+    (synopsis "Go library for pseudorandom functions")
+    (description "SipHash is a family of pseudorandom functions (PRFs) optimized
+for speed on short messages.")
+    (license license:cc0)))
+
+(define-public go-github-com-rakyll-statik
+  (package
+    (name "go-github-com-rakyll-statik")
+    (version "0.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rakyll/statik")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y0kbzma55vmyqhyrw9ssgvxn6nw7d0zg72a7nz8vp1zly4hs6va"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/rakyll/statik"))
+    (home-page "https://github.com/rakyll/statik/")
+    (synopsis "Embed files into a Go executable")
+    (description "Statik allows you to embed a directory of static files into
+your Go binary to be later served from an http.FileSystem.")
+    (license license:asl2.0)))
 
 ;; According to https://golang.org/doc/install/gccgo, gccgo-4.8.2 includes a
 ;; complete go-1.1.2 implementation, gccgo-4.9 includes a complete go-1.2
@@ -441,6 +1388,162 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
+(define-public go-1.16
+  (package
+    (inherit go-1.14)
+    (name "go")
+    (version "1.16.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/golang/go")
+             (commit (string-append "go" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "19a93p217h5xi2sgh34qzv24pkd4df0sw4fc5z6k47lspjp3vx2l"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-1.14)
+       ((#:tests? _) #t)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'remove-unused-sourcecode-generators
+             (lambda _
+               ;; Prevent perl from inclusion in closure through unused files
+               (for-each delete-file (find-files "src" "\\.pl$"))))
+           (replace 'prebuild
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
+                      (net-base (assoc-ref inputs "net-base"))
+                      (tzdata-path
+                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+
+                 ;; Having the patch in the 'patches' field of <origin> breaks
+                 ;; the 'TestServeContent' test due to the fact that
+                 ;; timestamps are reset.  Thus, apply it from here.
+                 (invoke "patch" "-p2" "--force" "-i"
+                         (assoc-ref inputs "go-skip-gc-test.patch"))
+                 (invoke "patch" "-p2" "--force" "-i"
+                         (assoc-ref inputs "go-fix-script-tests.patch"))
+
+                 (for-each make-file-writable (find-files "."))
+
+                 (substitute* "os/os_test.go"
+                   (("/usr/bin") (getcwd))
+                   (("/bin/sh") (which "sh")))
+
+                 (substitute* "cmd/go/testdata/script/cgo_path_space.txt"
+                   (("/bin/sh") (which "sh")))
+
+                 ;; Add libgcc to runpath
+                 (substitute* "cmd/link/internal/ld/lib.go"
+                   (("!rpath.set") "true"))
+                 (substitute* "cmd/go/internal/work/gccgo.go"
+                   (("cgoldflags := \\[\\]string\\{\\}")
+                    (string-append "cgoldflags := []string{"
+                                   "\"-Wl,-rpath=" gcclib "\""
+                                   "}"))
+                   (("\"-lgcc_s\", ")
+                    (string-append
+                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
+                 (substitute* "cmd/go/internal/work/gc.go"
+                   (("ldflags = setextld\\(ldflags, compiler\\)")
+                    (string-append
+                     "ldflags = setextld(ldflags, compiler)\n"
+                     "ldflags = append(ldflags, \"-r\")\n"
+                     "ldflags = append(ldflags, \"" gcclib "\")\n")))
+
+                 ;; Disable failing tests: these tests attempt to access
+                 ;; commands or network resources which are neither available
+                 ;; nor necessary for the build to succeed.
+                 (for-each
+                  (match-lambda
+                    ((file regex)
+                     (substitute* file
+                       ((regex all before test_name)
+                        (string-append before "Disabled" test_name)))))
+                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
+                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPort.+)")
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPortWithCancel.+)")
+                    ;; 127.0.0.1 doesn't exist
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPTR.+)")
+                    ;; 127.0.0.1 doesn't exist
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPTRWithCancel.+)")
+                    ;; /etc/services doesn't exist
+                    ("net/parse_test.go" "(.+)(TestReadLine.+)")
+                    ("os/os_test.go" "(.+)(TestHostname.+)")
+                    ;; The user's directory doesn't exist
+                    ("os/os_test.go" "(.+)(TestUserHomeDir.+)")
+                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
+                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
+                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
+                    ("syscall/exec_linux_test.go"
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+
+                 ;; These tests fail on aarch64-linux
+                 (substitute* "cmd/dist/test.go"
+                   (("t.registerHostTest\\(\"testsanitizers/msan.*") ""))
+
+                 ;; fix shebang for testar script
+                 ;; note the target script is generated at build time.
+                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
+                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
+
+                 (substitute* "net/lookup_unix.go"
+                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
+                 (substitute* "net/port_unix.go"
+                   (("/etc/services") (string-append net-base "/etc/services")))
+                 (substitute* "time/zoneinfo_unix.go"
+                   (("/usr/share/zoneinfo/") tzdata-path)))))
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; FIXME: Some of the .a files are not bit-reproducible.
+               ;; (Is this still true?)
+               (let* ((output (assoc-ref outputs "out"))
+                      (loader (string-append (assoc-ref inputs "libc")
+                                             ,(glibc-dynamic-linker))))
+                 (setenv "CC" (which "gcc"))
+                 (setenv "GO_LDSO" loader)
+                 (setenv "GOOS" "linux")
+                 (setenv "GOROOT" (dirname (getcwd)))
+                 (setenv "GOROOT_FINAL" output)
+                 (setenv "GOCACHE" "/tmp/go-cache")
+                 (invoke "sh" "make.bash" "--no-banner"))))
+           (replace 'check
+             (lambda* (#:key target (tests? (not target)) (parallel-tests? #t)
+                       #:allow-other-keys)
+               (let* ((njobs (if parallel-tests? (parallel-job-count) 1)))
+                 (when tests?
+                   (setenv "GOMAXPROCS" (number->string njobs))
+                   (invoke "sh" "run.bash" "--no-rebuild")))))
+           (add-before 'install 'unpatch-perl-shebangs
+             (lambda _
+               ;; Rewrite references to perl input in test scripts
+               (substitute* "net/http/cgi/testdata/test.cgi"
+                 (("^#!.*") "#!/usr/bin/env perl\n"))))))))
+    (native-inputs
+     `(("go-fix-script-tests.patch" ,(search-patch "go-fix-script-tests.patch"))
+       ,@(if (not (member (%current-system) (package-supported-systems go-1.4)))
+             (alist-replace "go" (list gccgo-10) (package-native-inputs go-1.14))
+             (package-native-inputs go-1.14))))))
+
 (define-public go go-1.14)
 
 (define-public go-github-com-alsm-ioprogress
@@ -494,6 +1597,41 @@ jar struct to manage the cookies added to the cookie jar.")
       (home-page "https://github.com/aki237/nscjar")
       (license license:expat))))
 
+(define-public go-github-com-gizak-termui
+  (package
+    (name "go-github-com-gizak-termui")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gizak/termui")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v3k8l5p95kb1v297ra5mw9sxdd59y82y6ibjzya5ma2pry6k5cn"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gizak/termui"
+       #:import-path "github.com/gizak/termui/v3"))
+    (propagated-inputs
+     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-github-com-mitchellh-go-wordwrap"
+        ,go-github-com-mitchellh-go-wordwrap)
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+    (home-page "https://github.com/gizak/termui")
+    (synopsis "Terminal dashboard widget Go library")
+    (description
+     "The termui Go library draws customizable dashboard widgets in a text
+terminal.  It includes several common widgets: lists, trees, tables and tabs,
+but also more complex items such as (stacked) bar and pie charts, scatter plots,
+gauges, and even images and a canvas for drawing `high resolution' braille dots.
+
+You can also easily create new custom widgets.  Widgets can be coloured and
+styled and positioned absolutely or relatively.  They respond to keyboard,
+mouse, and terminal resizing events.")
+    (license license:expat)))
+
 (define-public go-github-com-golangplus-fmt
   (package
     (name "go-github-com-golangplus-fmt")
@@ -513,6 +1651,32 @@ jar struct to manage the cookies added to the cookie jar.")
     (synopsis "Additions to Go's standard @code{fmt} package")
     (description "This package provides additions to Go's stdlib @code{fmt}.")
     (license license:bsd-3)))
+
+(define-public go-github-com-mitchellh-go-wordwrap
+  (package
+    (name "go-github-com-mitchellh-go-wordwrap")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitchellh/go-wordwrap")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12imq66hgj8q9ii2xqdy8apc0icphh6yimjb0div1pvl3s9gn83y"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/mitchellh/go-wordwrap"))
+    (propagated-inputs
+     `(("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/mitchellh/go-wordwrap")
+    (synopsis "Go library for word-wrapping strings")
+    (description
+     "This Go library automatically wraps words onto multiple lines.  It's
+primary goal is to format command-line output, but of course word wrapping is a
+generally useful thing to do.")
+    (license license:expat)))
 
 (define-public go-github-com-motemen-go-colorine
   (let ((commit "45d19169413a019e4e2be69629dde5c7d92f8706")

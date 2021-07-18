@@ -36,7 +36,7 @@ start)
       -E LC_ALL=en_US.utf8 \
       -p "/var/run/guix-daemon.pid" \
       @localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix-daemon \
-      --build-users-group=guixbuild
+      --build-users-group=guixbuild --discover=no
   fi
   ;;
 stop)

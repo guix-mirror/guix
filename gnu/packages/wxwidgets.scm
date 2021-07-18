@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -325,24 +325,25 @@ provide a 100% native look and feel for the application.")
 (define-public wxsvg
   (package
     (name "wxsvg")
-    (version "1.5.12")
+    (version "1.5.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/wxsvg/wxsvg/"
                             version "/wxsvg-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1hn3h9kzsjs4wimlpknzjfgn7q0n792hh7v3mshjgsjxdcrckzan"))))
+        (base32 "0agmmwg0zlsw1idygvqjpj1nk41akzlbdha0hsdk1k8ckz6niq8d"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets-3.1)
        ("cairo" ,cairo)
-       ("pango" ,pango)
-       ("libexif" ,libexif)
        ("ffmpeg" ,ffmpeg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In Requires.private of libwxsvg.pc.
+     `(("libexif" ,libexif)
+       ("pango" ,pango)))
     (synopsis "C++ library to create, manipulate and render SVG files")
     (description "wxSVG is a C++ library to create, manipulate and render
 @dfn{Scalable Vector Graphics} (SVG) files with the wxWidgets toolkit.")

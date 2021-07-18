@@ -61,8 +61,10 @@
                    (let ((socket "/run/pcscd/pcscd.comm"))
                      (when (file-exists? socket)
                        (delete-file socket)))
-                   (invoke #$(file-append pcsc-lite "/sbin/pcscd"))
-                   (call-with-input-file "/run/pcscd/pcscd.pid" read)))
+                   (fork+exec-command
+                    (list #$(file-append pcsc-lite "/sbin/pcscd")
+                          "--foreground")
+                    #:log-file "/var/log/pcscd.log")))
         (stop #~(make-kill-destructor)))))))
 
 (define pcscd-activation

@@ -10,7 +10,7 @@
 ;;; Copyright © 2014, 2015, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017, 2018, 2021 Chris Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -104,6 +104,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
@@ -835,7 +836,7 @@ high a score as possible.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.E-3")
+    (version "0.F")
     (source
      (origin
        (method git-fetch)
@@ -843,7 +844,7 @@ high a score as possible.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA")
              (commit version)))
        (sha256
-        (base32 "108cs6vp99qmqqfnmczad0xjgcl82bypm5xszwnlfcswdsrfs4da"))
+        (base32 "1jid8lcl04y768b3psj1ifhx96lmd6fn1j2wzxhl4ic7ra66p2z3"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -854,14 +855,22 @@ high a score as possible.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'build 'build-tiles
+         ;; Apparently we can't do make on both tiles and a console version at
+         ;; the same time anymore, so we have to either "make clean" between
+         ;; builds or do some other hackery.  See:
+         ;;   https://github.com/CleverRaven/Cataclysm-DDA/issues/42598#issuecomment-667702746
+         (add-after 'install 'make-clean-pre-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             ;; Change prefix directory and enable tile graphics and sound.
+             (invoke "make" "clean")))
+         (add-after 'make-clean-pre-tiles 'build-tiles
            (lambda* (#:key make-flags outputs #:allow-other-keys)
              ;; Change prefix directory and enable tile graphics and sound.
              (apply invoke "make" "TILES=1" "SOUND=1"
                     (string-append "PREFIX="
                                    (assoc-ref outputs "tiles"))
                     (cdr make-flags))))
-         (add-after 'install 'install-tiles
+         (add-after 'build-tiles 'install-tiles
            (lambda* (#:key make-flags outputs #:allow-other-keys)
              (apply invoke "make" "install" "TILES=1" "SOUND=1"
                     (string-append "PREFIX="
@@ -874,7 +883,8 @@ high a score as possible.")
                "tiles"))                ;for tile graphics and sound support
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("astyle" ,astyle)))
     (inputs
      `(("freetype" ,freetype)
        ("libogg" ,libogg)
@@ -1517,7 +1527,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
 (define-public opensurge
   (package
     (name "opensurge")
-    (version "0.5.1.2")
+    (version "0.5.2.1")
     (source
      (origin
        (method git-fetch)
@@ -1526,14 +1536,15 @@ shadow mimic them to reach blocks you couldn't reach alone.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ih7hlqjnp9rv0m4lqf7c0s1ai532way5i4pk45jq1gqm8325dbv"))))
+        (base32 "13g5izss7dmgigc8iif8hid3z6i066b0z29rbql2b9qjmdj1dp41"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;there are no tests
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
               (share (string-append out "/share")))
-         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out "/bin")
+         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+               (string-append "-DGAME_BINDIR=" out "/bin") ; not /bin/games
                (string-append "-DGAME_DATADIR=" share "/" ,name)
                (string-append "-DDESKTOP_ENTRY_PATH=" share "/applications")
                (string-append "-DDESKTOP_ICON_PATH=" share "/pixmaps")
@@ -3156,7 +3167,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.8")
+    (version "6.2.9")
     (source
      (origin
        (method url-fetch)
@@ -3164,7 +3175,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "0irqb0wl30c2i1rs8f6mm1c89l7l9nxxv7533lr408h1m36lc16m"))))
+         "140qqkmvldnf41s39khrgyzr6a0az7dcfhkcmflh0sbmvl5w5z6x"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -3933,7 +3944,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3941,7 +3952,7 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "05ysaxvsgps9fxc421kdifsxmc1sn6n79cjaa0k0i3fs9qqrja2b"))))
+                "0hc3qd9hv3h9qm53yxgc7iy1v1wyajwxyvil4vqvzf9ascz9dnlj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5933,7 +5944,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.6.4")
+   (version "2.6.5")
    (source
     (origin
      (method url-fetch)
@@ -5945,7 +5956,7 @@ for Un*x systems with X11.")
                   (version-major+minor version) "/" version
                   "/freeciv-" version ".tar.bz2")))
      (sha256
-      (base32 "1kn122f57wn5a8ryxaz73dlbd5m93mqx3bqmmz2lkgdccrvrbns0"))))
+      (base32 "0ngcj59ak71i6m8yvbr0g3aryzpw1scalpdzgfqsq4mf9p3y2r1f"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -8748,7 +8759,7 @@ game field is extended to 4D space, which has to filled up by the gamer with
 (define-public arx-libertatis
   (package
     (name "arx-libertatis")
-    (version "1.1.2")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -8756,7 +8767,7 @@ game field is extended to 4D space, which has to filled up by the gamer with
                            version ".tar.xz"))
        (sha256
         (base32
-         "0hjfxlsmp8wwqr06snv2dlly2s79ra0d9aw49gkp6rn8m50b9bc2"))))
+         "035dflxffa98bxmxkrqfizmhvnr09wyhhmzaqxk92772qil7gkxs"))))
     (build-system cmake-build-system)
     (outputs '("out" "installer"))
     (arguments
@@ -8801,8 +8812,8 @@ game field is extended to 4D space, which has to filled up by the gamer with
                (rename-file (string-append out "/bin/arx-install-data")
                             (string-append installer "/bin/arx-install-data"))))))))
     (inputs
-     `(("sdl" ,sdl)                     ; Switch to sdl2 in >1.1.2.
-       ("mesa" ,mesa)                   ; Switch to libepoxy in >1.1.2.
+     `(("sdl2" ,sdl2)
+       ("libepoxy" ,libepoxy)
        ("glew" ,glew)
        ("openal" ,openal)
        ("zlib" ,zlib)
@@ -11949,56 +11960,59 @@ etc.  You can also play games on FICS or against an engine.")
     (license license:gpl2+)))
 
 (define-public stockfish
-  (package
-    (name "stockfish")
-    (version "13")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/official-stockfish/Stockfish")
-             (commit (string-append "sf_" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "15dfp9fnl3w7dgxhqmsm461amsysn646rj1arnzvwhy2i6ijhg2m"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("neural-network"
-        ,(origin
-           (method url-fetch)
-           (uri "https://tests.stockfishchess.org/api/nn/nn-62ef826d1a6d.nnue")
-           (sha256
-            (base32 "0qsy9rr4zgxrpgwhwbi96z01a2560am2b00q2klbj4bd39nq5vv2"))))))
-    (arguments
-     `(#:tests? #f
-       #:make-flags (list "-C" "src"
-                          "build"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          (string-append "ARCH="
-                                         ,(match (%current-system)
-                                            ("x86_64-linux" "x86-64")
-                                            ("i686-linux" "x86-32")
-                                            ("aarch64-linux" "general-64")
-                                            ("armhf-linux" "armv7")
-                                            ("mips64el-linux" "general-64")
-                                            (_ "general-32"))))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  ;; The official neural network file is needed for building
-                  ;; and is embedded in the resulting binary.
-                  (add-after 'unpack 'copy-net
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (copy-file (assoc-ref inputs "neural-network")
-                                 "src/nn-62ef826d1a6d.nnue")
-                      #t)))))
-    (synopsis "Strong chess engine")
-    (description
-     "Stockfish is a very strong chess engine.  It is much stronger than the
+  (let ((neural-network-revision "3475407dc199")) ; also update hash below
+    (package
+      (name "stockfish")
+      (version "14")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/official-stockfish/Stockfish")
+               (commit (string-append "sf_" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "046b3rq9w8lzgk07q5zazzkl93ai99ab18hr9d8n73mabjpi6zbx"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("neural-network"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "https://tests.stockfishchess.org/api/nn/nn-"
+                                 neural-network-revision ".nnue"))
+             (sha256
+              (base32
+               "11zci5kgwdw9rh8w2w4p84764g82rr666y3n8r2flwwrq5yl0x9l"))))))
+      (arguments
+       `(#:tests? #f
+         #:make-flags (list "-C" "src"
+                            "build"
+                            (string-append "PREFIX="
+                                           (assoc-ref %outputs "out"))
+                            (string-append "ARCH="
+                                           ,(match (%current-system)
+                                              ("x86_64-linux" "x86-64")
+                                              ("i686-linux" "x86-32")
+                                              ("aarch64-linux" "general-64")
+                                              ("armhf-linux" "armv7")
+                                              ("mips64el-linux" "general-64")
+                                              (_ "general-32"))))
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure)
+                    ;; The official neural network file is needed for building
+                    ;; and is embedded in the resulting binary.
+                    (add-after 'unpack 'copy-net
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (copy-file (assoc-ref inputs "neural-network")
+                                   (format #f "src/nn-~a.nnue"
+                                           ,neural-network-revision)))))))
+      (synopsis "Strong chess engine")
+      (description
+       "Stockfish is a very strong chess engine.  It is much stronger than the
 best human chess grandmasters.  It can be used with UCI-compatible GUIs like
 ChessX.")
-    (home-page "https://stockfishchess.org/")
-    (license license:gpl3+)))
+      (home-page "https://stockfishchess.org/")
+      (license license:gpl3+))))
 
 (define-public barrage
   (package
@@ -12035,14 +12049,14 @@ get high scores.")
 (define-public burgerspace
   (package
     (name "burgerspace")
-    (version "1.9.3")
+    (version "1.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
                            "burgerspace-" version ".tar.gz"))
        (sha256
-        (base32 "1005a04rbn4lzjrpfg0m394k2mfaji63fm2qhdqdsxila8a6kjbv"))))
+        (base32 "1xb4immzmd419aa08lgkzf7ibxa6ax238zb2l5iw9nkgvzlh1v6l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

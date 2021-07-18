@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Hendur Saga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1308,15 +1309,20 @@ Trusted comments are signed, thus verified, before being displayed.")
               (sha256
                (base32
                 "0bixly6jqpwfx3p37c1qp1j685yg6m429r1nazwh43w4n527bs3y"))
-              (file-name (git-file-name name version))))
+              (file-name (git-file-name name version))
+              ;; Delete the bundled blob.  It's free, but unauditable,
+              ;; and apparently only required for android.
+              (snippet '(delete-file
+                         "android/gradle/wrapper/gradle-wrapper.jar"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (with-directory-excursion "tests"
-               (invoke "ctest" ".")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "tests"
+                 (invoke "ctest" "."))))))))
     (synopsis "Implementation of the olm and megolm cryptographic ratchets")
     (description "The libolm library implements the Double Ratchet
 cryptographic ratchet.  It is written in C and C++11, and exposed as a C

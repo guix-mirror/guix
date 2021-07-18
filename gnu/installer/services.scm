@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,7 +118,13 @@
      (system-service
       (name (G_ "DHCP client (dynamic IP address assignment)"))
       (type 'network-management)
-      (snippet '((service dhcp-client-service-type)))))))
+      (snippet '((service dhcp-client-service-type))))
+
+     ;; Dealing with documents.
+     (system-service
+      (name (G_ "CUPS printing system (no Web interface by default)"))
+      (type 'document)
+      (snippet '((service cups-service-type)))))))
 
 (define (desktop-system-service? service)
   "Return true if SERVICE is a desktop environment service."
