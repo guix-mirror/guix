@@ -47,6 +47,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system texlive)
   #:use-module (guix utils)
+  #:use-module (guix deprecation)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (gnu packages)
@@ -4053,8 +4054,8 @@ ones.")
                         '()
                         (append default-packages packages))))))))
 
-;;; Deprecated.
-(define texlive-union texlive-updmap.cfg)
+(define-deprecated/alias texlive-union texlive-updmap.cfg)
+(export texlive-union)
 
 ;; For use in package definitions only
 (define-public texlive-tiny
