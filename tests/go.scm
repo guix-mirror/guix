@@ -57,7 +57,6 @@ require (
 exclude D v1.2.3
 ")
 
-
 (define fixture-go-mod-complete
   "module M
 
@@ -95,12 +94,6 @@ replace (
 )
 
 ")
-
-
-
-(define fixture-latest-for-go-check
-  "{\"Version\":\"v0.0.0-20201130134442-10cb98267c6c\",\"Time\":\"2020-11-30T13:44:42Z\"}")
-
 
 (define fixtures-go-check-test
   (let ((version
