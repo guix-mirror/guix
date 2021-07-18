@@ -2474,6 +2474,9 @@ exec " gcc "/bin/" program
   (package
     (inherit diffutils)
     (name "diffutils-boot0")
+    (source (origin
+              (inherit (package-source diffutils))
+              (patches '())))                 ;patches for tests unneeded here
     (native-inputs `())
     (inputs
      `(("make" ,gnu-make-boot0)

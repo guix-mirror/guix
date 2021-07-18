@@ -148,6 +148,8 @@ including, for example, recursive directory searching.")
             (sha256
              (base32
               "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
+            (patches (search-patches "coreutils-gnulib-tests.patch"))
+
             ;; Remove this snippet once upstream releases a fixed version.
             ;; This snippet changes Makefile.in, even though the upstream
             ;; patch changes testsuite/local.mk, since we build sed from a
@@ -269,7 +271,8 @@ differences.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))))
+              "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))
+            (patches (search-patches "coreutils-gnulib-tests.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list perl))
    (synopsis "Comparing and merging files")
