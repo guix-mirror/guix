@@ -931,6 +931,15 @@ the HTML documentation of TXR.")
        #:test-target "tests"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-license-installation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("INSTALL(,.*LICENSE,.*)\\$\\(datadir\\)" _ match)
+                (string-append "INSTALL" match
+                               (assoc-ref outputs "out")
+                               "/share/doc/" ,name "-" ,version)))
+             #t))
+         (delete 'install-license-files)
          (add-after 'unpack 'inhibit-doc-syms-generation
            (lambda _
              (substitute* "genman.txr"
