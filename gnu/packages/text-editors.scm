@@ -532,7 +532,8 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
      ;; No test suite available.
      `(#:tests? #f
        #:make-flags (list (string-append "prefix=" %output)
-                          (string-append "CC=" ,(cc-for-target)))
+                          (string-append "CC=" ,(cc-for-target))
+                          (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ; no configure script
                   (add-before 'build 'correct-location-of-diff
@@ -541,13 +542,6 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                         (("/usr/bin/diff")
                          (string-append (assoc-ref inputs "diffutils")
                                         "/bin/diff")))))
-                  (add-before 'build 'pkg-config-for-cross-compiling-target
-                    (lambda _
-                      (substitute* "GNUmakefile"
-                        (("pkg-config")
-                         (or (which "pkg-config")
-                             (string-append ,(%current-target-system)
-                                            "-pkg-config"))))))
                   (add-before 'install 'patch-tutorial-location
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "mg.1"
