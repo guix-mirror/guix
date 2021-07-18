@@ -1514,10 +1514,12 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (substitute* "time/zoneinfo_unix.go"
                    (("/usr/share/zoneinfo/") tzdata-path)))))
            (replace 'build
-             (lambda* (#:key inputs outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs (parallel-build? #t)
+                       #:allow-other-keys)
                ;; FIXME: Some of the .a files are not bit-reproducible.
                ;; (Is this still true?)
-               (let* ((output (assoc-ref outputs "out"))
+               (let* ((njobs (if parallel-build? (parallel-job-count) 1))
+                      (output (assoc-ref outputs "out"))
                       (loader (string-append (assoc-ref inputs "libc")
                                              ,(glibc-dynamic-linker))))
                  (setenv "CC" (which "gcc"))
@@ -1526,6 +1528,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOROOT" (dirname (getcwd)))
                  (setenv "GOROOT_FINAL" output)
                  (setenv "GOCACHE" "/tmp/go-cache")
+                 (setenv "GOMAXPROCS" (number->string njobs))
                  (invoke "sh" "make.bash" "--no-banner"))))
            (replace 'check
              (lambda* (#:key target (tests? (not target)) (parallel-tests? #t)
