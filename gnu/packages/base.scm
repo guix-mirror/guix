@@ -409,6 +409,7 @@ standard.")
     (inherit coreutils)
     (name "coreutils-minimal")
     (outputs '("out"))
+    (native-inputs '())
     (inputs '())))
 
 (define-public coreutils-8.30
