@@ -10255,9 +10255,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                     "/lib/aspell"))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("iso-codes" ,iso-codes)))
+     `(("iso-codes" ,iso-codes)))
     (native-inputs
      `(("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -10269,7 +10267,10 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("aspell-dict-en" ,aspell-dict-en)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("enchant" ,enchant)))            ;enchant.pc is required by gspell-1.pc
+     ;; Referred by .pc file.
+     `(("enchant" ,enchant)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description
