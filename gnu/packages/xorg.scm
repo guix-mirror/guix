@@ -1517,11 +1517,10 @@ treat it as part of their software base when porting.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (inputs
-      `(("libxext" ,libxext)
-        ("libx11" ,libx11)))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
