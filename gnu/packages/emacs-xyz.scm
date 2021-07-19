@@ -5850,6 +5850,29 @@ minibuffer to enable editing the minibuffer input in another buffer with
 source code using IPython.")
     (license license:gpl3+)))
 
+(define-public emacs-ob-async
+  (package
+    (name "emacs-ob-async")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astahlman/ob-async")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10x4hxrjm4pr6vg42a961h9ilqzyd0l0fv7fsbq9clxi439f1nd6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-async" ,emacs-async)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/astahlman/ob-async")
+    (synopsis "Asynchronous src_block execution for org-babel")
+    (description "@code{ob-async} enables asynchronous execution of org-babel
+src blocks.")
+    (license license:gpl3+)))
+
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
