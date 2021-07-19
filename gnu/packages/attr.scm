@@ -30,14 +30,14 @@
 (define-public attr
   (package
     (name "attr")
-    (version "2.4.48")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/attr/attr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rr4adzwax4bzr2c00f06zcsljv5y6p9wymz1g89ww7cb2rp5bay"))))
+                "1y6sibbkrcjygv8naadnsg6xmsqwfh6cwrqk01l0v2i5kfacdqds"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -57,8 +57,7 @@
              ;; extended attributes, and we wish to allow Guix to be built
              ;; on such systems.
              (unless target
-               (system* "make" "tests" "-C" "test"))
-             #t)))))
+               (system* "make" "tests" "-C" "test")))))))
     (inputs
      ;; Perl is needed to run tests; remove it from cross builds.
      (if (%current-target-system)
