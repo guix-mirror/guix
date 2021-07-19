@@ -155,6 +155,7 @@
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages telephony)
@@ -5965,6 +5966,51 @@ integration servers.  Users can specify a list of server in the
 view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
     (license license:gpl3+)))
+
+(define-public emacs-zmq
+  (package
+    (name "emacs-zmq")
+    (version "0.10.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nnicandro/emacs-zmq")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ngxm5mm0kqgvn8977ryrngamx0khzlw86d8vz5s0jhm2kgwnqp8"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda _
+             (invoke "make" "src/configure")
+             (substitute* "src/configure"
+               (("/bin/sh") (which "sh"))
+               (("/usr/bin/file") (which "file")))
+             (invoke "make")))
+         (add-after 'install 'install-shared-object
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site-lisp (string-append out "/share/emacs/site-lisp"))
+                    (libdir (string-append site-lisp "/zmq-0.10.10")))
+               (copy-file "emacs-zmq.so"
+                          (string-append libdir "/emacs-zmq.so"))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (home-page "https://github.com/nnicandro/emacs-zmq")
+    (synopsis "Emacs bindings to ØMQ")
+    (description "This package provides Emacs bindings to ØMQ.")
+    (license (list license:gpl2+     ;zmq.el
+                   license:gpl3+)))) ;src/emacs-module.h
 
 (define-public emacs-tup-mode
   (package
