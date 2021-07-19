@@ -52,6 +52,7 @@
 ;;; Copyright © 2021 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,11 +89,14 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages jemalloc)
@@ -109,6 +113,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages pantheon)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -130,6 +135,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -148,6 +154,7 @@
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
@@ -3983,3 +3990,54 @@ PostreSQL, SQLite, ODBC and MySQL.")
      "FreeTDS is an implementation of the Tabular DataStream protocol, used for
 connecting to MS SQL and Sybase servers over TCP/IP.")
     (license license:lgpl2.0+)))
+
+(define-public sequeler
+  (package
+    (name "sequeler")
+    (version "0.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Alecaddd/sequeler")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q1vzc3likpiwfh6blkyiz0wr0aarj9xrm8gbi7m3p1wslkpah7c"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson_post_install.py"
+               (("gtk-update-icon-cache") "true")
+               (("update-desktop-database") "true"))
+             #t)))))
+    (native-inputs
+     `(;("appstream-glib" ,appstream-glib)  ; validation fails for lack of network
+       ("gettext-minimal" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")             ; for glib-compile-resources
+       ("gtk+" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("granite" ,granite)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("gtksourceview-3" ,gtksourceview-3)
+       ("libgda" ,libgda)
+       ("libgee" ,libgee)
+       ("libsecret" ,libsecret)
+       ("libssh2" ,libssh2)
+       ("libxml2" ,libxml2)))
+    (synopsis "Friendly SQL Client")
+    (description "Sequeler is a native Linux SQL client built in Vala and
+Gtk.  It allows you to connect to your local and remote databases, write SQL in
+a handy text editor with language recognition, and visualize SELECT results in
+a Gtk.Grid Widget.")
+    (home-page "https://github.com/Alecaddd/sequeler")
+    (license license:gpl2+)))
