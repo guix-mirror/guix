@@ -508,16 +508,15 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.36.1")
+   (version "2.37")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "18ypqr5y48vxqg9mkz1c47798jp1xb1d4vfpmfq8vkihkvkx4jsv"))
-            (patches (search-patches "binutils-libiberty-endianness-bug.patch"
-                                     "binutils-loongson-workaround.patch"))))
+              "1m3b2rdfv1dmdpd0bzg1hy7i8a2qng53szc6livyi3nh6101mz37"))
+            (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
