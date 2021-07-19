@@ -40,7 +40,7 @@
 (define-public acl
   (package
     (name "acl")
-    (version "2.2.53")
+    (version "2.3.1")
     (source
      (origin
       (method url-fetch)
@@ -48,7 +48,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1ir6my3w74s6nfbgbqgzj6w570sn0qjf3524zx8xh67lqrjrigh6"))))
+        "1bqi7hj0xkpivwg7lx5cv3yvs9ks1i6azvpgbvfpzcq1i736233n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
