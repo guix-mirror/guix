@@ -325,14 +325,15 @@ Font Format (WOFF).")
   (hidden-package
    (package
      (name "fontconfig-minimal")
-     (version "2.13.93")
+     (version "2.13.94")
      (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://www.freedesktop.org/software/"
                   "fontconfig/release/fontconfig-" version ".tar.xz"))
-            (sha256 (base32
-                     "1850q4k80yxma5g3yxkvyv8i5a3xqzswwml8gjy3jmywx8qqd5pa"))
+            (sha256
+             (base32
+              "0g004r0bkkqz00mpm3svnnxn7d83158q0yb9ggxryizxfg5m5w55"))
              (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
      (build-system gnu-build-system)
      ;; In Requires or Requires.private of fontconfig.pc.
