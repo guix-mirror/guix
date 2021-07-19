@@ -450,6 +450,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/php.scm				\
   %D%/packages/piet.scm			\
   %D%/packages/pkg-config.scm			\
+  %D%/packages/plan9.scm			\
   %D%/packages/plotutils.scm			\
   %D%/packages/poedit.scm				\
   %D%/packages/polkit.scm			\
