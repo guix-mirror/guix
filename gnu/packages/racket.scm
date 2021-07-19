@@ -64,14 +64,14 @@
 (define-public racket-minimal
   (package
     (name "racket-minimal")
-    (version "8.1")            ; note: remember to also update racket!
+    (version "8.2")            ; note: remember to also update racket!
     (source
      (origin
        (method url-fetch)
        (uri (map (lambda (base)
                    (string-append base version "/racket-minimal-src.tgz"))
                  %installer-mirrors))
-       (sha256 "04zzqybpxss50n1jrwwq98539gw0y0ygpw9civl2sq3s4ww7m8l3")
+       (sha256 "13qfg56w554vdj5iwa8lpacy83s7bzhhyr44pjns68mkhj69ring")
        (patches (search-patches
                  "racket-sh-via-rktio.patch"))))
     (home-page "https://racket-lang.org")
@@ -125,7 +125,7 @@
                                   'lib-search-dirs
                                   (lambda (dirs)
                                     (append dirs extra-lib-search-dirs))
-                                  null)
+                                  '(#f))
                                  #:exists 'truncate/replace
                                  file)))
                     "--"
@@ -183,7 +183,7 @@ DrRacket IDE, are not included.")
                  %installer-mirrors))
        (sha256
         (base32
-         "0xdqwrwm604bbnr97h75dps2ixxz2svlw0fn0f674bn04dcfd60f"))))
+         "10sgzsraxzxp1k2y2wvz8rcjwvhbcd6k72l9lyqr34yazlwfdz26"))))
     (inputs
      `(;; sqlite and libraries for `racket/draw' are needed to build the doc.
        ("cairo" ,cairo)
