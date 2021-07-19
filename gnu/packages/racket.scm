@@ -73,7 +73,7 @@
                  %installer-mirrors))
        (sha256 "13qfg56w554vdj5iwa8lpacy83s7bzhhyr44pjns68mkhj69ring")
        (patches (search-patches
-                 "racket-sh-via-rktio.patch"))))
+                 "racket-minimal-sh-via-rktio.patch"))))
     (home-page "https://racket-lang.org")
     (synopsis "Racket without bundled packages such as DrRacket")
     (inputs
@@ -183,10 +183,52 @@ DrRacket IDE, are not included.")
                  %installer-mirrors))
        (sha256
         (base32
-         "10sgzsraxzxp1k2y2wvz8rcjwvhbcd6k72l9lyqr34yazlwfdz26"))))
+         "10sgzsraxzxp1k2y2wvz8rcjwvhbcd6k72l9lyqr34yazlwfdz26"))
+       (snippet
+        #~(begin
+            (use-modules (guix build utils)
+                         (ice-9 match)
+                         (ice-9 regex))
+            ;; unbundle minimal Racket
+            (for-each delete-file-recursively
+                      '("collects"
+                        "doc"
+                        "etc"
+                        "README"
+                        "src"))
+            ;; unbundle package sources included elsewhere
+            (define (substitute/delete file pattern)
+              (substitute
+               file
+               (list (cons pattern
+                           (lambda (line matches)
+                             ;; must match exactly once
+                             (match matches
+                               ((m)
+                                (string-append (match:prefix m)
+                                               (match:suffix m)))))))))
+            (define (unbundle-pkg pkg)
+              (define quoted-pkg (regexp-quote pkg))
+              (with-directory-excursion "share"
+                (substitute/delete
+                 "links.rktd"
+                 (string-append
+                  "[(][^()]+[(]#\"pkgs\" #\""
+                  quoted-pkg
+                  "\"[)][)]"))
+                (with-directory-excursion "pkgs"
+                  (substitute/delete
+                   "pkgs.rktd"
+                   (string-append
+                    "[(]\""
+                    quoted-pkg
+                    "\" \\. #s[(]"
+                    "(pkg-info|[(]sc-pkg-info pkg-info 3[)])"
+                    " [(][^()]+[)] [^()]+[)][)]"))
+                  (delete-file-recursively pkg))))
+            (unbundle-pkg "racket-lib")))))
     (inputs
-     `(;; sqlite and libraries for `racket/draw' are needed to build the doc.
-       ("cairo" ,cairo)
+     `(("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
        ("glib" ,glib)
        ("glu" ,glu)
@@ -199,8 +241,67 @@ DrRacket IDE, are not included.")
        ("mpfr" ,mpfr)
        ("pango" ,pango)
        ("unixodbc" ,unixodbc)
-       ("libedit" ,libedit)
-       ,@(package-inputs racket-minimal)))
+       ("libedit" ,libedit)))
+    (native-inputs
+     `(("racket" ,racket-minimal)
+       ("extend-layer" ,extend-layer)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'unpack-packages
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let ((racket (assoc-ref (or native-inputs inputs) "racket"))
+                   (prefix (assoc-ref outputs "out")))
+               (mkdir-p (string-append prefix "/share/racket/pkgs"))
+               (copy-recursively
+                "share/links.rktd"
+                (string-append prefix "/share/racket/links.rktd"))
+               (copy-recursively
+                "share/pkgs"
+                (string-append prefix "/share/racket/pkgs"))
+               #t)))
+         (replace 'configure
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let ((racket (assoc-ref (or native-inputs inputs) "racket"))
+                   (prefix (assoc-ref outputs "out")))
+               (apply invoke
+                      (string-append racket "/bin/racket")
+                      (assoc-ref inputs "extend-layer")
+                      racket
+                      prefix
+                      (map
+                       (lambda (lib)
+                         (string-append (assoc-ref inputs lib) "/lib"))
+                       '("cairo"
+                         "fontconfig"
+                         "glib"
+                         "glu"
+                         "gmp"
+                         "gtk+"
+                         "libjpeg"
+                         "libpng"
+                         "libx11"
+                         "mesa"
+                         "mpfr"
+                         "pango"
+                         "unixodbc"
+                         "libedit")))
+               #t)))
+         (replace 'build
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (invoke (string-append (assoc-ref (or native-inputs inputs)
+                                               "racket")
+                                    "/bin/racket")
+                     "--config"
+                     (string-append (assoc-ref outputs "out")
+                                    "/etc/racket")
+                     "-l"
+                     "raco"
+                     "setup")
+             #t))
+         (delete 'install))
+       ;; we still don't have these:
+       #:tests? #f))
     (synopsis "A programmable programming language in the Scheme family")
     (description
      "Racket is a general-purpose programming language in the Scheme family,
@@ -211,3 +312,83 @@ languages to complete language implementations.
 The main Racket distribution comes with many bundled packages, including the
 DrRacket IDE, libraries for GUI and web programming, and implementations of
 languages such as Typed Racket, R5RS and R6RS Scheme, Algol 60, and Datalog.")))
+
+
+(define extend-layer
+  (scheme-file
+   "extend-layer.rkt"
+   `(module
+     extend-layer racket/base
+     (require racket/cmdline
+              racket/match
+              racket/file
+              racket/list
+              racket/pretty)
+     (define config-file-pth
+       "etc/racket/config.rktd")
+     (define (build-path-string . args)
+       (path->string (apply build-path args)))
+     (define rx:racket
+       ;; Guile's reader doesn't support #rx"racket"
+       (regexp "racket"))
+     (command-line
+      #:args (parent-layer prefix . lib-dir*)
+      (let* ([config
+              (for/fold
+               ([config (file->value (build-path parent-layer
+                                                 config-file-pth))])
+               ([spec (in-list
+                       '((lib-dir lib-search-dirs "lib/racket")
+                         (share-dir share-search-dirs "share/racket")
+                         (links-file
+                          links-search-files
+                          "share/racket/links.rktd")
+                         (pkgs-dir pkgs-search-dirs "share/racket/pkgs")
+                         (bin-dir bin-search-dirs "bin")
+                         (man-dir man-search-dirs "share/man")
+                         (doc-dir doc-search-dirs "share/doc/racket")
+                         (include-dir
+                          include-search-dirs
+                          "include/racket")))])
+               (match-define (list main-key search-key pth) spec)
+               (hash-set*
+                config
+                main-key
+                (build-path-string prefix pth)
+                search-key
+                (list* #f
+                       (hash-ref config
+                                 main-key
+                                 (build-path-string parent-layer pth))
+                       (filter values (hash-ref config search-key null)))))]
+             [config
+              (hash-set config
+                        'apps-dir
+                        (build-path-string prefix "share/applications"))]
+             [config
+              ;; place new foreign lib-search-dirs before old
+              ;; foreign dirs, but after Racket layers
+              (let-values
+                  ([(rkt extra)
+                    (partition (lambda (pth)
+                                 (or (not pth)
+                                     (regexp-match? rx:racket pth)))
+                               (hash-ref config 'lib-search-dirs))])
+                (hash-set config
+                          'lib-search-dirs
+                          (append rkt
+                                  lib-dir*
+                                  extra)))]
+             [bin-dir
+              (hash-ref config 'bin-dir)]
+             [config
+              (hash-set* config
+                         'config-tethered-console-bin-dir bin-dir
+                         'config-tethered-gui-bin-dir bin-dir)]
+             [new-config-pth
+              (build-path prefix config-file-pth)])
+        (make-parent-directory* new-config-pth)
+        (call-with-output-file*
+         new-config-pth
+         (lambda (out)
+           (pretty-write config out))))))))

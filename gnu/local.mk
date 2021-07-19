@@ -1685,7 +1685,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rtags-separate-rct.patch			\
-  %D%/packages/patches/racket-sh-via-rktio.patch		\
+  %D%/packages/patches/racket-minimal-sh-via-rktio.patch	\
   %D%/packages/patches/remake-impure-dirs.patch			\
   %D%/packages/patches/retroarch-LIBRETRO_DIRECTORY.patch	\
   %D%/packages/patches/rnp-add-version.cmake.patch		\
