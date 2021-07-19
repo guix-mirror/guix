@@ -1,0 +1,20 @@
+Fix recursion accounting in XPath expressions:
+
+  https://gitlab.gnome.org/GNOME/libxml2/-/issues/264
+
+Taken from upstream:
+
+  https://gitlab.gnome.org/GNOME/libxml2/-/commit/3e1aad4fe584747fd7d17cc7b2863a78e2d21a77
+
+diff --git a/xpath.c b/xpath.c
+--- a/xpath.c
++++ b/xpath.c
+@@ -10983,7 +10983,7 @@ xmlXPathCompileExpr(xmlXPathParserContextPtr ctxt, int sort) {
+     }
+ 
+     if (xpctxt != NULL)
+-        xpctxt->depth -= 1;
++        xpctxt->depth -= 10;
+ }
+ 
+ /**

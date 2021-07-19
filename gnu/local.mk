@@ -1356,6 +1356,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
+  %D%/packages/patches/libxml2-parent-pointers.patch		\
+  %D%/packages/patches/libxml2-terminating-newline.patch	\
+  %D%/packages/patches/libxml2-xpath-recursion-limit.patch	\
   %D%/packages/patches/libxml2-xpath0-Add-option-xpath0.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
@@ -1587,7 +1590,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
-  %D%/packages/patches/python-libxml2-python39-compat.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
   %D%/packages/patches/python-matplotlib-run-under-wayland-gtk3.patch	\
   %D%/packages/patches/python-mediafile-wavpack.patch		\

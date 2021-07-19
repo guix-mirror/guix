@@ -184,14 +184,17 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.10")
+    (version "2.9.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "07xynh8hcxb2yb1fs051xrgszjvj37wnxvxgsj10rzmqzy9y3zma"))))
+               "14hxwzmf5xqppx77z7i0ni9lpzg1a84dqpf8j8l1fvy570g6imn8"))
+             (patches (search-patches "libxml2-parent-pointers.patch"
+                                      "libxml2-terminating-newline.patch"
+                                      "libxml2-xpath-recursion-limit.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "static" "doc"))
     (arguments
@@ -217,8 +220,7 @@ hierarchical form with variable field lengths.")
                         ;; file such that Libtool does the right thing when both
                         ;; the shared and static variants are available.
                         (substitute* (string-append src "/lib/libxml2.la")
-                          (("^old_library='libxml2.a'") "old_library=''"))
-                        #t))))))
+                          (("^old_library='libxml2.a'") "old_library=''"))))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
     (inputs `(("xz" ,xz)))
@@ -374,8 +376,7 @@ It uses libxml2 to access the XML files.")
     (source (origin
               (inherit (package-source libxml2))
               (patches
-                (append (search-patches "python-libxml2-python39-compat.patch"
-                                        "python-libxml2-utf8.patch")
+                (append (search-patches "python-libxml2-utf8.patch")
                         (origin-patches (package-source libxml2))))))
     (build-system python-build-system)
     (outputs '("out"))
@@ -397,8 +398,7 @@ It uses libxml2 to access the XML files.")
                  (format #f "ROOT = r'~a'" libxml2))
                 ;; For 'iconv.h'.
                 (("/opt/include")
-                 (string-append glibc "/include"))))
-            #t)))))
+                 (string-append glibc "/include")))))))))
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
 
@@ -2603,7 +2603,14 @@ because lxml.etree already has its own implementation of XPath 1.0.")
        (method url-fetch)
        (uri (pypi-uri "lxml" version))
        (sha256
-        (base32 "0s14r1w2x9sdlcsw8mxiqgw4rz5zs5lpqpxrfyn4a1mkndqqbdrr"))))
+        (base32 "0s14r1w2x9sdlcsw8mxiqgw4rz5zs5lpqpxrfyn4a1mkndqqbdrr"))
+       ;; Adapt a test to libxml2 2.9.12, taken from this commit:
+       ;; https://github.com/lxml/lxml/commit/852ed1092bd80b6b9a51db24371047e
+       (modules '((guix build utils)))
+       (snippet
+        '(substitute* "src/lxml/tests/test_etree.py"
+             (("self\\.assertEqual\\(\\{'hha': None\\}, el\\.nsmap\\)")
+              "self.assertEqual({}, el.nsmap)")))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
