@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
@@ -36,16 +36,17 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages linux)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.2")
+    (version "6.2.20210619")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
-                                  (car (string-split version #\-))
+                                  (version-major+minor version)
                                   ".tar.gz"))
               (sha256
                (base32
@@ -57,8 +58,7 @@
      (let ((patch-makefile-phase
             '(lambda _
                (for-each patch-makefile-SHELL
-                         (find-files "." "Makefile.in"))
-               #t))
+                         (find-files "." "Makefile.in"))))
            (configure-phase
             ;; The 'configure' script does not understand '--docdir', so we must
             ;; override that and use '--mandir' instead.
@@ -74,18 +74,20 @@
                         (if target
                             (cons (string-append "--host=" target)
                                   configure-flags)
-                            configure-flags))
-                 #t)))
+                            configure-flags)))))
            (apply-rollup-patch-phase
             ;; Ncurses distributes "stable" patchsets to be applied on top
             ;; of the release tarball.  These are only available as shell
             ;; scripts(!) so we decompress and apply them in a phase.
             ;; See <https://invisible-mirror.net/archives/ncurses/6.1/README>.
             '(lambda* (#:key inputs native-inputs #:allow-other-keys)
-               (copy-file (assoc-ref (or native-inputs inputs) "rollup-patch")
-                          (string-append (getcwd) "/rollup-patch.sh.bz2"))
-               (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
-               (invoke "sh" "rollup-patch.sh")))
+               (let ((rollup-patch (assoc-ref (or native-inputs inputs)
+                                              "rollup-patch")))
+                 (when rollup-patch
+                   (copy-file rollup-patch
+                              (string-append (getcwd) "/rollup-patch.sh.bz2"))
+                   (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
+                   (invoke "sh" "rollup-patch.sh")))))
            (remove-shebang-phase
             '(lambda _
                ;; To avoid retaining a reference to the bootstrap Bash via the
@@ -98,8 +100,7 @@
                  (("@SHELL@ \\$0")
                   "$0")
                  (("mandir=.*$")
-                  "mandir=share/man"))
-               #t))
+                  "mandir=share/man"))))
            (post-install-phase
             `(lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -156,13 +157,12 @@
                                            (when (file-exists? packagew.pc)
                                              (symlink packagew.pc package.pc))))
                                        '())))
-                             '("curses" "ncurses" "form" "panel" "menu")))
-                 #t))))
+                             '("curses" "ncurses" "form" "panel" "menu")))))))
        `(#:configure-flags
          ,(cons*
            'quasiquote
            `(("--with-shared" "--without-debug" "--enable-widec"
-              
+
               "--enable-pc-files"
               ,(list 'unquote '(string-append "--with-pkg-config-libdir="
                                               (assoc-ref %outputs "out")
@@ -195,6 +195,8 @@
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
          #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'apply-rollup-patch
+                      ,apply-rollup-patch-phase)
                     (replace 'configure ,configure-phase)
                     (add-after 'install 'post-install
                       ,post-install-phase)
@@ -206,6 +208,17 @@
      `(,@(if (%current-target-system)
              `(("self" ,this-package))            ;for `tic'
              '())
+       ("rollup-patch"
+        ,(origin
+           (method url-fetch)
+           (uri (match (string-split (version-major+minor+point version) #\.)
+                  ((major minor point)
+                   (string-append "https://invisible-mirror.net/archives"
+                                  "/ncurses/" major "." minor "/ncurses-"
+                                  major "." minor "-" point "-patch.sh.bz2"))))
+           (sha256
+            (base32
+             "1b6522cvi4066bgh9lp93q8lk93zcjjssvnw1512z447xvazy2y6"))))
        ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
