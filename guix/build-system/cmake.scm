@@ -210,6 +210,9 @@ build system."
             (append #$(input-tuples->gexp host-inputs)
                     #+(input-tuples->gexp target-inputs)))
 
+          (define %build-inputs
+            (append %build-host-inputs %build-target-inputs))
+
           (define %outputs
             #$(outputs->gexp outputs))
 
