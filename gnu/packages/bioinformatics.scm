@@ -13061,28 +13061,32 @@ downstream analysis.")
        ("taxtastic" ,taxtastic)))
     (synopsis "Pplacer Python scripts")))
 
-(define-public python2-checkm-genome
+(define-public checkm
   (package
-    (name "python2-checkm-genome")
-    (version "1.0.13")
+    (name "checkm")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "checkm-genome" version))
        (sha256
         (base32
-         "0bm8gpxjmzxsxxl8lzwqhgx8g1dlnmp6znz7wv3hgb0gdjbf9dzz"))))
+         "0i2nnki639hgjag17wlva2x0ymn37b4krqsf6akxddykhfbkdnkz"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f))                    ; some tests are interactive
-    (propagated-inputs
-     `(("python-dendropy" ,python2-dendropy)
-       ("python-matplotlib" ,python2-matplotlib)
-       ("python-numpy" ,python2-numpy)
-       ("python-pysam" ,python2-pysam)
-       ("python-scipy" ,python2-scipy)))
-    (home-page "https://pypi.org/project/Checkm/")
+     `(#:tests? #f ; Some tests fail for unknown reasons.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
+    (inputs
+     `(("python-dendropy" ,python-dendropy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://ecogenomics.github.io/CheckM/")
     (synopsis "Assess the quality of putative genome bins")
     (description
      "CheckM provides a set of tools for assessing the quality of genomes
@@ -13096,6 +13100,9 @@ tools for identifying genome bins that are likely candidates for merging based
 on marker set compatibility, similarity in genomic characteristics, and
 proximity within a reference genome.")
     (license license:gpl3+)))
+
+(define-public python2-checkm-genome
+  (deprecated-package "python2-checkm-genome" checkm))
 
 (define-public umi-tools
   (package
