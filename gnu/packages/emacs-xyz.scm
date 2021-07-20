@@ -7879,6 +7879,33 @@ Sublime Text.  It features a dark blue/gray background and soft blue, green,
 orange and red as accent colors.")
       (license license:expat)))) ; MIT license
 
+(define-public emacs-org-cv
+  ;; There are no tagged releases.
+  (let ((commit "24bcd82348d441d95c2c80fb8ef8b5d6d4b80d95")
+        (revision "0"))
+    (package
+      (name "emacs-org-cv")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/Titan-C/org-cv")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zcnbxvlwi4d6vzsm3ag7z74qphdigmx303gppb9d614jnsfsdg2"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ox-hugo" ,emacs-ox-hugo)))
+      (home-page "https://titan-c.gitlab.io/org-cv/")
+      (synopsis "Collection of export backends for Org to generate a CV")
+      (description
+       "This project exports an Org file with reasonably structured items into
+a LaTeX file, which compiles into a nice CV.  In the same spirit, the Org file
+may export to Markdown so that it can be used for a web based CV.")
+      (license license:gpl3+))))
+
 (define-public emacs-2048-game
   (package
     (name "emacs-2048-game")
