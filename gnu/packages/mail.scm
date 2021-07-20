@@ -1629,6 +1629,16 @@ compresses it.")
         "gtk_update_icon_cache=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Use absolute paths to referenced programs.
+             (let* ((mailutils (assoc-ref inputs "mailutils"))
+                    (inc (string-append mailutils "/bin/mu-mh/inc"))
+                    (send-mail (assoc-ref inputs "sendmail"))
+                    (sendmail (string-append send-mail "/usr/sbin/sendmail")))
+               (substitute* "src/common/defs.h"
+                 (("/usr/bin/mh/inc") inc)
+                 (("/usr/sbin/sendmail") sendmail)))))
          (add-before 'build 'patch-mime
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/procmime.c"
@@ -1674,6 +1684,7 @@ compresses it.")
        ("libsm" ,libsm)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
+       ("mailutils" ,mailutils)
        ("nettle" ,nettle)
        ("network-manager" ,network-manager)
        ("openldap" ,openldap)
@@ -1681,6 +1692,7 @@ compresses it.")
        ("poppler" ,poppler)
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)
+       ("sendmail" ,sendmail)
        ("shared-mime-info" ,shared-mime-info)
        ("startup-notification" ,startup-notification)
        ;;("webkitgtk" ,webkitgtk)
