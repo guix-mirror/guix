@@ -75,6 +75,7 @@
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graph)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -1037,7 +1038,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "6.0.1")
+    (version "9.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1045,10 +1046,11 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "1d2m658ll8x7prlsfk71qgw89c7dz6y7d6nndfxwl49fmrd6sbxz"))))
+                "1zlql0xgiqc3pvgbpnnvj4xvpd91pwva8qf83xfb23if377ddxaw"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("mscgen" ,mscgen)
+       ("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("cairo" ,cairo-xcb)
@@ -1069,19 +1071,26 @@ applications, X servers (rootless or fullscreen) or other display servers.")
        ("mtdev" ,mtdev)
        ("linux-pam" ,linux-pam)
        ("pango" ,pango)
+       ("pipewire" ,pipewire)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (arguments
      `(#:configure-flags
-       (list "-Dbackend-rdp=false" ; TODO: Enable.
-             "-Dremoting=false" ; TODO: Enable.
-             "-Dsimple-dmabuf-drm=auto"
-             "-Dsystemd=false"
-             (string-append "-Dxwayland-path="
-                            (assoc-ref %build-inputs "xorg-server-xwayland")
-                            "/bin/Xwayland"))
-       #:parallel-tests? #f ; Parallel tests cause failures.
+       (list
+        ;; Otherwise, the RUNPATH will lack the final path component.
+        (string-append "-Dc_link_args=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib:"
+                       (assoc-ref %outputs "out") "/lib/weston:"
+                       (assoc-ref %outputs "out") "/lib/libweston-"
+                       ,(version-major (package-version this-package)))
+        "-Dbackend-rdp=false"           ; TODO: Enable.
+        "-Dremoting=false"              ; TODO: Enable.
+        "-Dsystemd=false"
+        (string-append "-Dxwayland-path="
+                       (assoc-ref %build-inputs "xorg-server-xwayland")
+                       "/bin/Xwayland"))
+       #:parallel-tests? #f           ; Parallel tests cause failures.
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'use-elogind
