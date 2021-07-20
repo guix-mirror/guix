@@ -223,7 +223,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public catfish
   (package
     (name "catfish")
-    (version "1.4.13")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -231,7 +231,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
                                   "/catfish-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fg89946z6n8njxn4mv29jksw8yavg8vypsljn9031pjwl3fmh2q"))))
+                "0md6ypirr97ch7x8qliwzixzwj6zzd68ivb2dzj90hm2lcn7wc8h"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -263,6 +263,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
        ("intltool" ,intltool)))
     (inputs
      `(("which" ,which)
+       ("xfconf" ,xfconf)
        ("xdg-utils" ,xdg-utils)))
     (propagated-inputs
      `(("gtk+" ,gtk+)
