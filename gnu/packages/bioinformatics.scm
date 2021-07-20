@@ -14660,3 +14660,32 @@ structural genomic variations in long-read sequencing data, such as data
 produced by Oxford Nanopore Technologies’ MinION, GridION or PromethION
 instruments, or Pacific Biosciences RSII or Sequel sequencers.")
    (license license:expat)))
+
+(define-public r-ascat
+  (package
+   (name "r-ascat")
+   (version "2.5.2")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/Crick-CancerGenomics/ascat.git")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0cc0y3as6cb64iwnx0pgbajiig7m4z723mns9d5i4j09ccid3ccm"))))
+   (build-system r-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+       (add-after 'unpack 'move-to-ascat-dir
+         (lambda _
+           (chdir "ASCAT"))))))
+   (propagated-inputs
+    `(("r-rcolorbrewer" ,r-rcolorbrewer)))
+   (home-page "https://github.com/VanLoo-lab/ascat/")
+   (synopsis "Allele-Specific Copy Number Analysis of Tumors in R")
+   (description "This package provides the @acronym{ASCAT,Allele-Specific Copy
+Number Analysis of Tumors} R package that can be used to infer tumour purity,
+ploidy and allele-specific copy number profiles.")
+   (license license:gpl3)))
