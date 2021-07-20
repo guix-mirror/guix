@@ -27941,7 +27941,7 @@ snippets for Emacs.")
 (define-public emacs-org-roam
   (package
     (name "emacs-org-roam")
-    (version "1.2.4")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -27950,7 +27950,7 @@ snippets for Emacs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10jrnjq65lpg1x8d7lqc537yai9m6pdnfbzwr87fcyv6f8yii8xn"))))
+        (base32 "0mslrdgd41czay3w7znz4qsv1h0p3zqfsq6bkyxmxfyd2w5z82zf"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -27973,6 +27973,7 @@ snippets for Emacs.")
         `(("emacs-dash" ,emacs-dash)
           ("emacs-emacsql-sqlite3" ,emacs-emacsql-sqlite3)
           ("emacs-f" ,emacs-f)
+          ("emacs-magit" ,emacs-magit)
           ("emacs-org" ,emacs-org)
           ("emacs-s" ,emacs-s)))
        (home-page "https://github.com/org-roam/org-roam/")
