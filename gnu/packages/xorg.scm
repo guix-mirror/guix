@@ -6340,7 +6340,7 @@ basic eye-candy effects.")
        (patches (search-patches "xpra-4.2-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
-    (inputs `(
+    (inputs `(("bash-minimal" ,bash-minimal)    ; for wrap-program
               ;; Essential dependencies.
               ("libjpeg" ,libjpeg-turbo)
               ("libwebp" ,libwebp)
