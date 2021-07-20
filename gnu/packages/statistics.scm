@@ -6282,3 +6282,27 @@ and functions that facilitate the plotting of missing values and examination of
 imputations.  This allows missing data dependencies to be explored with minimal
 deviation from the common work patterns of @code{ggplot2} and tidy data.")
     (license license:expat)))
+
+(define-public r-glinternet
+  (package
+    (name "r-glinternet")
+    (version "1.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glinternet" version))
+       (sha256
+        (base32
+         "1lqph2hj0h826gcfyk290ahkfalpnrd6jzymm60xi2qxia14lzk5"))))
+    (build-system r-build-system)
+    (home-page "http://web.stanford.edu/~hastie/Papers/glinternet_jcgs.pdf")
+    (synopsis "Learning interactions via hierarchical group-lasso regularization")
+    (description "Group-Lasso INTERaction-NET.  Fits linear pairwise-interaction
+models that satisfy strong hierarchy: if an interaction coefficient is estimated
+to be nonzero, then its two associated main effects also have nonzero estimated
+coefficients.  Accommodates categorical variables (factors) with arbitrary
+numbers of levels, continuous variables, and combinations thereof.  Implements
+the machinery described in the paper \"Learning interactions via hierarchical
+group-lasso regularization\" (JCGS 2015, Volume 24, Issue 3).
+Michael Lim & Trevor Hastie (2015)")
+    (license license:gpl2)))
