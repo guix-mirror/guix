@@ -14600,3 +14600,40 @@ modified nucleotides from nanopore sequencing data.  Tombo also provides tools
 for the analysis and visualization of raw nanopore signal.")
     ;; Some parts may be BSD-3-licensed.
     (license license:mpl2.0)))
+
+(define-public python-pyvcf
+  (package
+    (name "python-pyvcf")
+    (version "0.6.8")
+    ;; Use git, because the PyPI tarballs lack test data.
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jamescasbon/PyVCF.git")
+               ;; Latest release is not tagged.
+               (commit "bfcedb9bad1a14074ac4526ffdb610611e073810")))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0c7lsssns3zp8fh2ibllzzra003srg9vbxqzmq6654akbzdb7lrf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'install 'remove-installed-tests
+            ;; Do not install test files.
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (delete-file-recursively (string-append
+                                         (site-packages inputs outputs)
+                                         "vcf/test"))
+              #t)))))
+    (native-inputs `(("python-cython" ,python-cython)))
+    (propagated-inputs
+     `(("python-pysam" ,python-pysam)
+       ("python-rpy2" ,python-rpy2)))
+    (home-page "https://github.com/jamescasbon/PyVCF")
+    (synopsis "Variant Call Format parser for Python")
+    (description "This package provides a @acronym{VCF,Variant Call Format}
+parser for Python.")
+    (license license:expat)))
