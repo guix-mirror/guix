@@ -97,6 +97,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
@@ -1057,7 +1058,10 @@ applications, X servers (rootless or fullscreen) or other display servers.")
        ("colord" ,colord)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
+       ("freerdp" ,freerdp)
        ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("lcms" ,lcms)
        ("libdrm" ,libdrm)
        ("libevdev" ,libevdev)
@@ -1091,8 +1095,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                        (assoc-ref %outputs "out") "/lib/weston:"
                        (assoc-ref %outputs "out") "/lib/libweston-"
                        ,(version-major (package-version this-package)))
-        "-Dbackend-rdp=false"           ; TODO: Enable.
-        "-Dremoting=false"              ; TODO: Enable.
+        "-Dbackend-default=auto"
         "-Dsystemd=false"
         (string-append "-Dxwayland-path="
                        (assoc-ref %build-inputs "xorg-server-xwayland")
