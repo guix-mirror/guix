@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages freedesktop)
@@ -69,7 +70,8 @@
        ("python-pytest-httpserver" ,python-pytest-httpserver)
        ("which" ,which)))
     (inputs
-     `(("gtk+" ,gtk+)
+     `(("bash-minimal" ,bash-minimal)
+       ("gtk+" ,gtk+)
        ("python-pygobject" ,python-pygobject)
        ("python-pycairo" ,python-pycairo)
        ("python-requests" ,python-requests)
