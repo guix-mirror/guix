@@ -108,7 +108,6 @@ to remotely control a user's Windows desktop.")
        ("libjpeg" ,libjpeg-turbo)
        ("libusb" ,libusb)
        ("libx11" ,libx11)
-       ("libxkbcommon" ,libxkbcommon)
        ("libxkbfile" ,libxkbfile)
        ("libxcursor" ,libxcursor)
        ("libxext" ,libxext)
@@ -118,10 +117,12 @@ to remotely control a user's Windows desktop.")
        ("libxrender" ,libxrender)
        ("libxinerama" ,libxinerama)
        ("libxshmfence" ,libxshmfence)
-       ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("wayland" ,wayland)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("libxkbcommon" ,libxkbcommon)
+       ("openssl" ,openssl)
+       ("wayland" ,wayland)))
     (arguments
      `(#:build-type "RELEASE"
        #:configure-flags
