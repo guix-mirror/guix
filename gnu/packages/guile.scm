@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Taylan Kammer <taylan.kammer@gmail.com>
 ;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -316,11 +317,19 @@ without requiring the source code to be rewritten.")
     (arguments
      (substitute-keyword-arguments (package-arguments guile-2.2)
        ((#:configure-flags flags ''())
-        (let ((flags `(cons "--enable-mini-gmp" ,flags)))
-          ;; XXX: JIT-enabled Guile crashes in obscure ways on GNU/Hurd.
-          (if (hurd-target?)
-              `(cons "--disable-jit" ,flags)
-              flags)))
+        ;; XXX: JIT-enabled Guile crashes in obscure ways on GNU/Hurd.
+        `(cons* ,@(if (hurd-target?)
+                      '("--disable-jit")
+                      '())
+                ;; -fexcess-precision=standard is required when compiling for
+                ;; i686-linux, otherwise "numbers.test" will fail
+                ;; (see <https://issues.guix.gnu.org/49368> and
+                ;; <https://issues.guix.gnu.org/49659>).
+                ,@(if (target-x86-32?)
+                      '("CFLAGS=-g -O2 -fexcess-precision=standard")
+                      '())
+                "--enable-mini-gmp"
+                ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'check 'disable-stack-overflow-test
