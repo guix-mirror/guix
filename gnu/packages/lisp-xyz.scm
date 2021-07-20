@@ -16529,11 +16529,11 @@ for Common Lisp.")
   (sbcl-package->cl-source-package sbcl-bknr-datastore))
 
 (define-public sbcl-authentic
-  (let ((commit "d5ff2f4666ce24e41fb4ca22476c782c070e6f6e")
-        (revision "1"))
+  (let ((commit "4e9194dda227b98f56dda1c2a2480efcc2d1f973")
+        (revision "2"))
     (package
       (name "sbcl-authentic")
-      (version (git-version "0.1.0" revision commit))
+      (version (git-version "0.1.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16542,7 +16542,7 @@ for Common Lisp.")
                (commit commit)))
          (file-name (git-file-name "cl-authentic" version))
          (sha256
-          (base32 "1dmi9lw1ickx0i41lh9sfchalvy7km6wc9w3szfjlvny7svwf6qp"))))
+          (base32 "0ncsxrybnx0pjsndv3j8w4lphlpcsld8sxg3c5b46fb3a8nd4ssf"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
