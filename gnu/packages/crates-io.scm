@@ -30272,7 +30272,7 @@ the default program configured on the system.")
         (base32
          "0cw767rbasg4dbsfcsnxqm3q5ljkv6s1jq0a2p82xi5a8ii7n4f4"))))
     (arguments
-     `(#:tests? #f      ; Test directory not included in release
+     `(#:skip-build? #t ; Build depends on openssl-1.0.
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-0.7)
         ("rust-gcc" ,rust-gcc-0.3)
@@ -30291,9 +30291,7 @@ the default program configured on the system.")
            (lambda _
              (substitute* "Cargo.toml"
                ((", path =.*}") "}"))
-             #t)))))
-    (inputs
-     `(("openssl" ,openssl-1.0))))) ; for openssl-sys-extras
+             #t)))))))
 
 (define-public rust-openssl-probe-0.1
   (package
