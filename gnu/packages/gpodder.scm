@@ -93,11 +93,12 @@
                  (("xdg-open") (string-append xdg-utils "/bin/xdg-open")))
                #t)))
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? #:allow-other-keys)
              ; The `unittest' target overrides the PYTHONPATH variable.
              (substitute* "makefile"
                (("PYTHONPATH=src/") "PYTHONPATH=${PYTHONPATH}:src/"))
-             (invoke "make" "unittest")))
+             (when tests?
+               (invoke "make" "unittest"))))
          ;; 'msgmerge' introduces non-determinism by resetting the
          ;; POT-Creation-Date in .po files.
          (add-before 'install 'do-not-run-msgmerge
