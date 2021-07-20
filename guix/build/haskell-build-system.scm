@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,13 +64,14 @@
                      ((file-exists? "Setup.lhs")
                       "Setup.lhs")
                      (else
-                      #f))))
+                      #f)))
+        (pkgdb (string-append "-package-db=" %tmp-db-dir)))
     (if setup-file
         (begin
           (format #t "running \"runhaskell Setup.hs\" with command ~s \
 and parameters ~s~%"
                   command params)
-          (apply invoke "runhaskell" setup-file command params))
+          (apply invoke "runhaskell" pkgdb setup-file command params))
         (error "no Setup.hs nor Setup.lhs found"))))
 
 (define* (configure #:key outputs inputs tests? (configure-flags '())
