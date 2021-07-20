@@ -14560,3 +14560,36 @@ quantifying single-cell chromatin data, computing per-cell quality control
 metrics, dimension reduction and normalization, visualization, and DNA
 sequence motif analysis.")
       (license license:expat))))
+
+(define-public tombo
+  (package
+    (name "tombo")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ont-tombo" version))
+       (sha256
+        (base32
+         "1023hadgcsgi53kz53ql45207hfizf9sw57z0qij3ay1bx68zbpm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose2" ,python-nose2)))
+    ;; The package mainly consists of a command-line tool, but also has a
+    ;; Python-API. Thus these must be propagated.
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-h5py" ,python-h5py)
+       ("python-mappy" ,python-mappy)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-tqdm" ,python-tqdm)
+       ("python-rpy2" ,python-rpy2)))
+    (home-page "https://github.com/nanoporetech/tombo")
+    (synopsis "Analysis of raw nanopore sequencing data")
+    (description "Tombo is a suite of tools primarily for the identification of
+modified nucleotides from nanopore sequencing data.  Tombo also provides tools
+for the analysis and visualization of raw nanopore signal.")
+    ;; Some parts may be BSD-3-licensed.
+    (license license:mpl2.0)))
