@@ -252,9 +252,9 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
               (lambda (name revision hash)
                 (origin
                   (method url-fetch)
-                  (uri (string-append "https://git.archlinux.org/svntogit/packages.git"
-                                      "/plain/trunk/" name "?h=packages/texlive-bin"
-                                      "&id=" revision))
+                  (uri (string-append "https://raw.githubusercontent.com"
+                                      "/archlinux/svntogit-packages/" revision
+                                      "/repos/extra-x86_64/" name))
                   (file-name (string-append "texlive-bin-" name))
                   (sha256 (base32 hash)))))
              (arch-revision "49d7fe25e5ea63f136ebc20270c1d8fc9b00041c"))

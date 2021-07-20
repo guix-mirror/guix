@@ -1949,11 +1949,12 @@ parallel computing platforms.  It also supports serial execution.")
               (patches
                (list (origin
                        ;; Fix build with GCC 7.  Patch taken from Arch Linux:
-                       ;; https://git.archlinux.org/svntogit/community.git/tree/trunk?h=packages/freehdl
+                       ;; https://github.com/archlinux/svntogit-community/tree/packages/freehdl/trunk
                        (method url-fetch)
-                       (uri "https://git.archlinux.org/svntogit/community.git\
-/plain/trunk/build-fix.patch?h=packages/freehdl\
-&id=3bb90d64dfe6883e26083cd1fa96226d0d59175a")
+                       (uri (string-append "https://raw.githubusercontent.com"
+                                           "/archlinux/svntogit-community"
+                                           "/3bb90d64dfe6883e26083cd1fa96226d0d59175a"
+                                           "/trunk/build-fix.patch"))
                        (file-name "freehdl-c++-namespace.patch")
                        (sha256
                         (base32
