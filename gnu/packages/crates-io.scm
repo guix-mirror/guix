@@ -30389,7 +30389,8 @@ system for OpenSSL.")
          "1ymrmfnknyjji74fflbnnq9r5ihx25h0vgs5y203vl6klzdy3i8i"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t ; Depends on openssl-1.0.
+       #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-openssl-sys" ,rust-openssl-sys-0.7)
         ("rust-gcc" ,rust-gcc-0.3))
@@ -30400,8 +30401,6 @@ system for OpenSSL.")
              (substitute* "Cargo.toml"
                ((", path =.*}") "}"))
              #t)))))
-    (inputs
-     `(("openssl" ,openssl-1.0)))   ; openssl-1.0 specifically
     (home-page "https://github.com/sfackler/rust-openssl")
     (synopsis
      "Extra FFI bindings to OpenSSL that require a C shim")
