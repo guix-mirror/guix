@@ -14637,3 +14637,26 @@ for the analysis and visualization of raw nanopore signal.")
     (description "This package provides a @acronym{VCF,Variant Call Format}
 parser for Python.")
     (license license:expat)))
+
+(define-public nanosv
+  (package
+   (name "nanosv")
+   (version "1.2.4")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "NanoSV" version))
+            (sha256
+             (base32
+              "1wl2daj0bwrl8fx5xi8j8hfs3mp3vg3qycy66538n032v1qkc6xg"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-configparser" ,python-configparser)
+      ("python-pysam" ,python-pysam)
+      ("python-pyvcf" ,python-pyvcf)))
+   (home-page "https://github.com/mroosmalen/nanosv")
+   (synopsis "Structural variation detection tool for Oxford Nanopore data.")
+   (description "NanoSV is a software package that can be used to identify
+structural genomic variations in long-read sequencing data, such as data
+produced by Oxford Nanopore Technologies’ MinION, GridION or PromethION
+instruments, or Pacific Biosciences RSII or Sequel sequencers.")
+   (license license:expat)))
