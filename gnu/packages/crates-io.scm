@@ -42316,7 +42316,8 @@ functionality and without weak references.")
         (base32
          "0p09zfhd27z6yr5in07gfjcx345010rw51ivlcf14364x3hv2c6c"))))
     (arguments
-     `(#:cargo-development-inputs
+     `(#:tests? #f  ; Tests require openssl-1.0
+       #:cargo-development-inputs
        (("rust-openssl" ,rust-openssl-0.7)
         ("rust-rand" ,rust-rand-0.3))
        #:phases
@@ -42325,9 +42326,7 @@ functionality and without weak references.")
            (lambda _
              (substitute* "Cargo.toml"
                ((", path =.*}") "}"))
-             #t)))))
-    (inputs
-     `(("openssl" ,openssl-1.0))))) ; for openssl-sys-extras
+             #t)))))))
 
 (define-public rust-sha1-asm-0.4
   (package
