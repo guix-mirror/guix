@@ -29777,3 +29777,24 @@ step, then reads the values lazily, so only the data you actually use needs to
 be read.  The writer formats the data in parallel and writes to disk
 asynchronously from formatting.")
     (license license:expat)))
+
+(define-public r-rmisc
+  (package
+    (name "r-rmisc")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "Rmisc" version))
+              (sha256
+               (base32
+                "1ijjhfy3v91fspid77rrkc5dkcb2lav37wc3f4k5lwrn24wzy5y8"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-lattice" ,r-lattice)))
+    (home-page "https://cran.r-project.org/web/packages/Rmisc/")
+    (synopsis "Ryan Miscellaneous")
+    (description "The Rmisc library contains functions for data analysis and
+utility operations.")
+    (license license:gpl3)))
