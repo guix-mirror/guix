@@ -6224,3 +6224,23 @@ various statistical models with linear predictors.")
 factors for simple designs, including contingency tables, one- and two-sample
 designs, one-way designs, general ANOVA designs, and linear regression.")
     (license license:gpl2)))
+
+(define-public r-norm
+  (package
+    (name "r-norm")
+    (version "1.0-9.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "norm" version))
+              (sha256
+               (base32
+                "01j1h412yfjx5r4dd0w8rhlf55997spgb6zd6pawy19rgw0byp1h"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/norm/")
+    (synopsis "Analysis of multivariate normal datasets with missing values")
+    (description "Multiple imputation of multivariate continuous data under a
+normal model.")
+    ;; Custom license, see https://cran.r-project.org/web/packages/norm/LICENSE.
+    (license (license:non-copyleft "file://LICENSE"))))
