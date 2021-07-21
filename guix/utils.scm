@@ -963,7 +963,6 @@ bound by MAX-COLUMN-WIDTH."
                               (map (cut min <> max-column-width)
                                    column-widths)))
          (fmt (string-append (string-join column-formats "\t") "\t~a")))
-    (setvbuf (current-output-port) 'block) ;for better performance
     (for-each (cut format #t "~?~%" fmt <>) rows)))
 
 ;;; Local Variables:
