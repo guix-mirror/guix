@@ -1201,8 +1201,8 @@ handful of functions that are not resource-specific.")
 
 (define-public emacs-typit
   ;; Last release is from 2017.
-  (let ((commit "231cb7df43253b84323520b8ed70f128d37003af")
-        (revision "1"))
+  (let ((commit "fa125bf43757737fbcf91958b76c38b440d54b4c")
+        (revision "2"))
     (package
       (name "emacs-typit")
       (version (git-version "0.2.1" revision commit))
@@ -1214,7 +1214,7 @@ handful of functions that are not resource-specific.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1savrxs7xl92ifyxpxkkzv2didr7lb405h0dwz1bs1wldr5fb53f"))))
+          (base32 "1l0qb8gjgsmjjdvxlma7g6fn2z6rj246p2kczrikq8ajg1xh61sr"))))
       (build-system emacs-build-system)
       (arguments
         '(#:include (cons "^dict/" %default-include)))
