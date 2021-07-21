@@ -14689,3 +14689,33 @@ instruments, or Pacific Biosciences RSII or Sequel sequencers.")
 Number Analysis of Tumors} R package that can be used to infer tumour purity,
 ploidy and allele-specific copy number profiles.")
    (license license:gpl3)))
+
+(define-public r-battenberg
+  (package
+   (name "r-battenberg")
+   (version "2.2.9")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/Wedge-lab/battenberg.git")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0nmcq4c7y5g8h8lxsq9vadz9bj4qgqn118alip520ny6czaxki4h"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-devtools" ,r-devtools)
+      ("r-readr" ,r-readr)
+      ("r-doparallel" ,r-doparallel)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-rcolorbrewer" ,r-rcolorbrewer)
+      ("r-gridextra" ,r-gridextra)
+      ("r-gtools" ,r-gtools)
+      ("r-ascat" ,r-ascat)))
+   (home-page "https://github.com/Wedge-lab/battenberg")
+   (synopsis "Subclonal copy number estimation in R")
+   (description "This package contains the Battenberg R package for subclonal
+copy number estimation, as described by
+@url{doi:10.1016/j.cell.2012.04.023,Nik-Zainal et al.}")
+   (license license:gpl3)))
