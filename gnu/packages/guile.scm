@@ -305,8 +305,7 @@ without requiring the source code to be rewritten.")
                           (substitute* "test-suite/standalone/Makefile.in"
                             (("test-out-of-memory") ""))
                           (for-each delete-file
-                                    (find-files "prebuilt" "\\.go$"))
-                          #t))))
+                                    (find-files "prebuilt" "\\.go$"))))))
 
     ;; Build with the bundled mini-GMP to avoid interference with GnuTLS' own
     ;; use of GMP via Nettle: <https://issues.guix.gnu.org/46330>.
