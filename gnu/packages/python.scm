@@ -533,6 +533,14 @@ data types.")
                  ;; Disable hash randomization to ensure the generated .pycs
                  ;; are reproducible.
                  (setenv "PYTHONHASHSEED" "0")
+
+                 ;; XXX: Delete existing auto-generated pycs beforehand because
+                 ;; the -f argument does not necessarily overwrite all files,
+                 ;; leading to indeterministic results.
+                 (for-each (lambda (pyc)
+                             (delete-file pyc))
+                           (find-files out "\\.pyc$"))
+
                  (apply invoke
                         `(,,(if (%current-target-system)
                                 "python3"
