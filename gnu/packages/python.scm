@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -502,7 +502,8 @@ data types.")
                ;; Delete .exe from embedded .whl (zip) files
                (for-each
                 (lambda (whl)
-                  (let ((dir "whl-content"))
+                  (let ((dir "whl-content")
+                        (circa-1980 (* 10 366 24 60 60)))
                     (mkdir-p dir)
                     (with-directory-excursion dir
                       (let ((whl (string-append "../" whl)))
@@ -510,8 +511,13 @@ data types.")
                         (for-each delete-file
                                   (find-files "." "\\.exe$"))
                         (delete-file whl)
+                        ;; Reset timestamps to prevent them from ending
+                        ;; up in the Zip archive.
+                        (ftw "." (lambda (file stat flag)
+                                   (utime file circa-1980 circa-1980)
+                                   #t))
                         (apply invoke "zip" "-X" whl
-                               (find-files "." ".*" #:directories? #t))))
+                               (find-files "." #:directories? #t))))
                     (delete-file-recursively dir)))
                 (find-files "Lib/ensurepip" "\\.whl$"))))
            (add-before 'check 'set-TZDIR
