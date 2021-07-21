@@ -924,7 +924,7 @@ the HTML documentation of TXR.")
        ("groff" ,groff)
        ("man2html" ,man-for-txr)))
     (inputs
-     `(("bash" ,bash)
+     `(("bash" ,bash-minimal)
        ("libffi" ,libffi)))
     (arguments
      `(#:configure-flags
