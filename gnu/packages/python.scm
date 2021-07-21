@@ -533,23 +533,18 @@ data types.")
                  ;; Disable hash randomization to ensure the generated .pycs
                  ;; are reproducible.
                  (setenv "PYTHONHASHSEED" "0")
-                 (for-each
-                  (lambda (opt)
-                    (format #t "Compiling with optimization level: ~a\n" opt)
-                    (lambda (file)
-                      (apply invoke
-                             `(,,(if (%current-target-system)
-                                     "python3"
-                                     '(string-append out
-                                                     "/bin/python3"))
-                               ,opt
-                               "-m" "compileall"
-                               "-f" ; force rebuild
-                               "--invalidation-mode=unchecked-hash"
-                               ;; Don't build lib2to3, because it's Python 2 code.
-                               "-x" "lib2to3/.*"
-                               ,out))))
-                  (list "none" "-O" "-OO")))))
+                 (apply invoke
+                        `(,,(if (%current-target-system)
+                                "python3"
+                                '(string-append out
+                                                "/bin/python3"))
+                          "-m" "compileall"
+                          "-o" "0" "-o" "1" "-o" "2"
+                          "-f" ; force rebuild
+                          "--invalidation-mode=unchecked-hash"
+                          ;; Don't build lib2to3, because it's Python 2 code.
+                          "-x" "lib2to3/.*"
+                          ,out)))))
            (replace 'install-sitecustomize.py
              ,(customize-site version))))))
     (native-inputs
