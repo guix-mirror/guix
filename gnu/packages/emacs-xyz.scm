@@ -1217,17 +1217,7 @@ handful of functions that are not resource-specific.")
           (base32 "1savrxs7xl92ifyxpxkkzv2didr7lb405h0dwz1bs1wldr5fb53f"))))
       (build-system emacs-build-system)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-dictionaries
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (site-lisp
-                       (string-append
-                        out "/share/emacs/site-lisp/dict")))
-                 (mkdir-p site-lisp)
-                 (copy-recursively "dict" site-lisp)
-                 #t))))))
+        '(#:include (cons "^dict/" %default-include)))
       (propagated-inputs
        `(("emacs-f" ,emacs-f)
          ("emacs-mmt" ,emacs-mmt)))
