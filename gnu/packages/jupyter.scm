@@ -36,6 +36,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tls)
@@ -423,3 +424,49 @@ Docker registry.")
    (synopsis "Jupyter kernel for Bash")
    (description "A bash shell kernel for Jupyter.")
    (license license:expat)))
+
+(define-public python-sparqlkernel
+  (package
+    (name "python-sparqlkernel")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sparqlkernel" version))
+              (sha256
+               (base32
+                "004v22nyi5cnpxq4fiws89p7i5wcnzv45n3n70axdd6prh6rkapx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'no-custom-css
+           (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "sparqlkernel/install.py"
+                (("install_custom_css\\( destd, PKGNAME \\)") ""))
+              #t))
+         (add-after 'install 'install-kernelspec
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "HOME" "/tmp")
+               (add-installed-pythonpath inputs outputs)
+               (invoke
+                 (string-append out "/bin/jupyter-sparqlkernel")
+                 "install"
+                 (string-append "--InstallKernelSpec.prefix=" out))
+               #t))))))
+    (native-inputs
+     `(("python-traitlets" ,python-traitlets)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-notebook" ,python-notebook)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-html5lib" ,python-html5lib-0.9)))
+    (propagated-inputs
+     `(("python-sparqlwrapper" ,python-sparqlwrapper)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://github.com/paulovn/sparql-kernel")
+    (synopsis "Jupyter kernel for SPARQL")
+    (description "This module installs a Jupyter kernel for SPARQL.  It allows
+sending queries to an SPARQL endpoint and fetching & presenting the results in
+a notebook.")
+    (license license:bsd-3)))
