@@ -187,9 +187,12 @@
              "--with-system-ffi"        ;build ctypes
              "--with-ensurepip=install" ;install pip and setuptools
              "--with-computed-gotos"    ;main interpreter loop optimization
-             "--with-lto"               ;increase size by 20MB, but 15% speedup
              "--enable-unicode=ucs4"
-             "--enable-optimizations"
+
+             ;; FIXME: These flags makes Python significantly faster, but
+             ;; leads to non-reproducible binaries.
+             ;; "--with-lto"               ;increase size by 20MB, but 15% speedup
+             ;; "--enable-optimizations"
 
              ;; Prevent the installed _sysconfigdata.py from retaining a reference
              ;; to coreutils.
