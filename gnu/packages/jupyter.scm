@@ -25,6 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages linux)
@@ -382,3 +383,43 @@ used to explore a repository locally by building and executing the constructed
 image of the repository, or as a means of building images that are pushed to a
 Docker registry.")
     (license license:bsd-3)))
+
+(define-public python-bash-kernel
+  (package
+   (name "python-bash-kernel")
+   (version "0.7.2")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "bash_kernel" version))
+            (sha256
+             (base32
+              "0w0nbr3iqqsgpk83rgd0f5b02462bkyj2n0h6i9dwyc1vpnq9350"))))
+   (build-system python-build-system)
+   (arguments
+    `(#:tests? #f
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'bash-references
+          (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "bash_kernel/kernel.py"
+               (("\"bash\"")
+                (string-append "\"" (assoc-ref inputs "bash") "/bin/bash\""))
+               (("\\['bash', ")
+                (string-append "['" (assoc-ref inputs "bash") "/bin/bash', ")))
+             #t))
+        (add-after 'install 'install-kernelspec
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (setenv "HOME" "/tmp")
+              (invoke "python" "-m" "bash_kernel.install" "--prefix" out)
+              #t))))))
+   (inputs
+     `(("bash" ,bash)))
+   (propagated-inputs
+     `(("python-pexpect" ,python-pexpect)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-jupyter-client" ,python-jupyter-client)))
+   (home-page "https://github.com/takluyver/bash_kernel")
+   (synopsis "Jupyter kernel for Bash")
+   (description "A bash shell kernel for Jupyter.")
+   (license license:expat)))
