@@ -210,7 +210,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.36.7")
+    (version "3.38.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -218,7 +218,7 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09rgw8hq3ligap1zzjhx25q354ficpbiw1z9ramghhcqbpylsxdh"))))
+                "1llgzm2ni3iy31dznqkc81vadv0fpqgpz2l9zzrj5jshvyq0akgh"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -236,6 +236,15 @@ topology functions.")
                (("@pkgdatadir@/org.gnome.Maps")
                 (string-append  (assoc-ref outputs "out") "/bin/gnome-maps")))
              #t))
+         (add-after 'unpack 'fix-broken-tests
+           (lambda _
+             ;; For some reason setting LC_ALL=C and LANG=C as done in the
+             ;; build system does not prevent these gratuitous commas from
+             ;; being inserted.
+             (substitute* "tests/utilsTest.js"
+               (("1001 m") "1,001 m")
+               (("1000 ft") "1,000 ft")
+               (("5282 ft") "5,282 ft"))))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
