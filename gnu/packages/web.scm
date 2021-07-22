@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -772,6 +773,64 @@ documentation.")
     (synopsis "NGINX module for Lua programming language support")
     (description "This NGINX module provides a scripting support with Lua
 programming language.")))
+
+(define-public nginx-rtmp-module
+  (package
+    (inherit nginx)
+    (name "nginx-rtmp-module")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/arut/nginx-rtmp-module")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y45bswk213yhkc2v1xca2rnsxrhx8v6azxz9pvi71vvxcggqv6h"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("nginx-sources" ,(package-source nginx))
+       ,@(package-inputs nginx)))
+    (arguments
+     (substitute-keyword-arguments
+         `(#:configure-flags '("--add-dynamic-module=.")
+           #:make-flags '("modules")
+           #:modules ((guix build utils)
+                      (guix build gnu-build-system))
+           ,@(package-arguments nginx))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'unpack-nginx-sources
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (begin
+                 ;; The nginx source code is part of the module’s source.
+                 (format #t "decompressing nginx source code~%")
+                 (invoke "tar" "xvf" (assoc-ref inputs "nginx-sources")
+                         ;; This packages's LICENSE file would be
+                         ;; overwritten with the one from nginx when
+                         ;; unpacking the nginx source, so rename the nginx
+                         ;; one when unpacking.
+                         "--transform=s,/LICENSE$,/LICENSE.nginx,"
+                         "--strip-components=1")
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((modules-dir (string-append (assoc-ref outputs "out")
+                                                 "/etc/nginx/modules")))
+                 (install-file "objs/ngx_rtmp_module.so" modules-dir)
+                 #t)))
+           (delete 'fix-root-dirs)
+           (delete 'install-man-page)))))
+    (home-page "https://github.com/arut/nginx-rtmp-module")
+    (synopsis "NGINX module for audio and video streaming with RTMP")
+    (description "This NGINX module provides streaming with the @acronym{RTMP,
+Real-Time Messaging Protocol}, @acronym{DASH, Dynamic Adaptive Streaming over HTTP},
+and @acronym{HLS, HTTP Live Streaming} protocols.  It allows NGINX to accept
+incoming RTMP streams for recording or redistribution.  It also supports
+on-demand streaming from a file on disk and pulling from an upstream RTMP
+stream.  Remote control of the module is possible over HTTP.")
+    (license license:bsd-2)))
 
 (define-public lighttpd
   (package
