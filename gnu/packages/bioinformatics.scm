@@ -404,10 +404,10 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
     (license (list license:gpl3+ license:expat))))
 
-(define-public bcftools-1.9
+(define-public bcftools-1.10
   (package (inherit bcftools)
     (name "bcftools")
-    (version "1.9")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/samtools/bcftools/"
@@ -415,15 +415,15 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
                                   version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "1j3h638i8kgihzyrlnpj82xg1b23sijibys9hvwari3fy7kd0dkg"))
+                "10xgwfdgqb6dsmr3ndnpb77mc3a38dy8kh2c6czn6wj7jhdp4dra"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.9")
+                          (delete-file-recursively "htslib-1.10")
                           #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("htslib" ,htslib-1.9)
+     `(("htslib" ,htslib-1.10)
        ("perl" ,perl)))))
 
 (define-public bedops
@@ -2071,7 +2071,7 @@ has several key features:
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.15.1")
+    (version "0.16.0.1")
     (source (origin
               (method git-fetch)
               ;; Test data is missing on PyPi.
@@ -2081,7 +2081,7 @@ has several key features:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vj367w6xbn9bpmksm162l1aipf7cj97h1q83y7jcpm33ihwpf7x"))
+                "168bwwm8c2k22m7paip8q0yajyl7xdxgnik0bgjl7rhqg0majz0f"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Drop bundled htslib. TODO: Also remove samtools
@@ -2108,10 +2108,7 @@ has several key features:
              #t))
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; This file contains tests that require a connection to the
-             ;; internet.
-             (delete-file "tests/tabix_test.py")
-             ;; FIXME: This test fails
+             ;; Failing test removed in the next release.
              (delete-file "tests/AlignmentFile_test.py")
              ;; Add first subdirectory of "build" directory to PYTHONPATH.
              (setenv "PYTHONPATH"
@@ -2125,23 +2122,27 @@ has several key features:
                (setenv "HOME" "/tmp")
                (invoke "make" "-C" "pysam_data")
                (invoke "make" "-C" "cbcf_data")
-               ;; Running nosetests without explicitly asking for a single
-               ;; process leads to a crash.  Running with multiple processes
-               ;; fails because the tests are not designed to run in parallel.
-
-               ;; FIXME: tests keep timing out on some systems.
-               (invoke "nosetests" "-v" "--processes" "1")))))))
+               (invoke "pytest" "-k"
+                       (string-append
+                         ;; requires network access.
+                         "not FileHTTP"
+                         ;; bug in test suite with samtools update
+                         ;; https://github.com/pysam-developers/pysam/issues/961
+                         " and not TestHeaderBAM"
+                         " and not TestHeaderCRAM"
+                         " and not test_text_processing"))))))))
     (propagated-inputs
-     `(("htslib" ,htslib-1.9))) ; Included from installed header files.
+     `(("htslib" ,htslib-1.10)))    ; Included from installed header files.
     (inputs
      `(("ncurses" ,ncurses)
        ("curl" ,curl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
        ;; Dependencies below are are for tests only.
-       ("samtools" ,samtools-1.9)
-       ("bcftools" ,bcftools-1.9)
+       ("samtools" ,samtools-1.10)
+       ("bcftools" ,bcftools-1.10)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
@@ -6111,10 +6112,10 @@ variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
 
-(define-public samtools-1.9
+(define-public samtools-1.10
   (package (inherit samtools)
     (name "samtools")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -6123,14 +6124,14 @@ viewer.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "10ilqbmm7ri8z431sn90lvbjwizd0hhkf9rcqw8j823hf26nhgq8"))
+         "119ms0dpydw8dkh3zc4yyw9zhdzgv12px4l2kayigv31bpqcb7kv"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled htslib.
-                   (delete-file-recursively "htslib-1.9")
+                   (delete-file-recursively "htslib-1.10")
                    #t))))
     (inputs
-     `(("htslib" ,htslib-1.9)
+     `(("htslib" ,htslib-1.10)
        ("ncurses" ,ncurses)
        ("perl" ,perl)
        ("python" ,python)
