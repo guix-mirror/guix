@@ -2107,7 +2107,7 @@ has several key features:
              (setenv "CFLAGS" "-D_CURSES_LIB=1")
              #t))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key tests? #:allow-other-keys)
              ;; Failing test removed in the next release.
              (delete-file "tests/AlignmentFile_test.py")
              ;; Add first subdirectory of "build" directory to PYTHONPATH.
@@ -2117,20 +2117,21 @@ has several key features:
                       ":" (getcwd) "/build/"
                       (car (scandir "build"
                                     (negate (cut string-prefix? "." <>))))))
-             ;; Step out of source dir so python does not import from CWD.
-             (with-directory-excursion "tests"
-               (setenv "HOME" "/tmp")
-               (invoke "make" "-C" "pysam_data")
-               (invoke "make" "-C" "cbcf_data")
-               (invoke "pytest" "-k"
-                       (string-append
-                         ;; requires network access.
-                         "not FileHTTP"
-                         ;; bug in test suite with samtools update
-                         ;; https://github.com/pysam-developers/pysam/issues/961
-                         " and not TestHeaderBAM"
-                         " and not TestHeaderCRAM"
-                         " and not test_text_processing"))))))))
+             (when tests?
+               ;; Step out of source dir so python does not import from CWD.
+               (with-directory-excursion "tests"
+                 (setenv "HOME" "/tmp")
+                 (invoke "make" "-C" "pysam_data")
+                 (invoke "make" "-C" "cbcf_data")
+                 (invoke "pytest" "-k"
+                         (string-append
+                           ;; requires network access.
+                           "not FileHTTP"
+                           ;; bug in test suite with samtools update
+                           ;; https://github.com/pysam-developers/pysam/issues/961
+                           " and not TestHeaderBAM"
+                           " and not TestHeaderCRAM"
+                           " and not test_text_processing")))))))))
     (propagated-inputs
      `(("htslib" ,htslib-1.10)))    ; Included from installed header files.
     (inputs
