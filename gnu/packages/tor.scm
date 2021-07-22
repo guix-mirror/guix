@@ -45,6 +45,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -226,7 +227,7 @@ networks.")
 (define-public onionshare-cli
   (package
     (name "onionshare-cli")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method git-fetch)
@@ -235,13 +236,14 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1llvnvb676s2cs6a4y7isxdj75ddfvskw1p93v5m35vsw7f72kqz"))))
+         (base32 "1qk0zvbaws9md1lmi0al1jc8v86l65nf7n3w1s36iwsfzazc6clv"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs
      ;; TODO: obfs4proxy
      `(("python-click" ,python-click)
+       ("python-colorama" ,python-colorama)
        ("python-eventlet" ,python-eventlet)
        ("python-flask" ,python-flask)
        ("python-flask-httpauth" ,python-flask-httpauth)
@@ -303,10 +305,14 @@ OnionShare.")
              ;; - test_autostart_timer_too_short
              ;; - test_autostop_timer_too_short
              (substitute* "desktop/tests/test_gui_share.py"
+               (("import os" &)
+                (string-append "import pytest\n" &))
                (("( *)def test_autost(art|op)_(timer(_too_short)?|and_[^(]*)\\(" & >)
                 (string-append > "@pytest.mark.skip\n" &)))
              ;; - test_13_quit_with_server_started_should_warn
              (substitute* "desktop/tests/test_gui_tabs.py"
+               (("import os" &)
+                (string-append "import pytest\n" &))
                (("( *)def test_13" & >)
                 (string-append > "@pytest.mark.skip\n" &)))
              ;; Remove multiline load-path adjustment, so that onionshare-cli
