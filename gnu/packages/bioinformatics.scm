@@ -1241,14 +1241,14 @@ sequencing.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.70")
+    (version "1.73")
     (source (origin
               (method url-fetch)
               ;; use PyPi rather than biopython.org to ease updating
               (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "0nz4n9d2y2dg849gn1z0vjlkwcpzzkzy3fij7x94a6ixy2c54z2a"))))
+                "1q55jhf76z3k6is3psis0ckbki7df26x7dikpcc3vhk1vhkwribh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
