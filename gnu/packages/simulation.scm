@@ -42,6 +42,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -898,4 +900,83 @@ the methods and functions that comprise the Gmsh Python API.  In this
 way the meshing of complex geometries using high-level abstractions is
 made possible.  The package provides a Python library together with a
 command-line utility for mesh optimisation.")
+    (license license:lgpl3)))
+
+(define-public python-dolfin-adjoint
+  (package
+    (name "python-dolfin-adjoint")
+    (version "2019.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/dolfin-adjoint/pyadjoint")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+           "0xhy76a5f33hz94wc9g2mc5qmwkxfccbbc6yxl7psm130afp8lhn"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; One of the migration tests attempts to call openmpi
+            ;; recursively and fails.  See
+            ;; https://bitbucket.org/mpi4py/mpi4py/issues/95.  Run the
+            ;; test sequentially instead.
+            (with-directory-excursion "tests/migration/optimal_control_mms"
+              (substitute* "test_optimal_control_mms.py"
+                (("\\\"mpirun\\\", \\\"-n\\\", \\\"2\\\", ") "")))
+            ;; Result files are regenerated in the check phase.
+            (delete-file-recursively
+             "tests/migration/viscoelasticity/test-results")
+            #t))))
+    (build-system python-build-system)
+    (inputs
+     `(("fenics" ,fenics)
+       ("openmpi" ,openmpi)
+       ("pybind11" ,pybind11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-coverage" ,python-coverage)
+       ("python-decorator" ,python-decorator)
+       ("python-flake8" ,python-flake8)
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("scipy" ,python-scipy)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'mpi-setup
+                    ,%openmpi-setup)
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "out")
+                                        "/share/doc/" ,name "-"
+                                        ,version))
+                    (examples (string-append doc "/examples")))
+               (mkdir-p examples)
+               (copy-recursively "examples" examples))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (setenv "HOME" (getcwd))
+               (and (invoke "py.test" "-v" "tests/fenics_adjoint")
+                    (invoke "py.test" "-v" "tests/migration")
+                    (invoke "py.test" "-v" "tests/pyadjoint")))
+             #t)))))
+    (home-page "http://www.dolfin-adjoint.org")
+    (synopsis "Automatic differentiation library")
+    (description "@code{python-dolfin-adjoint} is a solver of
+differential equations associated with a governing system and a
+functional of interest.  Working from the forward model the solver
+automatically derives the discrete adjoint and tangent linear models.
+These additional models are key ingredients in many algorithms such as
+data assimilation, optimal control, sensitivity analysis, design
+optimisation and error estimation.  The dolfin-adjoint project
+provides the necessary tools and data structures for cases where the
+forward model is implemented in @code{fenics} or
+@url{https://firedrakeproject.org,firedrake}.")
     (license license:lgpl3)))
