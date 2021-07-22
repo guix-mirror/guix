@@ -4652,6 +4652,19 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
 
+(define-public htslib-1.10
+  (package (inherit htslib)
+    (name "htslib")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0wm9ay7qgypj3mwx9zl1mrpnr36298b1aj5vx69l4k7bzbclvr3s"))))))
+
 (define-public htslib-1.9
   (package (inherit htslib)
     (name "htslib")
