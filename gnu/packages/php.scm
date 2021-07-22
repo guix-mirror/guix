@@ -36,7 +36,6 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -61,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.20")
+    (version "7.4.21")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -69,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "0db3nqfbfqfd8fkvrw1k8l6698qcbzv1v5j8rgr0ny0dg6k6r90z"))
+                "141awf9fjg8ps1b1dv0j1xqvkax4p8cjc0i2zz11n906g153hhyg"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -146,13 +145,11 @@
              ;; This file has ISO-8859-1 encoding.
              (with-fluids ((%default-port-encoding "ISO-8859-1"))
                (substitute* "main/build-defs.h.in"
-                 (("@CONFIGURE_COMMAND@") "(omitted)")))
-             #t))
+                 (("@CONFIGURE_COMMAND@") "(omitted)")))))
          (add-before 'build 'patch-/bin/sh
            (lambda _
              (substitute* '("run-tests.php" "ext/standard/proc_open.c")
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-before 'check 'prepare-tests
            (lambda _
              ;; Some of these files have ISO-8859-1 encoding, whereas others
@@ -345,8 +342,7 @@
              (setenv "REPORT_EXIT_STATUS" "1")
              ;; Skip tests requiring I/O facilities that are unavailable in the
              ;; build environment
-             (setenv "SKIP_IO_CAPTURE_TESTS" "1")
-             #t)))
+             (setenv "SKIP_IO_CAPTURE_TESTS" "1"))))
        #:test-target "test"))
     (inputs
      `(("aspell" ,aspell)
@@ -378,7 +374,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("bison" ,bison)
-       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
        ("procps" ,procps)))             ; for tests
     (synopsis "PHP programming language")
     (description
