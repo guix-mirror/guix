@@ -1592,8 +1592,7 @@ Guile.")
                (invoke "python" "-m" "pytest" "tests")
                #t))))))
     (native-inputs
-     `(("lilypond" ,lilypond)
-       ("python-black" ,python-black)
+     `(("python-black" ,python-black)
        ("python-flake8" ,python-flake8)
        ("python-iniconfig" ,python-iniconfig)
        ("python-isort" ,python-isort)
@@ -1601,6 +1600,8 @@ Guile.")
        ("python-pytest" ,python-pytest-6)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)))
+    (inputs
+     `(("lilypond" ,lilypond)))
     (propagated-inputs
      `(("python-ply" ,python-ply)
        ("python-quicktions" ,python-quicktions)
