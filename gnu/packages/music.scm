@@ -1580,11 +1580,6 @@ Guile.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda _
-             (substitute* "setup.py"
-               (("uqbar>=0.5.1, <0.5.0") "uqbar>=0.5.0"))
-             #t))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
