@@ -4198,7 +4198,8 @@ access to BLIS implementations via traditional BLAS routine calls.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       (list (string-append "prefix=" (assoc-ref %outputs "out"))
+             ,(string-append "CC=" (cc-for-target)))
        #:phases
        ;; no configure script
        (modify-phases %standard-phases (delete 'configure))
