@@ -91,6 +91,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -18557,3 +18558,90 @@ semantics in Lisp and Parenscript.
 
 (define-public cl-spinneret
   (sbcl-package->cl-source-package sbcl-spinneret))
+
+(define-public sbcl-cl-libxml2
+  (let ((commit "8d03110c532c1a3fe15503fdfefe82f60669e4bd"))
+    (package
+      (name "sbcl-cl-libxml2")
+      (version (git-version "0.3.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/cl-libxml2")
+               (commit commit)))
+         (file-name (git-file-name "cl-libxml2" version))
+         (sha256
+          (base32 "09049c13cfp5sc6x9lrw762jd7a9qkfq5jgngqgrzn4kn9qscarw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("garbage-pools" ,sbcl-garbage-pools)
+         ("iterate" ,sbcl-iterate)
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("puri" ,sbcl-puri)
+         ;; Non-Lisp inputs:
+         ("libxml2" ,libxml2)
+         ("libxslt" ,libxslt)))
+      (native-inputs
+       `(("gcc" ,sbcl-lift)
+         ("lift" ,sbcl-lift)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "tree/xtree.lisp"
+                 (("libxml2.so.2")
+                  (string-append (assoc-ref inputs "libxml2") "/lib/libxml2.so")))
+               (let ((libxslt (assoc-ref inputs "libxslt")))
+                 (substitute* "xslt/xslt.lisp"
+                   (("libxslt.so.1")
+                    (string-append libxslt "/lib/libxslt.so"))
+                   (("libexslt.so.0")
+                    (string-append libxslt "/lib/libexslt.so"))
+                   (("cllibxml2.so")
+                    (string-append (assoc-ref outputs "out") "/lib/cllibxml2.so"))))
+               #t))
+           (add-before 'build 'build-helper-library
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((prefix-dir (string-append (assoc-ref outputs "out"))))
+                 (mkdir-p (string-append prefix-dir "/lib"))
+                 (invoke "make" "-C" "foreign" "install"
+                         "INSOPTS="
+                         (string-append "PREFIX=" prefix-dir))
+                 #t)))
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* '("cl-libxml2.asd" "cl-libxslt.asd" "xfactory.asd")
+                 ((" :force t") ""))
+               #t)))))
+      (home-page "https://web.archive.org/web/20160121073421/http://cl-libxml2.googlecode.com/svn/doc/index.html")
+      (synopsis "High-level wrapper around libxml2 and libxslt libraries")
+      (description
+       "cl-libxml2 is high-level Common Lisp wrapper around the @code{libxml2}
+and @code{libxslt} libraries.
+
+@itemize
+@item Interfaces for tree manipulation (like @code{cxml-stp}).
+@item Interface for HTML 4.0 non-validating parsers.
+@item Specific APIs to process HTML trees, especially serialization.
+@item XPath API.
+@item XSLT API.
+@item Custom URL resolvers.
+@item XPath extension functions.
+@item XSLT extension elements.
+@item Translates @code{libxml2} and @code{libxslt} errors to Lisp conditions.
+@item Extends the Common Lisp @code{iterate} library with custom drivers for
+child nodes enumeration, etc.
+@item The @code{XFACTORY} system provides a simple and compact syntax for XML generation.
+@end itemize\n")
+      (license license:llgpl))))
+
+(define-public ecl-cl-libxml2
+  (sbcl-package->ecl-package sbcl-cl-libxml2))
+
+(define-public cl-libxml2
+  (sbcl-package->cl-source-package sbcl-cl-libxml2))
