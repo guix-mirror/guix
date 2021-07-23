@@ -1171,7 +1171,7 @@ with the included @command{xfstests-check} helper.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.0.5")
+    (version "2.1.0")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -1180,7 +1180,7 @@ with the included @command{xfstests-check} helper.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "1jbfm18hh9x4a9s5d7si8lapmq2aniphyriif9flrgsff26lj5rs"))))
+           (base32 "0kzkggwznp4m3503f2m4lcinbl99jg50j4asrwfpfk1862vdrgb0"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -1211,6 +1211,25 @@ with the included @command{xfstests-check} helper.")
                    (util-linux (assoc-ref inputs "util-linux"))
                    (nfs-utils  (assoc-ref inputs "nfs-utils"))
                    (kmod       (assoc-ref inputs "kmod-runtime")))
+               ;; New feature "compatibility=" in 2.1.0.
+               ;; This feature looks up in two locations:
+               ;;   /etc/zfs/compatibility.d/
+               ;;   /usr/share/zfs/compatibility.d/
+               ;; The first is intended for system-specific compatibility
+               ;; sets, while the second is what is installed with the
+               ;; OpenZFS package, so use the absolute path for the first
+               ;; (which requires patching in the file) and the store path
+               ;; for the second (which it gets by default).
+               (substitute* "include/sys/fs/zfs.h"
+                 (("#define\tZPOOL_SYSCONF_COMPAT_D.*$")
+                  ; Use absolute path.
+                  "#define\tZPOOL_SYSCONF_COMPAT_D\t\"/etc/zfs/compatibility.d\"\n"))
+               ;; Also update the manual, which uses absolute paths, so that
+               ;; /usr/share/zfs/compatibility.d/ is referred via the store.
+               (substitute* '("man/man7/zpoolprops.7"
+                              "man/man7/zpool-features.7")
+                 (("/usr/share/zfs/compatibility.d")
+                  (string-append out "/share/zfs/compatibility.d")))
                (substitute* "etc/Makefile.in"
                  ;; This just contains an example configuration file for
                  ;; configuring ZFS on traditional init systems, skip it
