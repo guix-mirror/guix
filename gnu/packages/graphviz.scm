@@ -33,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -74,29 +75,27 @@
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
-     '(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'move-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share/graphviz"))
-               (rename-file (string-append out "/share/graphviz/doc")
-                            (string-append doc "/share/graphviz/doc"))
-               #t)))
-         (add-after 'move-docs 'move-guile-bindings
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (extdir (string-append lib
-                                           "/guile/2.0/extensions")))
-               (mkdir-p extdir)
-               (rename-file (string-append
-                             lib "/graphviz/guile/libgv_guile.so")
-                            (string-append extdir
-                                           "/libgv_guile.so"))
-               #t))))))
+     (list #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'move-docs
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out"))
+                         (doc (assoc-ref outputs "doc")))
+                     (mkdir-p (string-append doc "/share/graphviz"))
+                     (rename-file (string-append out "/share/graphviz/doc")
+                                  (string-append doc "/share/graphviz/doc")))))
+               (add-after 'move-docs 'move-guile-bindings
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (lib (string-append out "/lib"))
+                          (extdir (string-append lib
+                                                 "/guile/2.0/extensions")))
+                     (mkdir-p extdir)
+                     (rename-file (string-append
+                                   lib "/graphviz/guile/libgv_guile.so")
+                                  (string-append extdir
+                                                 "/libgv_guile.so"))))))))
     (inputs
      `(("libXrender" ,libxrender)
        ("libX11" ,libx11)
