@@ -1522,6 +1522,14 @@ from R7RS, which allows most R7RS code to run on R6RS implementations.")
         #:test-target "test"
         #:phases
         (modify-phases %standard-phases
+          (add-before 'configure 'patch-add-modules
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((coreutils (assoc-ref inputs "coreutils")))
+                (substitute* "script/add.modules.in"
+                  (("/bin/(cat|cp|rm)" _ command)
+                   (string-append coreutils "/bin/" command))
+                  (("/bin/echo")
+                   "echo")))))
           (add-before 'configure 'patch-scripts-for-python-3
             (lambda _
               ;; Patch the script for python-3.
