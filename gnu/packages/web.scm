@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -95,6 +95,7 @@
   #:use-module (gnu packages apr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages boost)
@@ -7693,87 +7694,83 @@ compressed JSON header blocks.
     (license license:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")
-        (revision "5"))
-    (package
-      (name "hpcguix-web")
-      (version (git-version "0.0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/UMCUGenetics/hpcguix-web")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0wjgj2s7v2cyz6dx24c111rxs99i84sfvxl4ch8brnh02j2606jz"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-26)
-                    (ice-9 popen)
-                    (ice-9 rdelim))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'set-variables
-             (lambda _
-               ;; This prevents a few warnings
-               (setenv "GUILE_AUTO_COMPILE" "0")
-               (setenv "XDG_CACHE_HOME" (getcwd))
-               #t))
-           (add-after 'install 'wrap-program
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out      (assoc-ref outputs "out"))
-                      (guix     (assoc-ref inputs "guix"))
-                      (guile    (assoc-ref inputs "guile"))
-                      (gcrypt   (assoc-ref inputs "guile-gcrypt"))
-                      (git      (assoc-ref inputs "guile-git"))
-                      (bs       (assoc-ref inputs "guile-bytestructures"))
-                      (json     (assoc-ref inputs "guile-json"))
-                      (guile-cm (assoc-ref inputs
-                                           "guile-commonmark"))
-                      (deps (list guile gcrypt git bs guile-cm guix json))
-                      (effective
-                       (read-line
-                        (open-pipe* OPEN_READ
-                                    (string-append guile "/bin/guile")
-                                    "-c" "(display (effective-version))")))
-                      (path   (string-join
-                               (map (cut string-append <>
-                                         "/share/guile/site/"
-                                         effective)
-                                    deps)
-                               ":"))
-                      (gopath (string-join
-                               (map (cut string-append <>
-                                         "/lib/guile/" effective
-                                         "/site-ccache")
-                                    deps)
-                               ":")))
-                 (wrap-program (string-append out "/bin/run")
-                   `("GUILE_LOAD_PATH" ":" prefix (,path))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
-
-                 #t))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("uglify-js" ,uglify-js)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-         ("guix" ,guix)))
-      (propagated-inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-         ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json-4)))
-      (home-page "https://github.com/UMCUGenetics/hpcguix-web")
-      (synopsis "Web interface for cluster deployments of Guix")
-      (description "Hpcguix-web provides a web interface to the list of packages
+  (package
+    (name "hpcguix-web")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/UMCUGenetics/hpcguix-web")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "02lz5k1hhkwfz3nr3lsd69icsz6n0q82z047d3svi09qpxw6y0cj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-variables
+           (lambda _
+             ;; This prevents a few warnings
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (setenv "XDG_CACHE_HOME" (getcwd))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (guix     (assoc-ref inputs "guix"))
+                    (guile    (assoc-ref inputs "guile"))
+                    (gcrypt   (assoc-ref inputs "guile-gcrypt"))
+                    (git      (assoc-ref inputs "guile-git"))
+                    (bs       (assoc-ref inputs "guile-bytestructures"))
+                    (json     (assoc-ref inputs "guile-json"))
+                    (guile-cm (assoc-ref inputs
+                                         "guile-commonmark"))
+                    (deps (list guile gcrypt git bs guile-cm guix json))
+                    (effective
+                     (read-line
+                      (open-pipe* OPEN_READ
+                                  (string-append guile "/bin/guile")
+                                  "-c" "(display (effective-version))")))
+                    (path   (string-join
+                             (map (cut string-append <>
+                                       "/share/guile/site/"
+                                       effective)
+                                  deps)
+                             ":"))
+                    (gopath (string-join
+                             (map (cut string-append <>
+                                       "/lib/guile/" effective
+                                       "/site-ccache")
+                                  deps)
+                             ":")))
+               (wrap-program (string-append out "/bin/hpcguix-web")
+                 `("GUILE_LOAD_PATH" ":" prefix (,path))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("uglify-js" ,uglify-js)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guix" ,guix)
+       ("bash-minimal" ,bash-minimal)))           ;for 'wrap-program'
+    (propagated-inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guile-commonmark" ,guile-commonmark)
+       ("guile-json" ,guile-json-4)))
+    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+    (synopsis "Web interface for cluster deployments of Guix")
+    (description "Hpcguix-web provides a web interface to the list of packages
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
-      (license license:agpl3+))))
+    (license license:agpl3+)))
 
 (define-public httrack
   (package
