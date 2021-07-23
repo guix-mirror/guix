@@ -97,7 +97,8 @@ continue running in the background, then later reattached.")
                                     "themepack.tmux"))))))))
     (home-page "https://github.com/jimeh/tmux-themepack")
     (synopsis "Collection of themes for Tmux")
-    (description "A collection of various themes for Tmux.")
+    (description
+     "This package provides several themes for Tmux, the terminal multiplexer.")
     (license license:wtfpl2)))
 
 (define-public tmuxifier
