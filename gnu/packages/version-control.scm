@@ -1036,7 +1036,7 @@ a built-in cache to decrease server I/O pressure.")
                                "'"))
                (("/usr/sbin/sendmail")
                 (string-append (assoc-ref inputs "sendmail")
-                               "/usr/sbin/sendmail")))
+                               "/sbin/sendmail")))
              #t)))))
     (inputs
      `(("git" ,git)

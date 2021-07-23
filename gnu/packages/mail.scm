@@ -1624,7 +1624,7 @@ compresses it.")
              (let* ((mailutils (assoc-ref inputs "mailutils"))
                     (inc (string-append mailutils "/bin/mu-mh/inc"))
                     (send-mail (assoc-ref inputs "sendmail"))
-                    (sendmail (string-append send-mail "/usr/sbin/sendmail")))
+                    (sendmail (string-append send-mail "/sbin/sendmail")))
                (substitute* "src/common/defs.h"
                  (("/usr/bin/mh/inc") inc)
                  (("/usr/sbin/sendmail") sendmail)))))
@@ -2871,6 +2871,13 @@ powerful user customization features.")
              (substitute* "devtools/bin/Build"
                (("SHELL=/bin/sh") (string-append "SHELL=" (which "sh"))))
              #t))
+         (add-before 'build 'replace-/usr
+           (lambda _
+             (substitute*
+               '("devtools/OS/Linux"
+                 "cf/ostype/mklinux.m4"
+                 "cf/ostype/linux.m4")
+               (("/usr/sbin") "/sbin"))))
          (replace 'configure
            (lambda _
 
@@ -2882,6 +2889,11 @@ powerful user customization features.")
              (with-output-to-file "devtools/Site/site.config.m4"
                (lambda ()
                  (format #t "
+define(`confEBINDIR', `/sbin')
+define(`confSBINDIR', `/sbin')
+define(`confMBINDIR', `/sbin')
+define(`confUBINDIR', `/bin')
+define(`confLINKS', `')
 define(`confCC', `gcc')
 define(`confOPTIMIZE', `-g -O2')
 define(`confLIBS', `-lresolv')
@@ -2900,13 +2912,21 @@ define(`confINST_DEP', `')
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
-               (mkdir-p (string-append out "/usr/bin"))
-               (mkdir-p (string-append out "/usr/sbin"))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/sbin"))
                (mkdir-p (string-append out "/etc/mail"))
                (setenv "DESTDIR" out)
                (with-directory-excursion "cf/cf"
                  (invoke "sh" "Build" "install-cf"))
-               #t))))
+               #t)))
+         (add-after 'install 'post-install
+           (lambda _
+               ;; Make symbolic links manually, because build script uses
+               ;; absolute paths for them and ignores DESTDIR.
+               (for-each
+                 (lambda (name)
+                   (symlink "../sbin/sendmail" (string-append %output "/bin/" name)))
+                 '("hoststat" "newaliases" "mailq" "purgestat")))))
        ;; There is no make check.  There are some post installation tests, but those
        ;; require root privileges
        #:tests? #f))
