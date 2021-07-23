@@ -63,15 +63,15 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (version "2.47.1")
+    (version "2.48.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gitlab.com/graphviz/graphviz"
-                                  "/-/package_files/9573974/download"))
-              (file-name (string-append "graphviz-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.com/api/v4/projects/4207231"
+                                  "/packages/generic/graphviz-releases/"
+                                  version "/graphviz-" version ".tar.xz"))
               (sha256
                (base32
-                "1hff831p300n989x1gmyzh3ix43xd2mgx01qgrrqill44n7zxfza"))))
+                "0lgv508zyfdv4wl95avaj58nmjhbvb5za65nhrkl5nn818ayvggn"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
@@ -103,8 +103,8 @@
      `(("libXrender" ,libxrender)
        ("libX11" ,libx11)
        ("gts" ,gts)
-       ("gd" ,gd)                                 ; FIXME: Our GD is too old
-       ("guile" ,guile-2.0)                       ;Guile bindings
+       ("gd" ,gd)
+       ("guile" ,guile-3.0)                       ;Guile bindings
        ("pango" ,pango)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
