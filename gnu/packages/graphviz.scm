@@ -89,8 +89,11 @@
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let* ((out (assoc-ref outputs "out"))
                           (lib (string-append out "/lib"))
-                          (extdir (string-append lib
-                                                 "/guile/2.0/extensions")))
+                          (extdir (string-append lib "/guile/"
+                                                 #$(version-major+minor
+                                                    (package-version
+                                                     (this-package-input "guile")))
+                                                 "/extensions")))
                      (mkdir-p extdir)
                      (rename-file (string-append
                                    lib "/graphviz/guile/libgv_guile.so")
