@@ -2399,7 +2399,8 @@ be expected from a simple client.")
        (sha256
         (base32
          "1ay282rrl92h0m0m8z5zzjnwiiagi7c78aq2qvhia5mw7prwfyw2"))
-       (file-name (string-append name "-" version "-checkout"))))
+       (file-name (string-append name "-" version "-checkout"))
+       (patches (search-patches "esmtp-add-lesmtp.patch"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
