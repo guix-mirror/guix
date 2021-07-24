@@ -18645,3 +18645,39 @@ child nodes enumeration, etc.
 
 (define-public cl-libxml2
   (sbcl-package->cl-source-package sbcl-cl-libxml2))
+
+(define-public sbcl-feeder
+  ;; No release.
+  (let ((commit "b05f517d7729564575cc809e086c262646a94d34")
+        (revision "1"))
+    (package
+      (name "sbcl-feeder")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/feeder")
+               (commit commit)))
+         (file-name (git-file-name "feeder" version))
+         (sha256
+          (base32 "1dpbzhycg50snl3j01c8dh8gdvhfhz0hnfl54xy55a3wbr3m6rp7"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("local-time" ,sbcl-local-time)
+         ("plump" ,sbcl-plump)))
+      (home-page "https://shinmera.github.io/feeder/")
+      (synopsis "RSS, Atom and general feed parsing and generating")
+      (description
+       "Feeder is a syndication feed library.  It presents a general protocol
+for representation of feed items, as well as a framework to translate these
+objects from and to external formats.  It also implements the RSS 2.0 and Atom
+formats within this framework.")
+      (license license:zlib))))
+
+(define-public ecl-feeder
+  (sbcl-package->ecl-package sbcl-feeder))
+
+(define-public cl-feeder
+  (sbcl-package->cl-source-package sbcl-feeder))
