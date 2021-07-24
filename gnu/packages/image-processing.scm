@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -800,6 +802,25 @@ including 2D color images.")
                (string-append "-DGMIC_LIB_PATH="
                               (assoc-ref %build-inputs "gmic") "/lib")))))
     (synopsis "Krita plugin for the G'MIC image processing framework")))
+
+(define-public gmic-qt-gimp
+  (package
+    (inherit gmic-qt)
+    (name "gmic-qt-gimp")
+    (inputs
+     ;; GIMP and its dependencies.
+     `(("gimp" ,gimp)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)
+       ("gegl" ,gegl)
+       ,@(package-inputs gmic-qt)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments gmic-qt)
+       ((#:configure-flags flags)
+        '(list "-DGMIC_QT_HOST=gimp" "-DENABLE_DYNAMIC_LINKING=ON"
+               (string-append "-DGMIC_LIB_PATH="
+                              (assoc-ref %build-inputs "gmic") "/lib")))))
+    (synopsis "GIMP plugin for the G'MIC image processing framework")))
 
 (define-public nip2
   (package
