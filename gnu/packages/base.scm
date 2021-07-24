@@ -996,46 +996,6 @@ with the Linux kernel.")
                                        "glibc-reinstate-prlimit64-fallback.patch"
                                        "glibc-2.29-supported-locales.patch"))))))
 
-(define-public glibc-2.28
-  (package
-    (inherit glibc)
-    (version "2.28")
-    (source (origin
-              (inherit (package-source glibc))
-              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
-              (sha256
-               (base32
-                "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"
-                                       "glibc-2.28-git-fixes.patch"
-                                       "glibc-hidden-visibility-ldconfig.patch"
-                                       "glibc-versioned-locpath.patch"
-                                       "glibc-allow-kernel-2.6.32.patch"
-                                       "glibc-reinstate-prlimit64-fallback.patch"
-                                       "glibc-hurd-magic-pid.patch"
-                                       "glibc-2.28-supported-locales.patch"))))))
-
-(define-public glibc-2.27
-  (package
-    (inherit glibc)
-    (version "2.27")
-    (source (origin
-              (inherit (package-source glibc))
-              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0wpwq7gsm7sd6ysidv0z575ckqdg13cr2njyfgrbgh4f65adwwji"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"
-                                       "glibc-2.27-git-fixes.patch"
-                                       "glibc-hidden-visibility-ldconfig.patch"
-                                       "glibc-versioned-locpath.patch"
-                                       "glibc-allow-kernel-2.6.32.patch"
-                                       "glibc-reinstate-prlimit64-fallback.patch"
-                                       "glibc-2.27-supported-locales.patch"
-                                       "glibc-CVE-2018-11236.patch"
-                                       "glibc-CVE-2018-11237.patch"))))
-    (properties `((lint-hidden-cve . ("CVE-2017-18269")))))) ; glibc-2.27-git-fixes
-
 (define-public (make-gcc-libc base-gcc libc)
   "Return a GCC that targets LIBC."
   (package (inherit base-gcc)
