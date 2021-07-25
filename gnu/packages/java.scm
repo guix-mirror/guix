@@ -7950,14 +7950,14 @@ This is a part of the Apache Commons Project.")
 (define-public java-commons-codec
   (package
     (name "java-commons-codec")
-    (version "1.14")
+    (version "1.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/commons/codec/source/"
                                   "commons-codec-" version "-src.tar.gz"))
               (sha256
                (base32
-                "11xr0agckkhm91pb5akf2mbk84yd54gyr178wj57gsm97fi7nkh9"))))
+                "01z9qmg8fd8d7p7xxipwj1vi9bmvpgqyi29kldjz2x6vzwm171jj"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-commons-codec.jar"
