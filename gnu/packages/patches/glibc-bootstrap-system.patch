@@ -10,7 +10,7 @@ instead uses the hard-coded absolute file name of `bash'.
  			      POSIX_SPAWN_SETSIGDEF | POSIX_SPAWN_SETSIGMASK);
  
 -  status = __posix_spawn (&pid, SHELL_PATH, 0, &spawn_attr,
-+  status = posix_spawnp (&pid, SHELL_NAME, 0, &spawn_attr,
++  status = __posix_spawnp (&pid, SHELL_NAME, 0, &spawn_attr,
  			  (char *const[]){ (char*) SHELL_NAME,
  					   (char*) "-c",
  					   (char *) line, NULL },
@@ -21,8 +21,31 @@ instead uses the hard-coded absolute file name of `bash'.
      }
  
 -  if (__posix_spawn (&((_IO_proc_file *) fp)->pid, _PATH_BSHELL, fa, 0,
-+  if (posix_spawnp (&((_IO_proc_file *) fp)->pid, "sh", fa, 0,
++  if (__posix_spawnp (&((_IO_proc_file *) fp)->pid, "sh", fa, 0,
  		     (char *const[]){ (char*) "sh", (char*) "-c",
  		     (char *) command, NULL }, __environ) != 0)
      return false;
+
+--- a/include/spawn.h
++++ b/include/spawn.h
+@@ -5,6 +5,9 @@
+ __typeof (posix_spawn) __posix_spawn;
+ libc_hidden_proto (__posix_spawn)
+
++__typeof (posix_spawnp) __posix_spawnp;
++libc_hidden_proto (__posix_spawnp)
++
+ __typeof (posix_spawn_file_actions_addclose)
+   __posix_spawn_file_actions_addclose attribute_hidden;
+
+--- a/posix/spawnp.c
++++ b/posix/spawnp.c
+@@ -31,6 +31,7 @@ __posix_spawnp (pid_t *pid, const char *file,
+                   SPAWN_XFLAGS_USE_PATH);
+ }
+ versioned_symbol (libc, __posix_spawnp, posix_spawnp, GLIBC_2_15);
++libc_hidden_def (__posix_spawnp)
+
+
+ #if SHLIB_COMPAT (libc, GLIBC_2_2, GLIBC_2_15)
 
