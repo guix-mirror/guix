@@ -2437,9 +2437,9 @@ using third-party geocoders and other data sources.")
          (uri (git-reference
                (url "https://invent.kde.org/education/marble.git/")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0m0sf3sddaib7vc5lhbmh7ziw07p1hahg02f65sgfylyl5f5kj92"))
+          (base32 "0m0sf3sddaib7vc5lhbmh7ziw07p1hahg02f65sgfylyl5f5kj92"))
          (patches (search-patches
                    "marble-qt-add-qt-headers.patch"))))
       (build-system cmake-build-system)
