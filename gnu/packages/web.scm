@@ -50,6 +50,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7965,8 +7966,8 @@ solution for any project's interface needs:
     (license license:expat)))
 
 (define-public gmnisrv
-  (let ((commit "d484ba0ab0020866535a44be5948c9482b8f2b8d")
-        (revision "1"))
+  (let ((commit "32854b79c73b278bf33eb5123abf1c36abdc7c01")
+        (revision "2"))
     (package
       (name "gmnisrv")
       (version (git-version "0" revision commit))
@@ -7978,7 +7979,7 @@ solution for any project's interface needs:
                       (commit commit)))
                 (sha256
                  (base32
-                  "11phipixsxx1jgm42agp76p5s68l0zj65kgb41vzaymgwcq79ivn"))
+                  "0lbb3ablwkdcgm1cjr1hikr55y8gpl420nh8b8g9wn4abhm2xgr9"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
