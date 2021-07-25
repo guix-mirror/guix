@@ -631,8 +631,11 @@ FILE must be a string like \"bin/sh\". If FILE is not found, an exception is
 raised."
   (match inputs
     (((_ . directories) ...)
-     (or (search-path directories file)
-         (raise (condition (&search-error (path directories) (file file))))))))
+     ;; Accept both "bin/sh" and "/bin/sh" as FILE argument.
+     (let ((file (string-trim file #\/)))
+       (or (search-path directories file)
+           (raise
+            (condition (&search-error (path directories) (file file)))))))))
 
 (define (search-input-directory inputs directory)
   "Find a sub-directory named DIRECTORY among the INPUTS and return its
