@@ -150,21 +150,19 @@ parsers to allow execution with Guile as extension languages.")))
                 "065ksalfllbdrzl12dz9d9dcxrv97wqxblslngsc6kajvnvlyvpk"))))
     (inputs (list guile-3.0))))
 
-(define-public mes-0.19
-  ;; Mes used for bootstrap.
+(define-public mes
   (package
     (name "mes")
-    (version "0.19")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
-    (build-system gnu-build-system)
-    (supported-systems '("i686-linux" "x86_64-linux"))
-    (propagated-inputs (list mescc-tools nyacc-0.86))
+                "0mnryfkl0dwbr5gxp16j5s95gw7z1vm1fqa1pxabp0aiar1hw53s"))))
+    (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
+    (propagated-inputs (list mescc-tools nyacc-1.00.2))
     (native-inputs
      `(("guile" ,guile-3.0)
        ,@(let ((target-system (or (%current-target-system)
@@ -181,31 +179,9 @@ parsers to allow execution with Guile as extension languages.")))
        ("help2man" ,help2man)
        ("perl" ,perl)                 ; build-aux/gitlog-to-changelog
        ("texinfo" ,texinfo)))
+    (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
-    (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
-    (description
-     "GNU Mes--Maxwell Equations of Software--brings the Reduced Binary Seed
-bootstrap to Guix and aims to help create full source bootstrapping for
-GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
-interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
-Guile.")
-    (home-page "https://www.gnu.org/software/mes/")
-    (license gpl3+)))
-
-(define-public mes
-  (package
-    (inherit mes-0.19)
-    (version "0.23")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/mes/"
-                                  "mes-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0mnryfkl0dwbr5gxp16j5s95gw7z1vm1fqa1pxabp0aiar1hw53s"))))
-    (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
-    (propagated-inputs (list mescc-tools nyacc-1.00.2))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
@@ -216,7 +192,16 @@ Guile.")
            (search-path-specification
             (variable "MES_PREFIX")
             (separator #f)
-            (files '("")))))))
+            (files '("")))))
+    (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
+    (description
+     "GNU Mes--Maxwell Equations of Software--brings the Reduced Binary Seed
+bootstrap to Guix and aims to help create full source bootstrapping for
+GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
+interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
+Guile.")
+    (home-page "https://www.gnu.org/software/mes/")
+    (license gpl3+)))
 
 (define-public mes-rb5
   ;; This is the Reproducible-Builds summit 5's Mes, also built on Debian
