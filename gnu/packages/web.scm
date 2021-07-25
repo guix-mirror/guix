@@ -7984,12 +7984,7 @@ solution for any project's interface needs:
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; no check target
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'set-variables
-             (lambda _
-               (setenv "CC" "gcc")
-               #t)))))
+         #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
       (inputs
        `(("openssl" ,openssl)))
       (native-inputs
