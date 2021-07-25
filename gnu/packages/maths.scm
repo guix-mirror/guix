@@ -3877,7 +3877,8 @@ parts of it.")
                        (string-prefix? "i686" system))
                    '("DYNAMIC_ARCH=1"))
                   ;; On some of these architectures the CPU can't be detected.
-                  ((string-prefix? "powerpc64le" system)
+                  ((or (string-prefix? "powerpc64le" system)
+                       (string-prefix? "aarch64" system))
                    '("DYNAMIC_ARCH=1"
                      "TARGET=GENERIC"))
                   ;; On MIPS we force the "SICORTEX" TARGET, as for the other
@@ -3885,9 +3886,6 @@ parts of it.")
                   ;; for Loongson cores are used.
                   ((string-prefix? "mips" system)
                    '("TARGET=SICORTEX"))
-                  ;; On aarch64 force the generic 'armv8-a' target
-                  ((string-prefix? "aarch64" system)
-                   '("TARGET=ARMV8"))
                   ;; Failed to detect CPU.
                   ((string-prefix? "armhf" system)
                    '("TARGET=ARMV7"))
