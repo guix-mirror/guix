@@ -4221,20 +4221,20 @@ graph construction.")
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "StructuralVariantAnnotation" version))
        (sha256
-        (base32
-         "10h63h1v87nvm3bfyr6dsjlbmzxf1vks30d0xz6q4hssqq9xlzgv"))))
+        (base32 "13q6zbdkpx1iw6n75pggg50f9q3zb7k3dxjdra8mhi6zin7018j8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-dplyr" ,r-dplyr)
+       ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-rlang" ,r-rlang)
        ("r-rtracklayer" ,r-rtracklayer)
