@@ -124,18 +124,16 @@
        (modify-phases %standard-phases
          (add-before 'configure 'setup-configure
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((coreutils (or (assoc-ref inputs "coreutils-minimal")
-                                  (assoc-ref inputs "coreutils"))))
-               ;; Use the right path for `pwd'.
-               (substitute* "dist/PathTools/Cwd.pm"
-                 (("'/bin/pwd'")
-                  (string-append "'" coreutils "/bin/pwd'")))
+             ;; Use the right path for `pwd'.
+             (substitute* "dist/PathTools/Cwd.pm"
+               (("'/bin/pwd'")
+                (string-append "'" (search-input-file inputs "bin/pwd") "'")))
 
-               ;; Build in GNU89 mode to tolerate C++-style comment in libc's
-               ;; <bits/string3.h>.
-               (substitute* "cflags.SH"
-                 (("-std=c89")
-                  "-std=gnu89")))))
+             ;; Build in GNU89 mode to tolerate C++-style comment in libc's
+             ;; <bits/string3.h>.
+             (substitute* "cflags.SH"
+               (("-std=c89")
+                "-std=gnu89"))))
          ,@(if (%current-target-system)
                `((add-after 'unpack 'unpack-cross
                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
