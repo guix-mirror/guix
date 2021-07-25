@@ -148,7 +148,7 @@ parsers to allow execution with Guile as extension languages.")))
               (sha256
                (base32
                 "065ksalfllbdrzl12dz9d9dcxrv97wqxblslngsc6kajvnvlyvpk"))))
-    (inputs (list guile-2.2))))
+    (inputs (list guile-3.0))))
 
 (define-public mes-0.19
   ;; Mes used for bootstrap.
@@ -166,7 +166,7 @@ parsers to allow execution with Guile as extension languages.")))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (propagated-inputs (list mescc-tools nyacc-0.86))
     (native-inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ,@(let ((target-system (or (%current-target-system)
                                   (%current-system))))
            (cond

@@ -627,7 +627,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (inherit mes)
     (name "mes-minimal")
     (native-inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (arguments
      `(#:system "i686-linux"
        #:strip-binaries? #f
