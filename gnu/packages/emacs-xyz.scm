@@ -24509,7 +24509,7 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 (define-public emacs-counsel-etags
   (package
     (name "emacs-counsel-etags")
-    (version "1.9.16")
+    (version "1.9.17")
     (source
      (origin
        (method git-fetch)
@@ -24518,13 +24518,13 @@ previewed by scrolling up and down within a @code{dired} buffer.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01si554r0s6m7ypx1m2n0z6j6q6yihifz76dha6q6v56ixdlv626"))))
+        (base32 "07445bbr68q1pnwpj5bwqmml9ky1gq67g24zswv8fylnzjkhy9wc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-counsel" ,emacs-counsel)))
     (arguments
-     `(#:tests? #t
-       #:test-command '("make" "test")))
+     `(#:tests? #f                      ;require internet access
+       #:test-command '("make test")))
     (home-page "https://github.com/redguardtoo/counsel-etags")
     (synopsis "Fast @code{Ctags}/@code{Etags} solution with @code{ivy-mode}")
     (description "This package uses @code{ivy-mode} to facilitate navigating
