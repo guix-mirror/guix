@@ -164,7 +164,7 @@ parsers to allow execution with Guile as extension languages.")))
                 "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (propagated-inputs (list mescc-tools-0.5.2 nyacc-0.86))
+    (propagated-inputs (list mescc-tools nyacc-0.86))
     (native-inputs
      `(("guile" ,guile-2.2)
        ,@(let ((target-system (or (%current-target-system)
@@ -295,69 +295,38 @@ Guile.")
            (lambda _
              (invoke "sh" "install.sh"))))))))
 
-(define-public mescc-tools-0.5.2
-  ;; Mescc-tools used for bootstrap.
-  (let ((commit "bb062b0da7bf2724ca40f9002b121579898d4ef7")
-        (revision "0")
-        (version "0.5.2"))
-    (package
-      (name "mescc-tools")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.nongnu.org/r/mescc-tools.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1nc6rnax66vmhqsjg0kgx23pihdcxmww6v325ywf59vsq1jqjvff"))))
-      (build-system gnu-build-system)
-      (supported-systems '("i686-linux" "x86_64-linux"))
-      (arguments
-       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:test-target "test"
-         #:phases (modify-phases %standard-phases
-                    (delete 'configure))))
-      (synopsis "Tools for the full source bootstrapping process")
-      (description
-       "Mescc-tools is a collection of tools for use in a full source
+(define-public mescc-tools
+  (package
+    (name "mescc-tools")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.savannah.nongnu.org/r/mescc-tools.git")
+                    (commit (string-append "Release_" version))
+                    (recursive? #t)))             ;for M2libc
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xkn5sspfxldy4wm8fq8gd8kwn46578zhfl12c16pq74x21zb198"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"
+                         "armhf-linux" "aarch64-linux"
+                         "powerpc64le-linux"))
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (native-inputs (list which))
+    (synopsis "Tools for the full source bootstrapping process")
+    (description
+     "Mescc-tools is a collection of tools for use in a full source
 bootstrapping process.  It consists of the M1 macro assembler, the hex2
 linker, the blood-elf symbol table generator, the kaem shell, exec_enable and
 get_machine.")
     (home-page "https://savannah.nongnu.org/projects/mescc-tools")
-    (license gpl3+))))
-
-(define-public mescc-tools
-  (package
-    (inherit mescc-tools-0.5.2)
-    (name "mescc-tools")
-    (version "0.7.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
-             name "-Release_" version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1p1ijia4rm3002f5sypidl9v5gq0mlch9b0n61rpxkdsaaxjqax3"))))
-    (supported-systems '("armhf-linux" "aarch64-linux"
-                         "i686-linux" "x86_64-linux"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
-       ((#:make-flags _)
-        `(list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-               "CC=gcc"))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'patch-prefix
-             (lambda _
-               (substitute* "sha256.sh"
-                 (("/usr/bin/sha256sum") (which "sha256sum")))
-               #t))))))))
+    (license gpl3+)))
 
 (define-public m2-planet
   (package

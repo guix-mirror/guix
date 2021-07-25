@@ -585,11 +585,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %mescc-tools-static
   ;; A statically linked MesCC Tools.
   (package
-    (inherit mescc-tools-0.5.2)
+    (inherit mescc-tools)
     (name "mescc-tools-static")
     (arguments
      `(#:system "i686-linux"
-       ,@(substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
+       ,@(substitute-keyword-arguments (package-arguments mescc-tools)
            ((#:make-flags flags)
             `(cons "CC=gcc -static" ,flags)))))))
 
@@ -624,7 +624,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define-public %mes-minimal
   ;; A minimal Mes without documentation.
   (package
-    (inherit mes-0.19)
+    (inherit mes)
     (name "mes-minimal")
     (native-inputs
      `(("guile" ,guile-2.2)))
@@ -641,7 +641,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                     (share (string-append out "/share")))
                (delete-file-recursively (string-append out "/lib/guile"))
                (delete-file-recursively (string-append share "/guile"))
-               (delete-file-recursively (string-append share "/mes/scaffold"))
 
                (for-each delete-file
                          (find-files
