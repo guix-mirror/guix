@@ -195,10 +195,9 @@
                           "llvm-11-D97435-AArch64-movaddrreg"
                           "llvm-11-D97571-AArch64-loh"
                           "llvm-11-aarch64-addrspace"))))))
+       ((#:build-type _) "Release")
        ((#:configure-flags flags)
-        `(list ;; Taken from NixOS. Only way I could get libLLVM-6.0.so
-           "-DCMAKE_BUILD_TYPE=Release"
-
+        `(list
            ;; Build a native compiler and the NVPTX backend (NVIDIA) since
            ;; Julia insists on it, nothing more.  This reduces build times and
            ;; disk usage.
