@@ -598,6 +598,8 @@ and 'man/'.  This phase moves directories to the right place if needed."
                                         (string-suffix? ".tgz" file))
                                     (gzip-file? file)))
                              #:stat lstat)))
+      ;; Ensure the files are writable.
+      (for-each make-file-writable files)
       (for-each reset-gzip-timestamp files)))
 
   (match outputs
