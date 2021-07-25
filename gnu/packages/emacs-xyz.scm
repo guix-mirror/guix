@@ -2352,14 +2352,14 @@ also includes a pairing agent.")
 (define-public emacs-aggressive-indent
   (package
     (name "emacs-aggressive-indent")
-    (version "1.8.3")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/"
-                                  "aggressive-indent-" version ".el"))
+                                  "aggressive-indent-" version ".tar"))
               (sha256
                (base32
-                "0jnzccl50x0wapprgwxinp99pwwa6j43q6msn4gv437j7swy8wnj"))))
+                "166jk1z0vw481lfi3gbg7f9vsgwfv8fiyxpkfphgvgcmf5phv4q1"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/aggressive-indent.html")
     (synopsis "Minor mode to aggressively keep your code always indented")
