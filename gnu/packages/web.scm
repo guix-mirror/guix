@@ -7984,14 +7984,16 @@ solution for any project's interface needs:
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; no check target
+         #:configure-flags (list (string-append "--with-mimedb="
+                                                (assoc-ref %build-inputs "mailcap")
+                                                "/etc/mime.types"))
          #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
       (inputs
-       `(("openssl" ,openssl)))
+       `(("mailcap" ,mailcap)
+         ("openssl" ,openssl)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("scdoc" ,scdoc)))
-      (propagated-inputs
-       `(("mailcap" ,mailcap)))
       (synopsis "Simple Gemini protocol server")
       (description "gmnisrv is a simple Gemini protocol server written in C.")
       (license (list license:gpl3+
