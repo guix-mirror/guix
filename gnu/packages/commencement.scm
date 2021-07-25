@@ -2702,6 +2702,50 @@ exec " gcc "/bin/" program
       (inputs (%boot0-inputs))
       (native-inputs '()))))
 
+(define libstdc++-boot0-gcc7
+  ;; GCC >= 7 is needed by architectures which use C++-14 features.
+  (let ((lib (make-libstdc++ gcc-7)))
+    (package
+      (inherit lib)
+      (source (bootstrap-origin (package-source lib)))
+      (name "libstdc++-boot0")
+      (arguments
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
+
+         ;; XXX: libstdc++.so NEEDs ld.so for some reason.
+         #:validate-runpath? #f
+
+         ,@(substitute-keyword-arguments (package-arguments lib)
+             ((#:phases phases)
+              `(modify-phases ,phases
+                 (add-after 'unpack 'unpack-gmp&co
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                           (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                           (mpc  (assoc-ref %build-inputs "mpc-source")))
+
+                       ;; To reduce the set of pre-built bootstrap inputs, build
+                       ;; GMP & co. from GCC.
+                       (for-each (lambda (source)
+                                   (invoke "tar" "xvf" source))
+                                 (list gmp mpfr mpc))
+
+                       ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
+                       ,@(map (lambda (lib)
+                                ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                                ;; into gmp-6.0.0.
+                                `(symlink ,(string-trim-right
+                                            (package-full-name lib "-")
+                                            char-set:letter)
+                                          ,(package-name lib)))
+                              (list gmp-6.0 mpfr mpc))))))))))
+      (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
+                ("mpfr-source" ,(bootstrap-origin (package-source mpfr)))
+                ("mpc-source" ,(bootstrap-origin (package-source mpc)))
+                ,@(%boot0-inputs)))
+      (native-inputs '()))))
+
 (define gcc-boot0
   (package
     (inherit gcc)
@@ -2813,7 +2857,9 @@ exec " gcc "/bin/" program
               ("binutils-cross" ,binutils-boot0)
 
               ;; The libstdc++ that libcc1 links against.
-              ("libstdc++" ,libstdc++-boot0)
+              ("libstdc++" ,(match (%current-system)
+                                   ("riscv64-linux" libstdc++-boot0-gcc7)
+                                   (_ libstdc++-boot0)))
 
               ;; Call it differently so that the builder can check whether
               ;; the "libc" input is #f.
