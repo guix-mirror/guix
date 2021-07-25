@@ -8,7 +8,7 @@
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -855,11 +855,11 @@ Shell (pdksh).")
            ;; The tests are not distributed in the tarballs but upstream
            ;; recommends running this smoke test.
            ;; https://github.com/oilshell/oil/blob/release/0.8.0/INSTALL.txt#L38-L48
-           (lambda _
-             (let* ((oil "_bin/oil.ovm"))
-               (invoke/quiet oil "osh" "-c" "echo hi")
-               (invoke/quiet oil "osh" "-n" "configure")
-               #t))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (let* ((oil "_bin/oil.ovm"))
+                 (invoke/quiet oil "osh" "-c" "echo hi")
+                 (invoke/quiet oil "osh" "-n" "configure"))))))))
     (inputs
      `(("readline" ,readline)))
     (home-page "https://www.oilshell.org")
