@@ -7969,13 +7969,11 @@ This is a part of the Apache Commons Project.")
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "src/main/resources"
-                               "build/classes")
-             #t))
+                               "build/classes")))
          (add-before 'check 'copy-test-resources
            (lambda _
              (copy-recursively "src/test/resources"
-                               "build/test-classes")
-             #t))
+                               "build/test-classes")))
          (replace 'install (install-from-pom "pom.xml")))))
     (native-inputs
      `(("java-commons-lang3" ,java-commons-lang3)
