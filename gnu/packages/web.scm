@@ -7984,7 +7984,8 @@ solution for any project's interface needs:
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; no check target
-         #:configure-flags (list (string-append "--with-mimedb="
+         #:configure-flags (list "--sysconfdir=/etc"
+                                 (string-append "--with-mimedb="
                                                 (assoc-ref %build-inputs "mailcap")
                                                 "/etc/mime.types"))
          #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
