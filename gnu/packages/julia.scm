@@ -69,16 +69,10 @@
                 (uri (git-reference
                        (url "https://github.com/JuliaLang/libuv")
                        (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1kqpn19d20aka30h6q5h8lnzyp0vw0xzgx0wm4w2r5j6yf76m2hr"))))
-      (build-system gnu-build-system)
-      (arguments
-       (substitute-keyword-arguments (package-arguments libuv)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'autogen)))))
       (home-page "https://github.com/JuliaLang/libuv"))))
 
 (define libunwind-julia
