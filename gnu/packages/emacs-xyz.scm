@@ -5486,7 +5486,7 @@ for Flow files.")
 (define-public emacs-flycheck-grammalecte
   (package
     (name "emacs-flycheck-grammalecte")
-    (version "1.4")
+    (version "2.0")
     (source
      (origin
        (method git-fetch)
@@ -5495,7 +5495,7 @@ for Flow files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18yiv09hzbclf9rjp61lxlia2m1qbvmwkiqxxs9jjpac28x7ypjf"))))
+        (base32 "040mb9djj4cxpjsjch9i30pi36a2z7grkhnsnfdi5qyh341p4pq0"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons "\\.py$" %default-include)
@@ -5508,29 +5508,26 @@ for Flow files.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
                                            "/bin/python3")))
-               (substitute* "flycheck-grammalecte.el"
+               (substitute* '("flycheck-grammalecte.el" "grammalecte.el")
                  (("\"python3") (string-append "\"" python3)))
-               (substitute* '("conjugueur.py" "flycheck-grammalecte.py")
-                 (("/usr/bin/env python3?") python3))
-               #t)))
+               (substitute* '("conjugueur.py" "flycheck_grammalecte.py")
+                 (("/usr/bin/env python3?") python3)))))
          (add-after 'unpack 'specify-grammalecte-location
+           ;; Use our own Grammalecte.
            (lambda* (#:key inputs #:allow-other-keys)
-             (make-file-writable "flycheck-grammalecte.el")
-             (emacs-substitute-variables "flycheck-grammalecte.el"
-               ("flycheck-grammalecte-grammalecte-directory"
+             (make-file-writable "grammalecte.el")
+             (emacs-substitute-variables "grammalecte.el"
+               ("grammalecte-python-package-directory"
                 (string-append (assoc-ref inputs "grammalecte")
                                "/lib/python"
                                ,(version-major+minor (package-version python))
-                               "/site-packages/grammalecte")))
-             #t))
+                               "/site-packages/grammalecte")))))
          (add-after 'unpack 'do-not-phone-home
-           ;; The package wants to check upstream Grammalecte version to
-           ;; decide if an update is in order.  Always return version
-           ;; installed so it doesn't phone home and doesn't install anything.
+           ;; Do not check for Grammalecte updates, ever.
            (lambda _
-             (substitute* "flycheck-grammalecte.el"
-               (("\\(flycheck-grammalecte--grammalecte-upstream-version\\)")
-                ,(format #f "\"~a\"" (package-version grammalecte)))))))))
+             (make-file-writable "grammalecte.el")
+             (emacs-substitute-variables "grammalecte.el"
+               ("grammalecte-check-upstream-version-delay" 0)))))))
     (inputs
      `(("grammalecte" ,grammalecte)
        ("python" ,python)))
