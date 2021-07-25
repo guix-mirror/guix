@@ -360,36 +360,35 @@ get_machine.")
                #t))))))))
 
 (define-public m2-planet
-  (let ((commit "b87ddb0051b168ea45f8d49a610dcd069263336a")
-        (revision "2"))
-    (package
-      (name "m2-planet")
-      (version (string-append "1.4.0-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/oriansj/m2-planet")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0yyc0fcbbxi9jqa1n76x0rwspdrwmc8g09jlmsw9c35nflrhmz8q"))))
-      (native-inputs
-       (list mescc-tools))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:tests? #f
-         #:phases (modify-phases %standard-phases
-                    (delete 'bootstrap)
-                    (delete 'configure))))
-      (synopsis "The PLAtform NEutral Transpiler")
-      (description
-       "M2-Planet, the PLAtform NEutral Transpiler, when combined with
+  (package
+    (name "m2-planet")
+    (version "1.8.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/oriansj/m2-planet")
+                    (commit (string-append "Release_" version))
+                    (recursive? #t)))             ;for M2libc
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0525fhijrjljgaabmgsjy8yk2pmh5zf8lwa44wpvkjc18knl7nza"))))
+    (native-inputs (list mescc-tools))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          ,(string-append "CC=" (cc-for-target)))
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'bootstrap)
+                  (delete 'configure))))
+    (synopsis "The PLAtform NEutral Transpiler")
+    (description
+     "M2-Planet, the PLAtform NEutral Transpiler, when combined with
 mescc-tools, compiles a subset of the C language into working binaries with
 introspective steps in between.  It is self-hosting and for bootstrapping it
 also has an implementation in the M1 macro assembly language.  M2-Planet is
 built as Phase-5 of the full source bootstrapping process and is capable of
 building GNU Mes.")
-      (home-page "https://github.com/oriansj/m2-planet")
-      (license gpl3+))))
+    (home-page "https://github.com/oriansj/m2-planet")
+    (license gpl3+)))
