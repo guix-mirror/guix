@@ -2435,7 +2435,7 @@ using third-party geocoders and other data sources.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "git://anongit.kde.org/marble")
+               (url "https://invent.kde.org/education/marble.git/")
                (commit commit)))
          (sha256
           (base32
