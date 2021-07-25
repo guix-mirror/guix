@@ -7983,13 +7983,13 @@ solution for any project's interface needs:
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
+       `(#:tests? #f ; no check target
+         #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'set-variables
              (lambda _
                (setenv "CC" "gcc")
-               #t))
-           (delete 'check))))
+               #t)))))
       (inputs
        `(("openssl" ,openssl)))
       (native-inputs
