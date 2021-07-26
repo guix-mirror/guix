@@ -29186,14 +29186,14 @@ latter.")
 (define-public r-readtext
   (package
     (name "r-readtext")
-    (version "0.80")
+    (version "0.81")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "readtext" version))
         (sha256
           (base32
-            "0q8ajnp99fwvh14ppkm2z3gqwdwmjrvxvsfb4q7ad0dhkqric05y"))))
+            "0k782h5hns5v5h8a6qyfqck2hc15nq0awg8bsp196q4zviv5jw3c"))))
     (properties `((upstream-name . "readtext")))
     (build-system r-build-system)
     (propagated-inputs
