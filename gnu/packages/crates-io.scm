@@ -48144,6 +48144,31 @@ different for every thread.")
      `(#:cargo-inputs
        (("rust-thread-id" ,rust-thread-id-2))))))
 
+(define-public rust-thread-tree-0.3
+  (package
+    (name "rust-thread-tree")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thread-tree" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mqsmabyf4vd18ci1xxwdyd77xv3b1dc24qx52ywq3nwch4125fx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5))))
+    (home-page "https://github.com/bluss/thread-tree")
+    (synopsis "Tree-structured thread pool")
+    (description
+     "This package provides a tree-structured thread pool for splitting jobs
+hierarchically on worker threads.  The tree structure means that there is no
+contention between workers when delivering jobs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-threadpool-1
   (package
     (name "rust-threadpool")
