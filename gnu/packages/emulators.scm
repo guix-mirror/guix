@@ -724,7 +724,7 @@ The following systems are supported:
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method git-fetch)
@@ -733,7 +733,7 @@ The following systems are supported:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "163azad5y4zxwzxyrb481rwfc2p86v99pf7nvdr6bavzq98x2z8h"))
+        (base32 "16kngkzf08jflqxwbgafb47091vqqb9pbhazg9cd94cy81ahz3q3"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -742,29 +742,30 @@ The following systems are supported:
             (lambda (subdir)
               (let ((lib-subdir (string-append "src/third-party/" subdir)))
                 (delete-file-recursively lib-subdir)))
-            '("libpng" "lzma" "sqlite3" "zlib"))
-           #t))))
+            '("libpng" "lzma" "sqlite3" "zlib"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no "test" target
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
              "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("qttools" ,qttools)))
-    (inputs `(("ffmpeg" ,ffmpeg)
-              ("libedit" ,libedit)
-              ("libelf" ,libelf)
-              ("libepoxy" ,libepoxy)
-              ("libpng" ,libpng)
-              ("mesa" ,mesa)
-              ("minizip" ,minizip)
-              ("ncurses" ,ncurses)
-              ("qtbase" ,qtbase-5)
-              ("qtmultimedia" ,qtmultimedia)
-              ("sdl2" ,sdl2)
-              ("sqlite" ,sqlite)
-              ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libedit" ,libedit)
+       ("libelf" ,libelf)
+       ("libepoxy" ,libepoxy)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("minizip" ,minizip)
+       ("ncurses" ,ncurses)
+       ("qtbase" ,qtbase-5)
+       ("qtmultimedia" ,qtmultimedia)
+       ("sdl2" ,sdl2)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
     (home-page "https://mgba.io")
     (synopsis "Game Boy Advance emulator")
     (description
