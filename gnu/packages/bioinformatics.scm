@@ -3635,7 +3635,7 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("seqan" ,seqan)))
+       ("seqan" ,seqan-2)))
     (home-page "https://github.com/seqan/flexbar")
     (synopsis "Barcode and adapter removal tool for sequencing platforms")
     (description
@@ -6787,6 +6787,39 @@ writing files into the .sra format.")
 (define-public seqan
   (package
     (name "seqan")
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/seqan/seqan3/releases/"
+                                  "download/" version "/seqan3-"
+                                  version "-Source.tar.xz"))
+              (sha256
+               (base32
+                "1h2z0cvgidhkmh5xsbw75waqbrqbbv6kkrvb0b92xfh3gqpaiz22"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "ctest" "test" "--output-on-failure"))))))
+    (native-inputs
+     `(("bzip2" ,bzip2)
+       ("cereal" ,cereal)
+       ("zlib" ,zlib)))
+    (home-page "https://www.seqan.de")
+    (synopsis "Library for nucleotide sequence analysis")
+    (description
+     "SeqAn is a C++ library of efficient algorithms and data structures for
+the analysis of sequences with the focus on biological data.  It contains
+algorithms and data structures for string representation and their
+manipulation, online and indexed string search, efficient I/O of
+bioinformatics file formats, sequence alignment, and more.")
+    (license license:bsd-3)))
+
+(define-public seqan-2
+  (package
+    (inherit seqan)
     (version "2.4.0")
     (source (origin
               (method url-fetch)
@@ -6818,16 +6851,7 @@ writing files into the .sra format.")
     (native-inputs
      `(("source" ,source)
        ("tar" ,tar)
-       ("xz" ,xz)))
-    (home-page "https://www.seqan.de")
-    (synopsis "Library for nucleotide sequence analysis")
-    (description
-     "SeqAn is a C++ library of efficient algorithms and data structures for
-the analysis of sequences with the focus on biological data.  It contains
-algorithms and data structures for string representation and their
-manipulation, online and indexed string search, efficient I/O of
-bioinformatics file formats, sequence alignment, and more.")
-    (license license:bsd-3)))
+       ("xz" ,xz)))))
 
 (define-public seqan-1
   (package (inherit seqan)
