@@ -42789,17 +42789,18 @@ functions core functionality.")
 picking compatible shaders.")
     (license license:expat)))
 
-(define-public rust-shadow-rs-0.5
+(define-public rust-shadow-rs-0.6
   (package
     (name "rust-shadow-rs")
-    (version "0.5.24")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "shadow-rs" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1qldaq7z09s6v0qp2yfhkrhvwprnjr4my6ngmidl2xj1v0ql9ln2"))))
+        (base32 "0sps996yhchz43zfk9zysjpirz638s1hbhspp998bk6v9l6k7j10"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -42813,6 +42814,24 @@ picking compatible shaders.")
 and environment at run time.  You can use this tool to check in production
 exactly where a binary came from and how it was built.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-shadow-rs-0.5
+  (package
+    (inherit rust-shadow-rs-0.6)
+    (name "rust-shadow-rs")
+    (version "0.5.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shadow-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qldaq7z09s6v0qp2yfhkrhvwprnjr4my6ngmidl2xj1v0ql9ln2"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-git2" ,rust-git2-0.13))))))
 
 (define-public rust-sharded-slab-0.1
   (package
