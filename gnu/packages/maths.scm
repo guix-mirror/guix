@@ -3700,31 +3700,32 @@ processor cores.")
     (synopsis "Parallel adaptive mesh refinement on forests of octrees")))
 
 (define-public gsegrafix
+  ;; This is an old and equally dead "experimental fork" of the longer-dead
+  ;; original. At least it no longer requires the even-deader libgnomeprint{,ui}
+  ;; libraries, instead rendering plots with Pango.
   (package
     (name "gsegrafix")
-    (version "1.0.6")
+    (version "1.0.7.2")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/" name "/" name "-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "1b13hvx063zv970y750bx41wpx6hwd5ngjhbdrna8w8yy5kmxcda"))))
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/gsegrafix-experimental/"
+                           "gsegrafix-experimental-" version ".tar.gz"))
+       (sha256
+        (base32 "0fwh6719xy2zasmqlp0vdx6kzm45hn37ga88xmw5cz0yx7xw4j6f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("LDFLAGS=-lm")))
+     `(#:configure-flags
+       (list "--disable-static")))
     (inputs
-     `(("libgnomecanvas" ,libgnomecanvas)
-       ("libbonoboui" ,libbonoboui)
-       ("libgnomeui" ,libgnomeui)
-       ("libgnomeprintui" ,libgnomeprintui)
-       ("popt" ,popt)))
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://www.gnu.org/software/gsegrafix/")
     (synopsis "GNOME application to create scientific and engineering plots")
-    (description  "GSEGrafix is an application which produces high-quality graphical
+    (description
+     "GSEGrafix is an application which produces high-quality graphical
 plots for science and engineering.  Plots are specified via simple ASCII
 parameter files and data files and are presented in an anti-aliased GNOME
 canvas.  The program supports rectangular two-dimensional plots, histograms,
