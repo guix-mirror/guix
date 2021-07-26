@@ -26774,14 +26774,14 @@ drop-in replacement for miniz.")
 (define-public rust-minus-3
   (package
     (name "rust-minus")
-    (version "3.3.0")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "minus" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1f5kx0q3pc04zlaf0dv2vmbzza65kjdr1h9kk8x716fyzc0w5pga"))))
+        (base32 "0k0h6zpfv87kkadkjjyhzgalciqvjrlhc48lxcp46rg6rk17s5d4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
