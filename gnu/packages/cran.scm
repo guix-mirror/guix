@@ -27861,14 +27861,14 @@ discovery of differentially expressed genes and markers.")
 (define-public r-phangorn
   (package
     (name "r-phangorn")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "phangorn" version))
        (sha256
         (base32
-         "19113x95vq09168x6v4ryfcdrb3a4ckp8rimd43sdkmz9pkfdxkx"))))
+         "160kks4bg4iwy8g234g6aiiqbvz7ki5k9csyax3kjv7ia5wddafq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
