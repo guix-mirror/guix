@@ -213,12 +213,15 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
              (substitute* "src/library/base/makebasedb.R"
                (("compress = TRUE") "compress = FALSE"))
              #t))
-         (add-before 'configure 'patch-uname
+         (add-before 'configure 'patch-coreutils-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((uname-bin (string-append (assoc-ref inputs "coreutils")
-                                             "/bin/uname")))
+             (let* ((coreutils (assoc-ref inputs "coreutils"))
+                   (uname-bin (string-append coreutils "/bin/uname"))
+                   (rm-bin (string-append coreutils "/bin/rm")))
                (substitute* "src/scripts/R.sh.in"
-                 (("uname") uname-bin)))
+                 (("uname") uname-bin))
+               (substitute* "src/unix/sys-std.c"
+                 (("rm -Rf ") (string-append rm-bin " -Rf "))))
              #t))
          (add-after 'unpack 'build-reproducibly
            (lambda _
