@@ -1445,14 +1445,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.6")
+    (version "3.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0a26kcj3n1a2kw1f3fc6s1x3rw3f3bj2cq6rp7k0kc4ciwh7i9hj"))))
+        (base32 "17d00kl0s010wg2dfhy7sdbr2qm54lsi317fmbcvjz4rxx8ywk3c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1465,8 +1465,7 @@ of the same name.")
            (lambda _
              (substitute* "CMakeLists.txt"
                (("suite_unittests" all) (string-append "# " all))
-               (("suite_extcaps" all) (string-append "# " all)))
-             #t)))
+               (("suite_extcaps" all) (string-append "# " all))))))
        ;; Build process chokes during `validate-runpath' phase.
        ;;
        ;; Errors are like the following:
