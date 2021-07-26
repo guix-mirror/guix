@@ -20008,14 +20008,14 @@ package.")
 (define-public r-showtext
   (package
     (name "r-showtext")
-    (version "0.9-2")
+    (version "0.9-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "showtext" version))
        (sha256
         (base32
-         "0y5mw6ffk92r7b22irrfhdmj4hxfl0d1wjxj14hznbapc4qm6f0z"))))
+         "0ghxd5la8is2mz5w7lk507zgcpr5lz30miqyhyn9cqazlsfwp4wa"))))
     (properties `((upstream-name . "showtext")))
     (build-system r-build-system)
     (inputs
