@@ -27333,14 +27333,14 @@ analysis using @code{dplyr}, @code{ggplot2}, and other Tidy tools.")
 (define-public r-parsnip
   (package
     (name "r-parsnip")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "parsnip" version))
        (sha256
         (base32
-         "0qhdh2xdswqy94f4gkdxi1iqm0k794p9y8sdh6mgbd1a86c8ngfs"))))
+         "12chngdzplwkk1c9k8y7cwaqlyy72yamlknp7ksg7g9p3b58f1fb"))))
     (properties `((upstream-name . "parsnip")))
     (build-system r-build-system)
     (propagated-inputs
@@ -27348,6 +27348,7 @@ analysis using @code{dplyr}, @code{ggplot2}, and other Tidy tools.")
        ("r-generics" ,r-generics)
        ("r-globals" ,r-globals)
        ("r-glue" ,r-glue)
+       ("r-hardhat" ,r-hardhat)
        ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
        ("r-prettyunits" ,r-prettyunits)
