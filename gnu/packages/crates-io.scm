@@ -43124,6 +43124,26 @@ CPUs, as well as raw interfaces to platform-specific instructions.
      "This package provides helpers to write more compact simd code.")
     (license license:expat)))
 
+(define-public rust-simdutf8-0.1
+  (package
+    (name "rust-simdutf8")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "simdutf8" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nama0xqzbl8x72fqd8nhgvwjhg2vqj0gkv1la8gm0n6wwbdlw69"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rusticstuff/simdutf8")
+    (synopsis "SIMD-accelerated UTF-8 validation")
+    (description
+     "simdutf8 is a fast API-compatible UTF-8 validation for Rust using SIMD
+extensions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-similar-1
   (package
     (name "rust-similar")
