@@ -10914,17 +10914,18 @@ ROPE percentage and pd).")
 (define-public r-performance
   (package
     (name "r-performance")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "performance" version))
        (sha256
         (base32
-         "1yfbf7cp4nqwh5mcnm008vw3dapr5v3yj4lq81pvlwblp9hg7y94"))))
+         "03qdsdl4x3hwqlbs7hlqb73xypd13p5zj519y0zcydqkf25391sp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
+       ("r-datawizard" ,r-datawizard)
        ("r-insight" ,r-insight)))
     (home-page "https://easystats.github.io/performance/")
     (synopsis "Assessment of regression models performance")
