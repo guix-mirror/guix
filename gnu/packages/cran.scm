@@ -28139,18 +28139,19 @@ are.")
 (define-public r-mlr3misc
   (package
     (name "r-mlr3misc")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3misc" version))
               (sha256
                (base32
-                "02ls0sr20z97jl6waz8mrs5l6l6vqrba3d5a9m1hqkvxakxchdky"))))
+                "0i3pngdqasajlwl9cmpqhrx0l6l1gi94kpiz61bm4c9dwkzjwn04"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
        ("r-checkmate" ,r-checkmate)
        ("r-data-table" ,r-data-table)
+       ("r-digest" ,r-digest)
        ("r-r6" ,r-r6)))
     (home-page "https://mlr3misc.mlr-org.com/")
     (synopsis "Helper functions for mlr3")
