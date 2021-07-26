@@ -7731,6 +7731,12 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'skip-dubious-test
+           ;; This unreliable test can fail with "Expected 0 to be >= 1."
+           (lambda _
+             (substitute* "test/test_stackprof.rb"
+               (("def test_(cputime)" _ name)
+                (string-append "def skip_" name)))))
          (add-before 'check 'build-tests
            (lambda _
              (invoke "rake" "compile"))))))
