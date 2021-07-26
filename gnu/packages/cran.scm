@@ -10886,18 +10886,19 @@ differentiation.")
 (define-public r-bayestestr
   (package
     (name "r-bayestestr")
-    (version "0.10.0")
+    (version "0.10.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bayestestR" version))
        (sha256
         (base32
-         "1qr51mag5wf44h4sygkn5arsirpqdanf039cg6fxmyw83k51fi2v"))))
+         "0qnjl8b41d8sv9fs7633sbdq8phra62z7vqdn5mxfnqwdkvfzcgl"))))
     (properties `((upstream-name . "bayestestR")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-insight" ,r-insight)))
+     `(("r-datawizard" ,r-datawizard)
+       ("r-insight" ,r-insight)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/easystats/bayestestR")
