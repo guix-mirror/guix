@@ -15949,14 +15949,14 @@ tessellation.")
 (define-public r-wk
   (package
     (name "r-wk")
-    (version "0.4.1")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "wk" version))
        (sha256
         (base32
-         "0l49pg1ds02h1qji1fi2m67mncvgd1n905i0jx07frdxy0d3b9ys"))))
+         "0fj2wzswv3dfninsyw9irf52fc2d0lag5b822x841vdfpvh01mbi"))))
     (properties `((upstream-name . "wk")))
     (build-system r-build-system)
     (propagated-inputs
