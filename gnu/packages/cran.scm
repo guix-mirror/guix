@@ -591,26 +591,24 @@ variables.")
 (define-public r-ggpp
   (package
     (name "r-ggpp")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpp" version))
        (sha256
         (base32
-         "05gk0jaxv30sgrr8q634cqm0n7z66i2p1zxkzc40azdlcxjp5w3h"))))
+         "17j8b46vn0kdpm7x6xyfqzz3la8mwzhjql6dbgyvqnrylbx4svyl"))))
     (properties `((upstream-name . "ggpp")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-generics" ,r-generics)
        ("r-ggplot2" ,r-ggplot2)
        ("r-glue" ,r-glue)
        ("r-gridextra" ,r-gridextra)
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
-       ("r-plyr" ,r-plyr)
        ("r-polynom" ,r-polynom)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
