@@ -5126,14 +5126,15 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "21.06")
+    (version "21.06.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
-                           version "/rosegarden-" version ".tar.bz2"))
+                           (version-major+minor version) "/"
+                           "rosegarden-" version ".tar.bz2"))
        (sha256
-        (base32 "0rhbmygzh62hc3mkq60lh9r28wvfkhzzd5kspl1ll0h1ipjgvr6d"))))
+        (base32 "0yir279gxc5b298sr0fg9jxgdi75bb1gvvy4mh3pxqjsnp00sxc7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
@@ -5144,8 +5145,7 @@ specification and header.")
              (substitute* "CMakeLists.txt"
                (("BUILD_TESTING OFF") "BUILD_TESTING ON")
                ;; Make tests work.
-               ((" -fvisibility=hidden") ""))
-             #t))
+               ((" -fvisibility=hidden") ""))))
          (add-after 'unpack 'fix-references
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/gui/general/ProjectPackager.cpp"
@@ -5163,8 +5163,7 @@ specification and header.")
                (("\"convert-ly\\>")
                 (string-append "\"" (assoc-ref inputs "lilypond") "/bin/convert-ly"))
                (("\"lilypond\\>")
-                (string-append "\"" (assoc-ref inputs "lilypond") "/bin/lilypond")))
-             #t))
+                (string-append "\"" (assoc-ref inputs "lilypond") "/bin/lilypond")))))
          (add-after 'unpack 'make-reproducible
            (lambda _
              ;; Prevent Last-Modified from being written.
@@ -5179,16 +5178,14 @@ specification and header.")
                ;; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
                )
              ;; Make hashtable traversal order predicable.
-             (setenv "QT_RCC_TEST" "1") ; important
-             #t))
+             (setenv "QT_RCC_TEST" "1"))) ; important
          (add-before 'check 'prepare-check
            (lambda _
              (setenv "QT_QPA_PLATFORM" "offscreen")
              ;; Tests create files in $HOME/.local/share/rosegarden .
              (mkdir-p "/tmp/foo")
              (setenv "HOME" "/tmp/foo")
-             (setenv "XDG_RUNTIME_DIR" "/tmp/foo")
-             #t)))))
+             (setenv "XDG_RUNTIME_DIR" "/tmp/foo"))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bash" ,bash)
@@ -5208,7 +5205,7 @@ specification and header.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qtlinguist" ,qttools)))
+       ("qttools" ,qttools)))           ;for qtlinguist
     (synopsis "Music composition and editing environment based around a MIDI
 sequencer")
     (description "Rosegarden is a music composition and editing environment
