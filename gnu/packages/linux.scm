@@ -356,7 +356,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.13-version "5.13.5")
+(define-public linux-libre-5.13-version "5.13.6")
 (define deblob-scripts-5.13
   (linux-libre-deblob-scripts
    linux-libre-5.13-version
@@ -364,23 +364,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "153jf5l5x4438zgxwggaky2ahjlfl48j438vhpzks6h77lzc51a5")))
 (define-public linux-libre-5.13-pristine-source
   (let ((version linux-libre-5.13-version)
-        (hash (base32 "0lqh7krxxnbrvr3w1kag92z9r4n9436fr6answjkjfbvw0z7q74m")))
+        (hash (base32 "0xjjl8dmilp425b1cp977v26qxlg1147gh54kni949pzxwh1fb56")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.13)))
-
-(define-public linux-libre-5.12-version "5.12.19")
-(define deblob-scripts-5.12
-  (linux-libre-deblob-scripts
-   linux-libre-5.12-version
-   (base32 "1vdsr9y4gckknrbqcjyfakwva3k0vb5zcivzk3k1s9mh7qp9dils")
-   (base32 "18441cw58y97zqnp47pj9sga9hkfifkpc8r37bi9h1c853vmbk5k")))
-(define-public linux-libre-5.12-pristine-source
-  (let ((version linux-libre-5.12-version)
-        (hash (base32 "0wscz736n13m833cd12lskn47r0b8ki4fhgpjnwga0jsab9iqf79")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.12)))
 
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
@@ -499,14 +486,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (search-patch
                               "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
-(define-public linux-libre-5.12-source
-  (source-with-patches linux-libre-5.12-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             ;; Pinebook Pro patch to fix LCD display
-                             (search-patch
-                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
-
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
@@ -617,10 +596,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.13
   (make-linux-libre-headers* linux-libre-5.13-version
                              linux-libre-5.13-source))
-
-(define-public linux-libre-headers-5.12
-  (make-linux-libre-headers* linux-libre-5.12-version
-                             linux-libre-5.12-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
@@ -923,16 +898,10 @@ It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-5.12
-  (make-linux-libre* linux-libre-5.12-version
-                     linux-libre-5.12-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.12-version)
-(define-public linux-libre-pristine-source linux-libre-5.12-pristine-source)
-(define-public linux-libre-source          linux-libre-5.12-source)
-(define-public linux-libre                 linux-libre-5.12)
+(define-public linux-libre-version         linux-libre-5.13-version)
+(define-public linux-libre-pristine-source linux-libre-5.13-pristine-source)
+(define-public linux-libre-source          linux-libre-5.13-source)
+(define-public linux-libre                 linux-libre-5.13)
 
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
@@ -1146,8 +1115,8 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.12-version
-          linux-libre-5.12-source
+          linux-libre-5.13-version
+          linux-libre-5.13-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
