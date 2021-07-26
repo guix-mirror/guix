@@ -4912,7 +4912,7 @@ in the package.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://git.zrythm.org/git/libaudec")
+               (url "https://git.zrythm.org/zrythm/libaudec")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -4933,7 +4933,7 @@ in the package.")
    (description "libaudec is a wrapper library over ffmpeg, sndfile and
 libsamplerate for reading and resampling audio files, based on Robin Gareus'
 @code{audio_decoder} code.")
-   (home-page "https://git.zrythm.org/cgit/libaudec")
+   (home-page "https://git.zrythm.org/zrythm/libaudec")
    (license license:agpl3+)))
 
 (define-public lv2lint
@@ -5012,7 +5012,7 @@ with the provided metadata and adhere to well-known best practices.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://git.zrythm.org/git/ztoolkit")
+             (url "https://git.zrythm.org/zrythm/ztoolkit")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5033,7 +5033,7 @@ the user and provides a high-level API for managing the UI and custom
 widgets.  ZToolkit is written in C and was created to be used for building
 audio plugin UIs, where the dependencies often need to be kept to a
 minimum.")
-    (home-page "https://git.zrythm.org/cgit/ztoolkit/")
+    (home-page "https://git.zrythm.org/zrythm/ztoolkit")
     (license license:agpl3+)))
 
 (define-public libinstpatch

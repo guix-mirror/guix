@@ -6493,7 +6493,7 @@ as JACK standalone applications.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://git.zrythm.org/git/zplugins")
+         (url "https://git.zrythm.org/zrythm/zplugins")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
