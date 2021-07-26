@@ -29773,14 +29773,14 @@ in order to customise how it should change with time.")
 (define-public r-tzdb
  (package
     (name "r-tzdb")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "tzdb" version))
         (sha256
           (base32
-            "0ym5rh6abs8ash6xz0av0gfhsjp7k1lgnjvpba36zwrxyfg2wrqi"))))
+            "1sl8nacx2i1h9vcvggiyzwd2zwvgrvfvsv3xa9072br62gkpay2c"))))
     (properties `((upstream-name . "tzdb")))
     (build-system r-build-system)
     (propagated-inputs `(("r-cpp11" ,r-cpp11)))
