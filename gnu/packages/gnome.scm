@@ -3328,7 +3328,7 @@ for dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.50.5")
+    (version "2.50.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -3336,7 +3336,7 @@ for dealing with different structured file formats.")
                                   "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "0wlj5g1jgp93sj3rr6qspj282whz13ahnv8ca99d7zilq9s1aw1j"))
+                "1g3f8byg5w08fx1bka12mmpl59v6a4q2p827w6m2la6mijq63yzz"))
               (modules '((guix build utils)))
               (snippet
                '(begin (delete-file-recursively "vendor")))))
