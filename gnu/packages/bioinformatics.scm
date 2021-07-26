@@ -9388,6 +9388,54 @@ using nucleotide or amino-acid sequence data.")
     ;; GPLv3 only
     (license license:gpl3)))
 
+(define-public segemehl
+  (package
+    (name "segemehl")
+    (version "0.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.bioinf.uni-leipzig.de/Software"
+                                  "/segemehl/downloads/segemehl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0lbzbb7i8zadsn9b99plairhq6s2h1z8qdn6n7djclfis01nycz4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "all")
+       #:tests? #false ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; There is no installation target
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (exes (list "segemehl.x" "haarz.x")))
+               (mkdir-p bin)
+               (for-each (lambda (exe)
+                           (install-file exe bin))
+                         exes)))))))
+    (inputs
+     `(("htslib" ,htslib)
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.bioinf.uni-leipzig.de/Software/segemehl")
+    (synopsis "Map short sequencer reads to reference genomes")
+    (description "Segemehl is software to map short sequencer reads to
+reference genomes.  Segemehl implements a matching strategy based on enhanced
+suffix arrays (ESA).  It accepts fasta and fastq queries (gzip'ed and
+bgzip'ed).  In addition to the alignment of reads from standard DNA- and
+RNA-seq protocols, it also allows the mapping of bisulfite converted
+reads (Lister and Cokus) and implements a split read mapping strategy.  The
+output of segemehl is a SAM or BAM formatted alignment file.")
+    (license license:gpl3+)))
+
 (define-public kallisto
   (package
     (name "kallisto")
