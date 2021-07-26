@@ -184,6 +184,29 @@ to other implementations such a @code{purrr::partial()} the operators in
 etc.")
     (license license:gpl2+)))
 
+(define-public r-datawizard
+  (package
+    (name "r-datawizard")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "datawizard" version))
+       (sha256
+        (base32
+         "1fc27arvm6ks65kl9nrl2vnprpz7j8d0r2yassgxnnvr3p3ba043"))))
+    (properties `((upstream-name . "datawizard")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-insight" ,r-insight)))
+    (home-page "https://easystats.github.io/datawizard/")
+    (synopsis "Easy data wrangling")
+    (description
+     "This package provides a lightweight package to easily manipulate,
+clean, transform, and prepare your data for analysis.  It also forms the data
+wrangling backend for the packages in the @code{easystats} ecosystem.")
+    (license license:gpl3)))
+
 (define-public r-diffobj
   (package
     (name "r-diffobj")
