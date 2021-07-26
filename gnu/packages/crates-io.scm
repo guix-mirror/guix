@@ -25718,8 +25718,38 @@ grammars.  It provides the subset of the regex crate that only deals with
 matching, not parsing substrings.")
     (license license:expat)))
 
+(define-public rust-matrixmultiply-0.3
+  (package
+    (name "rust-matrixmultiply")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "matrixmultiply" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hdpsvw28in1m9c5h8a7abzxv70rq8l5hg5h8k6sxpyrfsvib2js"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-rawpointer" ,rust-rawpointer-0.2)
+        ("rust-thread-tree" ,rust-thread-tree-0.3))))
+    (home-page "https://github.com/bluss/matrixmultiply/")
+    (synopsis "General matrix multiplication for f32 and f64 matrices")
+    (description "General matrix multiplication for f32 and f64 matrices.
+Operates on matrices with general layout (they can use arbitrary row and column
+stride).  Detects and uses AVX or SSE2 on x86 platforms transparently for higher
+performance.  Uses a microkernel strategy, so that the implementation is easy to
+parallelize and optimize.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-matrixmultiply-0.2
   (package
+    (inherit rust-matrixmultiply-0.3)
     (name "rust-matrixmultiply")
     (version "0.2.3")
     (source
@@ -25730,22 +25760,12 @@ matching, not parsing substrings.")
         (sha256
          (base32
           "13s7nfd3dfcsrixld2lk8c563ih5xzczl2w36hprfc016rkfrxyl"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-rawpointer" ,rust-rawpointer-0.2))
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)
-        ("rust-itertools" ,rust-itertools-0.7))))
-    (home-page "https://github.com/bluss/matrixmultiply/")
-    (synopsis "General matrix multiplication for f32 and f64 matrices")
-    (description "General matrix multiplication for f32 and f64 matrices.
-Operates on matrices with general layout (they can use arbitrary row and column
-stride).  Detects and uses AVX or SSE2 on x86 platforms transparently for higher
-performance.  Uses a microkernel strategy, so that the implementation is easy to
-parallelize and optimize.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-itertools" ,rust-itertools-0.7))))))
 
 (define-public rust-matrixmultiply-0.1
   (package
