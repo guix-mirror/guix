@@ -3973,36 +3973,6 @@ graphical interfaces described in glade files and for accessing the
 widgets built in the loading process.")
     (license license:gpl2+))) ; This is correct.  GPL not LGPL
 
-
-(define-public libgnomeprintui
-  ;; Deprecated; see libgnomeprint.
-  (package
-    (name "libgnomeprintui")
-    (version "2.18.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0spl8vinb5n6n1krnfnr61dwaxidg67h8j94z9p59k2xdsvfashm"))))
-    (build-system gnu-build-system)
-    ;; Mentioned as Required in the .pc file
-    (propagated-inputs `(("libgnomeprint" ,libgnomeprint)))
-    (inputs `(("gtk+" ,gtk+-2)
-              ("glib" ,glib)
-              ("gnome-icon-theme" ,gnome-icon-theme)
-              ("libgnomecanvas" ,libgnomecanvas)
-              ("libxml2" ,libxml2)))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
-    (synopsis "Printing framework for GNOME")
-    (description (package-description libgnomeprint))
-    (license license:lgpl2.0+)))
-
 (define-public libbonoboui
   (package
     (name "libbonoboui")
