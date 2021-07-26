@@ -21763,23 +21763,21 @@ crate.")
 (define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
-    (version "1.6.2")
+    (version "1.7.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "indexmap" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1wxfh55zlrlpdxfcvvvj6wwc46f23cnb0j9q71190yl9pyh4aj42"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indexmap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19b2zwfajhsfcgny0clv8y4jppy704znfhv8nv2dw9a18l2kcqxw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1)
-        ("rust-hashbrown" ,rust-hashbrown-0.9)
-        ("rust-serde" ,rust-serde-1)
-        ("rust-rayon" ,rust-rayon-1))
+        ("rust-hashbrown" ,rust-hashbrown-0.11)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-fnv" ,rust-fnv-1)
         ("rust-fxhash" ,rust-fxhash-0.2)
