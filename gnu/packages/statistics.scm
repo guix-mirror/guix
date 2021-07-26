@@ -1043,14 +1043,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.6.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "1bidc1xzsv5nz2glf6z4sjxqlbs6zq595wwdmiq66sc2p7cis59s"))))
+         "0mhz7dkjdm8ap2zav1pmivhr8s0l6p2f6piij2hy08nwszqk51nr"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
