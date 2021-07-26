@@ -1515,19 +1515,19 @@ the execution time of R expressions.")
 (define-public r-pryr
   (package
     (name "r-pryr")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pryr" version))
               (sha256
                (base32
-                "06vj5xl9x37kbd3l5bw7sbgfdnp37spvrjrn976rxi04clqk966k"))))
+                "02vp1y7zhv22id43j5c0gdcgn9171dyypqp8rqrlc3w5a7n565kv"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-stringr" ,r-stringr)
-       ("r-codetools" ,r-codetools)))
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-codetools" ,r-codetools)
+       ("r-lobstr" ,r-lobstr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)))
     (home-page "https://github.com/hadley/pryr")
     (synopsis "Tools for computing on the R language")
     (description
