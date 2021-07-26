@@ -3973,37 +3973,6 @@ graphical interfaces described in glade files and for accessing the
 widgets built in the loading process.")
     (license license:gpl2+))) ; This is correct.  GPL not LGPL
 
-(define-public libgnomeprint
-  ;; This library has been deprecated since 2006; see
-  ;; <https://mail.gnome.org/archives/devel-announce-list/2006-August/msg00005.html>.
-  (package
-    (name "libgnomeprint")
-    (version "2.18.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "14cnimvlc7ky22g2snyf4362412k3jk1syjf8b9887q5a63fqd0h"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("popt" ,popt)
-       ("libart-lgpl" ,libart-lgpl)
-       ("gtk+" ,gtk+-2)
-       ("libxml2" ,libxml2)))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
-    (synopsis "Printing framework for GNOME")
-    (description
-     "GNOME-print was a printing framework for GNOME.  It has been deprecated
-since ca. 2006, when GTK+ itself incorporated printing support.")
-    (license license:lgpl2.0+)))
-
 
 (define-public libgnomeprintui
   ;; Deprecated; see libgnomeprint.
