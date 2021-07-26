@@ -3756,13 +3756,13 @@ print, summary, etc.")
 (define-public r-laplacesdemon
   (package
     (name "r-laplacesdemon")
-    (version "16.1.4")
+    (version "16.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "LaplacesDemon" version))
        (sha256
-        (base32 "1nv1kx86cg8f2s8q15pzskc0lg94bb250p0fhybrx5sjqv1s2lj1"))))
+        (base32 "1dsfp65cg06f25zjzd5ib4qyn1alfhbhpgyvpcw5n6bszn13idap"))))
     (properties `((upstream-name . "LaplacesDemon")))
     (build-system r-build-system)
     (home-page "https://github.com/LaplacesDemonR/LaplacesDemon")
