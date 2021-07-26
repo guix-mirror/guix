@@ -2716,14 +2716,14 @@ applications.  That is, compute distances and related measures for angular
 (define-public r-jpeg
   (package
     (name "r-jpeg")
-    (version "0.1-8.1")
+    (version "0.1-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jpeg" version))
        (sha256
         (base32
-         "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
+         "0wihj538wdnr71wdldym83qadb4kh68a6rkallwbh2f25r27b881"))))
     (build-system r-build-system)
     (inputs `(("libjpeg" ,libjpeg-turbo)))
     (home-page "https://www.rforge.net/jpeg/")
