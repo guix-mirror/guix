@@ -6743,17 +6743,17 @@ cached data.")
 directories and @code{CACHEDIR.TAG} files.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-calamine-0.17
+(define-public rust-calamine-0.18
   (package
     (name "rust-calamine")
-    (version "0.17.0")
+    (version "0.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "calamine" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "095sx7dma2p1pn464l51ac6drih3c1bhwfw8g0y00vdwqwmrrvn8"))))
+        (base32 "1fssrwkwar1z4d2f0xl3cqg2y8qlmlc05g5xy305mkmxlj6sfv5q"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -6765,13 +6765,40 @@ directories and @code{CACHEDIR.TAG} files.")
         ("rust-log" ,rust-log-0.4)
         ("rust-quick-xml" ,rust-quick-xml-0.19)
         ("rust-serde" ,rust-serde-1)
-        ("rust-zip" ,rust-zip-0.5))))
+        ("rust-zip" ,rust-zip-0.5))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-glob" ,rust-glob-0.3))))
     (home-page "https://github.com/tafia/calamine")
     (synopsis "Reader and deserializer for spreadsheet files")
     (description
      "@code{calamine} is a pure Rust library to read and deserialize any
 spreadsheet file.")
     (license license:expat)))
+
+(define-public rust-calamine-0.17
+  (package
+    (inherit rust-calamine-0.18)
+    (name "rust-calamine")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "calamine" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "095sx7dma2p1pn464l51ac6drih3c1bhwfw8g0y00vdwqwmrrvn8"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-codepage" ,rust-codepage-0.1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-quick-xml" ,rust-quick-xml-0.19)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-zip" ,rust-zip-0.5))))))
 
 (define-public rust-calamine-0.16
   (package
