@@ -27768,8 +27768,46 @@ established.")
 library.")
     (license license:expat)))
 
+(define-public rust-ndarray-0.15
+  (package
+    (name "rust-ndarray")
+    (version "0.15.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ndarray" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jd845r1ihybq02iz85b1xcnvxr7l2qs06dabgk278v086b59s08"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-approx" ,rust-approx-0.4)
+        ("rust-cblas-sys" ,rust-cblas-sys-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-matrixmultiply" ,rust-matrixmultiply-0.3)
+        ("rust-num-complex" ,rust-num-complex-0.4)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rawpointer" ,rust-rawpointer-0.2)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.4)
+        ("rust-defmac" ,rust-defmac-0.2)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/rust-ndarray/ndarray")
+    (synopsis "N-dimensional container for general elements and for numerics")
+    (description "@code{ndarray} implements an n-dimensional container for
+general elements and for numerics.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-ndarray-0.13
   (package
+    (inherit rust-ndarray-0.15)
     (name "rust-ndarray")
     (version "0.13.1")
     (source
@@ -27783,7 +27821,6 @@ library.")
          "02dbwj3b7d0cpy29nhw31n51h3cwm4s1q6narl7fwiigxh1xn1mc"))
        (patches
         (search-patches "rust-ndarray-0.13-remove-blas-src.patch"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -27799,13 +27836,7 @@ library.")
        #:cargo-development-inputs
        (("rust-defmac" ,rust-defmac-0.2)
         ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-quickcheck" ,rust-quickcheck-0.9))))
-    (home-page "https://github.com/rust-ndarray/ndarray")
-    (synopsis "N-dimensional container for general elements and for numerics")
-    (description "@code{ndarray} implements an n-dimensional container for
-general elements and for numerics.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))))
 
 (define-public rust-ndarray-0.12
   (package
