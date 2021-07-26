@@ -2554,13 +2554,13 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "1.4.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "1fa67h4l9d30ig460xizgzl115i9pm3bk9dvsbrw6awbmf51ic82"))))
+                "1738nccg0msrhmzsasp19i0dpqi3m1nqbbg3nf1iiyp0mqc1dl8r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2572,7 +2572,8 @@ time-of-day values, based on the @code{difftime} class.")
        ("r-tibble" ,r-tibble)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
-       ("r-bh" ,r-bh)))
+       ("r-tzdb" ,r-tzdb)
+       ("r-vroom" ,r-vroom)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/readr")
