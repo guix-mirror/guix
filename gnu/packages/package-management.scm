@@ -1159,7 +1159,7 @@ outputs of those builds.")
 (define-public guix-jupyter
   (package
     (name "guix-jupyter")
-    (version "0.2.1")
+    (version "0.2.2")
     (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
     (source (origin
               (method git-fetch)
@@ -1167,7 +1167,7 @@ outputs of those builds.")
                                   (commit (string-append "v" version))))
               (sha256
                (base32
-                "1kqwfp5h95s6mirq5nbydsbmlhsinn32grz1ld5mbxvhl6sn2i0j"))
+                "17m6970wnvwlbarq4gxz5bakhzyhq5ch8qd8jw55ydccpv6473kq"))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
