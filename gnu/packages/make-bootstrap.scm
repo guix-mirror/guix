@@ -656,6 +656,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
+       #:allowed-references ()
        #:builder
        (begin
          (use-modules (guix build utils))
