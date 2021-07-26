@@ -26824,6 +26824,33 @@ workflow.  The advantages are:
 ")
     (license license:expat)))
 
+(define-public r-lobstr
+  (package
+    (name "r-lobstr")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lobstr" version))
+       (sha256
+        (base32
+         "0vkif17825x33cz8r89j0qph4wj5l8fzfgl8nh2g7m2v140cxjdq"))))
+    (properties `((upstream-name . "lobstr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/r-lib/lobstr")
+    (synopsis "Visualize R data structures with trees")
+    (description
+     "This package provides a set of tools for inspecting and understanding R
+data structures inspired by @code{str}.  It includes @code{ast} for
+visualizing abstract syntax trees, @code{ref} for showing shared references,
+@code{cst} for showing call stack trees, and @code{obj_size} for computing
+object sizes.")
+    (license license:gpl3)))
+
 (define-public r-gpfit
   (package
     (name "r-gpfit")
