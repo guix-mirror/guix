@@ -241,32 +241,29 @@ the store."
   "Return a list of inputs, such that when INPUTS contains the same DRV twice,
 they are coalesced, with their sub-derivations merged.  This is needed because
 Nix itself keeps only one of them."
-  (define (find pred lst)                         ;inlinable copy of 'find'
-    (let loop ((lst lst))
-      (match lst
-        (() #f)
-        ((head . tail)
-         (if (pred head) head (loop tail))))))
+  (define table
+    (make-hash-table 25))
 
-  (fold (lambda (input result)
-          (match input
-            (($ <derivation-input> (= derivation-file-name path) sub-drvs)
-             ;; XXX: quadratic
-             (match (find (match-lambda
-                            (($ <derivation-input> (= derivation-file-name p)
-                                                   s)
-                             (string=? p path)))
-                          result)
-               (#f
-                (cons input result))
-               ((and dup ($ <derivation-input> drv sub-drvs2))
-                ;; Merge DUP with INPUT.
-                (let ((sub-drvs (delete-duplicates
-                                 (append sub-drvs sub-drvs2))))
-                  (cons (make-derivation-input drv (sort sub-drvs string<?))
-                        (delq dup result))))))))
-        '()
-        inputs))
+  (for-each (lambda (input)
+              (let* ((drv (derivation-input-path input))
+                     (sub-drvs (derivation-input-sub-derivations input)))
+                (match (hash-get-handle table drv)
+                  (#f
+                   (hash-set! table drv input))
+                  ((and handle (key . ($ <derivation-input> drv sub-drvs2)))
+                   ;; Merge DUP with INPUT.
+                   (let* ((sub-drvs (delete-duplicates
+                                     (append sub-drvs sub-drvs2)))
+                          (input
+                           (make-derivation-input drv
+                                                  (sort sub-drvs string<?))))
+                     (set-cdr! handle input))))))
+            inputs)
+
+  (hash-fold (lambda (key input lst)
+               (cons input lst))
+             '()
+             table))
 
 (define* (derivation-prerequisites drv #:optional (cut? (const #f)))
   "Return the list of derivation-inputs required to build DRV, recursively.
