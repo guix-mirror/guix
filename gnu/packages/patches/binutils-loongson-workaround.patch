@@ -13,7 +13,7 @@ Patch by Mark H Weaver <mhw@netris.org>.
  
  /* ...likewise -mfix-loongson2f-nop.  */
 -static bool mips_fix_loongson2f_nop;
-+static bool mips_fix_loongson2f_nop = FALSE;
++static bool mips_fix_loongson2f_nop = TRUE;
  
  /* True if -mfix-loongson2f-nop or -mfix-loongson2f-jump passed.  */
  static bool mips_fix_loongson2f;
