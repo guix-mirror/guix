@@ -230,16 +230,7 @@ written in Go.")
     (build-system go-build-system)
     (arguments
      `(#:unpack-path "github.com/ipfs/go-ipfs"
-       #:import-path "github.com/ipfs/go-ipfs/cmd/ipfs"
-       #:phases (modify-phases %standard-phases
-                  (add-before 'reset-gzip-timestamps 'make-files-writable
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Make sure .gz files are writable so that the
-                      ;; 'reset-gzip-timestamps' phase can do its work.
-                      (let ((out (assoc-ref outputs "out")))
-                        (for-each make-file-writable
-                                  (find-files out "\\.gz$"))
-                        #t))))))
+       #:import-path "github.com/ipfs/go-ipfs/cmd/ipfs"))
     (native-inputs
      (list python-minimal-wrapper zsh))
     (home-page "https://ipfs.io")
