@@ -14746,13 +14746,7 @@ module, adding support for Unicode strings.")
              #t))
          (replace 'check
            (lambda _
-             (invoke "make" "test")))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+             (invoke "make" "test"))))))
     (propagated-inputs
      (list python-chardet python-cryptography python-sortedcontainers))
     (native-inputs
