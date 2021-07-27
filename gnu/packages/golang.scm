@@ -5552,17 +5552,7 @@ non-UTF-friendly sources.")
            "0il2nnxp2cqiy73m49215dnf9in3vd25ji8qxbmq87c5qy7i1q9d"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/gdamore/tcell"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-files-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Make sure .gz files are writable so that the
-               ;; 'reset-gzip-timestamps' phase can do its work.
-               (let ((out (assoc-ref outputs "out")))
-                 (for-each make-file-writable
-                           (find-files out "\\.gz$"))
-                 #t))))))
+       `(#:import-path "github.com/gdamore/tcell"))
       (inputs
        (list go-github.com-mattn-go-runewidth go-golang-org-colorful
              go-golang-org-x-text go-github-com-gdamore-encoding))
