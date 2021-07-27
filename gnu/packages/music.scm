@@ -2146,15 +2146,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "jalv.select.cpp"
                (("echo \\$PATH.*tr ':'.*xargs ls")
-                (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-manpages-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each make-file-writable
-                       (find-files (string-append (assoc-ref outputs "out")
-                                                  "/share/man")
-                                   ".*\\.gz$"))
-             #t)))))
+                (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin"))))))))
     (inputs
      (list lilv lv2 jalv gtkmm-2))
     (native-inputs
