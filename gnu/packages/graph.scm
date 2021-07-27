@@ -243,14 +243,7 @@ lines.")
                (invoke "pytest" "-x" "plotly/tests/test_io")
                ;; FIXME: Add optional dependencies and enable their tests.
                ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
-               (invoke "pytest" "_plotly_utils/tests"))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each (lambda (file) (chmod file #o644))
-                 (find-files out "\\.gz"))
-               #t))))))
+               (invoke "pytest" "_plotly_utils/tests")))))))
     (native-inputs
      (list python-ipywidgets python-pytest python-xarray))
     (propagated-inputs
