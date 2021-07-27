@@ -2577,13 +2577,6 @@ databases.")
      `(#:tests? #false
        #:phases
        (modify-phases %standard-phases
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure .gz files are writable so that the
-             ;; 'reset-gzip-timestamps' phase can do its work.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$")))))
          (add-after 'unpack 'use-python3-for-cython
            (lambda _
              (substitute* "setup.py"
