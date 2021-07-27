@@ -12,7 +12,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019, 2020 Vagrant Cascadian <vagrant@debian.org>
-;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
@@ -931,7 +931,7 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
-              (add-after 'patch-rockpro64-config 'set-environment
+              (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")
                                                 "/bl31.elf"))
