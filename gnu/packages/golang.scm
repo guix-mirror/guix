@@ -3729,17 +3729,7 @@ SysVinit, and more.")
        (list go-golang-org-x-sys go-github-com-sirupsen-logrus
              go-golang-org-x-crypto))
       (arguments
-       '(#:import-path "github.com/docker/distribution"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                     (assoc-ref outputs "out")
-                     ".*\\.gz$"))
-               #t)))))
+       '(#:import-path "github.com/docker/distribution"))
       (home-page
        "https://github.com/docker/distribution")
       (synopsis "This package is a Docker toolset to pack, ship, store, and
