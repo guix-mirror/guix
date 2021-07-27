@@ -4724,16 +4724,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
                       (assoc-ref outputs "out") "/lib/lmms"
                       ":"
                       (assoc-ref outputs "out") "/lib/lmms/ladspa"
-                      "\""))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-manpages-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (map (lambda (file)
-                    (make-file-writable file))
-                  (find-files (string-append (assoc-ref outputs "out")
-                                             "/share/man")
-                              ".*\\.gz$"))
-             #t)))))
+                      "\"")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)
