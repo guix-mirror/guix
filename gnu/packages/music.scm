@@ -6248,12 +6248,6 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
              (substitute* "Makefile"
                (("/usr") ""))
              #t))
-         (add-before 'reset-gzip-timestamps 'make-gz-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each make-file-writable
-                       (find-files (string-append (assoc-ref outputs "out"))
-                                   ".*\\.gz$"))
-             #t))
          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
