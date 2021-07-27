@@ -7358,11 +7358,8 @@ available in the kernel Linux.")
                   (add-before 'install 'fix-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "Makefile"
-                        (("\\$\\(BUILDROOT\\)/usr") (assoc-ref outputs "out")))
-                      ;; Make the compressed manpages writable so that the
-                      ;; reset-gzip-timestamps phase does not error out.
-                      (substitute* "Makefile"
-                        (("-m 444") "-m 644")))))))
+                        (("\\$\\(BUILDROOT\\)/usr")
+                         (assoc-ref outputs "out"))))))))
     (inputs (list perl))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.etallen.com/cpuid.html")
