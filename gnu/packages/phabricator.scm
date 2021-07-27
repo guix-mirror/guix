@@ -62,13 +62,7 @@
                    `("PATH" ":" prefix
                      (,@(map (lambda (i)
                                (string-append (assoc-ref %build-inputs i) "/bin"))
-                             '("php" "git" "mercurial" "subversion"))))))
-               #t))
-           (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
-             (lambda _
-               (for-each make-file-writable
-                         (find-files %output ".*\\.t?gz$"))
-               #t)))))
+                             '("php" "git" "mercurial" "subversion")))))))))))
       (inputs
        (list php git mercurial subversion))
       (home-page "https://github.com/phacility/arcanist")
