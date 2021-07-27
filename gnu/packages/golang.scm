@@ -2451,16 +2451,7 @@ Go programming language.")
          #:phases
          (modify-phases %standard-phases
            ;; Source-only package
-           (delete 'build)
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+           (delete 'build))))
       (propagated-inputs
        (list go-golang-org-x-sys))
       (synopsis "Supplementary cryptographic libraries in Go")
