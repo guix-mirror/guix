@@ -147,7 +147,15 @@ provides a 'Setup.hs' file as its build system."
           #$(with-build-variables inputs outputs
               #~(haskell-build #:name #$name
                                #:source #+source
-                               #:cabal-revision #$(assoc-ref inputs "cabal-revision")
+
+                               ;; XXX: INPUTS contains <gexp-input> records as
+                               ;; opposed to raw lowerable objects, hence the
+                               ;; use of ungexp-splicing.
+                               #:cabal-revision
+                               #$@(match (assoc-ref inputs "cabal-revision")
+                                    (#f '())
+                                    (lst lst))
+
                                #:configure-flags #$configure-flags
                                #:extra-directories #$extra-directories
                                #:extra-directories #$extra-directories
