@@ -164,21 +164,20 @@ parsers to allow execution with Guile as extension languages.")))
     (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
     (propagated-inputs (list mescc-tools nyacc-1.00.2))
     (native-inputs
-     `(("guile" ,guile-3.0)
-       ,@(let ((target-system (or (%current-target-system)
+     (append (list guile-3.0)
+         (let ((target-system (or (%current-target-system)
                                   (%current-system))))
            (cond
             ((string-prefix? "x86_64-linux" target-system)
              ;; Use cross-compiler rather than #:system "i686-linux" to get
              ;; MesCC 64 bit .go files installed ready for use with Guile.
-             `(("i686-linux-binutils" ,(cross-binutils "i686-unknown-linux-gnu"))
-               ("i686-linux-gcc" ,(cross-gcc "i686-unknown-linux-gnu"))))
+             (list (cross-binutils "i686-unknown-linux-gnu")
+                   (cross-gcc "i686-unknown-linux-gnu")))
             (else
              '())))
-       ("graphviz" ,graphviz)
-       ("help2man" ,help2man)
-       ("perl" ,perl)                 ; build-aux/gitlog-to-changelog
-       ("texinfo" ,texinfo)))
+       (list graphviz help2man
+             perl                               ;build-aux/gitlog-to-changelog
+             texinfo)))
     (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
