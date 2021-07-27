@@ -1075,13 +1075,7 @@ Python.")
                (("^(.+)def test_from_hdf5_issue_731" m indent)
                 (string-append indent
                                "@npt.dec.skipif(True, msg='Guix')\n"
-                               m)))))
-
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each (lambda (file) (chmod file #o644))
-                         (find-files out "\\.gz"))))))))
+                               m))))))))
     (propagated-inputs
      (list python-anndata
            python-numpy
