@@ -153,7 +153,7 @@ provides a 'Setup.hs' file as its build system."
                                ;; use of ungexp-splicing.
                                #:cabal-revision
                                #$@(match (assoc-ref inputs "cabal-revision")
-                                    (#f '())
+                                    (#f '(#f))
                                     (lst lst))
 
                                #:configure-flags #$configure-flags
