@@ -35,6 +35,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages machine-learning)
@@ -44,6 +45,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -840,4 +842,77 @@ correlation coefficient
 and more
 @end itemize")
     (license license:gpl3)))
+
+(define-public python-distributed
+  (package
+    (name "python-distributed")
+    (version "2021.07.1")
+    (source
+     (origin
+       ;; The test files are not included in the archive on pypi
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dask/distributed")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0i55zf3k55sqjxnwlzsyj3h3v1588fn54ng4mj3dfiqzh3nlj0dg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("distributed/comm/tests/test_ucx_config.py"
+                            "distributed/tests/test_client.py"
+                            "distributed/tests/test_queues.py"
+                            "distributed/tests/test_variable.py"
+                            "distributed/cli/tests/test_tls_cli.py"
+                            "distributed/cli/tests/test_dask_spec.py"
+                            "distributed/cli/tests/test_dask_worker.py"
+                            "distributed/cli/tests/test_dask_scheduler.py")
+               (("\"dask-scheduler\"")
+                (format #false "\"~a/bin/dask-scheduler\""
+                        (assoc-ref outputs "out")))
+               (("\"dask-worker\"")
+                (format #false "\"~a/bin/dask-worker\""
+                        (assoc-ref outputs "out"))))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "DISABLE_IPV6" "1")
+               (invoke "pytest" "-vv" "distributed"
+                       "-m" "not slow and not gpu and not ipython and not avoid_ci"
+                       "-k"
+                       ;; TODO: These tests fail for unknown reasons:
+                       ;; Assertion error.
+                       (string-append
+                        "not test_version_option"
+                        ;; "The 'distributed' distribution was not found"
+                        " and not test_register_backend_entrypoint"
+                        ;; "AttributeError: module 'distributed.dashboard' has no attribute 'scheduler'"
+                        " and not test_get_client_functions_spawn_clusters"))))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-cloudpickle" ,python-cloudpickle)
+       ("python-cryptography" ,python-cryptography)
+       ("python-dask" ,python-dask)
+       ("python-msgpack" ,python-msgpack)
+       ("python-psutil" ,python-psutil)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sortedcontainers" ,python-sortedcontainers)
+       ("python-tblib" ,python-tblib)
+       ("python-toolz" ,python-toolz)
+       ("python-tornado" ,python-tornado-6)
+       ("python-zict" ,python-zict)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://distributed.dask.org")
+    (synopsis "Distributed scheduler for Dask")
+    (description "Dask.distributed is a lightweight library for distributed
+computing in Python.  It extends both the @code{concurrent.futures} and
+@code{dask} APIs to moderate sized clusters.")
+    (license license:bsd-3)))
 
