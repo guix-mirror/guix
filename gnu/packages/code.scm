@@ -127,14 +127,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.6.6")
+    (version "6.6.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0pad5p31rdspyrzqky3ppgx7f6gdlfnwg1c7qm8w1m4qzyppi03m"))))
+               "0g4aslm2zajq605py11s4rs1wdnzcqhkh7bc2xl5az42adzzg839"))))
     (build-system gnu-build-system)
     (inputs `(("coreutils" ,coreutils)
               ("ncurses" ,ncurses)
