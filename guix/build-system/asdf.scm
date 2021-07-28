@@ -295,9 +295,9 @@ set up using CL source package conventions."
       (with-imported-modules imported-modules
         #~(begin
             (use-modules #$@(sexp->gexp modules))
-            (parameterize ((%lisp (string-append
-                                   (assoc-ref %build-inputs #$lisp-type)
-                                   "/bin/" #$lisp-type))
+            (parameterize ((%lisp (search-input-file
+                                   #$(input-tuples->gexp inputs)
+                                   (string-append "bin/" #$lisp-type)))
                            (%lisp-type #$lisp-type))
               (asdf-build #:name #$name
                           #:source #+source
