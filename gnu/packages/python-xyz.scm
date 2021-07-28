@@ -19514,6 +19514,26 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-phonenumbers
   (package-with-python2 python-phonenumbers))
 
+(define-public python-heapdict
+  (package
+    (name "python-heapdict")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "HeapDict" version))
+       (sha256
+        (base32
+         "1dnd7v9adqd21bf4ih2wzn9a7b41m0nccb0vbxny9n037rxzb5c4"))))
+    (build-system python-build-system)
+    (home-page "http://stutzbachenterprises.com/")
+    (synopsis "Heap with decrease-key and increase-key operations")
+    (description
+     "heapdict implements the MutableMapping ABC, meaning it works pretty much
+like a regular Python @code{dict}.  It’s designed to be used as a priority
+queue.")
+    (license license:bsd-3)))
+
 (define-public python-send2trash
   (package
     (name "python-send2trash")
