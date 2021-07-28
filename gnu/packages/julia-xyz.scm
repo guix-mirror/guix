@@ -663,7 +663,7 @@ common subexpression elimination.")
 (define-public julia-compat
   (package
     (name "julia-compat")
-    (version "3.30.0")
+    (version "3.31.0")
     (source
      (origin
        (method git-fetch)
@@ -672,7 +672,7 @@ common subexpression elimination.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qs6fm58dicdjy69qk5p0ndj2b7qsvg7rmydq7igvrvirad55v56"))))
+        (base32 "07ij7m4ca399i2bx63kghfhw15wg5pzzrazpaxic1wlpzrpssxfn"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaLang/Compat.jl")
     (synopsis "Compatibility across Julia versions")
