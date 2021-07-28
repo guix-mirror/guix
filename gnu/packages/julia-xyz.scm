@@ -956,6 +956,8 @@ straightforward loop implementation.")
         (sha256
          (base32 "0fy4kfnfacyfmlly6nqxn77dk2gqw80b69zb4m1i0i39zv3cpqfb"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))        ; Tests try to read SSL certificates.
     (home-page "https://juliadocs.github.io/DocStringExtensions.jl/latest/")
     (synopsis "Extensions for Julia's docsystem")
     (description "This package provides a collection of useful extensions for
