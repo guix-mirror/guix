@@ -101,6 +101,7 @@
 ;;; Copyright © 2021 David Dashyan <mail@davie.li>
 ;;; Copyright © 2021 Dhruvin Gandhi <contact@dhruvin.dev>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29055,3 +29056,26 @@ Believing} is a ruby gem to evaluate Ruby code, recording the results of each
 line.  This minor mode provides an easy way to run it from Emacs on the
 current region or entire buffer.")
       (license license:gpl3+))))
+
+(define-public emacs-nasm-mode
+  (package
+    (name "emacs-nasm-mode")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/nasm-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dyc50a1zskx9fqxl2iy2x74f3bkb2ccz908v0aj13rqfqqnns9j"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/skeeto/nasm-mode")
+    (synopsis "NASM x86 assembly major mode")
+    (description
+     "NASM mode is a major mode for editing NASM x86 assembly programs.
+It includes syntax highlighting, automatic indentation, and imenu integration.
+Unlike Emacs' generic ASM mode, it understands NASM-specific syntax.")
+    (license license:unlicense)))
