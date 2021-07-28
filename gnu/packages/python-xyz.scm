@@ -19534,6 +19534,30 @@ like a regular Python @code{dict}.  It’s designed to be used as a priority
 queue.")
     (license license:bsd-3)))
 
+(define-public python-zict
+  (package
+    (name "python-zict")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zict" version))
+       (sha256
+        (base32
+         "05pd1hyhqvpw87rnbvl3vdyf619snpyccbswaxisdj17frwnjacf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-heapdict" ,python-heapdict)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://zict.readthedocs.io/en/latest/")
+    (synopsis "Composable mutable mapping tools")
+    (description "This package provides abstract @code{MutableMapping} classes
+that consume and build on other @code{MutableMappings}.  Several of these can
+be composed with one another to form intuitive interfaces over complex storage
+systems policies.")
+    (license license:bsd-3)))
+
 (define-public python-send2trash
   (package
     (name "python-send2trash")
