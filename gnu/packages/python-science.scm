@@ -916,3 +916,68 @@ computing in Python.  It extends both the @code{concurrent.futures} and
 @code{dask} APIs to moderate sized clusters.")
     (license license:bsd-3)))
 
+(define-public python-modin
+  (package
+    (name "python-modin")
+    (version "0.10.1")
+    (source
+     (origin
+       ;; The archive on pypi does not include all required files.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/modin-project/modin")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "128ghfb9ncmnn8km409xjcdppvn9nr9jqw8rkvsfavh7wnwlk509"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "MODIN_ENGINE" "dask")
+               (invoke "python" "-m" "pytest"
+                       "modin/pandas/test/test_concat.py")
+               (setenv "MODIN_ENGINE" "python")
+               (invoke "python" "-m" "pytest"
+                       "modin/pandas/test/test_concat.py")))))))
+    (propagated-inputs
+     `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-dask" ,python-dask)
+       ("python-distributed" ,python-distributed)
+       ("python-numpy" ,python-numpy)
+       ("python-packaging" ,python-packaging)
+       ("python-pandas" ,python-pandas)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-jinja2" ,python-jinja2)
+       ("python-lxml" ,python-lxml)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-msgpack" ,python-msgpack)
+       ("python-openpyxl" ,python-openpyxl)
+       ("python-psutil" ,python-psutil)
+       ("python-pyarrow" ,python-pyarrow)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-scipy" ,python-scipy)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-tables" ,python-tables)
+       ("python-tqdm" ,python-tqdm)
+       ("python-xarray" ,python-xarray)
+       ("python-xlrd" ,python-xlrd)))
+    (home-page "https://github.com/modin-project/modin")
+    (synopsis "Make your pandas code run faster")
+    (description
+     "Modin uses Ray or Dask to provide an effortless way to speed up your
+pandas notebooks, scripts, and libraries.  Unlike other distributed DataFrame
+libraries, Modin provides seamless integration and compatibility with existing
+pandas code.")
+    (license license:asl2.0)))
