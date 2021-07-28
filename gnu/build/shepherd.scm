@@ -24,6 +24,12 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  ;; XXX: Lazy-bind the Shepherd to avoid a compile-time dependency.
+  #:autoload (shepherd service) (fork+exec-command
+                                 read-pid-file
+                                 exec-command
+                                 %precious-signals)
+  #:autoload (shepherd system) (unblock-signals)
   #:export (make-forkexec-constructor/container
             fork+exec-command/container))
 
@@ -91,14 +97,6 @@
                  (filter (lambda (mapping)
                            (file-exists? (file-system-mapping-source mapping)))
                          mappings)))))
-
-;; XXX: Lazy-bind the Shepherd to avoid a compile-time dependency.
-(module-autoload! (current-module)
-                  '(shepherd service)
-                  '(fork+exec-command read-pid-file exec-command
-                    %precious-signals))
-(module-autoload! (current-module)
-                  '(shepherd system) '(unblock-signals))
 
 (define* (read-pid-file/container pid pid-file #:key (max-delay 5))
   "Read PID-FILE in the container namespaces of PID, which exists in a
