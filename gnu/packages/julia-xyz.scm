@@ -925,10 +925,13 @@ dictionaries in Julia, for improved productivity and performance.")
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-flakey-tests
            (lambda _
+             ;; Some combination of these tests fail nondeterministically
+             ;; each of the times this package is built.
              (substitute* "test/test_dists.jl"
                (("test dyz ≥") "test_nowarn dyz ≥")
                (("test dist\\(y, x") "test_nowarn dist(y, x")
-               (("test dist\\(z, x") "test_nowarn dist(z, x")))))))
+               (("test dist\\(z, x") "test_nowarn dist(z, x")
+               (("test dist\\(z, y") "test_nowarn dist(z, y")))))))
     (propagated-inputs
      `(("julia-statsapi" ,julia-statsapi)))
     (native-inputs
