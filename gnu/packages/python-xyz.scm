@@ -21428,39 +21428,63 @@ pure-Python.")
 (define-public python2-sortedcontainers
   (package-with-python2 python-sortedcontainers))
 
-(define-public python-cloudpickle
+(define python-cloudpickle-testpkg
   (package
-    (name "python-cloudpickle")
-    (version "1.3.0")
+    (name "python-cloudpickle-testpkg")
+    (version "1.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "cloudpickle" version))
+       ;; Archive on pypi does not include test infrastructure.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cloudpipe/cloudpickle")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lx7gy9clp427qwcm7b23zdsldpr03gy3vxxhyi8fpbhwz859brq"))))
+         "1584d21d4rcpryn8yfz0pjnjprk4zm367m0razdcz8cjbsh0dxp6"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'do-not-override-PYTHONPATH
-                    (lambda _
-                      ;; Append to PYTHONPATH instead of overriding it so
-                      ;; that dependencies from Guix can be found.
-                      (substitute* "tests/testutils.py"
-                        (("env\\['PYTHONPATH'\\] = pythonpath")
-                         "env['PYTHONPATH'] += os.pathsep + pythonpath"))
-                      #t))
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (if tests?
-                          (invoke "pytest" "-s" "-vv")
-                          (format #t "test suite not run~%"))
-                      #t)))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "tests/cloudpickle_testpkg"))))))
+    (home-page "https://github.com/cloudpipe/cloudpickle")
+    (synopsis "Extended pickling support for Python objects")
+    (description
+     "Cloudpickle makes it possible to serialize Python constructs not
+supported by the default pickle module from the Python standard library.  It
+is especially useful for cluster computing where Python expressions are
+shipped over the network to execute on remote hosts, possibly close to the
+data.")
+    (license license:bsd-3)))
+
+(define-public python-cloudpickle
+  (package
+    (inherit python-cloudpickle-testpkg)
+    (name "python-cloudpickle")
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'do-not-override-PYTHONPATH
+           (lambda _
+             ;; Append to PYTHONPATH instead of overriding it so
+             ;; that dependencies from Guix can be found.
+             (substitute* "tests/testutils.py"
+               (("env\\['PYTHONPATH'\\] = pythonpath")
+                "env['PYTHONPATH'] += os.pathsep + pythonpath"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "pytest" "-s" "-vv")
+                 (format #t "test suite not run~%")))))))
     (native-inputs
      `(;; For tests.
+       ("python-cloudpickle-testpkg" ,python-cloudpickle-testpkg)
        ("python-psutil" ,python-psutil)
        ("python-pytest" ,python-pytest)
-       ("python-tornado" ,python-tornado)))
+       ("python-tornado" ,python-tornado-6)))
     (home-page "https://github.com/cloudpipe/cloudpickle")
     (synopsis "Extended pickling support for Python objects")
     (description
