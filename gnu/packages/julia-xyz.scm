@@ -842,7 +842,8 @@ without having to take direct dependencies.")
          (base32 "15j3hrqq6nazn533bfsvg32xznacbzsl303j1qs48av59ppnvhhv"))))
     (build-system julia-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f      ; Tests need upgrading with newer Julia version.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-known-failing-tests
            (lambda _
