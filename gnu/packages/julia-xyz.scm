@@ -2902,6 +2902,31 @@ Hessian and g the gradient) may not be a descent direction if H is not positive
 definite.")
     (license license:expat)))
 
+(define-public julia-preferences
+  (package
+    (name "julia-preferences")
+    (version "1.2.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPackaging/Preferences.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1cail43iqzbi6m9v6981rhz47zf2lcvhs5ds5gdqvc9nx5frghxq"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))        ; Tests try to mkdir /.julia
+    (home-page "https://github.com/JuliaPackaging/Preferences.jl")
+    (synopsis "Store configuration switches to TOML files")
+    (description "The @code{Preferences} package provides an integrated way for
+packages to store configuration switches to persistent TOML files, and use those
+pieces of information at both run time and compile time in Julia.  This enables
+the user to modify the behavior of a package, and have that choice reflected in
+everything from run time algorithm choice to code generation at compile time.")
+    (license license:expat)))
+
 (define-public julia-prettytables
   (package
     (name "julia-prettytables")
