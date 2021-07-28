@@ -150,19 +150,20 @@ interfaces for other technical domains.")
       (arguments
        (substitute-keyword-arguments (package-arguments graphviz)
          ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'prepare-bootstrap
-               (lambda _
-                 (substitute* "autogen.sh"
-                   (("/bin/sh") (which "sh"))
-                   (("\\$GRAPHVIZ_VERSION_DATE") "0"))
-                 (setenv "CONFIG_SHELL" (which "sh"))
-                 (setenv "SHELL" (which "sh"))
+          #~(modify-phases #$phases
+              (add-after 'unpack 'prepare-bootstrap
+                (lambda _
+                  (substitute* "autogen.sh"
+                    (("/bin/sh") (which "sh"))
+                    (("\\$GRAPHVIZ_VERSION_DATE") "0"))
+                  (setenv "CONFIG_SHELL" (which "sh"))
+                  (setenv "SHELL" (which "sh"))
 
-                 (map make-file-writable (find-files "." ".*"))
-                 #t))
-             (replace 'bootstrap
-               (lambda _ (invoke (which "sh") "autogen.sh" "NOCONFIG") #t))))))
+                  (map make-file-writable (find-files "." ".*"))
+                  #t))
+              (replace 'bootstrap
+                (lambda _
+                  (invoke (which "sh") "autogen.sh" "NOCONFIG") #t))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
