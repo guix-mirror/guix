@@ -21623,13 +21623,13 @@ decisions with any given backend.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "2.14.0")
+    (version "2021.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32 "031j0j26s0675v0isyps2dphm03330n7dy8ifdy70jgvf78d119q"))))
+        (base32 "131c1bp193d7wp4gx09j6wark1c322c8sqjy22i0jaafl5rqfbz7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -21640,14 +21640,7 @@ decisions with any given backend.")
              (substitute* "dask/tests/test_threaded.py"
                (("def test_interrupt\\(\\)" m)
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                               m)))
-             ;; This one fails with a type error:
-             ;; TypeError: Already tz-aware, use tz_convert to convert.
-             (substitute* "dask/dataframe/tests/test_shuffle.py"
-               (("def test_set_index_timestamp\\(\\)" m)
-                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                               m)))
-             #t))
+                               m)))))
          (replace 'check
            (lambda _ (invoke "pytest" "-vv"))))))
     (propagated-inputs
