@@ -362,14 +362,17 @@ without requiring the source code to be rewritten.")
                        ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=45214
                        (substitute* "bootstrap/Makefile.in"
                          (("^GUILE_OPTIMIZATIONS.*")
-                          "GUILE_OPTIMIZATIONS = -O1 -Oresolve-primitives -Ocps\n"))))
-                   (add-after 'unpack 'skip-failing-fdes-test
-                     (lambda _
-                       ;; ERROR: ((system-error "seek" "~A" ("Bad file descriptor") (9)))
-                       (substitute* "test-suite/tests/ports.test"
-                         (("fdes not closed\"" all) (string-append all "(exit 77)")))
-                       #t)))
-                 '())))))
+                          "GUILE_OPTIMIZATIONS = -O1 -Oresolve-primitives -Ocps\n")))))
+                 '())
+           ,@(if (or (target-ppc32?)
+                     (target-riscv64?))
+               `((add-after 'unpack 'skip-failing-fdes-test
+                   (lambda _
+                     ;; ERROR: ((system-error "seek" "~A" ("Bad file descriptor") (9)))
+                     (substitute* "test-suite/tests/ports.test"
+                       (("fdes not closed\"" all) (string-append all "(exit 77)")))
+                     #t)))
+               '())))))
 
     (native-search-paths
      (list (search-path-specification
