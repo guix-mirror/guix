@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2345,6 +2346,49 @@ reading from and writing to ZIP archives. ")
     ;; Project is distributed under LGPL, but "quazip/z*" "quazip/unzip.*" are
     ;; distributed under zlib terms.
     (license (list license:lgpl2.1+ license:zlib))))
+
+(define-public zchunk
+  (package
+    (name "zchunk")
+    (version "1.1.16")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zchunk/zchunk")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nlzwnv6wh2yjyyv27f81jnvmk7psgpbnw7dsdp7frfkya569hgv"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)))
+    (propagated-inputs
+     `(("zstd" ,zstd "lib")))           ;in Requires.private of zck.pc
+    (home-page "https://github.com/zchunk/zchunk")
+    (synopsis "Compressed file format for efficient deltas")
+    (description "The zchunk compressed file format allows splitting a file
+into independent chunks.  This makes it possible to retrieve only changed
+chunks when downloading a new version of the file, and also makes zchunk files
+efficient over rsync.  Along with the library, this package provides the
+following utilities:
+@table @command
+@item unzck
+To decompress a zchunk file.
+@item zck
+To compress a new zchunk file, or re-compress an existing one.
+@item zck_delta_size
+To calculate the difference between two zchunk files.
+@item zck_gen_zdict
+To create a dictionary for a zchunk file.
+@item zck_read_header
+To read a zchunk header.
+@item zckdl
+To download a zchunk file.
+@end table")
+    (license license:bsd-2)))
 
 (define-public zutils
   (package
