@@ -1298,7 +1298,7 @@ types and sparsity.")
 (define-public julia-finitedifferences
   (package
     (name "julia-finitedifferences")
-    (version "0.12.6")
+    (version "0.12.17")
     (source
      (origin
        (method git-fetch)
@@ -1307,7 +1307,7 @@ types and sparsity.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kg8snnspn48i2rr99mwy0an3hzlgrnic7xnh3whj2ws2znw46hr"))))
+        (base32 "09nsf9cgk49yrvprflnhd9h5rrgs280rgj8sad3csghxdx6jqk5c"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
