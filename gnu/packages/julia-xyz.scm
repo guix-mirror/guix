@@ -236,7 +236,7 @@ axes, allowing column names or interval selections.")
 (define-public julia-bandedmatrices
   (package
     (name "julia-bandedmatrices")
-    (version "0.16.9")
+    (version "0.16.10")
     (source
       (origin
         (method git-fetch)
@@ -245,7 +245,7 @@ axes, allowing column names or interval selections.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "105y5d3208s0byk3p0469sfy79lhjpdblk6karbwj8x7hl26na00"))))
+         (base32 "0rlfj9gr9ss621v5kw5b06206yaak21s2vq9vk7r8a7p2ylncism"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-arraylayouts" ,julia-arraylayouts)
