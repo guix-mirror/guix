@@ -3329,33 +3329,36 @@ other power series in @code{h}.")
     (license license:expat)))
 
 (define-public julia-rotations
-  (package
-    (name "julia-rotations")
-    (version "1.0.2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/JuliaGeometry/Rotations.jl")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "1l1a3bnrpv9qdksnk3c8j82ik3yrnpsmnyxyiy3gc1yjya5pajqj"))))
-    (build-system julia-build-system)
-    (propagated-inputs
-     `(("julia-staticarrays" ,julia-staticarrays)))
-    (native-inputs
-     `(("julia-benchmarktools" ,julia-benchmarktools)
-       ("julia-forwarddiff" ,julia-forwarddiff)
-       ("julia-unitful" ,julia-unitful)))
-    (home-page "https://github.com/JuliaGeometry/Rotations.jl")
-    (synopsis "Julia implementations for different rotation parameterisations")
-    (description "This package implements various 3D rotation parameterizations
+  ;; This is the first commit with support for julia-1.6.
+  (let ((commit "b599102535bc3534252c76f3fd4cf521f4741788")
+        (revision "1"))
+    (package
+      (name "julia-rotations")
+      (version (git-version "1.0.2" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/JuliaGeometry/Rotations.jl")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "01wwqbdmj61yiz7rkmams4xg7gb9hbmg325173846ky4b9x1wb19"))))
+      (build-system julia-build-system)
+      (propagated-inputs
+       `(("julia-staticarrays" ,julia-staticarrays)))
+      (native-inputs
+       `(("julia-benchmarktools" ,julia-benchmarktools)
+         ("julia-forwarddiff" ,julia-forwarddiff)
+         ("julia-unitful" ,julia-unitful)))
+      (home-page "https://github.com/JuliaGeometry/Rotations.jl")
+      (synopsis "Julia implementations for different rotation parameterisations")
+      (description "This package implements various 3D rotation parameterizations
 and defines conversions between them.  At their heart, each rotation
 parameterization is a 3×3 unitary (orthogonal) matrix (based on the
 @code{StaticArrays.jl} package), and acts to rotate a 3-vector about the origin
 through matrix-vector multiplication.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public julia-safetestsets
   ;; The only release tag is the first commit in the repository.
