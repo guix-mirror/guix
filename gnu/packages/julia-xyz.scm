@@ -887,7 +887,7 @@ dictionaries where values associated with a particular key may change,
 (define-public julia-dictionaries
   (package
     (name "julia-dictionaries")
-    (version "0.3.8")
+    (version "0.3.10")
     (source
       (origin
         (method git-fetch)
@@ -896,7 +896,7 @@ dictionaries where values associated with a particular key may change,
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1j88f6qa5hqm64n5q3jy08a02gwp7by401s03n5x7575p58iqqh2"))))
+         (base32 "1mm43hm8hd6sgmkkpqhbqhvap7mpkjwzmz5algxi6manp580gkr5"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-indexing" ,julia-indexing)))
