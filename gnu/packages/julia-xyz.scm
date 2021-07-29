@@ -319,7 +319,7 @@ access to the full matrix to use in in for example a linear solver.")
 (define-public julia-blockbandedmatrices
   (package
     (name "julia-blockbandedmatrices")
-    (version "0.10.6")
+    (version "0.10.7")
     (source
       (origin
         (method git-fetch)
@@ -328,7 +328,7 @@ access to the full matrix to use in in for example a linear solver.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0q9ni4pgdkb00jb42fdzlhx745852xx2666vr96k0c4l0cn5mi0y"))))
+         (base32 "10n1r6kmmv2wa307jfg9y2m6p16j8hngjp3fjavpbdy1r5haasm9"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-arraylayouts" ,julia-arraylayouts)
