@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -33,8 +34,11 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml))
 
 (define-public drpm
   (package
@@ -141,3 +145,56 @@ applying deltarpms, compatible with the original deltarpm packages.")
 for interacting with repodata (that is, streams of YAML that contains
 information on multiple streams, default data and translations).")
     (license license:expat)))
+
+(define-public createrepo-c
+  (package
+    (name "createrepo-c")
+    (version "0.17.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rpm-software-management/createrepo_c")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fgf71mkhghgbp0pf2pazc7hyaix5igb5nl4fqsisjksfvzdfm5k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:prefix python:)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-python-site-prefix
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "src/python/CMakeLists.txt"
+               (("EXECUTE_PROCESS.*OUTPUT_VARIABLE PYTHON_INSTALL_DIR.*")
+                (format #f "set (PYTHON_INSTALL_DIR ~a)~%"
+                        (python:site-packages inputs outputs))))))
+         (add-after 'unpack 'fix-bash-completion-prefix
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("execute_process.*OUTPUT_VARIABLE BASHCOMP_DIR.*")
+                (format #f "set (BASHCOMP_DIR ~a\
+/share/bash-completion/completions)~%" (assoc-ref outputs "out")))))))))
+    (native-inputs
+     `(("bash-completion" ,bash-completion)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("curl" ,curl)
+       ("drpm" ,drpm)
+       ("libmodulemd" ,libmodulemd)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)
+       ("zchunk" ,zchunk)))
+    (home-page "https://rpm-software-management.github.io/createrepo_c/")
+    (synopsis "C implementation of the createrepo tool")
+    (description "This package provides the @command{createrepo} command,
+which can be used to create RPM repositories.")
+    (license license:gpl2+)))
