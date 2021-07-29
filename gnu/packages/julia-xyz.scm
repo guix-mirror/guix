@@ -283,7 +283,7 @@ benchmarks as well as comparing benchmark results.")
 (define-public julia-blockarrays
   (package
     (name "julia-blockarrays")
-    (version "0.15.3")
+    (version "0.16.3")
     (source
       (origin
         (method git-fetch)
@@ -292,7 +292,7 @@ benchmarks as well as comparing benchmark results.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "15nd493bfkx92ihnr8dj8mb155dj44iqw266igv0qr5q0wad2bfr"))))
+         (base32 "1f9pnnfv97vww2dxklpx8pa2k85fw2l3pzsj7n28nws1xlwnj96c"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-arraylayouts" ,julia-arraylayouts)
