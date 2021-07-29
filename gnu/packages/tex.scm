@@ -9353,6 +9353,31 @@ Arguments may contain verbatim material or other special use of characters.
 The macros were designed for use within other macros.")
       (license license:lppl1.3))))
 
+(define-public texlive-grfext
+  (let ((template (simple-texlive-package
+                   "texlive-grfext"
+                   (list "/doc/latex/grfext/README.md"
+                         "/source/latex/grfext/grfext.dtx")
+                   (base32
+                    "1cdvjp9gcnixxlbl8ibwz1yr799gwax5hm686hwmwsigdgafhzgq"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/grfext")
+         ((#:build-targets _ '())
+          ''("grfext.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/grfext")))))))
+      (home-page "https://github.com/ho-tex/grfext")
+      (synopsis "Manipulate the graphics package's list of extensions")
+      (description "This package provides macros for adding to, and reordering
+the list of graphics file extensions recognised by package graphics.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-adjustbox
   (let ((template (simple-texlive-package
                    "texlive-adjustbox"
