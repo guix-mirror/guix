@@ -1836,11 +1836,13 @@ providing the system administrator with some help in common tasks.")
                         (substitute* (find-files (string-append lib "/lib/pkgconfig")
                                                  "\\.pc$")
                           (("^(exec_)?prefix=.*") ""))))))))
-    (inputs `(("zlib" ,zlib)
-              ("ncurses" ,ncurses)))
+    (inputs
+     (list file                         ;for libmagic
+           ncurses
+           zlib))
     (native-inputs
-     `(("perl" ,perl)
-       ("net-base" ,net-base)))         ;for tests
+     (list net-base                     ;for tests
+           perl))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
