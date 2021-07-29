@@ -21,6 +21,7 @@
 
 (define-module (gnu packages julia-xyz)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
@@ -3938,7 +3939,8 @@ package.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1s4mdywbp7nli7z985fqaj1rs4i6d92b1jx3lhg0qhk1s5wc0v8j"))))
+         (base32 "1s4mdywbp7nli7z985fqaj1rs4i6d92b1jx3lhg0qhk1s5wc0v8j"))
+        (patches (search-patches "julia-tracker-16-compat.patch"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-adapt" ,julia-adapt)
