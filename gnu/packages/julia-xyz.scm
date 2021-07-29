@@ -157,7 +157,7 @@ no issues with the upgrade.")
 (define-public julia-arraylayouts
   (package
     (name "julia-arraylayouts")
-    (version "0.7.0")
+    (version "0.7.3")
     (source
       (origin
         (method git-fetch)
@@ -166,7 +166,7 @@ no issues with the upgrade.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "01725v4jp8h8zwn85splw907r206h1hnp205pchmzjin7h4659xz"))))
+         (base32 "0ri05xhfrj2909c6yy09qm6zi8v8s5fvmbbwbg8qgjq0yxnviw32"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-fillarrays" ,julia-fillarrays)))
