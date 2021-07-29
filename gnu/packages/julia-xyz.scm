@@ -205,7 +205,7 @@ axis (dimension).")
 (define-public julia-axisarrays
   (package
     (name "julia-axisarrays")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
       (origin
         (method git-fetch)
@@ -214,7 +214,7 @@ axis (dimension).")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "079rj7wvh9ks293g2ih1yah5k0sg8wazw08z3vg2bxj4s16wr64p"))))
+         (base32 "03kzan1lm4fxfhzv1xjg3ysf6y7nagcc61vfz15kvdrp1dqxlynk"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-rangearrays" ,julia-rangearrays)
