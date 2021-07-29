@@ -4108,7 +4108,7 @@ useful in order to support @code{VersionNumber} comparisons applied to
 (define-public julia-weakrefstrings
   (package
     (name "julia-weakrefstrings")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
       (origin
         (method git-fetch)
@@ -4117,7 +4117,7 @@ useful in order to support @code{VersionNumber} comparisons applied to
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1p8q62zsmi02vyckgy25ddmxns223xrhx575x9lfgvr7jrw1kl2p"))))
+         (base32 "14h1vdnc3rx87w6v2rr59lgb4kai2hd1wzqpxhmzsi8karg2z219"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-dataapi" ,julia-dataapi)
