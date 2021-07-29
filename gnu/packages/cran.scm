@@ -23361,14 +23361,14 @@ imputed data sets with the appropriate degree of sampling uncertainty.")
 (define-public r-matrixcalc
   (package
     (name "r-matrixcalc")
-    (version "1.0-4")
+    (version "1.0-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "matrixcalc" version))
        (sha256
         (base32
-         "0id0s8fwwzs9mklp642vx1wzqwdqvpqry0rnhjnh3id60h8q7icl"))))
+         "1jkgl1v1q7cqpl1rf49qahdr9y0f33f0ldsbgby8xhfv0vpy21jr"))))
     (properties `((upstream-name . "matrixcalc")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/matrixcalc/")
