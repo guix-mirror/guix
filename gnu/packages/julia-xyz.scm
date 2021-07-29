@@ -3168,7 +3168,7 @@ recipes to full specifications for a plot.")
 (define-public julia-recursivearraytools
   (package
     (name "julia-recursivearraytools")
-    (version "2.11.4")
+    (version "2.16.1")
     (source
       (origin
         (method git-fetch)
@@ -3177,15 +3177,16 @@ recipes to full specifications for a plot.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "14wh39g3l0fzzrkxgxijklilqcgpxsk1d44dfpfl48gsp0n6icjm"))))
+         (base32 "0vx8ndxrii53na7jsc2lki47wfpi77rn3y2r6xhiysx1qwr14msf"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))    ; Cycle with OrdinaryDiffEq.jl.
     (propagated-inputs
      `(("julia-arrayinterface" ,julia-arrayinterface)
+       ("julia-chainrulescore" ,julia-chainrulescore)
        ("julia-docstringextensions" ,julia-docstringextensions)
-       ("julia-requires" ,julia-requires)
        ("julia-recipesbase" ,julia-recipesbase)
+       ("julia-requires" ,julia-requires)
        ("julia-staticarrays" ,julia-staticarrays)
        ("julia-zygoterules" ,julia-zygoterules)))
     ;(native-inputs
@@ -3193,7 +3194,6 @@ recipes to full specifications for a plot.")
     ;   ("julia-nlsolve" ,julia-nlsolve)
     ;   ("julia-ordinarydiffeq" ,julia-ordinarydiffeq)
     ;   ("julia-structarrays" ,julia-structarrays)
-    ;   ("julia-unitful" ,julia-unitful)
     ;   ("julia-zygote" ,julia-zygote)))
     (home-page "https://github.com/SciML/RecursiveArrayTools.jl")
     (synopsis "Tools for handling objects like arrays of arrays and deeper nestings")
