@@ -2611,7 +2611,7 @@ interface to interact with these types.")
 (define-public julia-nnlib
   (package
     (name "julia-nnlib")
-    (version "0.7.19")
+    (version "0.7.25")
     (source
       (origin
         (method git-fetch)
@@ -2620,10 +2620,11 @@ interface to interact with these types.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "163v7hkmbxxgnq7qigmqjdqcdywi2njxbh54w8v0hf4bddnalbba"))))
+         (base32 "0vp4kcn9ivkhmqgkyvnabcdqi6pv7ghbmjc1llkwv1kzhylyf86p"))))
     (build-system julia-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f      ; Test suite not updated for ChainRulesTestUtils-1.0.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'drop-cuda-support
            (lambda _
