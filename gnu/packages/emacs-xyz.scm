@@ -6428,7 +6428,7 @@ succeeds.")
 (define-public emacs-nswbuff
   (package
     (name "emacs-nswbuff")
-    (version "1.2.1")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -6437,7 +6437,7 @@ succeeds.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sswhr52rp8c4v4fv30sww1gadbdrlk3l35j8xmqfw6hbgzxb5dn"))))
+        (base32 "0bkx7mwy3zbb0ixawvn4cysxk3jjc7ahssvdprvw19ls9xx3wbsp"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/nswbuff")
     (synopsis "Quickly switch between buffers")
