@@ -3500,7 +3500,7 @@ timsort and radixsort.")
 (define-public julia-specialfunctions
   (package
     (name "julia-specialfunctions")
-    (version "1.3.0")
+    (version "1.6.0")
     (source
      (origin
        (method git-fetch)
@@ -3509,12 +3509,13 @@ timsort and radixsort.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rfhrrkzi3ils7fklbn35ki1yp5x88fi71qknfwqyw4pk8cf8p80"))))
+        (base32 "0nfpnglx7zl9g20w2mgfkg17hcw9ri0shaq2rwplj0ij5pwz8yf0"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-chainrulestestutils" ,julia-chainrulestestutils)))
     (propagated-inputs
      `(("julia-chainrulescore" ,julia-chainrulescore)
+       ("julia-logexpfunctions" ,julia-logexpfunctions)
        ("julia-openspecfun-jll" ,julia-openspecfun-jll)))
     (home-page "https://github.com/JuliaMath/SpecialFunctions.jl")
     (synopsis "Special mathematical functions")
