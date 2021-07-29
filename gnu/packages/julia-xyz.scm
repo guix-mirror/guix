@@ -1504,7 +1504,7 @@ algebra routines written in Julia (except for optimized BLAS).")
 (define-public julia-genericschur
   (package
     (name "julia-genericschur")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method git-fetch)
@@ -1513,7 +1513,7 @@ algebra routines written in Julia (except for optimized BLAS).")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0kklc2niylvynhq0v49kdmy58m9jmr5jxjf287k1wr9r81fya3sz"))))
+         (base32 "12x6lxzxm91y3k6s9dam46dq5hrby5sr0gy0fdfnp0xhjzdy2j0d"))))
     (build-system julia-build-system)
     (arguments
      `(#:phases
