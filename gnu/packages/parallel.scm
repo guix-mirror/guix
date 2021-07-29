@@ -31,6 +31,7 @@
 (define-module (gnu packages parallel)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
@@ -41,6 +42,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
@@ -410,4 +412,33 @@ command---e.g., @code{%salloc}, @code{%sbatch}, etc.")
 pool, similar to those implemented by OpenMP run-time support libraries for
 constructs such as @code{#pragma omp parallel for}, with additional
 features.")
+      (license license:bsd-2))))
+
+(define-public cpuinfo
+  ;; There's currently no tag on this repo.
+  (let ((version "0.0")
+        (revision "1")
+        (commit "866ae6e5ffe93a1f63be738078da94cf3005cce2"))
+    (package
+      (name "cpuinfo")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/pytorch/cpuinfo")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1lmsf4bpkm19a31i40qwcjn46qf7prggziv4pbsi695bkx5as71p"))
+                (patches (search-patches "cpuinfo-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (arguments '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+      (inputs
+       `(("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)))
+      (synopsis "C/C++ library to obtain information about the CPU")
+      (description
+       "The cpuinfo library provides a C/C++ and a command-line interface to
+obtain information about the CPU being used: supported instruction set,
+processor name, cache information, and topology information.")
       (license license:bsd-2))))

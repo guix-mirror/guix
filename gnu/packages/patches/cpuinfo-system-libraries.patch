@@ -1,0 +1,50 @@
+This patch allows the build process to use the provided dependencies instead
+of adding their source as CMake sub-directories (in which case "make install"
+would install googletest's and googlebenchmark's libraries and headers).
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 57abc26..761c612 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -93,7 +93,7 @@ SET(CONFU_DEPENDENCIES_BINARY_DIR ${CMAKE_BINARY_DIR}/deps
+   CACHE PATH "Confu-style dependencies binary directory")
+ 
+ IF(CPUINFO_BUILD_MOCK_TESTS OR CPUINFO_BUILD_UNIT_TESTS)
+-  IF(CPUINFO_SUPPORTED_PLATFORM AND NOT DEFINED GOOGLETEST_SOURCE_DIR)
++  IF(FALSE)
+     MESSAGE(STATUS "Downloading Google Test to ${CONFU_DEPENDENCIES_SOURCE_DIR}/googletest (define GOOGLETEST_SOURCE_DIR to avoid it)")
+     CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest-download/CMakeLists.txt")
+     EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -105,7 +105,7 @@ IF(CPUINFO_BUILD_MOCK_TESTS OR CPUINFO_BUILD_UNIT_TESTS)
+ ENDIF()
+ 
+ IF(CPUINFO_BUILD_BENCHMARKS)
+-  IF(CPUINFO_SUPPORTED_PLATFORM AND NOT DEFINED GOOGLEBENCHMARK_SOURCE_DIR)
++  IF(FALSE)
+     MESSAGE(STATUS "Downloading Google Benchmark to ${CONFU_DEPENDENCIES_SOURCE_DIR}/googlebenchmark (define GOOGLEBENCHMARK_SOURCE_DIR to avoid it)")
+     CONFIGURE_FILE(cmake/DownloadGoogleBenchmark.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/googlebenchmark-download/CMakeLists.txt")
+     EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -271,14 +271,6 @@ INSTALL(TARGETS cpuinfo
+ 
+ # ---[ cpuinfo micro-benchmarks
+ IF(CPUINFO_SUPPORTED_PLATFORM AND CPUINFO_BUILD_BENCHMARKS)
+-  # ---[ Build google benchmark
+-  IF(NOT TARGET benchmark)
+-    SET(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
+-    ADD_SUBDIRECTORY(
+-      "${GOOGLEBENCHMARK_SOURCE_DIR}"
+-      "${CONFU_DEPENDENCIES_BINARY_DIR}/googlebenchmark")
+-  ENDIF()
+-
+   IF(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Android)$")
+     ADD_EXECUTABLE(get-current-bench bench/get-current.cc)
+     TARGET_LINK_LIBRARIES(get-current-bench cpuinfo benchmark)
+@@ -289,7 +281,7 @@ IF(CPUINFO_SUPPORTED_PLATFORM AND CPUINFO_BUILD_BENCHMARKS)
+ ENDIF()
+ 
+ IF(CPUINFO_SUPPORTED_PLATFORM)
+-  IF(CPUINFO_BUILD_MOCK_TESTS OR CPUINFO_BUILD_UNIT_TESTS)
++  IF(FALSE)
+     # ---[ Build google test
+     IF(NOT TARGET gtest)
+       IF(MSVC AND NOT CPUINFO_RUNTIME_TYPE STREQUAL "static")
