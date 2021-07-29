@@ -2048,7 +2048,7 @@ interfaces with @file{.ini} files.")
 (define-public julia-interpolations
   (package
     (name "julia-interpolations")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
       (origin
         (method git-fetch)
@@ -2057,19 +2057,21 @@ interfaces with @file{.ini} files.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "06wh4fc7hy20kq9iipk3w8v50vd09k7vkii43k8z1vw036f6l7x3"))))
+         (base32 "1236c20k388qlh7k74mhf7hkbn0vf7ss8b1rgh1a6aj0234ayfnc"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-axisalgorithms" ,julia-axisalgorithms)
        ("julia-offsetarrays" ,julia-offsetarrays)
        ("julia-ratios" ,julia-ratios)
+       ("julia-requires" ,julia-requires)
        ("julia-staticarrays" ,julia-staticarrays)
        ("julia-woodburymatrices" ,julia-woodburymatrices)))
     (native-inputs
      `(("julia-dualnumbers" ,julia-dualnumbers)
        ("julia-forwarddiff" ,julia-forwarddiff)
        ("julia-offsetarrays" ,julia-offsetarrays)
-       ("julia-unitful" ,julia-unitful)))
+       ("julia-unitful" ,julia-unitful)
+       ("julia-zygote" ,julia-zygote)))
     (home-page "https://github.com/JuliaMath/Interpolations.jl")
     (synopsis "Continuous interpolation of discrete datasets")
     (description "This package implements a variety of interpolation schemes for
