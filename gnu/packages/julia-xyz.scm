@@ -3981,7 +3981,7 @@ automatic differentiation for its machine learning platform.")
 (define-public julia-typedtables
   (package
     (name "julia-typedtables")
-    (version "1.2.4")
+    (version "1.4.0")
     (source
       (origin
         (method git-fetch)
@@ -3990,7 +3990,7 @@ automatic differentiation for its machine learning platform.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "06k5h7ybsh29b6kiy0p62rp9b2q3xi9jk8p9wf0kq907p5kvfnfy"))))
+         (base32 "0nk6zhqvl2r8yhjdhb59kxq0srd3vy4ysg4d8rszj9a43dnn3w3i"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-adapt" ,julia-adapt)
