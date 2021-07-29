@@ -4646,6 +4646,154 @@ specifications.")
 revised simplex and the branch-and-bound methods.")
     (license license:lgpl2.1+)))
 
+;; Private Trilinos package for dealii-openmpi (similar to
+;; trilinos-serial-xyce and trilinos-parallel-xyce).
+;; This version is the latest known to be compatible with deal.II [1].
+;; Since the latest version of Trilinos is not necessarily supported by
+;; deal.II, it may be worth keeping this package even if and when Trilinos
+;; gets packaged separately for Guix (unless various versions of Trilinos are
+;; packaged).
+;;
+;; An insightful source of information for building Trilinos for deal.II lies
+;; in the Trilinos package for candi [2], which is a source-based installer
+;; for deal.II and its dependencies.
+;;
+;; [1]: https://www.dealii.org/current/external-libs/trilinos.html
+;; [2]: https://github.com/dealii/candi/blob/master/deal.II-toolchain/packages/trilinos.package
+(define trilinos-for-dealii-openmpi
+  (package
+    (name "trilinos-for-dealii-openmpi")
+    (version "12.18.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trilinos/Trilinos/")
+             (commit
+              (string-append "trilinos-release-"
+                             (string-replace-substring version "." "-")))))
+       (file-name (git-file-name "trilinos" version))
+       (sha256
+        (base32 "0fnwlhzsh85qj38cq3igbs8nm1b2jdgr2z734sapmyyzsy21mkgp"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ;; Trilinos's repository contains several C-shell scripts, but adding
+       ;; tcsh to the native inputs does not result in the check phase running
+       ;; any more tests than without it (nor is tcsh required to build
+       ;; Trilinos).
+       ;; It seems that Trilinos has replaced its use of C-shell test scripts
+       ;; with CMake's testing facilities.
+       ;; For example,
+       ;; packages/zoltan/doc/Zoltan_html/dev_html/dev_test_script.html [1]
+       ;; states that Zoltan's C-shell test script
+       ;; packages/zoltan/test/test_zoltan has been obsoleted by the tests now
+       ;; performed through CMake.
+       ;;
+       ;; Perl is required for some Zoltan tests and Python 2 for one ML test.
+       ;;
+       ;; [1]: https://cs.sandia.gov/zoltan/dev_html/dev_test_script.html
+       ("perl" ,perl)
+       ("python" ,python-2)))
+    (inputs
+     `(("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("mumps" ,mumps-openmpi)
+       ("scalapack" ,scalapack)))
+    (propagated-inputs
+     `(("mpi" ,openmpi)))
+    (arguments
+     `(#:build-type "Release"
+       #:configure-flags
+       `("-DBUILD_SHARED_LIBS=ON"
+         ;; Obtain the equivalent of RelWithDebInfo but with -O3 (the Release
+         ;; default) rather than -O2 (the RelWithDebInfo default), to conform
+         ;; to candi's trilinos.package's compilation flags, which are -g -O3.
+         "-DCMAKE_C_FLAGS=-g"
+         "-DCMAKE_CXX_FLAGS=-g"
+         "-DCMAKE_Fortran_FLAGS=-g"
+
+         ;; Trilinos libraries that deal.II can interface with.
+         "-DTrilinos_ENABLE_Amesos=ON"
+         "-DTrilinos_ENABLE_AztecOO=ON"
+         "-DTrilinos_ENABLE_Epetra=ON"
+         "-DTrilinos_ENABLE_EpetraExt=ON"
+         "-DTrilinos_ENABLE_Ifpack=ON"
+         "-DTrilinos_ENABLE_ML=ON"
+         "-DTrilinos_ENABLE_MueLu=ON"
+         "-DTrilinos_ENABLE_ROL=ON"
+         ;; Optional; required for deal.II's GridIn::read_exodusii, but
+         ;; depends on netcdf.
+         ;; Enable if and when someone needs it.
+         ;;"-DTrilinos_ENABLE_SEACAS=ON"
+         "-DTrilinos_ENABLE_Sacado=ON"
+         "-DTrilinos_ENABLE_Teuchos=ON"
+         "-DTrilinos_ENABLE_Tpetra=ON"
+         "-DTrilinos_ENABLE_Zoltan=ON"
+
+         ;; Third-party libraries (TPLs) that Trilinos can interface with.
+         "-DBLAS_LIBRARY_NAMES=openblas"
+         "-DTPL_ENABLE_MPI=ON"
+         "-DTPL_ENABLE_MUMPS=ON"
+         "-DTPL_ENABLE_SCALAPACK=ON"
+
+         ;; Enable the tests but not the examples (which are enabled by
+         ;; default when enabling tests).
+         ;; Although some examples are run as tests, they are otherwise
+         ;; unnecessary since this is a private package meant for
+         ;; dealii-openmpi.
+         ;; Besides, some MueLu and ROL examples require a lot of memory to
+         ;; compile.
+         ;;
+         ;; (For future reference, note that some ROL and SEACAS examples
+         ;; require removing gfortran from CPLUS_INCLUDE_PATH as in the
+         ;; dune-istl, dune-localfunctions and dune-alugrid packages.)
+         "-DTrilinos_ENABLE_TESTS=ON"
+         "-DTrilinos_ENABLE_EXAMPLES=OFF"
+         ;; MueLu tests require considerably more time and memory to compile
+         ;; than the rest of the tests.
+         "-DMueLu_ENABLE_TESTS=OFF"
+
+         ;; The following options were gleaned from candi's trilinos.package.
+         ;; (We do not enable the complex instantiations, which are anyway
+         ;; provided only as an option in trilinos.package, because they are
+         ;; costly in compilation time and memory usage, and disk space [1].)
+         ;;
+         ;; [1]: https://www.docs.trilinos.org/files/TrilinosBuildReference.html#enabling-float-and-complex-scalar-types
+         "-DTrilinos_ENABLE_Ifpack2=OFF"
+         "-DTeuchos_ENABLE_FLOAT=ON"
+         "-DTpetra_INST_INT_LONG=ON"
+         "-DTPL_ENABLE_Boost=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'fix-kokkos-config
+           (lambda _
+             ;; GNU Make 4.3 accidentally leaves the backslash preceding the
+             ;; number sign in strings containing a literal backslash–number
+             ;; sign (\#) [1, 2].
+             ;; This is still an issue in Trilinos 13.0.1, but should be fixed
+             ;; in the following version.
+             ;; (The latest versions of Kokkos incorporate the fix [2].)
+             ;;
+             ;; [1]: https://github.com/GEOSX/thirdPartyLibs/issues/136
+             ;; [2]: https://github.com/kokkos/kokkos/blob/3.4.00/Makefile.kokkos#L441
+             (substitute* "KokkosCore_config.h"
+               (("\\\\#") "#"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (home-page "https://trilinos.github.io/")
+    (synopsis "Algorithms for engineering and scientific problems")
+    (description
+     "The Trilinos Project is an effort to develop algorithms and enabling
+technologies within an object-oriented software framework for the solution of
+large-scale, complex multi-physics engineering and scientific problems.
+A unique design feature of Trilinos is its focus on packages.")
+    ;; The packages are variously licensed under more than just BSD-3 and
+    ;; LGPL-2.1+, but all the licenses are either BSD- or LGPL-compatible.
+    ;; See https://trilinos.github.io/license.html.
+    (license (list license:bsd-3 license:lgpl2.1+))))
+
 (define-public dealii
   (package
     (name "dealii")
@@ -4741,6 +4889,7 @@ in finite element programs.")
        ("p4est" ,p4est-openmpi)
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)
+       ("trilinos" ,trilinos-for-dealii-openmpi)
        ,@(alist-delete "hdf5" (package-propagated-inputs dealii))))
     (arguments
      (substitute-keyword-arguments (package-arguments dealii)
