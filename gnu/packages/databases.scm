@@ -1396,6 +1396,15 @@ including field and record folding.")))
          (delete 'configure)
          ;; The default target is only needed for tests and built on demand.
          (delete 'build)
+         (add-before 'check 'mount-tmp
+           ;; Use the provided workspace directory for test files.
+           ;; Otherwise, /tmp is used which is a mount namespace on /gnu/store.
+           ;; This speeds up the build when the host /tmp is a proper tmpfs or
+           ;; other fast filesystem, as opposed to /gnu which may be a HDD.
+           (lambda _
+             (let ((test-dir (string-append (getcwd) "/../test")))
+               (mkdir test-dir)
+               (setenv "TEST_TMPDIR" (canonicalize-path test-dir)))))
          (add-before 'check 'disable-optimizations
            (lambda _
              ;; Prevent the build from passing '-march=native' to the compiler.
