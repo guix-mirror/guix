@@ -3806,7 +3806,7 @@ the @code{Pluto.jl} tabular data import functionality.")
 (define-public julia-tables
   (package
     (name "julia-tables")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
       (origin
         (method git-fetch)
@@ -3815,7 +3815,7 @@ the @code{Pluto.jl} tabular data import functionality.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0yfjl4v1vglsk9wr7gbqgya4kk3a0q0i6zhi9xdgvnqsqzqrsc7c"))))
+         (base32 "1sqqagzqvav8b1rv5ywwbgy9ixvlmipq95fkwfwn0m8769i8jwzb"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-dataapi" ,julia-dataapi)
