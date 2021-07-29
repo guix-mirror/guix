@@ -1750,7 +1750,7 @@ dependencies.")
 (define-public julia-imagecore
   (package
     (name "julia-imagecore")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
       (origin
         (method git-fetch)
@@ -1759,7 +1759,7 @@ dependencies.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0d844lrilw7zjpax8zr5272a9s292wg4qk53mvm0n88yai598zd6"))))
+         (base32 "0h9m3pl3wic1jrgaqkdifz24cya5vxd3m6qdmm37pxg2y2ii2vcq"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))    ; Cycle with ImageMagick.jl.
