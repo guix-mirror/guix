@@ -332,7 +332,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "6.6.0")
+    (version "6.9.0")
     (source
      (origin
        (method git-fetch)
@@ -341,7 +341,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k0j0sp6zz2hnh7zc7f086zc3sld01h7sk277j6fak914yv6slzy"))))
+        (base32 "1wppz57lrrribrfnaiv6jrrf703w7i6ja0dnz8yx8naxhbsglwyf"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -370,8 +370,7 @@ easy.")
              (call-with-output-file script
                (lambda (port)
                  (format port "#!~a\n~a '~a'" bash xdg-open snap)))
-             (chmod script #o555)))
-         #t)))
+             (chmod script #o555))))))
     (inputs
      `(("bash" ,bash-minimal)
        ("js-filesaver" ,js-filesaver)
