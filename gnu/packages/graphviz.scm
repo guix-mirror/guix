@@ -214,7 +214,7 @@ visualization tool suite.")
 (define-public python-pygraphviz
   (package
     (name "python-pygraphviz")
-    (version "1.5")
+    (version "1.7")
     (source
      (origin
        (method git-fetch)
@@ -224,18 +224,14 @@ visualization tool suite.")
        (file-name (string-append "pygraphviz-" version "-checkout"))
        (sha256
         (base32
-         "1yldym38m8ckgflln83i88143pd9fjj1vfp23sq39fs6np5g0nzp"))))
+         "0jqc3dzy9n0hn3b99zq8jp53901zpjzvvi5ns5mbaxg8kdrb1lfx"))))
     (build-system python-build-system)
-    (arguments
-     `(#:configure-flags
-       (let ((graphviz (assoc-ref %build-inputs "graphviz")))
-         (list (string-append "--include-path=" graphviz "/include")
-               (string-append "--library-path=" graphviz "/lib")))))
     (inputs
-     `(("graphviz" ,graphviz-2.38)))
+     `(("graphviz" ,graphviz)))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
        ("python-doctest-ignore-unicode" ,python-doctest-ignore-unicode)))
     (home-page "https://pygraphviz.github.io")
     (synopsis "Python interface to Graphviz")
