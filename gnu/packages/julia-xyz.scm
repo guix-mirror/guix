@@ -1086,6 +1086,14 @@ combinations of dual numbers with predefined Julia numeric types.")
         (sha256
          (base32 "0py46kxl702r8pw3v7x4cqllf7yc91b0dr7vb60xh2qi7d6y3jc7"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-test-suite
+           (lambda _
+             (substitute* "test/runtests.jl"
+               ;; Seems to not play nicely with Julia-1.6.
+               ((".*basic.jl.*") "")))))))
     (propagated-inputs
      `(("julia-arrayinterface" ,julia-arrayinterface)))
     (home-page "https://github.com/ChrisRackauckas/EllipsisNotation.jl")
