@@ -28780,14 +28780,14 @@ percentages, citations, person tags, phone numbers, times, and zip codes.")
 (define-public r-mgsub
   (package
     (name "r-mgsub")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "mgsub" version))
         (sha256
           (base32
-            "02l1b96zv36ia0c97wgcwfhi037mbn3wy9c64hcw0n0w67yj77rr"))))
+            "1mci6x65h94qiz9cwikx2inbrwkykv43zbs8abfbx416zrh2bbn9"))))
     (properties `((upstream-name . "mgsub")))
     (build-system r-build-system)
     (native-inputs `(("r-knitr" ,r-knitr)))
