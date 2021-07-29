@@ -6688,3 +6688,33 @@ multiplication.  FXdiv implements an algorithm to replace an integer division
 with a multiplication and two shifts.  This algorithm improves performance
 when an application performs repeated divisions by the same divisor.")
       (license license:expat))))
+
+(define-public fp16
+  ;; There is currently no tag in this repo.
+  (let ((commit "0a92994d729ff76a58f692d3028ca1b64b145d91")
+        (version "0.0")
+        (revision "1"))
+    (package
+      (name "fp16")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/FP16")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "05mm4vrxsac35hjf5djif9r6rdxj9ippg97ia3p6q6b8lrp7srwv"))
+                (patches (search-patches "fp16-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("python-wrapper" ,python-wrapper)))
+      (inputs
+       `(("psimd" ,psimd)
+         ("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)))
+      (synopsis "C++ library for half-precision floating point formats")
+      (description
+       "This header-only C++ library implements conversion to and from
+half-precision floating point formats.")
+      (license license:expat))))
