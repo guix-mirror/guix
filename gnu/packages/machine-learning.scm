@@ -70,6 +70,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
@@ -2229,3 +2230,52 @@ These include a barrier, broadcast, and allreduce.")
 technique that can be used for visualisation similarly to t-SNE, but also for
 general non-linear dimension reduction.")
     (license license:bsd-3)))
+
+(define-public xnnpack
+  ;; There's currently no tag on this repo.
+  (let ((version "0.0")
+        (commit "bbe88243aba847f6a3dd86defec0fea4a0e415a1")
+        (revision "1"))
+    (package
+      (name "xnnpack")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/google/XNNPACK")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "19j605x1l2h95mjhcj90zwjh1153pdgmqggl35ya5w0wll628iiz"))
+                (patches (search-patches "xnnpack-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags '("-DXNNPACK_USE_SYSTEM_LIBS=YES"
+                             "-DBUILD_SHARED_LIBS=ON"
+                             "-DXNNPACK_LIBRARY_TYPE=shared"
+                             "-DXNNPACK_BUILD_TESTS=FALSE" ;FIXME: see below
+                             "-DXNNPACK_BUILD_BENCHMARKS=FALSE")
+
+         ;; FIXME: Building tests leads to a CMake error:
+         ;;
+         ;;   ADD_LIBRARY cannot create target "all_microkernels" because
+         ;;   another target with the same name already exists.
+         #:tests? #f))
+      (inputs
+       `(("cpuinfo" ,cpuinfo)
+         ("pthreadpool" ,pthreadpool)
+         ("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)
+         ("fxdiv" ,fxdiv)
+         ("fp16" ,fp16)
+         ("psimd" ,psimd)))
+      (synopsis "Optimized floating-point neural network inference operators")
+      (description
+       "XNNPACK is a highly optimized library of floating-point neural network
+inference operators for ARM, WebAssembly, and x86 platforms.  XNNPACK is not
+intended for direct use by deep learning practitioners and researchers;
+instead it provides low-level performance primitives for accelerating
+high-level machine learning frameworks, such as TensorFlow Lite,
+TensorFlow.js, PyTorch, and MediaPipe.")
+      (license license:bsd-3))))
+
