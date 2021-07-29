@@ -340,11 +340,13 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("texlive" ,(texlive-updmap.cfg (list texlive-ae
                                         texlive-inconsolata
                                         texlive-fonts-ec
+                                        texlive-grfext
                                         texlive-amsfonts
                                         texlive-latex-base
                                         texlive-latex-fancyvrb
                                         texlive-latex-graphics
                                         texlive-latex-hyperref
+                                        texlive-latex-l3backend
                                         texlive-latex-oberdiek
                                         texlive-latex-tools
                                         texlive-latex-upquote
