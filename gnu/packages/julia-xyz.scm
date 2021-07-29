@@ -1793,7 +1793,7 @@ of packages designed to support image processing and computer vision.")
 (define-public julia-imageinterminal
   (package
     (name "julia-imageinterminal")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
       (origin
         (method git-fetch)
@@ -1802,17 +1802,19 @@ of packages designed to support image processing and computer vision.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1mqbv27qmnsr6wqvklzb4gawi7hp4wnaspszhaxny1m53q6wbifl"))))
+         (base32 "0bbpzi7bv8jdiggq1wmcn67vnf96qagvwg0fk95s125wy5980xsl"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))    ; Cycle with ReferenceTests.jl.
     (propagated-inputs
      `(("julia-crayons" ,julia-crayons)
+       ("julia-imagebase" ,julia-imagebase)
        ("julia-imagecore" ,julia-imagecore)
-       ("julia-imagetransformations" ,julia-imagetransformations)))
+       ("julia-requires" ,julia-requires)))
     ;(native-inputs
     ; `(("julia-coordinatetransformations" ,julia-coordinatetransformations)
     ;   ("julia-imagemagick" ,julia-imagemagick)
+    ;   ("julia-imagetransformations" ,julia-imagetransformations)
     ;   ("julia-offsetarrays" ,julia-offsetarrays)
     ;   ("julia-referencetests" ,julia-referencetests)
     ;   ("julia-rotations" ,julia-rotations)
