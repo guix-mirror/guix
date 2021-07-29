@@ -11429,14 +11429,14 @@ ways.")
 (define-public r-summarytools
   (package
     (name "r-summarytools")
-    (version "0.9.9")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "summarytools" version))
        (sha256
         (base32
-         "0ig7vgjvldbndwhky1bsi38zifr9ji8xvvfqbfffplac08llvrbr"))))
+         "04qcysfywljnqkcz2b7kzpy0xv3ykkvvb14vnda63z1wvmadyhkn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
