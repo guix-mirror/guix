@@ -1,0 +1,79 @@
+This patch allows the build process to use the provided dependencies instead
+of adding their source as CMake sub-directories (in which case "make install"
+would install googletest's and googlebenchmark's libraries and headers).
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c1cba55..627550f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -36,7 +36,7 @@ MACRO(PTHREADPOOL_TARGET_ENABLE_CXX11 target)
+ ENDMACRO()
+ 
+ # ---[ Download deps
+-IF(NOT DEFINED FXDIV_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading FXdiv to ${CMAKE_BINARY_DIR}/FXdiv-source (define FXDIV_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadFXdiv.cmake "${CMAKE_BINARY_DIR}/FXdiv-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -46,7 +46,7 @@ IF(NOT DEFINED FXDIV_SOURCE_DIR)
+   SET(FXDIV_SOURCE_DIR "${CMAKE_BINARY_DIR}/FXdiv-source" CACHE STRING "FXdiv source directory")
+ ENDIF()
+ 
+-IF(PTHREADPOOL_BUILD_TESTS AND NOT DEFINED GOOGLETEST_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading Google Test to ${CMAKE_BINARY_DIR}/googletest-source (define GOOGLETEST_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake "${CMAKE_BINARY_DIR}/googletest-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -56,7 +56,7 @@ IF(PTHREADPOOL_BUILD_TESTS AND NOT DEFINED GOOGLETEST_SOURCE_DIR)
+   SET(GOOGLETEST_SOURCE_DIR "${CMAKE_BINARY_DIR}/googletest-source" CACHE STRING "Google Test source directory")
+ ENDIF()
+ 
+-IF(PTHREADPOOL_BUILD_BENCHMARKS AND NOT DEFINED GOOGLEBENCHMARK_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading Google Benchmark to ${CMAKE_BINARY_DIR}/googlebenchmark-source (define GOOGLEBENCHMARK_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadGoogleBenchmark.cmake "${CMAKE_BINARY_DIR}/googlebenchmark-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -150,27 +150,18 @@ IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ ENDIF()
+ 
+ # ---[ Configure FXdiv
+-IF(NOT TARGET fxdiv)
++IF(FALSE)
+   SET(FXDIV_BUILD_TESTS OFF CACHE BOOL "")
+   SET(FXDIV_BUILD_BENCHMARKS OFF CACHE BOOL "")
+   ADD_SUBDIRECTORY(
+     "${FXDIV_SOURCE_DIR}"
+     "${CMAKE_BINARY_DIR}/FXdiv")
+ ENDIF()
+-TARGET_LINK_LIBRARIES(pthreadpool PRIVATE fxdiv)
+-
+ INSTALL(TARGETS pthreadpool
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ IF(PTHREADPOOL_BUILD_TESTS)
+-  # ---[ Build google test
+-  IF(NOT TARGET gtest)
+-    SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+-    ADD_SUBDIRECTORY(
+-      "${GOOGLETEST_SOURCE_DIR}"
+-      "${CMAKE_BINARY_DIR}/googletest")
+-  ENDIF()
+ 
+   ADD_EXECUTABLE(pthreadpool-test test/pthreadpool.cc)
+   SET_TARGET_PROPERTIES(pthreadpool-test PROPERTIES
+@@ -188,14 +179,6 @@ IF(PTHREADPOOL_BUILD_TESTS)
+ ENDIF()
+ 
+ IF(PTHREADPOOL_BUILD_BENCHMARKS)
+-  # ---[ Build google benchmark
+-  IF(NOT TARGET benchmark)
+-    SET(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
+-    ADD_SUBDIRECTORY(
+-      "${GOOGLEBENCHMARK_SOURCE_DIR}"
+-      "${CMAKE_BINARY_DIR}/googlebenchmark")
+-  ENDIF()
+-
+   ADD_EXECUTABLE(latency-bench bench/latency.cc)
+   SET_TARGET_PROPERTIES(latency-bench PROPERTIES
+     CXX_STANDARD 11

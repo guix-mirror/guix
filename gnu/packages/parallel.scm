@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;;
@@ -44,6 +44,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -378,3 +379,35 @@ and output captured in the notebook.  Whatever arguments are accepted by a
 SLURM command line executable are also accepted by the corresponding magic
 command---e.g., @code{%salloc}, @code{%sbatch}, etc.")
       (license license:bsd-3))))
+
+(define-public pthreadpool
+  ;; This repository has only one tag, 0.1, which is older than what users
+  ;; such as XNNPACK expect.
+  (let ((commit "1787867f6183f056420e532eec640cba25efafea")
+        (version "0.1")
+        (revision "1"))
+    (package
+      (name "pthreadpool")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/pthreadpool")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "02hdvxfn5krw8zivkgjx3b4rk9p02yr4mpdjlp75lsv6z1xf5yrx"))
+                (patches (search-patches "pthreadpool-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (arguments '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+      (inputs
+       `(("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)
+         ("fxdiv" ,fxdiv)))
+      (synopsis "Efficient thread pool implementation")
+      (description
+       "The pthreadpool library implements an efficient and portable thread
+pool, similar to those implemented by OpenMP run-time support libraries for
+constructs such as @code{#pragma omp parallel for}, with additional
+features.")
+      (license license:bsd-2))))
