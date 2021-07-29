@@ -442,3 +442,27 @@ features.")
 obtain information about the CPU being used: supported instruction set,
 processor name, cache information, and topology information.")
       (license license:bsd-2))))
+
+(define-public psimd
+  ;; There is currently no tag in this repo.
+  (let ((commit "072586a71b55b7f8c584153d223e95687148a900")
+        (version "0.0")
+        (revision "1"))
+    (package
+      (name "psimd")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/Psimd")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "16mslhvqs0gpqbg7kkq566a8gkn58cgjpqca8ljj9qcv5mk9apwm"))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f))                  ;there are no tests
+      (synopsis "Portable 128-bit SIMD intrinsics")
+      (description
+       "This header-only C++ library provides a portable interface to
+single-instruction multiple-data (SIMD) intrinsics.")
+      (license license:expat))))
