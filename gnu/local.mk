@@ -493,6 +493,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/regex.scm				\
   %D%/packages/robotics.scm			\
   %D%/packages/rpc.scm				\
+  %D%/packages/rpm.scm				\
   %D%/packages/rrdtool.scm			\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
