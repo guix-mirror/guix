@@ -1772,7 +1772,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.233")
+    (version "0.234")
     (source
      (origin
        (method git-fetch)
@@ -1781,7 +1781,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zq7hvss004mwczk3jvyalkj9c5v6npswhkc2wj7dxyxz770clb3"))
+        (base32 "010ing14pfwc0j7jnghjdcvq0qr7g4dplnggl545apyy61zigdkn"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1790,8 +1790,7 @@ This is a part of the TiLP project.")
              (for-each delete-file-recursively
                        '("asio" "expat" "glm" "libflac" "libjpeg" "lua"
                          "portaudio" "portmidi" "pugixml" "rapidjson" "SDL2"
-                         "SDL2-override" "sqlite3" "utf8proc" "zlib")))
-           #t))))
+                         "SDL2-override" "sqlite3" "utf8proc" "zlib")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1829,16 +1828,14 @@ This is a part of the TiLP project.")
                  (install-file "uismall.bdf" fonts))
                (when (file-exists? "mame64")
                  (rename-file "mame64" "mame"))
-               (install-file "mame" (string-append out "/bin")))
-             #t))
+               (install-file "mame" (string-append out "/bin")))))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
                     (info (string-append out "/share/info")))
                (install-file "docs/build/man/MAME.1" man)
-               (install-file "docs/build/texinfo/MAME.info" info))
-             #t))
+               (install-file "docs/build/texinfo/MAME.info" info))))
          (add-after 'install 'install-ini-file
            ;; Generate an ini file so as to set some directories (e.g., roms)
            ;; to a writable location, i.e., "$HOME/.mame/" and "$HOME/mame/".
@@ -1897,8 +1894,7 @@ This is a part of the TiLP project.")
                             select_directory     $HOME/mame/select~@
                             icons_directory      $HOME/mame/icons~@
                             covers_directory     $HOME/mame/covers~@
-                            ui_path              $HOME/.mame/ui~%")))
-               #t)))
+                            ui_path              $HOME/.mame/ui~%"))))))
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1917,8 +1913,7 @@ This is a part of the TiLP project.")
                            Type=Application~@
                            Categories=Game;Emulator;~@
                            Keywords=Game;Emulator;Arcade;~%"
-                           executable)))
-               #t))))))
+                           executable)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("sphinx" ,python-sphinx)
