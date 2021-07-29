@@ -685,7 +685,7 @@ way.")
 (define-public julia-constructionbase
   (package
     (name "julia-constructionbase")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -694,7 +694,7 @@ way.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bmx5c5z9jxmyf2xjwwl5lhs9czmwq4isl0bkr78fak4j8brqr4n"))))
+        (base32 "1jk3h446vkv4yaavgm1hf1az7cwhppvhklvr08s49hhg02cm750q"))))
     (build-system julia-build-system)
     (home-page "https://juliaobjects.github.io/ConstructionBase.jl/dev/")
     (synopsis "Primitive functions for construction of objects")
