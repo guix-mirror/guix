@@ -1125,7 +1125,7 @@ before (or after)\".")
 (define-public julia-exprtools
   (package
     (name "julia-exprtools")
-    (version "0.1.3")
+    (version "0.1.6")
     (source
       (origin
         (method git-fetch)
@@ -1134,7 +1134,7 @@ before (or after)\".")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1lwxi9fx9farf1jdv42gv43xs3f3i3js2xnvr5gf6d0xfx0g6b6a"))))
+         (base32 "058ax5d96jpym5w3g37ah1c4xq3fskwpjdhchakzax15vqzy7ab4"))))
     (build-system julia-build-system)
     (home-page "https://github.com/invenia/ExprTools.jl")
     (synopsis "Light-weight expression manipulation tools")
