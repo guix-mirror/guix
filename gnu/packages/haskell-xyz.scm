@@ -66,7 +66,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sdl)
-  #:use-module (gnu packages web)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system haskell)

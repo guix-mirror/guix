@@ -99,6 +99,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)

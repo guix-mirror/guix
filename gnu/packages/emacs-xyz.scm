@@ -196,6 +196,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)

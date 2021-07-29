@@ -48,6 +48,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web)

@@ -39,7 +39,6 @@
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -166,6 +165,7 @@
   #:use-module (gnu packages re2c)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -1853,34 +1853,6 @@ requests or verify signatures using either NSS or OpenSSL for calculating the
 hash/signatures.")
     ;; Source code may be distributed under either license.
     (license (list license:expat license:gpl2+))))
-
-(define-public libyaml
-  (package
-    (name "libyaml")
-    (version "0.2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://pyyaml.org/download/libyaml/yaml-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1x4fcw13r3lqy8ndydr3ili87wicplw2awbcv6r21qgyfndswhn6"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--disable-static")))
-    (home-page "https://pyyaml.org/wiki/LibYAML")
-    (synopsis "YAML 1.1 parser and emitter written in C")
-    (description
-     "LibYAML is a YAML 1.1 parser and emitter written in C.")
-    (license license:expat)))
-
-(define-public libyaml+static
-  (package
-    (inherit libyaml)
-    (name "libyaml+static")
-    (arguments
-     '(#:configure-flags '("--enable-static")))))
 
 (define-public libquvi-scripts
   (package
@@ -5432,46 +5404,6 @@ developed as part of the Netsurf project.")
      "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
 written in C.  It is developed as part of the NetSurf project.")
     (license license:expat)))
-
-(define-public libcyaml
-  (package
-    (name "libcyaml")
-    (version "1.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tlsa/libcyaml")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (patches (search-patches "libcyaml-libyaml-compat.patch"))
-       (sha256
-        (base32 "0428p0rwq71nhh5nzcbapsbrjxa0x5l6h6ns32nxv7j624f0zd93"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "CC=gcc"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (replace 'check
-           (lambda _
-             (setenv "CC" "gcc")
-             (invoke "make" "test"))))))
-    (inputs
-     `(("libyaml" ,libyaml)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (synopsis "C library for reading and writing YAML")
-    (description
-     "LibCYAML is a C library written in ISO C11 for reading and writing
-structured YAML documents.  The fundamental idea behind CYAML is to allow
-applications to construct schemas which describe both the permissible
-structure of the YAML documents to read/write, and the C data structure(s)
-in which the loaded data is arranged in memory.")
-    (home-page "https://github.com/tlsa/libcyaml")
-    (license license:isc)))
 
 (define-public libdom
   (package
