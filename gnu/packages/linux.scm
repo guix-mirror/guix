@@ -1787,13 +1787,13 @@ providing the system administrator with some help in common tasks.")
                           (("\"/bin/umount\"")
                            (string-append "\"" out "/bin/umount\""))))))
                   (add-before 'check 'pre-check
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out"))
-                            (net (assoc-ref inputs "net-base")))
+                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                      (let ((services (search-input-file (or native-inputs inputs)
+                                                         "etc/services")))
                         ;; Change the test to refer to the right file.
                         (substitute* "tests/ts/misc/mcookie"
                           (("/etc/services")
-                           (string-append net "/etc/services")))
+                           services))
 
                         ;; The C.UTF-8 locale does not exist in our libc.
                         (substitute* "tests/ts/column/invalid-multibyte"
@@ -1837,12 +1837,7 @@ providing the system administrator with some help in common tasks.")
                                                  "\\.pc$")
                           (("^(exec_)?prefix=.*") ""))))))))
     (inputs `(("zlib" ,zlib)
-              ("ncurses" ,ncurses)
-
-              ;; XXX: This is so that the 'pre-check' phase can find it.
-              ,@(if (%current-target-system)
-                    `(("net-base" ,net-base))
-                    '())))
+              ("ncurses" ,ncurses)))
     (native-inputs
      `(("perl" ,perl)
        ("net-base" ,net-base)))         ;for tests
