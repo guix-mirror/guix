@@ -241,9 +241,6 @@ write, and draw graphs using Python to access the Graphviz graph data
 structure and layout algorithms.")
     (license license:bsd-3)))
 
-(define-public python2-pygraphviz
-  (package-with-python2 python-pygraphviz))
-
 (define-public python-uqbar
   (package
     (name "python-uqbar")
