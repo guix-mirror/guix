@@ -2743,14 +2743,14 @@ CAGE.")
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.16.2")
+    (version "2.16.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "0mbdfxic2vkfwm6b16353zr0qg8ylwf1vrxry85j2lgzl1qyyras"))))
+         "1y3d6mx59531ixr8nzq57sa5nwimq3qyy1xabk52vvdbkl2aa52x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -3814,14 +3814,14 @@ region sets and other genomic features.")
 (define-public r-reportingtools
   (package
     (name "r-reportingtools")
-    (version "2.32.0")
+    (version "2.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ReportingTools" version))
        (sha256
         (base32
-         "0v6wzfswwcd1xdxgwa9gzlkmavr4p55jy11k84anh0rs0xx3dmmj"))))
+         "0wq9y649dh1am6djzz0xlz42428xsgw2bdx1dknhdw2xbydmmx47"))))
     (properties
      `((upstream-name . "ReportingTools")))
     (build-system r-build-system)
@@ -4221,20 +4221,20 @@ graph construction.")
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "StructuralVariantAnnotation" version))
        (sha256
-        (base32
-         "10h63h1v87nvm3bfyr6dsjlbmzxf1vks30d0xz6q4hssqq9xlzgv"))))
+        (base32 "13q6zbdkpx1iw6n75pggg50f9q3zb7k3dxjdra8mhi6zin7018j8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-dplyr" ,r-dplyr)
+       ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-rlang" ,r-rlang)
        ("r-rtracklayer" ,r-rtracklayer)
@@ -5013,14 +5013,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.26.0")
+    (version "3.26.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "1wnmsdrb4wz2qprj5mnd3h0wx32y2mpy3xg7mjbgwlqn9bzpw3gk"))))
+         "003550ygh0haxyyypsss7s03jlsx7cqkhly4fcz10maczi6j4l30"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6541,14 +6541,14 @@ distributions.")
 (define-public r-scone
   (package
     (name "r-scone")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scone" version))
        (sha256
         (base32
-         "1wlky6nkdpz8fya81l6zaxlxc30wyp2gkyh94y5995jwddll38z5"))))
+         "0zw8g4mql7b02xqwhc1i0bnhm20c1q9xqc7yz84j98pqbi996vi5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-aroma-light" ,r-aroma-light)
@@ -7795,12 +7795,12 @@ frequency matrices from nine public sources, for multiple organisms.")
 (define-public r-motifbreakr
   (package
    (name "r-motifbreakr")
-   (version "2.6.0")
+   (version "2.6.1")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "motifbreakR" version))
             (sha256
-             (base32 "0i18qriznad4lr6ynzmz01k5yavs5m3h7hd0adbyg8lppbzm6hh4"))))
+             (base32 "1n6v8a7c27aswmbrlcwcpghf27aplkc6nn923imglc3c0sh2lkrz"))))
    (properties `((upstream-name . "motifbreakR")))
    (build-system r-build-system)
    (propagated-inputs
@@ -8612,14 +8612,14 @@ based on @dfn{Continuous Wavelet Transform} (CWT).")
 (define-public r-xcms
   (package
     (name "r-xcms")
-    (version "3.14.0")
+    (version "3.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "xcms" version))
        (sha256
         (base32
-         "1fs72lkgz1jik1smi6bb4f8jh6rrlpxdh3a5hydrnnndfxkz5kwx"))))
+         "1g8k90p0sbcb3rdrbldj5bcjp2piy5ldni4jplyr78vjpmrmvqk7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -9329,14 +9329,14 @@ datasets.")
 (define-public r-annotatr
   (package
     (name "r-annotatr")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotatr" version))
        (sha256
         (base32
-         "0pcf4jrq05bmfxph41hmdx1x147k1ay5fl2h488y1s4h8qm3c67p"))))
+         "1ls1qdfppcxysggi3bghrnspb5a3s40pm2mj4x0whc7c40cf90mg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -9370,14 +9370,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "2.6.3")
+    (version "2.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "04nz85vr184fjmf2k0kc5sy2hjzpfazfkxlhlgax50rnkn98va5x"))))
+         "043m4512q73x6q529hqfgrap0fq5anvny4va085nafia06b805pi"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -9932,14 +9932,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.16.1")
+    (version "6.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "0fiwf86hvkidxwkdcw0x7lk3bk2fsxqng43b1js7klifm3gfcf91"))))
+         "0kbljjwm5caf2znqnkhrbmcfsv1mhppp9h491210q477y8bjlkja"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13010,14 +13010,14 @@ relevant, and the minimum expression of the most abundant condition.")
 (define-public r-catalyst
   (package
     (name "r-catalyst")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
       (origin
         (method url-fetch)
         (uri (bioconductor-uri "CATALYST" version))
         (sha256
           (base32
-            "12frw4myqr8y3ff4n74ld4478ndpmfj5ynr6gnigbr1h61b94m3v"))))
+            "1vw8x54hwgcyn29k81zcvawawy2iy2qgp49gjpb830q04gx6yc6h"))))
     (properties `((upstream-name . "CATALYST")))
     (build-system r-build-system)
     (propagated-inputs

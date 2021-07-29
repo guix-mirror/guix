@@ -388,10 +388,10 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
     (license (list license:gpl3+ license:expat))))
 
-(define-public bcftools-1.9
+(define-public bcftools-1.10
   (package (inherit bcftools)
     (name "bcftools")
-    (version "1.9")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/samtools/bcftools/"
@@ -399,15 +399,15 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
                                   version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "1j3h638i8kgihzyrlnpj82xg1b23sijibys9hvwari3fy7kd0dkg"))
+                "10xgwfdgqb6dsmr3ndnpb77mc3a38dy8kh2c6czn6wj7jhdp4dra"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.9")
+                          (delete-file-recursively "htslib-1.10")
                           #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("htslib" ,htslib-1.9)
+     `(("htslib" ,htslib-1.10)
        ("perl" ,perl)))))
 
 (define-public bedops
@@ -1213,14 +1213,14 @@ sequencing.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.70")
+    (version "1.73")
     (source (origin
               (method url-fetch)
               ;; use PyPi rather than biopython.org to ease updating
               (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "0nz4n9d2y2dg849gn1z0vjlkwcpzzkzy3fij7x94a6ixy2c54z2a"))))
+                "1q55jhf76z3k6is3psis0ckbki7df26x7dikpcc3vhk1vhkwribh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2043,7 +2043,7 @@ has several key features:
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.15.1")
+    (version "0.16.0.1")
     (source (origin
               (method git-fetch)
               ;; Test data is missing on PyPi.
@@ -2053,7 +2053,7 @@ has several key features:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vj367w6xbn9bpmksm162l1aipf7cj97h1q83y7jcpm33ihwpf7x"))
+                "168bwwm8c2k22m7paip8q0yajyl7xdxgnik0bgjl7rhqg0majz0f"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Drop bundled htslib. TODO: Also remove samtools
@@ -2073,36 +2073,37 @@ has several key features:
              (setenv "LDFLAGS" "-lncurses")
              (setenv "CFLAGS" "-D_CURSES_LIB=1")))
          (replace 'check
-           (lambda _
-             ;; This file contains tests that require a connection to the
-             ;; internet.
-             (delete-file "tests/tabix_test.py")
+           (lambda* (#:key tests? #:allow-other-keys)
              ;; FIXME: These tests fail with "AttributeError: 'array.array'
              ;; object has no attribute 'tostring'".
              (delete-file "tests/AlignmentFile_test.py")
-             (delete-file "tests/AlignedSegment_test.py")
-             ;; Step out of source dir so python does not import from CWD.
-             (with-directory-excursion "tests"
-               (setenv "HOME" "/tmp")
-               (invoke "make" "-C" "pysam_data")
-               (invoke "make" "-C" "cbcf_data")
-               ;; Running nosetests without explicitly asking for a single
-               ;; process leads to a crash.  Running with multiple processes
-               ;; fails because the tests are not designed to run in parallel.
-
-               ;; FIXME: tests keep timing out on some systems.
-               (invoke "nosetests" "-v" "--processes" "1")))))))
+             (when tests?
+               ;; Step out of source dir so python does not import from CWD.
+               (with-directory-excursion "tests"
+                 (setenv "HOME" "/tmp")
+                 (invoke "make" "-C" "pysam_data")
+                 (invoke "make" "-C" "cbcf_data")
+                 (invoke "pytest" "-k"
+                         (string-append
+                           ;; requires network access.
+                           "not FileHTTP"
+                           ;; bug in test suite with samtools update
+                           ;; https://github.com/pysam-developers/pysam/issues/961
+                           " and not TestHeaderBAM"
+                           " and not TestHeaderCRAM"
+                           " and not test_text_processing")))))))))
     (propagated-inputs
-     `(("htslib" ,htslib-1.9))) ; Included from installed header files.
+     `(("htslib" ,htslib-1.10)))    ; Included from installed header files.
     (inputs
      `(("ncurses" ,ncurses)
        ("curl" ,curl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
        ;; Dependencies below are are for tests only.
-       ("samtools" ,samtools-1.9)
-       ("bcftools" ,bcftools-1.9)
+       ("samtools" ,samtools-1.10)
+       ("bcftools" ,bcftools-1.10)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
@@ -3589,7 +3590,7 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("seqan" ,seqan)))
+       ("seqan" ,seqan-2)))
     (home-page "https://github.com/seqan/flexbar")
     (synopsis "Barcode and adapter removal tool for sequencing platforms")
     (description
@@ -4602,6 +4603,19 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     ;; Files under cram/ are released under the modified BSD license;
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
+
+(define-public htslib-1.10
+  (package (inherit htslib)
+    (name "htslib")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0wm9ay7qgypj3mwx9zl1mrpnr36298b1aj5vx69l4k7bzbclvr3s"))))))
 
 (define-public htslib-1.9
   (package (inherit htslib)
@@ -6051,10 +6065,10 @@ variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
 
-(define-public samtools-1.9
+(define-public samtools-1.10
   (package (inherit samtools)
     (name "samtools")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -6063,14 +6077,14 @@ viewer.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "10ilqbmm7ri8z431sn90lvbjwizd0hhkf9rcqw8j823hf26nhgq8"))
+         "119ms0dpydw8dkh3zc4yyw9zhdzgv12px4l2kayigv31bpqcb7kv"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled htslib.
-                   (delete-file-recursively "htslib-1.9")
+                   (delete-file-recursively "htslib-1.10")
                    #t))))
     (inputs
-     `(("htslib" ,htslib-1.9)
+     `(("htslib" ,htslib-1.10)
        ("ncurses" ,ncurses)
        ("perl" ,perl)
        ("python" ,python)
@@ -6706,6 +6720,39 @@ writing files into the .sra format.")
 (define-public seqan
   (package
     (name "seqan")
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/seqan/seqan3/releases/"
+                                  "download/" version "/seqan3-"
+                                  version "-Source.tar.xz"))
+              (sha256
+               (base32
+                "1h2z0cvgidhkmh5xsbw75waqbrqbbv6kkrvb0b92xfh3gqpaiz22"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "ctest" "test" "--output-on-failure"))))))
+    (native-inputs
+     `(("bzip2" ,bzip2)
+       ("cereal" ,cereal)
+       ("zlib" ,zlib)))
+    (home-page "https://www.seqan.de")
+    (synopsis "Library for nucleotide sequence analysis")
+    (description
+     "SeqAn is a C++ library of efficient algorithms and data structures for
+the analysis of sequences with the focus on biological data.  It contains
+algorithms and data structures for string representation and their
+manipulation, online and indexed string search, efficient I/O of
+bioinformatics file formats, sequence alignment, and more.")
+    (license license:bsd-3)))
+
+(define-public seqan-2
+  (package
+    (inherit seqan)
     (version "2.4.0")
     (source (origin
               (method url-fetch)
@@ -6737,16 +6784,7 @@ writing files into the .sra format.")
     (native-inputs
      `(("source" ,source)
        ("tar" ,tar)
-       ("xz" ,xz)))
-    (home-page "https://www.seqan.de")
-    (synopsis "Library for nucleotide sequence analysis")
-    (description
-     "SeqAn is a C++ library of efficient algorithms and data structures for
-the analysis of sequences with the focus on biological data.  It contains
-algorithms and data structures for string representation and their
-manipulation, online and indexed string search, efficient I/O of
-bioinformatics file formats, sequence alignment, and more.")
-    (license license:bsd-3)))
+       ("xz" ,xz)))))
 
 (define-public seqan-1
   (package (inherit seqan)
@@ -9309,6 +9347,54 @@ contains a few programs for model fitting and phylogenetic tree reconstruction
 using nucleotide or amino-acid sequence data.")
     ;; GPLv3 only
     (license license:gpl3)))
+
+(define-public segemehl
+  (package
+    (name "segemehl")
+    (version "0.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.bioinf.uni-leipzig.de/Software"
+                                  "/segemehl/downloads/segemehl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0lbzbb7i8zadsn9b99plairhq6s2h1z8qdn6n7djclfis01nycz4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "all")
+       #:tests? #false ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; There is no installation target
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (exes (list "segemehl.x" "haarz.x")))
+               (mkdir-p bin)
+               (for-each (lambda (exe)
+                           (install-file exe bin))
+                         exes)))))))
+    (inputs
+     `(("htslib" ,htslib)
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.bioinf.uni-leipzig.de/Software/segemehl")
+    (synopsis "Map short sequencer reads to reference genomes")
+    (description "Segemehl is software to map short sequencer reads to
+reference genomes.  Segemehl implements a matching strategy based on enhanced
+suffix arrays (ESA).  It accepts fasta and fastq queries (gzip'ed and
+bgzip'ed).  In addition to the alignment of reads from standard DNA- and
+RNA-seq protocols, it also allows the mapping of bisulfite converted
+reads (Lister and Cokus) and implements a split read mapping strategy.  The
+output of segemehl is a SAM or BAM formatted alignment file.")
+    (license license:gpl3+)))
 
 (define-public kallisto
   (package
@@ -12991,28 +13077,32 @@ downstream analysis.")
        ("taxtastic" ,taxtastic)))
     (synopsis "Pplacer Python scripts")))
 
-(define-public python2-checkm-genome
+(define-public checkm
   (package
-    (name "python2-checkm-genome")
-    (version "1.0.13")
+    (name "checkm")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "checkm-genome" version))
        (sha256
         (base32
-         "0bm8gpxjmzxsxxl8lzwqhgx8g1dlnmp6znz7wv3hgb0gdjbf9dzz"))))
+         "0i2nnki639hgjag17wlva2x0ymn37b4krqsf6akxddykhfbkdnkz"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f))                    ; some tests are interactive
-    (propagated-inputs
-     `(("python-dendropy" ,python2-dendropy)
-       ("python-matplotlib" ,python2-matplotlib)
-       ("python-numpy" ,python2-numpy)
-       ("python-pysam" ,python2-pysam)
-       ("python-scipy" ,python2-scipy)))
-    (home-page "https://pypi.org/project/Checkm/")
+     `(#:tests? #f ; Some tests fail for unknown reasons.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
+    (inputs
+     `(("python-dendropy" ,python-dendropy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://ecogenomics.github.io/CheckM/")
     (synopsis "Assess the quality of putative genome bins")
     (description
      "CheckM provides a set of tools for assessing the quality of genomes
@@ -13026,6 +13116,9 @@ tools for identifying genome bins that are likely candidates for merging based
 on marker set compatibility, similarity in genomic characteristics, and
 proximity within a reference genome.")
     (license license:gpl3+)))
+
+(define-public python2-checkm-genome
+  (deprecated-package "python2-checkm-genome" checkm))
 
 (define-public umi-tools
   (package
@@ -14490,3 +14583,155 @@ quantifying single-cell chromatin data, computing per-cell quality control
 metrics, dimension reduction and normalization, visualization, and DNA
 sequence motif analysis.")
       (license license:expat))))
+
+(define-public tombo
+  (package
+    (name "tombo")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ont-tombo" version))
+       (sha256
+        (base32
+         "1023hadgcsgi53kz53ql45207hfizf9sw57z0qij3ay1bx68zbpm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose2" ,python-nose2)))
+    ;; The package mainly consists of a command-line tool, but also has a
+    ;; Python-API. Thus these must be propagated.
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-h5py" ,python-h5py)
+       ("python-mappy" ,python-mappy)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-tqdm" ,python-tqdm)
+       ("python-rpy2" ,python-rpy2)))
+    (home-page "https://github.com/nanoporetech/tombo")
+    (synopsis "Analysis of raw nanopore sequencing data")
+    (description "Tombo is a suite of tools primarily for the identification of
+modified nucleotides from nanopore sequencing data.  Tombo also provides tools
+for the analysis and visualization of raw nanopore signal.")
+    ;; Some parts may be BSD-3-licensed.
+    (license license:mpl2.0)))
+
+(define-public python-pyvcf
+  (package
+    (name "python-pyvcf")
+    (version "0.6.8")
+    ;; Use git, because the PyPI tarballs lack test data.
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jamescasbon/PyVCF.git")
+               ;; Latest release is not tagged.
+               (commit "bfcedb9bad1a14074ac4526ffdb610611e073810")))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0c7lsssns3zp8fh2ibllzzra003srg9vbxqzmq6654akbzdb7lrf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'install 'remove-installed-tests
+            ;; Do not install test files.
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (delete-file-recursively (string-append
+                                         (site-packages inputs outputs)
+                                         "vcf/test"))
+              #t)))))
+    (native-inputs `(("python-cython" ,python-cython)))
+    (propagated-inputs
+     `(("python-pysam" ,python-pysam)
+       ("python-rpy2" ,python-rpy2)))
+    (home-page "https://github.com/jamescasbon/PyVCF")
+    (synopsis "Variant Call Format parser for Python")
+    (description "This package provides a @acronym{VCF,Variant Call Format}
+parser for Python.")
+    (license license:expat)))
+
+(define-public nanosv
+  (package
+   (name "nanosv")
+   (version "1.2.4")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "NanoSV" version))
+            (sha256
+             (base32
+              "1wl2daj0bwrl8fx5xi8j8hfs3mp3vg3qycy66538n032v1qkc6xg"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-configparser" ,python-configparser)
+      ("python-pysam" ,python-pysam)
+      ("python-pyvcf" ,python-pyvcf)))
+   (home-page "https://github.com/mroosmalen/nanosv")
+   (synopsis "Structural variation detection tool for Oxford Nanopore data.")
+   (description "NanoSV is a software package that can be used to identify
+structural genomic variations in long-read sequencing data, such as data
+produced by Oxford Nanopore Technologies’ MinION, GridION or PromethION
+instruments, or Pacific Biosciences RSII or Sequel sequencers.")
+   (license license:expat)))
+
+(define-public r-ascat
+  (package
+   (name "r-ascat")
+   (version "2.5.2")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/Crick-CancerGenomics/ascat.git")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0cc0y3as6cb64iwnx0pgbajiig7m4z723mns9d5i4j09ccid3ccm"))))
+   (build-system r-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+       (add-after 'unpack 'move-to-ascat-dir
+         (lambda _
+           (chdir "ASCAT"))))))
+   (propagated-inputs
+    `(("r-rcolorbrewer" ,r-rcolorbrewer)))
+   (home-page "https://github.com/VanLoo-lab/ascat/")
+   (synopsis "Allele-Specific Copy Number Analysis of Tumors in R")
+   (description "This package provides the @acronym{ASCAT,Allele-Specific Copy
+Number Analysis of Tumors} R package that can be used to infer tumour purity,
+ploidy and allele-specific copy number profiles.")
+   (license license:gpl3)))
+
+(define-public r-battenberg
+  (package
+   (name "r-battenberg")
+   (version "2.2.9")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/Wedge-lab/battenberg.git")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0nmcq4c7y5g8h8lxsq9vadz9bj4qgqn118alip520ny6czaxki4h"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-devtools" ,r-devtools)
+      ("r-readr" ,r-readr)
+      ("r-doparallel" ,r-doparallel)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-rcolorbrewer" ,r-rcolorbrewer)
+      ("r-gridextra" ,r-gridextra)
+      ("r-gtools" ,r-gtools)
+      ("r-ascat" ,r-ascat)))
+   (home-page "https://github.com/Wedge-lab/battenberg")
+   (synopsis "Subclonal copy number estimation in R")
+   (description "This package contains the Battenberg R package for subclonal
+copy number estimation, as described by
+@url{doi:10.1016/j.cell.2012.04.023,Nik-Zainal et al.}")
+   (license license:gpl3)))

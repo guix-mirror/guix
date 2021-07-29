@@ -88,14 +88,14 @@ low-end hardware and serving many concurrent requests.")
 (define-public bat
   (package
     (name "bat")
-    (version "0.18.1")
+    (version "0.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bat" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0nvqkddpjxsmd27gqn8czql07faad50mihin5ivb9sxxnni28wnc"))))
+        (base32 "01zdamn1rd6d4xwwba1a8nfh06nmg7a0lakzgq8yfj5hsdgj9rdm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -113,6 +113,7 @@ low-end hardware and serving many concurrent requests.")
         ("rust-error-chain" ,rust-error-chain-0.12)
         ("rust-git2" ,rust-git2-0.13)
         ("rust-globset" ,rust-globset-0.4)
+        ("rust-grep-cli" ,rust-grep-cli-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-path-abs" ,rust-path-abs-0.5)
         ("rust-semver" ,rust-semver-0.11)
@@ -124,7 +125,7 @@ low-end hardware and serving many concurrent requests.")
         ("rust-wild" ,rust-wild-2))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
-        ("rust-nix" ,rust-nix-0.20)
+        ("rust-nix" ,rust-nix-0.21)
         ("rust-predicates" ,rust-predicates-1)
         ("rust-serial-test" ,rust-serial-test-0.5)
         ("rust-tempfile" ,rust-tempfile-3)

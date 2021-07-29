@@ -1,0 +1,40 @@
+https://github.com/FluxML/Tracker.jl/commit/f6550ba38a9ea5802e2de4fa9c939929ba711f0d.patch
+from an upstream pull request
+https://github.com/FluxML/Tracker.jl/pull/94
+
+
+From f6550ba38a9ea5802e2de4fa9c939929ba711f0d Mon Sep 17 00:00:00 2001
+From: Michael Abbott <me@escbook>
+Date: Wed, 3 Feb 2021 22:58:33 +0100
+Subject: [PATCH] two fixes for 1.6
+
+---
+ src/lib/array.jl | 2 +-
+ src/lib/real.jl  | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/lib/array.jl b/src/lib/array.jl
+index 92f2b39..f8cbbac 100644
+--- a/src/lib/array.jl
++++ b/src/lib/array.jl
+@@ -298,7 +298,7 @@ Base.reverse(xs::TrackedArray; dims) = track(reverse, xs, dims = dims)
+ @grad reverse(xs; dims) = reverse(data(xs), dims = dims), Δ -> (reverse(Δ, dims = dims), nothing)
+ Base.reverse(xs::TrackedVector) = track(reverse, xs)
+ @grad reverse(xs::TrackedVector) = reverse(data(xs)), Δ -> (reverse(Δ),)
+-Base.reverse(xs::TrackedVector, start, stop) = track(reverse, xs, start, stop)
++Base.reverse(xs::TrackedVector, start::Integer, stop::Integer) = track(reverse, xs, start, stop)
+ @grad reverse(xs, start, stop) = reverse(data(xs), start, stop), Δ -> (reverse(Δ, start, stop), nothing, nothing)
+ 
+ function _kron(mat1::AbstractMatrix,mat2::AbstractMatrix)
+diff --git a/src/lib/real.jl b/src/lib/real.jl
+index 737afd8..e1975ac 100644
+--- a/src/lib/real.jl
++++ b/src/lib/real.jl
+@@ -55,6 +55,7 @@ for f in :[isinf, isnan, isfinite].args
+ end
+ 
+ Printf.fix_dec(x::TrackedReal, n::Int, a...) = Printf.fix_dec(data(x), n, a...)
++Printf.tofloat(x::TrackedReal) = Printf.tofloat(data(x))
+ 
+ Base.float(x::TrackedReal) = x
+ 

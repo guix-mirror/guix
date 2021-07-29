@@ -2,6 +2,7 @@
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
+;;; Copyright © 2021 Charles <charles.b.jackson@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,32 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system node))
+
+(define-public node-acorn
+  (package
+    (name "node-acorn")
+    (version "8.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/acornjs/acorn")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "068h5gysz8bbslq31dva8f223rdf8l7w6nxcxjnv4zdprwkzkhaa"))))
+    (build-system node-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "acorn"))))))
+    (home-page "https://github.com/acornjs/acorn/tree/master/acorn")
+    (synopsis "Javascript-based Javascript parser")
+    (description "Acornjs is a Javascrip parser with many options and an
+architecture supporting plugins.")
+    (license license:expat)))
 
 (define-public node-color-name
   (package

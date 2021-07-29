@@ -1,9 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +32,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages certs)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
@@ -48,14 +51,15 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "1fcc6d66f9df74189c74d3d390f02202bb7db953")
-        (revision "2"))
+  (let ((commit "fb3e3364c33ae48c827f6b103e05c3f0e78b79a9")
+        (revision "3"))
     ;; When upgrading Julia, also upgrade this.  Get the commit from
-    ;; https://github.com/JuliaLang/julia/blob/v1.5.2/deps/libuv.version
+    ;; https://github.com/JuliaLang/julia/blob/v1.6.1/deps/libuv.version
     (package
       (inherit libuv)
       (name "libuv-julia")
@@ -65,16 +69,10 @@
                 (uri (git-reference
                        (url "https://github.com/JuliaLang/libuv")
                        (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "040l7f1hk7xyza11sry5cj4fhw05na949865axqqhxnifdvnmfji"))))
-      (build-system gnu-build-system)
-      (arguments
-       (substitute-keyword-arguments (package-arguments libuv)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'autogen)))))
+                  "1kqpn19d20aka30h6q5h8lnzyp0vw0xzgx0wm4w2r5j6yf76m2hr"))))
       (home-page "https://github.com/JuliaLang/libuv"))))
 
 (define libunwind-julia
@@ -97,7 +95,9 @@
          (julia-patch "libunwind-prefer-extbl"
                       "0lr4dafw8qyfh8sw8hhbwkql1dlhqv8px7k81y2l20hhxfgnh2m1")
          (julia-patch "libunwind-static-arm"
-                      "1jk3bmiw61ypcchqkk1fyg5wh8wpggk574wxyfyaic870zh3lhgq")))))
+                      "1jk3bmiw61ypcchqkk1fyg5wh8wpggk574wxyfyaic870zh3lhgq")
+         (julia-patch "libunwind-cfa-rsp"
+                      "1aswjhvysahhldbzh1afbf0hsjxrvs6xidsz2i7s1cjkjbdiia1z")))))
     (home-page "https://github.com/JuliaLang/tree/master/deps/")))
 
 (define (julia-patch-url version name)
@@ -105,7 +105,7 @@
                  "/deps/patches/" name ".patch"))
 
 (define (julia-patch name sha)
-  (let ((version "1.5.3"))
+  (let ((version "1.6.1"))
     (origin (method url-fetch)
             (uri (julia-patch-url version name))
             (sha256 (base32 sha))
@@ -113,10 +113,10 @@
 
 (define llvm-julia
   (package
-    (inherit llvm-9)
+    (inherit llvm-11)
     (name "llvm-julia")
     (source (origin
-              (inherit (package-source llvm-9))
+              (inherit (package-source llvm-11))
               ;; Those patches are inside the Julia source repo.
               ;; They are _not_ Julia specific (https://github.com/julialang/julia#llvm)
               ;; but they are required to build Julia.
@@ -132,37 +132,72 @@
                        "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
                      '("llvm-7.0-D44650"
                        "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
+                     '("llvm-6.0-DISABLE_ABI_CHECKS"
+                       "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
                      '("llvm9-D50010-VNCoercion-ni"
                        "1s1d3sjsiq4vxg7ncy5cz56zgy5vcq6ls3iqaiqkvr23wyryqmdx")
-                     '("llvm-exegesis-mingw"
-                       "0ph1cj1j7arvf1xq2xcr7qf9g0cpdl14fincgr67vpi520zvd3vp")
-                     '("llvm-test-plugin-mingw"
-                       "12z738cnahbf6n381im7i0hxp1m6k9hrnfjlmq9sac46nxly9gnj")
                      '("llvm7-revert-D44485"
                        "0f59kq3p3mpwsbmskypbi4zn01l6ig0x7v2rjp08k2r8z8m6fa8n")
-                     '("llvm-8.0-D66657-codegen-degenerate"
-                       "1n1ddx19h90bbpimdyd9dh8fsm6gb93xxyqm4ljkxa1k3cx2vm72")
-                     '("llvm-8.0-D71495-vectorize-freduce"
-                       "1zff08wvji9lnpskk4b3p5zyjsy5hhy23ynxjqlj9dw7jvvfrf0p")
-                     '("llvm-D75072-SCEV-add-type"
-                       "029a3fywsm233vf48mscina24idd50dc75wr70lmimrhwnw27p0z")
-                     '("llvm-9.0-D65174-limit-merge-stores"
-                       "04bff1mnblfj9mxfdwr1qdnw3i3szmp60gnhxwas5y68qg33z6j0")
-                     '("llvm9-D71443-PPC-MC-redef-symbol"
-                       "1c93nv7rgc9jg5mqrnvv08xib1789qvlql94fwggh18mp3b9hbgy")
-                     '("llvm-9.0-D78196"
-                       "08a43hyg7yyqjq2vmfsmppf34xcz60wq6y9zw5fdyhw2h1mcnmns")
+                     '("llvm-11-D75072-SCEV-add-type"
+                       "176xi1lnbnv2rcs05ywhyb7pd0xgmibayvwzksksg44wg2dh8mbx")
                      '("llvm-julia-tsan-custom-as"
                        "0awh40kf6lm4wn1nsjd1bmhfwq7rqj811szanp2xkpspykw9hg9s")
-                     '("llvm-9.0-D85499"
-                       "0vxlr35srvbvihlgrxq15v6dylp90vgi0qahj22j01jgqmdasjkm"))))
+                     '("llvm-D80101"
+                       "1gsdwmgmpbignvqyxcnlprj899259p3dvdznlncd84ss445qgq3j")
+                     '("llvm-D84031"
+                       "0nks9sbk7p0r5gyr0idrmm93a5fmdai8kihz9532dx4zhcvvqbjc")
+                     '("llvm-10-D85553"
+                       "1zjq7j9q2qp56hwkc8yc8f0z7kvam3j7hj8sb7qyd77r255ff78l")
+                     '("llvm-10-unique_function_clang-sa"
+                       "1jys9w2zqk3dasnxqh0qz5ij7rxi6mkgq9pqjsclmamr5169zyan")
+                     ;'("llvm-D88630-clang-cmake"
+                     ;  "0rs6s71nqnjkny7i69gqazhqj5jqfdr0bkxs2v5a55sfx8fa1k54")
+                     '("llvm-11-D85313-debuginfo-empty-arange"
+                       "1f672d5385xpgb8yrim8d3b7wg2z1l81agnshm1q61kdvjixqx32")
+                     '("llvm-11-D90722-rtdyld-absolute-relocs"
+                       "0kmnai229yyxkmpk9lxd180mcnhk2i8d87k2sg89gc8as18w10r6")
+                     '("llvm-invalid-addrspacecast-sink"
+                       "1n1b7j4s80vj7x5377aj9vyphmxx1q6bm0chhkxp6zsy3mx3g2ry")
+                     '("llvm-11-D92906-ppc-setjmp"
+                       "0cmd4dsblp7a8m03j16dqxws0ijh55zf4jzzxmj341qxa1gamdp9")
+                     '("llvm-11-PR48458-X86ISelDAGToDAG"
+                       "0vwzvlhsdazhxg4gj8g2f00a4f8qc5cgac23w575xk3pgba1jh6y")
+                     '("llvm-11-D93092-ppc-knownbits"
+                       "1748bypsc7c9lbs3fnkv0kwvch6bn85kj98j4jdaz254ig0wa6xj")
+                     '("llvm-11-D93154-globalisel-as"
+                       "1k5wd4z3pa7zj0gyjkif7viqj906dhqlbb7dc95gig40nbxv6zpj")
+                     '("llvm-11-ppc-half-ctr"
+                       "0piywisfz6cmw3133kz7vzhiqflq2y7igakqxlym0gi8pqylv7w9")
+                     '("llvm-11-ppc-sp-from-bp"
+                       "1wmg3485cx5f9pbykyl3jibk1wwv4w1x30hl4jyfndzr2yh8azf9")
+                     '("llvm-rGb498303066a6-gcc11-header-fix"
+                       "0hkd4rwhvh8g2yh13g29wiwnjpv2yd1hdyiv1ryw8izl25bz9c67")
+                     '("llvm-11-D94813-mergeicmps"
+                       "0cmy0ywkgyrdcvr9bd6pd912lyd4gcsrib4z0v05dwgcdxhk7y29")
+                     '("llvm-11-D94980-CTR-half"
+                       "1yf8cxib3z8hz7zi9n6v2g2c6vpfr4slq9hpx8m8yq8f1jbyw3fw")
+                     '("llvm-11-D94058-sext-atomic-ops"
+                       "1x6p6k6q651z5jcqxx8vj17cxnv196mka7mwn7dpp6c23lwgfdpb")
+                     '("llvm-11-D96283-dagcombine-half"
+                       "0lv4iq2f8qrcz1xyxfic3bcr5p0aqam3a7c6pp6fnw3riixm096k"))))
               (patch-flags '("-p1"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments llvm-9)
+     (substitute-keyword-arguments (package-arguments llvm-11)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-round-two
+             ;; We have to do the patching in two rounds because we can't
+             ;; pass '-p1' and '-p2' in the source field.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (map (lambda (patchname)
+                      (invoke "patch" patchname "-p2"))
+                    (list "llvm-11-AArch64-FastIsel-bug"
+                          "llvm-11-D97435-AArch64-movaddrreg"
+                          "llvm-11-D97571-AArch64-loh"
+                          "llvm-11-aarch64-addrspace"))))))
+       ((#:build-type _) "Release")
        ((#:configure-flags flags)
-        `(list ;; Taken from NixOS. Only way I could get libLLVM-6.0.so
-           "-DCMAKE_BUILD_TYPE=Release"
-
+        `(list
            ;; Build a native compiler and the NVPTX backend (NVIDIA) since
            ;; Julia insists on it, nothing more.  This reduces build times and
            ;; disk usage.
@@ -177,7 +212,22 @@
            ;; "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
            ;; "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
            "-DLLVM_ENABLE_DUMP=ON"
-           "-DLLVM_LINK_LLVM_DYLIB=ON"))))))
+           "-DLLVM_LINK_LLVM_DYLIB=ON"))))
+    (inputs
+     (append
+       (package-inputs llvm-11)
+       `(("llvm-11-AArch64-FastIsel-bug"
+          ,(julia-patch "llvm-11-AArch64-FastIsel-bug"
+                        "1m2vddj1mw4kbij8hbrx82piyy6bvr2x7wwdnlxfaqcm72ipzyh9"))
+         ("llvm-11-D97435-AArch64-movaddrreg"
+          ,(julia-patch "llvm-11-D97435-AArch64-movaddrreg"
+                        "10jnavq9ljkj7j2gqj2zd1pwqpqb5zs3zp9h96pmz0djbmxwa86y"))
+         ("llvm-11-D97571-AArch64-loh"
+          ,(julia-patch "llvm-11-D97571-AArch64-loh"
+                        "128zcbg1w1j7hngsf7z1a7alc6lig6l2rqgjp6i8nk3k3f842v6n"))
+         ("llvm-11-aarch64-addrspace"
+          ,(julia-patch "llvm-11-aarch64-addrspace"
+                        "0ckbzgfirxrf2d5bpinpngp7gnilbjrk0cbdfyl3h6f5v6i6xj6m")))))))
 
 (define-public libwhich
   (package
@@ -223,7 +273,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 (define-public julia
   (package
     (name "julia")
-    (version "1.5.3")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -231,7 +281,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "1zmim82x9kkdcgn0cdi01hmzi59zbszy1sqlygb86xq4hc1n66dy"))
+                "1mfzbjyqcmx7wb1sa7qab5fl78yzd7ap088krqbphbwvpn880srn"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
@@ -240,6 +290,10 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
        #:modules ((ice-9 match)
                   (guix build gnu-build-system)
                   (guix build utils))
+
+       ;; The test suite takes many times longer than building and
+       ;; can easily fail on smaller machines when they run out of memory.
+       #:tests? ,(not (target-aarch64?))
 
        ;; Do not strip binaries to keep support for full backtraces.
        ;; See https://github.com/JuliaLang/julia/issues/17831
@@ -259,14 +313,13 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                      (string-join (map (lambda (pkg)
                                          (string-append (assoc-ref inputs pkg)
                                                         "/lib"))
-                                       '("arpack-ng" "curl" "dsfmt"
+                                       '("curl" "dsfmt"
                                          "gmp" "lapack"
-                                         "libssh2" "libgit2"
+                                         "libssh2" "libnghttp2" "libgit2"
                                          "mbedtls" "mpfr"
                                          "openblas" "openlibm" "pcre2"
-                                         "suitesparse"))
-                                  ":"))
-             #t))
+                                         "suitesparse" "gfortran:lib"))
+                                  ":"))))
          ;; FIXME: Building the documentation requires Julia packages that
          ;; would be downloaded from the Internet.  We should build them in a
          ;; separate build phase.
@@ -304,7 +357,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                 "$(BUILDDIR)/$(EXENAME)-debug\\$\\(EXE\\): $(DOBJS) $(LLT_debug)"))
 
              ;; The REPL must be linked with libuv.
-             (substitute* "ui/Makefile"
+             (substitute* "cli/Makefile"
                (("JLDFLAGS \\+= ")
                 (string-append "JLDFLAGS += "
                                (assoc-ref %build-inputs "libuv")
@@ -318,27 +371,99 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              (substitute* "base/client.jl"
                (("/bin/sh") (which "sh")))
              #t))
-         (add-before 'build 'fix-precompile
-           (lambda _
-             (substitute* "base/loading.jl"
-               (("something(Base.active_project(), \"\")") "\"\""))
-             #t))
+         (add-before 'build 'shared-objects-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jlpath
+                    (lambda (pkgname)
+                      (string-append
+                       "stdlib/" pkgname "_jll/src/" pkgname "_jll.jl")))
+                   (from
+                    (lambda (libname)
+                      (string-append "const " libname " = .*\\.so")))
+                   (to
+                    (lambda* (pkg libname #:optional libname_jl)
+                      (string-append
+                       "const " (or libname_jl libname)  "= \""
+                       (assoc-ref inputs pkg) "/lib/" libname ".so"))))
+               (substitute* (jlpath "dSFMT")
+                 (((from "libdSFMT")) (to "dsfmt" "libdSFMT")))
+               (substitute* (jlpath "GMP")
+                 (((from "libgmp")) (to "gmp" "libgmp"))
+                 (((from "libgmpxx")) (to "gmp" "libgmpxx")))
+               (substitute* (jlpath "libLLVM")
+                 (((from "libLLVM")) (to "llvm" "libLLVM")))
+               (substitute* (jlpath "LibCURL")
+                 (((from "libcurl")) (to "curl" "libcurl")))
+               (substitute* (jlpath "LibGit2")
+                 (((from "libgit2")) (to "libgit2" "libgit2")))
+               (substitute* (jlpath "LibSSH2")
+                 (((from "libssh2")) (to "libssh2" "libssh2")))
+               (substitute* (jlpath "LibUV")
+                 (((from "libuv")) (to "libuv" "libuv")))
+               (substitute* (jlpath "LibUnwind")
+                 (((from "libunwind")) (to "libunwind" "libunwind")))
+               (substitute* (jlpath "MPFR")
+                 (((from "libmpfr")) (to "mpfr" "libmpfr")))
+               (substitute* (jlpath "MbedTLS")
+                 ;; For the newer version of mbedtls-apache:
+                 (("libmbedcrypto.so.5") "libmbedcrypto.so.6")
+                 (((from "libmbedcrypto")) (to "mbedtls" "libmbedcrypto"))
+                 (((from "libmbedtls")) (to "mbedtls" "libmbedtls"))
+                 (((from "libmbedx509")) (to "mbedtls" "libmbedx509")))
+               (substitute* (jlpath "nghttp2")
+                 (((from "libnghttp2")) (to "libnghttp2" "libnghttp2")))
+               (substitute* (jlpath "OpenBLAS")
+                 (((from "libopenblas")) (to "openblas" "libopenblas")))
+               (substitute* (jlpath "OpenLibm")
+                 (((from "libopenlibm")) (to "openlibm" "libopenlibm")))
+               (substitute* (jlpath "PCRE2")
+                 (((from "libpcre2")) (to "pcre2" "libpcre2" "libpcre2_8")))
+               (substitute* (jlpath "SuiteSparse")
+                 (((from "libamd")) (to "suitesparse" "libamd"))
+                 (((from "libbtf")) (to "suitesparse" "libbtf"))
+                 (((from "libcamd")) (to "suitesparse" "libcamd"))
+                 (((from "libccolamd")) (to "suitesparse" "libccolamd"))
+                 (((from "libcholmod")) (to "suitesparse" "libcholmod"))
+                 (((from "libcolamd")) (to "suitesparse" "libcolamd"))
+                 (((from "libklu")) (to "suitesparse" "libklu"))
+                 (((from "libldl")) (to "suitesparse" "libldl"))
+                 (((from "librbio")) (to "suitesparse" "librbio"))
+                 (((from "libspqr")) (to "suitesparse" "libspqr"))
+                 (((from "libsuitesparse")) (to "suitesparse" "libsuitesparse"))
+                 (((from "libsuitesparseconfig"))
+                  (to "suitesparse" "libsuitesparseconfig"))
+                 (((from "libumfpack")) (to "suitesparse" "libumfpack")))
+               (substitute* (jlpath "Zlib")
+                 (((from "libz")) (to "zlib" "libz"))))
+              #t))
+         (add-after 'unpack 'adjust-test-suite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let (;(pcre2 (assoc-ref inputs "pcre2"))
+                   (mbedtls-apache (assoc-ref inputs "mbedtls"))
+                   (mpfr (assoc-ref inputs "mpfr"))
+                   (suitesparse (assoc-ref inputs "suitesparse")))
+               ;; Some tests only check to see if the input is the correct version.
+               ;(substitute* "stdlib/PCRE2_jll/test/runtests.jl"
+               ;  (("10.36.0") ,(package-version pcre2)))
+               (substitute* "stdlib/MbedTLS_jll/test/runtests.jl"
+                 (("2.24.0") ,(package-version mbedtls-apache)))
+               (substitute* "stdlib/MPFR_jll/test/runtests.jl"
+                 (("4.1.0") ,(package-version mpfr)))
+               (substitute* "stdlib/SuiteSparse_jll/test/runtests.jl"
+                 (("5004") ,(string-replace-substring
+                              (version-major+minor
+                                (package-version suitesparse)) "." "0")))
+               #t)))
          (add-before 'check 'disable-broken-tests
            (lambda _
+             ;; disabling REPL tests because they require a stdin
+             ;; There are some read-only precompile issues in the 1.6 series.
+             ;; https://github.com/JuliaLang/julia/pull/41614
+             ;; https://github.com/JuliaLang/julia/issues/41156
              (substitute* "test/choosetests.jl"
-               (("tests = testnames")
-                ;; Those failings are not deterministic.  They depends on the
-                ;; running order.  I think it depends on the number of
-                ;; runners, disabling it for now
-                ;; https://github.com/JuliaLang/julia/issues/34330
-                "tests = filter(e->!in(e,[\"backtrace\",\"exceptions\",\"precompile\",
-                                           \"client\",\"stacktraces\"]),
-                                       testnames)"))
-             ;; Marking the test as broken as it's a known bug:
-             ;; https://github.com/JuliaLang/julia/issues/32377
-             (substitute* "stdlib/REPL/test/replcompletions.jl"
-               (("@test count") "@test_broken count"))
-             ;; Dates has a similar bug:
+               (("skip_tests = \\[\\]")
+                "skip_tests = [\"REPL\", \"precompile\"]"))
+             ;; Dates/io tests fail on master when networking is unavailable
              ;; https://github.com/JuliaLang/julia/issues/34655
              (substitute* "stdlib/Dates/test/io.jl"
                (("\"Dates.Date") "\"Date")
@@ -347,11 +472,67 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              ;; https://github.com/JuliaLang/julia/issues/35785
              (substitute* "test/file.jl"
                (("@test dirname\\(t\\) == d") "@test_broken dirname(t) == d"))
-             ;; Deprecation test fails with --depwarn=no
-             ;; https://github.com/JuliaLang/julia/issues/37673
-             (substitute* "test/Makefile"
-               (("./runtests.jl") "--depwarn=error ./runtests.jl"))
+             ;; julia embeds a certificate, we are not doing that
+             (substitute* "stdlib/MozillaCACerts_jll/test/runtests.jl"
+               (("@test isfile\\(MozillaCACerts_jll.cacert\\)")
+                "@test_broken isfile(MozillaCACerts_jll.cacert)"))
+             ;; since certificate is not present some tests are failing in network option
+             (substitute* "usr/share/julia/stdlib/v1.6/NetworkOptions/test/runtests.jl"
+               (("@test isfile\\(bundled_ca_roots\\(\\)\\)")
+                "@test_broken isfile(bundled_ca_roots())")
+               (("@test ispath\\(ca_roots_path\\(\\)\\)")
+                "@test_broken ispath(ca_roots_path())")
+               (("@test ca_roots_path\\(\\) \\!= bundled_ca_roots\\(\\)")
+                "@test_broken ca_roots_path() != bundled_ca_roots()"))
+             ;; Some digraphs are too wide for some terminals during testing.
+             (substitute* "stdlib/Unicode/test/runtests.jl"
+               (("test collect\\(graphemes") "test_broken collect(grapemes"))
+             ;; WARNING: failed to select UTF-8 encoding, using ASCII
+             ;; Using 'setlocale' doesn't affect the test failures.
+             ;(setlocale LC_ALL "en_US.utf8")
+             ;(setenv "LC_ALL" "en_US.utf8")
+             (substitute* "test/cmdlineargs.jl"
+               (("test v\\[3") "test_broken v[3")
+               (("test isempty\\(v\\[3") "test_broken isempty(v[3"))
              #t))
+         (add-before 'install 'symlink-libraries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((link
+                    (lambda (pkgname dir pred)
+                      (map (lambda (file)
+                             (unless (file-exists?
+                                       (string-append dir (basename file)))
+                               (symlink file (string-append dir (basename file)))))
+                           (find-files (string-append (assoc-ref inputs pkgname)
+                                                      "/lib") pred)))))
+               (link "curl" "usr/lib/" "\\.so") ; missing libpthreads libLLVM-11jl
+               (link "suitesparse" "usr/lib/julia/" "libbtf\\.so")
+               (link "suitesparse" "usr/lib/julia/" "libklu\\.so")
+               (link "suitesparse" "usr/lib/julia/" "libldl\\.so")
+               (link "suitesparse" "usr/lib/julia/" "librbio\\.so")
+               (link "gmp" "usr/lib/julia/" "libgmpxx\\.so")
+               (link "libuv" "usr/lib/julia/" "libuv\\.so")
+               (link "zlib" "usr/lib/julia/" "libz\\.so")
+               (link "libunwind" "usr/lib/julia/" "libunwind\\.so")
+               (symlink (string-append (assoc-ref inputs "p7zip") "/bin/7z")
+                        "usr/libexec/7z")
+               #t)))
+         (add-after 'install 'symlink-llvm-utf8proc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (link
+                      (lambda (pkgname pred)
+                        (map (lambda (file)
+                               (unless (file-exists?
+                                         (string-append out "/lib/julia/"
+                                                        (basename file)))
+                                 (symlink file (string-append out "/lib/julia/"
+                                                              (basename file)))))
+                        (find-files (string-append (assoc-ref inputs pkgname)
+                                                   "/lib") pred)))))
+               (link "llvm" "libLLVM-11\\.so")
+               (link "utf8proc" "libutf8proc\\.so")
+               #t)))
          (add-after 'install 'make-wrapper
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -360,8 +541,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (with-directory-excursion bin
                  (wrap-program program
                    `("JULIA_LOAD_PATH" ":" prefix
-                     ("" "$JULIA_LOAD_PATH")))
-                 (wrap-program program
+                     ("" "$JULIA_LOAD_PATH"))
                    `("JULIA_DEPOT_PATH" ":" prefix
                      ("" "$JULIA_DEPOT_PATH"))))
                #t))))
@@ -369,11 +549,14 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
        (list
         (string-append "prefix=" (assoc-ref %outputs "out"))
 
-         ;; Passing the MARCH flag is necessary to build binary substitutes for
-         ;; the supported architectures.
+         ;; Passing the MARCH or JULIA_CPU_TARGET flag is necessary to build
+         ;; binary substitutes for the supported architectures.  See also
+         ;; https://docs.julialang.org/en/v1/devdocs/sysimg/#Specifying-multiple-system-image-targets
          ,(match (or (%current-target-system)
                      (%current-system))
-                 ("x86_64-linux" "MARCH=x86-64")
+                 ("x86_64-linux"
+                  ;; These are the flags that upstream uses for their binaries.
+                  "JULIA_CPU_TARGET=generic;generic,-cx16,clone_all;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1)")
                  ("i686-linux" "MARCH=pentium4")
                  ("armhf-linux" "JULIA_CPU_TARGET=armv7-a,neon")
                  ("powerpc64le-linux" "JULIA_CPU_TARGET=pwr8")
@@ -382,81 +565,87 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                  ;; and also of targeting the builder's architecture.
                  (_ "JULIA_CPU_TARGET=generic"))
 
-         "CONFIG_SHELL=bash"     ;needed to build bundled libraries
-         ;; list of "USE_SYSTEM_*" is here:
-         ;; https://github.com/JuliaLang/julia/blob/v1.3.1/Make.inc
+         "CONFIG_SHELL=bash -x"     ; needed to build bundled libraries
+         "USE_BINARYBUILDER=0"
+         ;; list (and order!) of "USE_SYSTEM_*" is here:
+         ;; https://github.com/JuliaLang/julia/blob/v1.6.0/Make.inc
+         "USE_SYSTEM_CSL=1"
+         "USE_SYSTEM_LLVM=1"
+         "USE_SYSTEM_LIBUNWIND=1"
+         "USE_SYSTEM_PCRE=1"
+         "USE_SYSTEM_OPENLIBM=1"
          "USE_SYSTEM_DSFMT=1"
-         "USE_SYSTEM_P7ZIP=1"
-         "USE_SYSTEM_LAPACK=1"
          "USE_SYSTEM_BLAS=1"
-         "USE_BLAS64=0"          ;needed when USE_SYSTEM_BLAS=1
+         "USE_SYSTEM_LAPACK=1"
+         "USE_SYSTEM_GMP=1"
+         "USE_SYSTEM_MPFR=1"
+         "USE_SYSTEM_SUITESPARSE=1"
+         "USE_SYSTEM_LIBUV=1"
+         "USE_SYSTEM_UTF8PROC=1"
+         "USE_SYSTEM_MBEDTLS=1"
+         "USE_SYSTEM_LIBSSH2=1"
+         "USE_SYSTEM_NGHTTP2=1"
+         "USE_SYSTEM_CURL=1"
+         "USE_SYSTEM_LIBGIT2=1"
+         "USE_SYSTEM_PATCHELF=1"
+         "USE_SYSTEM_ZLIB=1"
+         "USE_SYSTEM_P7ZIP=1"
+
+         "NO_GIT=1"             ; build from release tarball.
+         "USE_BLAS64=0"         ; needed when USE_SYSTEM_BLAS=1
          "LIBBLAS=-lopenblas"
          "LIBBLASNAME=libopenblas"
 
-         "USE_SYSTEM_SUITESPARSE=1"
          (string-append "SUITESPARSE_INC=-I "
                         (assoc-ref %build-inputs "suitesparse")
                         "/include")
-         "USE_GPL_LIBS=1"        ;proudly
-         "USE_SYSTEM_UTF8PROC=1"
+         "USE_GPL_LIBS=1"       ; proudly
          (string-append "UTF8PROC_INC="
                         (assoc-ref %build-inputs "utf8proc")
                         "/include")
-         "USE_SYSTEM_LLVM=1"
-         "LLVM_VER=9.0.1"
+         "LLVM_VER=11.0.0"
 
          "USE_LLVM_SHLIB=1"
-         "USE_SYSTEM_LIBUNWIND=1"
-         "USE_SYSTEM_LIBUV=1"
          (string-append "LIBUV="
                         (assoc-ref %build-inputs "libuv")
                         "/lib/libuv.so")
          (string-append "LIBUV_INC="
                         (assoc-ref %build-inputs "libuv")
-                        "/include")
-         "USE_SYSTEM_PATCHELF=1"
-         "USE_SYSTEM_PCRE=1"
-         "USE_SYSTEM_OPENLIBM=1"
-         "USE_SYSTEM_MBEDTLS=1"
-         "USE_SYSTEM_LIBSSH2=1"
-         "USE_SYSTEM_GMP=1"
-         "USE_SYSTEM_MPFR=1"
-         "USE_SYSTEM_ARPACK=1"
-         "USE_SYSTEM_LIBGIT2=1"
-         "USE_SYSTEM_ZLIB=1")))
+                        "/include"))))
     (inputs
-     `(("llvm" ,llvm-julia)
-       ("p7zip" ,p7zip)
-       ;; The bundled version is 3.3.0 so stick to that version.  With other
-       ;; versions, we get test failures in 'linalg/arnoldi' as described in
-       ;; <https://bugs.gnu.org/30282>.
-       ("arpack-ng" ,arpack-ng-3.3.0)
-
-       ("coreutils" ,coreutils) ;for bindings to "mkdir" and the like
+     `(("coreutils" ,coreutils) ; for bindings to "mkdir" and the like
+       ("curl" ,curl-ssh)
+       ("gfortran" ,gfortran)
+       ;; required for libgcc_s.so
+       ("gfortran:lib" ,gfortran "lib")
+       ("gmp" ,gmp)
        ("lapack" ,lapack)
-       ("openblas" ,openblas) ;Julia does not build with Atlas
-       ("libunwind" ,libunwind-julia)
-       ("openlibm" ,openlibm)
-       ("mbedtls" ,mbedtls-apache)
-       ("curl" ,curl)
-       ("libgit2" ,libgit2-0.28)
+       ("libgit2" ,libgit2)
+       ("libnghttp2" ,nghttp2 "lib")
        ("libssh2" ,libssh2)
-       ("fortran" ,gfortran)
+       ("libunwind" ,libunwind-julia)
        ("libuv" ,libuv-julia)
-       ("pcre2" ,pcre2)
-       ("utf8proc" ,utf8proc)
+       ("llvm" ,llvm-julia)
+       ("mbedtls" ,mbedtls-apache)
        ("mpfr" ,mpfr)
+       ("openblas" ,openblas)
+       ("openlibm" ,openlibm)
+       ("p7zip" ,p7zip)
+       ;; pcre2-10.35 has a bug with the JIT regex parser:
+       ;; https://github.com/JuliaLang/julia/issues/40231#issuecomment-812753324
+       ("pcre2" ,pcre2-10.36)
+       ("suitesparse" ,suitesparse)
+       ("utf8proc" ,utf8proc-2.6.1)
        ("wget" ,wget)
        ("which" ,which)
        ("zlib" ,zlib)
-       ("gmp" ,gmp)
-       ("suitesparse" ,suitesparse)
        ;; Find dependencies versions here:
-       ;; https://raw.githubusercontent.com/JuliaLang/julia/v1.3.0/deps/Versions.make
-       ("libwhich" ,libwhich)
-       ("dsfmt" ,dsfmt)))
+       ;; https://raw.githubusercontent.com/JuliaLang/julia/v1.6.0/deps/Versions.make
+       ("dsfmt" ,dsfmt)
+       ("libwhich" ,libwhich)))
     (native-inputs
-     `(("openssl" ,openssl)
+     `(("nss-certs" ,nss-certs)
+       ("openssl" ,openssl)
        ("perl" ,perl)
        ("patchelf" ,patchelf)
        ("pkg-config" ,pkg-config)

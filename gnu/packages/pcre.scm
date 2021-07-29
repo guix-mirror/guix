@@ -7,6 +7,8 @@
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,3 +121,16 @@ own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "https://www.pcre.org/")))
+
+(define-public pcre2-10.36
+  (package
+    (inherit pcre2)
+    (name "pcre2")
+    (version "10.36")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/pcre/pcre2/"
+                                  version "/pcre2-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0p3699msps07p40g9426lvxa3b41rg7k2fn7qxl2jm0kh4kkkvx9"))))))

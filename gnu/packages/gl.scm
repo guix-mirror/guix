@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -484,10 +485,26 @@ from software emulation to complete hardware acceleration for modern GPUs.")
   (package/inherit mesa-opencl
     (name "mesa-opencl-icd")
     (arguments
-     (substitute-keyword-arguments (package-arguments mesa)
-       ((#:configure-flags flags)
-        `(cons "-Dgallium-opencl=icd"
-               ,(delete "-Dgallium-opencl=standalone" flags)))))))
+      (substitute-keyword-arguments (package-arguments mesa)
+        ((#:configure-flags flags)
+         `(cons "-Dgallium-opencl=icd"
+                ,(delete "-Dgallium-opencl=standalone" flags)))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'install 'mesa-icd-absolute-path
+              (lambda _
+                ;; Use absolute path for OpenCL platform library.
+                ;; Otherwise we would have to set LD_LIBRARY_PATH=LIBRARY_PATH
+                ;; for ICD in our applications to find OpenCL platform.
+                (use-modules (guix build utils)
+                             (ice-9 textual-ports))
+                (let* ((out (assoc-ref %outputs "out"))
+                       (mesa-icd (string-append out "/etc/OpenCL/vendors/mesa.icd"))
+                       (old-path (call-with-input-file mesa-icd get-string-all))
+                       (new-path (string-append out "/lib/" (string-trim-both old-path))))
+                  (if (file-exists? new-path)
+                    (call-with-output-file mesa-icd
+                      (lambda (port) (format port "~a\n" new-path)))))))))))))
 
 (define-public mesa-headers
   (package/inherit mesa

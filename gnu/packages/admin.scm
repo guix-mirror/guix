@@ -1307,6 +1307,38 @@ tools: server, client, and relay agent.")
       (license license:mpl2.0)
       (properties '((cpe-name . "dhcp"))))))
 
+(define-public radvd
+  (package
+    (name "radvd")
+    (version "2.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/radvd-project/radvd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1df827m3vkjq2bcs5y9wg2cygvpdwl8ppl446qqhyym584gz54nl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bison" ,bison)
+       ("check" ,check)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags '("--with-check")))
+    (home-page "https://radvd.litech.org/")
+    (synopsis "IPv6 Router Advertisement Daemon")
+    (description
+     "The Router Advertisement Daemon (radvd) is run on systems acting as IPv6
+routers.  It sends Router Advertisement messages specified by RFC 2461
+periodically and when requested by a node sending a Router Solicitation
+message.  These messages are required for IPv6 stateless autoconfiguration.")
+    (license (license:non-copyleft "file://COPYRIGHT"))))
+
 (define-public libpcap
   (package
     (name "libpcap")
@@ -1614,7 +1646,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.7p1")
+    (version "1.9.7p2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1624,7 +1656,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1kyqj45nmykwj38sc5kx7mi0vf6x637hzvbd1jv22lg5aks3251r"))
+                "1a7w99mlpa7kb7zfqkhvafli0a3xhz50kws25y2sg2dzbmrfxd98"))
               (modules '((guix build utils)))
               (snippet
                '(begin

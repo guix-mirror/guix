@@ -6,6 +6,8 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2020 Christine Lemmer-Webber <cwebber@dustycloud.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,7 @@
 
 (define-module (gnu build activation)
   #:use-module (gnu system accounts)
+  #:use-module (gnu system setuid)
   #:use-module (gnu build accounts)
   #:use-module (gnu build linux-boot)
   #:use-module (guix build utils)
@@ -279,14 +282,17 @@ they already exist."
   "/run/setuid-programs")
 
 (define (activate-setuid-programs programs)
-  "Turn PROGRAMS, a list of file names, into setuid programs stored under
-%SETUID-DIRECTORY."
-  (define (make-setuid-program prog)
+  "Turn PROGRAMS, a list of file setuid-programs record, into setuid programs
+stored under %SETUID-DIRECTORY."
+  (define (make-setuid-program program setuid? setgid? uid gid)
     (let ((target (string-append %setuid-directory
-                                 "/" (basename prog))))
-      (copy-file prog target)
-      (chown target 0 0)
-      (chmod target #o4555)))
+                                 "/" (basename program)))
+          (mode (+ #o0555                   ; base permissions
+                   (if setuid? #o4000 0)    ; setuid bit
+                   (if setgid? #o2000 0)))) ; setgid bit
+      (copy-file program target)
+      (chown target uid gid)
+      (chmod target mode)))
 
   (format #t "setting up setuid programs in '~a'...~%"
           %setuid-directory)
@@ -302,15 +308,27 @@ they already exist."
   (for-each (lambda (program)
               (catch 'system-error
                 (lambda ()
-                  (make-setuid-program program))
+                  (let* ((program-name (setuid-program-program program))
+                         (setuid?      (setuid-program-setuid? program))
+                         (setgid?      (setuid-program-setgid? program))
+                         (user         (setuid-program-user program))
+                         (group        (setuid-program-group program))
+                         (uid (match user
+                                ((? string?) (passwd:uid (getpwnam user)))
+                                ((? integer?) user)))
+                         (gid (match group
+                                ((? string?) (group:gid (getgrnam group)))
+                                ((? integer?) group))))
+                    (make-setuid-program program-name setuid? setgid? uid gid)))
                 (lambda args
                   ;; If we fail to create a setuid program, better keep going
                   ;; so that we don't leave %SETUID-DIRECTORY empty or
                   ;; half-populated.  This can happen if PROGRAMS contains
                   ;; incorrect file names: <https://bugs.gnu.org/38800>.
                   (format (current-error-port)
-                          "warning: failed to make '~a' setuid-root: ~a~%"
-                          program (strerror (system-error-errno args))))))
+                          "warning: failed to make ~s setuid/setgid: ~a~%"
+                          (setuid-program-program program)
+                          (strerror (system-error-errno args))))))
             programs))
 
 (define (activate-special-files special-files)

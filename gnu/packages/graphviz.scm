@@ -118,7 +118,7 @@
        ("swig" ,swig)
        ("pkg-config" ,pkg-config)))
     (outputs '("out" "doc"))                      ; 5 MiB of html + pdfs
-    (home-page "http://www.graphviz.org/")
+    (home-page "https://www.graphviz.org/")
     (synopsis "Graph visualization software")
     (description
      "Graphviz is a graph visualization tool suite.  Graph visualization is a

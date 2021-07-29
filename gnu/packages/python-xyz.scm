@@ -66,7 +66,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020, 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -105,6 +105,7 @@
 ;;; Copyright © 2021 Danial Behzadi <dani.behzi@ubuntu.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
+;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5534,14 +5535,14 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-numexpr
   (package
     (name "python-numexpr")
-    (version "2.6.5")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numexpr" version))
        (sha256
         (base32
-         "1frnbcwmsi312154x274xl28xazr1k8vjby83fwyla2n10a81bgq"))))
+         "09d8yfsx33ddwfkpn8805w2mxnn4cvf47yc66g4azldpz4lnaqa3"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (propagated-inputs
@@ -6321,13 +6322,13 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pikepdf
   (package
     (name "python-pikepdf")
-    (version "2.14.2")
+    (version "2.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pikepdf" version))
        (sha256
-        (base32 "01f173af5j0fmrzg6czfr92d331bqdbs3dkch7p41ykyv4fsv6kn"))))
+        (base32 "1phdpi9cm2pbvgcxqvwr8ck327sxhdw4dnxmzhrbf7hzydmgykg2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
@@ -10349,6 +10350,26 @@ your package is installed, via @code{pkg_resources} (part of
     (description "This module defines a decorator to wrap legacy APIs.  The
 primary use case is APIs defined before keyword-only parameters existed.")
     (license license:gpl3+)))
+
+(define-public python-langdetect
+  (package
+    (name "python-langdetect")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "langdetect" version))
+       (sha256
+        (base32 "1805svvb7xjm4sf1j7b6nc3409x37pd1xmabfwwjf1ldkzwgxhfb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/Mimino666/langdetect")
+    (synopsis "Language detection library")
+    (description
+     "This library is a port of Nakatani Shuyo's language-detection library
+(version from 03/03/2014) to Python.")
+    (license license:expat)))
 
 (define-public python-pyasn1
   (package
@@ -19391,6 +19412,50 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-phonenumbers
   (package-with-python2 python-phonenumbers))
 
+(define-public python-heapdict
+  (package
+    (name "python-heapdict")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "HeapDict" version))
+       (sha256
+        (base32
+         "1dnd7v9adqd21bf4ih2wzn9a7b41m0nccb0vbxny9n037rxzb5c4"))))
+    (build-system python-build-system)
+    (home-page "http://stutzbachenterprises.com/")
+    (synopsis "Heap with decrease-key and increase-key operations")
+    (description
+     "heapdict implements the MutableMapping ABC, meaning it works pretty much
+like a regular Python @code{dict}.  It’s designed to be used as a priority
+queue.")
+    (license license:bsd-3)))
+
+(define-public python-zict
+  (package
+    (name "python-zict")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zict" version))
+       (sha256
+        (base32
+         "05pd1hyhqvpw87rnbvl3vdyf619snpyccbswaxisdj17frwnjacf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-heapdict" ,python-heapdict)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://zict.readthedocs.io/en/latest/")
+    (synopsis "Composable mutable mapping tools")
+    (description "This package provides abstract @code{MutableMapping} classes
+that consume and build on other @code{MutableMappings}.  Several of these can
+be composed with one another to form intuitive interfaces over complex storage
+systems policies.")
+    (license license:bsd-3)))
+
 (define-public python-send2trash
   (package
     (name "python-send2trash")
@@ -20726,6 +20791,43 @@ Public Suffix List's private domains as well.")
 (define-public python2-tldextract
   (package-with-python2 python-tldextract))
 
+(define-public python-tldr
+  (package
+    (name "python-tldr")
+    (version "1.2.1")
+    (source
+     (origin
+       ;; There's no test in PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tldr-pages/tldr-python-client")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n9wqvjxspm18vlxf9j9slrcydshk4rkv5nwkrqhfq606n6zvks4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This test fails. It tries to open a network socket.
+               (invoke "pytest" "-vv" "-k" "not test_error_message")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-colorama" ,python-colorama)
+       ("python-termcolor" ,python-termcolor)))
+    (home-page "https://github.com/tldr-pages/tldr-python-client")
+    (synopsis "Python command-line client for tldr pages")
+    (description "This package provides the @code{tldr} command allowing users
+to view @code{tldr} pages from a shell.  The @code{tldr} pages are a community
+effort to simplify the man pages with practical examples.")
+    (license license:expat))) ; MIT license
+
 (define-public python-nodeenv
   (package
     (name "python-nodeenv")
@@ -21250,30 +21352,56 @@ pure-Python.")
 (define-public python2-sortedcontainers
   (package-with-python2 python-sortedcontainers))
 
-(define-public python-cloudpickle
+(define python-cloudpickle-testpkg
   (package
-    (name "python-cloudpickle")
-    (version "1.3.0")
+    (name "python-cloudpickle-testpkg")
+    (version "1.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "cloudpickle" version))
+       ;; Archive on pypi does not include test infrastructure.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cloudpipe/cloudpickle")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lx7gy9clp427qwcm7b23zdsldpr03gy3vxxhyi8fpbhwz859brq"))))
+         "1584d21d4rcpryn8yfz0pjnjprk4zm367m0razdcz8cjbsh0dxp6"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (if tests?
-                          (invoke "pytest" "-s" "-vv")
-                          (format #t "test suite not run~%")))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "tests/cloudpickle_testpkg"))))))
+    (home-page "https://github.com/cloudpipe/cloudpickle")
+    (synopsis "Extended pickling support for Python objects")
+    (description
+     "Cloudpickle makes it possible to serialize Python constructs not
+supported by the default pickle module from the Python standard library.  It
+is especially useful for cluster computing where Python expressions are
+shipped over the network to execute on remote hosts, possibly close to the
+data.")
+    (license license:bsd-3)))
+
+(define-public python-cloudpickle
+  (package
+    (inherit python-cloudpickle-testpkg)
+    (name "python-cloudpickle")
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "pytest" "-s" "-vv")
+                 (format #t "test suite not run~%")))))))
     (native-inputs
      `(;; For tests.
+       ("python-cloudpickle-testpkg" ,python-cloudpickle-testpkg)
        ("python-psutil" ,python-psutil)
        ("python-pytest" ,python-pytest)
-       ("python-tornado" ,python-tornado)))
+       ("python-tornado" ,python-tornado-6)))
     (home-page "https://github.com/cloudpipe/cloudpickle")
     (synopsis "Extended pickling support for Python objects")
     (description
@@ -21288,9 +21416,20 @@ data.")
 (define-public python2-cloudpickle
   (let ((base (package-with-python2 (strip-python2-variant python-cloudpickle))))
     (package/inherit base
+      (version "1.3.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "cloudpickle" version))
+         (sha256
+          (base32
+           "0lx7gy9clp427qwcm7b23zdsldpr03gy3vxxhyi8fpbhwz859brq"))))
       (native-inputs
-       `(("python-mock" ,python2-mock)
-         ,@(package-native-inputs base)))
+       `(;; For tests.
+         ("python-mock" ,python2-mock)
+         ("python-psutil" ,python2-psutil)
+         ("python-pytest" ,python2-pytest)
+         ("python-tornado" ,python2-tornado)))
       (propagated-inputs
        `(("python-futures" ,python2-futures)
          ,@(package-propagated-inputs base))))))
@@ -21354,14 +21493,14 @@ This Python package wraps the Blosc library.")
 (define-public python-partd
   (package
     (name "python-partd")
-    (version "0.3.9")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "partd" version))
        (sha256
         (base32
-         "0sz6rwlnl4fqq220pyz863cnv0gjdxl4m7lscl71ishl5z0xkmhz"))))
+         "1sy3vdfyyx3bc5590zb7gwpsmimqz8m992x9hsydq8nmhixqjrxa"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-blosc" ,python-blosc)
@@ -21401,13 +21540,13 @@ decisions with any given backend.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "2.14.0")
+    (version "2021.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32 "031j0j26s0675v0isyps2dphm03330n7dy8ifdy70jgvf78d119q"))))
+        (base32 "131c1bp193d7wp4gx09j6wark1c322c8sqjy22i0jaafl5rqfbz7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -21418,14 +21557,7 @@ decisions with any given backend.")
              (substitute* "dask/tests/test_threaded.py"
                (("def test_interrupt\\(\\)" m)
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                               m)))
-             ;; This one fails with a type error:
-             ;; TypeError: Already tz-aware, use tz_convert to convert.
-             (substitute* "dask/dataframe/tests/test_shuffle.py"
-               (("def test_set_index_timestamp\\(\\)" m)
-                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                               m)))
-             #t))
+                               m)))))
          (replace 'check
            (lambda _ (invoke "pytest" "-vv"))))))
     (propagated-inputs
@@ -25877,4 +26009,26 @@ result.")
     (description
      "This packages provides a docutils-compatibility bridge to CommonMark,
 enabling you to write CommonMark inside of Docutils & Sphinx projects.")
+    (license license:expat)))
+
+(define-public python-pyhull
+  (package
+    (name "python-pyhull")
+    (version "2015.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyhull" version))
+       (sha256
+        (base32
+         "091sph52c4yk1jlm5w8xidxpzbia9r7s42bnb23q4m4b56ihmzyj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/materialsvirtuallab/pyhull")
+    (synopsis "Python wrapper to Qhull")
+    (description
+     "This package provides a Python wrapper to @uref{http://www.qhull.org/,
+Qhull} for the computation of the convex hull, Delaunay triangulation, and
+Voronoi diagram.")
     (license license:expat)))

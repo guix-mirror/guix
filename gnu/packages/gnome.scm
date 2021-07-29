@@ -3926,67 +3926,6 @@ graphical interfaces described in glade files and for accessing the
 widgets built in the loading process.")
     (license license:gpl2+))) ; This is correct.  GPL not LGPL
 
-(define-public libgnomeprint
-  ;; This library has been deprecated since 2006; see
-  ;; <https://mail.gnome.org/archives/devel-announce-list/2006-August/msg00005.html>.
-  (package
-    (name "libgnomeprint")
-    (version "2.18.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "14cnimvlc7ky22g2snyf4362412k3jk1syjf8b9887q5a63fqd0h"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("popt" ,popt)
-       ("libart-lgpl" ,libart-lgpl)
-       ("gtk+" ,gtk+-2)
-       ("libxml2" ,libxml2)))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
-    (synopsis "Printing framework for GNOME")
-    (description
-     "GNOME-print was a printing framework for GNOME.  It has been deprecated
-since ca. 2006, when GTK+ itself incorporated printing support.")
-    (license license:lgpl2.0+)))
-
-
-(define-public libgnomeprintui
-  ;; Deprecated; see libgnomeprint.
-  (package
-    (name "libgnomeprintui")
-    (version "2.18.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0spl8vinb5n6n1krnfnr61dwaxidg67h8j94z9p59k2xdsvfashm"))))
-    (build-system gnu-build-system)
-    ;; Mentioned as Required in the .pc file
-    (propagated-inputs `(("libgnomeprint" ,libgnomeprint)))
-    (inputs `(("gtk+" ,gtk+-2)
-              ("glib" ,glib)
-              ("gnome-icon-theme" ,gnome-icon-theme)
-              ("libgnomecanvas" ,libgnomecanvas)
-              ("libxml2" ,libxml2)))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
-    (synopsis "Printing framework for GNOME")
-    (description (package-description libgnomeprint))
-    (license license:lgpl2.0+)))
-
 (define-public libbonoboui
   (package
     (name "libbonoboui")
@@ -10198,9 +10137,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
              (setenv "ASPELL_DICT_DIR"
                      (search-input-directory inputs "/lib/aspell")))))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("iso-codes" ,iso-codes)))
+     `(("iso-codes" ,iso-codes)))
     (native-inputs
      `(("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -10212,7 +10149,10 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("aspell-dict-en" ,aspell-dict-en)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("enchant" ,enchant)))            ;enchant.pc is required by gspell-1.pc
+     ;; Referred by .pc file.
+     `(("enchant" ,enchant)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description

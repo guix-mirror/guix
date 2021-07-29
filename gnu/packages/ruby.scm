@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -7676,15 +7676,26 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
 (define-public ruby-stackprof
   (package
     (name "ruby-stackprof")
-    (version "0.2.16")
+    (version "0.2.17")
     (source
-      (origin
-        (method url-fetch)
-        (uri (rubygems-uri "stackprof" version))
-        (sha256
-         (base32
-          "147rb66p3n062vc433afqhkd99iazvkrqnghxgh871r62yhha93f"))))
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "stackprof" version))
+       (sha256
+        (base32 "06lz70k8c0r7fyxk1nc3idh14x7nvsr21ydm1bsmbj00jyhmfzsn"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'skip-dubious-test
+           ;; This unreliable test can fail with "Expected 0 to be >= 1."
+           (lambda _
+             (substitute* "test/test_stackprof.rb"
+               (("def test_(cputime)" _ name)
+                (string-append "def skip_" name)))))
+         (add-before 'check 'build-tests
+           (lambda _
+             (invoke "rake" "compile"))))))
     (native-inputs
      `(("ruby-mocha" ,ruby-mocha)
        ("ruby-rake-compiler" ,ruby-rake-compiler)))

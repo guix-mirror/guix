@@ -237,7 +237,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.13.1")
+    (version "2.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1cgwdpw8b797883z9y92ixxjkv72kiy65zsw2qqf5and1kbzgv41"))))
+                "095s7vdlsxmxa0n0l1a082m6gjaypqfqkaj99z8j7dx0ji89hy8n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg
@@ -343,7 +343,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.7.0-17")
+    (version "1.7.0-21")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "0yh556wlgs9hfyp5j2xz4nlrd2dma63cicrc3dhahyl96y1aw6mr"))))
+        (base32 "1w8wyz559ljsjxf5xjkjvgkac1xpj71qzy6sycnbsqza4m0j28l5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -368,14 +368,12 @@ precision.")
            (lambda _
              (substitute* (cons "micropython-1.12/xcas/Makefile"
                                 (find-files "doc" "^Makefile"))
-               (("/bin/cp") (which "cp")))
-             #t))
+               (("/bin/cp") (which "cp")))))
          (add-after 'unpack 'disable-failing-test
            ;; FIXME: Test failing.  Not sure why.
            (lambda _
              (substitute* "check/Makefile.in"
-               (("chk_fhan11") ""))
-             #t))
+               (("chk_fhan11") ""))))
          (add-after 'install 'fix-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -388,13 +386,11 @@ precision.")
                ;; Remove duplicate documentation in
                ;; "%out/share/doc/giac/", where Xcas does not expect
                ;; to find it.
-               (delete-file-recursively (string-append out "/share/doc/giac"))
-               #t)))
+               (delete-file-recursively (string-append out "/share/doc/giac")))))
          (add-after 'install 'remove-unnecessary-executable
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (delete-file (string-append out "/bin/xcasnew"))
-               #t))))))
+               (delete-file (string-append out "/bin/xcasnew"))))))))
     (inputs
      ;; TODO: Add libnauty, unbundle "libmicropython.a".
      `(("fltk" ,fltk)

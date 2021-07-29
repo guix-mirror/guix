@@ -722,7 +722,7 @@ The following systems are supported:
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method git-fetch)
@@ -731,7 +731,7 @@ The following systems are supported:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "163azad5y4zxwzxyrb481rwfc2p86v99pf7nvdr6bavzq98x2z8h"))
+        (base32 "16kngkzf08jflqxwbgafb47091vqqb9pbhazg9cd94cy81ahz3q3"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -740,29 +740,30 @@ The following systems are supported:
             (lambda (subdir)
               (let ((lib-subdir (string-append "src/third-party/" subdir)))
                 (delete-file-recursively lib-subdir)))
-            '("libpng" "lzma" "sqlite3" "zlib"))
-           #t))))
+            '("libpng" "lzma" "sqlite3" "zlib"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no "test" target
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
              "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("qttools" ,qttools)))
-    (inputs `(("ffmpeg" ,ffmpeg)
-              ("libedit" ,libedit)
-              ("libelf" ,libelf)
-              ("libepoxy" ,libepoxy)
-              ("libpng" ,libpng)
-              ("mesa" ,mesa)
-              ("minizip" ,minizip)
-              ("ncurses" ,ncurses)
-              ("qtbase" ,qtbase-5)
-              ("qtmultimedia" ,qtmultimedia)
-              ("sdl2" ,sdl2)
-              ("sqlite" ,sqlite)
-              ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libedit" ,libedit)
+       ("libelf" ,libelf)
+       ("libepoxy" ,libepoxy)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("minizip" ,minizip)
+       ("ncurses" ,ncurses)
+       ("qtbase" ,qtbase-5)
+       ("qtmultimedia" ,qtmultimedia)
+       ("sdl2" ,sdl2)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
     (home-page "https://mgba.io")
     (synopsis "Game Boy Advance emulator")
     (description
@@ -1769,7 +1770,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.233")
+    (version "0.234")
     (source
      (origin
        (method git-fetch)
@@ -1778,7 +1779,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zq7hvss004mwczk3jvyalkj9c5v6npswhkc2wj7dxyxz770clb3"))
+        (base32 "010ing14pfwc0j7jnghjdcvq0qr7g4dplnggl545apyy61zigdkn"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1787,8 +1788,7 @@ This is a part of the TiLP project.")
              (for-each delete-file-recursively
                        '("asio" "expat" "glm" "libflac" "libjpeg" "lua"
                          "portaudio" "portmidi" "pugixml" "rapidjson" "SDL2"
-                         "SDL2-override" "sqlite3" "utf8proc" "zlib")))
-           #t))))
+                         "SDL2-override" "sqlite3" "utf8proc" "zlib")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1826,16 +1826,14 @@ This is a part of the TiLP project.")
                  (install-file "uismall.bdf" fonts))
                (when (file-exists? "mame64")
                  (rename-file "mame64" "mame"))
-               (install-file "mame" (string-append out "/bin")))
-             #t))
+               (install-file "mame" (string-append out "/bin")))))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
                     (info (string-append out "/share/info")))
                (install-file "docs/build/man/MAME.1" man)
-               (install-file "docs/build/texinfo/MAME.info" info))
-             #t))
+               (install-file "docs/build/texinfo/MAME.info" info))))
          (add-after 'install 'install-ini-file
            ;; Generate an ini file so as to set some directories (e.g., roms)
            ;; to a writable location, i.e., "$HOME/.mame/" and "$HOME/mame/".
@@ -1894,8 +1892,7 @@ This is a part of the TiLP project.")
                             select_directory     $HOME/mame/select~@
                             icons_directory      $HOME/mame/icons~@
                             covers_directory     $HOME/mame/covers~@
-                            ui_path              $HOME/.mame/ui~%")))
-               #t)))
+                            ui_path              $HOME/.mame/ui~%"))))))
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1914,8 +1911,7 @@ This is a part of the TiLP project.")
                            Type=Application~@
                            Categories=Game;Emulator;~@
                            Keywords=Game;Emulator;Arcade;~%"
-                           executable)))
-               #t))))))
+                           executable)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("sphinx" ,python-sphinx)

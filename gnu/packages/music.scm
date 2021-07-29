@@ -847,7 +847,7 @@ MusePack, Monkey's Audio, and WavPack files.")
 (define-public extempore
   (package
     (name "extempore")
-    (version "0.8.6")
+    (version "0.8.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -855,7 +855,7 @@ MusePack, Monkey's Audio, and WavPack files.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "182jy23qv115dipny7kglwbn21z55dp253w1ykm0kh8n6vkgs7gp"))
+                "16i12zl3g1zpx6lhg5pg821xirdf9rxx5m11b68inf83wn6hknhb"))
               (file-name (git-file-name name version))
               (patches (search-patches
                         "extempore-unbundle-external-dependencies.patch"))
@@ -864,16 +864,12 @@ MusePack, Monkey's Audio, and WavPack files.")
                '(begin
                   ;; Remove bundled sources.
                   (map delete-file-recursively
-                       '("src/portaudio"
-                         "src/pcre"))
+                       '("src/pcre"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DJACK=ON"
                                "-DPACKAGE=ON"
-                               "-DEXTERNAL_SHLIBS_AUDIO=OFF"
-                               "-DEXTERNAL_SHLIBS_GRAPHICS=OFF"
-                               "-DCMAKE_BUILD_TYPE=Release"
                                (string-append "-DEXT_SHARE_DIR="
                                               (assoc-ref %outputs "out")
                                               "/share"))
@@ -958,7 +954,12 @@ MusePack, Monkey's Audio, and WavPack files.")
                (("COMMAND extempore" prefix)
                 (string-append prefix " --sharedir " (getcwd)
                                " --mcpu=generic --attr=none")))
-             #t)))))
+             #t))
+         (add-after 'unpack 'symlink-assets
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((assets (assoc-ref inputs "extempore-assets")))
+               (symlink assets "assets")
+               #t))))))
     (inputs
      `(("llvm"
         ,(package
@@ -972,6 +973,19 @@ MusePack, Monkey's Audio, and WavPack files.")
               (sha256
                (base32
                 "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))))
+       ("extempore-assets"
+        ,(let ((commit "0c9f32c18169b3fbc24bc1ad66283125b54a0c85")
+               (revision "0")
+               (version "0.0.0"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/extemporelang/extempore-assets")
+                   (commit commit)))
+             (file-name (git-file-name "extempore-assets"
+                                       (git-version version revision commit)))
+             (sha256
+              (base32 "1pxmcbngd9qx8m71d5rfsmf4h31jnsnd3wjh8vb0rwskif22xz8l")))))
        ("libffi" ,libffi)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -1538,9 +1552,9 @@ Guile.")
     ;; more than an hour of silence, so double the max silent time.
     (properties `((max-silent-time . 7200)))))
 
-(define-public python-abjad
+(define-public abjad
   (package
-    (name "python-abjad")
+    (name "abjad")
     (version "3.3")
     (source
      (origin
@@ -1556,15 +1570,106 @@ Guile.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda _
-             (substitute* "setup.py"
-               (("uqbar>=0.5.1, <0.5.0") "uqbar>=0.5.0"))
-             #t))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                ;; See: https://stackoverflow.com/a/34140498
+               (invoke "python" "-m" "pytest" "tests")
+               #t))))))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)))
+    (inputs
+     `(("lilypond" ,lilypond)))
+    (propagated-inputs
+     `(("python-ply" ,python-ply)
+       ("python-quicktions" ,python-quicktions)
+       ("python-roman" ,python-roman)
+       ("python-six" ,python-six)
+       ("python-uqbar" ,python-uqbar)))
+    (home-page "https://abjad.github.io")
+    (synopsis "Python API for building LilyPond files")
+    (description
+     "Abjad helps composers build up complex pieces of music notation in iterative
+and incremental ways.  Use Abjad to create a symbolic representation of all the notes,
+rests, chords, tuplets, beams and slurs in any score.  Because Abjad extends the Python
+programming language, you can use Abjad to make systematic changes to music as you work.
+Because Abjad wraps the LilyPond music notation package, you can use Abjad to control the
+typographic detail of symbols on the page.")
+     (license license:expat)))
+
+(define-public python-abjad
+  (deprecated-package "python-abjad" abjad))
+
+(define-public abjad-ext-rmakers
+  (package
+    (name "abjad-ext-rmakers")
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/Abjad/abjad-ext-rmakers")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03nry8lzh3s81yq4lw8y6j63m7zdsl20q7rvx9cfmp3rmbvlaycs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" ".")
+               #t))))))
+    (native-inputs
+     `(("lilypond" ,lilypond)
+       ("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-helpers-namespace" ,python-pytest-helpers-namespace)))
+    (propagated-inputs
+     `(("abjad" ,abjad)))
+    (home-page "https://abjad.github.io")
+    (synopsis "Abjad rhythm-maker exension package")
+    (description
+     "@code{abjad-ext-rmakers} includes a collection of classes for creating and
+and manipulating rhythms such as accelerandi, taleas, and more.")
+    (license license:expat)))
+
+(define-public abjad-ext-nauert
+  (package
+    (name "abjad-ext-nauert")
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/Abjad/abjad-ext-nauert")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07vgfjh32vmf652lcl2vrbzr0h6nld00qbgwbf9i1kk3xwhvklc9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
                (invoke "python" "-m" "pytest" "tests")
                #t))))))
     (native-inputs
@@ -1574,19 +1679,64 @@ Guile.")
        ("python-iniconfig" ,python-iniconfig)
        ("python-isort" ,python-isort)
        ("python-mypy" ,python-mypy)
-       ("python-ply" ,python-ply)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
-       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)))
+       ("python-pytest-helpers-namespace" ,python-pytest-helpers-namespace)))
     (propagated-inputs
-     `(("python-quicktions" ,python-quicktions)
-       ("python-roman" ,python-roman)
-       ("python-six" ,python-six)
-       ("python-uqbar" ,python-uqbar)))
+     `(("abjad" ,abjad)))
     (home-page "https://abjad.github.io")
-    (synopsis "Python API for building LilyPond files")
+    (synopsis "Abjad quantization extension, based on Paul Nauert's Q-Grids")
     (description
-     "This package provides a Python API for building LilyPond files.")
+     "@code{abjad-ext-nauert} provides classes for dealing with composer and
+music theorist Paul Nauert's quantization grids or Q-Grids, for short.")
+    (license license:expat)))
+
+(define-public abjad-ext-ipython
+  (package
+    (name "abjad-ext-ipython")
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://github.com/Abjad/abjad-ext-ipython")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vv0alpiz0gf5lgjfvlh4km72dvrxfqkwzxl3k4amzci3i0jzbs2"))))
+    (build-system python-build-system)
+    (arguments
+     ;; UnboundLocalError: local variable 'output_path' referenced before assignment
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" (getcwd))
+               (add-installed-pythonpath inputs outputs)
+               ;; From 'make jupyter-test'
+               (invoke "jupyter" "nbconvert" "--to=html"
+               "--ExecutePreprocessor.enabled=True" "tests/test.ipynb")))))))
+    (native-inputs
+     `(("lilypond" ,lilypond)
+       ("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-helpers-namespace" ,python-pytest-helpers-namespace)))
+    (propagated-inputs
+     `(("abjad" ,abjad)
+       ("jupyter" ,jupyter)))
+    (home-page "https://abjad.github.io")
+    (synopsis "Abjad IPython Extension")
+    (description
+     "@code{abjad-ext-ipython} makes it possible to embed music notation in
+@code{jupyter} notebooks.")
     (license license:expat)))
 
 (define-public non-sequencer
@@ -4963,14 +5113,15 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "21.06")
+    (version "21.06.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
-                           version "/rosegarden-" version ".tar.bz2"))
+                           (version-major+minor version) "/"
+                           "rosegarden-" version ".tar.bz2"))
        (sha256
-        (base32 "0rhbmygzh62hc3mkq60lh9r28wvfkhzzd5kspl1ll0h1ipjgvr6d"))))
+        (base32 "0yir279gxc5b298sr0fg9jxgdi75bb1gvvy4mh3pxqjsnp00sxc7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
@@ -4981,8 +5132,7 @@ specification and header.")
              (substitute* "CMakeLists.txt"
                (("BUILD_TESTING OFF") "BUILD_TESTING ON")
                ;; Make tests work.
-               ((" -fvisibility=hidden") ""))
-             #t))
+               ((" -fvisibility=hidden") ""))))
          (add-after 'unpack 'fix-references
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/gui/general/ProjectPackager.cpp"
@@ -5000,8 +5150,7 @@ specification and header.")
                (("\"convert-ly\\>")
                 (string-append "\"" (assoc-ref inputs "lilypond") "/bin/convert-ly"))
                (("\"lilypond\\>")
-                (string-append "\"" (assoc-ref inputs "lilypond") "/bin/lilypond")))
-             #t))
+                (string-append "\"" (assoc-ref inputs "lilypond") "/bin/lilypond")))))
          (add-after 'unpack 'make-reproducible
            (lambda _
              ;; Prevent Last-Modified from being written.
@@ -5016,16 +5165,14 @@ specification and header.")
                ;; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
                )
              ;; Make hashtable traversal order predicable.
-             (setenv "QT_RCC_TEST" "1") ; important
-             #t))
+             (setenv "QT_RCC_TEST" "1"))) ; important
          (add-before 'check 'prepare-check
            (lambda _
              (setenv "QT_QPA_PLATFORM" "offscreen")
              ;; Tests create files in $HOME/.local/share/rosegarden .
              (mkdir-p "/tmp/foo")
              (setenv "HOME" "/tmp/foo")
-             (setenv "XDG_RUNTIME_DIR" "/tmp/foo")
-             #t)))))
+             (setenv "XDG_RUNTIME_DIR" "/tmp/foo"))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bash" ,bash)
@@ -5045,7 +5192,7 @@ specification and header.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qtlinguist" ,qttools)))
+       ("qttools" ,qttools)))           ;for qtlinguist
     (synopsis "Music composition and editing environment based around a MIDI
 sequencer")
     (description "Rosegarden is a music composition and editing environment
@@ -6332,7 +6479,7 @@ as JACK standalone applications.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://git.zrythm.org/git/zplugins")
+         (url "https://git.zrythm.org/zrythm/zplugins")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

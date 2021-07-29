@@ -91,6 +91,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -16516,11 +16517,11 @@ for Common Lisp.")
   (sbcl-package->cl-source-package sbcl-bknr-datastore))
 
 (define-public sbcl-authentic
-  (let ((commit "d5ff2f4666ce24e41fb4ca22476c782c070e6f6e")
-        (revision "1"))
+  (let ((commit "4e9194dda227b98f56dda1c2a2480efcc2d1f973")
+        (revision "2"))
     (package
       (name "sbcl-authentic")
-      (version (git-version "0.1.0" revision commit))
+      (version (git-version "0.1.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16529,7 +16530,7 @@ for Common Lisp.")
                (commit commit)))
          (file-name (git-file-name "cl-authentic" version))
          (sha256
-          (base32 "1dmi9lw1ickx0i41lh9sfchalvy7km6wc9w3szfjlvny7svwf6qp"))))
+          (base32 "0ncsxrybnx0pjsndv3j8w4lphlpcsld8sxg3c5b46fb3a8nd4ssf"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
@@ -18543,3 +18544,126 @@ semantics in Lisp and Parenscript.
 
 (define-public cl-spinneret
   (sbcl-package->cl-source-package sbcl-spinneret))
+
+(define-public sbcl-cl-libxml2
+  (let ((commit "8d03110c532c1a3fe15503fdfefe82f60669e4bd"))
+    (package
+      (name "sbcl-cl-libxml2")
+      (version (git-version "0.3.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/cl-libxml2")
+               (commit commit)))
+         (file-name (git-file-name "cl-libxml2" version))
+         (sha256
+          (base32 "09049c13cfp5sc6x9lrw762jd7a9qkfq5jgngqgrzn4kn9qscarw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("garbage-pools" ,sbcl-garbage-pools)
+         ("iterate" ,sbcl-iterate)
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("puri" ,sbcl-puri)
+         ;; Non-Lisp inputs:
+         ("libxml2" ,libxml2)
+         ("libxslt" ,libxslt)))
+      (native-inputs
+       `(("gcc" ,sbcl-lift)
+         ("lift" ,sbcl-lift)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "tree/xtree.lisp"
+                 (("libxml2.so.2")
+                  (string-append (assoc-ref inputs "libxml2") "/lib/libxml2.so")))
+               (let ((libxslt (assoc-ref inputs "libxslt")))
+                 (substitute* "xslt/xslt.lisp"
+                   (("libxslt.so.1")
+                    (string-append libxslt "/lib/libxslt.so"))
+                   (("libexslt.so.0")
+                    (string-append libxslt "/lib/libexslt.so"))
+                   (("cllibxml2.so")
+                    (string-append (assoc-ref outputs "out") "/lib/cllibxml2.so"))))
+               #t))
+           (add-before 'build 'build-helper-library
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((prefix-dir (string-append (assoc-ref outputs "out"))))
+                 (mkdir-p (string-append prefix-dir "/lib"))
+                 (invoke "make" "-C" "foreign" "install"
+                         "INSOPTS="
+                         (string-append "PREFIX=" prefix-dir))
+                 #t)))
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* '("cl-libxml2.asd" "cl-libxslt.asd" "xfactory.asd")
+                 ((" :force t") ""))
+               #t)))))
+      (home-page "https://web.archive.org/web/20160121073421/http://cl-libxml2.googlecode.com/svn/doc/index.html")
+      (synopsis "High-level wrapper around libxml2 and libxslt libraries")
+      (description
+       "cl-libxml2 is high-level Common Lisp wrapper around the @code{libxml2}
+and @code{libxslt} libraries.
+
+@itemize
+@item Interfaces for tree manipulation (like @code{cxml-stp}).
+@item Interface for HTML 4.0 non-validating parsers.
+@item Specific APIs to process HTML trees, especially serialization.
+@item XPath API.
+@item XSLT API.
+@item Custom URL resolvers.
+@item XPath extension functions.
+@item XSLT extension elements.
+@item Translates @code{libxml2} and @code{libxslt} errors to Lisp conditions.
+@item Extends the Common Lisp @code{iterate} library with custom drivers for
+child nodes enumeration, etc.
+@item The @code{XFACTORY} system provides a simple and compact syntax for XML generation.
+@end itemize\n")
+      (license license:llgpl))))
+
+(define-public ecl-cl-libxml2
+  (sbcl-package->ecl-package sbcl-cl-libxml2))
+
+(define-public cl-libxml2
+  (sbcl-package->cl-source-package sbcl-cl-libxml2))
+
+(define-public sbcl-feeder
+  ;; No release.
+  (let ((commit "b05f517d7729564575cc809e086c262646a94d34")
+        (revision "1"))
+    (package
+      (name "sbcl-feeder")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/feeder")
+               (commit commit)))
+         (file-name (git-file-name "feeder" version))
+         (sha256
+          (base32 "1dpbzhycg50snl3j01c8dh8gdvhfhz0hnfl54xy55a3wbr3m6rp7"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("local-time" ,sbcl-local-time)
+         ("plump" ,sbcl-plump)))
+      (home-page "https://shinmera.github.io/feeder/")
+      (synopsis "RSS, Atom and general feed parsing and generating")
+      (description
+       "Feeder is a syndication feed library.  It presents a general protocol
+for representation of feed items, as well as a framework to translate these
+objects from and to external formats.  It also implements the RSS 2.0 and Atom
+formats within this framework.")
+      (license license:zlib))))
+
+(define-public ecl-feeder
+  (sbcl-package->ecl-package sbcl-feeder))
+
+(define-public cl-feeder
+  (sbcl-package->cl-source-package sbcl-feeder))

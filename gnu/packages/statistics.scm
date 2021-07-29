@@ -214,11 +214,14 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
              (substitute* "src/library/base/makebasedb.R"
                (("compress = TRUE") "compress = FALSE"))
              #t))
-         (add-before 'configure 'patch-uname
+         (add-before 'configure 'patch-coreutils-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((uname-bin (search-input-file inputs "/bin/uname")))
+             (let ((uname-bin (search-input-file inputs "/bin/uname"))
+                   (rm-bin (search-input-file inputs "/bin/rm")))
                (substitute* "src/scripts/R.sh.in"
-                 (("uname") uname-bin)))
+                 (("uname") uname-bin))
+               (substitute* "src/unix/sys-std.c"
+                 (("rm -Rf ") (string-append rm-bin " -Rf "))))
              #t))
          (add-after 'unpack 'build-reproducibly
            (lambda _
@@ -1041,14 +1044,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.6.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "1bidc1xzsv5nz2glf6z4sjxqlbs6zq595wwdmiq66sc2p7cis59s"))))
+         "0mhz7dkjdm8ap2zav1pmivhr8s0l6p2f6piij2hy08nwszqk51nr"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1513,19 +1516,19 @@ the execution time of R expressions.")
 (define-public r-pryr
   (package
     (name "r-pryr")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pryr" version))
               (sha256
                (base32
-                "06vj5xl9x37kbd3l5bw7sbgfdnp37spvrjrn976rxi04clqk966k"))))
+                "02vp1y7zhv22id43j5c0gdcgn9171dyypqp8rqrlc3w5a7n565kv"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-stringr" ,r-stringr)
-       ("r-codetools" ,r-codetools)))
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-codetools" ,r-codetools)
+       ("r-lobstr" ,r-lobstr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)))
     (home-page "https://github.com/hadley/pryr")
     (synopsis "Tools for computing on the R language")
     (description
@@ -1677,14 +1680,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "3.1.2")
+    (version "3.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "1vmwz1a756lar0jsigx6dhmj9mwk5mhywhq0prifwih3abhvszmn"))))
+         "1gpy90hg0bd4an0wqj0xx16a6x37fhc94z1v63y46dpiz231xfks"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -2552,13 +2555,13 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "1.4.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "1fa67h4l9d30ig460xizgzl115i9pm3bk9dvsbrw6awbmf51ic82"))))
+                "1738nccg0msrhmzsasp19i0dpqi3m1nqbbg3nf1iiyp0mqc1dl8r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2570,7 +2573,8 @@ time-of-day values, based on the @code{difftime} class.")
        ("r-tibble" ,r-tibble)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
-       ("r-bh" ,r-bh)))
+       ("r-tzdb" ,r-tzdb)
+       ("r-vroom" ,r-vroom)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/readr")
@@ -2644,13 +2648,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.10.5.0.0")
+    (version "0.10.6.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "059qi872f9h40ns65166qsq1i1jq1mvizm29a0xmqlyn7a5y9ca3"))))
+                "1bcx8fk5l5mmwb6cw36ndvld9v3amkz6vyc19059dw0xp7mxx04v"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2829,13 +2833,13 @@ that package, other packages are unaffected.")
 (define-public r-blob
   (package
     (name "r-blob")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "blob" version))
               (sha256
                (base32
-                "1slb5mvxfyi92i8ifx2qa31hp57inilwhq1g9lzvgha6jrxbqm7g"))))
+                "1yn7f13icaix0apxp4drnciwdn8bx8xmbd129jd7ck4rcly0axj9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
@@ -3410,14 +3414,14 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
 (define-public r-e1071
   (package
     (name "r-e1071")
-    (version "1.7-7")
+    (version "1.7-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "e1071" version))
        (sha256
         (base32
-         "1phqrx787fkiamgx56sjjmzl9nh5wgpffah0mlwd7ijrf446qz3r"))))
+         "16lw0pr71h00whndkkv9zh2ixm6vc8bkp8m4i5wwhmihd9abdkdb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -3658,13 +3662,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.59.0")
+    (version "0.60.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "178baqrd7rbin3l10zyrkps5sda0q9mdqil9r12b3n99mlk8fhh7"))))
+                "08azjib5pwqs683dpgr3p5gid0silddcq6baqmvmazncrw1r7q0f"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (arguments
@@ -5444,14 +5448,14 @@ diagnostic tools (@code{ctlcurves} and @code{DiscrFact}).")
 (define-public r-ranger
   (package
     (name "r-ranger")
-    (version "0.12.1")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ranger" version))
        (sha256
         (base32
-         "1vr5akgh388iivrxi0g4pl2npq9dc4cim3ljk4kjf637q058wc7w"))))
+         "02idcc6zbdz4wsi1mcwh7qyhmlbwvnzxwkdvvppxw7n2rh54z4v0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -6214,4 +6218,86 @@ various statistical models with linear predictors.")
       "This package provides a suite of functions for computing various Bayes
 factors for simple designs, including contingency tables, one- and two-sample
 designs, one-way designs, general ANOVA designs, and linear regression.")
+    (license license:gpl2)))
+
+(define-public r-norm
+  (package
+    (name "r-norm")
+    (version "1.0-9.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "norm" version))
+              (sha256
+               (base32
+                "01j1h412yfjx5r4dd0w8rhlf55997spgb6zd6pawy19rgw0byp1h"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/norm/")
+    (synopsis "Analysis of multivariate normal datasets with missing values")
+    (description "Multiple imputation of multivariate continuous data under a
+normal model.")
+    ;; Custom license, see https://cran.r-project.org/web/packages/norm/LICENSE.
+    (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public r-naniar
+  (package
+    (name "r-naniar")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "naniar" version))
+              (sha256
+               (base32
+                "0l3l2x85v3srilww483kpgp4zlwixyml257b0cqly8kcpwawlinm"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-norm" ,r-norm)
+       ("r-forcats" ,r-forcats)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-upsetr" ,r-upsetr)
+       ("r-viridis" ,r-viridis)
+       ("r-visdat" ,r-visdat)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/njtierney/naniar")
+    (synopsis
+     "Data structures, summaries, and visualisations for missing data")
+    (description
+     "Missing values are ubiquitous in data and need to be explored and
+handled in the initial stages of analysis.  The package provides data structures
+and functions that facilitate the plotting of missing values and examination of
+imputations.  This allows missing data dependencies to be explored with minimal
+deviation from the common work patterns of @code{ggplot2} and tidy data.")
+    (license license:expat)))
+
+(define-public r-glinternet
+  (package
+    (name "r-glinternet")
+    (version "1.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glinternet" version))
+       (sha256
+        (base32
+         "1lqph2hj0h826gcfyk290ahkfalpnrd6jzymm60xi2qxia14lzk5"))))
+    (build-system r-build-system)
+    (home-page "http://web.stanford.edu/~hastie/Papers/glinternet_jcgs.pdf")
+    (synopsis "Learning interactions via hierarchical group-lasso regularization")
+    (description "Group-Lasso INTERaction-NET.  Fits linear pairwise-interaction
+models that satisfy strong hierarchy: if an interaction coefficient is estimated
+to be nonzero, then its two associated main effects also have nonzero estimated
+coefficients.  Accommodates categorical variables (factors) with arbitrary
+numbers of levels, continuous variables, and combinations thereof.  Implements
+the machinery described in the paper \"Learning interactions via hierarchical
+group-lasso regularization\" (JCGS 2015, Volume 24, Issue 3).
+Michael Lim & Trevor Hastie (2015)")
     (license license:gpl2)))

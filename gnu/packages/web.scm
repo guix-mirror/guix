@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,7 @@
   #:use-module (gnu packages apr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages boost)
@@ -3482,14 +3484,14 @@ and multipart/form-data.")
 (define-public perl-http-cookiejar
   (package
     (name "perl-http-cookiejar")
-    (version "0.010")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                            "HTTP-CookieJar-" version ".tar.gz"))
        (sha256
-        (base32 "1l7mqsca4fmls7agzwmp6yq1x16y9jwq4114i6i75n654gl37qsn"))))
+        (base32 "0jk0ps4i67dhhhwaxwwa9nkv3n6n5w44xlnwyzvk59735pwvyjh0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -7692,87 +7694,83 @@ compressed JSON header blocks.
     (license license:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")
-        (revision "5"))
-    (package
-      (name "hpcguix-web")
-      (version (git-version "0.0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/UMCUGenetics/hpcguix-web")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0wjgj2s7v2cyz6dx24c111rxs99i84sfvxl4ch8brnh02j2606jz"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-26)
-                    (ice-9 popen)
-                    (ice-9 rdelim))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'set-variables
-             (lambda _
-               ;; This prevents a few warnings
-               (setenv "GUILE_AUTO_COMPILE" "0")
-               (setenv "XDG_CACHE_HOME" (getcwd))
-               #t))
-           (add-after 'install 'wrap-program
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out      (assoc-ref outputs "out"))
-                      (guix     (assoc-ref inputs "guix"))
-                      (guile    (assoc-ref inputs "guile"))
-                      (gcrypt   (assoc-ref inputs "guile-gcrypt"))
-                      (git      (assoc-ref inputs "guile-git"))
-                      (bs       (assoc-ref inputs "guile-bytestructures"))
-                      (json     (assoc-ref inputs "guile-json"))
-                      (guile-cm (assoc-ref inputs
-                                           "guile-commonmark"))
-                      (deps (list guile gcrypt git bs guile-cm guix json))
-                      (effective
-                       (read-line
-                        (open-pipe* OPEN_READ
-                                    (string-append guile "/bin/guile")
-                                    "-c" "(display (effective-version))")))
-                      (path   (string-join
-                               (map (cut string-append <>
-                                         "/share/guile/site/"
-                                         effective)
-                                    deps)
-                               ":"))
-                      (gopath (string-join
-                               (map (cut string-append <>
-                                         "/lib/guile/" effective
-                                         "/site-ccache")
-                                    deps)
-                               ":")))
-                 (wrap-program (string-append out "/bin/run")
-                   `("GUILE_LOAD_PATH" ":" prefix (,path))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
-
-                 #t))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("uglify-js" ,uglify-js)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-         ("guix" ,guix)))
-      (propagated-inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-         ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json-4)))
-      (home-page "https://github.com/UMCUGenetics/hpcguix-web")
-      (synopsis "Web interface for cluster deployments of Guix")
-      (description "Hpcguix-web provides a web interface to the list of packages
+  (package
+    (name "hpcguix-web")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/UMCUGenetics/hpcguix-web")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "02lz5k1hhkwfz3nr3lsd69icsz6n0q82z047d3svi09qpxw6y0cj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-variables
+           (lambda _
+             ;; This prevents a few warnings
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (setenv "XDG_CACHE_HOME" (getcwd))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (guix     (assoc-ref inputs "guix"))
+                    (guile    (assoc-ref inputs "guile"))
+                    (gcrypt   (assoc-ref inputs "guile-gcrypt"))
+                    (git      (assoc-ref inputs "guile-git"))
+                    (bs       (assoc-ref inputs "guile-bytestructures"))
+                    (json     (assoc-ref inputs "guile-json"))
+                    (guile-cm (assoc-ref inputs
+                                         "guile-commonmark"))
+                    (deps (list guile gcrypt git bs guile-cm guix json))
+                    (effective
+                     (read-line
+                      (open-pipe* OPEN_READ
+                                  (string-append guile "/bin/guile")
+                                  "-c" "(display (effective-version))")))
+                    (path   (string-join
+                             (map (cut string-append <>
+                                       "/share/guile/site/"
+                                       effective)
+                                  deps)
+                             ":"))
+                    (gopath (string-join
+                             (map (cut string-append <>
+                                       "/lib/guile/" effective
+                                       "/site-ccache")
+                                  deps)
+                             ":")))
+               (wrap-program (string-append out "/bin/hpcguix-web")
+                 `("GUILE_LOAD_PATH" ":" prefix (,path))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("uglify-js" ,uglify-js)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guix" ,guix)
+       ("bash-minimal" ,bash-minimal)))           ;for 'wrap-program'
+    (propagated-inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guile-commonmark" ,guile-commonmark)
+       ("guile-json" ,guile-json-4)))
+    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+    (synopsis "Web interface for cluster deployments of Guix")
+    (description "Hpcguix-web provides a web interface to the list of packages
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
-      (license license:agpl3+))))
+    (license license:agpl3+)))
 
 (define-public httrack
   (package
@@ -7967,8 +7965,8 @@ solution for any project's interface needs:
     (license license:expat)))
 
 (define-public gmnisrv
-  (let ((commit "d484ba0ab0020866535a44be5948c9482b8f2b8d")
-        (revision "1"))
+  (let ((commit "32854b79c73b278bf33eb5123abf1c36abdc7c01")
+        (revision "2"))
     (package
       (name "gmnisrv")
       (version (git-version "0" revision commit))
@@ -7980,24 +7978,22 @@ solution for any project's interface needs:
                       (commit commit)))
                 (sha256
                  (base32
-                  "11phipixsxx1jgm42agp76p5s68l0zj65kgb41vzaymgwcq79ivn"))
+                  "0lbb3ablwkdcgm1cjr1hikr55y8gpl420nh8b8g9wn4abhm2xgr9"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'set-variables
-             (lambda _
-               (setenv "CC" "gcc")
-               #t))
-           (delete 'check))))
+       `(#:tests? #f ; no check target
+         #:configure-flags (list "--sysconfdir=/etc"
+                                 (string-append "--with-mimedb="
+                                                (assoc-ref %build-inputs "mailcap")
+                                                "/etc/mime.types"))
+         #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
       (inputs
-       `(("openssl" ,openssl)))
+       `(("mailcap" ,mailcap)
+         ("openssl" ,openssl)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("scdoc" ,scdoc)))
-      (propagated-inputs
-       `(("mailcap" ,mailcap)))
       (synopsis "Simple Gemini protocol server")
       (description "gmnisrv is a simple Gemini protocol server written in C.")
       (license (list license:gpl3+

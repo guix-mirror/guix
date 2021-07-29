@@ -534,7 +534,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -544,7 +544,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0dqd6gg1wwhxjgdfl8j0kf93mw43kvd6wrwrzkscq2wjrsy5p0w0"))
+               "0jjjvqkqmpj55v111p1a1i2ry7mpd1bpphn1bhvlr18rgw7xdrja"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1628,6 +1628,16 @@ compresses it.")
         "gtk_update_icon_cache=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Use absolute paths to referenced programs.
+             (let* ((mailutils (assoc-ref inputs "mailutils"))
+                    (inc (string-append mailutils "/bin/mu-mh/inc"))
+                    (send-mail (assoc-ref inputs "sendmail"))
+                    (sendmail (string-append send-mail "/usr/sbin/sendmail")))
+               (substitute* "src/common/defs.h"
+                 (("/usr/bin/mh/inc") inc)
+                 (("/usr/sbin/sendmail") sendmail)))))
          (add-before 'build 'patch-mime
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/procmime.c"
@@ -1673,6 +1683,7 @@ compresses it.")
        ("libsm" ,libsm)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
+       ("mailutils" ,mailutils)
        ("nettle" ,nettle)
        ("network-manager" ,network-manager)
        ("openldap" ,openldap)
@@ -1680,6 +1691,7 @@ compresses it.")
        ("poppler" ,poppler)
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)
+       ("sendmail" ,sendmail)
        ("shared-mime-info" ,shared-mime-info)
        ("startup-notification" ,startup-notification)
        ;;("webkitgtk" ,webkitgtk)
@@ -2386,7 +2398,8 @@ be expected from a simple client.")
        (sha256
         (base32
          "1ay282rrl92h0m0m8z5zzjnwiiagi7c78aq2qvhia5mw7prwfyw2"))
-       (file-name (string-append name "-" version "-checkout"))))
+       (file-name (string-append name "-" version "-checkout"))
+       (patches (search-patches "esmtp-add-lesmtp.patch"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap

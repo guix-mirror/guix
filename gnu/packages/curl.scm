@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Dale Mellor <guix-devel-0brg6b@rdmp.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (srfi srfi-1))
@@ -145,6 +147,17 @@ tunneling, and so on.")
 
 (define-public curl-minimal
   (deprecated-package "curl-minimal" curl))
+
+(define-public curl-ssh
+  (package/inherit curl
+    (arguments
+     (substitute-keyword-arguments (package-arguments curl)
+       ((#:configure-flags flags)
+        `(cons "--with-libssh2" ,flags))))
+    (inputs
+     `(("libssh2" ,libssh2)
+       ,@(package-inputs curl)))
+    (properties `((hidden? . #t)))))
 
 (define-public kurly
   (package

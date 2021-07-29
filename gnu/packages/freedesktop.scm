@@ -75,6 +75,7 @@
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graph)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -96,6 +97,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
@@ -1065,7 +1067,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
 (define-public weston
   (package
     (name "weston")
-    (version "6.0.1")
+    (version "9.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1073,43 +1075,60 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "1d2m658ll8x7prlsfk71qgw89c7dz6y7d6nndfxwl49fmrd6sbxz"))))
+                "1zlql0xgiqc3pvgbpnnvj4xvpd91pwva8qf83xfb23if377ddxaw"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("mscgen" ,mscgen)
+       ("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("cairo" ,cairo-xcb)
        ("colord" ,colord)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
+       ("freerdp" ,freerdp)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("lcms" ,lcms)
+       ("libdrm" ,libdrm)
        ("libevdev" ,libevdev)
        ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
        ("libunwind" ,libunwind)
        ("libva" ,libva)
        ("libwebp" ,libwebp)
+       ("libx11" ,libx11)
+       ("libxcb" ,libxcb)
        ("libxcursor" ,libxcursor)
-       ("libxkbcommon" ,libxkbcommon)
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
        ("mtdev" ,mtdev)
        ("linux-pam" ,linux-pam)
        ("pango" ,pango)
-       ("wayland" ,wayland)
+       ("pipewire" ,pipewire)
        ("wayland-protocols" ,wayland-protocols)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (propagated-inputs
+     `(("libxkbcommon" ,libxkbcommon)
+       ("pixman" ,pixman)
+       ("wayland" ,wayland)))
     (arguments
      `(#:configure-flags
-       (list "-Dbackend-rdp=false" ; TODO: Enable.
-             "-Dremoting=false" ; TODO: Enable.
-             "-Dsimple-dmabuf-drm=auto"
-             "-Dsystemd=false"
-             (string-append "-Dxwayland-path="
-                            (assoc-ref %build-inputs "xorg-server-xwayland")
-                            "/bin/Xwayland"))
-       #:parallel-tests? #f ; Parallel tests cause failures.
+       (list
+        ;; Otherwise, the RUNPATH will lack the final path component.
+        (string-append "-Dc_link_args=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib:"
+                       (assoc-ref %outputs "out") "/lib/weston:"
+                       (assoc-ref %outputs "out") "/lib/libweston-"
+                       ,(version-major (package-version this-package)))
+        "-Dbackend-default=auto"
+        "-Dsystemd=false"
+        (string-append "-Dxwayland-path="
+                       (assoc-ref %build-inputs "xorg-server-xwayland")
+                       "/bin/Xwayland"))
+       #:parallel-tests? #f           ; Parallel tests cause failures.
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'use-elogind

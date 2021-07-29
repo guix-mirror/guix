@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
@@ -64,6 +66,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
@@ -83,6 +86,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -1155,7 +1159,7 @@ outputs of those builds.")
 (define-public guix-jupyter
   (package
     (name "guix-jupyter")
-    (version "0.2.1")
+    (version "0.2.2")
     (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
     (source (origin
               (method git-fetch)
@@ -1163,7 +1167,7 @@ outputs of those builds.")
                                   (commit (string-append "v" version))))
               (sha256
                (base32
-                "1kqwfp5h95s6mirq5nbydsbmlhsinn32grz1ld5mbxvhl6sn2i0j"))
+                "17m6970wnvwlbarq4gxz5bakhzyhq5ch8qd8jw55ydccpv6473kq"))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
@@ -1494,3 +1498,116 @@ It is mainly meant for programmers who develop portable programs or libraries in
 but could potentially work for end-users of those programs.  It also has a translator
 from R7RS, which allows most R7RS code to run on R6RS implementations.")
     (license license:gpl3+)))
+
+(define-public modules
+  (package
+    (name "modules")
+    (version "4.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/modules/Modules/modules-"
+                            version "/modules-" version ".tar.bz2"))
+        (sha256 (base32 "1amz8qdqbvfdc8jv0j4720vywbz2gi7l3sr1lh37ilfbxy9lq9g9"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:configure-flags
+        (list (string-append "--with-bin-search-path="
+                             (assoc-ref %build-inputs "tcl") "/bin" ":"
+                             (assoc-ref %build-inputs "procps") "/bin" ":"
+                             (assoc-ref %build-inputs "less") "/bin" ":"
+                             (assoc-ref %build-inputs "coreutils") "/bin")
+              (string-append "--with-tcl=" (assoc-ref %build-inputs "tcl") "/lib")
+              "--disable-compat-version")
+        #:test-target "test"
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'patch-add-modules
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((coreutils (assoc-ref inputs "coreutils")))
+                (substitute* "script/add.modules.in"
+                  (("/bin/(cat|cp|rm)" _ command)
+                   (string-append coreutils "/bin/" command))
+                  (("/bin/echo")
+                   "echo")))))
+          (add-before 'configure 'patch-scripts-for-python-3
+            (lambda _
+              ;; Patch the script for python-3.
+              (substitute* "script/createmodule.py.in"
+                (("pathkeys.sort\\(\\)") "pathkeys = sorted(pathkeys)")
+                (("print\\(\"\\\\t\"\\*") "print(\"\\t\"*int")
+                (("@PYTHON@") (which "python3")))))
+          (add-before 'check 'patch-/bin/sh-and-nixbld-groups-in-tests
+            (lambda _
+              (use-modules (srfi srfi-1))
+              (let* ((groups-file (string-append (getcwd) "/nixbld-groups"))
+                     (groups-file-z (string-append groups-file "-z"))
+                     (nixbld-groups
+                       (fold
+                         (lambda (id prev)
+                           (catch #t
+                             (lambda () (cons (group:name (getgrnam id)) prev))
+                             (lambda _ prev)))
+                         '()
+                         (vector->list (getgroups)))))
+                ;; Simulate "id -G -n" command output.
+                (call-with-output-file groups-file
+                  (lambda (port)
+                    (display (string-join nixbld-groups " ") port)
+                    (display #\newline port)))
+                ;; Simulate "id -G -n -z" command output.
+                (call-with-output-file groups-file-z
+                  (lambda (port)
+                    (for-each
+                      (lambda (group-name)
+                        (display group-name port)
+                        (display #\null port))
+                      nixbld-groups)))
+                ;; Generate "modulecmd-test.tcl" before running "make test".
+                (invoke "make" "modulecmd-test.tcl")
+                ;; Substitute shell.
+                (substitute*
+                  '("modulecmd-test.tcl"
+                    "modulecmd.tcl"
+                    "testsuite/modules.70-maint/380-edit.exp"
+                    "compat/init/filter")
+                  (("/bin/sh") (which "sh")))
+                ;; Skip tests that use supplementary groups.
+                (for-each
+                  delete-file
+                  '("testsuite/modules.20-locate/112-hide-user-group.exp"
+                    "testsuite/modules.20-locate/117-forbid-user-group.exp"
+                    "testsuite/modules.20-locate/119-hide-cascading.exp"
+                    "testsuite/modules.50-cmds/140-system.exp"
+                    "testsuite/modules.50-cmds/287-info-usergroups.exp"
+                    "testsuite/modules.50-cmds/440-module-tag.exp"
+                    "testsuite/modules.70-maint/220-config.exp"))
+                (for-each
+                  (lambda (file)
+                    (substitute* file
+                      (("/bin/sh") (which "bash"))
+                      ;; For some reason "kvm" group cannot be resolved for
+                      ;; "nixbld" user. We replace "id ..." commands with
+                      ;; "cat ..." that simulates them.
+                      (("exec id -G -n -z") (string-append "exec cat " groups-file-z))
+                      (("exec id -G -n") (string-append "exec cat " groups-file))))
+                  '("testsuite/modules.00-init/005-init_ts.exp"
+                    "testsuite/install.00-init/005-init_ts.exp"
+                    "modulecmd-test.tcl"))))))))
+    (native-inputs
+      `(("dejagnu" ,dejagnu)
+        ("autoconf" ,autoconf)
+        ("which" ,which)))
+    (inputs
+      `(("tcl" ,tcl)
+        ("less" ,less)
+        ("procps" ,procps)
+        ("coreutils" ,coreutils)
+        ("python" ,python-3)))
+    (home-page "http://modules.sourceforge.net/")
+    (synopsis "Shell environment variables and aliases management")
+    (description "Modules simplify shell initialization and let users
+modify their environment during the session with modulefiles.  Modules are
+used on high-performance clusters to dynamically add and remove paths
+to specific versions of applications.")
+    (license license:gpl2+)))

@@ -539,7 +539,7 @@ transformed into common image formats for display or printing.")
 (define-public python-graph-tool
   (package
     (name "python-graph-tool")
-    (version "2.37")
+    (version "2.43")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -547,7 +547,7 @@ transformed into common image formats for display or printing.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0w2i4d4zyk051zkykcg0ksngspajznwmp523hbsx50xnxc6jliyz"))))
+                "0v58in4rwk9fhjarjw6xfxpx5zz2z13sy3yvd14b5kr0884yw6sz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -563,23 +563,23 @@ transformed into common image formats for display or printing.")
                                      "python"))))
                             "/site-packages/"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gcc-10" ,gcc-10)
-       ("ncurses" ,ncurses)))
+     `(("gcc-10" ,gcc-10)
+       ("ncurses" ,ncurses)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python-wrapper)
-       ("boost" ,boost)
+     `(("boost" ,boost)
+       ("cairomm" ,cairomm)
+       ("cgal" ,cgal)
        ("expat" ,expat)
        ("gmp" ,gmp)
-       ("cgal" ,cgal)
-       ("sparsehash" ,sparsehash)
        ("gtk+" ,gtk+)
-       ("cairomm" ,cairomm)))
+       ("python" ,python-wrapper)
+       ("sparsehash" ,sparsehash)))
     (propagated-inputs
-     `(("python-scipy" ,python-scipy)
+     `(("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ("python-pycairo" ,python-pycairo)
-       ("python-matplotlib" ,python-matplotlib)))
+       ("python-scipy" ,python-scipy)))
     (synopsis "Manipulate and analyze graphs with Python efficiently")
     (description "Graph-tool is an efficient Python module for manipulation
 and statistical analysis of graphs (a.k.a. networks).  Contrary to most other

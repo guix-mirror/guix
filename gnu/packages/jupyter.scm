@@ -25,6 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages linux)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tls)
@@ -381,4 +383,90 @@ based on the configuration files found in the repository.  repo2docker can be
 used to explore a repository locally by building and executing the constructed
 image of the repository, or as a means of building images that are pushed to a
 Docker registry.")
+    (license license:bsd-3)))
+
+(define-public python-bash-kernel
+  (package
+   (name "python-bash-kernel")
+   (version "0.7.2")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "bash_kernel" version))
+            (sha256
+             (base32
+              "0w0nbr3iqqsgpk83rgd0f5b02462bkyj2n0h6i9dwyc1vpnq9350"))))
+   (build-system python-build-system)
+   (arguments
+    `(#:tests? #f
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'bash-references
+          (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "bash_kernel/kernel.py"
+               (("\"bash\"")
+                (string-append "\"" (assoc-ref inputs "bash") "/bin/bash\""))
+               (("\\['bash', ")
+                (string-append "['" (assoc-ref inputs "bash") "/bin/bash', ")))
+             #t))
+        (add-after 'install 'install-kernelspec
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (setenv "HOME" "/tmp")
+              (invoke "python" "-m" "bash_kernel.install" "--prefix" out)
+              #t))))))
+   (inputs
+     `(("bash" ,bash)))
+   (propagated-inputs
+     `(("python-pexpect" ,python-pexpect)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-jupyter-client" ,python-jupyter-client)))
+   (home-page "https://github.com/takluyver/bash_kernel")
+   (synopsis "Jupyter kernel for Bash")
+   (description "A bash shell kernel for Jupyter.")
+   (license license:expat)))
+
+(define-public python-sparqlkernel
+  (package
+    (name "python-sparqlkernel")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sparqlkernel" version))
+              (sha256
+               (base32
+                "004v22nyi5cnpxq4fiws89p7i5wcnzv45n3n70axdd6prh6rkapx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'no-custom-css
+           (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "sparqlkernel/install.py"
+                (("install_custom_css\\( destd, PKGNAME \\)") ""))
+              #t))
+         (add-after 'install 'install-kernelspec
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "HOME" "/tmp")
+               (add-installed-pythonpath inputs outputs)
+               (invoke
+                 (string-append out "/bin/jupyter-sparqlkernel")
+                 "install"
+                 (string-append "--InstallKernelSpec.prefix=" out))
+               #t))))))
+    (native-inputs
+     `(("python-traitlets" ,python-traitlets)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-notebook" ,python-notebook)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-html5lib" ,python-html5lib-0.9)))
+    (propagated-inputs
+     `(("python-sparqlwrapper" ,python-sparqlwrapper)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://github.com/paulovn/sparql-kernel")
+    (synopsis "Jupyter kernel for SPARQL")
+    (description "This module installs a Jupyter kernel for SPARQL.  It allows
+sending queries to an SPARQL endpoint and fetching & presenting the results in
+a notebook.")
     (license license:bsd-3)))

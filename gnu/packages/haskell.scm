@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,14 +613,14 @@ interactive environment for the functional language Haskell.")
 (define-public ghc-8.8
   (package (inherit ghc-8.6)
     (name "ghc")
-    (version "8.8.3")
+    (version "8.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.haskell.org/ghc/dist/"
                            version "/ghc-" version "-src.tar.xz"))
        (sha256
-        (base32 "128g932i3wix6ic03v04nh5755vyjiidzri9iybwad72yfmc1p70"))))
+        (base32 "0bgwbxxvdn56l91bp9p5d083gzcfdi6z8l8b17qzjpr3n8w5wl7h"))))
     (native-inputs
      `(("ghc-bootstrap" ,ghc-8.6)
        ("ghc-testsuite"
@@ -631,7 +632,7 @@ interactive environment for the functional language Haskell.")
            (patches (search-patches "ghc-testsuite-dlopen-pie.patch"))
            (sha256
             (base32
-             "1l32mp94ll72skfsq1g2fqax4bkiw8b85gr3wd0bbqsqyi9a9jpr"))))
+             "0c55pj2820q26rikhpf636sn4mjgqsxjrl94vsywrh79dxp3k14z"))))
        ("git" ,git)                     ; invoked during tests
        ,@(filter (match-lambda
                    (("ghc-bootstrap" . _) #f)
@@ -642,6 +643,11 @@ interactive environment for the functional language Haskell.")
      (substitute-keyword-arguments (package-arguments ghc-8.6)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (add-after 'fix-references 'fix-cc-reference
+             (lambda _
+               (substitute* "utils/hsc2hs/Common.hs"
+                 (("\"cc\"") "\"gcc\""))
+               #t))
            (add-after 'unpack-testsuite 'skip-more-tests
              (lambda _
                ;; XXX: This test fails because our ld-wrapper script

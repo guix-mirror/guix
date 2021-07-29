@@ -73,6 +73,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
@@ -138,6 +139,45 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public omemo-wget
+  (package
+    (name "omemo-wget")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/roobre/omemo-wget")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s3vfaicw5xbjl9yiyr4ckrzhzqbvfh1w2ih1igavlfpgw4v7kva"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/roobre/omemo-wget"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((xdg-utils (assoc-ref inputs "xdg-utils"))
+                    (xdg-open (string-append xdg-utils "/bin/xdg-open")))
+               (substitute* (find-files "." "\\.go$")
+                 ;; Correct the import path of 'aesgcm' package.
+                 (("roob\\.re/omemo-wget/aesgcm")
+                  "github.com/roobre/omemo-wget/aesgcm")
+                 ;; Use absolute path of 'xdg-open' program.
+                 (("xdg-open") xdg-open))))))))
+    (inputs
+     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://roob.re/omemo-wget")
+    (synopsis "Program to download and decrypt @code{aesgcm://} URLs")
+    (description "OMEMO-wget is a tool to handle cryptographic URLs, generated
+by @acronym{OMEMO, OMEMO Multi-End Message and Object Encryption}, during
+XMPP-based sessions.")
+    (license license:lgpl3+)))
 
 (define-public psi
   (package

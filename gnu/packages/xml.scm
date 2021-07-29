@@ -2071,8 +2071,9 @@ advantage of JIT JVMs.")
     (version "2.1.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.extreme.indiana.edu/xgws/xsoap/"
-                                  "PullParser/PullParser" version ".tgz"))
+              ;; Unfortunately, archive.org does not have a copy of this file.
+              (uri (string-append "https://ftp.fau.de/gentoo/distfiles/"
+                                  "PullParser" version ".tgz"))
               (sha256
                (base32
                 "1kw9nhyqb7bzhn2zjbwlpi5vp5rzj89amzi3hadw2acyh2dmd0md"))
@@ -2088,7 +2089,8 @@ advantage of JIT JVMs.")
        #:phases
        (modify-phases %standard-phases
          (replace 'install (install-jars "build/lib")))))
-    (home-page "http://www.extreme.indiana.edu/xgws/xsoap/xpp/")
+    (home-page (string-append "https://web.archive.org/web/20210225153105/"
+                              "https://www.extreme.indiana.edu/"))
     (synopsis "Streaming pull XML parser")
     (description "Xml Pull Parser (in short XPP) is a streaming pull XML
 parser and should be used when there is a need to process quickly and

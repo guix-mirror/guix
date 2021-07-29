@@ -47,6 +47,7 @@
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages code)
   #:use-module (gnu packages crates-io)
@@ -524,27 +525,23 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libbsd" ,libbsd)
+     `(("diffutils" ,diffutils)
+       ("libbsd" ,libbsd)
        ("ncurses" ,ncurses)))
     (arguments
      ;; No test suite available.
      `(#:tests? #f
        #:make-flags (list (string-append "prefix=" %output)
-                          (string-append "CC=" ,(cc-for-target)))
+                          (string-append "CC=" ,(cc-for-target))
+                          (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ; no configure script
-                  (add-before 'build 'correct-location-of-difftool
-                    (lambda _
+                  (add-before 'build 'correct-location-of-diff
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "buffer.c"
                         (("/usr/bin/diff")
-                         (which "diff")))))
-                  (add-before 'build 'pkg-config-for-cross-compiling-target
-                    (lambda _
-                      (substitute* "GNUmakefile"
-                        (("pkg-config")
-                         (or (which "pkg-config")
-                             (string-append ,(%current-target-system)
-                                            "-pkg-config"))))))
+                         (string-append (assoc-ref inputs "diffutils")
+                                        "/bin/diff")))))
                   (add-before 'install 'patch-tutorial-location
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "mg.1"

@@ -31,6 +31,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,7 @@
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -1518,11 +1520,10 @@ treat it as part of their software base when porting.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (inputs
-      `(("libxext" ,libxext)
-        ("libx11" ,libx11)))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -6330,18 +6331,18 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.2")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1yg9asi3i3wf73ibc006xv3g77axvbyp81lyinwq27syabh30i1a"))
+        (base32 "0gqdcw5cfk919jk8g0g4xjxbsvr5j9gskn8q3cmrz388pvfvm8x7"))
        (patches (search-patches "xpra-4.2-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
-    (inputs `(
+    (inputs `(("bash-minimal" ,bash-minimal)    ; for wrap-program
               ;; Essential dependencies.
               ("libjpeg" ,libjpeg-turbo)
               ("libwebp" ,libwebp)
@@ -6473,7 +6474,8 @@ X11 servers, Windows, or macOS.")
      `(("anthy" ,anthy)
        ("libedit" ,libedit)
        ("libxft" ,libxft)
-       ("m17n-lib" ,m17n-lib)))
+       ("m17n-lib" ,m17n-lib)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("intltool" ,intltool)

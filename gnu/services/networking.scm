@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2021 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -363,8 +364,9 @@ Protocol (DHCP) client, on all the non-loopback network interfaces.")))
                (lambda _ (display ""))))
            ;; Validate the config.
            (invoke/quiet
-            #$(file-append package "/sbin/dhcpd") "-t" "-cf"
-            #$config-file))))))
+            #$(file-append package "/sbin/dhcpd")
+            #$(string-append "-" version)
+            "-t" "-cf" #$config-file))))))
 
 (define dhcpd-service-type
   (service-type

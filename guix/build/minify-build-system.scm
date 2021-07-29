@@ -40,7 +40,7 @@
   (format #t "minifying ~a\n" file)
   (let* ((base (basename file ".js"))
          (installed (or target (string-append directory base ".min.js")))
-         (minified (open-pipe* OPEN_READ "uglify-js" file)))
+         (minified (open-pipe* OPEN_READ "uglifyjs" file)))
     (call-with-output-file installed
       (cut dump-port minified <>))
     (match (close-pipe minified)

@@ -1057,7 +1057,11 @@ H.264 (MPEG-4 AVC) video streams.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* (find-files "." ".*-viewer$")
+             (substitute* (find-files "lib" "\\.pm$")
+               (("\"youtube-dl\"")
+                (format #f "\"~a/bin/youtube-dl\""
+                        (assoc-ref inputs "youtube-dl"))))
+             (substitute* (find-files "bin" ".*-viewer$")
                (("'ffmpeg'")
                 (format #f "'~a/bin/ffmpeg'"
                         (assoc-ref inputs "ffmpeg")))

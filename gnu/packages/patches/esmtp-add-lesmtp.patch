@@ -1,0 +1,37 @@
+From 9b09ff673954c459218e2c664386286ca68aae51 Mon Sep 17 00:00:00 2001
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Sat, 24 Jul 2021 23:55:26 +0200
+Subject: [PATCH] gnu: esmtp: Always assume that -lesmtp will work.
+
+libesmtp 1.1.0 removed the libesmtp-config helper in favour of pkg-config.
+This does not use that (I lack the chops and the patience).  Assume that
+the build environment has everything set up for us, which is true on Guix.
+---
+ configure.ac | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 9252ec2..7ccf71a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -32,15 +32,8 @@ then
+ 	AC_CHECK_HEADER(libesmtp.h, ,[AC_MSG_ERROR([libesmtp.h not found in $with_libesmtp])])
+ fi    
+ AC_MSG_CHECKING(for libESMTP)
+-if libesmtp-config --version > /dev/null 2>&1
+-then
+-	AC_MSG_RESULT(yes)
+-	CFLAGS="$CFLAGS `libesmtp-config --cflags`"
+-	LIBS="$LIBS `libesmtp-config --libs`"
+-else
+-	AC_MSG_RESULT(no)
+-	AC_MSG_ERROR(libESMTP library not found)
+-fi
++AC_MSG_RESULT(assumed)
++LIBS="$LIBS -lesmtp"
+ 
+ jrf_FUNC_GETOPT
+ 
+-- 
+2.32.0
+

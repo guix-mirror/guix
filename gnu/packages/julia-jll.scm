@@ -40,6 +40,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages julia)
+  #:use-module (gnu packages julia-xyz)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
@@ -639,6 +640,8 @@ rendering library.")
                (("return joinpath.*") "return $override\n"))
              #t)))))
     (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-preferences" ,julia-preferences)))
     (home-page "https://github.com/JuliaPackaging/JLLWrappers.jl")
     (synopsis "Julia macros used by JLL packages")
     (description "This package contains Julia macros that enable JLL packages

@@ -7,7 +7,7 @@
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <jannek@gnu.org>
@@ -74,6 +74,7 @@
   #:use-module (gnu system locale)
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
+  #:use-module (gnu system setuid)
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
@@ -267,7 +268,7 @@
 
   (pam-services operating-system-pam-services     ; list of PAM services
                 (default (base-pam-services)))
-  (setuid-programs operating-system-setuid-programs
+  (setuid-programs %operating-system-setuid-programs
                    (default %setuid-programs))    ; list of string-valued gexps
 
   (sudoers-file operating-system-sudoers-file     ; file-like
@@ -671,7 +672,7 @@ bookkeeping."
             (operating-system-environment-variables os))
            host-name procs root-fs
            (service setuid-program-service-type
-                    (operating-system-setuid-programs os))
+                    (%operating-system-setuid-programs os))
            (service profile-service-type
                     (operating-system-packages os))
            other-fs
@@ -701,7 +702,7 @@ bookkeeping."
           (pam-root-service (operating-system-pam-services os))
           (operating-system-etc-service os)
           (service setuid-program-service-type
-                   (operating-system-setuid-programs os))
+                   (%operating-system-setuid-programs os))
           (service profile-service-type (operating-system-packages os)))))
 
 (define* (operating-system-services os)
@@ -1065,25 +1066,31 @@ use 'plain-file' instead~%")
     ;; TODO: Remove when glibc@2.23 is long gone.
     ("GUIX_LOCPATH" . "/run/current-system/locale")))
 
+(define (operating-system-setuid-programs os)
+  "Return the setuid programs for OS, as a list of setuid-program record."
+  (map file-like->setuid-program
+         (%operating-system-setuid-programs os)))
+
 (define %setuid-programs
   ;; Default set of setuid-root programs.
   (let ((shadow (@ (gnu packages admin) shadow)))
-    (list (file-append shadow "/bin/passwd")
-          (file-append shadow "/bin/sg")
-          (file-append shadow "/bin/su")
-          (file-append shadow "/bin/newgrp")
-          (file-append shadow "/bin/newuidmap")
-          (file-append shadow "/bin/newgidmap")
-          (file-append inetutils "/bin/ping")
-          (file-append inetutils "/bin/ping6")
-          (file-append sudo "/bin/sudo")
-          (file-append sudo "/bin/sudoedit")
-          (file-append fuse "/bin/fusermount")
+    (map file-like->setuid-program
+         (list (file-append shadow "/bin/passwd")
+               (file-append shadow "/bin/sg")
+               (file-append shadow "/bin/su")
+               (file-append shadow "/bin/newgrp")
+               (file-append shadow "/bin/newuidmap")
+               (file-append shadow "/bin/newgidmap")
+               (file-append inetutils "/bin/ping")
+               (file-append inetutils "/bin/ping6")
+               (file-append sudo "/bin/sudo")
+               (file-append sudo "/bin/sudoedit")
+               (file-append fuse "/bin/fusermount")
 
-          ;; To allow mounts with the "user" option, "mount" and "umount" must
-          ;; be setuid-root.
-          (file-append util-linux "/bin/mount")
-          (file-append util-linux "/bin/umount"))))
+               ;; To allow mounts with the "user" option, "mount" and "umount" must
+               ;; be setuid-root.
+               (file-append util-linux "/bin/mount")
+               (file-append util-linux "/bin/umount")))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'

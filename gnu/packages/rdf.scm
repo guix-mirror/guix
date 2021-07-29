@@ -443,3 +443,30 @@ parser and serializer.")
 RDF data that can also be queried for Triple Patterns.  This package provides a
 C++ library as well as various command-line tools to to work with HDT.")
 (license license:lgpl2.1+)))
+
+(define-public python-sparqlwrapper
+  (package
+    (name "python-sparqlwrapper")
+    (version "1.8.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/RDFLib/sparqlwrapper.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ia5h06zf6kpw6gdi7f80pzx10m79brj08zrbffb5wn9hzz8x528"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; The test suite simply queries external HTTP endpoints.
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-rdflib" ,python-rdflib)))
+    (home-page "https://rdflib.dev/sparqlwrapper/")
+    (synopsis "SPARQL Endpoint interface to Python")
+    (description "Python wrapper around a SPARQL service.  It helps in creating
+the query URI and, possibly, convert the result into a more manageable
+format.")
+    (license license:w3c)))

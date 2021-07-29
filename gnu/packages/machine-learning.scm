@@ -1189,6 +1189,57 @@ Models, is a program for performing both single-SNP and SNP-set genome-wide
 association studies (GWAS) on extremely large data sets.")
     (license license:asl2.0)))
 
+(define-public python-hyperopt
+  (package
+    (name "python-hyperopt")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hyperopt" version))
+       (sha256
+        (base32 "1k4ma8ci0bxghw7g4ms944zak1pi83yv2d6bxd7fcslm1zalfq5w"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--ignore"
+                       ;; Needs python-pyspark.
+                       "hyperopt/tests/test_spark.py"
+                       ;; Needs both python-scikit-learn and python-lightgbm.
+                       "--ignore" "hyperopt/tests/test_atpe_basic.py"
+                       ;; The tests below need python-lightgbm.
+                       "-k" (string-append "not test_branin"
+                                           " and not test_distractor"
+                                           " and not test_q1lognormal"
+                                           " and not test_quadratic1"
+                                           " and not test_twoarms"))))))))
+    (propagated-inputs
+     `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-future" ,python-future)
+       ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("python-tqdm" ,python-tqdm)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-ipython" ,python-ipython)
+       ("python-ipyparallel" ,python-ipyparallel)
+       ("python-nose" ,python-nose)
+       ("python-pymongo" ,python-pymongo)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://hyperopt.github.io/hyperopt/")
+    (synopsis "Library for hyperparameter optimization")
+    (description "Hyperopt is a Python library for serial and parallel
+optimization over awkward search spaces, which may include real-valued,
+discrete, and conditional dimensions.")
+    (license license:bsd-3)))
+
 ;; There have been no proper releases yet.
 (define-public kaldi
   (let ((commit "d4791c0f3fc1a09c042dac365e120899ee2ad21e")

@@ -69,9 +69,9 @@ when evaluated."
       (if var
           (symbol-append 'license: var)
           `(license
-            (name ,(license-name lic))
-            (uri ,(license-uri lic))
-            (comment ,(license-comment lic))))))
+            ,(license-name lic)
+            ,(license-uri lic)
+            ,(license-comment lic)))))
 
   (define (search-path-specification->code spec)
     `(search-path-specification
