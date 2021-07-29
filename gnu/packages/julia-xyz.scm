@@ -3455,7 +3455,7 @@ in @code{Gadfly}, @code{Plots} and @code{Makie} to label axes and keys.")
 (define-public julia-simpletraits
   (package
     (name "julia-simpletraits")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
       (origin
         (method git-fetch)
@@ -3464,7 +3464,7 @@ in @code{Gadfly}, @code{Plots} and @code{Makie} to label axes and keys.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1aaq91klwxb0r3ckwihf7rd7jvg70757nkhp5ip4cc3lspnnip23"))))
+         (base32 "1qvmkqcvhc2nilvkk36szccxdlcv9ls2i0ksxgl2yfjr3b3qlr05"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-macrotools" ,julia-macrotools)))
