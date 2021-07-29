@@ -762,7 +762,7 @@ styles available to terminals.")
 (define-public julia-dataapi
   (package
     (name "julia-dataapi")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
       (origin
         (method git-fetch)
@@ -771,7 +771,7 @@ styles available to terminals.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "14sfvkz169zcbap3gdwpj16qsap783h86fd07flfxk822abam11w"))))
+         (base32 "0swk31p83fycz5cdj4fg6b0wfqj473lnx94q2fl7ybxkkc6afba7"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaData/DataAPI.jl")
     (synopsis "Data-focused namespace for packages to share functions")
