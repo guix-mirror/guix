@@ -1266,7 +1266,7 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
 (define-public julia-finitediff
   (package
     (name "julia-finitediff")
-    (version "2.8.0")
+    (version "2.8.1")
     (source
       (origin
         (method git-fetch)
@@ -1275,7 +1275,7 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0ndazn02wn8ddwgjh1i32y7pbaqpw06f42ccilz5ya78cyrjhq2m"))))
+         (base32 "105f6r0hq97n9mxf1nacmz94dpca66vzqj5p3zh4h0brshmggqnq"))))
     (build-system julia-build-system)
     (arguments
      `(#:phases
