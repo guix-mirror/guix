@@ -1587,7 +1587,7 @@ library for parsing HTML.")
 (define-public julia-http
   (package
     (name "julia-http")
-    (version "0.9.2")
+    (version "0.9.12")
     (source
      (origin
        (method git-fetch)
@@ -1596,7 +1596,7 @@ library for parsing HTML.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ij0yci13c46p92m4zywvcs02nn8pm0abyfffiyhxvva6hq48lyl"))))
+        (base32 "1jsyk3mhnwj4h19cxclx26igdqdrw51fd3k1hgav0nm67dy4cxyk"))))
     (build-system julia-build-system)
     (arguments
      `(#:phases
