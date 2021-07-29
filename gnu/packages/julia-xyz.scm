@@ -2371,7 +2371,7 @@ comes from the fact that @code{M == map(f, A)}.")
 (define-public julia-matrixfactorizations
   (package
     (name "julia-matrixfactorizations")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
       (origin
         (method git-fetch)
@@ -2380,7 +2380,7 @@ comes from the fact that @code{M == map(f, A)}.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "14c6w1vhyf4pi4454pdp6ryczsxn9pgjg99fg9bkdj03xg5fsxb8"))))
+         (base32 "15zvcv2l4iqmjpnqjyx2kry7a85p652nbjy9pj3wq0piksqcz4jb"))))
     (build-system julia-build-system)
     (arguments
      `(#:phases
