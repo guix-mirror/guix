@@ -3641,7 +3641,7 @@ types and a common interface that is shared between them.")
 (define-public julia-staticarrays
   (package
     (name "julia-staticarrays")
-    (version "1.2.5")
+    (version "1.2.8")
     (source
      (origin
        (method git-fetch)
@@ -3650,7 +3650,7 @@ types and a common interface that is shared between them.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vvs1kwpax18iyhiivznhq49nid0zh4fbfxyq99h0n3x2s1hzyi6"))))
+        (base32 "1932m3wddll63vqpgjfnkirp9y5agvic7vz5rv2lbjx8gjbamqs4"))))
     (build-system julia-build-system)
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
