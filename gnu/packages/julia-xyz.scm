@@ -2151,7 +2151,7 @@ as a string together with the return value.")
 (define-public julia-irtools
   (package
     (name "julia-irtools")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method git-fetch)
@@ -2160,7 +2160,7 @@ as a string together with the return value.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wwzy77jcdnffnd5fr6xan7162g4wydz67igrq82wflwnrhlcx5y"))))
+        (base32 "11334fcg2slpwcj0raxf457brhf7pxglgxc6cy8q58ggrpxqfqql"))))
     (arguments
      '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
