@@ -429,7 +429,7 @@ variables, both with unordered (nominal variables) and ordered categories
 (define-public julia-chainrules
   (package
     (name "julia-chainrules")
-    (version "0.7.65")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -438,7 +438,7 @@ variables, both with unordered (nominal variables) and ordered categories
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0697m5y5ryqnhw6cbk90rlydrxan2b308pzbl86qz4mzhypyk7yi"))))
+        (base32 "0if93pd3b3scg2x3gmk1cbwjk0ax1n792vy8c38y3xl7jpd5cb70"))))
     (build-system julia-build-system)
     (inputs                             ;required for test
      `(("julia-chainrulestestutils" ,julia-chainrulestestutils)
