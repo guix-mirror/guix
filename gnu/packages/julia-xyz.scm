@@ -485,7 +485,7 @@ sensitivities for functions without the need to depend on ChainRules itself.")
 (define-public julia-chainrulestestutils
   (package
     (name "julia-chainrulestestutils")
-    (version "0.6.11")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -494,7 +494,7 @@ sensitivities for functions without the need to depend on ChainRules itself.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1nx2fzxhh3q8znnjfjbgf7776scszixmigwna3hvmdfixsk58x0i"))))
+        (base32 "07l4sjc7avmmp4v1dsym1jyb46q4jsvv7i0yzszf72gj8d9k6lwa"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-chainrulescore" ,julia-chainrulescore)
