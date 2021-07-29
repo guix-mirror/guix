@@ -2554,7 +2554,7 @@ Julia, with type-driven, overloadable packing/unpacking functionality.")
 (define-public julia-mutablearithmetics
   (package
     (name "julia-mutablearithmetics")
-    (version "0.2.19")
+    (version "0.2.20")
     (source
       (origin
         (method git-fetch)
@@ -2563,7 +2563,7 @@ Julia, with type-driven, overloadable packing/unpacking functionality.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1zjfq5sh0rc941pbc9kvnr6a2lpr4yd276mw62vbncbz9jg52rrg"))))
+         (base32 "1isyj8h4nx96cr6892d154v8pw1nhr7mjyz5bd6ffr2mkzb2bq4f"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-offsetarrays" ,julia-offsetarrays)))
