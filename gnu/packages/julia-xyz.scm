@@ -460,7 +460,7 @@ execute forward-, reverse-, and mixed-mode primitives.")
 (define-public julia-chainrulescore
   (package
     (name "julia-chainrulescore")
-    (version "0.9.43")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -469,7 +469,7 @@ execute forward-, reverse-, and mixed-mode primitives.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12by6zcxv0ivpf0f22gc9i067360syda9m2lxk0rhypxq4smj8w4"))))
+        (base32 "1866xv30h1bi7f2m993nljzf58wwmv8zlgn6ffn9j3wckch1nfpb"))))
     (build-system julia-build-system)
     (inputs                             ;required for tests
      `(("julia-benchmarktools" ,julia-benchmarktools)
