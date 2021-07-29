@@ -261,7 +261,7 @@ the entries on the bands.")
 (define-public julia-benchmarktools
   (package
     (name "julia-benchmarktools")
-    (version "0.7.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -270,7 +270,7 @@ the entries on the bands.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "000izw9pj7cbh9r35nnwg2ijkb9dpfd5nkl2889b8b2dpsh4fi63"))))
+        (base32 "1xz3kdrphp4b158pg7dwkiry49phs2fjjpdvk1hjpww5ykxacks8"))))
     (build-system julia-build-system)
     (propagated-inputs `(("julia-json" ,julia-json)))
     (home-page "https://github.com/JuliaCI/BenchmarkTools.jl")
