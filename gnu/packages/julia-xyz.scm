@@ -121,7 +121,7 @@ provides functions to run a few automatable checks for Julia packages.")
 (define-public julia-arrayinterface
   (package
     (name "julia-arrayinterface")
-    (version "3.1.17")
+    (version "3.1.19")
     (source
       (origin
         (method git-fetch)
@@ -130,7 +130,7 @@ provides functions to run a few automatable checks for Julia packages.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1yfl7wsciqm8ggfs6grxdrvpkxniy4c63d05f65v2j0c55z8a6mn"))))
+         (base32 "0cmldnzvdgmfnrnrzgj6v1mfr2rvk5096392rwmhd3iyx7v0pq33"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-ifelse" ,julia-ifelse)
