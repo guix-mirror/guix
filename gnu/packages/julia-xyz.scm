@@ -3480,18 +3480,16 @@ types are fixed after creation.")
 (define-public julia-sortingalgorithms
   (package
     (name "julia-sortingalgorithms")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
                (url "https://github.com/JuliaCollections/SortingAlgorithms.jl")
-               ;; Tagging releases is hard:
-               ;; https://github.com/JuliaCollections/SortingAlgorithms.jl/issues/41#issuecomment-840587380
-               (commit "aa2b98d384ddd132aae0219e68fb63b92513cb35")))
+               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "13zbx18psxrg4fvkqgp0m7g484vrama2xm6902bbls30801hgljg"))))
+         (base32 "173x77a80xnh99viqa3r7rgdaksvxaw8xyfqw09gwvp4p2zrxivb"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f))    ; cycle with StatsBase.jl
