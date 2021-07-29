@@ -2265,7 +2265,7 @@ focus on speed and slick struct mapping.")
 (define-public julia-lazyarrays
   (package
     (name "julia-lazyarrays")
-    (version "0.21.6")
+    (version "0.21.11")
     (source
       (origin
         (method git-fetch)
@@ -2274,7 +2274,7 @@ focus on speed and slick struct mapping.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0zm1ihvi8v2823ap59ajqcs46s5z0nai8l70n51f6j9dzp8lc3cy"))))
+         (base32 "1vdli4zr94xhrx5bpvrqiysz21nzlcgmqz0zhza1ayw0zjgzihfw"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-arraylayouts" ,julia-arraylayouts)
