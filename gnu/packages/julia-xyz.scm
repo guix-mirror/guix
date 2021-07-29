@@ -2855,7 +2855,7 @@ actual computation.")
 (define-public julia-plotutils
   (package
     (name "julia-plotutils")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method git-fetch)
@@ -2864,8 +2864,7 @@ actual computation.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1jimdkp590g7s33w7i431nn7mp1phjy9gdjs88zyqsmq5hxldacg"))))
+         (base32 "0pqd3yvs3w48sr50c8rcqk5pzvpdy9nf4kimcvyz9dvwc3jgh6rd"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-colors" ,julia-colors)
