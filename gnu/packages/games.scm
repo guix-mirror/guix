@@ -4429,11 +4429,11 @@ OpenGFX provides you with...
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://cdn.openttd.org/extra/opensfx/"
-             version "/opensfx-" version "-source.tar.gz"))
+             "https://cdn.openttd.org/opensfx-releases/"
+             version "/opensfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "03jxgp02ks31hmsdh4xh0xcpkb70ds8jakc9pfc1y9vdrdavh4p5"))))
+         "06vycppqcxbfdqlxzna5xr303zgcmpcvj6ylw5b2ws0ssph2f1s0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("catcodec" ,catcodec)
