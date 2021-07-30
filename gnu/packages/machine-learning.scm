@@ -584,7 +584,7 @@ in terms of new algorithms.")
 (define-public python-onnx
   (package
     (name "python-onnx")
-    (version "1.8.1")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
@@ -593,7 +593,7 @@ in terms of new algorithms.")
        ;; to use googletest from Guix and enable tests by default.
        (patches (search-patches "python-onnx-use-system-googletest.patch"))
        (sha256
-        (base32 "1ys5f4kqkabm4mgivsw80zz8xj1svanfbpszqbw9j15914hcarcx"))))
+        (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))))
     (build-system python-build-system)
     (native-inputs
      `(("cmake" ,cmake)
