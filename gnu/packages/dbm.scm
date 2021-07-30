@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -30,7 +30,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 ;;; Commentary:
 ;;;
@@ -87,15 +88,17 @@
                        (string-append "CONFIG_SHELL=" (which "bash"))
                        (string-append "SHELL=" (which "bash"))
 
-                       ;; Bdb doesn't recognize aarch64 as an architecture.
-                       ,@(if (string=? "aarch64-linux" (%current-system))
-                             '("--build=aarch64-unknown-linux-gnu")
-                             '())
-
-                       ;; Bdb doesn't recognize powerpc64le as an architecture.
-                       ,@(if (string=? "powerpc64le-linux" (%current-system))
-                             '("--build=powerpc64le-unknown-linux-gnu")
-                             '())
+                       ;; Bdb's config script doesn't recognize very many
+                       ;; architectures, and is a dependant on the 'config'
+                       ;; package, so we manually define the build target.
+                       ,@(match (%current-system)
+                           ("aarch64-linux"
+                            '("--build=aarch64-unknown-linux-gnu"))
+                           ("powerpc64le-linux"
+                            '("--build=powerpc64le-unknown-linux-gnu"))
+                           ("riscv64-linux"
+                            '("--build=riscv64-unknown-linux-gnu"))
+                           (_ '()))
 
                        ,@(if (%current-target-system)         ; cross building
                              '((string-append "--host=" target))
