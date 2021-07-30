@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -38,6 +38,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages c)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
@@ -169,6 +171,58 @@ property of interest (such as triggering a compiler bug) and automatically
 produces a much smaller C/C++ program that has the same property.  It is
 intended for use by people who discover and report bugs in compilers and other
 tools that process C/C++ code.")
+    (license license:ncsa)))
+
+(define-public c-vise
+  (package
+    (name "c-vise")
+    (version "2.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/marxin/cvise")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0f6m58rak87gvcvxxcgp1bzbsv1q618h0iipmv0dx9jv1bn0qv43"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-flake8" ,python-pytest-flake8)))
+    (inputs
+     `(("bash" ,bash-minimal)           ; For wrap-program
+       ("clang" ,clang)
+       ("llvm" ,llvm)
+       ("python" ,python)
+       ("python-pebble" ,python-pebble)
+       ("python-psutil" ,python-psutil)
+       ("unifdef" ,unifdef)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'hardcode-paths
+           (lambda _
+            (substitute* "cvise.py"
+              (("/bin/bash") (which "bash"))
+              (("(.*)# Special case for clang-format" & >)
+               (string-append > "# Special case for unifdef\n"
+                              > "programs['unifdef'] = '" (which "unifdef") "'\n"
+                              &)))))
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (python-path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/cvise")
+                 `("PYTHONPATH" ":" prefix (,python-path)))
+               #t))))))
+    (home-page "https://github.com/marxin/cvise")
+    (synopsis "Reducer for interesting code")
+    (description
+     "C-Vise is a Python port of the C-Reduce tool that is fully compatible
+and uses the same efficient LLVM-based C/C++ @code{clang_delta} reduction
+tool.")
     (license license:ncsa)))
 
 (define-public american-fuzzy-lop
