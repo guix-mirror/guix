@@ -47,7 +47,6 @@
             cc0
             cc-by2.0 cc-by3.0 cc-by4.0
             cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
-            cc-sampling-plus-1.0
             cddl1.0 cddl1.1
             cecill cecill-b cecill-c
             artistic2.0 clarified-artistic
