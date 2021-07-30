@@ -62,6 +62,7 @@
 ;;; Copyright © 2021 David Pflug <david@pflug.io>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
+;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4423,12 +4424,12 @@ OpenGFX provides you with...
 (define openttd-opensfx
   (package
     (name "openttd-opensfx")
-    (version "0.2.3")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://binaries.openttd.org/extra/opensfx/"
+             "https://cdn.openttd.org/extra/opensfx/"
              version "/opensfx-" version "-source.tar.gz"))
        (sha256
         (base32
@@ -4456,7 +4457,7 @@ OpenGFX provides you with...
     (description "OpenSFX is a set of free base sounds for OpenTTD which make
 it possible to play OpenTTD without requiring the proprietary sound files from
 the original Transport Tycoon Deluxe.")
-    (license license:cc-sampling-plus-1.0)))
+    (license license:cc-by-sa3.0)))
 
 (define openttd-openmsx
   (package
