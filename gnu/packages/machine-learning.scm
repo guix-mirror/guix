@@ -581,16 +581,16 @@ tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
 
-(define-public python-onnx
+(define-public onnx
   (package
-    (name "python-onnx")
+    (name "onnx")
     (version "1.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "onnx" version))
-       (patches (search-patches "python-onnx-use-system-googletest.patch"
-                                "python-onnx-shared-libraries.patch"))
+       (patches (search-patches "onnx-use-system-googletest.patch"
+                                "onnx-shared-libraries.patch"))
        (sha256
         (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))
        (modules '((guix build utils)))
@@ -657,6 +657,12 @@ AI models, both deep learning and traditional ML.  It defines an extensible
 computation graph model, as well as definitions of built-in operators and
 standard data types.")
     (license license:expat)))
+
+(define-public python-onnx
+  ;; This used to be called "python-onnx" because it provided nothing but
+  ;; Python bindings.  The package now provides shared libraries and C++
+  ;; headers, hence the name change.
+  (deprecated-package "python-onnx" onnx))
 
 (define-public rxcpp
   (package
