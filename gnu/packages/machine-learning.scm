@@ -589,12 +589,49 @@ in terms of new algorithms.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "onnx" version))
-       (patches (search-patches "python-onnx-use-system-googletest.patch"))
+       (patches (search-patches "python-onnx-use-system-googletest.patch"
+                                "python-onnx-shared-libraries.patch"))
        (sha256
         (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))
        (modules '((guix build utils)))
        (snippet '(delete-file-recursively "third_party"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'pass-cmake-arguments
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Pass options to the CMake-based build process.
+                      (define out
+                        (assoc-ref outputs "out"))
+
+                      (define args
+                        ;; Copy arguments from 'cmake-build-system', plus ask
+                        ;; for shared libraries.
+                        (list "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+                              (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                              "-DCMAKE_INSTALL_LIBDIR=lib"
+                              "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                              (string-append "-DCMAKE_INSTALL_RPATH=" out
+                                             "/lib")
+                              "-DCMAKE_VERBOSE_MAKEFILE=ON"
+
+                              "-DBUILD_SHARED_LIBS=ON"))
+
+                      ;; This environment variable is honored by 'setup.py',
+                      ;; which passes it down to 'cmake'.
+                      (setenv "CMAKE_ARGS" (string-join args))
+
+                      ;; This one is honored by 'setup.py' and passed to 'make
+                      ;; -j'.
+                      (setenv "MAX_JOBS"
+                              (number->string (parallel-job-count)))))
+                  (add-after 'install 'install-from-cmake
+                    (lambda _
+                      ;; Run "make install" in the build tree 'setup.py'
+                      ;; created for CMake so that libonnx.so,
+                      ;; libonnx_proto.so, etc. are installed.
+                      (invoke "make" "install"
+                              "-C" ".setuptools-cmake-build"))))))
     (native-inputs
      `(("cmake" ,cmake)
        ("googletest" ,googletest)
