@@ -585,16 +585,20 @@ in terms of new algorithms.")
   (package
     (name "onnx")
     (version "1.9.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "onnx" version))
-       (patches (search-patches "onnx-use-system-googletest.patch"
-                                "onnx-shared-libraries.patch"))
-       (sha256
-        (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))
-       (modules '((guix build utils)))
-       (snippet '(delete-file-recursively "third_party"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/onnx/onnx")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1xnii361f68x0masxgfc4ai7hh3wlxxk56aznwf4m4yr6wqx47ml"))
+              (file-name (git-file-name name version))
+              (patches (search-patches "onnx-use-system-googletest.patch"
+                                       "onnx-shared-libraries.patch"
+                                       "onnx-skip-model-downloads.patch"))
+              (modules '((guix build utils)))
+              (snippet '(delete-file-recursively "third_party"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -625,6 +629,13 @@ in terms of new algorithms.")
                       ;; -j'.
                       (setenv "MAX_JOBS"
                               (number->string (parallel-job-count)))))
+                  (add-before 'check 'make-test-directory-writable
+                    (lambda _
+                      ;; Make things writable for tests.
+                      (setenv "HOME" (getcwd))
+                      (for-each make-file-writable
+                                (find-files "onnx/examples" "."
+                                            #:directories? #t))))
                   (add-after 'install 'install-from-cmake
                     (lambda _
                       ;; Run "make install" in the build tree 'setup.py'
