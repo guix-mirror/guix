@@ -589,8 +589,6 @@ in terms of new algorithms.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "onnx" version))
-       ;; ONNX will build googletest from a git checkout.  Patch CMake
-       ;; to use googletest from Guix and enable tests by default.
        (patches (search-patches "python-onnx-use-system-googletest.patch"))
        (sha256
         (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))))

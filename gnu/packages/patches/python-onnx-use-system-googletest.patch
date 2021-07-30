@@ -1,3 +1,6 @@
+ONNX will build googletest from a Git checkout.  Patch CMake to use our
+googletest package and enable tests by default.
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 0aa9fda2..a573170c 100644
 --- a/CMakeLists.txt
