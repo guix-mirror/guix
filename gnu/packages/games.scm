@@ -4437,11 +4437,15 @@ OpenGFX provides you with...
     (build-system gnu-build-system)
     (native-inputs
      `(("catcodec" ,catcodec)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("tar" ,tar)))
     (arguments
      `(#:make-flags
-       (list (string-append "INSTALL_DIR=" %output
-                            "/share/games/openttd/baseset/opensfx"))
+       (list (string-append "DIR_NAME=opensfx")
+             (string-append "TAR=" (assoc-ref %build-inputs "tar")
+                            "/bin/tar"))
+       ;; The check phase only verifies md5sums, see openttd-opengfx.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-reproducible
@@ -4451,7 +4455,15 @@ OpenGFX provides you with...
              (substitute* "scripts/Makefile.def"
                (("-cf") " --mtime=@0 -cf"))
              #t))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'build 'prebuild
+           (lambda _ (invoke "make" "opensfx.cat")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively "opensfx"
+                               (string-append (assoc-ref outputs "out")
+                                              "/share/games/openttd/baseset"
+                                              "/opensfx")))))))
     (home-page "http://dev.openttdcoop.org/projects/opensfx")
     (synopsis "Base sounds for OpenTTD")
     (description "OpenSFX is a set of free base sounds for OpenTTD which make
