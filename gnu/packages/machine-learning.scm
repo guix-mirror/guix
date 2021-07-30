@@ -591,7 +591,9 @@ in terms of new algorithms.")
        (uri (pypi-uri "onnx" version))
        (patches (search-patches "python-onnx-use-system-googletest.patch"))
        (sha256
-        (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))))
+        (base32 "0yjv2axz2vc2ysniwislsp53fsb8f61y1warrr2ppn2d9ijml1d9"))
+       (modules '((guix build utils)))
+       (snippet '(delete-file-recursively "third_party"))))
     (build-system python-build-system)
     (native-inputs
      `(("cmake" ,cmake)
