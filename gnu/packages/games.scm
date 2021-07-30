@@ -4474,34 +4474,37 @@ the original Transport Tycoon Deluxe.")
 (define openttd-openmsx
   (package
     (name "openttd-openmsx")
-    (version "0.3.1")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://binaries.openttd.org/extra/openmsx/"
-             version "/openmsx-" version "-source.tar.gz"))
+             "https://cdn.openttd.org/openmsx-releases/"
+             version "/openmsx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0nskq97a6fsv1v6d62zf3yb8whzhqnlh3lap3va3nzvj7csjgf7c"))))
+         "0prjljsdgdxqdhhcriqskqha004ybs575xcjq80zha3pqnmrdk0k"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)))
+     `(("grfcodec" ,grfcodec)
+       ("python" ,python-2)
+       ("tar" ,tar)))
     (arguments
      `(#:make-flags
-       (list (string-append "INSTALL_DIR=" %output
-                            "/share/games/openttd/baseset"))
+       (list (string-append "DIR_NAME=openmsx")
+             (string-append "TAR=" (assoc-ref %build-inputs "tar")
+                            "/bin/tar"))
+       ;; The check phase only verifies md5sums, see openttd-opengfx.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'install 'post-install
-           ;; Rename openmsx-version to openmsx
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((install-directory (string-append (assoc-ref outputs "out")
-                                                     "/share/games/openttd/baseset")))
-               (rename-file (string-append install-directory "/openmsx-" ,version)
-                            (string-append install-directory "/openmsx"))
-               #t))))))
+             (copy-recursively "openmsx"
+                               (string-append (assoc-ref outputs "out")
+                                              "/share/games/openttd/baseset"
+                                              "/openmsx")))))))
     (home-page "http://dev.openttdcoop.org/projects/openmsx")
     (synopsis "Music set for OpenTTD")
     (description "OpenMSX is a music set for OpenTTD which makes it possible
