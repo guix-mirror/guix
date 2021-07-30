@@ -2869,6 +2869,7 @@ formats.")
          ("texlive-ukrhyph" ,texlive-ukrhyph)
          ("texlive-ruhyphen" ,texlive-ruhyphen)
          ("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
+         ("texlive-latex-l3backend" ,texlive-latex-l3backend)
          ;; TODO: This dependency isn't needed for LaTeX version 2021-06-01
          ;; and later. See:
          ;; https://tug.org/pipermail/tex-live/2021-June/047180.html
@@ -8449,7 +8450,6 @@ are part of the LaTeX required tools distribution, comprising the packages:
                #t))))))
     (native-inputs
      `(("texlive-latex-base" ,texlive-latex-base)
-       ("texlive-latex-l3backend" ,texlive-latex-l3backend)
        ("texlive-cm" ,texlive-cm)
        ("texlive-lm" ,texlive-lm)
        ("texlive-url" ,texlive-url)

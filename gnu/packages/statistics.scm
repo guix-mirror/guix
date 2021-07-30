@@ -349,7 +349,6 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                                         texlive-latex-fancyvrb
                                         texlive-latex-graphics
                                         texlive-latex-hyperref
-                                        texlive-latex-l3backend
                                         texlive-latex-oberdiek
                                         texlive-latex-tools
                                         texlive-latex-upquote
