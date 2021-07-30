@@ -51,7 +51,7 @@ for dist in ws:
     # Try to load top level modules. This should not have any side-effects.
     try:
         metalines = dist.get_metadata_lines('top_level.txt')
-    except (KeyError, FileNotFoundError):
+    except (KeyError, EnvironmentError):
         # distutils (i.e. #:use-setuptools? #f) will not install any metadata.
         # This file is also missing for packages built using a PEP 517 builder
         # such as poetry.
