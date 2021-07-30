@@ -4365,7 +4365,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
@@ -4373,7 +4373,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0qxc6gl2gxcrn1np88dnjgbaaakkkx96b13rcmy1spryc8c09hyr"))))
+         "0jgy8xv7r72m127qn09vr3rxhnbakl2990f7lldsk0d5d8n993vd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
