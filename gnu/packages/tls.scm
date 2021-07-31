@@ -180,7 +180,8 @@ living in the same process.")
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
               (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"))
+                                       "gnutls-cross.patch"
+                                       "gnutls-guile-eintr-eagain.patch"))
               (sha256
                (base32
                 "0li7mwjnm64mbxhacz0rpf6i9qd83f53fvbrx96alpqqk9d6qvk4"))))

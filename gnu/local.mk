@@ -1144,6 +1144,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gnutls-cross.patch			\
+  %D%/packages/patches/gnutls-guile-eintr-eagain.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
