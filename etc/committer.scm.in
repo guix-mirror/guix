@@ -4,6 +4,7 @@
 
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
         (ice-9 popen)
         (ice-9 match)
         (ice-9 rdelim)
+        (ice-9 regex)
         (ice-9 textual-ports)
         (guix gexp))
 
@@ -65,6 +67,13 @@ Return a single string."
           ((_ last-words lines)
            (string-join (reverse (cons (restore-line last-words) lines))
                         "\n"))))))
+
+(define* (break-string-with-newlines str #:optional (max-line-length 70))
+  "Break the lines of string STR into lines that are no longer than
+MAX-LINE-LENGTH. Return a single string."
+  (string-join (map (cut break-string <> max-line-length)
+                    (string-split str #\newline))
+               "\n"))
 
 (define (read-excursion port)
   "Read an expression from PORT and reset the port position before returning
@@ -253,6 +262,32 @@ corresponding to the top-level definition containing the staged changes."
           "gnu: Add ~a.~%~%* ~a (~a): New variable.~%"
           variable-name file-name variable-name))
 
+(define* (custom-commit-message file-name variable-name message changelog
+                                #:optional (port (current-output-port)))
+  "Print custom commit message for a change to VARIABLE-NAME in FILE-NAME, using
+MESSAGE as the commit message and CHANGELOG as the body of the ChangeLog
+entry. If CHANGELOG is #f, the commit message is reused. If CHANGELOG already
+contains ': ', no colon is inserted between the location and body of the
+ChangeLog entry."
+  (define (trim msg)
+    (string-trim-right (string-trim-both msg) (char-set #\.)))
+
+  (define (changelog-has-location? changelog)
+    (->bool (string-match "^[[:graph:]]+:[[:blank:]]" changelog)))
+
+  (let* ((message (trim message))
+         (changelog (if changelog (trim changelog) message))
+         (message/f (format #f "gnu: ~a: ~a." variable-name message))
+         (changelog/f (if (changelog-has-location? changelog)
+                          (format #f "* ~a (~a)~a."
+                                  file-name variable-name changelog)
+                          (format #f "* ~a (~a): ~a."
+                                  file-name variable-name changelog))))
+    (format port
+            "~a~%~%~a~%"
+            (break-string-with-newlines message/f 72)
+            (break-string-with-newlines changelog/f 72))))
+
 (define (group-hunks-by-sexp hunks)
   "Return a list of pairs associating all hunks with the S-expression they are
 modifying."
@@ -281,6 +316,15 @@ modifying."
 (define %delay 1000)
 
 (define (main . args)
+  (define* (change-commit-message* file-name old new #:rest rest)
+    (let ((changelog #f))
+      (match args
+        ((or (message changelog) (message))
+         (apply custom-commit-message
+                file-name (second old) message changelog rest))
+        (_
+         (apply change-commit-message file-name old new rest)))))
+
   (match (diff-info)
     (()
      (display "Nothing to be done.\n" (current-error-port)))
@@ -326,13 +370,12 @@ modifying."
                                     (error "Cannot apply")))
                                 (usleep %delay))
                               hunks)
-                    (change-commit-message (hunk-file-name (first hunks))
-                                           old new
-                                           (current-output-port))
+                    (change-commit-message* (hunk-file-name (first hunks))
+                                            old new)
                     (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
-                      (change-commit-message (hunk-file-name (first hunks))
-                                             old new
-                                             port)
+                      (change-commit-message* (hunk-file-name (first hunks))
+                                              old new
+                                              port)
                       (usleep %delay)
                       (unless (eqv? 0 (status:exit-val (close-pipe port)))
                         (error "Cannot commit")))))
