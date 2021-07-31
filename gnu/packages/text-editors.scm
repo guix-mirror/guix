@@ -9,7 +9,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
@@ -35,6 +35,7 @@
 (define-module (gnu packages text-editors)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cargo)
@@ -529,27 +530,29 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
        ("ncurses" ,ncurses)))
     (arguments
      ;; No test suite available.
-     `(#:tests? #f
-       #:make-flags (list (string-append "prefix=" %output)
-                          (string-append "CC=" ,(cc-for-target))
-                          (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)   ; no configure script
-                  (add-before 'build 'correct-location-of-diff
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "buffer.c"
-                        (("/usr/bin/diff")
-                         (string-append (assoc-ref inputs "diffutils")
-                                        "/bin/diff")))))
-                  (add-before 'install 'patch-tutorial-location
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (substitute* "mg.1"
-                        (("/usr") (assoc-ref outputs "out")))))
-                  (add-after 'install 'install-tutorial
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (doc (string-append out "/share/doc/mg")))
-                        (install-file "tutorial" doc)))))))
+     (list #:tests? #f
+           #:make-flags
+           #~(list (string-append "prefix=" #$output)
+                   (string-append "CC=" #$(cc-for-target))
+                   (string-append "PKG_CONFIG=" #$(pkg-config-for-target)))
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)      ;no configure script
+               (add-before 'build 'correct-location-of-diff
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "buffer.c"
+                     (("/usr/bin/diff")
+                      (string-append (assoc-ref inputs "diffutils")
+                                     "/bin/diff")))))
+               (add-before 'install 'patch-tutorial-location
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (substitute* "mg.1"
+                     (("/usr") (assoc-ref outputs "out")))))
+               (add-after 'install 'install-tutorial
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (doc (string-append out "/share/doc/mg")))
+                     (install-file "tutorial" doc)))))))
     (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
