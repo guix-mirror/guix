@@ -1100,6 +1100,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/")
                  (changeset "jdk6-b41")))
+           (file-name "jdk6-checkout")
            (sha256
             (base32
              "14q47yfg586fs64w30g8mk92m5dkxsvr36zzh0ra99xk5x0x96mv"))))
@@ -1109,6 +1110,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/jdk/")
                  (changeset "jdk6-b41")))
+           (file-name "jdk-checkout")
            (sha256
             (base32
              "165824nhg1k1dx6zs9dny0j49rmk35jw5b13dmz8c77jfajml4v9"))))
@@ -1118,6 +1120,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/hotspot/")
                  (changeset "jdk6-b41")))
+           (file-name "hotspot-checkout")
            (sha256
             (base32
              "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))))
@@ -1127,6 +1130,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/corba/")
                  (changeset "jdk6-b41")))
+           (file-name "corba-checkout")
            (sha256
             (base32
              "1p9g1r9dnax2iwp7yb59qx7m4nmshqhwmrb2b8jj8zgbd9dl2i3q"))))
@@ -1136,6 +1140,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/langtools/")
                  (changeset "jdk6-b41")))
+           (file-name "langtools-checkout")
            (sha256
             (base32
              "1x52wd67fynbbd9ild6fb4wvba3f5hhwk03qdjfazd0a1qr37z3d"))))
@@ -1145,6 +1150,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/jaxp/")
                  (changeset "jdk6-b41")))
+           (file-name "jaxp-checkout")
            (sha256
             (base32
              "0shlqrvzpr4nrkmv215lbxnby63s3yvbdh1yxcayznsyqwa4nlxm"))))
@@ -1154,6 +1160,7 @@ machine.")))
            (uri (hg-reference
                  (url "http://hg.openjdk.java.net/jdk6/jdk6/jaxws/")
                  (changeset "jdk6-b41")))
+           (file-name "jaxws-checkout")
            (sha256
             (base32
              "0835lkw8vib1xhp8lxnybhlvzdh699hbi4mclxanydjk63zbpxk0"))))))
