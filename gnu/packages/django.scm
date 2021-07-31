@@ -79,6 +79,8 @@
            (lambda* (#:key tests? #:allow-other-keys)
              (if tests?
                  (with-directory-excursion "tests"
+                   ;; Tests expect PYTHONPATH to contain the root directory.
+                   (setenv "PYTHONPATH" "..")
                    (invoke "python" "runtests.py"
                            ;; By default tests run in parallel, which may cause
                            ;; various race conditions.  Run sequentially for
