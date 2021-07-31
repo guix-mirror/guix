@@ -522,12 +522,8 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                           (substitute* "GNUmakefile"
                             (("/usr/bin/") ""))))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("diffutils" ,diffutils)
-       ("libbsd" ,libbsd)
-       ("ncurses" ,ncurses)))
+    (native-inputs (list pkg-config))
+    (inputs (list diffutils libbsd ncurses))
     (arguments
      ;; No test suite available.
      (list #:tests? #f
@@ -542,16 +538,14 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                  (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "buffer.c"
                      (("/usr/bin/diff")
-                      (string-append (assoc-ref inputs "diffutils")
-                                     "/bin/diff")))))
+                      (search-input-file inputs "/bin/diff")))))
                (add-before 'install 'patch-tutorial-location
-                 (lambda* (#:key outputs #:allow-other-keys)
+                 (lambda _
                    (substitute* "mg.1"
-                     (("/usr") (assoc-ref outputs "out")))))
+                     (("/usr") #$output))))
                (add-after 'install 'install-tutorial
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (doc (string-append out "/share/doc/mg")))
+                 (lambda _
+                   (let ((doc (string-append #$output "/share/doc/mg")))
                      (install-file "tutorial" doc)))))))
     (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
