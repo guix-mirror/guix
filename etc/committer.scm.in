@@ -383,4 +383,4 @@ modifying."
                  ;; insertions lead to offsets.
                  (new+old+hunks (diff-info)))))))
 
-(main)
+(apply main (cdr (command-line)))
