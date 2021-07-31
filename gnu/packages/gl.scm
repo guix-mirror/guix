@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -238,7 +239,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "20.2.6")
+    (version "21.1.6")
     (source
       (origin
         (method url-fetch)
@@ -250,7 +251,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1nw5k2qrlcrp5bljy1lmyybgl525y0h44synkbbirw92qv3a6b7i"))
+          "0dwyk7cxlwna24ap23i8i92a2qcc6xhp16i03zzakpqiz4i03jxi"))
         (patches
          (search-patches "mesa-skip-tests.patch"))))
     (build-system meson-build-system)
@@ -310,7 +311,7 @@ also known as DXTn or DXTC) for Mesa.")
          "-Dglx=dri"        ;Thread Local Storage, improves performance
          ;; "-Dopencl=true"
          ;; "-Domx=true"
-         "-Dosmesa=gallium"
+         "-Dosmesa=true"
          "-Dgallium-xa=enabled"
 
          ;; features required by wayland
@@ -418,8 +419,8 @@ also known as DXTn or DXTC) for Mesa.")
              (let ((out (assoc-ref outputs "out"))
                    (bin (assoc-ref outputs "bin")))
                ;; Not all architectures have the Vulkan overlay control script.
-               (mkdir-p (string-append bin "/bin"))
-               (call-with-output-file (string-append bin "/bin/.empty")
+               (mkdir-p (string-append out "/bin"))
+               (call-with-output-file (string-append out "/bin/.empty")
                  (const #t))
                (copy-recursively (string-append out "/bin")
                                  (string-append bin "/bin"))
