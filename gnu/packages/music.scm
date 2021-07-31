@@ -81,6 +81,7 @@
   #:use-module (gnu packages apr)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base) ;libbdf
   #:use-module (gnu packages bash)
@@ -4885,6 +4886,51 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 implementation library that is easy to integrate into other projects.  A
 standalone JACK client and an LV2 plugin is also available.")
     (license license:lgpl2.1+)))
+
+(define-public sfizz
+  (package
+    (name "sfizz")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sfztools/sfizz"
+                                  "/releases/download/" version
+                                  "/sfizz-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pk67xvyqkvhjz2q5hbj5v0mnfvdvvl8vl5bsh6ymwiq3glkd41l"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; TODO: pugixml is bundled, but can only be removed in
+               ;; versions after 1.0.0.
+               '(for-each delete-file-recursively
+                          '("external/abseil-cpp"
+                            "external/simde"
+                            "plugins/editor/external/vstgui4"
+                            "plugins/vst")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSFIZZ_LV2_UI=OFF"
+             "-DSFIZZ_VST=OFF"
+             "-DSFIZZ_VST2=OFF"
+             "-DSFIZZ_TESTS=ON"
+             "-DSFIZZ_USE_SYSTEM_ABSEIL=ON")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("abseil-cpp" ,abseil-cpp)
+       ("glib" ,glib)
+       ("jack" ,jack-2)
+       ("lv2" ,lv2)
+       ("libsamplerate" ,libsamplerate)
+       ("pugixml" ,pugixml)
+       ("simde" ,simde)))
+    (home-page "https://sfz.tools/sfizz/")
+    (synopsis "SFZ parser and synth library")
+    (description "Sfizz provides an SFZ parser and synth C++ library.  It
+includes LV2 plugins and a JACK standalone client.")
+    (license license:bsd-2)))
 
 (define-public musescore
   (package
