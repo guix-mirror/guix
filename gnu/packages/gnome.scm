@@ -4685,7 +4685,9 @@ library.")
                                   "glib-networking-" version ".tar.xz"))
               (sha256
                (base32
-                "0vlzn8jf4sg90cm8xxr28yf66nhf8qy9dl2m4b8w1cr6mn2mw8qb"))))
+                "0vlzn8jf4sg90cm8xxr28yf66nhf8qy9dl2m4b8w1cr6mn2mw8qb"))
+              (patches
+               (search-patches "glib-networking-gnutls-binding.patch"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
