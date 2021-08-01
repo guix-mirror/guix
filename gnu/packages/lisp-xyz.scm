@@ -18586,8 +18586,7 @@ semantics in Lisp and Parenscript.
          ("libxml2" ,libxml2)
          ("libxslt" ,libxslt)))
       (native-inputs
-       `(("gcc" ,sbcl-lift)
-         ("lift" ,sbcl-lift)))
+       `(("lift" ,sbcl-lift)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
