@@ -1,0 +1,24 @@
+These linker options for the 'onnx_cpp2py_export.cpython-38-*-gnu.so'
+(or similar) extension are meant to be used when building 'libonn.a',
+a static archive.  This patch adapts the link flags to linking with
+'libonnx.so'.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cede3073..52f846ed 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -475,11 +475,10 @@ if(BUILD_ONNX_PYTHON)
+                           PRIVATE $<TARGET_OBJECTS:onnx>)
+   else()
+     # Assume everything else is like gcc
+-    target_link_libraries(onnx_cpp2py_export
+-                          PRIVATE "-Wl,--whole-archive" $<TARGET_FILE:onnx>
+-                                  "-Wl,--no-whole-archive")
++    target_link_libraries(onnx_cpp2py_export PRIVATE onnx)
+     set_target_properties(onnx_cpp2py_export
+-                          PROPERTIES LINK_FLAGS "-Wl,--exclude-libs,ALL")
++                          PROPERTIES LINK_FLAGS
++			  "-Wl,-rpath=${CMAKE_INSTALL_PREFIX}/lib")
+   endif()
+ 
+   target_link_libraries(onnx_cpp2py_export PRIVATE onnx)

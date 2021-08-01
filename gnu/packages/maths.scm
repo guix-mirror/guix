@@ -127,6 +127,7 @@
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -6674,3 +6675,63 @@ high-performance multidimensional array containers for scientific computing.")
     (license (list license:artistic2.0
                    license:bsd-3
                    license:lgpl3+))))
+
+(define-public fxdiv
+  ;; There is currently no tag in this repo.
+  (let ((commit "63058eff77e11aa15bf531df5dd34395ec3017c8")
+        (version "0.0")
+        (revision "1"))
+    (package
+      (name "fxdiv")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/FXdiv")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0zwzh8gmbx4m6b18s5nf13b0dk5yjkd1fs8f421bl7fz5f9gjd9f"))
+                (patches (search-patches "fxdiv-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)))
+      (synopsis
+       "C++ library for division via fixed-point multiplication by inverse")
+      (description
+       "On modern CPUs and GPUs, integer division is several times slower than
+multiplication.  FXdiv implements an algorithm to replace an integer division
+with a multiplication and two shifts.  This algorithm improves performance
+when an application performs repeated divisions by the same divisor.")
+      (license license:expat))))
+
+(define-public fp16
+  ;; There is currently no tag in this repo.
+  (let ((commit "0a92994d729ff76a58f692d3028ca1b64b145d91")
+        (version "0.0")
+        (revision "1"))
+    (package
+      (name "fp16")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/FP16")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "05mm4vrxsac35hjf5djif9r6rdxj9ippg97ia3p6q6b8lrp7srwv"))
+                (patches (search-patches "fp16-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("python-wrapper" ,python-wrapper)))
+      (inputs
+       `(("psimd" ,psimd)
+         ("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)))
+      (synopsis "C++ library for half-precision floating point formats")
+      (description
+       "This header-only C++ library implements conversion to and from
+half-precision floating point formats.")
+      (license license:expat))))

@@ -70,6 +70,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
@@ -565,20 +566,68 @@ tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
 
-(define-public python-onnx
+(define-public onnx
   (package
-    (name "python-onnx")
-    (version "1.8.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "onnx" version))
-       ;; ONNX will build googletest from a git checkout.  Patch CMake
-       ;; to use googletest from Guix and enable tests by default.
-       (patches (search-patches "python-onnx-use-system-googletest.patch"))
-       (sha256
-        (base32 "1ys5f4kqkabm4mgivsw80zz8xj1svanfbpszqbw9j15914hcarcx"))))
+    (name "onnx")
+    (version "1.9.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/onnx/onnx")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1xnii361f68x0masxgfc4ai7hh3wlxxk56aznwf4m4yr6wqx47ml"))
+              (file-name (git-file-name name version))
+              (patches (search-patches "onnx-use-system-googletest.patch"
+                                       "onnx-shared-libraries.patch"
+                                       "onnx-skip-model-downloads.patch"))
+              (modules '((guix build utils)))
+              (snippet '(delete-file-recursively "third_party"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'pass-cmake-arguments
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Pass options to the CMake-based build process.
+                      (define out
+                        (assoc-ref outputs "out"))
+
+                      (define args
+                        ;; Copy arguments from 'cmake-build-system', plus ask
+                        ;; for shared libraries.
+                        (list "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+                              (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                              "-DCMAKE_INSTALL_LIBDIR=lib"
+                              "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                              (string-append "-DCMAKE_INSTALL_RPATH=" out
+                                             "/lib")
+                              "-DCMAKE_VERBOSE_MAKEFILE=ON"
+
+                              "-DBUILD_SHARED_LIBS=ON"))
+
+                      ;; This environment variable is honored by 'setup.py',
+                      ;; which passes it down to 'cmake'.
+                      (setenv "CMAKE_ARGS" (string-join args))
+
+                      ;; This one is honored by 'setup.py' and passed to 'make
+                      ;; -j'.
+                      (setenv "MAX_JOBS"
+                              (number->string (parallel-job-count)))))
+                  (add-before 'check 'make-test-directory-writable
+                    (lambda _
+                      ;; Make things writable for tests.
+                      (setenv "HOME" (getcwd))
+                      (for-each make-file-writable
+                                (find-files "onnx/examples" "."
+                                            #:directories? #t))))
+                  (add-after 'install 'install-from-cmake
+                    (lambda _
+                      ;; Run "make install" in the build tree 'setup.py'
+                      ;; created for CMake so that libonnx.so,
+                      ;; libonnx_proto.so, etc. are installed.
+                      (invoke "make" "install"
+                              "-C" ".setuptools-cmake-build"))))))
     (native-inputs
      `(("cmake" ,cmake)
        ("googletest" ,googletest)
@@ -604,6 +653,12 @@ AI models, both deep learning and traditional ML.  It defines an extensible
 computation graph model, as well as definitions of built-in operators and
 standard data types.")
     (license license:expat)))
+
+(define-public python-onnx
+  ;; This used to be called "python-onnx" because it provided nothing but
+  ;; Python bindings.  The package now provides shared libraries and C++
+  ;; headers, hence the name change.
+  (deprecated-package "python-onnx" onnx))
 
 (define-public rxcpp
   (package
@@ -2201,3 +2256,52 @@ These include a barrier, broadcast, and allreduce.")
 technique that can be used for visualisation similarly to t-SNE, but also for
 general non-linear dimension reduction.")
     (license license:bsd-3)))
+
+(define-public xnnpack
+  ;; There's currently no tag on this repo.
+  (let ((version "0.0")
+        (commit "bbe88243aba847f6a3dd86defec0fea4a0e415a1")
+        (revision "1"))
+    (package
+      (name "xnnpack")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/google/XNNPACK")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "19j605x1l2h95mjhcj90zwjh1153pdgmqggl35ya5w0wll628iiz"))
+                (patches (search-patches "xnnpack-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags '("-DXNNPACK_USE_SYSTEM_LIBS=YES"
+                             "-DBUILD_SHARED_LIBS=ON"
+                             "-DXNNPACK_LIBRARY_TYPE=shared"
+                             "-DXNNPACK_BUILD_TESTS=FALSE" ;FIXME: see below
+                             "-DXNNPACK_BUILD_BENCHMARKS=FALSE")
+
+         ;; FIXME: Building tests leads to a CMake error:
+         ;;
+         ;;   ADD_LIBRARY cannot create target "all_microkernels" because
+         ;;   another target with the same name already exists.
+         #:tests? #f))
+      (inputs
+       `(("cpuinfo" ,cpuinfo)
+         ("pthreadpool" ,pthreadpool)
+         ("googletest" ,googletest)
+         ("googlebenchmark" ,googlebenchmark)
+         ("fxdiv" ,fxdiv)
+         ("fp16" ,fp16)
+         ("psimd" ,psimd)))
+      (synopsis "Optimized floating-point neural network inference operators")
+      (description
+       "XNNPACK is a highly optimized library of floating-point neural network
+inference operators for ARM, WebAssembly, and x86 platforms.  XNNPACK is not
+intended for direct use by deep learning practitioners and researchers;
+instead it provides low-level performance primitives for accelerating
+high-level machine learning frameworks, such as TensorFlow Lite,
+TensorFlow.js, PyTorch, and MediaPipe.")
+      (license license:bsd-3))))
+

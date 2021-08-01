@@ -196,6 +196,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
@@ -732,7 +733,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "3.1.1")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -741,7 +742,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sn4iiicmqfqmvi7zwii6qdp35k09kqn36rpalv0w1i4jcm6j9kk"))))
+        (base32 "1ig4yzvd9hzvajjc46wk2g4xyg1ign92wgasa4wgn4hh878i3r1y"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs-no-x             ;module support is required
@@ -4788,7 +4789,7 @@ configuration, cache, and other data.")
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
-    (version "1.0.12")
+    (version "1.0.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4797,7 +4798,7 @@ configuration, cache, and other data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f3nkfdpngax4zfw75jca2wywwh31ha6ywddh4125lbxi3y6m7s9"))))
+                "0g4lm384380q03pdspqzv8rb2gppb77m354r0xzw71340w8xh3hd"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("ert-runner" ,emacs-ert-runner)))
@@ -8326,7 +8327,7 @@ regexp that matches all known keywords.")
 (define-public emacs-perspective
   (package
     (name "emacs-perspective")
-    (version "2.15")
+    (version "2.16")
     (source
      (origin
        (method git-fetch)
@@ -8335,7 +8336,7 @@ regexp that matches all known keywords.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0l9i7ky25d9ii04w2brgxc8dk2rky50naba8lbfqi7hcc34z8pp6"))))
+        (base32 "0hg4rj3v748f6k4fwa21g683vs3bfya0wg9r9xdg216kdhfdk5j7"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -11405,7 +11406,7 @@ extensions.")
 (define-public emacs-evil-collection
   (package
     (name "emacs-evil-collection")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11414,7 +11415,7 @@ extensions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dxrwcf5dnww0a9mvwjkcgm8ry3y282v9l85jh0645zk71nz1in3"))))
+                "0ssb3n1i67b6zp2j8djaalkr33x4c7zalw6vl6p5kqxkh8vy8cdf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
@@ -11786,7 +11787,7 @@ pasting into and from @code{tmux} paste buffers.")
 (define-public emacs-evil-nerd-commenter
   (package
     (name "emacs-evil-nerd-commenter")
-    (version "3.5.4")
+    (version "3.5.5")
     (source
      (origin
        (method git-fetch)
@@ -11796,7 +11797,7 @@ pasting into and from @code{tmux} paste buffers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1vyl8lidhjph7k86n8q09mwqpasaxsmwb8vi5i2gcd6klds9hg0d"))))
+         "1qrlg4cxlsd4cf1z8j2662pfb9p6pnqpsyb74flja9cqv6g5ylp8"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-evil" ,emacs-evil)))
     (home-page "https://github.com/redguardtoo/evil-nerd-commenter")
@@ -12289,6 +12290,34 @@ that allows users to concentrate more on their own work.  Its features are:
 a visual interface, reduce overhead of completion by using statistic method,
 extensibility.")
     (license license:gpl3+)))
+
+(define-public emacs-autocrypt
+  (let ((commit "5b55f8d37545e9c441788627c17e350d7edf4055")
+        (revision "0"))
+    (package
+      (name "emacs-autocrypt")
+      (version (git-version "0.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~zge/autocrypt")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0b06xnjkgwjpxl96mdi674pmvdaiwncifi1a30wxhl1dwr7kr084"))))
+      (build-system emacs-build-system)
+      (home-page "https://git.sr.ht/~zge/autocrypt")
+      (synopsis "Autocrypt implementation for Emacs")
+      (description "@code{emacs-autocrypt} is an implementation of
+Autocrypt (@url{https://autocrypt.org/}) for various Emacs MUAs.  Autocrypt is
+a cryptographic protocol for email clients aiming to simplify key exchange and
+encryption.
+
+Run @code{M-x autocrypt-create-account} to initialize an autocrypt key, and
+add @code{autocrypt-mode} to your MUA's hooks (@code{gnus-mode-hook},
+@code{message-mode-hook}, ...) to activate its usage.")
+      (license license:cc0))))
 
 (define-public emacs-nginx-mode
   (package
@@ -15654,7 +15683,7 @@ Features:
 (define-public emacs-evil-matchit
   (package
     (name "emacs-evil-matchit")
-    (version "2.3.12")
+    (version "2.3.13")
     (source
      (origin
        (method git-fetch)
@@ -15663,7 +15692,7 @@ Features:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0l4ash907d91vccqdxjz1v5spd8f4va0vrdri6h9y1qc67mjlsph"))))
+        (base32 "1j1p4z6ps58nbsh55l9h30gxbkrzwzkjpq7zl50q6yfc84z7byzk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
@@ -16991,7 +17020,7 @@ tables of contents.")
 (define-public emacs-ts
   (package
     (name "emacs-ts")
-    (version "0.2")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -16999,7 +17028,7 @@ tables of contents.")
              (url "https://github.com/alphapapa/ts.el")
              (commit version)))
        (sha256
-        (base32 "0hmzc1ppnkkr0lfq5fhzqr6icv6iqz824a6bnns7zr466hhqp3qb"))
+        (base32 "0l35gz1hpada2kzascbyqgawa5d3sdyg67gzvak84p9zx62jppn8"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -24887,14 +24916,14 @@ well as an option for visually flashing evaluated s-expressions.")
 (define-public emacs-tramp
   (package
     (name "emacs-tramp")
-    (version "2.5.1")
+    (version "2.5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "tramp-" version ".tar"))
        (sha256
-        (base32 "1r7wifhzy2ipdlc4fqnx6549fnx45ggz57wh0cp7s6y25761si7q"))))
+        (base32 "0v3rvvhjcnyvg6l4vyxz6513mxzvv9n0skkmr62ry8yi5x9wnqp1"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs                   ;need D-Bus
@@ -24947,7 +24976,7 @@ with passwords for paths matching regexps.")
 (define-public emacs-eacl
   (package
     (name "emacs-eacl")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -24957,7 +24986,7 @@ with passwords for paths matching regexps.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fxb2lv4cqdjxarqhzjgfc43sncc1c6m96n0aflm8l4gdmm090kq"))))
+         "0n1vlzvq5mv7z1yffjjqm9ixd3r0cljr60kg55l9pj9kp72a4iv8"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
@@ -28883,7 +28912,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method git-fetch)
@@ -28892,7 +28921,7 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qb5qmspc7042r366d73j26hrzmrsdwscv8ly9glsa4gbdxcjkln"))))
+        (base32 "09zrrjbfbvj5lfrgjq21nsavdm69iwdsa0a80618v7xlkfk56wf1"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))

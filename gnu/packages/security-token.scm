@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Sergey Trofimov <sarg@sarg.org.ru>
+;;; Copyright © 2021 Dhruvin Gandhi <contact@dhruvin.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -659,6 +660,23 @@ implementing a Relying Party.")
                (base32
                 "11rsmcaj60k3y5m5gdhr2nbbz0w5dm3m04klyxz0fh5hnpcmr7fm"))))
     (build-system python-build-system)
+    (arguments
+     '(#:modules ((srfi srfi-1)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libykpers-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "ykman/driver_otp.py"
+               (("Ykpers\\('ykpers-1', '1'\\)")
+                (string-append
+                 "Ykpers('"
+                 (find (negate symbolic-link?)
+                       (find-files (assoc-ref inputs "yubikey-personalization")
+                                   "^libykpers-.*\\.so\\..*"))
+                 "')")))
+             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-pyscard" ,python-pyscard)

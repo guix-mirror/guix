@@ -100,7 +100,7 @@
 (define-public sbcl-alexandria
   (package
    (name "sbcl-alexandria")
-   (version "1.2")
+   (version "1.4")
    (source
     (origin
      (method git-fetch)
@@ -109,7 +109,7 @@
            (commit (string-append "v" version))))
      (sha256
       (base32
-       "0bcqs0z9xlqgjz43qzgq9i07vdlnjllpm1wwa37wpkg0w975r712"))
+       "0r1adhvf98h0104vq14q7y99h0hsa8wqwqw92h7ghrjxmsvz2z6l"))
      (file-name (git-file-name name version))))
    (build-system asdf-build-system/sbcl)
    (native-inputs
@@ -18572,8 +18572,7 @@ semantics in Lisp and Parenscript.
          ("libxml2" ,libxml2)
          ("libxslt" ,libxslt)))
       (native-inputs
-       `(("gcc" ,sbcl-lift)
-         ("lift" ,sbcl-lift)))
+       `(("lift" ,sbcl-lift)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases

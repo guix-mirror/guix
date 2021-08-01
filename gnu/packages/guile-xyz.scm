@@ -101,6 +101,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
@@ -108,7 +109,6 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -1454,13 +1454,14 @@ library}.")
     (name "guile-dbi")
     (version "2.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/guile-dbi/guile-dbi-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://example.org") ;only hosted on Software Heritage
+                    (commit "e19b019e9683faf66c3f385b20fcc112e65f8c6e")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "116njrprhgrsv1qm904sp3b02rq01fx639r433d657gyhw3x159n"))))
+                "09ys5hj7gnj5w1iv1m194j06jk6b8sdhc8j6hcv3bprq1428kyxw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1487,7 +1488,7 @@ library}.")
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
-    (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
+    (home-page "https://web.archive.org/web/20160328232717/http://home.gna.org/guile-dbi/guile-dbi.html")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  Database programming with guile-dbi is generic in that the same
@@ -1509,13 +1510,14 @@ It currently supports MySQL, Postgres and SQLite3.")
     (name "guile-dbd-sqlite3")
     (version "2.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/guile-dbi/guile-dbd-sqlite3-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://example.org") ;only hosted on Software Heritage
+                    (commit "0758c615e9e85ad76d153d5dc6179881f1f50089")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rg71jchxd2y8x496s8zmfmikr5g8zxi8zv2ar3f7a23pph92iw2"))))
+                "1rwf3z6ib6nkhfnk2nw8p6fqirdx2pparcrlmsm0i2ii62plpqhb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1524,6 +1526,8 @@ It currently supports MySQL, Postgres and SQLite3.")
      `(("sqlite" ,sqlite)
        ("zlib" ,(@ (gnu packages compression) zlib))))
     (synopsis "Guile DBI driver for SQLite")
+    ;; Unofficial home-page.
+    ;; Added by b9cbfa52f71505de8447fefabd97f16d0a9cbde6 (2016-06)
     (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to

@@ -35,13 +35,13 @@ making this change at the C level is both:
       conditional and a runtime check that the file in the store exists,
       we make it much less likely that it will "leak" out of Guix.
 ---
- src/rktio/rktio_process.c | 21 ++++++++++++++++++++-
+ racket/src/rktio/rktio_process.c | 21 ++++++++++++++++++++-
  1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/src/rktio/rktio_process.c b/src/rktio/rktio_process.c
+diff --git a/racket/src/rktio/rktio_process.c b/racket/src/rktio/rktio_process.c
 index 89202436c0..465ebdd5c5 100644
---- a/src/rktio/rktio_process.c
-+++ b/src/rktio/rktio_process.c
+--- a/racket/src/rktio/rktio_process.c
++++ b/racket/src/rktio/rktio_process.c
 @@ -1224,12 +1224,14 @@ int rktio_process_allowed_flags(rktio_t *rktio)
  /*========================================================================*/
  

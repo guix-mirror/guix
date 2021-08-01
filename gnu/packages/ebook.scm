@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -596,3 +598,47 @@ Some of the current features:
     (description "xCHM is a graphical CHM file viewer.  It is a frontend to
 the CHM library CHMLIB.")
     (license license:gpl2+)))
+
+(define-public libmobi
+  (package
+    (name "libmobi")
+    (version "0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bfabiszewski/libmobi/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0yps72cm609xn2k7alflkdhp9kgr1w7zzyxjygz0n1kqrdcplihh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("libxml2" ,libxml2)))
+    (home-page "https://github.com/bfabiszewski/libmobi/")
+    (synopsis "C library for handling MOBI formats")
+    (description "Libmobi is a C library for handling MOBI ebook
+format documents, with the following features:
+
+@itemize
+@item reading and parsing:
+@itemize
+@item some older text Palmdoc formats (pdb),
+@item Mobipocket files (prc, mobi),
+@item newer MOBI files including KF8 format (azw, azw3),
+@item Replica Print files (azw4)
+@end itemize
+@item recreating source files using indices
+@item reconstructing references (links and embedded) in html files
+@item reconstructing source structure that can be fed back to kindlegen
+@item reconstructing dictionary markup (orth, infl tags)
+@item writing back loaded documents
+@item metadata editing
+@item handling encrypted documents
+@end itemize\n")
+    (license license:lgpl3+)))

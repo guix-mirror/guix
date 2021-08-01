@@ -3787,22 +3787,18 @@ CSS tidy.  Also supports URL rewriting in CSS files.")
 (define-public python-elasticsearch
   (package
     (name "python-elasticsearch")
-    (version "7.1.0")
+    (version "7.13.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "elasticsearch" version))
         (sha256
          (base32
-          "0rnjvlhw4v3vg14l519qliy1s1zpmx3827q0xfviwvk42rr7hh01"))))
+          "1q38w9nh2j2yi82d8rhzb57597l4lq5zx7xzfg45xf7ffrgsipaj"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nosexcover" ,python-nosexcover)
-       ("python-pyaml" ,python-pyaml)
-       ("python-requests" ,python-requests)))
     (propagated-inputs
-     `(("urllib3" ,python-urllib3)))
+     `(("python-certifi" ,python-certifi)
+       ("python-urllib3" ,python-urllib3)))
     (arguments
      ;; tests require the test_elasticsearch module but it is not distributed.
      `(#:tests? #f))

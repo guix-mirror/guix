@@ -1427,7 +1427,7 @@ files in these formats.")
 (define-public ocaml-zarith
   (package
     (name "ocaml-zarith")
-    (version "1.9.1")
+    (version "1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1436,7 +1436,7 @@ files in these formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hv5ywz1q2cgn8apfz490clwk5hcynr937g2v8i13x2ax4bnv0lz"))))
+                "1jslm1rv1j0ya818yh23wf3bb6hz7qqj9pn5fwl45y9mqyqa01s9"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -1447,7 +1447,14 @@ files in these formats.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _ (invoke "./configure"))))))
+           (lambda _ (invoke "./configure")))
+         (add-after 'install 'move-sublibs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib/ocaml/site-lib")))
+               (mkdir-p (string-append lib "/stublibs"))
+               (rename-file (string-append lib "/zarith/dllzarith.so")
+                            (string-append lib "/stublibs/dllzarith.so"))))))))
     (home-page "https://forge.ocamlcore.org/projects/zarith/")
     (synopsis "Implements arbitrary-precision integers")
     (description "Implements arithmetic and logical operations over
@@ -6893,8 +6900,12 @@ support for Mparser.")))
            (lambda _
              (for-each (lambda (file)
                          (chmod file #o644))
-                       (find-files "." "."))
-             #t)))))
+                       (find-files "." "."))))
+         (add-before 'build 'set-version
+           (lambda _
+             (substitute* "dune-project"
+               (("\\(name lablgtk3\\)")
+                (string-append "(name lablgtk3)\n(version " ,version ")"))))))))
     (propagated-inputs
      `(("ocaml-cairo2" ,ocaml-cairo2)))
     (inputs

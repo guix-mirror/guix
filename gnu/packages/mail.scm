@@ -2105,14 +2105,14 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "0hskfpj4r4q3959k3npyqli353daj3r5d9mfia9bbmig87nyfd8r"))))
+                "024p3glj4p7fhrssw5sr55arls9zna1igxxrspxlfd6sbds21ixl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -4405,6 +4405,34 @@ score.")
     (description "This package provides a tool to extract, recover and
 undelete email messages from Outlook Express .dbx files.")
     (license license:gpl3+)))
+
+(define-public libpst
+  (package
+    (name "libpst")
+    (version "0.6.76")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.five-ten-sg.com/libpst/packages/"
+                           "libpst-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hhbbb8ddsgjhv9y1xd8s9ixlhdnjmhw12v06jwx4j6vpgp1na9x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("libgsf" ,libgsf)
+       ("python" ,python)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.five-ten-sg.com/libpst/")
+    (synopsis "")
+    (description "The Libpst utilities include @code{readpst} which can
+convert email messages to both mbox and MH mailbox formats, @code{pst2ldif}
+which can convert the contacts to @code{.ldif} format for import into LDAP
+databases, and other tools to process Outlook email archives.")
+    (license license:gpl2+)))
 
 (define-public crm114
   (package

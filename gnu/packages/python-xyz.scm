@@ -190,8 +190,9 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages sdl)
-  #:use-module (gnu packages search)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages search)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
@@ -7177,6 +7178,31 @@ consisting of several processes. honcho starts all listed processes.
 The output of all running processes is collected by honcho and
 displayed.")
     (license license:expat)))
+
+(define-public python-pebble
+  (package
+    (name "python-pebble")
+    (version "4.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pebble" version))
+       (sha256
+        (base32 "16siqc3brbk7dp4d9sg48bjl6a8wyy24aib3il1hf4y2624draxh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "python" "-m" "pytest" "-sv"))))))
+    (home-page "https://github.com/noxdafox/pebble")
+    (synopsis "Threading and multiprocessing for Python")
+    (description
+     "Pebble aims to help manage threads and processes in an easier way.  It
+wraps Python's standard library threading and multiprocessing objects.")
+    (license license:lgpl3+)))
 
 (define-public python-pexpect
   (package

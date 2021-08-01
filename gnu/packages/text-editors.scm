@@ -506,7 +506,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20180927")
+    (version "20210609")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -515,12 +515,11 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14vrm8lvwksf697sqks7xfd1xaqjlqjc9afjk33sksq5p27wr203"))
+                "04c2vqxg31mk15cfrhzrivykis8fmf0m1d8h1qdjdmlfxd4qwaqf"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "GNUmakefile"
-                            (("/usr/bin/") ""))
-                          #t))))
+                            (("/usr/bin/") ""))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -929,14 +928,14 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "0figd543inpi00yr6han73qd2fzx99r099vzcbg9mhpzsgxfwz4f"))))
+        (base32 "1d0yjx2wlx4fj5bccxdgfmrr7nzazkw4m08i6h4c0a54sb484yif"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")

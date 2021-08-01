@@ -39,7 +39,6 @@
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -52,6 +51,7 @@
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,6 +166,7 @@
   #:use-module (gnu packages re2c)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -773,6 +774,64 @@ documentation.")
     (synopsis "NGINX module for Lua programming language support")
     (description "This NGINX module provides a scripting support with Lua
 programming language.")))
+
+(define-public nginx-rtmp-module
+  (package
+    (inherit nginx)
+    (name "nginx-rtmp-module")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/arut/nginx-rtmp-module")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y45bswk213yhkc2v1xca2rnsxrhx8v6azxz9pvi71vvxcggqv6h"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("nginx-sources" ,(package-source nginx))
+       ,@(package-inputs nginx)))
+    (arguments
+     (substitute-keyword-arguments
+         `(#:configure-flags '("--add-dynamic-module=.")
+           #:make-flags '("modules")
+           #:modules ((guix build utils)
+                      (guix build gnu-build-system))
+           ,@(package-arguments nginx))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'unpack-nginx-sources
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (begin
+                 ;; The nginx source code is part of the module’s source.
+                 (format #t "decompressing nginx source code~%")
+                 (invoke "tar" "xvf" (assoc-ref inputs "nginx-sources")
+                         ;; This packages's LICENSE file would be
+                         ;; overwritten with the one from nginx when
+                         ;; unpacking the nginx source, so rename the nginx
+                         ;; one when unpacking.
+                         "--transform=s,/LICENSE$,/LICENSE.nginx,"
+                         "--strip-components=1")
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((modules-dir (string-append (assoc-ref outputs "out")
+                                                 "/etc/nginx/modules")))
+                 (install-file "objs/ngx_rtmp_module.so" modules-dir)
+                 #t)))
+           (delete 'fix-root-dirs)
+           (delete 'install-man-page)))))
+    (home-page "https://github.com/arut/nginx-rtmp-module")
+    (synopsis "NGINX module for audio and video streaming with RTMP")
+    (description "This NGINX module provides streaming with the @acronym{RTMP,
+Real-Time Messaging Protocol}, @acronym{DASH, Dynamic Adaptive Streaming over HTTP},
+and @acronym{HLS, HTTP Live Streaming} protocols.  It allows NGINX to accept
+incoming RTMP streams for recording or redistribution.  It also supports
+on-demand streaming from a file on disk and pulling from an upstream RTMP
+stream.  Remote control of the module is possible over HTTP.")
+    (license license:bsd-2)))
 
 (define-public lighttpd
   (package
@@ -1795,34 +1854,6 @@ requests or verify signatures using either NSS or OpenSSL for calculating the
 hash/signatures.")
     ;; Source code may be distributed under either license.
     (license (list license:expat license:gpl2+))))
-
-(define-public libyaml
-  (package
-    (name "libyaml")
-    (version "0.2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://pyyaml.org/download/libyaml/yaml-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1x4fcw13r3lqy8ndydr3ili87wicplw2awbcv6r21qgyfndswhn6"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--disable-static")))
-    (home-page "https://pyyaml.org/wiki/LibYAML")
-    (synopsis "YAML 1.1 parser and emitter written in C")
-    (description
-     "LibYAML is a YAML 1.1 parser and emitter written in C.")
-    (license license:expat)))
-
-(define-public libyaml+static
-  (package
-    (inherit libyaml)
-    (name "libyaml+static")
-    (arguments
-     '(#:configure-flags '("--enable-static")))))
 
 (define-public libquvi-scripts
   (package
@@ -5372,46 +5403,6 @@ developed as part of the Netsurf project.")
      "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
 written in C.  It is developed as part of the NetSurf project.")
     (license license:expat)))
-
-(define-public libcyaml
-  (package
-    (name "libcyaml")
-    (version "1.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tlsa/libcyaml")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (patches (search-patches "libcyaml-libyaml-compat.patch"))
-       (sha256
-        (base32 "0428p0rwq71nhh5nzcbapsbrjxa0x5l6h6ns32nxv7j624f0zd93"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "CC=gcc"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (replace 'check
-           (lambda _
-             (setenv "CC" "gcc")
-             (invoke "make" "test"))))))
-    (inputs
-     `(("libyaml" ,libyaml)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (synopsis "C library for reading and writing YAML")
-    (description
-     "LibCYAML is a C library written in ISO C11 for reading and writing
-structured YAML documents.  The fundamental idea behind CYAML is to allow
-applications to construct schemas which describe both the permissible
-structure of the YAML documents to read/write, and the C data structure(s)
-in which the loaded data is arranged in memory.")
-    (home-page "https://github.com/tlsa/libcyaml")
-    (license license:isc)))
 
 (define-public libdom
   (package

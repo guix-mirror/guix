@@ -1,0 +1,16 @@
+A few tests require downloading models from URLs such as
+ <https://s3.amazonaws.com/download.onnx/models/opset_9/zfnet512.tar.gz>.
+Skip those.
+
+diff --git a/onnx/backend/test/runner/__init__.py b/onnx/backend/test/runner/__init__.py
+index 049ed57b..f236f1bf 100644
+--- a/onnx/backend/test/runner/__init__.py
++++ b/onnx/backend/test/runner/__init__.py
+@@ -202,6 +202,7 @@ class Runner(object):
+             print('Start downloading model {} from {}'.format(
+                 model_test.model_name,
+                 model_test.url))
++            raise unittest.SkipTest('Skipping download')
+             urlretrieve(model_test.url, download_file.name)
+             print('Done')
+             with tarfile.open(download_file.name) as t:

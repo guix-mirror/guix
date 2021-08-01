@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2015, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
@@ -732,6 +732,33 @@ generation.")
              (sha256
               (base32
                "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk"))))))
+
+(define-public googlebenchmark
+  (package
+    (name "googlebenchmark")
+    (version "1.5.3")
+    (home-page "https://github.com/google/benchmark")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name "google-benchmark" version))
+              (sha256
+               (base32
+                "1hls0aqqj5cfldn9jfpvzjhpxkhrydrz9crp477rwllwjsybdxw7"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
+                               (string-append
+                                "-DGOOGLETEST_PATH="
+                                (assoc-ref %build-inputs "googletest")))))
+    (inputs
+     `(("googletest" ,(package-source googletest))))
+    (synopsis "C++ library to support the benchmarking of functions")
+    (description
+     "The googlebenchmark C++ library support the benchmarking of functions,
+similar to unit tests.")
+    (license license:asl2.0)))
 
 (define-public cpputest
   (package
