@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -98,7 +98,14 @@
            (lambda _
              (substitute* "tests/Makefile.in"
                (("run-backtrace-native.sh") ""))
-             #t)))))
+             #t))
+         ,@(if (target-riscv64?)
+             `((add-after 'unpack 'disable-failing-riscv64-test
+                 (lambda _
+                   ;; dwfl_thread_getframes: No DWARF information found
+                   (substitute* "tests/Makefile.in"
+                     (("run-backtrace-dwarf.sh") "")))))
+             '()))))
 
     (native-inputs (list m4))
     (inputs (list zlib))
