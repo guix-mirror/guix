@@ -1739,7 +1739,7 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.3.4")
+    (version "0.3.6")
     (source
      (origin
        (method git-fetch)
@@ -1748,7 +1748,7 @@ and routines to assist in editing internationalized text.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08rpw9hkaprm4r853xy1d35i2af1pji8c3mzzl01mmwmyr9p0x8k"))))
+        (base32 "0whwwj31fxfaf4r4qvxb4kl3mj05xj3n9c6nzdn46r30bkg9z4dw"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check-0.14)
                      ("gettext" ,gettext-minimal)
