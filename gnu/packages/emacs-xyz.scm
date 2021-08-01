@@ -17027,7 +17027,7 @@ tables of contents.")
 (define-public emacs-ts
   (package
     (name "emacs-ts")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -17035,7 +17035,7 @@ tables of contents.")
              (url "https://github.com/alphapapa/ts.el")
              (commit version)))
        (sha256
-        (base32 "1h953wn96r23bcafv83p04mwr6vy1vc4fg46x7sxlikg71b4wk8i"))
+        (base32 "0l35gz1hpada2kzascbyqgawa5d3sdyg67gzvak84p9zx62jppn8"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
