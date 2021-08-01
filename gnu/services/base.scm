@@ -1383,14 +1383,8 @@ information on the configuration file syntax."
   (let ((security-limits
          ;; Create /etc/security containing the provided "limits.conf" file.
          (lambda (limits-file)
-           `(("security"
-              ,(computed-file
-                "security"
-                #~(begin
-                    (mkdir #$output)
-                    (stat #$limits-file)
-                    (symlink #$limits-file
-                             (string-append #$output "/limits.conf"))))))))
+           `(("security/limits.conf"
+              ,limits-file))))
         (pam-extension
          (lambda (pam)
            (let ((pam-limits (pam-entry
