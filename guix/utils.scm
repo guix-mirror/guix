@@ -97,6 +97,7 @@
             target-ppc32?
             target-ppc64le?
             target-powerpc?
+            target-riscv64?
             target-64bit?
             cc-for-target
             cxx-for-target
@@ -703,6 +704,11 @@ architecture (x86_64)?"
 (define* (target-powerpc? #:optional (target (or (%current-target-system)
                                                  (%current-system))))
   (string-prefix? "powerpc" target))
+
+(define* (target-riscv64? #:optional (target (or (%current-target-system)
+                                                 (%current-system))))
+  "Is the architecture of TARGET a 'riscv64' machine?"
+  (string-prefix? "riscv64" target))
 
 (define* (target-64bit? #:optional (system (or (%current-target-system)
                                                (%current-system))))
