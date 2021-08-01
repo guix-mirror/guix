@@ -33,6 +33,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 (define-public pcre
@@ -62,7 +63,9 @@
                           "--enable-pcre16"
                           "--enable-pcre32"
                           ;; pcretest fails on powerpc32.
-                          ,@(if (target-ppc32?)
+                          ;; riscv64-linux is an unsupported architecture.
+                          ,@(if (or (target-ppc32?)
+                                    (target-riscv64?))
                               '()
                               `("--enable-jit")))
       #:phases (modify-phases %standard-phases
