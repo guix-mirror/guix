@@ -124,6 +124,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
@@ -174,6 +175,39 @@ logical symbols and its natural deduction interface make it easy to use for
 beginners.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/aris/")))
+
+(define-public bitwise
+  (package
+    (name "bitwise")
+    (version "0.42")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mellowcandle/bitwise"
+                                  "/releases/download/v" version
+                                  "/bitwise-v" version ".tar.gz"))
+              (sha256
+               (base32 "1lniw4bsb5qs5ybf018qllf95pzixb1q3lvybzl4k3xz8zpkrm6k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("cunit" ,cunit)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Terminal based bit manipulator in ncurses")
+    (description "Bitwise is a multi base interactive calculator supporting
+dynamic base conversion and bit manipulation.  It's a handy tool for low level
+hackers, kernel developers and device drivers developers.
+
+Some of the features include:
+@itemize
+@item Interactive ncurses interface.
+@item Command line calculator supporting all bitwise operations.
+@item Individual bit manipulator.
+@item Bitwise operations such as NOT, OR, AND, XOR, and shifts.
+@end itemize")
+    (license license:gpl3+)
+    (home-page "https://github.com/mellowcandle/bitwise/")))
 
 (define-public c-graph
   (package
