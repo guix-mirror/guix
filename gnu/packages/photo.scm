@@ -769,7 +769,7 @@ a complete panorama and stitch any series of overlapping pictures.")
     (version "5.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://rawtherapee.com/shared/source/"
+              (uri (string-append "https://rawtherapee.com/shared/source/"
                                   "rawtherapee-" version ".tar.xz"))
               (sha256
                (base32
@@ -809,7 +809,7 @@ a complete panorama and stitch any series of overlapping pictures.")
        ("libsigc++" ,libsigc++)
        ("libtiff" ,libtiff)
        ("zlib" ,zlib)))
-    (home-page "http://rawtherapee.com")
+    (home-page "https://rawtherapee.com")
     (synopsis "Raw image developing and processing")
     (description "RawTherapee is a raw image processing suite.  It comprises a
 subset of image editing operations specifically aimed at non-destructive raw
