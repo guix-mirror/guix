@@ -1,0 +1,22 @@
+From 37404bb039bd9c5509b4aec8f61e360dfba50715 Mon Sep 17 00:00:00 2001
+From: Wenxin Ling <w.ling@mediaire.de>
+Date: Mon, 1 Mar 2021 15:21:16 +0100
+Subject: [PATCH] Fix positional arguments issue for CallGraphVisitor
+
+---
+ pyan/main.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pyan/main.py b/pyan/main.py
+index 18821a14..5d079714 100644
+--- a/pyan/main.py
++++ b/pyan/main.py
+@@ -203,7 +203,7 @@ def main(cli_args=None):
+         handler = logging.FileHandler(known_args.logname)
+         logger.addHandler(handler)
+ 
+-    v = CallGraphVisitor(filenames, logger, root=root)
++    v = CallGraphVisitor(filenames, logger=logger, root=root)
+ 
+     if known_args.function or known_args.namespace:
+ 

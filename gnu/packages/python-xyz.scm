@@ -26232,3 +26232,45 @@ for the Go language tool chain; it adapts to different calling conventions and
 application binary interfaces (ABIs); it takes care of register allocation; it
 supports x86_64 instructions up to AVX-512 and SHA.")
       (license license:bsd-2))))
+
+(define-public python-pyan3
+  (package
+    (name "python-pyan3")
+    (version "1.2.0")
+    (source
+     (origin
+       ;; Source tarball on PyPI lacks tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Technologicat/pyan")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1367x25rcy2y8f0x9c2dbxl2qgdln3arr7ddyzybz2c28g6jrv5z"))
+       (patches (search-patches "python-pyan3-fix-positional-arguments.patch"
+                                "python-pyan3-fix-absolute-path-bug.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Extend PYTHONPATH so the built package will be found.
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-wheel" ,python-wheel)))
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)))
+    (home-page "https://github.com/Technologicat/pyan")
+    (synopsis "Offline call graph generator for Python 3")
+    (description "Pyan takes one or more Python source files, performs
+a (rather superficial) static analysis, and constructs a directed graph of the
+objects in the combined source, and how they define or use each other.  The
+graph can be output for rendering by GraphViz or yEd.")
+    (license license:gpl2)))
