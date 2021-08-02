@@ -26191,3 +26191,36 @@ enabling you to write CommonMark inside of Docutils & Sphinx projects.")
 Qhull} for the computation of the convex hull, Delaunay triangulation, and
 Voronoi diagram.")
     (license license:expat)))
+
+(define-public python-opcodes
+  ;; There are no tags in this repo, but 'opcodes/__init__.py' specifies a
+  ;; version number, which is what we use here.
+  (let ((commit "0f7c7d63f5e13ce5a89d9acc3934f1b6e247ec1f"))
+    (package
+      (name "python-opcodes")
+      (version "0.3.14")                          ;from 'opcodes/__init__.py'
+      (home-page "https://github.com/Maratyszcza/Opcodes")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1fvxkr83gfl9f0ikd2wl2lzazzya2qz1hk4yn2a0pq742brbwpys"))))
+      (build-system python-build-system)
+      (synopsis "Database of processor instructions and opcodes")
+      (description
+       "This project documents instruction sets in a format convenient for
+tools development.  An instruction set is represented by three files:
+
+@itemize
+@item an XML file that describes instructions;
+@item an XSD file that describes the structure of the XML file;
+@item a Python module that reads the XML file and represents it as a set of
+Python objects;
+@end itemize
+
+It currently provides descriptions for most user-mode x86, x86_64, and k1om
+instructions up to AVX-512 and SHA (including 3dnow!+, XOP, FMA3, FMA4, TBM
+and BMI2).")
+      (license license:bsd-2))))
