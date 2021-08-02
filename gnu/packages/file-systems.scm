@@ -1176,7 +1176,7 @@ with the included @command{xfstests-check} helper.")
     (source
       (origin
         (method url-fetch)
-          (uri (string-append "https://github.com/zfsonlinux/zfs/releases"
+          (uri (string-append "https://github.com/openzfs/zfs/releases"
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
