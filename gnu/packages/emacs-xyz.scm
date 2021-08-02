@@ -25415,40 +25415,37 @@ it forcibly
       (license license:gpl3+))))
 
 (define-public emacs-elpher
-  ;; No tagged release upstream, but the commit below corresponds to the 2.10.3
-  ;; release.
-  (let ((commit "b0272de36cea3e1cd41cd15a012c8141b4b04575"))
-    (package
-      (name "emacs-elpher")
-      (version "2.10.3")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "git://thelambdalab.xyz/elpher.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1m6lq47i4j6k76f81vcch6akab9mqph7kna3fn356295fvgm7j7q"))))
-      (build-system emacs-build-system)
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'build-doc
-             (lambda _
-               (invoke "makeinfo" "elpher.texi"))))))
-      (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
-      (synopsis "Gopher and gemini client for Emacs")
-      (description "Elpher is a full-featured gopher and gemini client for
+  (package
+    (name "emacs-elpher")
+    (version "3.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://thelambdalab.xyz/elpher.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k0nv5afsf4lh71yvqpg2zcmlbsgwcim1s161c2h4gh4p05vjwyq"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build-doc
+           (lambda _
+             (invoke "makeinfo" "elpher.texi"))))))
+    (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
+    (synopsis "Gopher and gemini client for Emacs")
+    (description "Elpher is a full-featured gopher and gemini client for
 Emacs.  Its features include intuitive keyboard and mouse-driven browsing,
 out-of-the-box compatibility with evil-mode, clickable links in plain text,
 caching of visited sites, pleasant and configurable visualization of Gopher
 directories, direct visualisation of image files, jumping directly to links by
 name (with autocompletion), a simple bookmark management system and
 connections using TLS encryption.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-zerodark-theme
   (package
