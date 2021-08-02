@@ -489,7 +489,6 @@ SCM_TESTS =					\
   tests/services/file-sharing.scm		\
   tests/services/configuration.scm		\
   tests/services/linux.scm			\
-  tests/services/telephony.scm			\
   tests/sets.scm				\
   tests/size.scm				\
   tests/status.scm				\
