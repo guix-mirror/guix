@@ -974,6 +974,8 @@ itself."
                  (list *core-package-modules* *package-modules*
                        *extra-modules* *system-modules* *core-modules*
                        *cli-modules*)           ;for (guix scripts pack), etc.
+                 #:extra-files (file-imports source "gnu/tests/data"
+                                             (const #t))
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 

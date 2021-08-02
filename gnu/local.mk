@@ -685,6 +685,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/chromium-extension.scm		\
   %D%/build/cross-toolchain.scm			\
   %D%/build/image.scm				\
+  %D%/build/jami-service.scm			\
   %D%/build/file-systems.scm			\
   %D%/build/hurd-boot.scm			\
   %D%/build/install.scm				\
@@ -722,6 +723,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/security-token.scm			\
   %D%/tests/singularity.scm			\
   %D%/tests/ssh.scm				\
+  %D%/tests/telephony.scm		        \
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
@@ -787,7 +789,8 @@ dist_installer_DATA =				\
 MODULES_NOT_COMPILED +=				\
   %D%/build/locale.scm				\
   %D%/build/shepherd.scm			\
-  %D%/build/svg.scm
+  %D%/build/svg.scm				\
+  %D%/tests/data/jami-dummy-account.dat
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
 dist_patch_DATA =						\

@@ -22526,6 +22526,234 @@ and Error.
 @node Telephony Services
 @subsection Telephony Services
 
+@cindex telephony, services
+The @code{(gnu services telephony)} module contains Guix service
+definitions for telephony services.  Currently it provides the following
+services:
+
+@subsubheading Jami
+
+@cindex jami, service
+
+This section describes how to configure a Jami server that can be used
+to host video (or audio) conferences, among other uses.  The following
+example demonstrates how to specify Jami account archives (backups) to
+be provisioned automatically:
+
+@lisp
+(service jami-service-type
+         (jami-configuration
+          (accounts
+           (list (jami-account
+                  (archive "/etc/jami/unencrypted-account-1.gz"))
+                 (jami-account
+                  (archive "/etc/jami/unencrypted-account-2.gz"))))))
+@end lisp
+
+When the accounts field is specified, the Jami account files of the
+service found under @file{/var/lib/jami} are recreated every time the
+service starts.
+
+Jami accounts and their corresponding backup archives can be generated
+using either the @code{jami-qt} or @code{jami-gnome} Jami clients.  The
+accounts should not be password-protected, but it is wise to ensure
+their files are only readable by @samp{root}.
+
+The next example shows how to declare that only some contacts should be
+allowed to communicate with a given account:
+
+@lisp
+(service jami-service-type
+         (jami-configuration
+          (accounts
+           (list (jami-account
+                  (archive "/etc/jami/unencrypted-account-1.gz")
+                  (peer-discovery? #t)
+                  (rendezvous-point? #t)
+                  (allowed-contacts
+                   '("1dbcb0f5f37324228235564b79f2b9737e9a008f"
+                     "2dbcb0f5f37324228235564b79f2b9737e9a008f")))))))
+@end lisp
+
+In this mode, only the declared @code{allowed-contacts} can initiate
+communication with the Jami account.  This can be used, for example,
+with rendezvous point accounts to create a private video conferencing
+space.
+
+To put the system administrator in full control of the conferences
+hosted on their system, the Jami service supports the following actions:
+
+@example sh
+# herd doc jami list-actions jami
+(list-accounts
+ list-account-details
+ list-banned-contacts
+ list-contacts
+ list-moderators
+ add-moderator
+ ban-contact
+ enable-account
+ disable-account)
+@end example
+
+The above actions aim to provide the most valuable actions for
+moderation purposes, not to cover the whole Jami API.  Users wanting to
+interact with the Jami daemon from Guile may be interested in
+experimenting with the @code{(gnu build jami-service)} module, which
+powers the above Shepherd actions.
+
+@c TODO: This should be auto-generated from the doc already defined on
+@c the shepherd-actions themselves in (gnu services telephony).
+The @code{add-moderator} and @code{ban-contact} actions accept a contact
+@emph{fingerprint} (40 characters long hash) as first argument and an
+account fingerprint or username as second argument:
+
+@example sh
+# herd add-moderator jami 1dbcb0f5f37324228235564b79f2b9737e9a008f \
+  f3345f2775ddfe07a4b0d95daea111d15fbc1199
+
+# herd list-moderators jami
+Moderators for account f3345f2775ddfe07a4b0d95daea111d15fbc1199:
+  - 1dbcb0f5f37324228235564b79f2b9737e9a008f
+
+@end example
+
+In the case of @code{ban-contact}, the second username argument is
+optional; when omitted, the account is banned from all Jami accounts:
+
+@example sh
+# herd ban-contact jami 1dbcb0f5f37324228235564b79f2b9737e9a008f
+
+# herd list-banned-contacts jami
+Banned contacts for account f3345f2775ddfe07a4b0d95daea111d15fbc1199:
+  - 1dbcb0f5f37324228235564b79f2b9737e9a008f
+
+@end example
+
+Banned contacts are also stripped from their moderation privileges.
+
+The @code{disable-account} action allows to completely disconnect an
+account from the network, making it unreachable, while
+@code{enable-account} does the inverse.  They accept a single account
+username or fingerprint as first argument:
+
+@example sh
+# herd disable-account jami f3345f2775ddfe07a4b0d95daea111d15fbc1199
+
+# herd list-accounts jami
+The following Jami accounts are available:
+  - f3345f2775ddfe07a4b0d95daea111d15fbc1199 (dummy) [disabled]
+
+@end example
+
+The @code{list-account-details} action prints the detailed parameters of
+each accounts in the Recutils format, which means the @command{recsel}
+command can be used to select accounts of interest (@pxref{Selection
+Expressions,,,recutils, GNU recutils manual}).  Note that period
+characters (@samp{.}) found in the account parameter keys are mapped to
+underscores (@samp{_}) in the output, to meet the requirements of the
+Recutils format.  The following example shows how to print the account
+fingerprints for all accounts operating in the rendezvous point mode:
+
+@example sh
+# herd list-account-details jami | \
+  recsel -p Account.username -e 'Account.rendezVous ~ "true"'
+Account_username: f3345f2775ddfe07a4b0d95daea111d15fbc1199
+@end example
+
+The remaining actions should be self-explanatory.
+
+The complete set of available configuration options is detailed below.
+
+@c TODO: Ideally, the following fragments would be auto-generated at
+@c build time, so that they needn't be manually duplicated.
+@c Auto-generated via (configuration->documentation 'jami-configuration)
+@deftp {Data Type} jami-configuration
+Available @code{jami-configuration} fields are:
+
+@table @asis
+@item @code{jamid} (default: @code{libring}) (type: package)
+The Jami daemon package to use.
+
+@item @code{dbus} (default: @code{dbus}) (type: package)
+The D-Bus package to use to start the required D-Bus session.
+
+@item @code{nss-certs} (default: @code{nss-certs}) (type: package)
+The nss-certs package to use to provide TLS certificates.
+
+@item @code{enable-logging?} (default: @code{#t}) (type: boolean)
+Whether to enable logging to syslog.
+
+@item @code{debug?} (default: @code{#f}) (type: boolean)
+Whether to enable debug level messages.
+
+@item @code{auto-answer?} (default: @code{#f}) (type: boolean)
+Whether to force automatic answer to incoming calls.
+
+@item @code{accounts} (default: @code{disabled}) (type: maybe-jami-account-list)
+A list of Jami accounts to be (re-)provisioned every time the Jami
+daemon service starts.  When providing this field, the account
+directories under @file{/var/lib/jami/} are recreated every time the
+service starts, ensuring a consistent state.
+
+@end table
+
+@end deftp
+
+@c Auto-generated via (configuration->documentation 'jami-account)
+@deftp {Data Type} jami-account
+Available @code{jami-account} fields are:
+
+@table @asis
+@item @code{archive} (type: string-or-computed-file)
+The account archive (backup) file name of the account.  This is used to
+provision the account when the service starts.  The account archive
+should @emph{not} be encrypted.  It is highly recommended to make it
+readable only to the @samp{root} user (i.e., not in the store), to guard
+against leaking the secret key material of the Jami account it contains.
+
+@item @code{allowed-contacts} (default: @code{disabled}) (type: maybe-account-fingerprint-list)
+The list of allowed contacts for the account, entered as their 40
+characters long fingerprint.  Messages or calls from accounts not in
+that list will be rejected.  When unspecified, the configuration of the
+account archive is used as-is with respect to contacts and public
+inbound calls/messaging allowance, which typically defaults to allow any
+contact to communicate with the account.
+
+@item @code{moderators} (default: @code{disabled}) (type: maybe-account-fingerprint-list)
+The list of contacts that should have moderation privileges (to ban,
+mute, etc.  other users) in rendezvous conferences, entered as their 40
+characters long fingerprint.  When unspecified, the configuration of the
+account archive is used as-is with respect to moderation, which
+typically defaults to allow anyone to moderate.
+
+@item @code{rendezvous-point?} (default: @code{disabled}) (type: maybe-boolean)
+Whether the account should operate in the rendezvous mode.  In this
+mode, all the incoming audio/video calls are mixed into a conference.
+When left unspecified, the value from the account archive prevails.
+
+@item @code{peer-discovery?} (default: @code{disabled}) (type: maybe-boolean)
+Whether peer discovery should be enabled.  Peer discovery is used to
+discover other OpenDHT nodes on the local network, which can be useful
+to maintain communication between devices on such network even when the
+connection to the the Internet has been lost.  When left unspecified,
+the value from the account archive prevails.
+
+@item @code{bootstrap-hostnames} (default: @code{disabled}) (type: maybe-string-list)
+A list of hostnames or IPs pointing to OpenDHT nodes, that should be
+used to initially join the OpenDHT network.  When left unspecified, the
+value from the account archive prevails.
+
+@item @code{name-server-uri} (default: @code{disabled}) (type: maybe-string)
+The URI of the name server to use, that can be used to retrieve the
+account fingerprint for a registered username.
+
+@end table
+
+@end deftp
+
+@subsubheading Murmur (VoIP server)
+
 @cindex Murmur (VoIP server)
 @cindex VoIP server
 This section describes how to set up and run a Murmur server.  Murmur is
