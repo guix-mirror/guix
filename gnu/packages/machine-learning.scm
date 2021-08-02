@@ -675,6 +675,50 @@ standard data types.")
   ;; headers, hence the name change.
   (deprecated-package "python-onnx" onnx))
 
+(define-public onnx-optimizer
+  (package
+    (name "onnx-optimizer")
+    ;; Note: 0.2.x is *more* recent than 1.5.0.
+    (version "0.2.6")
+    (home-page "https://github.com/onnx/optimizer")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1wkqqdxcxpfbf8zpbdfdd3zz5jkw775g31gyykj11z4y6pp659l6"))
+              (file-name (git-file-name name version))
+              (patches (search-patches "onnx-optimizer-system-library.patch"))
+              (modules '((guix build utils)))
+              (snippet '(delete-file-recursively "third_party"))))
+    (build-system python-build-system)
+    (arguments (package-arguments onnx))          ;reuse build system tweaks
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-nbval" ,python-nbval)
+       ("python-coverage" ,python-coverage)))
+    (inputs
+     `(("onnx" ,onnx)
+       ("protobuf" ,protobuf)
+       ("pybind11" ,pybind11)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (synopsis "Library to optimize ONNX models")
+    (description
+     "This package provides a C++ and Python library for performing arbitrary
+optimizations on ONNX models, as well as a growing list of prepackaged
+optimization passes.
+
+Not all possible optimizations can be directly implemented on ONNX graphs---
+some will need additional backend-specific information---but many can, and the
+aim is to provide all such passes along with ONNX so that they can be re-used
+with a single function call.")
+    (license license:expat)))
+
 (define-public rxcpp
   (package
     (name "rxcpp")

@@ -1512,6 +1512,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/oneko-remove-nonfree-characters.patch	\
+  %D%/packages/patches/onnx-optimizer-system-library.patch	\
   %D%/packages/patches/onnx-use-system-googletest.patch	\
   %D%/packages/patches/onnx-shared-libraries.patch	\
   %D%/packages/patches/onnx-skip-model-downloads.patch		\
