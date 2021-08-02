@@ -713,9 +713,6 @@ board-independent tools.")))
                   uboot-files)
                  #t)))))))))
 
-(define-public u-boot-vexpress
-  (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
-
 (define-public u-boot-malta
   (make-u-boot-package "malta" "mips64el-linux-gnuabi64"))
 
