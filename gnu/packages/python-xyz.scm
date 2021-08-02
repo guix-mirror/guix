@@ -26224,3 +26224,44 @@ It currently provides descriptions for most user-mode x86, x86_64, and k1om
 instructions up to AVX-512 and SHA (including 3dnow!+, XOP, FMA3, FMA4, TBM
 and BMI2).")
       (license license:bsd-2))))
+
+(define-public python-peachpy
+  ;; There is no tag in this repo.
+  (let ((commit "906d578266dc7188bf61e4cdbc9f8ea7d69edec0")
+        (version "0.2.0")                         ;from 'peachpy/__init__.py'
+        (revision "1"))
+    (package
+      (name "python-peachpy")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/PeachPy")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1yy62k3cjr6556nbp651w6v4hzl7kz4y75wy2dfqgndgbnixskx2"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (replace 'check
+                      (lambda* (#:key tests? #:allow-other-keys)
+                        (when tests?
+                          (invoke "python" "setup.py" "nosetests")))))))
+      (native-inputs
+       `(("python-nose" ,python-nose)
+         ("python-rednose" ,python-rednose)))
+      (propagated-inputs
+       `(("python-six" ,python-six)
+         ("python-opcodes" ,python-opcodes)))
+      (synopsis "Efficient assembly code generation in Python")
+      (description
+       "PeachPy is a Python framework for writing high-performance assembly kernels.
+PeachPy aims to simplify writing optimized assembly kernels while preserving
+all optimization opportunities of traditional assembly.
+
+PeachPy can generate ELF, MS-COFF, Mach-O object files, and assembly listings
+for the Go language tool chain; it adapts to different calling conventions and
+application binary interfaces (ABIs); it takes care of register allocation; it
+supports x86_64 instructions up to AVX-512 and SHA.")
+      (license license:bsd-2))))
