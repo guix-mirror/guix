@@ -663,7 +663,7 @@ Method Engine.")
 (define-public ibus-rime
   (package
     (name "ibus-rime")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -672,40 +672,22 @@ Method Engine.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12y6jdz1amhgrnqa7zjim63dfsz6zyxyahbirfan37wmcfp6gp1d"))))
-    (build-system gnu-build-system)
+        (base32 "1vl3m6ydf7mvmalpdqqmrnnmqdi6l8yyac3bv19pp8a5q3qhkwlg"))))
+    (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:configure-flags
+       (list (string-append "-DRIME_DATA_DIR="
+                            (assoc-ref %build-inputs "rime-data")
+                            "/share/rime-data"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Define RIME_DATA_DIR. It's required but not used by the code.
-             (substitute* "Makefile"
-               (("cmake")
-                (string-append "cmake -DRIME_DATA_DIR="
-                               (assoc-ref inputs "rime-data")
-                               "/share/rime-data")))
-             ;; rime_config.h defines the actual data directory.
-             (substitute* "rime_config.h"
-               (("^#define IBUS_RIME_INSTALL_PREFIX .*$")
-                (string-append "#define IBUS_RIME_INSTALL_PREFIX \""
-                               (assoc-ref outputs "out")
-                               "\"\n"))
-               (("^#define IBUS_RIME_SHARED_DATA_DIR .*$")
-                (string-append "#define IBUS_RIME_SHARED_DATA_DIR \""
-                               (assoc-ref inputs "rime-data")
-                               "/share/rime-data\"\n")))
-             #t))
-         (add-after 'unpack 'fix-file-names
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; IBus uses the component file rime.xml to start the Rime
-             ;; engine.  It must be patched with appropriate file names.
-             (substitute* "rime.xml"
-               (("/usr") (assoc-ref outputs "out")))
-             #t))
-         (delete 'configure))))
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION....RIME_DATA_DIR..")
+                "DESTINATION \"${CMAKE_INSTALL_DATADIR}/rime-data\""))
+             #t)))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
