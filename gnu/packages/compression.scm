@@ -2361,12 +2361,21 @@ reading from and writing to ZIP archives. ")
                (base32
                 "0nlzwnv6wh2yjyyv27f81jnvmk7psgpbnw7dsdp7frfkya569hgv"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "src/zck_gen_zdict.c"
+                        (("/usr/bin/zstd")
+                         (string-append (assoc-ref inputs "zstd")
+                                        "/bin/zstd"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)))
+     `(("curl" ,curl)
+       ("zstd" ,zstd)))
     (propagated-inputs
-     `(("zstd" ,zstd "lib")))           ;in Requires.private of zck.pc
+     `(("zstd:lib" ,zstd "lib")))       ;in Requires.private of zck.pc
     (home-page "https://github.com/zchunk/zchunk")
     (synopsis "Compressed file format for efficient deltas")
     (description "The zchunk compressed file format allows splitting a file
