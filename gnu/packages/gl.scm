@@ -471,6 +471,10 @@ from software emulation to complete hardware acceleration for modern GPUs.")
 (define-public mesa-opencl
   (package/inherit mesa
     (name "mesa-opencl")
+    (source (origin
+              (inherit (package-source mesa))
+              (patches (cons (search-patch "mesa-opencl-all-targets.patch")
+                             (origin-patches (package-source mesa))))))
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
        ((#:configure-flags flags)

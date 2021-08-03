@@ -1,0 +1,25 @@
+This patch restores LLVM targets needed for OpenCL, *reverting* this
+upstream commit:
+
+  From 80817b6e344258ac9b955f824ebf9019a0fc1610 Mon Sep 17 00:00:00 2001
+  From: Jesse Natalie <jenatali@microsoft.com>
+  Date: Wed, 18 Nov 2020 18:30:30 -0800
+  Subject: [PATCH] meson: Adjust Clover's required LLVM modules
+
+diff --git a/meson.build b/meson.build
+index 6d1607c35a3..f828eb80faa 100644
+--- b/meson.build
++++ a/meson.build
+@@ -1479,10 +1479,9 @@
+ endif
+ if with_gallium_opencl
+   llvm_modules += [
+-    'linker', 'coverage', 'instrumentation', 'ipo', 'irreader',
+-    'lto', 'option', 'objcarcopts', 'profiledata'
++    'all-targets', 'linker', 'coverage', 'instrumentation', 'ipo', 'irreader',
++    'lto', 'option', 'objcarcopts', 'profiledata',
+   ]
+-  llvm_optional_modules += ['frontendopenmp']
+ endif
+ if with_microsoft_clc
+   llvm_modules += ['target', 'linker', 'irreader', 'option', 'libdriver']
