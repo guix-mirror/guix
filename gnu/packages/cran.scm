@@ -29958,3 +29958,31 @@ applications.  The OpenCPU server runs either as a single-user development
 server within the interactive R session, or as a multi-user stack based on
 Apache2.")
     (license license:asl2.0)))
+
+(define-public r-exactextractr
+  (package
+    (name "r-exactextractr")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "exactextractr" version))
+       (sha256
+        (base32
+         "1xnccadbj03h7m81ix5qn0hx918xc9hbxnzgv5lr3hf8b26i9wni"))))
+    (properties `((upstream-name . "exactextractr")))
+    (build-system r-build-system)
+    (inputs `(("geos" ,geos)))
+    (propagated-inputs
+     `(("r-raster" ,r-raster)
+       ("r-rcpp" ,r-rcpp)
+       ("r-sf" ,r-sf)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://isciences.gitlab.io/exactextractr/")
+    (synopsis "Fast extraction from raster datasets using polygons")
+    (description
+     "This package provides a replacement for the @code{extract} function from
+the @code{raster} package that is suitable for extracting raster values using
+@code{sf} polygons.")
+    (license license:asl2.0)))
