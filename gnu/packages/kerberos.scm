@@ -52,6 +52,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
+    (replacement mit-krb5-1.18.4)
     (version "1.18")
     (source (origin
               (method url-fetch)
@@ -118,6 +119,28 @@ cryptography.")
                                    "See NOTICE in the distribution."))
     (home-page "https://web.mit.edu/kerberos/")
     (properties '((cpe-name . "kerberos")))))
+
+(define-public mit-krb5-1.18.4
+  ;; Hide the package to avoid displaying the confusing "1.1a" version in the
+  ;; user interface.
+  (hidden-package
+    (package
+      (inherit mit-krb5)
+      ; version 1.18.4
+      (version "1.1a")
+      (source (origin
+                (method url-fetch)
+                (uri (list
+                       (string-append "https://web.mit.edu/kerberos/dist/krb5/"
+                                      "1.18"
+                                      "/krb5-1.18.4.tar.gz")
+                       (string-append "https://kerberos.org/dist/krb5/"
+                                      "1.18"
+                                      "/krb5-1.18.4.tar.gz")))
+                (patches (search-patches "mit-krb5-hurd.patch"))
+                (sha256
+                  (base32
+                    "1j4zm5npv3yxrwrsdwlxias0ycj4qfxzgnz0h9zffla7b4pmw236")))))))
 
 (define-public shishi
   (package
