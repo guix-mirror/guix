@@ -2462,9 +2462,9 @@ that:
          #:phases
          (modify-phases %standard-phases
            (replace 'check
-             (lambda _
-               (invoke "make" "gloo_test")
-               #t)))))
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "make" "gloo_test")))))))
       (synopsis "Collective communications library")
       (description
        "Gloo is a collective communications library.  It comes with a
