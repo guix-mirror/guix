@@ -30012,3 +30012,27 @@ the @code{raster} package that is suitable for extracting raster values using
      "This package provides an extendable, performant and multithreaded
 @code{alt-string} implementation backed by C++ vectors and strings.")
     (license license:gpl3)))
+
+(define-public r-rapiserialize
+  (package
+    (name "r-rapiserialize")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RApiSerialize" version))
+       (sha256
+        (base32
+         "0gm2j8kh40imhncwwx1sx9kmraaxcxycvgwls53lcyy2ap344k9j"))))
+    (properties `((upstream-name . "RApiSerialize")))
+    (build-system r-build-system)
+    (home-page
+     "https://cran.r-project.org/package=RApiSerialize")
+    (synopsis "R API serialization")
+    (description
+     "This package provides other packages with access to the internal R
+serialization code.  Access to this code is provided at the C function level
+by using the registration of native function mechanism.  Client packages
+simply include a single header file RApiSerializeAPI.h provided by this
+package.")
+    (license license:gpl2+)))
