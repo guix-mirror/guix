@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019, 2020 Peng Mei Yu <i@pengmeiyu.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
@@ -306,7 +306,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.6.1")
+    (version "1.7.3")
     (source
      (origin
        (method git-fetch)
@@ -316,7 +316,7 @@ Japanese language input in most graphical applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1avmy2yyag22cl2j8085n5czsk93sxv440pdb3a2diwcxwwmzm9v"))
+         "0pqk0i3zcii3fx5laj9qzbgd58jvq6wn31j76w4zix2i4b1lqcqv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
