@@ -354,8 +354,8 @@ resolution scaling on graphical console window resize.")
                                "/lib/softhsm/libsofthsm2.so"))))))))
     (propagated-inputs
      `(("glib" ,glib)                   ; Requires: in the pkg-config file
-       ("nss" ,nss)))                   ; Requires.private: in the pkg-config
-                                        ; file
+       ("nss" ,nss)                     ; Requires.private: in the pkg-config
+       ("pcsc-lite" ,pcsc-lite)))       ; file
     (native-inputs
      `(("openssl" ,openssl)
        ("nss" ,nss "bin")
