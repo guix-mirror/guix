@@ -1085,15 +1085,14 @@ coding footprint.")
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
+    ;; The following definition is copied from the cURL package to prevent a
+    ;; cycle between the curl and tls modules.
     (native-search-paths
-     ;; The following definition is copied from the cURL package to prevent a
-     ;; cycle between the curl and tls modules.
-     (native-search-paths
-      (list (search-path-specification
-             (variable "CURL_CA_BUNDLE")
-             (file-type 'regular)
-             (separator #f)
-             (files '("etc/ssl/certs/ca-certificates.crt"))))))
+     (list (search-path-specification
+            (variable "CURL_CA_BUNDLE")
+            (file-type 'regular)
+            (separator #f)
+            (files '("etc/ssl/certs/ca-certificates.crt")))))
     (home-page "https://dehydrated.io/")
     (synopsis "Let's Encrypt/ACME client implemented as a shell script")
     (description "Dehydrated is a client for signing certificates with an
