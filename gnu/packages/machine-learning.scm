@@ -87,6 +87,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -2436,8 +2437,8 @@ that:
 
 (define-public gloo
   (let ((version "0.0.0") ; no proper version tag
-        (commit "ca528e32fea9ca8f2b16053cff17160290fc84ce")
-        (revision "0"))
+        (commit "c22a5cfba94edf8ea4f53a174d38aa0c629d070f")
+        (revision "1"))
     (package
       (name "gloo")
       (version (git-version version revision commit))
@@ -2450,10 +2451,12 @@ that:
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1q9f80zy75f6njrzrqkmhc0g3qxs4gskr7ns2jdqanxa2ww7a99w"))))
+           "1crmqgybzkgkpbmcx16912gsl5qsj49swa0ikx6mhqgph0chrh11"))))
       (build-system cmake-build-system)
       (native-inputs
        `(("googletest" ,googletest)))
+      (inputs
+       `(("openssl" ,openssl)))
       (arguments
        `(#:configure-flags '("-DBUILD_TEST=1")
          #:phases
