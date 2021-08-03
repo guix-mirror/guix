@@ -30036,3 +30036,31 @@ by using the registration of native function mechanism.  Client packages
 simply include a single header file RApiSerializeAPI.h provided by this
 package.")
     (license license:gpl2+)))
+
+(define-public r-qs
+  (package
+    (name "r-qs")
+    (version "0.25.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qs" version))
+       (sha256
+        (base32
+         "0qzrhc5jsygj813k956b00h4b6haynz44rk6a4v34fv4ywq9ba7w"))))
+    (properties `((upstream-name . "qs")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-rapiserialize" ,r-rapiserialize)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringfish" ,r-stringfish)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/traversc/qs")
+    (synopsis "Quick serialization of R objects")
+    (description
+     "This package provides functions for quickly writing and reading any R
+object to and from disk.")
+    (license license:gpl3)))
