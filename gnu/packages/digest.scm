@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,10 @@
 (define-module (gnu packages digest)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (ice-9 match))
@@ -96,3 +99,21 @@ The code is highly portable, and hashes of the same length are identical on all
 platforms (both big and little endian).")
     (license (list license:bsd-2        ; xxhash library (xxhash.[ch])
                    license:gpl2+))))    ; xxhsum.c
+
+(define-public python-xxhash
+  (package
+    (name "python-xxhash")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xxhash" version))
+       (sha256
+        (base32
+         "0jbvz19acznq00544gcsjg05fkvrmwbnwdfgrvwss3i1ys6avgmp"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ifduyue/python-xxhash")
+    (synopsis "Python binding for xxHash")
+    (description "This package provides Python bindings for the xxHash hash
+algorithm.")
+    (license license:bsd-3)))
