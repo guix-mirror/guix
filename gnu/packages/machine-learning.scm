@@ -762,23 +762,22 @@ synchronization, thread-safety, concurrent data structures, and non-blocking
 I/O.")
     (license license:asl2.0)))
 
-(define-public gemmlowp-for-tensorflow
-  ;; The commit hash is taken from "tensorflow/workspace.bzl".
-  (let ((commit "38ebac7b059e84692f53e5938f97a9943c120d98")
-        (revision "2"))
+
+(define-public gemmlowp
+  (let ((commit "f9959600daa42992baace8a49544a00a743ce1b6")
+        (version "0.1")
+        (revision "1"))
     (package
       (name "gemmlowp")
-      (version (git-version "0" revision commit))
+      (version (git-version version revision commit))
+      (home-page "https://github.com/google/gemmlowp")
       (source (origin
-                (method url-fetch)
-                (uri (string-append "https://mirror.bazel.build/"
-                                    "github.com/google/gemmlowp/archive/"
-                                    commit ".zip"))
-                (file-name (string-append "gemmlowp-" version ".zip"))
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0n56s2g8hrssm4w8qj1v58gfm56a04n9v992ixkmvk6zjiralzxq"))))
-      (build-system cmake-build-system)
+                  "1hzfhlhzcb827aza6a7drydc67dw5fm3qfqilb9ibskan8dsf0c6"))))
       (arguments
        `(#:configure-flags
          (list ,@(match (%current-system)
@@ -798,18 +797,15 @@ I/O.")
                       (inc (string-append out "/include/")))
                  (install-file "../build/libeight_bit_int_gemm.so" lib)
                  (for-each (lambda (dir)
-                             (let ((target (string-append inc "/" dir)))
-                               (mkdir-p target)
+                             (let ((target
+                                    (string-append inc "/gemmlowp/" dir)))
                                (for-each (lambda (h)
                                            (install-file h target))
                                          (find-files (string-append "../" dir)
                                                      "\\.h$"))))
                            '("meta" "profiling" "public" "fixedpoint"
-                             "eight_bit_int_gemm" "internal"))
-                 #t))))))
-      (native-inputs
-       `(("unzip" ,unzip)))
-      (home-page "https://github.com/google/gemmlowp")
+                             "eight_bit_int_gemm" "internal"))))))))
+      (build-system cmake-build-system)
       (synopsis "Small self-contained low-precision GEMM library")
       (description
        "This is a small self-contained low-precision @dfn{general matrix
@@ -818,6 +814,46 @@ Low-precision means that the input and output matrix entries are integers on
 at most 8 bits.  To avoid overflow, results are internally accumulated on more
 than 8 bits, and at the end only some significant 8 bits are kept.")
       (license license:asl2.0))))
+
+(define-public gemmlowp-for-tensorflow
+  ;; The commit hash is taken from "tensorflow/workspace.bzl".
+  (let ((commit "38ebac7b059e84692f53e5938f97a9943c120d98")
+        (revision "2"))
+    (package
+      (inherit gemmlowp)
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://mirror.bazel.build/"
+                                    "github.com/google/gemmlowp/archive/"
+                                    commit ".zip"))
+                (file-name (string-append "gemmlowp-" version ".zip"))
+                (sha256
+                 (base32
+                  "0n56s2g8hrssm4w8qj1v58gfm56a04n9v992ixkmvk6zjiralzxq"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gemmlowp)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (lib (string-append out "/lib/"))
+                        (inc (string-append out "/include/")))
+                   (install-file "../build/libeight_bit_int_gemm.so" lib)
+                   (for-each (lambda (dir)
+                               ;; Note: Install headers straight into
+                               ;; $includedir instead of $includedir/gemmlowp.
+                               (let ((target (string-append inc "/" dir)))
+                                 (for-each (lambda (h)
+                                             (install-file h target))
+                                           (find-files (string-append "../" dir)
+                                                       "\\.h$"))))
+                             '("meta" "profiling" "public" "fixedpoint"
+                               "eight_bit_int_gemm" "internal")))))))))
+      (native-inputs
+       `(("unzip" ,unzip)))
+      (properties '((hidden? . #t))))))
 
 (define-public dlib
   (package
