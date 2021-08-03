@@ -359,38 +359,29 @@ traditional Chinese output.")
 (define-public rime-data
   (package
     (name "rime-data")
-    (version "0.38.20200623")
+    (version "0.38.20210802")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rime/plum")
-             (commit "397d601dd22cfc857613973724724b8f44db9f9c")))
+             (commit "0b835e347cad9c2d7038cfe82df5b5d1fe1c0327")))
        (file-name "plum-checkout")
        (sha256
-        (base32 "06ad5c4m7xsfr4if5ywshfj2aj5g5b5hwzh38dzccn7c1l2ibi0z"))))
+        (base32 "0mja4wyazxdc6fr7pzij5ah4rzwxv4s12s64vfn5ikx1ias1f8ib"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match)
                   ,@%gnu-build-system-modules)
        #:tests? #f                  ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "no_update=1")
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda _
-             ;; Don't build binary Rime schema.  The binary Rime schema files
-             ;; are platform dependent and contains timestamp information.
-             ;; Thus they are not reproducible.
-
-             ;; Change `.DEFAULT_GOAL' to `all'.
-             (substitute* "Makefile"
-               (("^\\.DEFAULT_GOAL := preset")
-                ".DEFAULT_GOAL := all"))
              ;; Disable git operations.
              (substitute* "scripts/install-packages.sh"
-               ((".*update-package\\.sh.*") ""))
+               (("^\\s*fetch_or_update_package\\s$") ""))
              #t))
          ;; Copy Rime schemas into the "package/rime" directory.
          (add-after 'unpack 'copy-rime-schemas
@@ -405,6 +396,12 @@ traditional Chinese output.")
                          (symlink path (string-append dest-dir "/" schema))))))
                 inputs))
              #t))
+         (replace 'build
+           ;; NOTE: Don't build binary Rime schema.  Binary Rime schema files
+           ;; are platform dependent and contain timestamp information.
+           ;; Therefore they are not reproducible.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "all" make-flags)))
          (delete 'configure))))
     (inputs
      `(("rime-array"
@@ -412,51 +409,51 @@ traditional Chinese output.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-array")
-                 (commit "93cc99238f120606a076220ec4ddcad164f6396a")))
+                 (commit "7a7bfafae966e5f949a23a82ee8594cacf492593")))
            (file-name "rime-array-checkout")
            (sha256
             (base32
-             "06yxrv3x702751jvx46rfw3ix34jk7jh183rz6bllznzi7lxz7sz"))))
+             "0kw0wyc5f77bv06fixkfvqnibmm80pyifvrhz8f1h411926ny37r"))))
        ("rime-bopomofo"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-bopomofo")
-                 (commit "ed25098386f5efd3d70b08650f0d1b70c41c11a3")))
+                 (commit "c7618f4f5728e1634417e9d02ea50d82b71956ab")))
            (file-name "rime-bopomofo-checkout")
            (sha256
             (base32
-             "1ip1pbfb1hadf2mcymr5939iagf25ywfl67d9198jahzyr6rdyvc"))))
+             "0g77nv0jrwqnbqqna0ib0kqcy6l5zl62kh49ny67d6bjwnwz9186"))))
        ("rime-cangjie"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-cangjie")
-                 (commit "5fd8ce6f64039e505ca02655a621f2e830b97c19")))
+                 (commit "8dfad9e537f18821b71ba28773315d9c670ae245")))
            (file-name "rime-cangjie-checkout")
            (sha256
             (base32
-             "1gf6r0q593ixar6v0jyvs56cik2gjp7pf9v799rfd2yydyia3bfg"))))
+             "029kw9nx6x0acg4f0m8wj1ziqffffhy9yyj51nlx17cnia0qcrby"))))
        ("rime-cantonese"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-cantonese")
-                 (commit "e06fe8e79d7d64db2f2b6339aabc004d8cbc1f67")))
+                 (commit "fa7c8ad19d51143c1a470295d56feeb63e92113f")))
            (file-name "rime-cantonese-checkout")
            (sha256
             (base32
-             "0j6kbhdfj7dx812yzykndzbk53s2v1rsaa2jlyma03hz7qlnnl0s"))))
+             "0vy5vv6h4r4b2msdvdrsj0zr6wmrv0fxm5zyyvxq8f1ix7ignm4c"))))
        ("rime-combo-pinyin"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-combo-pinyin")
-                 (commit "67b29cdc786928ea46b43a9c660dee3db8f1adff")))
+                 (commit "a84065a86b272c76215215bd6f03c506b6e7097c")))
            (file-name "rime-combo-pinyin-checkout")
            (sha256
             (base32
-             "1v6ax51xll2aizbz1xzjyk6p3lmq8cyzbxkrwcffa723zaj0zz4l"))))
+             "1f0b4kakw0x26gmx7xi4f94nbjlb8lvi9bks4f92jswa045vnd87"))))
        ("rime-double-pinyin"
         ,(origin
            (method git-fetch)
@@ -472,21 +469,21 @@ traditional Chinese output.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-emoji")
-                 (commit "c99d34e4a837349e4679a110bb4b94f71fe015ae")))
+                 (commit "4c8c51f4a3bc7298c99376eda9bbd86070fc4fa1")))
            (file-name "rime-emoji-checkout")
            (sha256
             (base32
-             "1wiwlxjjml9xfgg7z1wzaf4b1bsg81dkwvsfff2b61fwxq61zkgw"))))
+             "0175jqh210fncafqckr9zzaw55qpswmqjrykwms1apmc68l43122"))))
        ("rime-essay"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-essay")
-                 (commit "88055afa3752e4582fa887765d962a30e02bb1fa")))
+                 (commit "9db2e77305e75798baf3ec8dcf1f82785b5e1be9")))
            (file-name "rime-essay-checkout")
            (sha256
             (base32
-             "0ap7xqv6v0x6mdkw2cv93cbr6qhpla3803z04522wb8l9hr7iryg"))))
+             "03ypkkaadd5qmyg26n24a66cll90xvcimgbmiyv4d33jradiqg22"))))
        ("rime-ipa"
         ,(origin
            (method git-fetch)
@@ -502,51 +499,51 @@ traditional Chinese output.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-jyutping")
-                 (commit "6fe0d727b3178feabd0f01e6cd82599202764735")))
+                 (commit "1e24baa6998815c716c581effe8ec65ee87c4e8c")))
            (file-name "rime-jyutping-checkout")
            (sha256
             (base32
-             "0wz6d3pmi72ysh2c0nml3rsz9hd2vazsyhnz34gq26yf4j85phfs"))))
+             "0s2rckpwlrm3n7w1csnqyi5p9mkpp3z87s7mrm2vc9sv06rpv7zl"))))
        ("rime-luna-pinyin"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-luna-pinyin")
-                 (commit "f1268e192ca88b9526467ce04ac3e47c837891ad")))
+                 (commit "623adb022b094d540218b287c2e601509eee3347")))
            (file-name "rime-luna-pinyin-checkout")
            (sha256
             (base32
-             "0nxnjp1ybcrsan1mxnzwbkfhwl99kza6i9k1s7m9wzmhv7x7zahg"))))
+             "06pcwp09l5wkqv7792gbsl31xnlb3gr9q6bgbp94vvq6m2ycahqz"))))
        ("rime-middle-chinese"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-middle-chinese")
-                 (commit "ed6d44f8d0bedf6e0c1c3183a270f8f01a211a40")))
+                 (commit "9fad7a7c0c26167d5e6e85db8df48a15c7f7d4f0")))
            (file-name "rime-middle-chinese-checkout")
            (sha256
             (base32
-             "09mql88lsrxa99pyllby5z22kaiwwa037ha8gwaxjnnlsjgvz7zx"))))
+             "0a0bqrlzg0k692xblqnh1rh1fwwqqb205xwxlihgji85n8ibcgph"))))
        ("rime-pinyin-simp"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-pinyin-simp")
-                 (commit "b73df7fc0994912ce785462b3be569ae81258ac2")))
+                 (commit "b0e84cda02c613ebdedc127a26131b3800f45a8e")))
            (file-name "rime-pinyin-simp-checkout")
            (sha256
             (base32
-             "1m9hchnj1xf5s5185qm66ja0g1324drc98b2jjhnqgcp47bwz9fx"))))
+             "05v804qr3a9xvjzp9yid7231fi2l2yrl47ybbvql61z9k36ab094"))))
        ("rime-prelude"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-prelude")
-                 (commit "8a52b4f86a59f3eb602f9a4cf6a680a67c15df8c")))
+                 (commit "3de303ffaa731dba07b0462ce59f4767e1219ad2")))
            (file-name "rime-prelude-checkout")
            (sha256
             (base32
-             "039fr3996vfxzn2milaq1f5fw08f6zgjsxsql6cfhsc5b55fidm7"))))
+             "0g7a0bla58rh1v3md59k6adk185pilb4z8i2i0pqdl4nwqp40n2p"))))
        ("rime-quick"
         ,(origin
            (method git-fetch)
@@ -602,21 +599,21 @@ traditional Chinese output.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-terra-pinyin")
-                 (commit "492aaf914f9de37cc9d26b846dc693116de70ae8")))
+                 (commit "ce7b9249612f575d2f43d51fcacd31d1b4e0ef1b")))
            (file-name "rime-terra-pinyin-checkout")
            (sha256
             (base32
-             "1l4l2w42mc3sf7jwbadx95gzrsq11ld9f6yj2hwaq9accainw3bf"))))
+             "0vm303f4lrdmdmif5klrp6w29vn9z2vzw33cw0y83pcnz39wiads"))))
        ("rime-wubi"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-wubi")
-                 (commit "dd052ee158a38cb791755318b1aef9b4a3ed0316")))
+                 (commit "f1876f08f1d4a9696395be0070c0e8e4353c44cb")))
            (file-name "rime-wubi-checkout")
            (sha256
             (base32
-             "00xzv3sbwqh2jz4i7s315h7rw17qa2dgj7kflyy3blxk0s2cqiqa"))))
+             "1d9y9rqssacria9d0hla96czsqv2wkfm6z926m1x269ryv96zxvk"))))
        ("rime-wugniu"
         ,(origin
            (method git-fetch)
@@ -631,7 +628,37 @@ traditional Chinese output.")
     (synopsis "Schema data of Rime Input Method Engine")
     (description "@dfn{rime-data} provides the schema data of Rime Input
 Method Engine.")
-    (license lgpl3)))
+    (license (list
+              ;; rime-array
+              ;; rime-combo-pinyin
+              ;; rime-double-pinyin
+              ;; rime-middle-chinese
+              ;; rime-scj
+              ;; rime-soutzoe
+              ;; rime-stenotype
+              ;; rime-wugniu
+              gpl3
+
+              ;; plum
+              ;; rime-bopomofo
+              ;; rime-cangjie
+              ;; rime-emoji
+              ;; rime-essay
+              ;; rime-ipa
+              ;; rime-jyutping
+              ;; rime-luna-pinyin
+              ;; rime-prelude
+              ;; rime-quick
+              ;; rime-stroke
+              ;; rime-terra-pinyin
+              ;; rime-wubi
+              lgpl3
+
+              ;; rime-pinyin-simp
+              asl2.0
+
+              ;; rime-cantonese
+              cc-by4.0))))
 
 (define-public ibus-rime
   (package
