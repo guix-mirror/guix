@@ -29986,3 +29986,29 @@ Apache2.")
 the @code{raster} package that is suitable for extracting raster values using
 @code{sf} polygons.")
     (license license:asl2.0)))
+
+(define-public r-stringfish
+  (package
+    (name "r-stringfish")
+    (version "0.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stringfish" version))
+       (sha256
+        (base32
+         "0m8485p1gb5z2n2g5nyr38zixw4iv8xxm7bxspxlxvx6alhn03pn"))))
+    (properties `((upstream-name . "stringfish")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/traversc/stringfish")
+    (synopsis "Alternative string implementation")
+    (description
+     "This package provides an extendable, performant and multithreaded
+@code{alt-string} implementation backed by C++ vectors and strings.")
+    (license license:gpl3)))
