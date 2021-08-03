@@ -22584,7 +22584,7 @@ To put the system administrator in full control of the conferences
 hosted on their system, the Jami service supports the following actions:
 
 @example sh
-# herd doc jami list-actions jami
+# herd doc jami list-actions
 (list-accounts
  list-account-details
  list-banned-contacts
