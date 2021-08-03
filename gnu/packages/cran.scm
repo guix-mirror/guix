@@ -30064,3 +30064,27 @@ package.")
      "This package provides functions for quickly writing and reading any R
 object to and from disk.")
     (license license:gpl3)))
+
+(define-public r-rgeos
+  (package
+    (name "r-rgeos")
+    (version "0.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rgeos" version))
+       (sha256
+        (base32
+         "086l0qk3p4jq23bs91c4a65x4qz99z0hy0vsnvfqfvppdzz0vajb"))))
+    (properties `((upstream-name . "rgeos")))
+    (build-system r-build-system)
+    (inputs
+     `(("geos" ,geos)))
+    (propagated-inputs
+     `(("r-sp" ,r-sp)))
+    (home-page "https://cran.r-project.org/package=rgeos")
+    (synopsis "Interface to Geometry Engine (GEOS)")
+    (description
+     "This package provides an R interface to Geometry Engine (GEOS) using the
+C API for topology operations on geometries.")
+    (license license:gpl2+)))
