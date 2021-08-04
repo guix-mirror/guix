@@ -30153,3 +30153,36 @@ flow graphs.  Nodes in the graph represent mathematical operations, while the
 graph edges represent the multidimensional data arrays (tensors) communicated
 between them.")
     (license license:asl2.0)))
+
+(define-public r-keras
+  (package
+    (name "r-keras")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "keras" version))
+       (sha256
+        (base32
+         "00bw5f5d81md8db1k6bf2a91by4k25xvlwxiwv188y4vw3bfc7md"))))
+    (properties `((upstream-name . "keras")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-generics" ,r-generics)
+       ("r-magrittr" ,r-magrittr)
+       ("r-r6" ,r-r6)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rlang" ,r-rlang)
+       ("r-tensorflow" ,r-tensorflow)
+       ("r-tfruns" ,r-tfruns)
+       ("r-zeallot" ,r-zeallot)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://keras.rstudio.com")
+    (synopsis "R Interface to 'Keras'")
+    (description
+     "This package provides an interface to Keras, a high-level neural
+networks API.  Keras was developed with a focus on enabling fast
+experimentation, supports both convolution based networks and recurrent
+networks (as well as combinations of the two), and runs seamlessly on both CPU
+and GPU devices.")
+    (license license:expat)))
