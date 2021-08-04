@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +43,7 @@
 (define-public gprolog
   (package
     (name "gprolog")
-    (version "1.4.5")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -53,7 +54,7 @@
                                   ".tar.gz")))
         (sha256
          (base32
-          "0z4cc42n3k6i35b8mr816iwsvrpxshw6d7dgz6s2h1hy0l7g1p5z"))))
+          "009ca4wn2q6xdmb0js0vz647cw5ygsqyyqc9svmjgahg7js441k7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -61,13 +62,9 @@
               "--with-install-dir=" %output "/share/gprolog"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'change-dir-n-fix-shells
+         (add-before 'configure 'change-dir
            (lambda _
-             (chdir "src")
-             (substitute* "configure"
-               (("-/bin/sh")  (string-append "-"  (which "sh")))
-               (("= /bin/sh") (string-append "= " (which "sh"))))
-             #t)))))
+             (chdir "src"))))))
     (home-page "https://www.gnu.org/software/gprolog/")
     (synopsis "Prolog compiler")
     (description
