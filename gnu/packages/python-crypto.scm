@@ -138,9 +138,6 @@ on the Blowfish password hashing algorithm, as described in
 Password Scheme\"} by Niels Provos and David Mazieres.")
     (license license:asl2.0)))
 
-(define-public python2-bcrypt
-  (package-with-python2 python-bcrypt))
-
 (define-public python-passlib
   (package
     (name "python-passlib")
