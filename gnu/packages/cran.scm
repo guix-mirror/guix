@@ -638,21 +638,19 @@ variables.")
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggpmisc" version))
               (sha256
                (base32
-                "1vfzhpd4bqskq1sxh60dkab02m51g0dhj9i8mfqqbakhmkqggxa3"))))
+                "0ma0xcwjgj0sp9483s2y62ylv992dqjxqfgb3zl8f1pksypqdbac"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-generics" ,r-generics)
-       ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggpp" ,r-ggpp)
-       ("r-gridextra" ,r-gridextra)
        ("r-lubridate" ,r-lubridate)
        ("r-mass" ,r-mass)
        ("r-plyr" ,r-plyr)
@@ -661,10 +659,7 @@ variables.")
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-splus2r" ,r-splus2r)
-       ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-xts" ,r-xts)
-       ("r-zoo" ,r-zoo)))
+       ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://www.r4photobiology.info/")
