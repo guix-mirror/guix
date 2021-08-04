@@ -11360,7 +11360,7 @@ using package inferred style.")
 (define-public emacs-lua-mode
   (package
     (name "emacs-lua-mode")
-    (version "20201010")
+    (version "20210802")
     (home-page "https://github.com/immerrr/lua-mode/")
     (source
      (origin
@@ -11370,7 +11370,7 @@ using package inferred style.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zf43f7fkrgki6pbc09zak975p4jx1yf3ipfs38hypfl9s5d6xrf"))))
+        (base32 "0r3svhggdml2n256k3b0zmbjnw51p46gan6dg07bhavpfrqs5196"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
