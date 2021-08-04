@@ -2595,33 +2595,6 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     ;; distribution for clarification.
     (license (list license:bsd-3 license:bsd-4))))
 
-(define-public pidentd
-  (package
-    (name "pidentd")
-    (version "3.0.19")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/ptrrkssn/pidentd")
-              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1k4rr0b4ygxssbnsykzjvz4hjhazzz4j5arlilyc1iq7b1wzsk7i"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f)) ; No tests are included
-    (inputs
-     `(("openssl" ,openssl-1.0)))       ;for the DES library
-    (home-page "https://www.lysator.liu.se/~pen/pidentd/")
-    (synopsis "Small Ident Daemon")
-    (description
-     "@dfn{Pidentd} (Peter's Ident Daemon) is an identd, which implements a
-identification server.  Pidentd looks up specific TCP/IP connections and
-returns the user name and other information about the connection.")
-    (license license:public-domain)))
-
 (define-public spiped
   (package
     (name "spiped")
