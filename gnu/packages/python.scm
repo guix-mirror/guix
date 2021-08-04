@@ -716,15 +716,14 @@ ease from the desktop to a microcontroller or embedded system.")
 (define-public pypy3
   (package
     (name "pypy3")
-    (version "7.3.1")
+    (version "7.3.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://bitbucket.org/pypy/pypy/downloads/" ;
-                                  "pypy3.6-v" version "-src.tar.bz2"))
+              (uri (string-append "https://downloads.python.org/pypy/"
+                                  "pypy3.7-v" version "-src.tar.bz2"))
               (sha256
                (base32
-                "10zsk8jby8j6visk5mzikpb1cidvz27qq4pfpa26jv53klic6b0c"))
-              (patches (search-patches "pypy3-7.3.1-fix-tests.patch"))))
+                "18lrdmpcczlbk3cfarkgwqdmilrybz56i1dafk8dkjlyk90gw86r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python-2" ,python-2)
@@ -749,7 +748,7 @@ ease from the desktop to a microcontroller or embedded system.")
        ("bash-minimal" ,bash-minimal)   ; Used as /bin/sh
        ("xz" ,xz)))                     ; liblzma
     (arguments
-     `(#:tests? #f     ;FIXME: Disabled for now, there are many tests failing.
+     `(#:tests? #f                     ;FIXME: 43 out of 364 tests are failing
        #:modules ((ice-9 ftw) (ice-9 match)
                   (guix build utils) (guix build gnu-build-system))
        #:phases (modify-phases %standard-phases
