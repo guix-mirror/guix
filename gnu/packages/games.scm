@@ -8365,7 +8365,6 @@ your score gets higher, you level up and the blocks fall faster.")
     (arguments
      `(#:scons ,scons-python2
        #:scons-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
