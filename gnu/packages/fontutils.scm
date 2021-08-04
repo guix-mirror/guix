@@ -326,14 +326,13 @@ Font Format (WOFF).")
      (name "fontconfig-minimal")
      (version "2.13.94")
      (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://www.freedesktop.org/software/"
-                  "fontconfig/release/fontconfig-" version ".tar.xz"))
-            (sha256
-             (base32
-              "0g004r0bkkqz00mpm3svnnxn7d83158q0yb9ggxryizxfg5m5w55"))
-             (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
+               (method url-fetch)
+               (uri (string-append
+                     "https://www.freedesktop.org/software/"
+                     "fontconfig/release/fontconfig-" version ".tar.xz"))
+               (sha256 (base32
+                        "0g004r0bkkqz00mpm3svnnxn7d83158q0yb9ggxryizxfg5m5w55"))
+               (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
      (build-system gnu-build-system)
      ;; In Requires or Requires.private of fontconfig.pc.
      (propagated-inputs `(("expat" ,expat)
@@ -355,12 +354,7 @@ Font Format (WOFF).")
               ;; register the default fonts
               (string-append "--with-default-fonts="
                              (assoc-ref %build-inputs "font-dejavu")
-                             "/share/fonts")
-
-              ;; Register fonts from user and system profiles.
-              (string-append "--with-add-fonts="
-                             "~/.guix-profile/share/fonts,"
-                             "/run/current-system/profile/share/fonts"))
+                             "/share/fonts"))
         #:phases
         (modify-phases %standard-phases
           (add-before 'check 'skip-problematic-tests
@@ -392,6 +386,12 @@ high quality, anti-aliased and subpixel rendered text on a display.")
                                         ; The exact license is more X11-style than BSD-style.
      (license (license:non-copyleft "file://COPYING"
                                     "See COPYING in the distribution."))
+     (native-search-paths
+      ;; Since version 2.13.94, fontconfig knows to find fonts from
+      ;; XDG_DATA_DIRS.
+      (list (search-path-specification
+             (variable "XDG_DATA_DIRS")
+             (files '("share")))))
      (home-page "https://www.freedesktop.org/wiki/Software/fontconfig"))))
 
 ;;; The documentation of fontconfig is built in a separate package, as it
