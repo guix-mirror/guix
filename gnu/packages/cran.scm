@@ -2769,20 +2769,18 @@ including functions for geolocation and routing.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "2.4.1")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "1san6dc7kg2wy6f1jr5p1br28zdrand8wwgg7p6xxnx45h773320"))
+         "0pr9jcdk1r9pi9iz0xm1g5yy5qyjk5r7hh9467abx4kpwx3hzdwm"))
        (modules '((guix build utils)))
        (snippet
-        '(begin
-            ;; unvendor readstat
-           (delete-file-recursively "src/readstat")
-           #t))))
+        ;; unvendor readstat
+        '(delete-file-recursively "src/readstat"))))
     (build-system r-build-system)
     (arguments
      '(#:phases
@@ -2791,8 +2789,7 @@ including functions for geolocation and routing.")
            (lambda _
              ;; Not required, since we’re not building readstat.
              (substitute* "src/Makevars"
-               (("-lz") "-lreadstat"))
-             #t)))))
+               (("-lz") "-lreadstat")))))))
     (inputs
      `(("readstat" ,readstat)))
     (native-inputs
@@ -2807,10 +2804,10 @@ including functions for geolocation and routing.")
        ("r-tidyselect" ,r-tidyselect)
        ("r-vctrs" ,r-vctrs)))
     (home-page "https://haven.tidyverse.org")
-    (synopsis "Import and Export 'SPSS', 'Stata' and 'SAS' Files")
+    (synopsis "Import and export SPSS, Stata and SAS files")
     (description
-     "This package lets you mport foreign statistical formats into R via the
-embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
+     "This package lets you import foreign statistical formats into R via the
+@url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
     (license license:expat)))
 
 (define-public r-amap
