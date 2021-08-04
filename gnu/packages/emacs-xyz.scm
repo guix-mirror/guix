@@ -20939,28 +20939,26 @@ server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
 
 (define-public emacs-so-long
-  (let ((commit "cfae473b1bf65f78ddb015159e667ec0103d881c")
-        (revision "2"))
-    (package
-      (name "emacs-so-long")
-      (version (git-version "1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.savannah.gnu.org/git/so-long.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0g943n5cl9lz5s7hszg6yvp10xd1xvd8mfgxyg0yckmp8fqkswin"))))
-      (build-system emacs-build-system)
-      (home-page "https://www.emacswiki.org/emacs/SoLong")
-      (synopsis "Improve performance in files with long lines")
-      (description "This package improves the performance of Emacs when
+  (package
+    (name "emacs-so-long")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.savannah.gnu.org/git/so-long")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d886fgsbly7wpm6ppll45yq3y87a27wy5c6m0gqxq5jb4q0q7d2"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/SoLong")
+    (synopsis "Improve performance in files with long lines")
+    (description "This package improves the performance of Emacs when
 viewing files with long lines.  It is included as standard with Emacs 27 or
 later.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-github-review
   (let ((commit "a13a3b4f1b6114a32af843971a145ab880f51232")
