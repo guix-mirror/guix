@@ -55693,6 +55693,29 @@ serialization.")
      "Contains function definitions for the Windows API library ws2_32.")
     (license license:expat)))
 
+(define-public rust-wyhash-0.5
+  (package
+    (name "rust-wyhash")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wyhash" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "15f26hvx6nyp4d6iswha7rm3psidxa2k2iab1f1aqgsyq9iy3xms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.6))))
+    (home-page "https://github.com/eldruin/wyhash-rs")
+    (synopsis "Rust implementation of the WyHash algorithm")
+    (description
+     "This package provides a Rust implementation of the WyHash fast portable
+non-cryptographic hashing algorithm and random number generator.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wyz-0.2
   (package
     (name "rust-wyz")
