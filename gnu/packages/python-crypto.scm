@@ -257,9 +257,6 @@ extension for low level cryptography (PyCrypto), Paramiko itself is a pure
 Python interface around SSH networking concepts.")
     (license license:lgpl2.1+)))
 
-(define-public python2-paramiko
-  (package-with-python2 python-paramiko))
-
 (define-public python-ecdsa
   (package
     (name "python-ecdsa")
