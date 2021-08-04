@@ -88,10 +88,8 @@
        "ftp://ftp.ring.gr.jp/pub/net/gnupg/"
        "ftp://ftp.gnupg.org/gcrypt/")
       (gnome
-       "http://ftp.belnet.be/ftp.gnome.org/"
-       "http://ftp.linux.org.uk/mirrors/ftp.gnome.org/"
-       "http://ftp.gnome.org/pub/GNOME/"
        "https://download.gnome.org/"
+       "http://ftp.gnome.org/pub/GNOME/"
        "http://mirror.yandex.ru/mirrors/ftp.gnome.org/")
       (hackage
        "http://hackage.haskell.org/")
