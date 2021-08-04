@@ -23,7 +23,7 @@
 
 # If adding a language, update the following variables, and info_TEXINFOS.
 MANUAL_LANGUAGES = de es fa fr it ko pt_BR ru sk zh_CN
-COOKBOOK_LANGUAGES = de fa fr ko zh_Hans
+COOKBOOK_LANGUAGES = de fa fr ko ru sk zh_Hans
 
 # Arg1: A list of languages codes.
 # Arg2: The file name stem.
@@ -47,6 +47,8 @@ info_TEXINFOS = %D%/guix.texi			\
   %D%/guix-cookbook.fa.texi			\
   %D%/guix-cookbook.fr.texi			\
   %D%/guix-cookbook.ko.texi			\
+  %D%/guix-cookbook.ru.texi			\
+  %D%/guix-cookbook.sk.texi			\
   %D%/guix-cookbook.zh_Hans.texi
 
 %C%_guix_TEXINFOS = \
