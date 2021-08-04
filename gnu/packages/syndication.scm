@@ -475,9 +475,10 @@ a simple interface that makes it easy to organize and browse feeds.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest"))))))
+             (when tests?
+               (invoke "pytest")))))))
     (inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-decorator" ,python-decorator)
