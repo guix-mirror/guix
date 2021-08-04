@@ -2638,15 +2638,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
                       (setenv "USE_SYSTEM_LIBS" "1")
 
                       ;; XXX: Disable that for simplicity for now.
-                      (setenv "USE_FBGEMM" "0")
-
-                      ;; Set 'OUT/lib' rather than '$ORIGIN' as the RUNPATH on
-                      ;; binaries that go to 'lib/python3.8/torch/bin' & co.
-                      #;(substitute* "cmake/Dependencies.cmake"
-                        (("^set\\(CMAKE_INSTALL_RPATH .*")
-                         (string-append "set(CMAKE_INSTALL_RPATH \""
-                                        (assoc-ref outputs "out")
-                                        "/lib\")\n")))))
+                      (setenv "USE_FBGEMM" "0")))
                   (add-before 'build 'make-things-writable
                     (lambda _
                       ;; The 'build_caffe2' function in
