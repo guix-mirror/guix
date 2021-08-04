@@ -13661,3 +13661,44 @@ starting site, start codon, stop codon and transcription ending site.")
      "This package provides flexible, quantitative, and integrative genomic
 visualizations for publication-quality multi-panel figures.")
     (license license:gpl2+)))
+
+(define-public r-tximeta
+  (package
+    (name "r-tximeta")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "tximeta" version))
+       (sha256
+        (base32
+         "0ipgpcl93cac4qff6lp9x2l3gav5kb1x1d56g32h09hlm797rvvh"))))
+    (properties `((upstream-name . "tximeta")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-biostrings" ,r-biostrings)
+       ("r-ensembldb" ,r-ensembldb)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tximport" ,r-tximport)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mikelove/tximeta")
+    (synopsis "Transcript quantification import with automatic metadata")
+    (description
+     "This package implements transcript quantification import from Salmon and
+alevin with automatic attachment of transcript ranges and release information,
+and other associated metadata.  De novo transcriptomes can be linked to the
+appropriate sources with linkedTxomes and shared for computational
+reproducibility.")
+    (license license:gpl2)))
