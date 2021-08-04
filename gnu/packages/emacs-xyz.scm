@@ -138,6 +138,7 @@
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages chez)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
   #:use-module (gnu packages cpp)
@@ -406,6 +407,49 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
     (description
      "This package adds support for the Racket implementation to Geiser,
 a generic Scheme interaction mode for the GNU Emacs editor.")
+    (license license:bsd-3)))
+
+(define-public emacs-geiser-chez
+  (package
+    (name "emacs-geiser-chez")
+    (version "0.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/emacs-geiser/chez")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cc1z5z5cpvxa5f3n8kvms0wxlybzcg4l1bh3rwv1l1sb0lk1xzx"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^src/" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'make-autoloads 'patch-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (string-append
+                           (elpa-directory (assoc-ref outputs "out"))
+                           "/geiser-chez-autoloads.el")
+               ;; Activating implementations fails when Geiser is not yet
+               ;; loaded, so let's defer that until it is.
+               ;; See <https://gitlab.com/emacs-geiser/chez/-/issues/7>.
+               (("\\(geiser-activate-implementation .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")"))
+               (("\\(geiser-implementation-extension .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")"))))))))
+    (inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (propagated-inputs
+     `(("emacs-geiser" ,emacs-geiser)))
+    (home-page "https://nongnu.org/geiser/")
+    (synopsis "Support for Chez Scheme in Geiser")
+    (description
+     "This package adds support for using Chez Scheme in Emacs with Geiser.")
     (license license:bsd-3)))
 
 (define-public emacs-vc-hgcmd
