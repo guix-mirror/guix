@@ -6611,38 +6611,6 @@ file links.")
                    license:psfl               ; linkcheck/gzip2.py
                    license:expat))))          ; linkcheck/mem.py
 
-(define-public cadaver
-  (package
-    (name "cadaver")
-    (version "0.23.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://www.webdav.org/cadaver/"
-                           name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1jizq69ifrjbjvz5y79wh1ny94gsdby4gdxwjad4bfih6a5fck7x"))))
-    (build-system gnu-build-system)
-    ;; TODO: Unbundle libneon and make build succeed with new neon.
-    (arguments
-     `(#:configure-flags (list "--with-ssl=openssl")
-       #:tests? #f)) ;No tests included
-    (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
-    (inputs
-     `(("expat" ,expat)
-       ("openssl" ,openssl-1.0)))
-    (home-page "http://www.webdav.org/cadaver/")
-    (synopsis "Command-line WebDAV client")
-    (description
-     "Cadaver is a command-line WebDAV client for Unix.  It supports
-file upload, download, on-screen display, namespace operations (move/copy),
-collection creation and deletion, and locking operations.")
-    (license license:gpl2)))
-
 (define-public castor
   (package
     (name "castor")
