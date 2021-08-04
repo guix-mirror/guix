@@ -18585,8 +18585,44 @@ getters and setters on fields.")
      `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1))))))
 
+(define-public rust-gfa-0.10
+  (package
+    (name "rust-gfa")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gfa" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hadm6vfjwyqw41bqci18wb4wv80rydmrag7a5c02pdp1gid14fw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-bstr" ,rust-bstr-0.2)
+        ("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/chfi/rs-gfa")
+    (synopsis "Library for graphs in the GFA (Graphical Fragment Assembly) format")
+    (description
+     "This package provides a library for working with graphs in the
+@acronym{GFA, Graphical Fragment Assembly} format.")
+    (license license:expat)))
+
 (define-public rust-gfa-0.6
   (package
+    (inherit rust-gfa-0.10)
     (name "rust-gfa")
     (version "0.6.2")
     (source
@@ -18598,7 +18634,6 @@ getters and setters on fields.")
         (sha256
          (base32
           "0ghmy4r0324s6vvmj9nmh326346nkwm7nybnpcpswnjvf02b85gw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
@@ -18608,13 +18643,7 @@ getters and setters on fields.")
         ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-criterion" ,rust-criterion-0.3))))
-    (home-page "https://github.com/chfi/rs-gfa")
-    (synopsis "Library for graphs in the GFA (Graphical Fragment Assembly) format")
-    (description
-     "This package provides a library for working with graphs in the
-@acronym{GFA, Graphical Fragment Assembly} format.")
-    (license license:expat)))
+       (("rust-criterion" ,rust-criterion-0.3))))))
 
 (define-public rust-ghash-0.3
   (package
