@@ -1,0 +1,25 @@
+Libraries (such as 'libtorch_cpu.so') and executables (such as 'torch_shm_manager')
+get installed, quite surprisingly, to 'lib/python3.8/site-packages/{bin,lib}'.
+Make sure RUNPATH matches that.
+
+--- a/cmake/Dependencies.cmake
++++ b/cmake/Dependencies.cmake
+@@ -4,7 +4,7 @@ if(APPLE)
+   set(CMAKE_MACOSX_RPATH ON)
+   set(_rpath_portable_origin "@loader_path")
+ else()
+-  set(_rpath_portable_origin $ORIGIN)
++  set(_rpath_portable_origin $ORIGIN/../lib)
+ endif(APPLE)
+ # Use separate rpaths during build and install phases
+ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+--- a/caffe2/CMakeLists.txt
++++ b/caffe2/CMakeLists.txt
+@@ -1797,5 +1797,5 @@ if(BUILD_PYTHON)
+   if(${BUILDING_WITH_TORCH_LIBS})
+     # site-packages/caffe2/python/caffe2_pybind11_state
+     # site-packages/torch/lib
+-    set(caffe2_pybind11_rpath "${_rpath_portable_origin}/../../torch/lib")
++    set(caffe2_pybind11_rpath $ORIGIN/../../torch/lib)
+   endif(${BUILDING_WITH_TORCH_LIBS})

@@ -65,10 +65,12 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages parallel)
@@ -2546,7 +2548,7 @@ general non-linear dimension reduction.")
     (package
       (name "xnnpack")
       (version (git-version version revision commit))
-      (home-page "https://github.com/google/XNNPACK")
+      (home-page "https://github.com/google/XNNPACK") ;fork of QNNPACK
       (source (origin
                 (method git-fetch)
                 (uri (git-reference (url home-page) (commit commit)))
@@ -2586,3 +2588,142 @@ high-level machine learning frameworks, such as TensorFlow Lite,
 TensorFlow.js, PyTorch, and MediaPipe.")
       (license license:bsd-3))))
 
+(define-public python-pytorch
+  (package
+    (name "python-pytorch")
+    (version "1.9.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pytorch/pytorch")
+                    (commit (string-append "v" version))
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0cznsh68hwk5761gv7iijb4g6jgjpvs3bbixwpzzmkbkbn2q96c1"))
+              (patches (search-patches "python-pytorch-system-libraries.patch"
+                                       "python-pytorch-runpath.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; XXX: Let's be clear: this package is a bundling fest.  We
+                  ;; delete as much as we can, but there's still a lot left.
+                  (for-each (lambda (directory)
+                              (delete-file-recursively
+                               (string-append "third_party/" directory)))
+                            '("benchmark" "cpuinfo" "eigen"
+
+                              ;; FIXME: QNNPACK (of which XNNPACK is a fork)
+                              ;; needs these.
+                              ;; "FP16" "FXdiv" "gemmlowp" "psimd"
+
+                              "gloo" "googletest" "ios-cmake"
+                              "onnx" "protobuf" "pthreadpool"
+                              "pybind11" "python-enum" "python-peachpy"
+                              "python-six" "tbb" "XNNPACK" "zstd"))
+
+                  ;; Adjust references to the onnx-optimizer headers.
+                  (substitute* "caffe2/onnx/backend.cc"
+                    (("onnx/optimizer/")
+                     "onnxoptimizer/"))))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'use-system-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Tell 'setup.py' to let 'CMakeLists.txt' know that we
+                      ;; want to use "system libraries" instead of the bundled
+                      ;; ones.
+                      (setenv "USE_SYSTEM_LIBS" "1")
+
+                      ;; XXX: Disable that for simplicity for now.
+                      (setenv "USE_FBGEMM" "0")
+
+                      ;; Set 'OUT/lib' rather than '$ORIGIN' as the RUNPATH on
+                      ;; binaries that go to 'lib/python3.8/torch/bin' & co.
+                      #;(substitute* "cmake/Dependencies.cmake"
+                        (("^set\\(CMAKE_INSTALL_RPATH .*")
+                         (string-append "set(CMAKE_INSTALL_RPATH \""
+                                        (assoc-ref outputs "out")
+                                        "/lib\")\n")))))
+                  (add-before 'build 'make-things-writable
+                    (lambda _
+                      ;; The 'build_caffe2' function in
+                      ;; 'tools/build_pytorch_libs.py', called from the
+                      ;; top-level 'setup.py', needs write access to this
+                      ;; directory.
+                      (for-each make-file-writable
+                                (find-files "caffe2/proto" "."
+                                            #:directories? #t))))
+                  (replace 'check
+                    (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+                      ;; Run the test suite following the instructions in
+                      ;; 'CONTRIBUTING.md'.  XXX: Unfortunately this doesn't
+                      ;; work, unless you set PYTHONPATH presumably.
+                      (when tests?
+                        (let ((python-site (site-packages inputs outputs)))
+                          (setenv "PYTHONPATH"
+                                  (string-append python-site ":"
+                                                 (getenv "PYTHONPATH")))
+                          (invoke "python" "test/run_test.py")))))
+                  (add-after 'install 'remove-test-executables
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Remove test executables, but keep other executables
+                      ;; such as 'torch_shm_manager' and and .so files such as
+                      ;; 'libtorch_global_deps.so'.
+                      (let ((python-site (site-packages inputs outputs)))
+                        (for-each delete-file
+                                  (find-files python-site
+                                              "(^test_cpp_rpc|_test)$"))))))
+
+       ;; XXX: Tests attempt to download data such as
+       ;; <https://raw.githubusercontent.com/pytorch/test-infra/master/stats/slow-tests.json>.
+       #:tests? #f))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("ninja" ,ninja)))
+    (inputs
+     `(("eigen" ,eigen)
+       ;; ("fmt" ,fmt)
+       ("fp16" ,fp16)
+       ("gemmlowp" ,gemmlowp)
+       ("googletest" ,googletest)
+       ("googlebenchmark" ,googlebenchmark)
+       ("gloo" ,gloo)
+       ("openblas" ,openblas)
+       ("openmpi" ,openmpi)
+       ("pthreadpool" ,pthreadpool)
+       ("protobuf" ,protobuf)
+       ("pybind11" ,pybind11)
+       ("sleef" ,sleef)
+       ("xnnpack" ,xnnpack)
+       ("zstd" ,zstd)))
+    (propagated-inputs
+     `(("python-astunparse" ,python-astunparse)
+       ("python-numpy" ,python-numpy)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-cffi" ,python-cffi)
+       ("python-peachpy" ,python-peachpy)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-future" ,python-future)
+       ("python-six" ,python-six)
+       ("python-requests" ,python-requests)
+       ("onnx" ,onnx)                       ;propagated for its Python modules
+       ("onnx-optimizer" ,onnx-optimizer)
+       ("cpuinfo" ,cpuinfo)))
+    (home-page "https://pytorch.org/")
+    (synopsis "Python library for tensor computation and deep neural networks")
+    (description
+     "PyTorch is a Python package that provides two high-level features:
+
+@itemize
+@item tensor computation (like NumPy) with strong GPU acceleration;
+@item deep neural networks (DNNs) built on a tape-based autograd system.
+@end itemize
+
+You can reuse Python packages such as NumPy, SciPy, and Cython to extend
+PyTorch when needed.
+
+Note: currently this package does not provide GPU support.")
+    (license license:bsd-3)))
