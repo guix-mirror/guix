@@ -16982,14 +16982,14 @@ package.")
 (define-public r-ggplotify
   (package
     (name "r-ggplotify")
-    (version "0.0.7")
+    (version "0.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplotify" version))
        (sha256
         (base32
-         "1vx2fg91ivssrxr4kzs9737hr8bsfs0q5pvd7lck7ffjpkjbclhh"))))
+         "08c9vxm8pg6l5g3r7wsfgzsq00xdrc6v4xnn7pd3qcyw7cc8s969"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
