@@ -8368,19 +8368,13 @@ your score gets higher, you level up and the blocks fall faster.")
        #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-resource-locations
+         (add-after 'unpack 'fix-paths
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Look for resources in the store directory.
              (substitute* "source/Files.cpp"
-               (("/usr/local/")
-                (string-append (assoc-ref outputs "out") "/")))
-             #t))
-         (add-after 'unpack 'patch-scons
-           (lambda _
+               (("/usr/local") (assoc-ref outputs "out")))
+             ;; Install game binary into %out/bin.
              (substitute* "SConstruct"
-               ;; Keep environmental variables
-               (("Environment\\(\\)")
-                "Environment(ENV = os.environ)")
-               ;; Install into %out/bin
                (("games\"") "bin\""))
              #t))
          (add-before 'build 'use-gcc-ar
