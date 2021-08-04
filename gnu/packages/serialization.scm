@@ -584,22 +584,28 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
 (define-public flatbuffers
   (package
     (name "flatbuffers")
-    (version "1.10.0")
+    (version "2.0.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/google/flatbuffers/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/google/flatbuffers")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0z4swldxs0s31hnkqdhsbfmc8vx3p7zsvmqaw4l31r2iikdy651p"))))
+          "1zbf6bdpps8369r1ql00irxrp58jnalycc8jcapb8iqg654vlfz8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"
        #:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib"))))
+       (list "-DFLATBUFFERS_BUILD_SHAREDLIB=ON"
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-writable
+           (lambda _ (for-each make-file-writable (find-files ".")))))))
     (home-page "https://google.github.io/flatbuffers/")
     (synopsis "Memory-efficient serialization library")
     (description "FlatBuffers is a cross-platform serialization library for C++,
