@@ -34863,6 +34863,27 @@ they were parsed from")
 implementation.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-quick-csv-0.1
+  (package
+    (name "rust-quick-csv")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quick-csv" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "131k8zzlplk2h62wz813jbvm0sk7v3mixwhhq34y9lmp3mqbgx7d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))
+    (home-page "https://github.com/tafia/quick-csv")
+    (synopsis "Quick csv reader and decoder")
+    (description "This package provides a quick csv reader and decoder in Rust.")
+    (license license:expat)))
+
 (define-public rust-quick-error-1
   (package
     (name "rust-quick-error")
