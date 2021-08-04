@@ -6153,3 +6153,22 @@ your code non-blocking and speedy.")
      "Socks is a library providing core proxy (SOCKS4, SOCKS5, HTTP tunneling)
  functionality.")
     (license license:asl2.0)))
+
+(define-public python-azure-nspkg
+  (package
+    (name "python-azure-nspkg")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "azure-nspkg" version ".zip"))
+       (sha256
+        (base32
+         "1l4xwdh0fcnvrv0mzig4g2kgqkfbsy64zjm1ggc6grk3mykcxlz7"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://github.com/Azure/azure-sdk-for-python")
+    (synopsis "Azure namespace internals")
+    (description
+     "This package is an internal Azure namespace package.")
+    (license license:expat)))
