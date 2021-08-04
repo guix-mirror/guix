@@ -4515,15 +4515,16 @@ appropriate console.")
 (define-public emacs-znc
   (package
     (name "emacs-znc")
-    (version "0.0.2")
+    (version "0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://marmalade-repo.org/packages/znc-"
-                           version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sshirokov/ZNC.el")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1d8lqvybgyazin5z0g1c4l3rg1vzrrvf0saqs53jr1zcdg0lianh"))))
+        (base32 "1ran86ycnays9s23wk3iczqqgnpbyx0lijiarx65am3jc1yzg5ia"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/sshirokov/ZNC.el")
     (synopsis "Make ERC and ZNC get along better")
