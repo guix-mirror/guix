@@ -56,6 +56,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
@@ -2100,6 +2101,175 @@ computation and includes high level Python APIs, including both a sequential
 API for beginners that allows users to build models quickly by plugging
 together building blocks and a subclassing API with an imperative style for
 advanced research.")
+    (license license:asl2.0)))
+
+(define-public tensorflow-lite
+  (package
+    (name "tensorflow-lite")
+    (version "2.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tensorflow/tensorflow")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1jdw2i1rq06zqd6aabh7bbm0avsg4pygnfmd7gviv0blhih9054l"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #false                  ; no "check" target
+       #:build-type "Release"
+       #:configure-flags
+       (list
+        "-DTFLITE_ENABLE_GPU=OFF"
+        "-DTFLITE_ENABLE_RUY=OFF"
+
+        ;; TODO: The build system attempts to build xnnpack from source.  We
+        ;; would like to use our xnnpack package here, but this requires more
+        ;; work.
+        "-DTFLITE_ENABLE_XNNPACK=OFF"
+
+        ;; Pretend we've already fetched abseil.  We won't actually build it
+        ;; but use the existing package.
+        "-Dabseil-cpp_POPULATED=TRUE"
+
+        ;; Don't fetch the sources.  We have already built flatbuffers.
+        "-Dflatbuffers_POPULATED=TRUE"
+
+        "-DFFT2D_SOURCE_DIR=/tmp/fft2d"
+        "-Dneon2sse_SOURCE_DIR=/tmp/neon2sse"
+        "-Dneon2sse_BINARY_DIR=/tmp/neon2sse-bin"
+        "-DFARMHASH_SOURCE_DIR=/tmp/farmhash"
+        "-Dgemmlowp_SOURCE_DIR=/tmp/gemmlowp"
+        (string-append "-DRUY_SOURCE_DIR="
+                       (assoc-ref %build-inputs "ruy-src")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "tensorflow/lite")))
+         (add-after 'chdir 'copy-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Use external cmake finders instead of these stubs that won't
+             ;; find anything but the bundled sources.
+             (delete-file "tools/cmake/modules/Findabsl.cmake")
+             (delete-file "tools/cmake/modules/Findeigen.cmake")
+
+             (substitute* "CMakeLists.txt"
+               (("find_package\\(eigen REQUIRED")
+                "find_package(eigen REQUIRED NAMES Eigen3"))
+             (substitute* "tools/cmake/modules/Findflatbuffers.cmake"
+               (("get_target_property.*")
+                (format #false "set(FLATBUFFERS_INCLUDE_DIRS ~a/include)\n"
+                        (assoc-ref inputs "flatbuffers"))))
+
+             ;; Don't fetch source code; we already have everything we need.
+             (substitute* '("tools/cmake/modules/fft2d.cmake"
+                            "tools/cmake/modules/ruy.cmake"
+                            "tools/cmake/modules/farmhash.cmake"
+                            "tools/cmake/modules/neon2sse.cmake"
+                            "tools/cmake/modules/gemmlowp.cmake")
+               (("OverridableFetchContent_Populate.*") ""))
+
+             (mkdir-p "/tmp/farmhash")
+             (with-directory-excursion "/tmp/farmhash"
+               (invoke "tar" "--strip-components=1"
+                       "-xf" (assoc-ref inputs "farmhash-src")))
+
+             (mkdir-p "/tmp/fft2d")
+             (with-directory-excursion "/tmp/fft2d"
+               (invoke "tar" "--strip-components=1"
+                       "-xf" (assoc-ref inputs "fft2d-src")))
+
+             (copy-recursively (assoc-ref inputs "neon2sse-src")
+                               "/tmp/neon2sse/")
+             (copy-recursively (assoc-ref inputs "gemmlowp-src")
+                               "/tmp/gemmlowp/")))
+         (add-after 'copy-sources 'prepare-shared-library-build
+           (lambda _ (chdir "c")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (headers (string-append out "/include/tensorflow/lite")))
+               (install-file "../build/libtensorflowlite_c.so" lib)
+               (with-directory-excursion ".."
+                 (for-each
+                  (lambda (file)
+                    (let ((target-dir (string-append headers "/" (dirname file))))
+                      (install-file file target-dir)))
+                  (find-files "." "\\.h$")))))))))
+    (inputs
+     `(("abseil-cpp" ,abseil-cpp)
+       ("eigen" ,eigen-for-tensorflow-lite)
+       ("flatbuffers" ,flatbuffers)
+       ("python" ,python)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gemmlowp-src"
+        ;; The commit hash is taken from
+        ;; "tensorflow/lite/tools/cmake/modules/gemmlowp.cmake".
+        ,(let ((commit "fda83bdc38b118cc6b56753bd540caa49e570745"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/gemmlowp")
+                   (commit commit)))
+             (file-name (git-file-name "gemmlowp" (string-take commit 8)))
+             (sha256
+              (base32
+               "1sbp8kmr2azwlvfbzryy1frxi99jhsh1nc93bdbxdf8zdgpv0kxl")))))
+       ("neon2sse-src"
+        ,(let ((commit "a1652fd5253afbf3e39357b012974f93511f6108"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/intel/ARM_NEON_2_x86_SSE")
+                   (commit commit)))
+             (file-name (git-file-name "neon2sse" (string-take commit 8)))
+             (sha256
+              (base32
+               "1q8gkxag9wlnwdwad2pclsrkwzrdjy94hyrkayrsvxyj7szb5y8i")))))
+       ("farmhash-src"
+        ,(let ((commit "816a4ae622e964763ca0862d9dbd19324a1eaf45"))
+           (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://mirror.bazel.build/github.com/google/farmhash/archive/"
+                   commit ".tar.gz"))
+             (file-name (git-file-name "farmhash" (string-take commit 8)))
+             (sha256
+              (base32
+               "185b2xdxl4d4cnsnv6abg8s22gxvx8673jq2yaq85bz4cdy58q35")))))
+       ("fft2d-src"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://storage.googleapis.com/"
+                               "mirror.tensorflow.org/"
+                               "www.kurims.kyoto-u.ac.jp/~ooura/fft2d.tgz"))
+           (file-name "fft2d.tar.gz")
+           (sha256
+            (base32
+             "1jfflzi74fag9z4qmgwvp90aif4dpbr1657izmxlgvf4hy8fk9xd"))))
+       ("ruy-src"
+        ,(let ((commit "9c56af3fce210a8a103eda19bd6f47c08a9e3d90"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/ruy")
+                   (commit commit)
+                   (recursive? #true)))
+             (file-name (git-file-name "ruy" (string-take commit 8)))
+             (sha256
+              (base32
+               "1cfd5gk6kaj8kbl3h98gx1ap8czd59y6p8qq8nr28fklpyzf5cis")))))))
+    (home-page "https://tensorflow.org")
+    (synopsis "Machine learning framework")
+    (description
+     "TensorFlow is a flexible platform for building and training machine
+learning models.  This package provides the \"lite\" variant for mobile
+devices.")
     (license license:asl2.0)))
 
 (define-public python-iml
