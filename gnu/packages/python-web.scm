@@ -6172,3 +6172,24 @@ your code non-blocking and speedy.")
     (description
      "This package is an internal Azure namespace package.")
     (license license:expat)))
+
+(define-public python-azure-storage-nspkg
+  (package
+    (name "python-azure-storage-nspkg")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "azure-storage-nspkg" version))
+       (sha256
+        (base32
+         "049qcmgshz7dj9yaqma0fwcgbxwddgwyfcw4gmv45xfmaa3bwfvg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-azure-nspkg" ,python-azure-nspkg)))
+    (home-page "https://github.com/Azure/azure-storage-python")
+    (synopsis "Microsoft Azure Storage Namespace package")
+    (description
+     "This project provides a client library in Python that makes it easy to
+communicate with Microsoft Azure Storage services.")
+    (license license:expat)))
