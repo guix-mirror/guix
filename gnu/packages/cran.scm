@@ -25808,14 +25808,14 @@ simple interface for all functions.")
 (define-public r-iml
   (package
     (name "r-iml")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "iml" version))
        (sha256
         (base32
-         "0xm3q42qahq798ilgg050df0mahhbdfd3fx3i7cpx606h38si0x7"))))
+         "1wz6xqhvqkzj723nw7qrlwb1171wvvpxhv3pa8cq7vcbkiflq37r"))))
     (properties `((upstream-name . "iml")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25825,7 +25825,7 @@ simple interface for all functions.")
        ("r-future" ,r-future)
        ("r-future-apply" ,r-future-apply)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)
+       ("r-keras" ,r-keras)
        ("r-metrics" ,r-metrics)
        ("r-prediction" ,r-prediction)
        ("r-r6" ,r-r6)))
