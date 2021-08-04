@@ -5715,6 +5715,37 @@ programs.")
         ("rust-parking" ,rust-parking-1)
         ("rust-waker-fn" ,rust-waker-fn-1))))))
 
+(define-public rust-boomphf-0.5
+  (package
+    (name "rust-boomphf")
+    (version "0.5.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "boomphf" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0braniw72g9yq5006sfgc1g8d4317bb524c694jw6nggizrvg3sf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-wyhash" ,rust-wyhash-0.5))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-1))))
+    (home-page "https://github.com/10XGenomics/rust-boomphf")
+    (synopsis "Scalable and Efficient Minimal Perfect Hash Functions")
+    (description "This package provides a Rust implementation of
+@url{https://arxiv.org/abs/1702.03154, fast and scalable minimal perfect hashing
+for massive key sets}.  It generates an @acronym{MPHF, minimal perfect hash
+functions} for a collection of hashable objects.")
+    (license license:expat)))
+
 (define-public rust-boxfnonce-0.1
   (package
     (name "rust-boxfnonce")
