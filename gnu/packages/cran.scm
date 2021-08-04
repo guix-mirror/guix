@@ -30088,3 +30088,37 @@ object to and from disk.")
      "This package provides an R interface to Geometry Engine (GEOS) using the
 C API for topology operations on geometries.")
     (license license:gpl2+)))
+
+(define-public r-tfruns
+  (package
+    (name "r-tfruns")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tfruns" version))
+       (sha256
+        (base32
+         "04lfckg1if3kfwcl4s4fcc9aw04crwk4m1qr55ag22j2x2jlb2l9"))))
+    (properties `((upstream-name . "tfruns")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-config" ,r-config)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rlang" ,r-rlang)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-whisker" ,r-whisker)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/rstudio/tfruns")
+    (synopsis "Training run tools for TensorFlow")
+    (description
+     "Create and manage unique directories for each TensorFlow training run.
+This package provides a unique, time stamped directory for each run along with
+functions to retrieve the directory of the latest run or latest several
+runs.")
+    (license license:asl2.0)))
