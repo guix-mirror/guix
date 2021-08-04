@@ -20,13 +20,26 @@
 import os
 import sys
 
-python_root = os.path.realpath(sys.executable).split('/bin/')[0]
-major_minor = '{}.{}'.format(sys.version_info[0], sys.version_info[1])
-site_packages_prefix = 'lib/python' + major_minor + '/site-packages'
-python_site = python_root + '/' + site_packages_prefix
+# Commentary:
+#
+# Site-specific customization for Guix.
+#
+# The program below honors the GUIX_PYTHONPATH environment variable to
+# discover Python packages.  File names appearing in this variable that match
+# a predefined versioned installation prefix are added to the sys.path.  To be
+# considered, a Python package must be installed under the
+# 'lib/pythonX.Y/site-packages' directory, where X and Y are the major and
+# minor version numbers of the Python interpreter.
+#
+# Code:
+
+major_minor = '{}.{}'.format(*sys.version_info)
+site_packages_prefix = os.path.join(
+    'lib', 'python' + major_minor, 'site-packages')
+python_site = os.path.join(sys.prefix, site_packages_prefix)
 
 try:
-    all_sites_raw = os.environ['GUIX_PYTHONPATH'].split(':')
+    all_sites_raw = os.environ['GUIX_PYTHONPATH'].split(os.path.pathsep)
 except KeyError:
     all_sites_raw = []
 # Normalize paths, otherwise a trailing slash would cause it to not match.
@@ -35,7 +48,8 @@ matching_sites = [p for p in all_sites_norm
                   if p.endswith(site_packages_prefix)]
 
 # Insert sites matching the current version into sys.path, right before
-# Python's own site.
+# Python's own site.  This way, the user can override the libraries provided
+# by Python itself.
 sys_path_absolute = [os.path.realpath(p) for p in sys.path]
 index = sys_path_absolute.index(python_site)
-sys.path = sys.path[:index] + matching_sites + sys.path[index:]
+sys.path[index:index] = matching_sites
