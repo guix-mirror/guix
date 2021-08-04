@@ -659,12 +659,7 @@ detection, and lossless compression.")
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
-                       (list "blake2" "lz4" "msgpack" "zstd")))
-           ;; Purge some msgpack references from setup.py or the resulting
-           ;; sources will be unbuildable.
-           (substitute* "setup.py"
-             ((".*Extension\\('borg\\.algorithms\\.msgpack\\..*") "")
-             (("msgpack_packer_source, msgpack_unpacker_source") ""))
+                       (list "blake2" "lz4" "zstd")))
            #t))))
     (build-system python-build-system)
     (arguments
@@ -688,12 +683,6 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
-         (add-after 'unpack 'use-system-msgpack
-           (lambda _
-             (substitute* "src/borg/helpers.py"
-               (("prefer_system_msgpack = False")
-                "prefer_system_msgpack = True"))
-             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
@@ -757,10 +746,6 @@ detection, and lossless compression.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-llfuse" ,python-llfuse)
-       ;; The Python msgpack library changed its name so Borg requires this
-       ;; transitional package for now:
-       ;; <https://bugs.gnu.org/30662>
-       ("python-msgpack" ,python-msgpack-transitional)
        ("zstd" ,zstd "lib")))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it
