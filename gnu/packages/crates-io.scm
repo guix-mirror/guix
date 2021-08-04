@@ -25871,7 +25871,7 @@ parallelize and optimize.")
 (define-public rust-md-5-0.9
   (package
     (name "rust-md-5")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
       (origin
         (method url-fetch)
@@ -25880,14 +25880,14 @@ parallelize and optimize.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "14x7yxfi4pk4qy3zmn9dj69yc18fg3cyind346kribjd93077qij"))))
+          "059ajjacz1q3cms7vl6cvhdqs4qdw2nnwj9dq99ryzv0p6djfnkv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-block-buffer" ,rust-block-buffer-0.8)
+       (("rust-block-buffer" ,rust-block-buffer-0.9)
         ("rust-digest" ,rust-digest-0.9)
         ("rust-md5-asm" ,rust-md5-asm-0.4)
-        ("rust-opaque-debug" ,rust-opaque-debug-0.2))
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.9)
         ("rust-hex-literal" ,rust-hex-literal-0.2))))
