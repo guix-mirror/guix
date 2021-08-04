@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2114,6 +2115,56 @@ added.  The permanent goal is to create the open source Quake 3 distribution
 upon which people base their games, ports to new platforms, and other
 projects.")
       (license license:gpl2))))
+
+(define-public instead
+  (package
+    (name "instead")
+    (version "3.3.5")
+    (build-system cmake-build-system)
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/instead-hub/instead")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02j8cw623j51qmr4991i5hsbrzmnp0qfzds8m6nwwr15sjv3hv1g"))
+       (patches
+        (search-patches
+         "instead-use-games-path.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/zlib")))))
+    (arguments
+     '(#:configure-flags
+       (list (string-append
+              "-DLUA_INCLUDE_DIR="
+              (assoc-ref %build-inputs "luajit") "/include/luajit-2.1/")
+             "-DWITH_LUAJIT=1"
+             "-DWITH_GTK3=1")
+       #:tests? #f))
+    (inputs
+     `(("gtk+",gtk+)
+       ("lua" ,lua)
+       ("luajit" ,luajit)
+       ("pkg-config" ,pkg-config)
+       ("sdl2-images" ,sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("zlib" ,zlib)))
+    (home-page "https://instead3.syscall.ru/")
+    (synopsis "Text adventure interpreter")
+    (description "The STEAD (Simple TExt ADventures) interpreter provides
+functionality to play games that mix elements of visual novels, interactive
+fiction and classic point-and-click adventures.")
+    (native-search-paths
+     (list (search-path-specification
+            (variable "INSTEAD_GAMES_PATH")
+            (separator #f)                        ;single entry
+            (files '("share/instead/games")))))
+    (license license:expat)))
 
 (define-public openvr
   (package

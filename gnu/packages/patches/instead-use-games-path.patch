@@ -1,0 +1,32 @@
+From 8b350daa847dd8e131d9e6b5b4434ce68a7903d0 Mon Sep 17 00:00:00 2001
+From: Dmitry Polyakov <polyakov@liltechdude.xyz>
+Date: Wed, 4 Aug 2021 15:46:33 +0500
+Subject: [PATCH] Add support for INSTEAD_GAMES_PATH
+
+In some setups, users might prefer to determine on their own the path in
+which games are located.  This patch enables them to do so by setting
+the “INSTEAD_GAMES_PATH” environmnent variable.
+---
+ src/main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/main.c b/src/main.c
+index ba0ada1d..b05497b8 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -394,6 +394,12 @@ int instead_main(int argc, char *argv[])
+ 	setdir(game_cwd);
+ 	profile_load(NULL);
+ 
++	char *gamespath_env = NULL;
++
++	if (gamespath_env = getenv("INSTEAD_GAMES_PATH"), gamespath_env != NULL) {
++	  games_sw = strdup(gamespath_env);
++	}
++
+ 	for (i = 1; i < argc; i++) {
+ 		if (lua_sw) /* during load profile */
+ 			break;
+-- 
+2.32.0
+
