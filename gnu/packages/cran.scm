@@ -10288,24 +10288,24 @@ analysis.")
 (define-public r-tab
   (package
     (name "r-tab")
-    (version "4.1.1")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tab" version))
        (sha256
         (base32
-         "0ds8n6gncidb66in7hlqkcmil5yfsf7ihqvmls789hrm2iz9xlfm"))))
+         "1kg8c1safi9klkx2mdkmsf5dn9piy4jljwd4ma7g4jz2rwl4jzhv"))))
     (properties `((upstream-name . "tab")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-gee" ,r-gee)
+       ("r-kableextra" ,r-kableextra)
        ("r-knitr" ,r-knitr)
        ("r-mass" ,r-mass)
-       ("r-survey" ,r-survey)
-       ("r-survival" ,r-survival)
-       ("r-xtable" ,r-xtable)))
+       ("r-survey" ,r-survey)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/tab/")
     (synopsis "Create summary tables for statistical reports")
     (description
