@@ -7776,6 +7776,30 @@ clauses.")
     (description "Date and time library for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-chrono-humanize-0.2
+  (package
+    (name "rust-chrono-humanize")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chrono-humanize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jvm6fcs3zvz4kcqkp9q5hjy0i2zc17194nb63ckyn0xa0cw3p9f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4))))
+    (home-page "https://gitlab.com/imp/chrono-humanize-rs")
+    (synopsis "Human-friendly time expressions")
+    (description
+     "Chrono-Humanize provides human-friendly time expressions, similar to
+Python arrow.humanize.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-chrono-tz-0.5
   (package
     (name "rust-chrono-tz")
