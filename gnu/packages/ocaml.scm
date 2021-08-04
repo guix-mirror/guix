@@ -4477,12 +4477,7 @@ than the first one.")
     `(#:phases
       (modify-phases %standard-phases
         (add-before 'build 'make-writable
-          (lambda _
-            (for-each
-              (lambda (file)
-                (chmod file #o644))
-              (find-files "." "."))
-            #t)))))
+          (lambda _ (for-each make-file-writable (find-files "." ".")))))))
    (inputs
     `(("ocaml-easy-format" ,ocaml-easy-format)))
    (native-inputs
