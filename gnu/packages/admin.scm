@@ -3425,52 +3425,6 @@ Intel DRM Driver.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
 
-(define-public fabric
-  (package
-    (name "fabric")
-    (version "1.14.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Fabric" version))
-       (sha256
-        (base32
-         "1a3ndlpdw6bhn8fcw1jgznl117a8pnr84az9rb5fwnrypf1ph2b6"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2               ; Python 2 only
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke
-              "nosetests" "-v" "tests/"
-              ;; This test hangs indefinitely when run on a single core VM
-              ;; (see GNU bug #26647 and Debian bug #850230).
-              "--exclude=test_nested_execution_with_explicit_ports"
-              ;; This test randomly fails in certain environments causing too
-              ;; much noise to be useful (see Debian bug #854686).
-              "--exclude=test_should_use_sentinel_for_tasks_that_errored"))))))
-    (native-inputs
-     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
-       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
-       ("python2-nose" ,python2-nose) ; Requires < 2.0
-       ("python2-pynacl" ,python2-pynacl)
-       ("python2-bcrypt" ,python2-bcrypt)))
-    (propagated-inputs
-     `(("python2-paramiko" ,python2-paramiko)))
-    (home-page "https://www.fabfile.org/")
-    (synopsis "Simple Pythonic remote execution and deployment tool")
-    (description
-     "Fabric is designed to upload files and run shell commands on a number of
-servers in parallel or serially.  These commands are grouped in tasks (which
-are regular Python functions) and specified in a @dfn{fabfile}.
-
-It is similar to Capistrano, except it's implemented in Python and doesn't
-expect you to be deploying Rails applications.  Fabric is a simple, Pythonic
-tool for remote execution and deployment.")
-    (license license:bsd-2)))
-
 (define-public neofetch
   (package
     (name "neofetch")
