@@ -30122,3 +30122,34 @@ This package provides a unique, time stamped directory for each run along with
 functions to retrieve the directory of the latest run or latest several
 runs.")
     (license license:asl2.0)))
+
+(define-public r-tensorflow
+  (package
+    (name "r-tensorflow")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tensorflow" version))
+       (sha256
+        (base32
+         "00g9w4xmdyjl4578kmhng58k7afjkj2vwgcq2ik8rqwljkcz5pph"))))
+    (properties `((upstream-name . "tensorflow")))
+    (build-system r-build-system)
+    (inputs `(("tensorflow" ,tensorflow)))
+    (propagated-inputs
+     `(("r-config" ,r-config)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-processx" ,r-processx)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-tfruns" ,r-tfruns)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/rstudio/tensorflow")
+    (synopsis "R interface to TensorFlow")
+    (description
+     "R interface to TensorFlow a library for numerical computation using data
+flow graphs.  Nodes in the graph represent mathematical operations, while the
+graph edges represent the multidimensional data arrays (tensors) communicated
+between them.")
+    (license license:asl2.0)))
