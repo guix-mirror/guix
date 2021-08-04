@@ -45559,6 +45559,30 @@ cryptographic implementations.")
         (base32
          "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
+(define-public rust-succinct-0.5
+  (package
+    (name "rust-succinct")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "succinct" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0654c9gq50x7djyf25zbzz3d2pc4x3z21wmjj3qbr6d9h4hbd63p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-num-traits" ,rust-num-traits-0.2))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/tov/succinct-rs")
+    (synopsis "Succinct data structures for Rust")
+    (description "This package provides succinct data structures for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-surf-2
   (package
     (name "rust-surf")
