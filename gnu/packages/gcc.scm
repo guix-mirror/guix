@@ -490,7 +490,9 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5-source-date-epoch-2.patch"
                                        "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-fix-texi2pod.patch"
-                                       "gcc-5-hurd.patch"))
+                                       "gcc-5-hurd.patch"
+                                       ;; See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86162
+                                       "gcc-5-fix-powerpc64le-build.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
     (inputs
