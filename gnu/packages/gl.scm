@@ -261,7 +261,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux"
+                 "powerpc-linux" "riscv64-linux")
              ;; Note: update the 'clang' input of mesa-opencl when bumping this.
              `(("llvm" ,llvm-11)))
             (_
@@ -273,7 +274,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("flex" ,flex)
         ("gettext" ,gettext-minimal)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux"
+                 "powerpc-linux" "riscv64-linux")
              `(("glslang" ,glslang)))
             (_
              `()))
@@ -289,7 +291,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for non-Intel architectures.
               '("-Dgallium-drivers=etnaviv,freedreno,kmsro,lima,nouveau,panfrost,r300,r600,swrast,tegra,v3d,vc4,virgl"))
-             ((or "powerpc64le-linux" "powerpc-linux")
+             ((or "powerpc64le-linux" "powerpc-linux" "riscv64-linux")
               '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,swrast,virgl"))
              (_
               '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
@@ -315,12 +317,15 @@ also known as DXTn or DXTC) for Mesa.")
               '("-Dvulkan-drivers=amd,swrast"))
              ("aarch64-linux"
               '("-Dvulkan-drivers=freedreno,amd,broadcom,swrast"))
+             ("riscv64-linux"
+              '("-Dvulkan-drivers=amd,swrast"))
              (_
               '("-Dvulkan-drivers=auto")))
 
          ;; Enable the Vulkan overlay layer on architectures using llvm.
          ,@(match (%current-system)
-             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
+             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux"
+                  "powerpc-linux" "riscv64-linux")
               '("-Dvulkan-layers=device-select,overlay"))
              (_
               '()))
@@ -334,7 +339,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "x86_64-linux" "i686-linux")
               '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
                 "-Dllvm=enabled"))      ; default is x86/x86_64 only
-             ((or "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
+             ((or "powerpc64le-linux" "aarch64-linux" "powerpc-linux" "riscv64-linux")
               '("-Ddri-drivers=nouveau,r200,r100"
                 "-Dllvm=enabled"))
              (_
@@ -359,6 +364,13 @@ also known as DXTn or DXTC) for Mesa.")
                (("if with_tests")
                 "if false"))
              ,@(match (%current-system)
+                 ("riscv64-linux"
+                  ;; According to the test logs the llvm JIT is not designed
+                  ;; for this architecture and the llvmpipe tests all segfault.
+                  ;; The same is true for mesa:gallium / osmesa-render.
+                  `((substitute* '("src/gallium/drivers/llvmpipe/meson.build"
+                                   "src/gallium/targets/osmesa/meson.build")
+                      (("if with_tests") "if false"))))
                  ("powerpc64le-linux"
                   ;; Disable some of the llvmpipe tests.
                   `((substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
