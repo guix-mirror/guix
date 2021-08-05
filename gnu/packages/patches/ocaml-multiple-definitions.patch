@@ -1,0 +1,43 @@
+Avoid multiply-defined symbols that lead to link errors such as:
+
+  gcc -O2 -fno-strict-aliasing -fwrapv -Wall -fno-tree-vrp  -g -D_FILE_OFFSET_BITS=64 -D_REENTRANT -DCAML_NAME_SPACE  -Wl,-E -o ocamlruni prims.o libcamlruni.a -lm  -ldl -lpthread 
+  ld: libcamlruni.a(backtrace.i.o):/tmp/guix-build-ocaml-4.07.1.drv-0/ocaml-4.07.1/byterun/backtrace.c:31: multiple definition of `caml_debug_info'; libcamlruni.a(backtrace_prim.i.o):/tmp/guix-build-ocaml-4.07.1.drv-0/ocaml-4.07.1/byterun/backtrace_prim.c:47: first defined here
+
+diff --git a/asmrun/startup.c b/asmrun/startup.c
+index 070f0c6..cf8a56f 100644
+--- a/asmrun/startup.c
++++ b/asmrun/startup.c
+@@ -44,7 +44,6 @@
+ #endif
+ 
+ extern int caml_parser_trace;
+-CAMLexport header_t caml_atom_table[256];
+ char * caml_code_area_start, * caml_code_area_end;
+ struct ext_table caml_code_fragments_table;
+ 
+diff --git a/byterun/backtrace.c b/byterun/backtrace.c
+index 8dfe9b7..9cc9e72 100644
+--- a/byterun/backtrace.c
++++ b/byterun/backtrace.c
+@@ -28,7 +28,7 @@
+ #include "caml/fail.h"
+ 
+ /* The table of debug information fragments */
+-struct ext_table caml_debug_info;
++static struct ext_table caml_debug_info;
+ 
+ CAMLexport int32_t caml_backtrace_active = 0;
+ CAMLexport int32_t caml_backtrace_pos = 0;
+diff --git a/byterun/backtrace_prim.c b/byterun/backtrace_prim.c
+index e69b256..d794f73 100644
+--- a/byterun/backtrace_prim.c
++++ b/byterun/backtrace_prim.c
+@@ -44,7 +44,7 @@
+ #include "caml/backtrace_prim.h"
+ 
+ /* The table of debug information fragments */
+-struct ext_table caml_debug_info;
++static struct ext_table caml_debug_info;
+ 
+ CAMLexport char_os * caml_cds_file = NULL;
+ 

@@ -1485,6 +1485,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-dose3-Fix-for-ocaml-4.06.patch	\
   %D%/packages/patches/ocaml-dose3-dont-make-printconf.patch	\
   %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
+  %D%/packages/patches/ocaml-multiple-definitions.patch		\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/oneko-remove-nonfree-characters.patch	\
   %D%/packages/patches/onnx-use-system-googletest.patch	\

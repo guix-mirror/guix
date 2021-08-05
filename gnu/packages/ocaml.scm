@@ -275,6 +275,7 @@ functional, imperative and object-oriented styles of programming.")
               (sha256
                (base32
                 "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))
+              (patches (search-patches "ocaml-multiple-definitions.patch"))
               (modules '((guix build utils)))
               (snippet
                `(begin
