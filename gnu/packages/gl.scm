@@ -326,7 +326,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "powerpc64le-linux" "powerpc-linux")
               '("-Dvulkan-drivers=amd"))
              ("aarch64-linux"
-              '("-Dvulkan-drivers=freedreno,amd"))
+              '("-Dvulkan-drivers=freedreno,amd,broadcom,swrast"))
              (_
               '("-Dvulkan-drivers=auto")))
 
