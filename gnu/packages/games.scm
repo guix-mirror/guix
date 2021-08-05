@@ -6935,7 +6935,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.7.3")
+    (version "1.7.4")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6943,7 +6943,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1rik17r01glq3944sdb06xjf0xppgqkjk564wrh22slm4mi3fifz"))
+        (base32 "197jmd99l3w3sig32pvdlq9fcgdjjx7g9csy08kz174cyhrlyly3"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6952,8 +6952,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
               (string-append
                line " || defined(__GNUC__)")))
            (substitute* '("src/tgl.h")
-             (("#include <GL/glext.h>") ""))
-           #t))))
+             (("#include <GL/glext.h>") ""))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -6976,15 +6975,13 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                   (delete 'bootstrap)
                   (replace 'configure
                     (lambda _
-                      (invoke "premake4" "gmake")
-                      #t))
+                      (invoke "premake4" "gmake")))
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
                                              "/include/SDL2:"
-                                             (or (getenv "CPATH") "")))
-                      #t))
+                                             (or (getenv "CPATH") "")))))
                   (delete 'check)
                   ;; premake doesn't provide install target
                   (replace 'install
@@ -7043,8 +7040,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                          #:comment ,synopsis
                          #:exec ,name
                          #:icon icon
-                         #:categories '("Game" "RolePlaying")))
-                      #t)))))
+                         #:categories '("Game" "RolePlaying"))))))))
     (home-page "https://te4.org")
     (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
 combat and advanced character building.  Play as one of many unique races and
