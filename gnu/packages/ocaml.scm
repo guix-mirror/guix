@@ -265,6 +265,7 @@ functional, imperative and object-oriented styles of programming.")
 (define ocaml-4.07-boot
   (package
     (inherit ocaml-4.09)
+    (name "ocaml-boot")
     (version "4.07.1")
     (source (origin
               (method url-fetch)
@@ -402,6 +403,7 @@ depend: $(STDLIB_MLIS) $(STDLIB_DEPS)"))
 (define-public ocaml-4.07
   (package
     (inherit ocaml-4.07-boot)
+    (name "ocaml")
     (arguments
       (substitute-keyword-arguments (package-arguments ocaml-4.09)
         ((#:phases phases)
