@@ -2685,14 +2685,14 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1midrn15d5kqy4zd2029bj1db6gnfhxg8mcgfy4bkp5p9nl4v4rd"))))
+                "0bkn235g2ia4f7ispr9d55c7bc18282r3qd8ldhh5q2kiin75zi0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
