@@ -8353,14 +8353,14 @@ your score gets higher, you level up and the blocks fall faster.")
     (name "endless-sky")
     (version "0.9.14")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/endless-sky/endless-sky")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "12iganf8dxiyrjznnabsarxjsr0h717j3k4mz15p0k67wxyahhmf"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/endless-sky/endless-sky")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12iganf8dxiyrjznnabsarxjsr0h717j3k4mz15p0k67wxyahhmf"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -8374,8 +8374,7 @@ your score gets higher, you level up and the blocks fall faster.")
                (("/usr/local") (assoc-ref outputs "out")))
              ;; Install game binary into %out/bin.
              (substitute* "SConstruct"
-               (("games\"") "bin\""))
-             #t))
+               (("games\"") "bin\""))))
          (add-before 'build 'use-gcc-ar
            ;; Use gcc-ar to support LTO.
            (lambda _ (setenv "AR" "gcc-ar"))))))
