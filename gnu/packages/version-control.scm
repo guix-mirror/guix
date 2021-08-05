@@ -39,6 +39,7 @@
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 François J. <francois-oss@avalenn.eu>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail)
@@ -114,6 +116,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
@@ -1523,6 +1526,97 @@ also walk each side of a merge and test those changes individually.")
      "Gitolite is an access control layer on top of Git, providing fine access
 control to Git repositories.")
     (license license:gpl2)))
+
+;; gitile requires a more recent version than the latest release.
+(define guile-syntax-highlight-for-gitile
+  (let ((commit "897fa5156ff41588e0d281eb00e4e94de63ccd8a")
+        (revision "0"))
+    (package
+      (inherit guile-syntax-highlight)
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://git.dthompson.us/guile-syntax-highlight.git")
+                       (commit commit)))
+                (file-name (git-file-name "guile-syntax-highlight" version))
+                (sha256
+                 (base32
+                  "18zlg4mkgd3swgv2ggfz91ivnnzc0zhvc9ybgrxg1y762va9hyvj"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs guile-syntax-highlight))))))
+
+(define-public gitile
+  (package
+    (name "gitile")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.lepiller.eu/git/gitile")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fnmgrrsdc24mvicj2gkv3vasag7h5x27xc12w55i0id9vw7k9sw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:make-flags (list "GUILE_AUTO_COMPILE=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install-bin 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (use-modules (guix build guile-build-system))
+             ;; Wrap the 'gitile' command to refer to the right modules.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (commonmark (assoc-ref inputs "guile-commonmark"))
+                    (git    (assoc-ref inputs "guile-git"))
+                    (bytes  (assoc-ref inputs "guile-bytestructures"))
+                    (fibers (assoc-ref inputs "guile-fibers"))
+                    (gcrypt (assoc-ref inputs "guile-gcrypt"))
+                    (syntax-highlight (assoc-ref inputs "guile-syntax-highlight"))
+                    (deps   (list out commonmark git bytes fibers gcrypt
+                                  syntax-highlight))
+                    (guile  (assoc-ref inputs "guile"))
+                    (effective (target-guile-effective-version))
+                    (mods   (string-drop-right  ;drop trailing colon
+                             (string-join deps
+                                          (string-append "/share/guile/site/"
+                                                         effective ":")
+                                          'suffix)
+                             1))
+                    (objs   (string-drop-right
+                             (string-join deps
+                                          (string-append "/lib/guile/" effective
+                                                         "/site-ccache:")
+                                          'suffix)
+                             1)))
+               (wrap-program (string-append out "/bin/gitile")
+                 `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("guile" ,guile-3.0)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-commonmark" ,guile-commonmark)
+       ("guile-fibers" ,guile-fibers)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-git" ,guile-git)
+       ("guile-syntax-highlight" ,guile-syntax-highlight-for-gitile)
+       ("gnutls" ,gnutls)))
+    (home-page "https://git.lepiller.eu/gitile")
+    (synopsis "Simple Git forge written in Guile")
+    (description "Gitile is a Git forge written in Guile that lets you
+visualize your public Git repositories on a web interface.")
+    (license license:agpl3+)))
 
 (define-public pre-commit
   (package
