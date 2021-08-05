@@ -492,3 +492,29 @@ environment, and its configuration file, when available.")))
 
 (define sexp->home-provenance sexp->system-provenance)
 (define home-provenance system-provenance)
+
+
+;;;
+;;; Searching
+;;;
+
+(define (parent-directory directory)
+  "Get the parent directory of DIRECTORY"
+  (string-join (drop-right (string-split directory #\/) 1) "/"))
+
+(define %guix-home-root-directory
+  ;; Absolute file name of the module hierarchy.
+  (parent-directory (dirname (search-path %load-path "gnu/home-services.scm"))))
+
+(define %service-type-path
+  ;; Search path for service types.
+  (make-parameter `((,%guix-home-root-directory . "gnu/home-services"))))
+
+(define (all-home-service-modules)
+  "Return the default set of home-service modules."
+  (cons (resolve-interface '(gnu home-services))
+        (all-modules (%service-type-path)
+                     #:warn warn-about-load-error)))
+
+(define* (fold-home-service-types proc seed)
+  (fold-service-types proc seed (all-home-service-modules)))
