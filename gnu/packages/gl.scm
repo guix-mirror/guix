@@ -387,6 +387,11 @@ also known as DXTn or DXTC) for Mesa.")
                   ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
                   `((substitute* "src/util/tests/format/meson.build"
                       (("'u_format_test',") ""))))
+                 ("aarch64-linux"
+                  ;; The ir3_disasm test segfaults.
+                  ;; The simplest way to skip it is to run a different test instead.
+                  `((substitute* "src/freedreno/ir3/meson.build"
+                      (("disasm\\.c'") "delay.c',\n    link_args: ld_args_build_id"))))
                  (_
                   '((display "No tests to disable on this architecture.\n"))))))
          (add-after 'unpack 'fix-tests
