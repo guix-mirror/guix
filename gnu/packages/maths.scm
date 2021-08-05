@@ -142,6 +142,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -6752,3 +6753,103 @@ when an application performs repeated divisions by the same divisor.")
        "This header-only C++ library implements conversion to and from
 half-precision floating point formats.")
       (license license:expat))))
+
+(define-public optizelle
+  (let ((commit "ed4160b5287518448caeb34789d92dc6a0b7e2cc"))
+   (package
+    (name "optizelle")
+    (version (git-version "1.3.0" "0" commit))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OptimoJoe/Optizelle")
+             (commit commit)))
+       (file-name (git-file-name "optizelle" commit))
+       (sha256
+        (base32
+         "0rjrs5sdmd33a9f4xm8an7p0953aa0bxsmr4hs3ss1aad9k181vq"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Reduce the stopping tolerance in one test so that the
+           ;; convergence check returns the correct stopping
+           ;; condition.
+           (substitute*
+            "src/unit/linear_algebra/tcg_loss_of_orthogonality.cpp"
+            (("1e-13") "5e-14"))
+           ;; Skip one set of python tests.  See
+           ;; https://github.com/OptimoJoe/Optizelle/issues/2.
+           (substitute*
+            "src/examples/inequality_scaling/CMakeLists.txt"
+            (("add_unit(.*)\\$\\{interfaces\\}(.*)$" all middle end)
+             (string-append "add_unit" middle "\"cpp\"" end)))
+           ;; Install the licence for Optizelle, without also
+           ;; including the licences for the dependencies.
+           (substitute* "licenses/CMakeLists.txt"
+                        (("file.*package.*$" all)
+                         (string-append "# " all))
+                        ((".*[^l].[.]txt\\)\n") "")
+                        (("add_license.*\"\n") ""))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%cmake-build-system-modules)
+       #:modules (((guix build python-build-system) #:select
+                   (python-version))
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:configure-flags `("-DCMAKE_CXX_FLAGS:STRING=-pthread"
+                           "-DENABLE_CPP_UNIT:BOOL=ON"
+                           "-DENABLE_CPP_EXAMPLES:BOOL=ON"
+                           "-DENABLE_PYTHON:BOOL=ON"
+                           "-DENABLE_PYTHON_UNIT:BOOL=ON"
+                           "-DENABLE_PYTHON_EXAMPLES:BOOL=ON"
+                           ,(string-append "-DBLAS_LIBRARY:FILEPATH="
+                                           (assoc-ref %build-inputs
+                                                      "blas/lapack")
+                                           "/lib/libopenblas.so")
+                           ,(string-append "-DLAPACK_LIBRARY:FILEPATH="
+                                           (assoc-ref %build-inputs
+                                                      "fortran:lib")
+                                           "/lib/libgfortran.so;"
+                                           (assoc-ref %build-inputs
+                                                      "fortran:lib")
+                                           "/lib/libquadmath.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-numpy-path ; Needed for the unit tests.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((pyver (python-version (assoc-ref inputs "python")))
+                    (npdir (string-append (assoc-ref inputs "numpy")
+                                          "/lib/python" pyver
+                                          "/site-packages")))
+                (substitute* "src/cmake/Modules/Optizelle.cmake"
+                  (("PYTHONPATH=")
+                   (string-append "LD_LIBRARY_PATH=$ENV{LIBRARY_PATH};"
+                                  "PYTHONPATH=" npdir ":"))))))
+         (delete 'install-license-files)))) ; LICENSE.txt is installed.
+    (inputs
+     `(("blas/lapack" ,openblas)
+       ("fortran:lib" ,gfortran "lib")
+       ("jsoncpp" ,jsoncpp)
+       ("numpy" ,python-numpy)
+       ("python" ,python)))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.optimojoe.com/products/optizelle/")
+    (synopsis "Mathematical optimization library")
+    (description "@code{optizelle} is a software library designed to
+solve nonlinear optimization problems.  Four types of problem are
+considered: unconstrained, equality constrained, inequality
+constrained and constrained.  Constraints may be applied as values of
+functions or sets of partial differential equations (PDEs).
+
+Solution algorithms such as the preconditioned nonlinear conjugate
+gradient method, sequential quadratic programming (SQP) and the
+primal-dual interior-point method are made available.  Interfaces are
+provided for applications written in C++ and Python.  Parallel
+computation is supported via MPI.")
+    (license license:bsd-2))))
