@@ -37,7 +37,8 @@
             home-environment-variables-service-type
             home-files-service-type
             home-run-on-first-login-service-type
-            home-activation-service-type)
+            home-activation-service-type
+            home-run-on-change-service-type)
 
   #:re-export (service
                service-type
@@ -91,6 +92,9 @@
 ;;; symlink-manager or run-on-change services.
 ;;;
 ;;; - Run all activation gexps provided by other home services.
+;;;
+;;; home-run-on-change-service-type allows to trigger actions during
+;;; activation if file or directory specified by pattern is changed.
 ;;;
 ;;; Code:
 
@@ -366,3 +370,100 @@ directory.  @command{activate} script automatically called during
 reconfiguration or generation switching.  This service can be extended
 with one gexp, but many times, and all gexps must be idempotent.")))
 
+
+;;;
+;;; On-change.
+;;;
+
+(define (compute-on-change-gexp eval-gexps? pattern-gexp-tuples)
+  #~(begin
+      (define (equal-regulars? file1 file2)
+        "Check if FILE1 and FILE2 are bit for bit identical."
+        (let* ((cmp-binary #$(file-append
+                              (@ (gnu packages base) diffutils) "/bin/cmp"))
+               (stats1     (lstat file1))
+               (stats2     (lstat file2)))
+          (cond
+           ((= (stat:ino stats1) (stat:ino stats2))         #t)
+           ((not (= (stat:size stats1) (stat:size stats2))) #f)
+
+           (else (= (system* cmp-binary file1 file2) 0)))))
+
+      (define (equal-symlinks? symlink1 symlink2)
+        "Check if SYMLINK1 and SYMLINK2 are pointing to the same target."
+        (string=? (readlink symlink1) (readlink symlink2)))
+
+      (define (equal-directories? dir1 dir2)
+        "Check if DIR1 and DIR2 have the same content."
+        (define (ordinary-file file)
+          (not (or (string=? file ".")
+                   (string=? file ".."))))
+        (let* ((files1 (scandir dir1 ordinary-file))
+               (files2 (scandir dir2 ordinary-file)))
+          (if (equal? files1 files2)
+              (map (lambda (file)
+                     (equal-files?
+                      (string-append dir1 "/" file)
+                      (string-append dir2 "/" file)))
+                   files1)
+              #f)))
+
+      (define (equal-files? file1 file2)
+        "Compares files, symlinks or directories of the same type."
+        (case (file-type file1)
+          ((directory) (equal-directories? file1 file2))
+          ((symlink) (equal-symlinks? file1 file2))
+          ((regular) (equal-regulars? file1 file2))
+          (else
+           (display "The file type is unsupported by on-change service.\n")
+           #f)))
+
+      (define (file-type file)
+        (stat:type (lstat file)))
+
+      (define (something-changed? file1 file2)
+        (cond
+         ((and (not (file-exists? file1))
+               (not (file-exists? file2))) #f)
+         ((or  (not (file-exists? file1))
+               (not (file-exists? file2))) #t)
+
+         ((not (eq? (file-type file1) (file-type file2))) #t)
+
+         (else
+          (not (equal-files? file1 file2)))))
+
+      (define expressions-to-eval
+        (map
+         (lambda (x)
+           (let* ((file1 (string-append (getenv "GUIX_OLD_HOME") "/" (car x)))
+                  (file2 (string-append (getenv "GUIX_NEW_HOME") "/" (car x)))
+                  (_ (format #t "Comparing ~a and\n~10t~a..." file1 file2))
+                  (any-changes? (something-changed? file1 file2))
+                  (_ (format #t " done (~a)\n"
+                             (if any-changes? "changed" "same"))))
+             (if any-changes? (cadr x) "")))
+         '#$pattern-gexp-tuples))
+
+      (if #$eval-gexps?
+          (begin
+            (display "Evaling on-change gexps.\n\n")
+            (for-each primitive-eval expressions-to-eval)
+            (display "On-change gexps evaluation finished.\n\n"))
+          (display "\
+On-change gexps won't evaluated, disabled by service configuration.\n"))))
+
+(define home-run-on-change-service-type
+  (service-type (name 'home-run-on-change)
+                (extensions
+                 (list (service-extension
+                        home-activation-service-type
+                        identity)))
+                (compose concatenate)
+                (extend compute-on-change-gexp)
+                (default-value #t)
+                (description "\
+G-expressions to run if the specified files have changed since the
+last generation.  The extension should be a list of lists where the
+first element is the pattern for file or directory that expected to be
+changed, and the second element is the G-expression to be evaluated.")))
