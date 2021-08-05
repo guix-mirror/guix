@@ -341,6 +341,19 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (("\\$\\$\\(build_depsbindir\\)/libwhich")
                 (string-append (assoc-ref inputs "libwhich") "/bin/libwhich")))
              #t))
+         ;; For some reason libquadmath is unavailable on this architecture.
+         ;; https://github.com/JuliaLang/julia/issues/41613
+         ,@(if (target-aarch64?)
+             '((add-after 'unpack 'drop-libquadmath-on-aarch64
+                 (lambda _
+                   (substitute* '("contrib/fixup-libgfortran.sh"
+                                  "deps/csl.mk"
+                                  "base/Makefile")
+                     ((".*libquadmath.*") ""))
+                   (substitute* "Makefile"
+                     (("libquadmath ") ""))
+                   #t)))
+             '())
          (add-before 'check 'set-home
            ;; Some tests require a home directory to be set.
            (lambda _ (setenv "HOME" "/tmp") #t))
