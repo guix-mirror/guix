@@ -10738,7 +10738,7 @@ based methods.")
 (define-public pigx-sars-cov2-ww
   (package
     (name "pigx-sars-cov2-ww")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_sarscov2_ww/"
@@ -10746,7 +10746,7 @@ based methods.")
                                   "/pigx_sars-cov2-ww-" version ".tar.gz"))
               (sha256
                (base32
-                "0yrbza7lbzijjc8ifk06b646n959a4k7id94x3ndz795892f64l0"))))
+                "1hhdbwsnl0d37lrmisw5hr630xr8s41qvxflm05anh11rj8n22yw"))))
     (build-system gnu-build-system)
     (inputs
      `(("bash-minimal" ,bash-minimal)
