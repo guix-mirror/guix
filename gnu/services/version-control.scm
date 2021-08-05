@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +60,21 @@
             gitolite-rc-file-roles
             gitolite-rc-file-enable
 
-            gitolite-service-type))
+            gitolite-service-type
+
+            gitile-configuration
+            gitile-configuration-package
+            gitile-configuration-host
+            gitile-configuration-port
+            gitile-configuration-database
+            gitile-configuration-repositories
+            gitile-configuration-git-base-url
+            gitile-configuration-index-title
+            gitile-configuration-intro
+            gitile-configuration-footer
+            gitile-configuration-nginx
+
+            gitile-service-type))
 
 ;;; Commentary:
 ;;;
@@ -386,3 +401,114 @@ access to exported repositories under @file{/srv/git}."
 By default, the @code{git} user is used, but this is configurable.
 Additionally, Gitolite can integrate with with tools like gitweb or cgit to
 provide a web interface to view selected repositories.")))
+
+;;;
+;;; Gitile
+;;;
+
+(define-record-type* <gitile-configuration>
+  gitile-configuration make-gitile-configuration gitile-configuration?
+  (package gitile-configuration-package
+           (default gitile))
+  (host gitile-configuration-host
+        (default "127.0.0.1"))
+  (port gitile-configuration-port
+        (default 8080))
+  (database gitile-configuration-database
+            (default "/var/lib/gitile/gitile-db.sql"))
+  (repositories gitile-configuration-repositories
+                (default "/var/lib/gitolite/repositories"))
+  (base-git-url gitile-configuration-base-git-url)
+  (index-title gitile-configuration-index-title
+               (default "Index"))
+  (intro gitile-configuration-intro
+         (default '()))
+  (footer gitile-configuration-footer
+          (default '()))
+  (nginx gitile-configuration-nginx))
+
+(define (gitile-config-file host port database repositories base-git-url
+                            index-title intro footer)
+  (define build
+    #~(write `(config
+                (port #$port)
+                (host #$host)
+                (database #$database)
+                (repositories #$repositories)
+                (base-git-url #$base-git-url)
+                (index-title #$index-title)
+                (intro #$intro)
+                (footer #$footer))
+             (open-output-file #$output)))
+
+  (computed-file "gitile.conf" build))
+
+(define gitile-nginx-server-block
+  (match-lambda
+    (($ <gitile-configuration> package host port database repositories
+        base-git-url index-title intro footer nginx)
+     (list (nginx-server-configuration
+             (inherit nginx)
+             (locations
+               (append
+                 (list
+                   (nginx-location-configuration
+                            (uri "/")
+                            (body
+                              (list
+                                #~(string-append "proxy_pass http://" #$host
+                                                 ":" (number->string #$port)
+                                                 "/;")))))
+                 (map
+                   (lambda (loc)
+                     (nginx-location-configuration
+                       (uri loc)
+                       (body
+                         (list
+                           #~(string-append "root " #$package "/share/gitile/assets;")))))
+                   '("/css" "/js" "/images"))
+                 (nginx-server-configuration-locations nginx))))))))
+
+(define gitile-shepherd-service
+  (match-lambda
+    (($ <gitile-configuration> package host port database repositories
+        base-git-url index-title intro footer nginx)
+     (list (shepherd-service
+             (provision '(gitile))
+             (requirement '(loopback))
+             (documentation "gitile")
+             (start (let ((gitile (file-append package "/bin/gitile")))
+                          #~(make-forkexec-constructor
+                              `(,#$gitile "-c" #$(gitile-config-file
+                                                   host port database
+                                                   repositories
+                                                   base-git-url index-title
+                                                   intro footer))
+                              #:user "gitile"
+                              #:group "git")))
+             (stop #~(make-kill-destructor)))))))
+
+(define %gitile-accounts
+  (list (user-group
+         (name "git")
+         (system? #t))
+        (user-account
+          (name "gitile")
+          (group "git")
+          (system? #t)
+          (comment "Gitile user")
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define gitile-service-type
+  (service-type
+    (name 'gitile)
+    (description "Run Gitile, a small Git forge.  Expose public repositories
+on the web.")
+    (extensions
+      (list (service-extension account-service-type
+                               (const %gitile-accounts))
+            (service-extension shepherd-root-service-type
+                               gitile-shepherd-service)
+            (service-extension nginx-service-type
+                               gitile-nginx-server-block)))))

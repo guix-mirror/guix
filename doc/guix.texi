@@ -25144,6 +25144,7 @@ of strings and G-expressions.
 @end table
 @end deffn
 
+@anchor{NGINX}
 @subsubheading NGINX
 
 @deffn {Scheme Variable} nginx-service-type
@@ -31540,6 +31541,137 @@ Set the role names allowed to be used by users running the perms command.
 @item @code{enable} (default: @code{'("help" "desc" "info" "perms" "writable" "ssh-authkeys" "git-config" "daemon" "gitweb")})
 This setting controls the commands and features to enable within Gitolite.
 
+@end table
+@end deftp
+
+
+@subsubheading Gitile Service
+
+@cindex Gitile service
+@cindex Git, forge
+@uref{https://git.lepiller.eu/gitile, Gitile} is a Git forge for viewing
+public git repository contents from a web browser.
+
+Gitile works best in collaboration with Gitolite, and will serve the public
+repositories from Gitolite by default.  The service should listen only on
+a local port, and a webserver should be configured to serve static resources.
+The gitile service provides an easy way to extend the Nginx service for
+that purpose (@pxref{NGINX}).
+
+The following example will configure Gitile to serve repositories from a
+custom location, with some default messages for the home page and the
+footers.
+
+@lisp
+(service gitile-service-type
+         (gitile-configuration
+           (repositories "/srv/git")
+           (base-git-url "https://myweb.site/git")
+           (index-title "My git repositories")
+           (intro '((p "This is all my public work!")))
+           (footer '((p "This is the end")))
+           (nginx-server-block
+             (nginx-server-configuration
+               (ssl-certificate
+                 "/etc/letsencrypt/live/myweb.site/fullchain.pem")
+               (ssl-certificate-key
+                 "/etc/letsencrypt/live/myweb.site/privkey.pem")
+               (listen '("443 ssl http2" "[::]:443 ssl http2"))
+               (locations
+                 (list
+                   ;; Allow for https anonymous fetch on /git/ urls.
+                   (git-http-nginx-location-configuration
+                     (git-http-configuration
+                       (uri-path "/git/")
+                       (git-root "/var/lib/gitolite/repositories")))))))))
+@end lisp
+
+In addition to the configuration record, you should configure your git
+repositories to contain some optional information.  First, your public
+repositories need to contain the @file{git-daemon-export-ok} magic file
+that allows Git to export the repository.  Gitile uses the presence of this
+file to detect public repositories it should make accessible.  To do so with
+Gitolite for instance, modify your @file{conf/gitolite.conf} to include
+this in the repositories you want to make public:
+
+@example
+repo foo
+    R = daemon
+@end example
+
+In addition, Gitile can read the repository configuration to display more
+infomation on the repository.  Gitile uses the gitweb namespace for its
+configuration.  As an example, you can use the following in your
+@file{conf/gitolite.conf}:
+
+@example
+repo foo
+    R = daemon
+    desc = A long description, optionally with <i>HTML</i>, shown on the index page
+    config gitweb.name = The Foo Project
+    config gitweb.synopsis = A short description, shown on the main page of the project
+@end example
+
+Do not forget to commit and push these changes once you are satisfied.  You
+may need to change your gitolite configuration to allow the previous
+configuration options to be set.  One way to do that is to add the
+following service definition:
+
+@lisp
+(service gitolite-service-type
+          (gitolite-configuration
+            (admin-pubkey (local-file "key.pub"))
+            (rc-file
+              (gitolite-rc-file
+                (umask #o0027)
+                ;; Allow to set any configuration key
+                (git-config-keys ".*")
+                ;; Allow any text as a valid configuration value
+                (unsafe-patt "^$")))))
+@end lisp
+
+@deftp {Data Type} gitile-configuration
+Data type representing the configuration for @code{gitile-service-type}.
+
+@table @asis
+@item @code{package} (default: @var{gitile})
+Gitile package to use.
+
+@item @code{host} (default: @code{"localhost"})
+The host on which gitile is listening.
+
+@item @code{port} (default: @code{8080})
+The port on which gitile is listening.
+
+@item @code{database} (default: @code{"/var/lib/gitile/gitile-db.sql"})
+The location of the database.
+
+@item @code{repositories} (default: @code{"/var/lib/gitolite/repositories"})
+The location of the repositories.  Note that only public repositories will
+be shown by Gitile.  To make a repository public, add an empty
+@file{git-daemon-export-ok} file at the root of that repository.
+
+@item @code{base-git-url}
+The base git url that will be used to show clone commands.
+
+@item @code{index-title} (default: @code{"Index"})
+The page title for the index page that lists all the available repositories.
+
+@item @code{intro} (default: @code{'()})
+The intro content, as a list of sxml expressions.  This is shown above the list
+of repositories, on the index page.
+
+@item @code{footer} (default: @code{'()})
+The footer content, as a list of sxml expressions.  This is shown on every
+page served by Gitile.
+
+@item @code{nginx-server-block}
+An nginx server block that will be extended and used as a reverse proxy by
+Gitile to serve its pages, and as a normal web server to serve its assets.
+
+You can use this block to add more custom URLs to your domain, such as a
+@code{/git/} URL for anonymous clones, or serving any other files you would
+like to serve.
 @end table
 @end deftp
 

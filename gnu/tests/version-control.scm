@@ -38,7 +38,8 @@
   #:use-module (guix modules)
   #:export (%test-cgit
             %test-git-http
-            %test-gitolite))
+            %test-gitolite
+            %test-gitile))
 
 (define README-contents
   "Hello!  This is what goes inside the 'README' file.")
@@ -63,7 +64,10 @@
             (invoke git "commit" "-m" "That's a commit."))
 
           (mkdir-p "/srv/git")
-          (rename-file "/tmp/test-repo/.git" "/srv/git/test")))))
+          (rename-file "/tmp/test-repo/.git" "/srv/git/test")
+          (with-output-to-file "/srv/git/test/git-daemon-export-ok"
+            (lambda _
+              (display "")))))))
 
 (define %test-repository-service
   ;; Service that creates /srv/git/test.
@@ -416,3 +420,133 @@ HTTP-PORT."
    (name "gitolite")
    (description "Clone the Gitolite admin repository.")
    (value (run-gitolite-test))))
+
+;;;
+;;; Gitile.
+;;;
+
+(define %gitile-configuration-nginx
+  (nginx-server-configuration
+   (root "/does/not/exists")
+   (try-files (list "$uri" "=404"))
+   (listen '("19418"))
+   (ssl-certificate #f)
+   (ssl-certificate-key #f)))
+
+(define %gitile-os
+  ;; Operating system under test.
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   (simple-service 'srv-git activation-service-type
+                   #~(mkdir-p "/srv/git"))
+   (service gitile-service-type
+            (gitile-configuration
+             (base-git-url "http://localhost")
+             (repositories "/srv/git")
+             (nginx %gitile-configuration-nginx)))
+   %test-repository-service))
+
+(define* (run-gitile-test #:optional (http-port 19418))
+  "Run tests in %GITOLITE-OS, which has nginx running and listening on
+HTTP-PORT."
+  (define os
+    (marionette-operating-system
+     %gitile-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings `((8081 . ,http-port)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette)
+                       (web uri)
+                       (web client)
+                       (web response))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "gitile")
+
+          ;; XXX: Shepherd reads the config file *before* binding its control
+          ;; socket, so /var/run/shepherd/socket might not exist yet when the
+          ;; 'marionette' service is started.
+          (test-assert "shepherd socket ready"
+            (marionette-eval
+             `(begin
+                (use-modules (gnu services herd))
+                (let loop ((i 10))
+                  (cond ((file-exists? (%shepherd-socket-file))
+                         #t)
+                        ((> i 0)
+                         (sleep 1)
+                         (loop (- i 1)))
+                        (else
+                         'failure))))
+             marionette))
+
+          ;; Wait for nginx to be up and running.
+          (test-assert "nginx running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'nginx))
+             marionette))
+
+          ;; Make sure the PID file is created.
+          (test-assert "PID file"
+            (marionette-eval
+             '(file-exists? "/var/run/nginx/pid")
+             marionette))
+
+          ;; Make sure Git test repository is created.
+          (test-assert "Git test repository"
+            (marionette-eval
+             '(file-exists? "/srv/git/test")
+             marionette))
+
+          (sleep 2)
+
+          ;; Make sure we can access pages that correspond to our repository.
+          (letrec-syntax ((test-url
+                           (syntax-rules ()
+                             ((_ path code)
+                              (test-equal (string-append "GET " path)
+                                code
+                                (let-values (((response body)
+                                              (http-get (string-append
+                                                         "http://localhost:8081"
+                                                         path))))
+                                  (response-code response))))
+                             ((_ path)
+                              (test-url path 200)))))
+            (test-url "/")
+            (test-url "/css/gitile.css")
+            (test-url "/test")
+            (test-url "/test/commits")
+            (test-url "/test/tree" 404)
+            (test-url "/test/tree/-")
+            (test-url "/test/tree/-/README")
+            (test-url "/test/does-not-exist" 404)
+            (test-url "/test/tree/-/does-not-exist" 404)
+            (test-url "/does-not-exist" 404))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "gitile-test" test))
+
+(define %test-gitile
+  (system-test
+   (name "gitile")
+   (description "Connect to a running Gitile server.")
+   (value (run-gitile-test))))
