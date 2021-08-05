@@ -44,6 +44,7 @@
 # Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 # Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 # Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
+# Copyright © 2021 Andrew Tropin <andrew@trop.in>
 #
 # This file is part of GNU Guix.
 #
@@ -72,6 +73,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/u-boot.scm                     \
   %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
+  %D%/home-services.scm                         \
   %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
