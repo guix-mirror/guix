@@ -38,7 +38,10 @@
             home-files-service-type
             home-run-on-first-login-service-type
             home-activation-service-type
-            home-run-on-change-service-type)
+            home-run-on-change-service-type
+            home-provenance-service-type
+
+            fold-home-service-types)
 
   #:re-export (service
                service-type
@@ -467,3 +470,25 @@ G-expressions to run if the specified files have changed since the
 last generation.  The extension should be a list of lists where the
 first element is the pattern for file or directory that expected to be
 changed, and the second element is the G-expression to be evaluated.")))
+
+
+;;;
+;;; Provenance tracking.
+;;;
+
+(define home-provenance-service-type
+  (service-type
+   (name 'home-provenance)
+   (extensions
+    (list (service-extension
+           home-service-type
+           (service-extension-compute
+            (first (service-type-extensions provenance-service-type))))))
+   (default-value #f)                ;the HE config file
+   (description "\
+Store provenance information about the home environment in the home
+environment itself: the channels used when building the home
+environment, and its configuration file, when available.")))
+
+(define sexp->home-provenance sexp->system-provenance)
+(define home-provenance system-provenance)
