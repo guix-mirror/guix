@@ -147,3 +147,25 @@ oclc, ocml, ockl, opencl, hip and hc.")
     (description "The Comgr library provides APIs for compiling and inspecting
 AMDGPU code objects.")
     (license license:ncsa)))
+
+(define-public roct-thunk-interface
+  (package
+    (name "roct-thunk-interface")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ffqhrrscmcydfqf61dk58d7nnxk6n2k68jhqfj7a4hvhlphb74f"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; Not sure how to run tests.
+    (inputs `(("numactl" ,numactl)))
+    (home-page "https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface")
+    (synopsis "Radeon Open Compute Thunk Interface")
+    (description "User-mode API interfaces used to interact with the ROCk
+driver.")
+    (license license:ncsa)))
