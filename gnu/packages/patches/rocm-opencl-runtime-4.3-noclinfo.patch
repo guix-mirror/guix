@@ -1,0 +1,28 @@
+Do not build and install clinfo.
+
+diff --git a/CMakeLists.txt.orig b/CMakeLists.txt
+index 76847d3..3f62bfe 100644
+--- a/CMakeLists.txt.orig
++++ b/CMakeLists.txt
+@@ -72,7 +72,7 @@ find_package(ROCclr REQUIRED CONFIG
+ 
+ add_subdirectory(khronos/icd)
+ add_subdirectory(amdocl)
+-add_subdirectory(tools/clinfo)
++#add_subdirectory(tools/clinfo)
+ add_subdirectory(tools/cltrace)
+ if(BUILD_TESTS)
+   add_subdirectory(tests/ocltst)
+@@ -108,9 +108,9 @@ endif()
+ ###--- Packaging ------------------------------------------------------------###
+ 
+ # MAIN package
+-install(PROGRAMS $<TARGET_FILE:clinfo>
+-        DESTINATION bin
+-        COMPONENT MAIN)
++#install(PROGRAMS $<TARGET_FILE:clinfo>
++#        DESTINATION bin
++#        COMPONENT MAIN)
+ install(PROGRAMS $<TARGET_FILE:cltrace>
+         DESTINATION lib
+         COMPONENT MAIN)

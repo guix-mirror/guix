@@ -253,3 +253,54 @@ applications to launch compute kernels to available HSA ROCm kernel agents.")
 interact with to different backends such as ROCr or PAL.  This abstraction
 allows runtimes to work on Windows as well as on Linux without much effort.")
     (license license:ncsa)))
+
+(define-public rocm-opencl-runtime
+  (package
+    (name "rocm-opencl-runtime")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cglpiaj3ny1z74ssmy6j63vj92sfy4q38ix6qsga0mg3b2wvqz3"))
+              (patches
+               (search-patches
+                "rocm-opencl-runtime-3.10.0-add-rocclr-include-directories.patch"
+                ;; Do not install libOpenCL, which ocl-icd provides.
+                "rocm-opencl-runtime-4.3-noopencl.patch"
+                ;; Guix includes a program clinfo already.
+                "rocm-opencl-runtime-4.3-noclinfo.patch"
+                ;; cltrace linking fails, remove it.
+                "rocm-opencl-runtime-4.3-nocltrace.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; Not sure how to run them.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'create-icd
+           ;; Manually install ICD, which simply consists of dumping
+           ;; the path of the .so into the correct file.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vendors (string-append out "/etc/OpenCL/vendors"))
+                    (sopath (string-append out "/lib/libamdocl64.so")))
+               (mkdir-p vendors)
+               (with-output-to-file (string-append vendors "/amdocl64.icd")
+                 (lambda _ (display sopath)))))))))
+    (inputs
+     `(("mesa" ,mesa)
+       ("rocm-comgr" ,rocm-comgr)
+       ("rocr-runtime" ,rocr-runtime)
+       ("rocclr" ,rocclr)
+       ("ocl-icd" ,ocl-icd)
+       ("glew" ,glew)))
+    (native-inputs `())
+    (home-page "https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime")
+    (synopsis "ROCm OpenCL Runtime")
+    (description "OpenCL 2.0 compatible language runtime, supporting offline
+and in-process/in-memory compilation.")
+    (license license:ncsa)))

@@ -1,0 +1,63 @@
+Do not build and install libOpenCL.
+
+--- b/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -70,7 +70,7 @@
+     ${ROCclr_DIR}
+     ${LIBROCclr_STATIC_DIR})
+ 
+-add_subdirectory(khronos/icd)
++#add_subdirectory(khronos/icd)
+ add_subdirectory(amdocl)
+ #add_subdirectory(tools/clinfo)
+ add_subdirectory(tools/cltrace)
+@@ -93,9 +93,6 @@
+     OUTPUT_VARIABLE OPENCL_VERSION_GITDATE
+     OUTPUT_STRIP_TRAILING_WHITESPACE)
+ 
+-get_target_property(OPENCL_LIB_VERSION_MAJOR OpenCL SOVERSION)
+-get_target_property(OPENCL_LIB_VERSION_STRING OpenCL VERSION)
+-
+ find_package(ROCM QUIET CONFIG PATHS /opt/rocm)
+ 
+ if(ROCM_FOUND)
+@@ -117,25 +114,6 @@
+ install(PROGRAMS $<TARGET_FILE:amdocl64>
+         DESTINATION lib
+         COMPONENT MAIN)
+-install(PROGRAMS $<TARGET_FILE:OpenCL>
+-        DESTINATION lib
+-        COMPONENT MAIN)
+-install(PROGRAMS $<TARGET_SONAME_FILE:OpenCL>
+-        DESTINATION lib
+-        COMPONENT MAIN)
+-
+-# DEV package
+-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/khronos/headers/opencl2.2/CL"
+-        DESTINATION include
+-        COMPONENT DEV
+-        USE_SOURCE_PERMISSIONS
+-        PATTERN cl_d3d10.h EXCLUDE
+-        PATTERN cl_d3d11.h EXCLUDE
+-        PATTERN cl_dx9_media_sharing.h EXCLUDE
+-        PATTERN cl_egl.h EXCLUDE)
+-install(PROGRAMS $<TARGET_LINKER_FILE:OpenCL>
+-        DESTINATION lib
+-        COMPONENT DEV)
+ 
+ #############################
+ # Packaging steps
+--- a/khronos/icd/CMakeLists.txt	2020-06-07 16:05:32.425022904 +0200
++++ b/khronos/icd/CMakeLists.txt	2020-06-07 16:06:03.273022786 +0200
+@@ -132,7 +132,7 @@
+     add_subdirectory (test)
+ endif()
+ 
+-install (TARGETS OpenCL
+-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
++#install (TARGETS OpenCL
++#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
