@@ -1248,6 +1248,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                    (("/bin/pwd") (which "pwd"))
                    (("/bin/sh") (which "sh")))
 
+                 ;; Backport fix for go-1.14 with GCC 9+
+                 ;; https://github.com/golang/go/issues/39157
+                 (substitute* "cmd/go/note_test.go"
+                   (("cannot find 'ld'") "cannot find [‘']ld[’']"))
+
                  ;; Add libgcc to runpath
                  (substitute* "cmd/link/internal/ld/lib.go"
                    (("!rpath.set") "true"))
