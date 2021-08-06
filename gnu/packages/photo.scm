@@ -486,6 +486,24 @@ photographic equipment.")
                            "-DBUILD_TESTING=On")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'libOpenCL-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Statically link to libOpenCL.
+             (substitute* "./src/common/dlopencl.c"
+               (("\"libOpenCL\"")
+                (string-append "\"" (assoc-ref inputs "ocl-icd") "/lib/libOpenCL.so\"")))
+             #t))
+         ;; The use of inline is wrong and darktable cannot compile its kernels
+         ;; with ROCm. See upstream commit
+         ;; https://github.com/darktable-org/darktable/commit/f0d8710f5ef34eb7e33b4064e022ebf3057b9e53
+         (add-after 'unpack 'opencl-inline
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This is a feature of OpenCL 1.2 and later.
+             (substitute* "data/kernels/CMakeLists.txt"
+               (("CL1\\.1") "CL1.2"))
+             (substitute* (find-files "data/kernels" "\\.(cl|h)$")
+               (("inline") "static inline"))
+             #t))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Rawspeed fails to build with GCC due to OpenMP error:
@@ -516,11 +534,7 @@ photographic equipment.")
                ;; For GtkFileChooserDialog.
                `("GSETTINGS_SCHEMA_DIR" =
                  (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas")))
-               ;; For libOpenCL.so.
-               `("LD_LIBRARY_PATH" =
-                 (,(string-append (assoc-ref inputs "ocl-icd")
-                                  "/lib"))))
+                                  "/share/glib-2.0/schemas"))))
              #t)))))
     (native-inputs
      `(("clang" ,clang-11)
