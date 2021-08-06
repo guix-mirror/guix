@@ -325,3 +325,29 @@ and in-process/in-memory compilation.")
     (synopsis "ROCm Application for Reporting System Info")
     (description #f)
     (license license:ncsa)))
+
+(define-public rocm-bandwidth-test
+  (package
+    (name "rocm-bandwidth-test")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/rocm_bandwidth_test.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a14kwkjpiyljgzxblh031qibn6xgbxp6m12zdy1pmwb2c44jjmm"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; No tests.
+    (inputs `(("rocr-runtime" ,rocr-runtime)))
+    (home-page "https://github.com/RadeonOpenCompute/rocm_bandwidth_test")
+    (synopsis "Bandwidth test for ROCm")
+    (description "RocBandwidthTest is designed to capture the performance
+characteristics of buffer copying and kernel read/write operations. The help
+screen of the benchmark shows various options one can use in initiating
+cop/read/writer operations.  In addition one can also query the topology of the
+system in terms of memory pools and their agents.")
+    (license license:ncsa)))
+
