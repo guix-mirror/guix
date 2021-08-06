@@ -50,6 +50,33 @@
   #:use-module (guix utils)
   #:use-module (guix packages))
 
+(define-public slscroll
+  (package
+    (name "slscroll")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.suckless.org/tools/scroll-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1mpfrvn122lnaqid1pi99ckpxd6x679b0w91pl003xmdwsfdbcly"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://tools.suckless.org/scroll/")
+    (synopsis "Scroll-back buffer program for st")
+    (description "Scroll is a program that provides a scroll back buffer for
+terminal like @code{st}.")
+    (license license:isc)))
+
 (define-public tabbed
   (package
     (name "tabbed")
