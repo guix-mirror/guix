@@ -261,7 +261,7 @@ bootloader's configuration file."
      ;; would attempt to write directly to the virtual disk if the
      ;; installation script were run.
      (test
-      (install-bootloader-program #f #f #f bootcfg bootcfg-file #f "/")))))
+      (install-bootloader-program #f #f #f bootcfg bootcfg-file '(#f) "/")))))
 
 
 (define %test-switch-to-system

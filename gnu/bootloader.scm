@@ -55,7 +55,8 @@
             bootloader-configuration
             bootloader-configuration?
             bootloader-configuration-bootloader
-            bootloader-configuration-target
+            bootloader-configuration-target ;deprecated
+            bootloader-configuration-targets
             bootloader-configuration-menu-entries
             bootloader-configuration-default-entry
             bootloader-configuration-timeout
@@ -183,7 +184,9 @@ record."
   bootloader-configuration make-bootloader-configuration
   bootloader-configuration?
   (bootloader         bootloader-configuration-bootloader) ;<bootloader>
-  (target             bootloader-configuration-target      ;string
+  (targets            %bootloader-configuration-targets    ;list of strings
+                      (default #f))
+  (target             %bootloader-configuration-target ;deprecated
                       (default #f))
   (menu-entries       bootloader-configuration-menu-entries ;list of <menu-entry>
                       (default '()))
@@ -203,6 +206,21 @@ record."
                       (default #f))
   (serial-speed       bootloader-configuration-serial-speed ;integer | #f
                       (default #f)))
+
+;;; Deprecated.
+(define (bootloader-configuration-target config)
+  (warning (G_ "the 'target' field is deprecated, please use 'targets' \
+instead~%"))
+  (%bootloader-configuration-target config))
+
+(define (bootloader-configuration-targets config)
+  (or (%bootloader-configuration-targets config)
+      ;; TODO: Remove after the deprecated 'target' field is removed.
+      (list (bootloader-configuration-target config))
+      ;; XXX: At least the GRUB installer (see (gnu bootloader grub)) has this
+      ;; peculiar behavior of installing fonts and GRUB modules when DEVICE is #f,
+      ;; hence the default value of '(#f) rather than '().
+      (list #f)))
 
 
 ;;;

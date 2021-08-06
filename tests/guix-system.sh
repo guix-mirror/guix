@@ -115,7 +115,7 @@ cat > "$tmpfile" <<EOF
   (timezone "Europe/Paris")                           ; 6
   (locale "en_US.UTF-8")                              ; 7
 
-  (bootloader (GRUB-config (target "/dev/sdX")))      ; 9
+  (bootloader (GRUB-config (targets (list "/dev/sdX"))))        ; 9
   (file-systems (cons (file-system
                         (device (file-system-label "root"))
                         (mount-point "/")
@@ -168,7 +168,7 @@ OS_BASE='
 
   (bootloader (bootloader-configuration
                (bootloader grub-bootloader)
-               (target "/dev/sdX")))
+               (targets (list "/dev/sdX"))))
   (file-systems (cons (file-system
                         (device (file-system-label "root"))
                         (mount-point "/")
@@ -241,7 +241,7 @@ make_user_config ()
 
   (bootloader (bootloader-configuration
                 (bootloader grub-bootloader)
-                (target "/dev/sdX")))
+                (targets (list "/dev/sdX"))))
   (file-systems (cons (file-system
                         (device (file-system-label "root"))
                         (mount-point "/")

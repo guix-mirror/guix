@@ -2569,14 +2569,15 @@ in particular:
 
 @itemize
 @item
-Make sure the @code{bootloader-configuration} form refers to the target
-you want to install GRUB on.  It should mention @code{grub-bootloader} if
-you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
-for newer UEFI systems.  For legacy systems, the @code{target} field
-names a device, like @code{/dev/sda}; for UEFI systems it names a path
-to a mounted EFI partition, like @code{/boot/efi}; do make sure the path is
-currently mounted and a @code{file-system} entry is specified in your
-configuration.
+Make sure the @code{bootloader-configuration} form refers to the targets
+you want to install GRUB on.  It should mention @code{grub-bootloader}
+if you are installing GRUB in the legacy way, or
+@code{grub-efi-bootloader} for newer UEFI systems.  For legacy systems,
+the @code{targets} field contain the names of the devices, like
+@code{(list "/dev/sda")}; for UEFI systems it names the paths to mounted
+EFI partitions, like @code{(list "/boot/efi")}; do make sure the paths
+are currently mounted and a @code{file-system} entry is specified in
+your configuration.
 
 @item
 Be sure that your file system labels match the value of their respective
@@ -13543,7 +13544,7 @@ the @code{bootloader} field should contain something along these lines:
 @lisp
 (bootloader-configuration
   (bootloader grub-efi-bootloader)
-  (target "/boot/efi"))
+  (targets '("/boot/efi")))
 @end lisp
 
 @xref{Bootloader Configuration}, for more information on the available
@@ -14758,7 +14759,7 @@ configuration would look like:
   (keyboard-layout (keyboard-layout "tr"))  ;for the console
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
-                (target "/boot/efi")
+                (targets '("/boot/efi"))
                 (keyboard-layout keyboard-layout))) ;for GRUB
   (services (cons (set-xorg-configuration
                     (xorg-configuration             ;for Xorg
@@ -33188,11 +33189,11 @@ in ``legacy'' BIOS mode.
 through TFTP@.  In combination with an NFS root file system this allows you to
 build a diskless Guix system.
 
-The installation of the @code{grub-efi-netboot-bootloader} generates the content
-of the TFTP root directory at @code{target}
-(@pxref{Bootloader Configuration, @code{target}}), to be served by a TFTP server.
- You may want to mount your TFTP server directory onto @code{target} to move the
-required files to the TFTP server automatically.
+The installation of the @code{grub-efi-netboot-bootloader} generates the
+content of the TFTP root directory at @code{targets} (@pxref{Bootloader
+Configuration, @code{targets}}), to be served by a TFTP server.  You may
+want to mount your TFTP server directories onto the @code{targets} to
+move the required files to the TFTP server automatically.
 
 If you plan to use an NFS root file system as well (actually if you mount the
 store from an NFS share), then the TFTP server needs to serve the file
@@ -33203,22 +33204,25 @@ files from the store will be accessed by GRUB through TFTP with their normal
 store path, for example as
 @file{tftp://tftp-server/gnu/store/…-initrd/initrd.cpio.gz}.
 
-Two symlinks are created to make this possible.  The first symlink is
-@code{target}@file{/efi/Guix/boot/grub/grub.cfg} pointing to
-@file{../../../boot/grub/grub.cfg},
-where @code{target} may be @file{/boot}.  In this case the link is not leaving
-the served TFTP root directory, but otherwise it does.  The second link is
-@code{target}@file{/gnu/store} and points to @file{../gnu/store}.  This link
-is leaving the served TFTP root directory.
+Two symlinks are created to make this possible.  For each target in the
+@code{targets} field, the first symlink is
+@samp{target}@file{/efi/Guix/boot/grub/grub.cfg} pointing to
+@file{../../../boot/grub/grub.cfg}, where @samp{target} may be
+@file{/boot}.  In this case the link is not leaving the served TFTP root
+directory, but otherwise it does.  The second link is
+@samp{target}@file{/gnu/store} and points to @file{../gnu/store}.  This
+link is leaving the served TFTP root directory.
 
-The assumption behind all this is that you have an NFS server exporting the root
-file system for your Guix system, and additionally a TFTP server exporting your
-@code{target} directory—usually @file{/boot}—from that same root file system for
-your Guix system.  In this constellation the symlinks will work.
+The assumption behind all this is that you have an NFS server exporting
+the root file system for your Guix system, and additionally a TFTP
+server exporting your @code{targets} directories—usually a single
+@file{/boot}—from that same root file system for your Guix system.  In
+this constellation the symlinks will work.
 
-For other constellations you will have to program your own bootloader installer,
-which then takes care to make necessary files from the store accessible through
-TFTP, for example by copying them into the TFTP root directory at @code{target}.
+For other constellations you will have to program your own bootloader
+installer, which then takes care to make necessary files from the store
+accessible through TFTP, for example by copying them into the TFTP root
+directory to your @code{targets}.
 
 It is important to note that symlinks pointing outside the TFTP root directory
 may need to be allowed in the configuration of your TFTP server.  Further the
@@ -33230,18 +33234,19 @@ NFS servers, you also need a properly configured DHCP server to make the booting
 over netboot possible.  For all this we can currently only recommend you to look
 for instructions about @acronym{PXE, Preboot eXecution Environment}.
 
-@item @code{target}
-This is a string denoting the target onto which to install the
+@item @code{targets}
+This is a list of strings denoting the targets onto which to install the
 bootloader.
 
-The interpretation depends on the bootloader in question.  For
-@code{grub-bootloader}, for example, it should be a device name understood by
-the bootloader @command{installer} command, such as @code{/dev/sda} or
-@code{(hd0)} (@pxref{Invoking grub-install,,, grub, GNU GRUB Manual}).  For
-@code{grub-efi-bootloader}, it should be the mount point of the EFI file
-system, usually @file{/boot/efi}.  For @code{grub-efi-netboot-bootloader},
-@code{target} should be the mount point corresponding to the TFTP root
-directory of your TFTP server.
+The interpretation of targets depends on the bootloader in question.
+For @code{grub-bootloader}, for example, they should be device names
+understood by the bootloader @command{installer} command, such as
+@code{/dev/sda} or @code{(hd0)} (@pxref{Invoking grub-install,,, grub,
+GNU GRUB Manual}).  For @code{grub-efi-bootloader}, they should be mount
+points of the EFI file system, usually @file{/boot/efi}.  For
+@code{grub-efi-netboot-bootloader}, @code{targets} should be the mount
+points corresponding to TFTP root directories served by your TFTP
+server.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
@@ -33657,7 +33662,7 @@ files, packages, and so on.  It also creates other essential files
 needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
-This command also installs bootloader on the target specified in
+This command also installs bootloader on the targets specified in
 @file{my-os-config}, unless the @option{--no-bootloader} option was
 passed.
 
@@ -34053,7 +34058,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
    (timezone "Etc/UTC")
    (bootloader (bootloader-configuration
                 (bootloader grub-bootloader)
-                (target "/dev/vda")
+                (targets '("/dev/vda"))
                 (terminal-outputs '(console))))
    (file-systems (cons (file-system
                         (mount-point "/")
