@@ -304,3 +304,24 @@ allows runtimes to work on Windows as well as on Linux without much effort.")
     (description "OpenCL 2.0 compatible language runtime, supporting offline
 and in-process/in-memory compilation.")
     (license license:ncsa)))
+
+(define-public rocminfo
+  (package
+    (name "rocminfo")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/rocminfo.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pcm308vwkjrwnrk507iya20mkil8j0vx699w9jk2gas4n4jvkcz"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; No tests.
+    (inputs `(("rocr-runtime" ,rocr-runtime)))
+    (home-page "https://github.com/RadeonOpenCompute/rocminfo")
+    (synopsis "ROCm Application for Reporting System Info")
+    (description #f)
+    (license license:ncsa)))
