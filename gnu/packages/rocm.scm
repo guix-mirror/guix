@@ -90,3 +90,28 @@ tasks needed for the ROCM software stack.")
             "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
             "-DBUILD_SHARED_LIBS:BOOL=TRUE"
             "-DLLVM_VERSION_SUFFIX=")))))))
+
+(define-public rocm-device-libs
+  (package
+    (name "rocm-device-libs")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/ROCm-Device-Libs.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f8xsylfajpxqjk6ayjnrry53y8b0a6lh9d72pd41nffxfyzvw3w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+             "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE")))
+    (inputs `(("llvm" ,llvm-for-rocm)))
+    (home-page "https://github.com/RadeonOpenCompute/ROCm-Device-Libs")
+    (synopsis "ROCm Device libraries")
+    (description "AMD-specific device-side language runtime libraries, namely
+oclc, ocml, ockl, opencl, hip and hc.")
+    (license license:ncsa)))
