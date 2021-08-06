@@ -10244,6 +10244,32 @@ provide the historic behavior of @code{flet}, as well as
 @code{declare-function} stub for older Emacs.")
     (license license:gpl2+)))
 
+(define-public emacs-epithet
+  ;; No tags.
+  (let ((commit "cc42338376c2c58da561214c554be8e8856f6a2b"))
+    (package
+      (name "emacs-epithet")
+      (version "0.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/oantolin/epithet")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06irgshgcgmm09nswrny8mam6l660ai71rgn0l3rmyp9li8n97j0"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/oantolin/epithet")
+      (synopsis "Rename Emacs buffers with descriptive names")
+      (description
+       "This package provides a function---@code{epithet-rename-buffer}---to rename
+the current buffer with a descriptive name. The name suggestion is governed by
+the @code{epithet-suggesters} hook variable: each hook should return either a
+name suggestion or @code{nil}, they are called in turn and the first non-nil
+suggestion is taken.")
+      (license license:gpl3+))))
+
 (define-public emacs-mocker
   (package
     (name "emacs-mocker")
