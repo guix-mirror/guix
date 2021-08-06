@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6310,3 +6311,35 @@ the machinery described in the paper \"Learning interactions via hierarchical
 group-lasso regularization\" (JCGS 2015, Volume 24, Issue 3).
 Michael Lim & Trevor Hastie (2015)")
     (license license:gpl2)))
+
+(define-public r-datasaurus
+  (package
+    (name "r-datasaurus")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "datasauRus" version))
+        (sha256
+          (base32
+            "1w1yhwwrmh95bklacz44wjwynxd8cj3z8b9zvsnzmk18m5a4k0fl"))))
+    (properties `((upstream-name . "datasauRus")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://github.com/lockedata/datasauRus")
+    (synopsis "Datasets from the Datasaurus Dozen")
+    (description
+     "The Datasaurus Dozen is a set of datasets with the same summary
+statistics.  They retain the same summary statistics despite having radically
+different distributions.  The datasets represent a larger and quirkier object
+lesson that is typically taught via Anscombe's Quartet (available in the
+'datasets' package).  Anscombe's Quartet contains four very different
+distributions with the same summary statistics and as such highlights the value
+of visualisation in understanding data, over and above summary statistics.  As
+well as being an engaging variant on the Quartet, the data is generated in a
+novel way.  The simulated annealing process used to derive datasets from the
+original Datasaurus is detailed in \"Same Stats, Different Graphs: Generating
+Datasets with Varied Appearance and Identical Statistics through Simulated
+Annealing\" @url{doi:10.1145/3025453.3025912}.")
+    (license license:expat)))
