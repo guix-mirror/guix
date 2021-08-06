@@ -169,3 +169,42 @@ AMDGPU code objects.")
     (description "User-mode API interfaces used to interact with the ROCk
 driver.")
     (license license:ncsa)))
+
+(define-public rocr-runtime
+  (package
+    (name "rocr-runtime")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/ROCR-Runtime.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jqfqf5ymwlbpac065bhigmkgsk7mbyimdgvca7ymn38wpf80ka7"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       `(,(string-append
+           "-DBITCODE_DIR="
+           (assoc-ref %build-inputs "rocm-device-libs")
+           "/amdgcn/bitcode/"))
+       #:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src"))))))
+    (inputs
+     `(("libelf" ,libelf)
+       ("numactl" ,numactl)
+       ("llvm" ,llvm-for-rocm)
+       ("roct-thunk-interface" ,roct-thunk-interface)
+       ("rocm-device-libs" ,rocm-device-libs))) ; For bitcode.
+    (native-inputs `(("xxd" ,xxd)))
+    (home-page "https://github.com/RadeonOpenCompute/ROCR-Runtime")
+    (synopsis "ROCm Platform Runtime")
+    (description "User-mode API interfaces and libraries necessary for host
+applications to launch compute kernels to available HSA ROCm kernel agents.")
+    (license license:ncsa)))
