@@ -208,3 +208,48 @@ driver.")
     (description "User-mode API interfaces and libraries necessary for host
 applications to launch compute kernels to available HSA ROCm kernel agents.")
     (license license:ncsa)))
+
+(define-public rocclr
+  (package
+    (name "rocclr")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ROCm-Developer-Tools/ROCclr.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pm1y020zriz7zmi95w0rcpka0jrsc7wwh81sssnysi8wxk3nnfy"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:configure-flags
+       `(,(string-append
+           "-DOPENCL_DIR="
+           (assoc-ref %build-inputs "rocm-opencl-runtime-src")))))
+    (inputs
+     `(("mesa" ,mesa)
+       ("rocm-comgr" ,rocm-comgr)
+       ("llvm" ,llvm-for-rocm)
+       ("rocm-device-libs" ,rocm-device-libs)
+       ("rocr-runtime" ,rocr-runtime)
+       ("rocm-cmake" ,rocm-cmake)
+       ;; rocclr depends on a few headers provided by rocm-opencl-runtime.
+       ("rocm-opencl-runtime-src"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime.git")
+                 (commit (string-append "rocm-" version))))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32
+             "1cglpiaj3ny1z74ssmy6j63vj92sfy4q38ix6qsga0mg3b2wvqz3"))))))
+    (home-page "https://github.com/ROCm-Developer-Tools/ROCclr")
+    (synopsis "Radeon Open Compute Common Language Runtime")
+    (description "ROCclr is a virtual device interface that compute runtimes
+interact with to different backends such as ROCr or PAL.  This abstraction
+allows runtimes to work on Windows as well as on Linux without much effort.")
+    (license license:ncsa)))
