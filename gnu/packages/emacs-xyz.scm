@@ -210,6 +210,7 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages shellutils)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnupg)
@@ -2888,6 +2889,18 @@ overlay below or above the point.  Corfu can be considered the minimalistic
        (sha256
         (base32 "0xkqn4604k2imas6azy1www56br8ls4iv9a44pxcd8h94j1fp44d"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-in-direnv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((direnv-path (assoc-ref inputs "direnv"))
+                    (direnv-bin (string-append
+                                 "\"" direnv-path "/bin/direnv\"")))
+               (substitute* "direnv.el"
+                 (("\"direnv\"") direnv-bin))))))))
+    (inputs
+     `(("direnv" ,direnv)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("with-editor" ,emacs-with-editor)))
