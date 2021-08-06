@@ -115,3 +115,35 @@ tasks needed for the ROCM software stack.")
     (description "AMD-specific device-side language runtime libraries, namely
 oclc, ocml, ockl, opencl, hip and hc.")
     (license license:ncsa)))
+
+(define-public rocm-comgr
+  (package
+    (name "rocm-comgr")
+    (version %rocm-version)
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/ROCm-CompilerSupport.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0bakbm7shr0l67lph44b5cnc9psd6rivg1mp79qizaawkn380x60"))
+              (patches
+               (search-patches "rocm-comgr-3.1.0-dependencies.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "lib/comgr"))))))
+    (inputs
+     `(("rocm-device-libs" ,rocm-device-libs)
+       ("llvm" ,llvm-for-rocm)
+       ("lld" ,lld)))
+    (home-page "https://github.com/RadeonOpenCompute/ROCm-CompilerSupport")
+    (synopsis "ROCm Code Object Manager")
+    (description "The Comgr library provides APIs for compiling and inspecting
+AMDGPU code objects.")
+    (license license:ncsa)))

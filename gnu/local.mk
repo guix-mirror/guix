@@ -1701,6 +1701,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rnp-add-version.cmake.patch		\
   %D%/packages/patches/rnp-disable-ruby-rnp-tests.patch		\
   %D%/packages/patches/rnp-unbundle-googletest.patch		\
+  %D%/packages/patches/rocm-comgr-3.1.0-dependencies.patch \
   %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
   %D%/packages/patches/rust-1.19-mrustc.patch			\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
