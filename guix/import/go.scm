@@ -6,6 +6,7 @@
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (web uri)
 
   #:export (go-module->guix-package
+            go-module->guix-package*
             go-module-recursive-import))
 
 ;;; Commentary:
@@ -646,7 +648,28 @@ hint: use one of the following available versions ~a\n"
          dependencies+versions
          dependencies))))
 
-(define go-module->guix-package* (memoize go-module->guix-package))
+(define go-module->guix-package*
+  (lambda args
+    ;; Disable output buffering so that the following warning gets printed
+    ;; consistently.
+    (setvbuf (current-error-port) 'none)
+    (let ((package-name (match args ((name _ ...) name))))
+      (guard (c ((http-get-error? c)
+                 (warning (G_ "Failed to import package ~s.
+reason: ~s could not be fetched: HTTP error ~a (~s).
+This package and its dependencies won't be imported.~%")
+                          package-name
+                          (uri->string (http-get-error-uri c))
+                          (http-get-error-code c)
+                          (http-get-error-reason c))
+                 (values #f '()))
+                (else
+                 (warning (G_ "Failed to import package ~s.
+reason: ~s.~%")
+                          package-name
+                          (exception-args c))
+                 (values #f '())))
+        (apply go-module->guix-package args)))))
 
 (define* (go-module-recursive-import package-name
                                      #:key (goproxy "https://proxy.golang.org")
@@ -656,23 +679,12 @@ hint: use one of the following available versions ~a\n"
   (recursive-import
    package-name
    #:repo->guix-package
-   (lambda* (name #:key version repo)
-     ;; Disable output buffering so that the following warning gets printed
-     ;; consistently.
-     (setvbuf (current-error-port) 'none)
-     (guard (c ((http-get-error? c)
-                (warning (G_ "Failed to import package ~s.
-reason: ~s could not be fetched: HTTP error ~a (~s).
-This package and its dependencies won't be imported.~%")
-                         name
-                         (uri->string (http-get-error-uri c))
-                         (http-get-error-code c)
-                         (http-get-error-reason c))
-                (values #f '())))
-       (receive (package-sexp dependencies)
-           (go-module->guix-package* name #:goproxy goproxy
-                                     #:version version
-                                     #:pin-versions? pin-versions?)
-         (values package-sexp dependencies))))
+   (memoize
+    (lambda* (name #:key version repo)
+      (receive (package-sexp dependencies)
+          (go-module->guix-package* name #:goproxy goproxy
+                                    #:version version
+                                    #:pin-versions? pin-versions?)
+        (values package-sexp dependencies))))
    #:guix-name go-module->guix-package-name
    #:version version))
