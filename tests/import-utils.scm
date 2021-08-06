@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,33 @@
                        (values '(package
                                   (name "bar"))
                                '())))
+                    #:guix-name identity))
+
+(test-equal "recursive-import: skip false packages (toplevel)"
+  '()
+  (recursive-import "foo"
+                    #:repo 'repo
+                    #:repo->guix-package
+                    (match-lambda*
+                      (("foo" #:version #f #:repo 'repo)
+                       (values #f '())))
+                    #:guix-name identity))
+
+(test-equal "recursive-import: skip false packages (dependency)"
+  '((package
+      (name "foo")
+      (inputs `(("bar" ,bar)))))
+  (recursive-import "foo"
+                    #:repo 'repo
+                    #:repo->guix-package
+                    (match-lambda*
+                      (("foo" #:version #f #:repo 'repo)
+                       (values '(package
+                                  (name "foo")
+                                  (inputs `(("bar" ,bar))))
+                               '("bar")))
+                      (("bar" #:version #f #:repo 'repo)
+                       (values #f '())))
                     #:guix-name identity))
 
 (test-assert "alist->package with simple source"

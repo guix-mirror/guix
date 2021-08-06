@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -489,15 +490,16 @@ to obtain the Guix package name corresponding to the upstream name."
                                    (name (list name #f))) dependencies)))
       (make-node name version package normalized-deps)))
 
-  (map node-package
-       (topological-sort (list (lookup-node package-name version))
-                         (lambda (node)
-                           (map (lambda (name-version)
-                                  (apply lookup-node name-version))
-                                (remove (lambda (name-version)
-                                          (apply exists? name-version))
-                                        (node-dependencies node))))
-                         (lambda (node)
-                           (string-append
-                            (node-name node)
-                            (or (node-version node) ""))))))
+  (filter-map
+   node-package
+   (topological-sort (list (lookup-node package-name version))
+                     (lambda (node)
+                       (map (lambda (name-version)
+                              (apply lookup-node name-version))
+                            (remove (lambda (name-version)
+                                      (apply exists? name-version))
+                                    (node-dependencies node))))
+                     (lambda (node)
+                       (string-append
+                        (node-name node)
+                        (or (node-version node) ""))))))
