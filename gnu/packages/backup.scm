@@ -948,11 +948,12 @@ is like a time machine for your data. ")
                (invoke "go" "run" "build.go"))))
 
          (replace 'check
-           (lambda _
-             (with-directory-excursion "src/github.com/restic/restic"
-               ;; Disable FUSE tests.
-               (setenv "RESTIC_TEST_FUSE" "0")
-               (invoke "go" "run" "build.go" "--test"))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "src/github.com/restic/restic"
+                 ;; Disable FUSE tests.
+                 (setenv "RESTIC_TEST_FUSE" "0")
+                 (invoke "go" "run" "build.go" "--test")))))
 
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
