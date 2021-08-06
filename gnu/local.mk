@@ -1416,6 +1416,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-9-fix-bitcast-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-lpad-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-scev-miscompilation.patch	\
+  %D%/packages/patches/llvm-roc-3.0.0-add_libraries.patch \
+  %D%/packages/patches/llvm-roc-4.0.0-remove-isystem-usr-include.patch \
+  %D%/packages/patches/llvm-roc-4.2.0-add_Object.patch \
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lrcalc-includes.patch    		\
   %D%/packages/patches/lsh-fix-x11-forwarding.patch		\
