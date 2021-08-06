@@ -668,7 +668,7 @@ This package and its dependencies won't be imported.~%")
                          (uri->string (http-get-error-uri c))
                          (http-get-error-code c)
                          (http-get-error-reason c))
-                (values '() '())))
+                (values #f '())))
        (receive (package-sexp dependencies)
            (go-module->guix-package* name #:goproxy goproxy
                                      #:version version
