@@ -28251,6 +28251,35 @@ provides a simple but convenient user interface to manage those trashed
 files.")
     (license license:gpl3+)))
 
+(define-public emacs-placeholder
+  ;; No tags.
+  (let ((commit "b80cb152ddd63db40cc581eafee9d2ac08328df8"))
+    (package
+      (name "emacs-placeholder")
+      (version "0.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/oantolin/placeholder")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1ifiaxrp7inj70a3zf5137dih4b1sw38zmkp3h7dj79k2bv7h34h"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/oantolin/placeholder")
+      (synopsis "Treat any buffer as a template with placeholders to fill-in")
+      (description
+       "This package provides a simple way to treat text in a buffer as a template
+with placeholders where text needs to be filled in.  Any occurrence of
+@code{<++>} in the buffer is a placeholder.  You can navigate among the
+placeholder with the placeholder-forward and placeholder-backward commands.
+They move the point to the next placeholder in the specified direction and
+delete the placeholder so you can immediately start typing the text that
+should replace it.  However, if you call them again immediately after, they
+restore that occurrence of the placeholder and move to the next.")
+      (license license:gpl3+))))
+
 (define-public emacs-plantuml-mode
   (package
     (name "emacs-plantuml-mode")
