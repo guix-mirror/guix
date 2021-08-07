@@ -51,6 +51,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
@@ -193,7 +194,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "14.2")
+    (version "15.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -201,7 +202,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1wb6zyln49ca93rl9id8r873b2sb8l79122ck824kr0s5isgglvm"))
+               "1851rg4h6sjwanvd294hn52z321rc6vbs4gbfrlw53597dx8h2x4"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -218,8 +219,7 @@ rates.")
     (arguments
      `(#:configure-flags
        (let ((out (assoc-ref %outputs "out")))
-         (list "-Doss-output=disable"
-               "-Dbluez5=true"
+         (list "-Doss-output=disabled"
                "-Dlocalstatedir=/var"
                (string-append "-Dudevrulesdir="
                               out "/lib/udev/rules.d")
@@ -258,6 +258,7 @@ rates.")
        ("libxcb" ,libxcb)
        ("libxtst" ,libxtst)
 
+       ("elogind" ,elogind)
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
      `(("check" ,check)
