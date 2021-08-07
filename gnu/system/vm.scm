@@ -630,7 +630,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
     (bootloader (bootloader-configuration
                   (inherit (operating-system-bootloader os))
                   (bootloader grub-bootloader)
-                  (target "/dev/vda")))
+                  (targets '("/dev/vda"))))
 
     (initrd (lambda (file-systems . rest)
               (apply (operating-system-initrd os)

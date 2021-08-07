@@ -19,7 +19,7 @@
   ;; Partition mounted on /boot/efi.
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
-                (target "/boot/efi")
+                (targets '("/boot/efi"))
                 (keyboard-layout keyboard-layout)))
 
   ;; Specify a mapped device for the encrypted root partition.

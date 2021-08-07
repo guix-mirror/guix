@@ -39,7 +39,7 @@
     (locale "en_US.utf8")
     (bootloader (bootloader-configuration
                  (bootloader u-boot-novena-bootloader)
-                 (target "/dev/vda")))
+                 (targets '("/dev/vda"))))
     (initrd-modules '("sdhci-esdhc-imx" "ahci_imx" "i2c-dev"))
     ;(kernel linux-libre-arm-generic)
     (kernel-arguments '("console=ttymxc1,115200"))

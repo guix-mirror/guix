@@ -454,7 +454,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     (name-service-switch %mdns-host-lookup-nss)
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sda")))
+                 (targets '("/dev/sda"))))
     (label (string-append "GNU Guix installation "
                           (package-version guix)))
 
@@ -530,7 +530,7 @@ operating-system's kernel-arguments (\"console=ttyS0\" or similar)."
     (bootloader (bootloader-configuration
                  (bootloader (bootloader (inherit u-boot-bootloader)
                               (package (make-u-boot-package board triplet))))
-                 (target bootloader-target)))))
+                 (targets (list bootloader-target))))))
 
 (define* (embedded-installation-os bootloader bootloader-target tty
                                    #:key (extra-modules '()))
@@ -542,7 +542,7 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
     (inherit installation-os)
     (bootloader (bootloader-configuration
                  (bootloader bootloader)
-                 (target bootloader-target)))
+                 (targets (list bootloader-target))))
     (kernel linux-libre)
     (kernel-arguments
      (cons (string-append "console=" tty)

@@ -14,7 +14,7 @@
   ;; the label of the target root file system.
   (bootloader (bootloader-configuration
                (bootloader u-boot-beaglebone-black-bootloader)
-               (target "/dev/mmcblk1")))
+               (targets '("/dev/mmcblk1"))))
 
   ;; This module is required to mount the SD card.
   (initrd-modules (cons "omap_hsmmc" %base-initrd-modules))

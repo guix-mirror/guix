@@ -110,7 +110,7 @@
     (hurd hurd)
     (bootloader (bootloader-configuration
                  (bootloader grub-minimal-bootloader)
-                 (target "/dev/vda")))
+                 (targets '("/dev/vda"))))
     (initrd #f)
     (initrd-modules (lambda _ '()))
     (firmware '())

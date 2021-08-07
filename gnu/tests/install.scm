@@ -494,7 +494,7 @@ reboot\n")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets '("/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons* (file-system
                            (device (file-system-label "my-root"))
@@ -709,7 +709,7 @@ by 'mdadm'.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets '("/dev/vdb"))))
 
     ;; Note: Do not pass "console=ttyS0" so we can use our passphrase prompt
     ;; detection logic in 'enter-luks-passphrase'.

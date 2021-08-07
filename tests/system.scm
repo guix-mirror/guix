@@ -39,7 +39,7 @@
     (locale "en_US.utf8")
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sdX")))
+                 (targets '("/dev/sdX"))))
     (file-systems (cons %root-fs %base-file-systems))
 
     (users %base-user-accounts)))
@@ -56,7 +56,7 @@
     (locale "en_US.utf8")
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sdX")))
+                 (targets '("/dev/sdX"))))
     (mapped-devices (list %luks-device))
     (file-systems (cons (file-system
                           (inherit %root-fs)
