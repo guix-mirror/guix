@@ -95,6 +95,7 @@ Copyright @copyright{} 2021 Raghav Gururajan@*
 Copyright @copyright{} 2021 Domagoj Stolfa@*
 Copyright @copyright{} 2021 Hui Lu@*
 Copyright @copyright{} 2021 pukkamustard@*
+Copyright @copyright{} 2021 Alice Brenon@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -11659,14 +11660,30 @@ Traverse the dependency graph of the given upstream package recursively
 and generate package expressions for all those packages that are not yet
 in Guix.
 @item --repo
-Select the given repository (a repository name).  Possible values include:
+By default, packages are searched in the official OPAM repository.  This
+option, which can be used more than once, lets you add other repositories
+which will be searched for packages.  It accepts as valid arguments:
+
 @itemize
-@item @code{opam}, the default opam repository,
-@item @code{coq} or @code{coq-released}, the stable repository for coq packages,
-@item @code{coq-core-dev}, the repository that contains development versions of coq,
-@item @code{coq-extra-dev}, the repository that contains development versions
-      of coq packages.
+@item the name of a known repository - can be one of @code{opam},
+      @code{coq} (equivalent to @code{coq-released}),
+	  @code{coq-core-dev}, @code{coq-extra-dev} or @code{grew}.
+@item the URL of a repository as expected by the @code{opam repository
+      add} command (for instance, the URL equivalent of the above
+	  @code{opam} name would be @uref{https://opam.ocaml.org}).
+@item the path to a local copy of a repository (a directory containing a
+      @file{packages/} sub-directory).
 @end itemize
+
+Repositories are assumed to be passed to this option by order of
+preference.  The additional repositories will not replace the default
+@code{opam} repository, which is always kept as a fallback.
+
+Also, please note that versions are not compared accross repositories.
+The first repository (from left to right) that has at least one version
+of a given package will prevail over any others, and the version
+imported will be the latest one found @emph{in this repository only}.
+
 @end table
 
 @item go

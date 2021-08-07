@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Alice Brenon <alice.brenon@ens-lyon.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,21 +23,24 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 peg)
+  #:use-module ((ice-9 popen) #:select (open-pipe*))
   #:use-module (ice-9 receive)
-  #:use-module ((ice-9 rdelim) #:select (read-line))
   #:use-module (ice-9 textual-ports)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
-  #:use-module (web uri)
+  #:use-module ((srfi srfi-26) #:select (cut))
+  #:use-module ((web uri) #:select (string->uri uri->string))
+  #:use-module ((guix build utils) #:select (dump-port find-files mkdir-p))
   #:use-module (guix build-system)
   #:use-module (guix build-system ocaml)
   #:use-module (guix http-client)
-  #:use-module (guix git)
   #:use-module (guix ui)
   #:use-module (guix packages)
   #:use-module (guix upstream)
-  #:use-module (guix utils)
+  #:use-module ((guix utils) #:select (cache-directory
+                                       version>?
+                                       call-with-temporary-output-file))
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:export (opam->guix-package
@@ -121,51 +125,83 @@
 (define-peg-pattern condition-string all (and QUOTE (* STRCHR) QUOTE))
 (define-peg-pattern condition-var all (+ (or (range #\a #\z) "-" ":")))
 
-(define* (get-opam-repository #:optional repo)
+(define (opam-cache-directory path)
+  (string-append (cache-directory) "/opam/" path))
+
+(define known-repositories
+  '((opam . "https://opam.ocaml.org")
+    (coq . "https://coq.inria.fr/opam/released")
+    (coq-released . "https://coq.inria.fr/opam/released")
+    (coq-core-dev . "https://coq.inria.fr/opam/core-dev")
+    (coq-extra-dev . "https://coq.inria.fr/opam/extra-dev")
+    (grew . "http://opam.grew.fr")))
+
+(define (get-uri repo-root)
+  (let ((archive-file (string-append repo-root "/index.tar.gz")))
+    (or (string->uri archive-file)
+        (begin
+          (warning (G_ "'~a' is not a valid URI~%") archive-file)
+          'bad-repo))))
+
+(define (repo-type repo)
+  (match (assoc-ref known-repositories (string->symbol repo))
+    (#f (if (file-exists? repo)
+            `(local ,repo)
+            `(remote ,(get-uri repo))))
+    (url `(remote ,(get-uri url)))))
+
+(define (update-repository input)
+  "Make sure the cache for opam repository INPUT is up-to-date"
+  (let* ((output (opam-cache-directory (basename (port-filename input))))
+         (cached-date (if (file-exists? output)
+                          (stat:mtime (stat output))
+                          (begin (mkdir-p output) 0))))
+    (when (> (stat:mtime (stat input)) cached-date)
+      (call-with-port
+       (open-pipe* OPEN_WRITE "tar" "xz" "-C" output "-f" "-")
+       (cut dump-port input <>)))
+    output))
+
+(define* (get-opam-repository #:optional (repo "opam"))
   "Update or fetch the latest version of the opam repository and return the
 path to the repository."
-  (let ((url (cond
-               ((or (not repo) (equal? repo 'opam))
-                "https://github.com/ocaml/opam-repository")
-               ((string-prefix? "coq-" (symbol->string repo))
-                "https://github.com/coq/opam-coq-archive")
-               ((equal? repo 'coq) "https://github.com/coq/opam-coq-archive")
-               (else (throw 'unknown-repository repo)))))
-    (receive (location commit _)
-      (update-cached-checkout url)
-      (cond
-        ((or (not repo) (equal? repo 'opam))
-         location)
-        ((equal? repo 'coq)
-         (string-append location "/released"))
-        ((string-prefix? "coq-" (symbol->string repo))
-         (string-append location "/" (substring (symbol->string repo) 4)))
-        (else location)))))
+  (match (repo-type repo)
+    (('local p) p)
+    (('remote 'bad-repo) #f) ; to weed it out during filter-map in opam-fetch
+    (('remote r) (call-with-port (http-fetch/cached r) update-repository))))
 
 ;; Prevent Guile 3 from inlining this procedure so we can mock it in tests.
 (set! get-opam-repository get-opam-repository)
 
-(define (latest-version versions)
-  "Find the most recent version from a list of versions."
-  (fold (lambda (a b) (if (version>? a b) a b)) (car versions) versions))
+(define (get-version-and-file path)
+  "Analyse a candidate path and return an list containing information for proper
+  version comparison as well as the source path for metadata."
+  (and-let* ((metadata-file (string-append path "/opam"))
+             (filename (basename path))
+             (version (string-join (cdr (string-split filename #\.)) ".")))
+    (and (file-exists? metadata-file)
+         (eq? 'regular (stat:type (stat metadata-file)))
+         (if (string-prefix? "v" version)
+             `(V ,(substring version 1) ,metadata-file)
+             `(digits ,version ,metadata-file)))))
+
+(define (keep-max-version a b)
+  "Version comparison on the lists returned by the previous function taking the
+  janestreet re-versioning into account (v-prefixed come first)."
+  (match (cons a b)
+    ((('V va _) . ('V vb _)) (if (version>? va vb) a b))
+    ((('V _ _) . _) a)
+    ((_ . ('V _ _)) b)
+    ((('digits va _) . ('digits vb _)) (if (version>? va vb) a b))))
 
 (define (find-latest-version package repository)
   "Get the latest version of a package as described in the given repository."
-  (let* ((dir (string-append repository "/packages/" package))
-         (versions (scandir dir (lambda (name) (not (string-prefix? "." name))))))
-    (if versions
-      (let ((versions (map
-                        (lambda (dir)
-                          (string-join (cdr (string-split dir #\.)) "."))
-                        versions)))
-        ;; Workaround for janestreet re-versionning
-        (let ((v-versions (filter (lambda (version) (string-prefix? "v" version)) versions)))
-          (if (null? v-versions)
-            (latest-version versions)
-            (string-append "v" (latest-version (map (lambda (version) (substring version 1)) v-versions))))))
-      (begin
-        (format #t (G_ "Package not found in opam repository: ~a~%") package)
-        #f))))
+  (let ((packages (string-append repository "/packages"))
+        (filter (make-regexp (string-append "^" package "\\."))))
+    (reduce keep-max-version #f
+            (filter-map
+             get-version-and-file
+             (find-files packages filter #:directories? #t)))))
 
 (define (get-metadata opam-file)
   (with-input-from-file opam-file
@@ -266,28 +302,30 @@ path to the repository."
 
 (define (depends->native-inputs depends)
   (filter (lambda (name) (not (equal? "" name)))
-    (map dependency->native-input depends)))
+          (map dependency->native-input depends)))
 
 (define (dependency-list->inputs lst)
   (map
-    (lambda (dependency)
-      (list dependency (list 'unquote (string->symbol dependency))))
-    (ocaml-names->guix-names lst)))
+   (lambda (dependency)
+     (list dependency (list 'unquote (string->symbol dependency))))
+   (ocaml-names->guix-names lst)))
 
-(define* (opam-fetch name #:optional (repository (get-opam-repository)))
-  (and-let* ((repository repository)
-             (version (find-latest-version name repository))
-             (file (string-append repository "/packages/" name "/" name "." version "/opam")))
-    `(("metadata" ,@(get-metadata file))
-      ("version" . ,(if (string-prefix? "v" version)
-                        (substring version 1)
-                        version)))))
+(define* (opam-fetch name #:optional (repositories-specs '("opam")))
+  (or (fold (lambda (repository others)
+              (match (find-latest-version name repository)
+                ((_ version file) `(("metadata" ,@(get-metadata file))
+                                    ("version" . ,version)))
+                (_ others)))
+            #f
+            (filter-map get-opam-repository repositories-specs))
+      (leave (G_ "package '~a' not found~%") name)))
 
-(define* (opam->guix-package name #:key (repo 'opam) version)
-  "Import OPAM package NAME from REPOSITORY (a directory name) or, if
-REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
+(define* (opam->guix-package name #:key (repo '()) version)
+  "Import OPAM package NAME from REPOSITORIES (a list of names, URLs or local
+paths, always including OPAM's official repository).  Return a 'package' sexp
 or #f on failure."
-  (and-let* ((opam-file (opam-fetch name (get-opam-repository repo)))
+  (and-let* ((with-opam (if (member "opam" repo) repo (cons "opam" repo)))
+             (opam-file (opam-fetch name with-opam))
              (version (assoc-ref opam-file "version"))
              (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))
@@ -312,9 +350,7 @@ or #f on failure."
                    (values
                     `(package
                        (name ,(ocaml-name->guix-name name))
-                       (version ,(if (string-prefix? "v" version)
-                                   (substring version 1)
-                                   version))
+                       (version ,version)
                        (source
                          (origin
                            (method url-fetch)
