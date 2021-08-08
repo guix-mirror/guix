@@ -154,7 +154,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.7
   (package
     (inherit ruby)
-    (version "2.7.2")
+    (version "2.7.4")
     (source
      (origin
        (method url-fetch)
@@ -163,12 +163,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.gz"))
        (sha256
         (base32
-         "1m63461mxi3fg4y3bspbgmb0ckbbb1ldgf9xi0piwkpfsk80cmvf"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))
+         "0nxwkxh7snmjqf787qsp4i33mxd1rbf9yzyfiky5k230i680jhrh"))))
     (arguments
      `(#:test-target "test"
        #:configure-flags '("--enable-shared") ; dynamic linking
