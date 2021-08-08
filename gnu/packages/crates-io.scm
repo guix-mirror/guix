@@ -56941,7 +56941,7 @@ variant of this library is available separately as @code{im}.")
 (define-public svd2rust
   (package
     (name "svd2rust")
-    (version "0.17.0")
+    (version "0.19.0")
     (source
       (origin
         (method url-fetch)
@@ -56950,20 +56950,22 @@ variant of this library is available separately as @code{im}.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "0850pn92a5pmrlavdsm4s9wgrgx9gz0vylf9i594nj8sixmddjd9"))))
+            "0q8slfgjfhpljzlk2myb0i538mfq99q1ljn398jm17r1q2pjjxhv"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
-        (("rust-cast" ,rust-cast-0.2)
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-cast" ,rust-cast-0.2)
          ("rust-clap" ,rust-clap-2)
+         ("rust-clap-conf" ,rust-clap-conf-0.1)
          ("rust-env-logger" ,rust-env-logger-0.7)
-         ("rust-error-chain" ,rust-error-chain-0.12)
          ("rust-inflections" ,rust-inflections-1)
          ("rust-log" ,rust-log-0.4)
          ("rust-proc-macro2" ,rust-proc-macro2-0.4)
          ("rust-quote" ,rust-quote-1)
          ("rust-svd-parser" ,rust-svd-parser-0.9)
-         ("rust-syn" ,rust-syn-1))))
+         ("rust-syn" ,rust-syn-1)
+         ("rust-thiserror" ,rust-thiserror-1))))
     (home-page #f)
     (synopsis
       "Generate Rust register maps (`struct`s) from SVD files")
