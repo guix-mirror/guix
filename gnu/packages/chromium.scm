@@ -865,7 +865,7 @@
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c-69)
+       ("icu4c" ,icu4c)
        ("lcms" ,lcms)
        ("libevent" ,libevent)
        ("libffi" ,libffi)
