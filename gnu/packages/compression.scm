@@ -1347,10 +1347,11 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
                          "makefile.linux_any_cpu_gcc_4.X")))
                      "makefile.machine")))
          (replace 'check
-           (lambda _
-             (invoke "make" "test")
-             (invoke "make" "test_7z")
-             (invoke "make" "test_7zr"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "test")
+               (invoke "make" "test_7z")
+               (invoke "make" "test_7zr")))))))
     (native-inputs
      (let ((system (or (%current-target-system)
                        (%current-system))))
