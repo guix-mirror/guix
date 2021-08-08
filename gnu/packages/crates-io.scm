@@ -56649,7 +56649,7 @@ configuration file and/or environment variables.")
          ("rust-xmltree" ,rust-xmltree-0.8))
         #:cargo-development-inputs
         (("rust-serde-json" ,rust-serde-json-1))))
-    (home-page #f)
+    (home-page "https://github.com/rust-embedded/svd")
     (synopsis "A CMSIS-SVD file parser")
     (description
       "This package provides a CMSIS-SVD file parser")
