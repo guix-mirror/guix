@@ -1320,7 +1320,10 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
                              (find-files  "Utils/file_Codecs_Rar_so.py")))
                   (delete-file-recursively "CPP/7zip/Archive/Rar")
                   (delete-file-recursively "CPP/7zip/Compress/Rar")
-                  #t))
+                  ;; Fix FTBFS with gcc-10.
+                  (substitute* "CPP/Windows/ErrorMsg.cpp"
+                    (("switch\\(errorCode\\) \\{")
+                     "switch(static_cast<HRESULT>(errorCode)) {"))))
               (patches (search-patches "p7zip-CVE-2016-9296.patch"
                                        "p7zip-CVE-2017-17969.patch"
                                        "p7zip-remove-unused-code.patch"))))
