@@ -15919,7 +15919,8 @@ gexps to introduce job definitions that are passed to mcron
          (lambda ()
            (execl (string-append #$findutils "/bin/updatedb")
                   "updatedb"
-                  "--prunepaths=/tmp /var/tmp /gnu/store"))))
+                  "--prunepaths=/tmp /var/tmp /gnu/store"))
+         "updatedb"))
 
 (define garbage-collector-job
   ;; Collect garbage 5 minutes after midnight every day.
@@ -15947,6 +15948,14 @@ gexps to introduce job definitions that are passed to mcron
                                          idutils-job))
                   %base-services)))
 @end lisp
+
+@quotation Tip
+When providing the action of a job specification as a procedure, you
+should provide an explicit name for the job via the optional 3rd
+argument as done in the @code{updatedb-job} example above.  Otherwise,
+the job would appear as ``Lambda function'' in the output of
+@command{herd schedule mcron}, which is not nearly descriptive enough!
+@end quotation
 
 For more complex jobs defined in Scheme where you need control over the top
 level, for instance to introduce a @code{use-modules} form, you can move your
