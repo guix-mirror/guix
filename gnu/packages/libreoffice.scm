@@ -272,8 +272,16 @@ into other word processors.")
         (uri (string-append "mirror://sourceforge/libebook/libe-book-"
                             version "/libe-book-" version ".tar.xz"))
         (sha256
-          (base32
-            "1yg1vws1wggzhjw672bpgh2x541g5i9wryf67g51m0r79zrqz3by"))))
+         (base32
+          "1yg1vws1wggzhjw672bpgh2x541g5i9wryf67g51m0r79zrqz3by"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; This can be removed with the next release.
+            ;; Needed for icu4c compatibility >= 68.0.
+            (substitute* "src/lib/EBOOKCharsetConverter.cpp"
+              (("TRUE, TRUE, &status")
+              "true, true, &status"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
