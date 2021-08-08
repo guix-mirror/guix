@@ -1334,18 +1334,15 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key system outputs #:allow-other-keys)
-             (invoke "cp"
-                     (let ((system ,(or (%current-target-system)
-                                        (%current-system))))
-                       (cond
-                        ((string-prefix? "x86_64" system)
-                         "makefile.linux_amd64_asm")
-                        ((string-prefix? "i686" system)
-                         "makefile.linux_x86_asm_gcc_4.X")
-                        (else
-                         "makefile.linux_any_cpu_gcc_4.X")))
-                     "makefile.machine")))
+           (lambda _
+             (copy-file
+               ,(cond ((target-x86-64?)
+                       "makefile.linux_amd64_asm")
+                      ((target-x86-32?)
+                       "makefile.linux_x86_asm_gcc_4.X")
+                      (else
+                        "makefile.linux_any_cpu_gcc_4.X"))
+               "makefile.machine")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
