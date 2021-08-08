@@ -553,7 +553,8 @@ library primarily intended for language guessing.")
                "1b1lvqh68rwij1yvmxy02hsmh7i74ma5767mk8mg5nx6chajshhf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(#:configure-flags '("--disable-werror")
+       #:phases (modify-phases %standard-phases
                   (add-before 'build 'adjust-for-ICU-65
                     (lambda _
                       ;; Fix build with ICU 65 and later.  Taken from this
