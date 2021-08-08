@@ -360,7 +360,8 @@ libskba (working with X.509 certificates and CMS data).")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1fkq4sqldvf6a25mm2qz95swv1qjg464736091w51djiwqbjyin9"))))
+                "1fkq4sqldvf6a25mm2qz95swv1qjg464736091w51djiwqbjyin9"))
+              (patches (search-patches "gnupg-1-build-with-gcc10.patch"))))
     (native-inputs '())
     (inputs
      `(("zlib" ,zlib)
