@@ -56627,7 +56627,7 @@ configuration file and/or environment variables.")
 (define-public rust-svd-parser-0.9
   (package
     (name "rust-svd-parser")
-    (version "0.9.0")
+    (version "0.10.2")
     (source
       (origin
         (method url-fetch)
@@ -56636,12 +56636,14 @@ configuration file and/or environment variables.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "1qhvdz3k76i3sfypcy8c84hhb8sqixrckba21kalzcpgy6an45ml"))))
+            "1fbr4m9cla6xvmrib7pad9hv29sn2d5hjbc77pz12lwzmm2pczk9"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
         (("rust-anyhow" ,rust-anyhow-1)
-         ("rust-either" ,rust-either-1)
+         ("rust-once-cell" ,rust-once-cell-1)
+         ("rust-rayon" ,rust-rayon-1)
+         ("rust-regex" ,rust-regex-1)
          ("rust-serde" ,rust-serde-1)
          ("rust-thiserror" ,rust-thiserror-1)
          ("rust-xmltree" ,rust-xmltree-0.8))
