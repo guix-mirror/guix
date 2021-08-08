@@ -5387,7 +5387,13 @@ developed as part of the Netsurf project.")
                            "libcss-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1p66sdiiqm7w4jkq23hsf08khsnmq93hshh9f9m8sbirjdpf3p6j"))))
+         "1p66sdiiqm7w4jkq23hsf08khsnmq93hshh9f9m8sbirjdpf3p6j"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; This can be removed with the next release.
+           (substitute* "src/select/computed.c"
+             (("css_unit unit;") "css_unit unit = CSS_UNIT_PX;"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
