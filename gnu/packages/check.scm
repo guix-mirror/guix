@@ -763,7 +763,7 @@ similar to unit tests.")
 (define-public cpputest
   (package
     (name "cpputest")
-    (version "3.8")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
@@ -771,7 +771,7 @@ similar to unit tests.")
                            version "/cpputest-" version ".tar.gz"))
        (sha256
         (base32
-         "0mk48xd3klyqi7wf3f4wn4zqxxzmvrhhl32r25jzrixzl72wq7f8"))))
+         "1xslavlb1974y5xvs8n1j9zkk05dlw8imy4saasrjlmibl895ii1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("googletest" ,googletest)))
