@@ -592,7 +592,15 @@ Aldus/Macromedia/Adobe FreeHand documents.")
       (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "1fhkn013gzg59f4z7rldpbi0nj7lgdqzxanspsqa6axvmahw2dpg"))))
+               "1fhkn013gzg59f4z7rldpbi0nj7lgdqzxanspsqa6axvmahw2dpg"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; This can be removed with the next release.
+          ;; https://gerrit.libreoffice.org/c/libmspub/+/73814
+          (substitute* "src/lib/MSPUBMetaData.h"
+            (("include <vector>" all)
+             (string-append all "\n#include <cstdint>")))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
