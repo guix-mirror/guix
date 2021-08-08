@@ -907,7 +907,7 @@ the HTML documentation of TXR.")
 (define-public txr
   (package
     (name "txr")
-    (version "266")
+    (version "268")
     (source
      (origin
        (method git-fetch)
@@ -916,7 +916,7 @@ the HTML documentation of TXR.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k9mj3zaxdsylgnb8g6cq0cmp6420x7fp3nnsqdmds4gh8ib95wn"))))
+        (base32 "0q97qddbgk9356gx4xp8iip4pwj3ln03dvjfgrny76f3wmmiwsw6"))))
     (build-system gnu-build-system)
     (native-inputs
      ;; Required to build the documentation.
@@ -961,10 +961,7 @@ the HTML documentation of TXR.")
            (lambda _
              (substitute* (list "tests/017/realpath.tl"
                                 "tests/017/realpath.expected")
-               (("/usr/bin") "/"))
-             (substitute* "tests/018/path-test.tl"
-               (("/bin") (dirname (which "sh"))))
-             #t))
+               (("/usr/bin") "/"))))
          (replace 'configure
            ;; ./configure is a hand-written script that can't handle standard
            ;; autotools arguments like CONFIG_SHELL.
