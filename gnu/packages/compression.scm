@@ -1350,13 +1350,11 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
                (invoke "make" "test_7z")
                (invoke "make" "test_7zr")))))))
     (native-inputs
-     (let ((system (or (%current-target-system)
-                       (%current-system))))
-       `(,@(cond ((string-prefix? "x86_64" system)
-                  `(("yasm" ,yasm)))
-                 ((string-prefix? "i686" system)
-                  `(("nasm" ,nasm)))
-                 (else '())))))
+      (cond ((target-x86-64?)
+             (list yasm))
+            ((target-x86-32?)
+             (list nasm))
+            (else '())))
     (home-page "http://p7zip.sourceforge.net/")
     (synopsis "Command-line file archiver with high compression ratio")
     (description "p7zip is a command-line port of 7-Zip, a file archiver that
