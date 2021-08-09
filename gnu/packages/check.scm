@@ -2163,42 +2163,25 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.6.0")
+    (version "2.9.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/PyCQA/pylint")
-             (commit (string-append "pylint-" version))))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ws3dz3wm49brnhhfm7v75zq202pwlwfbi3njdd69aqxq912x15z"))))
+        (base32 "15yw69v1cj6zkndk60c2g0dgl0khh8bfm1lrwhjffpdjfc7nkc9a"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #t
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               ;; The following failing tests are skipped (see:
-               ;; https://github.com/PyCQA/pylint/issues/4068).
-               (invoke "pytest" "-k"
-                       (string-append
-                        "not unused_typing_imports "
-                        "and not star_needs_assignment_target_py35 "
-                        "and not regression_property_no_member_2641 "
-                        "and not missing_kwoa_py3"))))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-benchmark" ,python-pytest-benchmark)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-tox" ,python-tox)))
+       ("python-pytest-runner" ,python-pytest-runner)))
     (propagated-inputs
      `(("python-astroid" ,python-astroid)
        ("python-isort" ,python-isort)
        ("python-mccabe" ,python-mccabe)
-       ("python-six" ,python-six)
        ("python-toml" ,python-toml)))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
