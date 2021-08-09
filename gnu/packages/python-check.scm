@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
@@ -727,13 +727,13 @@ compliance.")
 (define-public python-pytest-isort
   (package
     (name "python-pytest-isort")
-    (version "0.3.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-isort" version))
        (sha256
-        (base32 "06myn5hhxs5yp8dqr1yjsgcnnxnsrvsqannm00bvaw0qml6ydzjb"))))
+        (base32 "05wi28zlqk3jafpjal8j523y5jcsx3xl3id9rx93qfjgkif8q6l2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -745,6 +745,8 @@ compliance.")
     (propagated-inputs
      `(("python-isort" ,python-isort)
        ("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
     (home-page "https://github.com/moccu/pytest-isort/")
     (synopsis "Pytest plugin to check import ordering using isort")
     (description
