@@ -1,0 +1,29 @@
+https://sources.debian.org/data/main/d/docopt/0.6.2-3/debian/patches/pytest6
+
+From: Michael R. Crusoe <crusoe@debian.org>
+Subject: fix for pytest 6.x comptability
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=979285
+
+--- docopt.orig/conftest.py
++++ docopt/conftest.py
+@@ -11,6 +11,8 @@
+ 
+ def pytest_collect_file(path, parent):
+     if path.ext == ".docopt" and path.basename.startswith("test"):
++        if hasattr(DocoptTestFile, "from_parent"):
++            return DocoptTestFile.from_parent(parent, fspath=path)
+         return DocoptTestFile(path, parent)
+ 
+ 
+@@ -41,7 +43,10 @@
+         for name, doc, cases in parse_test(raw):
+             name = self.fspath.purebasename
+             for case in cases:
+-                yield DocoptTestItem("%s(%d)" % (name, index), self, doc, case)
++                if hasattr(DocoptTestItem, "from_parent"):
++                    yield DocoptTestItem.from_parent(self, name="%s(%d)" % (name, index), doc=doc, case=case)
++                else:
++                    yield DocoptTestItem("%s(%d)" % (name, index), self, doc, case)
+                 index += 1
+ 
+ 

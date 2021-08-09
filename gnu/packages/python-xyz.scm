@@ -11563,7 +11563,8 @@ automatically detect a wide range of file encodings.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0aad9gbswnnhssin2q0m5lmpm0ahyf80ahs2zjigbn5y7fvljnd0"))))
+         "0aad9gbswnnhssin2q0m5lmpm0ahyf80ahs2zjigbn5y7fvljnd0"))
+       (patches (search-patches "python-docopt-pytest6-compat.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
