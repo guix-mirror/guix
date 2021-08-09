@@ -20751,8 +20751,9 @@ library to allow local file system access via @code{file://} URLs.")
          ;; system-error "utime" "~A" ("No such file or directory")
          (delete 'ensure-no-mtimes-pre-1980)
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)))
