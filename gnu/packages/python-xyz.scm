@@ -3745,14 +3745,14 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-markupsafe
   (package
     (name "python-markupsafe")
-    (version "1.1.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
-         "0sqipg4fk7xbixqd8kq6rlkxj664d157bdwbh93farcphf92x1r9"))))
+         "02k2ynmqvvd0z0gakkf8s4idyb606r7zgga41jrkhqmigy06fk2r"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
