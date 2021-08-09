@@ -2943,8 +2943,9 @@ minimum of WSGI.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv" "tests"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "tests")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
