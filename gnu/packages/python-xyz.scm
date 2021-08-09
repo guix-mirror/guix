@@ -17080,34 +17080,29 @@ happens using the @code{logging} library.")
     (license license:gpl3+)))
 
 (define-public python-astroid
-  (let ((revision "1")
-        (commit "5f67396894c79c4661e357ec8bb03aa134a51109"))
-    (package
-      (name "python-astroid")
-      (version (git-version "2.4.2" revision commit))
-      (source
-       (origin
-         ;; The current 2.4.2 release doesn't support Python 3.9.
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/PyCQA/astroid")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1ir5716wqgz39jva7x9chhjy41yi3n7fkymb8snh5giwig8kyipk"))))
-      (build-system python-build-system)
-      (propagated-inputs
-       `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
-         ("python-six" ,python-six)
-         ("python-wrapt" ,python-wrapt)))
-      (native-inputs
-       `(("python-dateutil" ,python-dateutil)
-         ("python-pytest" ,python-pytest)
-         ("python-pytest-runner" ,python-pytest-runner)))
-      (home-page "https://github.com/PyCQA/astroid")
-      (synopsis "Common base representation of python source code for pylint and
+  (package
+    (name "python-astroid")
+    (version "2.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PyCQA/astroid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1amzf996inwmh4r3mlpzmch60xs6lrg86vppfnwl1y0l8r0y7zxh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
+       ("python-wrapt" ,python-wrapt)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/PyCQA/astroid")
+    (synopsis "Common base representation of python source code for pylint and
 other projects")
-      (description "@code{python-astroid} provides a common base representation
+    (description "@code{python-astroid} provides a common base representation
 of python source code for projects such as pychecker, pyreverse, pylint, etc.
 
 It provides a compatible representation which comes from the _ast module.  It
@@ -17116,8 +17111,8 @@ down the AST and building an extended ast.  The new node classes have
 additional methods and attributes for different usages.  They include some
 support for static inference and local name scopes.  Furthermore, astroid
 builds partial trees by inspecting living objects.")
-      (license license:lgpl2.1+)
-      (properties `((python2-variant . ,(delay python2-astroid)))))))
+    (license license:lgpl2.1+)
+    (properties `((python2-variant . ,(delay python2-astroid))))))
 
 (define-public python2-astroid
   (let ((base (package-with-python2
