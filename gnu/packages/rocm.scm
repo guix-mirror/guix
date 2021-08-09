@@ -334,7 +334,8 @@ and in-process/in-memory compilation.")
        ("kmod" ,kmod)))
     (home-page "https://github.com/RadeonOpenCompute/rocminfo")
     (synopsis "ROCm Application for Reporting System Info")
-    (description #f)
+    (description "List @acronym{HSA,Heterogeneous System Architecture} Agents
+available to ROCm and show their properties.")
     (license license:ncsa)))
 
 (define-public rocm-bandwidth-test
