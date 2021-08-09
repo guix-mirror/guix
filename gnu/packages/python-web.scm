@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
@@ -4044,28 +4044,31 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "1.0.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "0z74sa1xw5h20yin9faj0vvdbq713cgbj84klc72jr9nmpjv303c"))))
+         "0hlwawnn8c41f254qify5jnjj8xb97n294h09bqimzqhs0qdpq8x"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "python" "-m" "pytest"))))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest"
+                       ;; Test tries to use the network.
+                       "-k not test_reloader_sys_path")))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-timeout" ,python-pytest-timeout)))
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-xprocess" ,python-pytest-xprocess)))
     (home-page "https://palletsprojects.com/p/werkzeug/")
     (synopsis "Utilities for WSGI applications")
     (description "One of the most advanced WSGI utility modules.  It includes a
