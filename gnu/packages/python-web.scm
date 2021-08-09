@@ -284,14 +284,14 @@ using @url{https://github.com/saghul/pycares,pycares}.")
 (define-public python-aiorpcx
   (package
     (name "python-aiorpcx")
-    (version "0.18.3")
+    (version "0.18.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiorpcX" version))
        (sha256
         (base32
-         "0k545hc7wl6sh1svydzbv6x7sx5pig2pqkl3yxs9riwmvzawx9xp"))))
+         "1rswrspv27x33xa5bnhrkjqzhv0sknv5kd7pl1vidw9d2z4rx2l0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)))
