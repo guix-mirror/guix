@@ -6432,7 +6432,7 @@ the full Core is not available, such as in Javascript.")
 (define-public ocaml-markup
   (package
     (name "ocaml-markup")
-    (version "1.0.0")
+    (version "1.0.2")
     (home-page "https://github.com/aantron/markup.ml")
     (source
      (origin
@@ -6443,7 +6443,7 @@ the full Core is not available, such as in Javascript.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "09hkrf9pw6hpb9j06p5bddklpnjwdjpqza3bx2179l970yl67an9"))))
+         "1kvqwrrcrys5d0kzdwxcj66jpi6sdhfas4pcg02pixx92q87vhqm"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "markup"))
