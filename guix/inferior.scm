@@ -48,7 +48,7 @@
   #:use-module (gcrypt hash)
   #:autoload   (guix cache) (maybe-remove-expired-cache-entries
                              file-expiration-time)
-  #:autoload   (guix ui) (show-what-to-build*)
+  #:autoload   (guix ui) (build-notifier)
   #:autoload   (guix build utils) (mkdir-p)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -801,8 +801,10 @@ determines whether CHANNELS are authenticated."
                              (profile
                               (channel-instances->derivation instances)))
           (mbegin %store-monad
-            (show-what-to-build* (list profile))
+            ;; It's up to the caller to install a build handler to report
+            ;; what's going to be built.
             (built-derivations (list profile))
+
             ;; Note: Caching is fine even when AUTHENTICATE? is false because
             ;; we always call 'latest-channel-instances?'.
             (symlink* (derivation->output-path profile) cached)
@@ -821,10 +823,14 @@ This is a convenience procedure that people may use in manifests passed to
 'guix package -m', for instance."
   (define cached
     (with-store store
-      (cached-channel-instance store
-                               channels
-                               #:cache-directory cache-directory
-                               #:ttl ttl)))
+      ;; XXX: Install a build notifier out of convenience, so users know
+      ;; what's going on.  However, we cannot be sure that its options, such
+      ;; as #:use-substitutes?, correspond to the daemon's default settings.
+      (with-build-handler (build-notifier)
+        (cached-channel-instance store
+                                 channels
+                                 #:cache-directory cache-directory
+                                 #:ttl ttl))))
   (open-inferior cached))
 
 ;;; Local Variables:
