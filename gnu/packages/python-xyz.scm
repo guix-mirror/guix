@@ -20748,6 +20748,8 @@ library to allow local file system access via @code{file://} URLs.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; system-error "utime" "~A" ("No such file or directory")
+         (delete 'ensure-no-mtimes-pre-1980)
          (replace 'check
            (lambda _
              (invoke "pytest" "-vv"))))))
