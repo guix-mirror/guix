@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -32,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix hg-download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
@@ -557,6 +558,44 @@ style and key ordering are kept, so you can diff the source.")
 
 (define-public python2-ruamel.yaml
   (package-with-python2 python-ruamel.yaml))
+
+(define-public python-ruamel.yaml.clib
+  (package
+    (name "python-ruamel.yaml.clib")
+    (version "0.2.6")
+    (source
+      (origin
+        ;; pypi release code has cythonized code without corresponding source.
+        (method hg-fetch)
+        (uri (hg-reference
+               (url "http://hg.code.sf.net/p/ruamel-yaml-clib/code")
+               (changeset version)))
+        (file-name (string-append name "-" version "-checkout"))
+        (sha256
+         (base32
+          "05m3y7pjfbaarqbbgw1k6gs6cnnmxnwadjipxvw1aaaqk3s236cs"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file "_ruamel_yaml.c")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; This package is split from python-ruamel.yaml and
+                    ; depends on modules from it for the test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'sanity-check) ; Depends on python-ruamel.yaml
+         (add-after 'unpack 'cythonize-code
+           (lambda _
+             (invoke "cython" "_ruamel_yaml.pyx"))))))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree")
+    (synopsis "C version of reader, parser and emitter for ruamel.yaml")
+    (description
+     "This package provides a C version of the reader, parser and emitter for
+@code{ruamel.yaml} derived from libyaml.")
+    (license license:expat)))
 
 (define-public python-cbor
   (package
