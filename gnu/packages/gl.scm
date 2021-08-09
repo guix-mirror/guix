@@ -381,7 +381,10 @@ also known as DXTn or DXTC) for Mesa.")
                       (("'u_format_test', ") ""))
                     ;; It is only this portion of the test which fails.
                     (substitute* "src/mesa/main/tests/meson.build"
-                      ((".*mesa_formats.*") ""))))
+                      ((".*mesa_formats.*") ""))
+                    ;; This test times out and receives SIGTERM.
+                    (substitute* "src/amd/common/meson.build"
+                      (("and not with_platform_windows") "and with_platform_windows"))))
                  ("i686-linux"
                   ;; Disable new test from Mesa 19 that fails on i686.  Upstream
                   ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
