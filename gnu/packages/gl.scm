@@ -365,11 +365,11 @@ also known as DXTn or DXTC) for Mesa.")
          (add-after 'unpack 'disable-failing-test
            (lambda _
              ,@(match (%current-system)
-                 ("powerpc64le"
+                 ("powerpc64le-linux"
                   ;; Disable some of the llvmpipe tests.
                   `((substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
                       (("0\\.5, ") ""))))
-                 ("powerpc"
+                 ("powerpc-linux"
                   ;; There are some tests which fail specifically on powerpc.
                   `((substitute* '(;; LLVM ERROR: Relocation type not implemented yet!
                                    "src/gallium/drivers/llvmpipe/meson.build"
