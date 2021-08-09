@@ -2876,8 +2876,7 @@ without a complete in-memory representation of the data.")
           "1dvcl108ir9nqkk4mjm9xhhj4p9dx9bmg8bnms54fizs1x3x8ar3"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "tests"
-       #:build-flags (list "--profile=release")))
+     `(#:test-target "tests"))
     (propagated-inputs
      `(("ocaml-cmdliner" ,ocaml-cmdliner)))
     (home-page "https://www.typerex.org/ocp-indent.html")
@@ -3295,8 +3294,7 @@ build system and allows external tools to analyse your project easily.")
                   "1smcc0l6fh2n0y6bp96c69j5nw755jja99w0b206wx3yb2m4w2hs"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:build-flags (list "--profile" "release")))
+     `(#:tests? #f))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/mjambon/cppo")
@@ -3364,8 +3362,7 @@ standard iterator type starting from 4.07.")
         (base32 "07ycb103mr4mrkxfd63cwlsn023xvcjp0ra0k7n2gwrg0mwxmfss"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:build-flags (list "--profile" "release")))
+     `(#:tests? #f))
     (propagated-inputs
      `(("ocaml-seq" ,ocaml-seq)))
     (native-inputs
@@ -3842,9 +3839,8 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
                 "0chn7ldqb3wyf95yhmsxxq65cif56smgz1mhhc7m0dpwmyq1k97h"))))
     (build-system dune-build-system)
     (arguments
-     `(#:build-flags (list "--profile" "release")
-       #:test-target "camomile-test"
-       #:tests? #f; Tests fail, see https://github.com/yoriyuki/Camomile/issues/82
+     `(#:test-target "camomile-test"
+       #:tests? #f ; Tests fail, see https://github.com/yoriyuki/Camomile/issues/82
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-usr-share
@@ -3935,8 +3931,7 @@ connect an engine to your inputs and rendering functions to get an editor.")
         (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
     (build-system dune-build-system)
     (arguments
-     `(#:build-flags (list "--profile" "release")
-       #:tests? #f
+     `(#:tests? #f
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
