@@ -1517,7 +1517,7 @@ control to Git repositories.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.13.0")
+    (version "2.14.0")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -1527,7 +1527,7 @@ control to Git repositories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02lr8d6fkr32j4rpp2ac84a5gjwq16k1hb74j6js0kxg83qw6raf"))))
+        (base32 "0k6a9bmci5j0q0vmnmxxyx99h3i7lks8p7d76byadnxdh117ygqg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
