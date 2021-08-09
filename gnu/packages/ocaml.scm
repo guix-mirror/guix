@@ -4942,16 +4942,6 @@ provided by companion libraries such as
         (sha256
          (base32
           "0j6xb4265jr41vw4fjzak6yr8s30qrnzapnc6rl1dxy8bjai0nir"))))
-     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (replace 'build
-            ;; make warnings non fatal (jbuilder behaviour)
-            (lambda _
-              (invoke "dune" "build" "@install" "--profile=release"))))
-        #:ocaml ,ocaml-4.07
-        #:findlib ,ocaml4.07-findlib
-        #:dune ,ocaml4.07-dune))
      (properties '()))))
 
 (define-public ocaml-compiler-libs
