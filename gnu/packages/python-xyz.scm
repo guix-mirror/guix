@@ -218,6 +218,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -8475,10 +8476,15 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
         (base32
          "1k70gpn2d3vgdyxbdy536dgm4kchcraxz6lmgsfg3324iy2789q5"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f))
-    ;;XXX: 2 tests fail currently despite claming they were to be
-    ;;skipped. Also, beautifulsoup4 may depend on this in the future, so we
-    ;;don't want to create a circular dependency.
+    (arguments
+      ;;XXX: 2 tests fail currently despite claming they were to be
+      ;;skipped. Also, beautifulsoup4 may depend on this in the future, so we
+      ;;don't want to create a circular dependency.
+      (list #:tests? #f
+            #:phases
+            #~(modify-phases %standard-phases
+                ;; Circular dependency with python-beautifulsoup4.
+                (delete 'sanity-check))))
     (home-page "https://github.com/facelessuser/soupsieve")
     (synopsis "CSS selector library")
     (description
