@@ -77,6 +77,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
   #:use-module (gnu packages web-browsers)
@@ -775,7 +776,7 @@ the opam file format.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.8")
+    (version "2.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -784,78 +785,99 @@ the opam file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1z0ls6xxa4ws5xw0am5gxmh5apnmyhgkcphrncp53w34j8sfydsj"))))
-    (build-system ocaml-build-system)
+                "12l7l4pbzy71k1yc7ym5aczajszvc9bqkdnfg8xhqc8ch8j1h1lj"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "SHELL="
-                            (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs make-flags #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash"))
+                   (bwrap (string-append (assoc-ref inputs "bubblewrap")
+                                         "/bin/bwrap")))
+               (substitute* "src/core/opamSystem.ml"
+                 (("\"/bin/sh\"")
+                  (string-append "\"" bash "/bin/sh\""))
+                 (("getconf")
+                  (which "getconf")))
+               ;; Use bwrap from the store directly.
+               (substitute* "src/state/shellscripts/bwrap.sh"
+                 (("-v bwrap") (string-append "-v " bwrap))
+                 (("exec bwrap") (string-append "exec " bwrap))
+                 ;; Mount /gnu and /run/current-system in the
+                 ;; isolated environment when building with opam.
+                 ;; This is necessary for packages to find external
+                 ;; dependencies, such as a C compiler, make, etc...
+                 (("^add_sys_mounts /usr")
+                  (string-append "add_sys_mounts "
+                                 (%store-directory)
+                                 " /run/current-system /usr")))
+               (substitute* "src/client/opamInitDefaults.ml"
+                 (("\"bwrap\"") (string-append "\"" bwrap "\""))))))
+         (add-before 'check 'prepare-checks
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Opam tests need to run an isolated environment from a writable
+             ;; home directory.
+             (mkdir-p "test-home")
+             (setenv "HOME" (string-append (getcwd) "/test-home"))
 
-       ;; For some reason, 'ocp-build' needs $TERM to be set.
-       #:make-flags
-       (list "TERM=screen"
-             (string-append "SHELL="
-                            (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))
-
-       #:test-target "tests"
-
-       #:phases (modify-phases %standard-phases
-                 (add-before 'build 'pre-build
-                   (lambda* (#:key inputs make-flags #:allow-other-keys)
-                     (let ((bash (assoc-ref inputs "bash"))
-                           (bwrap (string-append (assoc-ref inputs "bubblewrap")
-                                                 "/bin/bwrap")))
-                       (substitute* "src/core/opamSystem.ml"
-                         (("\"/bin/sh\"")
-                          (string-append "\"" bash "/bin/sh\""))
-                         (("getconf")
-                          (which "getconf")))
-                       ;; Use bwrap from the store directly.
-                       (substitute* "src/state/shellscripts/bwrap.sh"
-                         (("-v bwrap") (string-append "-v " bwrap))
-                         (("exec bwrap") (string-append "exec " bwrap))
-                         ;; Mount /gnu and /run/current-system in the
-                         ;; isolated environment when building with opam.
-                         ;; This is necessary for packages to find external
-                         ;; dependencies, such as a C compiler, make, etc...
-                         (("^add_sys_mounts /usr")
-                          "add_sys_mounts /gnu /run/current-system /usr"))
-                       (substitute* "src/client/opamInitDefaults.ml"
-                         (("\"bwrap\"") (string-append "\"" bwrap "\"")))
-                       ;; Generating the documentation needs write access
-                       (for-each
-                         (lambda (f) (chmod f #o644))
-                         (find-files "doc" "."))
-                       #t)))
-                 (add-before 'check 'pre-check
-                   (lambda _
-                     ;; The "repo" test attempts to open some of these files O_WRONLY
-                     ;; and fails with a bogus "OpamSystem.File_not_found" otherwise.
-                     (for-each
-                      (lambda (f) (chmod f #o644))
-                      (find-files "tests/packages" "\\.opam$"))
-
-                     (substitute* "tests/Makefile"
-                       (("/usr/bin/printf")
-                        (which "printf"))
-                       ;; By default tests run twice: once with a "local" repository
-                       ;; and once with a git repository: disable the git tests to
-                       ;; avoid the dependency.
-                       (("all: local git")
-                        "all: local"))
-                     #t)))))
+             ;; Opam tests require data from opam-repository. Instead of
+             ;; downloading them with wget from the guix environment, copy the
+             ;; content to the expected directory.
+             (substitute* "tests/reftests/dune.inc"
+               (("tar -C.*opam-archive-([0-9a-f]*)[^)]*" _ commit)
+                (string-append "rmdir %{targets}) (run cp -r "
+                               (assoc-ref inputs (string-append "opam-repo-" commit))
+                               "/ %{targets}) (run chmod +w -R %{targets}"))
+               (("wget[^)]*") "touch %{targets}")
+               ;; Disable a failing test because of different line wrapping
+               (("diff cli-versioning.test cli-versioning.out") "run true")
+               ;; Disable a failing test because it tries to clone a git
+               ;; repository from inside bwrap
+               (("diff upgrade-format.test upgrade-format.out") "run true"))
+             (substitute* "tests/reftests/dune"
+               ;; Because of our changes to the previous file, we cannot check
+               ;; it can be regenerated
+               (("diff dune.inc dune.inc.gen") "run true"))
+             ;; Ensure we can run the generated build.sh (no /bin/sh)
+             (substitute* '("tests/reftests/legacy-local.test"
+                            "tests/reftests/legacy-git.test")
+               (("#! ?/bin/sh") (string-append "#!" (assoc-ref inputs "bash")
+                                               "/bin/sh")))
+             (substitute* "tests/reftests/testing-env"
+               (("OPAMSTRICT=1")
+                (string-append "OPAMSTRICT=1\nLIBRARY_PATH="
+                               (assoc-ref inputs "libc") "/lib"))))))))
     (native-inputs
-     `(("dune" ,dune)
-       ("ocaml-cppo" ,ocaml-cppo)
+      (let ((opam-repo (lambda (commit hash)
+                         (origin
+                           (method git-fetch)
+                           (uri (git-reference
+                                  (url "https://github.com/ocaml/opam-repository")
+                                  (commit commit)))
+                           (file-name (git-file-name "opam-repo" commit))
+                           (sha256 (base32 hash))))))
+       `(("dune" ,dune)
+         ("ocaml-cppo" ,ocaml-cppo)
 
-       ;; For tests.
-       ("openssl" ,openssl)
-       ("python" ,python-wrapper)
-       ("rsync" ,rsync)
-       ("unzip" ,unzip)
-       ("which" ,which)))
+         ;; For tests.
+         ("git" ,git-minimal)
+         ("openssl" ,openssl)
+         ("python" ,python-wrapper)
+         ("rsync" ,rsync)
+         ("unzip" ,unzip)
+         ("which" ,which)
+
+         ;; Data for tests
+         ("opam-repo-009e00fa" ,(opam-repo "009e00fa86300d11c311309a2544e5c6c3eb8de2"
+                                           "1wwy0rwrsjf4q10j1rh1dazk32fbzhzy6f7zl6qmndidx9b1bq7w"))
+         ("opam-repo-ad4dd344" ,(opam-repo "ad4dd344fe5cd1cab49ced49d6758a9844549fb4"
+                                           "1a1qj47kj8xjdnc4zc50ijrix1kym1n7k20n3viki80a7518baw8"))
+         ("opam-repo-c1d23f0e" ,(opam-repo "c1d23f0e17ec83a036ebfbad1c78311b898a2ca0"
+                                           "0j9abisx3ifzm66ci3p45mngmz4f0fx7yd9jjxrz3f8w5jffc9ii"))
+         ("opam-repo-f372039d" ,(opam-repo "f372039db86a970ef3e662adbfe0d4f5cd980701"
+                                           "0ld7fcry6ss6fmrpswvr6bikgx299w97h0gwrjjh7kd7rydsjdws")))))
     (inputs
      `(("ocaml" ,ocaml)
        ("ncurses" ,ncurses)
