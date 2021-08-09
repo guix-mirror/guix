@@ -320,7 +320,7 @@ with COMPRESSION, starting at NAR-PATH."
     (format #f "URL: ~a~%Compression: ~a~%~@[FileSize: ~a~%~]"
             url (compression-type compression) file-size)))
 
-(define* (narinfo-string store store-path key
+(define* (narinfo-string store store-path
                          #:key (compressions (list %no-compression))
                          (nar-path "nar") (file-sizes '()))
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
@@ -414,7 +414,7 @@ appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
                         `((cache-control (max-age . ,ttl)))
                         '()))
                 (cut display
-                  (narinfo-string store store-path (%private-key)
+                  (narinfo-string store store-path
                                   #:nar-path nar-path
                                   #:compressions compressions)
                   <>)))))
@@ -654,7 +654,6 @@ requested using POOL."
              (with-store store
                (let ((sizes (filter-map compressed-nar-size compression)))
                  (display (narinfo-string store item
-                                          (%private-key)
                                           #:nar-path nar-path
                                           #:compressions compressions
                                           #:file-sizes sizes)
