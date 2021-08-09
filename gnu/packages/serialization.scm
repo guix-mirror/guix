@@ -532,21 +532,23 @@ it is comparable to protobuf.")
 (define-public python-ruamel.yaml
   (package
     (name "python-ruamel.yaml")
-    (version "0.15.83")
+    (version "0.16.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ruamel.yaml" version))
        (sha256
         (base32
-         "0p4i8ad28cbbbjja8b9274irkhnphhvhap3aym6yb8xfp1d72kpw"))))
+         "0hm9yg785f46bkrgqknd6fdvmkby9dpzjnm0b63qf0i748acaj5v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-ruamel.yaml.clib" ,python-ruamel.yaml.clib)))
     (arguments
      `(;; TODO: Tests require packaging "ruamel.std.pathlib".
        #:tests? #f))
-    (home-page "https://bitbucket.org/ruamel/yaml")
+    (home-page "https://sourceforge.net/projects/ruamel-yaml/")
     (synopsis "YAML 1.2 parser/emitter")
     (description
      "This package provides YAML parser/emitter that supports roundtrip
@@ -555,9 +557,6 @@ is a derivative of Kirill Simonov’s PyYAML 3.11.  It supports YAML 1.2
 and has round-trip loaders and dumpers.  It supports comments.  Block
 style and key ordering are kept, so you can diff the source.")
     (license license:expat)))
-
-(define-public python2-ruamel.yaml
-  (package-with-python2 python-ruamel.yaml))
 
 (define-public python-ruamel.yaml.clib
   (package
