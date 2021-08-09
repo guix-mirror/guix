@@ -64,6 +64,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -4251,17 +4252,36 @@ name resolutions asynchronously.")
 (define-public python-yarl
   (package
     (name "python-yarl")
-    (version "1.1.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "yarl" version))
        (sha256
         (base32
-         "1s6z13g8vgxfkkqwhn6imnm7pl7ky9arv4jygnn6bcndcbidg7d6"))))
+         "045z4ssg8g5h0qhz8hnx74hswgkndaldqq1xi5l1n5s0j996d44a"))
+       (modules '((guix build utils)))
+       (snippet
+         #~(begin
+             (delete-file "yarl/_quoting_c.c")))))
     (build-system python-build-system)
+    (arguments
+      (list #:tests? #f     ; test suite can't find yarl._quoting_c
+            #:phases
+            #~(modify-phases %standard-phases
+                (add-after 'unpack 'cythonize-code
+                  (lambda _
+                    (invoke "cython" "yarl/_quoting_c.pyx")))
+                (replace 'check
+                  (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+                    (when tests?
+                      (substitute* "setup.cfg"
+                        (("--cov=yarl") ""))
+                      (add-installed-pythonpath inputs outputs)
+                      (invoke "python" "-m" "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (propagated-inputs
      `(("python-idna" ,python-idna)
