@@ -1560,16 +1560,14 @@ control to Git repositories.")
                        ;; Ruby and Node tests require node and gem.
                        "--ignore=tests/languages/node_test.py"
                        "--ignore=tests/languages/ruby_test.py"
-                       ;; FIXME: Python tests fail because of distlib version
-                       ;; mismatch.  Even with python-distlib/next it is
-                       ;; pulling version 0.3.0, while 0.3.1 is required.
-                       "--ignore=tests/languages/python_test.py" "-k"
+                       "-k"
                        (string-append
                         ;; TODO: these tests fail with AssertionError.  It may
                         ;; be possible to fix them.
                         "not test_install_existing_hooks_no_overwrite"
                         " and not test_uninstall_restores_legacy_hooks"
-                        " and not test_installed_from_venv")))))
+                        " and not test_installed_from_venv"
+                        " and not test_healthy_venv_creator")))))
          (add-before 'reset-gzip-timestamps 'make-gz-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
@@ -1581,7 +1579,7 @@ control to Git repositories.")
      `(("git" ,git-minimal)
        ("python-covdefaults" ,python-covdefaults)
        ("python-coverage" ,python-coverage)
-       ("python-distlib" ,python-distlib/next)
+       ("python-distlib" ,python-distlib)
        ("python-pytest" ,python-pytest)
        ("python-pytest-env" ,python-pytest-env)
        ("python-re-assert" ,python-re-assert)

@@ -3702,7 +3702,7 @@ e.g. filters, callbacks and errbacks can all be promises.")
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
-       ("python-distlib" ,python-distlib/next)
+       ("python-distlib" ,python-distlib)
        ("python-filelock" ,python-filelock)
        ("python-six" ,python-six)))
     (home-page "https://virtualenv.pypa.io/")
@@ -6230,19 +6230,6 @@ by pycodestyle.")
 relate to packaging and distribution of Python software.  It is intended to be
 used as the basis for third-party packaging tools.")
     (license license:psfl)))
-
-;; TODO: Merge with 'python-distlib' on the next rebuild cycle.
-(define-public python-distlib/next
-  (package
-    (inherit python-distlib)
-    (version "0.3.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "distlib" version ".zip"))
-       (sha256
-        (base32
-         "1wdzv7fsjhrkhh1wfkarlhcwa8m00mgcpdsvknmf2qy8f9l13xpd"))))))
 
 (define-public python-distutils-extra
   (package
