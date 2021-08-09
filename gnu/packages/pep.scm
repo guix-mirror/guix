@@ -244,7 +244,7 @@ ENGINE_INC_PATH=~a/include
      `(("boost-python" ,boost-with-python3)
        ("libpepadapter" ,libpepadapter)
        ("pep-engine" ,pep-engine)
-       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("util-linux" ,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Python adapter for p≡p (pretty Easy Privacy)")
