@@ -1893,22 +1893,23 @@ framework which enables you to test server connections locally.")
 (define-public python-pytest-xprocess
   (package
     (name "python-pytest-xprocess")
-    (version "0.9.1")
+    (version "0.18.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "pytest-xprocess" version))
              (sha256
               (base32
-               "17zlql1xqw3ywcgwwbqmw633aly99lab12hm02asr8awvg5603pp"))))
+               "0rm2rchrr63imn44xk5slwydxf8gvy579524qcxq7dc42pnk17zx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-cache" ,python-pytest-cache)
        ("python-psutil" ,python-psutil)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (synopsis "Pytest plugin to manage external processes across test runs")
     (description "Pytest-xprocess is an experimental py.test plugin for managing
 processes across test runs.")
-    (home-page "https://bitbucket.org/pytest-dev/pytest-xprocess")
+    (home-page "https://github.com/pytest-dev/pytest-xprocess/")
     (license license:expat)))
 
 (define-public python-pytest-subtesthack
