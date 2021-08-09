@@ -319,8 +319,19 @@ and in-process/in-memory compilation.")
                (base32
                 "0pcm308vwkjrwnrk507iya20mkil8j0vx699w9jk2gas4n4jvkcz"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; No tests.
-    (inputs `(("rocr-runtime" ,rocr-runtime)))
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-binary-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "rocminfo.cc"
+               (("lsmod")
+                (string-append (assoc-ref inputs "kmod") "/bin/lsmod"))
+               (("grep") (which "grep"))))))))
+    (inputs
+     `(("rocr-runtime" ,rocr-runtime)
+       ("kmod" ,kmod)))
     (home-page "https://github.com/RadeonOpenCompute/rocminfo")
     (synopsis "ROCm Application for Reporting System Info")
     (description #f)
