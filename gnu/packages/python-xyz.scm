@@ -11572,7 +11572,9 @@ automatically detect a wide range of file encodings.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "py.test"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "py.test")))))))
     (home-page "http://docopt.org")
     (synopsis "Command-line interface description language for Python")
     (description "This library allows the user to define a command-line
