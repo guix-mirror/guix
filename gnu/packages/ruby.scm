@@ -4756,7 +4756,10 @@ minitest 5.12, and is planned to be removed from minitest 6.")
          "05z8r6sw3fz4s44fs1150ndlcmcy82vlxmhps5nncg8vk59k3gmf"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:test-target "spec"))
+     '(#:test-target "spec"
+       ;; Test suite is incompatible with ruby-2.7.
+       ;; https://github.com/jeremyevans/minitest-hooks/issues/19
+       #:tests? #f))
     (native-inputs
      `(("ruby-sequel" ,ruby-sequel)
        ("ruby-sqlite3" ,ruby-sqlite3)))
