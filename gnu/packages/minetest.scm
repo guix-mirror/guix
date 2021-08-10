@@ -293,3 +293,38 @@ Minetest game, this mod has become an extension of the default mod an a library
 for general colour handling.")
     (license license:gpl2+)
     (properties `((upstream-name . "VanessaE/unifieddyes")))))
+
+(define-public minetest-unified-inventory
+  (package
+    (name "minetest-unified-inventory")
+    ;; Upstream doesn't keep version numbers, so use the release title
+    ;; on ContentDB instead.
+    (version "2021-03-25-1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minetest-mods/unified_inventory")
+             (commit "c044f5e3b08f0c68ab028d757b2fa63d9a1b0370")))
+       (sha256
+        (base32 "198g945gzbfl0kps46gwjw0c601l3b3wvn4c7dw8manskri1jr4g"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page (minetest-topic 12767))
+    (synopsis "Replace the default inventory in Minetest and add a crafting guide")
+    (description
+     "The Unified Inventory Minetest mod relaces the default survival an
+creative inventory.  It includes a node, item and tool browser, a crafting
+guide, a trash and refill slot for creative mode, bags and waypoints for keeping
+track of important locations.")
+    ;; CC-BY: some textures and icons
+    ;; CC-BY-SA: some textures and icons
+    ;; LGLPL2.1+: code and some textures
+    ;; GPL2+: some textures
+    ;; GPL3: bags.lua
+    ;; GFDL: some icons
+    ;; public domain, CC0: some icons
+    (license (list license:gpl3 license:gpl2+ license:lgpl2.1+ license:cc-by3.0
+                   license:cc-by4.0 license:cc-by-sa3.0 license:public-domain
+                   license:cc0 license:fdl1.2+))
+    (properties `((upstream-name . "RealBadAngel/unified_inventory")))))
