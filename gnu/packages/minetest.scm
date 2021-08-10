@@ -174,6 +174,41 @@ breakers simulate a player punching a node.")
     (license (list license:cc-by-sa4.0 license:lgpl3))
     (properties `((upstream-name . "VanessaE/pipeworks")))))
 
+(define-public minetest-technic
+  (package
+    (name "minetest-technic")
+    ;; Upstream doesn't keep version numbers, so use the release
+    ;; date on ContentDB instead.
+    (version "2021-04-15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minetest-mods/technic")
+             (commit "1c219487d3f4dd03c01ff9aa1f298c7c18c7e189")))
+       (sha256
+        (base32 "1k9hdgzp7jnhsk6rgrlrv1lr5xrmh8ln4wv6r25v6f0fwbyj57sf"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-pipeworks" ,minetest-pipeworks)
+       ("minetest-basic-materials" ,minetest-basic-materials)))
+    (home-page (minetest-topic 2538))
+    (synopsis "Machinery and automation for Minetest")
+    (description
+     "This Minetest mod adds machinery and automation to Minetest.
+It adds various ores that can be processed for constructing various
+machinery, such as power generators, force field emitters, quarries
+and a workshop for repairing tools.  Most machines are electrically
+powered.")
+    ;; CC BY-SA 3.0: some texture
+    ;; WTFPL: some textures
+    ;; CC BY-SA3.0: some textures
+    ;; CC BY-SA4.0: some sounds
+    (license (list license:lgpl2.1+ license:cc-by-sa3.0 license:cc-by-sa4.0
+                   license:wtfpl2))
+    (properties `((upstream-name . "RealBadAngel/technic")))))
+
 (define-public minetest-unifieddyes
   (package
     (name "minetest-unifieddyes")
