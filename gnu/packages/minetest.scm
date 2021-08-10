@@ -266,6 +266,29 @@ arrow and bow, but @code{minetest-throwing-arrows} does.")
 replacement for the throwing mod by PilzAdam that uses the throwing API.")
       (license license:mpl2.0))))
 
+(define-public minetest-worldedit
+  (package
+    (name "minetest-worldedit")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Uberi/Minetest-WorldEdit")
+             (commit "2f26fb76459c587868199160b9d7b5d6d7852e50")))
+       (sha256
+        (base32 "0lsvihkixi2na1b0vmml9vwgs0g24hqqshl73ffhkzh6jsq4cagq"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page (minetest-topic 572))
+    (synopsis "In-game world editor for Minetest")
+    (description
+     "WorldEdit is a mod for Minetest.  It allows for creating various
+geometric shapes and copying regions.  It can also export and import regions
+to and from the file system.")
+    (license license:agpl3)
+    (properties `((upstream-name . "sfan5/worldedit")))))
+
 (define-public minetest-unifieddyes
   (package
     (name "minetest-unifieddyes")
