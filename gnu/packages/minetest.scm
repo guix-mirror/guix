@@ -143,6 +143,35 @@ with different rules and mechanics.")
     (license (list license:lgpl3+ license:cc-by-sa3.0))
     (properties `((upstream-name . "Jeija/mesecons"))))))
 
+(define-public minetest-mobs
+  (package
+    (name "minetest-mobs")
+    ;; Upstream does not tag release, so use the ContentDB release
+    ;; title instead.
+    (version "2021-07-22")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://notabug.org/TenPlus1/mobs_redo")
+             (commit "9f46182bb4b1a390f9a140bc2b443f3cda702332")))
+       (sha256
+        (base32 "026kqjis4lipgskjivb3jh9ris3iz80vy2q1jvgxhxmfghjjzp4j"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page (minetest-topic 9917))
+    (synopsis "Mob library for Minetest mods, for animals, monsters etc.")
+    (description
+     "This Minetest mod provides an API for adding mods (moving entities
+like animals and monsters), but does not include any mobs itself.  To actually
+add some mobs, a mod like e.g. @code{mobs_animal} provided by the
+@code{minetest-mobs-animal} package needs to be enabled.")
+    ;; CC0: mob_swing.ogg
+    ;; CC-BY 3.0: mob_spell.ogg
+    ;; Expat: everything else
+    (license (list license:expat license:cc0 license:cc-by3.0))
+    (properties `((upstream-name . "TenPlus1/mobs")))))
+
 (define-public minetest-pipeworks
   (package
     (name "minetest-pipeworks")
