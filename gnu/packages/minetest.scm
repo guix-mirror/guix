@@ -78,6 +78,35 @@ coloured and cut wood shapes are provided as well.")
      (list license:cc-by-sa4.0 license:lgpl3))
     (properties `((upstream-name . "VanessaE/coloredwood")))))
 
+(define-public minetest-ethereal
+  ;; ContentDB release 2021-07-28 is slightly ahead of the
+  ;; initial version 1.29 -- i.e., some released changes have been
+  ;; made to version 1.29 without a corresponding version bump.
+  (let ((commit "7670c1da9274901f57f6682384af2b3bae005a86")
+        (revision "0"))
+    (package
+      (name "minetest-ethereal")
+      (version (git-version "1.29" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/TenPlus1/ethereal")
+               (commit commit)))
+         (sha256
+          (base32 "1hal8bq4fydsip7s8rqz4vlaaqy9rhzxmryd0j2qnqm9286yjgkk"))
+         (file-name (git-file-name name version))))
+      (build-system minetest-mod-build-system)
+      (home-page (minetest-topic 14638))
+      (synopsis "The Ethereal mod adds many new biomes to Minetest")
+      (description
+       "The Ethereal Minetest mod uses the v7 map generator to add many new
+biomes to the world.  It adds new trees, plants, food items, tweaks and some
+special items, intending to make an interesting adventure.")
+      ;; CC0: some textures
+      (license (list license:cc0 license:expat))
+      (properties `((upstream-name . "TenPlus1/ethereal"))))))
+
 (define-public minetest-mesecons
   ;; The release on ContentDB does not have its own version number.
   (let ((commit "db5879706d04d3480bc4863ce0c03fa73e5f10c7")
@@ -157,8 +186,7 @@ breakers simulate a player punching a node.")
              (url "https://gitlab.com/VanessaE/unifieddyes")
              (commit "ff3b2d30fa0df5c7181fdd401b989de6271c3bb3")))
        (sha256
-        (base32
-         "0rba9n192xcpmxwnq7ixb6mn32gkpic247j3w4mwinrqcyscacsv"))
+        (base32 "0rba9n192xcpmxwnq7ixb6mn32gkpic247j3w4mwinrqcyscacsv"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
