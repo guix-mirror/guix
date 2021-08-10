@@ -715,15 +715,13 @@ different notification systems.")
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
                            "-DKDE_INSTALL_LIBEXECDIR=libexec")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'set-paths 'extend-CPLUS_INCLUDE_PATH
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      ;; FIXME: <kcmutils_version.h> is not found during one
-                      ;; of the compilation steps without this hack.
-                      (setenv "CPLUS_INCLUDE_PATH"
-                              (string-append
-                               (search-input-directory inputs "include/KF5")
-                               ":" (or (getenv "CPLUS_INCLUDE_PATH") ""))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-include-header
+           (lambda _
+             (substitute* "plugins/runcommand/runcommandplugin.cpp"
+               (("<kcmutils_version.h>")
+                "<KF5/kcmutils_version.h>")))))
        #:tests? #f)) ; tests fail hard in our build environment
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
