@@ -107,6 +107,37 @@ special items, intending to make an interesting adventure.")
       (license (list license:cc0 license:expat))
       (properties `((upstream-name . "TenPlus1/ethereal"))))))
 
+(define-public minetest-homedecor-modpack
+  (package
+    (name "minetest-homedecor-modpack")
+    ;; Upstream doesn't tag releases, so use the release title from
+    ;; ContentDB as version.
+    (version "2021-03-27-1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/VanessaE/homedecor_modpack")
+             (commit "9ffe2b7d691133e1a067546574fbe7364fd02f32")))
+       (sha256
+        (base32 "1lfajqvc2adf9hqskghky4arccqzpjw4i9a01hv4qcckvivm04ag"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-basic-materials" ,minetest-basic-materials)
+       ("minetest-unifieddyes" ,minetest-unifieddyes)))
+    (home-page (minetest-topic 2041))
+    (synopsis "Home decor mod for Minetest")
+    (description
+     ;; TRANSLATORS: ‘homedecor’ is the name is the name of a Minetest mod
+     ;; and should not be translated.
+     "The homedecor Minetest mod provides a large seleection of items that
+might be found inside and around homes, such as sofas, chairs, tables, fences
+and a variety of other stuff.")
+    (license
+     (list license:cc-by-sa4.0 license:lgpl3))
+    (properties `((upstream-name . "VanessaE/homedecor_modpack")))))
+
 (define-public minetest-mesecons
   ;; The release on ContentDB does not have its own version number.
   (let ((commit "db5879706d04d3480bc4863ce0c03fa73e5f10c7")
