@@ -270,7 +270,7 @@ allows runtimes to work on Windows as well as on Linux without much effort.")
                 "1cglpiaj3ny1z74ssmy6j63vj92sfy4q38ix6qsga0mg3b2wvqz3"))
               (patches
                (search-patches
-                "rocm-opencl-runtime-3.10.0-add-rocclr-include-directories.patch"
+                "rocm-opencl-runtime-3.10.0-includes.patch"
                 ;; Do not install libOpenCL, which ocl-icd provides.
                 "rocm-opencl-runtime-4.3-noopencl.patch"
                 ;; Guix includes a program clinfo already.

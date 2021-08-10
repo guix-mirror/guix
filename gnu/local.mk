@@ -1702,7 +1702,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rnp-disable-ruby-rnp-tests.patch		\
   %D%/packages/patches/rnp-unbundle-googletest.patch		\
   %D%/packages/patches/rocm-comgr-3.1.0-dependencies.patch \
-  %D%/packages/patches/rocm-opencl-runtime-3.10.0-add-rocclr-include-directories.patch \
+  %D%/packages/patches/rocm-opencl-runtime-3.10.0-includes.patch \
   %D%/packages/patches/rocm-opencl-runtime-4.3-noclinfo.patch \
   %D%/packages/patches/rocm-opencl-runtime-4.3-nocltrace.patch \
   %D%/packages/patches/rocm-opencl-runtime-4.3-noopencl.patch \
