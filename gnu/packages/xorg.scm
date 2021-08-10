@@ -2920,7 +2920,13 @@ framebuffer device.")
        `(#:configure-flags
          (list (string-append "--with-xorg-conf-dir="
                               (assoc-ref %outputs "out")
-                              "/share/X11/xorg.conf.d"))))
+                              "/share/X11/xorg.conf.d"))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               ;; autogen.sh calls configure unconditionally.
+               (invoke "autoreconf" "-vfi"))))))
       (home-page "https://www.x.org/wiki/")
       (synopsis "Adreno video driver for X server")
       (description
