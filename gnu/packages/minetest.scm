@@ -172,6 +172,33 @@ add some mobs, a mod like e.g. @code{mobs_animal} provided by the
     (license (list license:expat license:cc0 license:cc-by3.0))
     (properties `((upstream-name . "TenPlus1/mobs")))))
 
+(define-public minetest-mobs-animal
+  (package
+    (name "minetest-mobs-animal")
+    ;; Upstream does not use version numbers, so use the release title
+    ;; from ContentDB instead;
+    (version "2021-07-24")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://notabug.org/TenPlus1/mobs_animal")
+             (commit "c2fa3e300c79c7dd80b6fe91a8b5082bb6b3d934")))
+       (sha256
+        (base32 "1j719f079ia9vjxrmjrcj8s6jvaz5kgs1r4dh66z8ql6s70kx7vh"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-mobs" ,minetest-mobs)))
+    (home-page "https://notabug.org/TenPlus1/mobs_animal")
+    (synopsis "Add animals to Minetest")
+    (description
+     "This Minetest mod adds various animals to Minetest, such as bees,
+bunnies, chickens, cows, kittens, rats, sheep, warthogs, penguins and pandas.")
+    ;; CC0: some textures and sounds
+    (license (list license:cc0 license:expat))
+    (properties `((upstream-name . "TenPlus1/mobs_animal")))))
+
 (define-public minetest-pipeworks
   (package
     (name "minetest-pipeworks")
