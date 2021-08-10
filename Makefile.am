@@ -262,6 +262,7 @@ MODULES =					\
   guix/import/json.scm				\
   guix/import/kde.scm				\
   guix/import/launchpad.scm   			\
+  guix/import/minetest.scm   			\
   guix/import/opam.scm				\
   guix/import/print.scm				\
   guix/import/pypi.scm				\
@@ -304,6 +305,7 @@ MODULES =					\
   guix/scripts/import/go.scm			\
   guix/scripts/import/hackage.scm		\
   guix/scripts/import/json.scm  		\
+  guix/scripts/import/minetest.scm  		\
   guix/scripts/import/opam.scm			\
   guix/scripts/import/pypi.scm			\
   guix/scripts/import/stackage.scm		\
@@ -470,6 +472,7 @@ SCM_TESTS =					\
   tests/import-utils.scm			\
   tests/inferior.scm				\
   tests/lint.scm				\
+  tests/minetest.scm				\
   tests/modules.scm				\
   tests/monads.scm				\
   tests/nar.scm				\

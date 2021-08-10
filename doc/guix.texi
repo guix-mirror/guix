@@ -11314,6 +11314,38 @@ and generate package expressions for all those packages that are not yet
 in Guix.
 @end table
 
+@item contentdb
+@cindex minetest
+@cindex ContentDB
+Import metadata from @uref{https://content.minetest.net, ContentDB}.
+Information is taken from the JSON-formatted metadata provided through
+@uref{https://content.minetest.net/help/api/, ContentDB's API} and
+includes most relevant information, including dependencies.  There are
+some caveats, however.  The license information is often incomplete.
+The commit hash is sometimes missing.  The descriptions are in the
+Markdown format, but Guix uses Texinfo instead.  Texture packs and
+subgames are unsupported.
+
+The command below imports metadata for the Mesecons mod by Jeija:
+
+@example
+guix import minetest Jeija/mesecons
+@end example
+
+The author name can also be left out:
+
+@example
+guix import minetest mesecons
+@end example
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item cpan
 @cindex CPAN
 Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}.
