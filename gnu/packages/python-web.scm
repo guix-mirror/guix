@@ -284,14 +284,14 @@ using @url{https://github.com/saghul/pycares,pycares}.")
 (define-public python-aiorpcx
   (package
     (name "python-aiorpcx")
-    (version "0.18.7")
+    (version "0.22.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiorpcX" version))
        (sha256
         (base32
-         "1rswrspv27x33xa5bnhrkjqzhv0sknv5kd7pl1vidw9d2z4rx2l0"))))
+         "0lx54bcinp44fmr8q4bbffsqbkg8kdcwykf9i5jj0bj3sfzgf9k0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)))
@@ -305,6 +305,18 @@ The package includes a module with full coverage of JSON RPC versions 1.0 and
 2.0, JSON RPC protocol auto-detection, and arbitrary message framing.  It also
 comes with a SOCKS proxy client.")
     (license (list license:expat license:bsd-2))))
+
+(define-public python-aiorpcx-0.18
+  (package
+    (inherit python-aiorpcx)
+    (version "0.18.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiorpcX" version))
+       (sha256
+        (base32
+         "1rswrspv27x33xa5bnhrkjqzhv0sknv5kd7pl1vidw9d2z4rx2l0"))))))
 
 (define-public python-asgiref
   (package
