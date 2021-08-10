@@ -2624,7 +2624,8 @@ different kinds of sliders, and much more.")
         (sha256
          (base32
           "1rm9sjkabxna67dl7myx9d9vpdyfxfdhrk9w7b94srkkjbd2d8cw"))
-        (patches (search-patches "qtwebkit-pbutils-include.patch"))))
+        (patches (search-patches "qtwebkit-pbutils-include.patch"
+                                 "qtwebkit-fix-building-with-python-3.9.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
