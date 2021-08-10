@@ -50,6 +50,34 @@ like steel bars and chains, wire, plastic strips and sheets, and more.")
      (list license:cc-by-sa4.0 license:lgpl3))
     (properties `((upstream-name . "VanessaE/basic_materials")))))
 
+(define-public minetest-coloredwood
+  (package
+    (name "minetest-coloredwood")
+    ;; Upstream uses dates as version numbers.
+    (version "2021-04-14-1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/VanessaE/coloredwood")
+             (commit "be4df6fc889419155bed8638bbb752493e78cbd5")))
+       (sha256
+        (base32 "1swirfk6b4xfbiwv8adyw5yl2lyfpp8ymfipzq9ivyvmif8nl3ki"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-unifieddyes" ,minetest-unifieddyes)))
+    (home-page (minetest-topic 2411))
+    (synopsis "Painted wood in Minetest")
+    (description
+     "This Minetest mod provides hundreds of colours of wood and fences to
+Minetest, using Unified Dyes.  If the \"moreblocks\" mod is active,
+coloured and cut wood shapes are provided as well.")
+    (license
+     ;; LGPL for code, CC-BY-SA for textures
+     (list license:cc-by-sa4.0 license:lgpl3))
+    (properties `((upstream-name . "VanessaE/coloredwood")))))
+
 (define-public minetest-mesecons
   ;; The release on ContentDB does not have its own version number.
   (let ((commit "db5879706d04d3480bc4863ce0c03fa73e5f10c7")
