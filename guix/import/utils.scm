@@ -133,8 +133,14 @@ of the string VERSION is replaced by the symbol 'version."
   ;; Please update guix/licenses.scm when modifying
   ;; this list to avoid mismatches.
   (match str
+    ;; "GPL-N+" has been deprecated in favour of "GPL-N-or-later".
+    ;; "GPL-N" has been deprecated in favour of "GPL-N-only"
+    ;; or "GPL-N-or-later" as appropriate.  Likewise for LGPL
+    ;; and AGPL
     ("AGPL-1.0"                    'license:agpl1)
     ("AGPL-3.0"                    'license:agpl3)
+    ("AGPL-3.0-only"               'license:agpl3)
+    ("AGPL-3.0-or-later"           'license:agpl3+)
     ("Apache-1.1"                  'license:asl1.1)
     ("Apache-2.0"                  'license:asl2.0)
     ("BSL-1.0"                     'license:boost1.0)
@@ -161,11 +167,17 @@ of the string VERSION is replaced by the symbol 'version."
     ("GFDL-1.3"                    'license:fdl1.3+)
     ("Giftware"                    'license:giftware)
     ("GPL-1.0"                     'license:gpl1)
+    ("GPL-1.0-only"                'license:gpl1)
     ("GPL-1.0+"                    'license:gpl1+)
+    ("GPL-1.0-or-later"            'license:gpl1+)
     ("GPL-2.0"                     'license:gpl2)
+    ("GPL-2.0-only"                'license:gpl2)
     ("GPL-2.0+"                    'license:gpl2+)
+    ("GPL-2.0-or-later"            'license:gpl2+)
     ("GPL-3.0"                     'license:gpl3)
+    ("GPL-3.0-only"                'license:gpl3)
     ("GPL-3.0+"                    'license:gpl3+)
+    ("GPL-3.0-or-later"            'license:gpl3+)
     ("ISC"                         'license:isc)
     ("IJG"                         'license:ijg)
     ("Imlib2"                      'license:imlib2)
@@ -173,11 +185,17 @@ of the string VERSION is replaced by the symbol 'version."
     ("IPL-1.0"                     'license:ibmpl1.0)
     ("LAL-1.3"                     'license:lal1.3)
     ("LGPL-2.0"                    'license:lgpl2.0)
+    ("LGPL-2.0-only"               'license:lgpl2.0)
     ("LGPL-2.0+"                   'license:lgpl2.0+)
+    ("LGPL-2.0-or-later"           'license:lgpl2.0+)
     ("LGPL-2.1"                    'license:lgpl2.1)
+    ("LGPL-2.1-only"               'license:lgpl2.1)
     ("LGPL-2.1+"                   'license:lgpl2.1+)
+    ("LGPL-2.1-or-later"           'license:lgpl2.1+)
     ("LGPL-3.0"                    'license:lgpl3)
+    ("LGPL-3.0-only"               'license:lgpl3)
     ("LGPL-3.0+"                   'license:lgpl3+)
+    ("LGPL-3.0-or-later"           'license:lgpl3+)
     ("MPL-1.0"                     'license:mpl1.0)
     ("MPL-1.1"                     'license:mpl1.1)
     ("MPL-2.0"                     'license:mpl2.0)
