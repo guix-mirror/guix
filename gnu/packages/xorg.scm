@@ -2783,27 +2783,36 @@ X server.")
     (license license:x11)))
 
 (define-public xf86-video-ati
-  (package
-    (name "xf86-video-ati")
-    (version "19.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://xorg/individual/driver/"
-                           "xf86-video-ati-" version ".tar.bz2"))
-       (sha256
-        (base32 "0j9w4axsqlycv4v14g53xyhkm9h7d27b2fcv9lrzb9gf54b5m7v5"))))
-    (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
-    (synopsis "ATI Radeon video driver for X server")
-    (description
-     "xf86-video-ati is an ATI Radeon video driver for the Xorg
+  ;; The current release is too old to build with our inputs.
+  (let ((commit "5eba006e4129e8015b822f9e1d2f1e613e252cda")
+        (revision "1"))
+    (package
+      (name "xf86-video-ati")
+      (version (git-version "19.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.freedesktop.org/xorg/driver/xf86-video-ati.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1n49wx0v13jh8vv17sxgrmmpi1mk3n2wph07jfmxmzqahpcn4lkn"))))
+      (build-system gnu-build-system)
+      (inputs `(("mesa" ,mesa)
+                ("xorgproto" ,xorgproto)
+                ("xorg-server" ,xorg-server)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (home-page "https://www.x.org/wiki/")
+      (synopsis "ATI Radeon video driver for X server")
+      (description
+       "xf86-video-ati is an ATI Radeon video driver for the Xorg
 X server.")
-    (license license:x11)))
+      (license license:x11))))
 
 
 (define-public xf86-video-cirrus
