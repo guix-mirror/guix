@@ -1358,11 +1358,28 @@ on the build output of a previous derivation."
 (define (map/accumulate-builds store proc lst)
   "Apply PROC over each element of LST, accumulating 'build-things' calls and
 coalescing them into a single call."
-  (define result
-    (map (lambda (obj)
-           (with-build-handler build-accumulator
-             (proc obj)))
-         lst))
+  (define accumulation-cutoff
+    ;; Threshold above which we stop accumulating unresolved nodes to avoid
+    ;; pessimal behavior where we keep stumbling upon the same .drv build
+    ;; requests with many incoming edges.  See <https://bugs.gnu.org/49439>.
+    30)
+
+  (define-values (result rest)
+    (let loop ((lst lst)
+               (result '())
+               (unresolved 0))
+      (match lst
+        ((head . tail)
+         (match (with-build-handler build-accumulator
+                  (proc head))
+           ((? unresolved? obj)
+            (if (> unresolved accumulation-cutoff)
+                (values (reverse (cons obj result)) tail)
+                (loop tail (cons obj result) (+ 1 unresolved))))
+           (obj
+            (loop tail (cons obj result) unresolved))))
+        (()
+         (values (reverse result) lst)))))
 
   (match (append-map (lambda (obj)
                        (if (unresolved? obj)
@@ -1370,6 +1387,7 @@ coalescing them into a single call."
                            '()))
                      result)
     (()
+     ;; REST is necessarily empty.
      result)
     (to-build
      ;; We've accumulated things TO-BUILD.  Actually build them and resume the
@@ -1382,7 +1400,7 @@ coalescing them into a single call."
                                   ;; unnecessary.
                                   ((unresolved-continuation obj) #f)
                                   obj))
-                            result))))
+                            (append result rest)))))
 
 (define build-things
   (let ((build (operation (build-things (string-list things)
