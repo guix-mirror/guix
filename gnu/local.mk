@@ -383,6 +383,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mercury.scm			\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
+  %D%/packages/minetest.scm			\
   %D%/packages/mingw.scm			\
   %D%/packages/microcom.scm			\
   %D%/packages/moe.scm				\
