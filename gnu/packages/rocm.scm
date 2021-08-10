@@ -258,10 +258,11 @@ allows runtimes to work on Windows as well as on Linux without much effort.")
   (package
     (name "rocm-opencl-runtime")
     (version %rocm-version)
+    (home-page "https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime.git")
+                    (url home-page)
                     (commit (string-append "rocm-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -299,7 +300,6 @@ allows runtimes to work on Windows as well as on Linux without much effort.")
        ("ocl-icd" ,ocl-icd)
        ("glew" ,glew)))
     (native-inputs `())
-    (home-page "https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime")
     (synopsis "ROCm OpenCL Runtime")
     (description "OpenCL 2.0 compatible language runtime, supporting offline
 and in-process/in-memory compilation.")
