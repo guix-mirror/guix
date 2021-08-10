@@ -209,6 +209,33 @@ powered.")
                    license:wtfpl2))
     (properties `((upstream-name . "RealBadAngel/technic")))))
 
+(define-public minetest-throwing
+  ;; The latest release on ContentDB is ahead of the latet
+  ;; tagged commit.
+  (let ((commit "31f0cf5f868673dc82f24ddc432b45c9cd282d27")
+        (revision "0"))
+    (package
+      (name "minetest-throwing")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minetest-mods/throwing")
+               (commit commit)))
+         (sha256
+          (base32 "1s5kkr6rxxv2dhbbjzv62gw1s617hnpjavw1v9fv11v3mgigdfjb"))
+         (file-name (git-file-name name version))))
+      (build-system minetest-mod-build-system)
+      (home-page (minetest-topic 16365))
+      (synopsis "API for throwing things in Minetest")
+      (description
+       "This Minetest mod provides an API for registering throwable things and
+throwing things like arrows.  However, this mod does not provide an actual
+arrow and bow, but @code{minetest-throwing-arrows} does.")
+      (license license:mpl2.0)
+      (properties `((upstream-name . "Palige/throwing"))))))
+
 (define-public minetest-unifieddyes
   (package
     (name "minetest-unifieddyes")
