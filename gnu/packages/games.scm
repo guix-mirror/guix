@@ -3633,13 +3633,12 @@ match, cannon keep, and grave-itation pit.")
                      (string-append (getcwd) "/games")) ; for check
              #t))
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? #:allow-other-keys)
              ;; Thanks to our substitutions, the tests should also run
              ;; when invoked on the target outside of `guix build'.
-             (unless ,(%current-target-system)
+             (when tests?
                (setenv "HOME" "/tmp")
-               (invoke "src/minetest" "--run-unittests"))
-             #t)))))
+               (invoke "src/minetest" "--run-unittests")))))))
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
