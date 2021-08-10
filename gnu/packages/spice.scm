@@ -349,15 +349,6 @@ resolution scaling on graphical console window resize.")
                (base32
                 "0azj3rqr2smg0lai24xrn3zr628xmjfrzcggay877zrr64ybj1c0"))))
     (build-system meson-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "tests/setup-softhsm2.sh"
-               (("\\/usr\\/lib64\\/pkcs11\\/libsofthsm2\\.so")
-                (search-input-file inputs
-                                   "/lib/softhsm/libsofthsm2.so"))))))))
     (propagated-inputs
      `(("glib" ,glib)                   ; Requires: in the pkg-config file
        ("nss" ,nss)))                   ; Requires.private: in the pkg-config
@@ -366,7 +357,6 @@ resolution scaling on graphical console window resize.")
      `(("openssl" ,openssl)
        ("nss" ,nss "bin")
        ("opensc" ,opensc)
-       ("softhsm" ,softhsm)
        ("gnutls" ,gnutls)
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
