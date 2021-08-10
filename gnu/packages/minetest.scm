@@ -25,6 +25,31 @@ numeric identifier TOPIC-ID on the official Minetest forums."
   (string-append "https://forum.minetest.net/viewtopic.php?t="
                  (number->string topic-id)))
 
+(define-public minetest-basic-materials
+  (package
+    (name "minetest-basic-materials")
+    ;; Upstream uses dates as version numbers.
+    (version "2021-01-30")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/VanessaE/basic_materials.git")
+             (commit "e72665b2ed98d7be115779a32d35e6d9ffa231bd")))
+       (sha256
+        (base32 "0v6l3lrjgshy4sccjhfhmfxc3gk0cdy73qb02i9wd2vw506v5asx"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page (minetest-topic 21000))
+    (synopsis "Some \"basic\" materials and items for other Minetest mods to use")
+    (description
+     "The Minetest mod \"basic_materials\" provides a small selection of
+\"basic\" materials and items that other mods should use when possible -- things
+like steel bars and chains, wire, plastic strips and sheets, and more.")
+    (license
+     (list license:cc-by-sa4.0 license:lgpl3))
+    (properties `((upstream-name . "VanessaE/basic_materials")))))
+
 (define-public minetest-mesecons
   ;; The release on ContentDB does not have its own version number.
   (let ((commit "db5879706d04d3480bc4863ce0c03fa73e5f10c7")
