@@ -3596,6 +3596,9 @@ match, cannon keep, and grave-itation pit.")
                (base32
                 "062ilb7s377q3hwfhl8q06vvcw2raydz5ljzlzwy2dmyzmdcndb8"))
               (modules '((guix build utils)))
+              (patches
+               (search-patches
+                "minetest-add-MINETEST_MOD_PATH.patch"))
               (snippet
                '(begin
                   ;; Delete bundled libraries.
@@ -3642,7 +3645,10 @@ match, cannon keep, and grave-itation pit.")
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
-            (files '("share/minetest/games")))))
+            (files '("share/minetest/games")))
+           (search-path-specification
+            (variable "MINETEST_MOD_PATH")
+            (files '("share/minetest/mods")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

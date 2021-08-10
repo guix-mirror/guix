@@ -1452,6 +1452,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
+  %D%/packages/patches/minetest-add-MINETEST_MOD_PATH.patch	\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
   %D%/packages/patches/mingw-w64-dlltool-temp-prefix.patch	\
   %D%/packages/patches/mingw-w64-reproducible-gendef.patch	\
