@@ -141,7 +141,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
@@ -149,7 +149,7 @@ of categories with some of the activities available in that category.
              "https://gcompris.net/download/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "08dw1q0h4qz2q0ksa5pbmb9v60hr1zv9skx6z8dlq9b1i7harnds"))))
+        (base32 "1bpjwrv83rhikbycpyfpf6dbqr0xfq6amgdpqfgfph6nzr3zka7h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
