@@ -566,7 +566,6 @@ requested using POOL."
              (single-baker item
                ;; Check whether CACHED has been produced in the meantime.
                (unless (file-exists? cached)
-                 ;; (format #t "baking ~s~%" item)
                  (bake-narinfo+nar cache item
                                    #:ttl ttl
                                    #:compressions compressions
