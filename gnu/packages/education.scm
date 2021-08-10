@@ -150,7 +150,7 @@ of categories with some of the activities available in that category.
              version ".tar.xz"))
        (sha256
         (base32 "1bpjwrv83rhikbycpyfpf6dbqr0xfq6amgdpqfgfph6nzr3zka7h"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -162,23 +162,7 @@ of categories with some of the activities available in that category.
              (setenv "DISPLAY" ":1")
              ;; The test suite wants to write to /homeless-shelter
              (setenv "HOME" (getcwd))
-             #t))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/gcompris-qt")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtdeclarative" "qtmultimedia" "qtsvg")))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/qml"))
-                         '("qtdeclarative" "qtgraphicaleffects"
-                           "qtmultimedia" "qtquickcontrols"))))
-               #t))))
+             #t)))
        #:configure-flags (list "-DQML_BOX2D_MODULE=disabled"
                                "-DBUILD_TESTING=TRUE")))
     (native-inputs
