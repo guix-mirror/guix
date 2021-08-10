@@ -85,3 +85,32 @@ with different rules and mechanics.")
     ;; <https://github.com/minetest-mods/mesecons/issues/575>.
     (license (list license:lgpl3+ license:cc-by-sa3.0))
     (properties `((upstream-name . "Jeija/mesecons"))))))
+
+(define-public minetest-unifieddyes
+  (package
+    (name "minetest-unifieddyes")
+    ;; Upstream uses dates as version numbers.
+    (version "2021-04-20-1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/VanessaE/unifieddyes")
+             (commit "ff3b2d30fa0df5c7181fdd401b989de6271c3bb3")))
+       (sha256
+        (base32
+         "0rba9n192xcpmxwnq7ixb6mn32gkpic247j3w4mwinrqcyscacsv"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-basic-materials" ,minetest-basic-materials)))
+    (home-page (minetest-topic 2178))
+    (synopsis
+     "Unified Dyes expands the standard dye set of Minetest to up to 256 colours")
+    (description "The purpose of this mod originally was to supply a complete
+set of colours for Minetest mod authors to use for colourised nodes or
+reference in recipes.  Since the advent of the default dyes mod in the standard
+Minetest game, this mod has become an extension of the default mod an a library
+for general colour handling.")
+    (license license:gpl2+)
+    (properties `((upstream-name . "VanessaE/unifieddyes")))))
