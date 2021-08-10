@@ -236,6 +236,36 @@ arrow and bow, but @code{minetest-throwing-arrows} does.")
       (license license:mpl2.0)
       (properties `((upstream-name . "Palige/throwing"))))))
 
+(define-public minetest-throwing-arrows
+  ;; There is only one tagged commit (version 1.1),
+  ;; there are no releases on ContentDB and the latest
+  ;; commit has a compatibility fix for Minetest 5.4.0-dev.
+  (let ((commit "059cc897af0aebfbd2c54ac5588f2b842f44f159")
+        (revision "0"))
+    (package
+      (name "minetest-throwing-arrows")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minetest-mods/throwing_arrows")
+               (commit commit)))
+         (sha256
+          (base32 "0m2pmccpfxn878zd00pmrpga2h6gknz4f3qprck0fq94mksmwqs3"))
+         (file-name (git-file-name name version))))
+      (build-system minetest-mod-build-system)
+      (propagated-inputs
+       `(("minetest-throwing" ,minetest-throwing)))
+      (home-page (minetest-topic 16365))
+      (synopsis "Arrows and bows for Minetest")
+      (description
+       ;; TRANSLATORS: "throwing" is the name of a Minetest mod and should
+       ;; not be translated.
+       "This mod adds arrows and bows to Minetest.  It is a compatible
+replacement for the throwing mod by PilzAdam that uses the throwing API.")
+      (license license:mpl2.0))))
+
 (define-public minetest-unifieddyes
   (package
     (name "minetest-unifieddyes")
