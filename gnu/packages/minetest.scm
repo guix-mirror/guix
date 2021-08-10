@@ -86,6 +86,37 @@ with different rules and mechanics.")
     (license (list license:lgpl3+ license:cc-by-sa3.0))
     (properties `((upstream-name . "Jeija/mesecons"))))))
 
+(define-public minetest-pipeworks
+  (package
+    (name "minetest-pipeworks")
+    ;; Upstream uses dates as version numbers.
+    (version "2021-04-14-1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/VanessaE/pipeworks")
+             (commit "db6d1bd9c109e1e543b97cc3fa8a11400da23bcd")))
+       (sha256
+        (base32 "1flhcnf17dn1v86kcg47a1n4cb0lybd11ncxrkxn3wmf10ibsrm0"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-basic-materials" ,minetest-basic-materials)))
+    (home-page (minetest-topic 2155))
+    (synopsis "Pipes, item-transport tubes and related devices for Minetest")
+    (description
+     "Pipeworks is a mod for Minetest implementing 3D pipes and tubes for
+transporting liquids and items and some related devices.  Pipes and tubes can
+go horizontally or vertically.  Item tubes can also be used for sorting items
+and extracting items from chests or putting items in chests.  Autocrafters can
+automatically follow craft recipes to make new items and can be fed by item
+tubes.  Deployers can place items in the world as a player would.  Node
+breakers simulate a player punching a node.")
+    ;; CC-BY-SA for textures, LGPL for code
+    (license (list license:cc-by-sa4.0 license:lgpl3))
+    (properties `((upstream-name . "VanessaE/pipeworks")))))
+
 (define-public minetest-unifieddyes
   (package
     (name "minetest-unifieddyes")
