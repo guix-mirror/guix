@@ -7895,6 +7895,14 @@ declaration.  Its default value is @code{(default-maven-plugins)} which is
 also exported.
 @end defvr
 
+@defvr {Scheme Variable} minetest-mod-build-system
+This variable is exported by @code{(guix build-system minetest)}.  It
+implements a build procedure for @uref{https://www.minetest.net, Minetest}
+mods, which consists of copying Lua code, images and other resources to
+the location Minetest searches for mods.  The build system also minimises
+PNG images and verifies that Minetest can load the mod without errors.
+@end defvr
+
 @defvr {Scheme Variable} minify-build-system
 This variable is exported by @code{(guix build-system minify)}.  It
 implements a minification procedure for simple JavaScript packages.

@@ -141,6 +141,7 @@ MODULES =					\
   guix/build-system/go.scm			\
   guix/build-system/meson.scm			\
   guix/build-system/minify.scm			\
+  guix/build-system/minetest.scm		\
   guix/build-system/asdf.scm			\
   guix/build-system/copy.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -203,6 +204,7 @@ MODULES =					\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
   guix/build/maven-build-system.scm		\
+  guix/build/minetest-build-system.scm		\
   guix/build/node-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
