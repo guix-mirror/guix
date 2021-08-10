@@ -4420,6 +4420,40 @@ time.  This information can be reviewed to determine what is causing the user
 interface to pause.")
       (license license:gpl3+))))
 
+(define-public emacs-filladapt
+  (package
+    (name "emacs-filladapt")
+    (version "2.12.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://elpa.gnu.org/packages/filladapt-"
+               version ".el"))
+        (sha256
+          (base32
+            "1cxyxfdjg1dsmn1jrl6b7xy03xr42fb6vyggh27s4dk417ils6yg"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/filladapt.html")
+    (synopsis "Adaptive fill for Emacs")
+    (description
+     "This package provides funtions which enhance the default behavior of
+Emacs' Auto Fill mode and the commands @code{fill-paragraph},
+@code{lisp-fill-paragraph}, @code{fill-region-as-paragraph}, and
+@code{fill-region}.
+
+The chief improvement is that the beginning of a line to be
+filled is examined and, based on information gathered, an
+appropriate value for fill-prefix is constructed.  Also the
+boundaries of the current paragraph are located.  This occurs
+only if the fill prefix is not already non-nil.
+
+The net result of this is that blurbs of text that are offset
+from left margin by asterisks, dashes, and/or spaces, numbered
+examples, included text from USENET news articles, etc. are
+generally filled correctly with no fuss.")
+    (license license:gpl3+)))
+
 (define-public emacs-fill-column-indicator
   (package
     (name "emacs-fill-column-indicator")
