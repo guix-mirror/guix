@@ -16,3 +16,51 @@ index 422a5240..d4039716 100644
  #endif
  
  #ifdef _MSC_VER
+
+Cast destination pointers to avoid a GCC error about memmove writing to
+a different type.
+
+Adapted from this upstream commit:
+https://github.com/Tencent/rapidjson/commit/fa5963a2f5b231ee2babff771f169ccca22870ed
+
+diff --git a/include/rapidjson/document.h b/include/rapidjson/document.h
+--- a/include/rapidjson/document.h
++++ b/include/rapidjson/document.h
+@@ -1425,7 +1425,7 @@ public:
+         MemberIterator pos = MemberBegin() + (first - MemberBegin());
+         for (MemberIterator itr = pos; itr != last; ++itr)
+             itr->~Member();
+-        std::memmove(&*pos, &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
++        std::memmove(static_cast<void*>(&*pos), &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
+         data_.o.size -= static_cast<SizeType>(last - first);
+         return pos;
+     }
+@@ -1628,8 +1628,8 @@ public:
+         RAPIDJSON_ASSERT(last <= End());
+         ValueIterator pos = Begin() + (first - Begin());
+         for (ValueIterator itr = pos; itr != last; ++itr)
+-            itr->~GenericValue();       
+-        std::memmove(pos, last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
++            itr->~GenericValue();
++        std::memmove(static_cast<void*>(pos), last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
+         data_.a.size -= static_cast<SizeType>(last - first);
+         return pos;
+     }
+@@ -1936,7 +1936,7 @@ private:
+         if (count) {
+             GenericValue* e = static_cast<GenericValue*>(allocator.Malloc(count * sizeof(GenericValue)));
+             SetElementsPointer(e);
+-            std::memcpy(e, values, count * sizeof(GenericValue));
++            std::memcpy(static_cast<void*>(e), values, count * sizeof(GenericValue));
+         }
+         else
+             SetElementsPointer(0);
+@@ -1949,7 +1949,7 @@ private:
+         if (count) {
+             Member* m = static_cast<Member*>(allocator.Malloc(count * sizeof(Member)));
+             SetMembersPointer(m);
+-            std::memcpy(m, members, count * sizeof(Member));
++            std::memcpy(static_cast<void*>(m), members, count * sizeof(Member));
+         }
+         else
+             SetMembersPointer(0);
