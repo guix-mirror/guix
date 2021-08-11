@@ -491,7 +491,8 @@ photographic equipment.")
              ;; Statically link to libOpenCL.
              (substitute* "./src/common/dlopencl.c"
                (("\"libOpenCL\"")
-                (string-append "\"" (assoc-ref inputs "ocl-icd") "/lib/libOpenCL.so\"")))
+                (string-append "\"" (assoc-ref inputs "opencl-icd-loader")
+                               "/lib/libOpenCL.so\"")))
              #t))
          ;; The use of inline is wrong and darktable cannot compile its kernels
          ;; with ROCm. See upstream commit
@@ -580,7 +581,7 @@ photographic equipment.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("lua" ,lua) ;optional, for plugins
-       ("ocl-icd" ,ocl-icd) ;optional, for OpenCL support
+       ("opencl-icd-loader" ,opencl-icd-loader) ;optional, for OpenCL support
        ("openexr" ,openexr) ;optional, for EXR import/export
        ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
        ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view

@@ -10031,7 +10031,7 @@ remake of that series or any other game.")
     `(("googletest" ,googletest)))
    (inputs
     `(("boost" ,boost)
-      ("ocl-icd" ,ocl-icd)
+      ("opencl-icd-loader" ,opencl-icd-loader)
       ("openblas" ,openblas)
       ("opencl-headers" ,opencl-headers)
       ("qtbase" ,qtbase-5)

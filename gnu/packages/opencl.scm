@@ -159,41 +159,7 @@ This package contains the Khronos official OpenCL ICD Loader.")
     (license license:asl2.0)))
 
 (define-public ocl-icd
-  (package
-    (name "ocl-icd")
-    (version "2.2.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://forge.imag.fr/frs/download.php/836/ocl-icd-"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1x2dr8p4dkfds56r38av360i3nv1y3326jmshxvjngaf6mlg6rbn"))
-              (modules '((guix build utils)))
-              (snippet
-               '(delete-file-recursively "khronos-headers"))))
-    (native-inputs
-     `(("opencl-headers" ,opencl-headers)
-       ("ruby" ,ruby)))
-    (inputs
-     `(("libgcrypt" ,libgcrypt)))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("DEBUG_OCL_ICD=1")))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "OPENCL_VENDOR_PATH")
-            (files '("etc/OpenCL/vendors")))))
-    (search-paths native-search-paths)
-    (home-page "https://forge.imag.fr/projects/ocl-icd/")
-    (synopsis "OpenCL loader for Installable Client Drivers (ICDs)")
-    (description
-     "OpenCL implementations are provided as ICDs (Installable Client
-Drivers).  An OpenCL program can use several ICDs thanks to the use of an ICD
-Loader as provided by this package.")
-    (license license:bsd-2)))
+  (deprecated-package "ocl-icd" opencl-icd-loader))
 
 (define-public clinfo
   (package
@@ -212,7 +178,7 @@ Loader as provided by this package.")
     (native-inputs
      `(("opencl-headers" ,opencl-headers)))
     (inputs
-     `(("ocl-icd" ,ocl-icd)))
+     `(("opencl-icd-loader" ,opencl-icd-loader)))
     (arguments
      `(#:make-flags
        (list ,(string-append "CC=" (cc-for-target))
@@ -262,7 +228,7 @@ the system.")
               ("libxext" ,libxext)
               ("mesa-utils" ,mesa-utils)
               ("ncurses" ,ncurses)
-              ("ocl-icd" ,ocl-icd)
+              ("opencl-icd-loader" ,opencl-icd-loader)
               ("opencl-headers" ,opencl-headers)
               ("xextproto" ,xextproto)
               ("zlib" ,zlib)))
@@ -329,7 +295,7 @@ back-end for the LLVM compiler framework.")
      `(("clang" ,clang)
        ("hwloc" ,hwloc-2 "lib")
        ("llvm" ,llvm)
-       ("ocl-icd" ,ocl-icd)))
+       ("opencl-icd-loader" ,opencl-icd-loader)))
     (arguments
      `(#:configure-flags
        (list "-DENABLE_ICD=ON"
@@ -431,7 +397,7 @@ A lexer, @code{pytools.lex}.
     (inputs
      `(("opencl-headers" ,opencl-headers-1.2)   ;POCL only supports OpenCL 1.2
        ("pybind11" ,pybind11)
-       ("ocl-icd" ,ocl-icd)))                     ;libOpenCL
+       ("opencl-icd-loader" ,opencl-icd-loader)))                     ;libOpenCL
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
        ("python-decorator" ,python-decorator)
