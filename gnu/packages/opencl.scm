@@ -48,10 +48,13 @@
 ;; tests that require such devices are all disabled.
 ;; Check https://lists.gnu.org/archive/html/guix-devel/2018-04/msg00293.html
 
+;; If you update either of opencl-headers, opencl-clhpp or opencl-icd-loader
+;; note that they are released together (lockstep) and must be updated
+;; together.
 (define-public opencl-headers
   (package
     (name "opencl-headers")
-    (version "2020.12.18")
+    (version "2021.06.30")
     (source
       (origin
         (method git-fetch)
@@ -60,11 +63,9 @@
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1zslxfzvbb1mrzmsik4pjzj88ds8y3p94ry5nnrnkhv6qm4n4lw9"))))
-    (build-system copy-build-system)
-    (arguments
-     '(#:install-plan
-       '(("CL" "include/")))) ; TODO: add phase for tests
+         (base32 "1nrvx0x9r1nz1qpmzbgffnn9h9pn2fwcxsksf101bkpmqziq5lii"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; Not enabled during build.
     (synopsis "The Khronos OpenCL headers")
     (description
      "This package provides the C headers by Khronos for OpenCL programming.")
