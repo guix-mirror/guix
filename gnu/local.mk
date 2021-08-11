@@ -1612,7 +1612,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-mediafile-wavpack.patch		\
   %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
-  %D%/packages/patches/python-testtools.patch			\
   %D%/packages/patches/python-typing-inspect-fix.patch		\
   %D%/packages/patches/python-packaging-test-arch.patch		\
   %D%/packages/patches/python2-parameterized-docstring-test.patch	\

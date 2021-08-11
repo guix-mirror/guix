@@ -1404,25 +1404,20 @@ subprocess and see the output as well as any file modifications.")
 (define-public python-testtools-bootstrap
   (package
     (name "python-testtools-bootstrap")
-    (version "2.3.0")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "testtools" version))
        (sha256
         (base32
-         "0n8519lk8aaa91vymz842831181wf7fss98hyllhygi3z1nfq9sq"))
-       (patches (search-patches "python-testtools.patch"))))
+         "0gxjbjk93jjqi491k4s9rh3ia37v21yifd35pvizv7sgv4rk9hap"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-extras" ,python-extras)
        ("python-fixtures" ,python-fixtures-bootstrap)
-       ("python-mimeparse" ,python-mimeparse)
-       ("python-pbr" ,python-pbr-minimal)
-       ("python-six" ,python-six)
-       ("python-traceback2" ,python-traceback2)
-       ("python-unittest2" ,python-unittest2)))
+       ("python-pbr" ,python-pbr-minimal)))
     (home-page "https://github.com/testing-cabal/testtools")
     (synopsis
      "Extensions to the Python standard library unit testing framework")
@@ -1443,11 +1438,7 @@ subprocess and see the output as well as any file modifications.")
     (propagated-inputs
      `(("python-extras" ,python-extras)
        ("python-fixtures" ,python-fixtures)
-       ("python-mimeparse" ,python-mimeparse)
-       ("python-pbr" ,python-pbr)
-       ("python-six" ,python-six)
-       ("python-traceback2" ,python-traceback2)
-       ("python-unittest2" ,python-unittest2)))
+       ("python-pbr" ,python-pbr)))
     (native-inputs
      `(("python-testscenarios" ,python-testscenarios-bootstrap)))
     (description
