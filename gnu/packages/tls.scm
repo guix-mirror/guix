@@ -509,98 +509,113 @@ required structures.")
                (base32
                 "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))))
 
+;; We will not add any new uses of this package. If you add new code that uses
+;; this package, your change will be reverted!
+;;
+;; The only acceptable use for this package is to bootstrap Rust, in
+;; ((gnu packages rust) rust-1.19).
+;;
+;; OpenSSL 1.0 is no longer suppported upstream [0] and has several security
+;; vulnerabilities that will not be fixed [1].
+;;
+;; For more information from the Guix point of view, see
+;; <https://bugs.gnu.org/46602>.
+;;
+;; [0] https://www.openssl.org/policies/releasestrat.html
+;; [1] https://www.openssl.org/news/vulnerabilities.html
 (define-public openssl-1.0
-  (package
-    (inherit openssl)
-    (name "openssl")
-    (version "1.0.2u")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/"
-                                        "openssl-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/openssl-" version ".tar.gz")))
-              (sha256
-               (base32
-                "05lxcs4hzyfqd5jn0d9p0fvqna62v2s4pc9qgmq0dpcknkzwdl7c"))
-              (patches (search-patches "openssl-runpath.patch"
-                                       "openssl-c-rehash-in.patch"))))
-    (outputs '("out"
-               "doc"                    ;1.5MiB of man3 pages
-               "static"))               ;6MiB of .a files
-    (arguments
-     (substitute-keyword-arguments (package-arguments openssl)
-       ;; Parallel build is not supported in 1.0.x.
-       ((#:parallel-build? _ #f) #f)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'patch-source-shebangs 'patch-tests
-             (lambda* (#:key inputs native-inputs #:allow-other-keys)
-               (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
-                 (substitute* (find-files "test" ".*")
-                   (("/bin/sh")
-                    (string-append bash "/bin/sh"))
-                   (("/bin/rm")
-                    "rm"))
-                 #t)))
-           (add-before 'configure 'patch-Makefile.org
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; The default MANDIR is some unusual place.  Fix that.
-               (let ((out (assoc-ref outputs "out")))
-                 (patch-makefile-SHELL "Makefile.org")
-                 (substitute* "Makefile.org"
-                   (("^MANDIR[[:blank:]]*=.*$")
-                    (string-append "MANDIR = " out "/share/man\n")))
-                 #t)))
-	   (replace 'configure
-	     ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
-	     (lambda* (#:key outputs #:allow-other-keys)
-	       (let ((out (assoc-ref outputs "out")))
-		 (invoke ,@(if (%current-target-system)
-			       '("./Configure")
-			       '("./config"))
-			 "shared"                 ;build shared libraries
-			 "--libdir=lib"
+  (hidden-package
+    (package
+      (inherit openssl)
+      (name "openssl")
+      (version "1.0.2u")
+      (source (origin
+                (method url-fetch)
+                (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                          version ".tar.gz")
+                           (string-append "ftp://ftp.openssl.org/source/"
+                                          "openssl-" version ".tar.gz")
+                           (string-append "ftp://ftp.openssl.org/source/old/"
+                                          (string-trim-right version char-set:letter)
+                                          "/openssl-" version ".tar.gz")))
+                (sha256
+                 (base32
+                  "05lxcs4hzyfqd5jn0d9p0fvqna62v2s4pc9qgmq0dpcknkzwdl7c"))
+                (patches (search-patches "openssl-runpath.patch"
+                                         "openssl-c-rehash-in.patch"))))
+      (outputs '("out"
+                 "doc"                    ;1.5MiB of man3 pages
+                 "static"))               ;6MiB of .a files
+      (arguments
+       (substitute-keyword-arguments (package-arguments openssl)
+         ;; Parallel build is not supported in 1.0.x.
+         ((#:parallel-build? _ #f) #f)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'patch-source-shebangs 'patch-tests
+               (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
+                   (substitute* (find-files "test" ".*")
+                     (("/bin/sh")
+                      (string-append bash "/bin/sh"))
+                     (("/bin/rm")
+                      "rm"))
+                   #t)))
+             (add-before 'configure 'patch-Makefile.org
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; The default MANDIR is some unusual place.  Fix that.
+                 (let ((out (assoc-ref outputs "out")))
+                   (patch-makefile-SHELL "Makefile.org")
+                   (substitute* "Makefile.org"
+                     (("^MANDIR[[:blank:]]*=.*$")
+                      (string-append "MANDIR = " out "/share/man\n")))
+                   #t)))
+             (replace 'configure
+               ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((out (assoc-ref outputs "out")))
+                   (invoke ,@(if (%current-target-system)
+                                 '("./Configure")
+                                 '("./config"))
+                           "shared"                 ;build shared libraries
+                           "--libdir=lib"
 
-			 ;; The default for this catch-all directory is
-			 ;; PREFIX/ssl.  Change that to something more
-			 ;; conventional.
-			 (string-append "--openssldir=" out
-					"/share/openssl-" ,version)
+                           ;; The default for this catch-all directory is
+                           ;; PREFIX/ssl.  Change that to something more
+                           ;; conventional.
+                           (string-append "--openssldir=" out
+                                          "/share/openssl-" ,version)
 
-			 (string-append "--prefix=" out)
-			 ,@(if (%current-target-system)
-			       '((getenv "CONFIGURE_TARGET_ARCH"))
-			       '())))))
-        (delete 'move-extra-documentation)
-        (add-after 'install 'move-man3-pages
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move section 3 man pages to "doc".
-            (let* ((out    (assoc-ref outputs "out"))
-                   (man3   (string-append out "/share/man/man3"))
-                   (doc    (assoc-ref outputs "doc"))
-                   (target (string-append doc "/share/man/man3")))
-              (mkdir-p target)
-              (for-each (lambda (file)
-                          (rename-file file
-                                       (string-append target "/"
-                                                      (basename file))))
-                        (find-files man3))
-              (delete-file-recursively man3)
-              #t)))
-           ;; XXX: Duplicate this phase to make sure 'version' evaluates
-           ;; in the current scope and not the inherited one.
-           (replace 'remove-miscellany
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; The 'misc' directory contains random undocumented shell and Perl
-               ;; scripts.  Remove them to avoid retaining a reference on Perl.
-               (let ((out (assoc-ref outputs "out")))
-                 (delete-file-recursively (string-append out "/share/openssl-"
-                                                         ,version "/misc"))
-                 #t)))))))))
+                           (string-append "--prefix=" out)
+                           ,@(if (%current-target-system)
+                                 '((getenv "CONFIGURE_TARGET_ARCH"))
+                                 '())))))
+             (delete 'move-extra-documentation)
+             (add-after 'install 'move-man3-pages
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; Move section 3 man pages to "doc".
+                 (let* ((out    (assoc-ref outputs "out"))
+                        (man3   (string-append out "/share/man/man3"))
+                        (doc    (assoc-ref outputs "doc"))
+                        (target (string-append doc "/share/man/man3")))
+                   (mkdir-p target)
+                   (for-each (lambda (file)
+                               (rename-file file
+                                            (string-append target "/"
+                                                           (basename file))))
+                             (find-files man3))
+                   (delete-file-recursively man3)
+                   #t)))
+             ;; XXX: Duplicate this phase to make sure 'version' evaluates
+             ;; in the current scope and not the inherited one.
+             (replace 'remove-miscellany
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; The 'misc' directory contains random undocumented shell and Perl
+                 ;; scripts.  Remove them to avoid retaining a reference on Perl.
+                 (let ((out (assoc-ref outputs "out")))
+                   (delete-file-recursively (string-append out "/share/openssl-"
+                                                           ,version "/misc"))
+                   #t))))))))))
 
 (define-public libressl
   (package
