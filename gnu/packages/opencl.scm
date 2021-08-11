@@ -327,20 +327,18 @@ pocl.")
 (define-public python-pytools
   (package
     (name "python-pytools")
-    (version "2020.4")
+    (version "2021.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytools" version))
        (sha256
-        (base32 "0q7439iy365a874ckpavx6h1mhnnngfy8nl7xj5grdd127zkknrp"))))
+        (base32 "1yyr4k6sqx859gjhc02633l2vxwdnj6m2f5blmf7dgq0gzzgcf05"))))
     (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; Tests depend on packages not present in Guix.
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
-       ("python-decorator" ,python-decorator)
-       ("python-numpy" ,python-numpy)
-       ("python-six" ,python-six)
-       ("python-mpi4py" ,python-mpi4py)))
+       ("python-numpy" ,python-numpy)))
     (home-page "https://pypi.org/project/pytools/")
     (synopsis "Assorted tools for Python")
     (description
