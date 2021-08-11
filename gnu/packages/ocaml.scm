@@ -6613,6 +6613,34 @@ advantage over ocamldoc is an accurate cross-referencer, which handles the
 complexity of the OCaml module system.")
     (license license:isc)))
 
+(define-public ocaml-odoc-parser
+  (package
+    (name "ocaml-odoc-parser")
+    (version "0.9.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-doc/odoc-parser")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+           "1jlc6dp3v90r1ra7r0jfw0xs8rylwdz9gymw4rd53h0p17cw1wnj"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-astring" ,ocaml-astring)
+        ("ocaml-result" ,ocaml-result)))
+    (native-inputs
+      `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (home-page "https://github.com/ocaml-doc/odoc-parser")
+    (synopsis "Parser for ocaml documentation comments")
+    (description
+     "This package provides a library for parsing the contents of OCaml
+documentation comments, formatted using Odoc syntax, an extension of the
+language understood by ocamldoc.")
+    (license license:isc)))
+
 ;; version 1.5.2 requires ocaml-markdown 1.0.0 which does not compile
 ;; with old version of dune used in package-with-ocaml4.07
 (define-public ocaml4.07-odoc
