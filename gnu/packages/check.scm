@@ -1430,11 +1430,13 @@ subprocess and see the output as well as any file modifications.")
     (inherit python-testtools-bootstrap)
     (name "python-testtools")
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "python" "-m" "testtools.run"
-                              "testtools.tests.test_suite"))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "testtools.run"
+                       "testtools.tests.test_suite")))))))
     (propagated-inputs
      `(("python-extras" ,python-extras)
        ("python-fixtures" ,python-fixtures)
