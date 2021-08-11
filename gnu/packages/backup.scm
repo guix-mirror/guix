@@ -105,6 +105,7 @@
        ("par2cmdline" ,par2cmdline)
        ("python-fasteners" ,python-fasteners)
        ("python-future" ,python-future) ; for tests
+       ("python-paramiko" ,python-paramiko)
        ("python-pexpect" ,python-pexpect)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)
