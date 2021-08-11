@@ -1381,8 +1381,7 @@ current version of any major web browser.")
                '(begin
                   ;; Remove code using the problematic JSON license (see
                   ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
-                  (delete-file-recursively "bin/jsonchecker")
-                  #t))))
+                  (delete-file-recursively "bin/jsonchecker")))))
     (build-system cmake-build-system)
     (arguments
      (if (string-prefix? "aarch64" (or (%current-target-system)
@@ -1392,10 +1391,8 @@ current version of any major web browser.")
              (add-after 'unpack 'patch-aarch-march-detection
                (lambda _
                  (substitute* (find-files "." "^CMakeLists\\.txt$")
-                   (("native") "armv8-a"))
-                 #t))))
-         ;; Disable CPU optimization for reproducibility.
-         '(#:configure-flags '("-DRAPIDJSON_ENABLE_INSTRUMENTATION_OPT=OFF"))))
+                   (("native") "armv8-a"))))))
+         '()))
     (home-page "https://github.com/Tencent/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
