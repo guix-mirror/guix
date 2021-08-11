@@ -1704,6 +1704,30 @@ view.  This allows you to move to the character, word, or line almost
 directly.")
     (license license:gpl3+)))
 
+(define-public emacs-ahg
+  ;; No tags; commit from 2021-04-12.
+  (let ((commit "77bc2a628df006dcd2dc359ac12acdf8091a1356")
+        (revision "0"))
+    (package
+      (name "emacs-ahg")
+      (version (git-version "1.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://bitbucket.org/agriggio/ahg")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1wmvz9d40aznqh2y078v8k7n3l66m48vnf873vifi8rwg6158kqh"))))
+      (build-system emacs-build-system)
+      (home-page "https://bitbucket.org/agriggio/ahg")
+      (synopsis "Emacs front-end for the Mercurial SCM")
+      (description
+       "This packages provides a simple Emacs front-end for the Mercurial
+Distributed @acronym{Source Control Management, SCM} system.")
+      (license license:gpl3+))))
+
 (define-public emacs-anaphora
   (package
     (name "emacs-anaphora")
