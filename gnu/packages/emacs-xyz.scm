@@ -8253,7 +8253,7 @@ and present results either as single emails or full trees.")
 (define-public emacs-marginalia
   (package
     (name "emacs-marginalia")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method git-fetch)
@@ -8262,7 +8262,7 @@ and present results either as single emails or full trees.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yn6dybvsdhr37hnadmbfqi7pf7scxr9z6a6ghsqbrghycddd0mc"))))
+        (base32 "1d6xbidxcxd5gxs5cjxbx1i1wdcmgdnn3hh7fxz0sgf1gaxyp5kv"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/marginalia")
     (synopsis "Marginalia in the minibuffer completions")
