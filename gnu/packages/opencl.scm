@@ -95,7 +95,7 @@
 (define-public opencl-clhpp
   (package
     (name "opencl-clhpp")
-    (version "2.0.10")
+    (version "2.0.15")
     (source
      (origin
        (method git-fetch)
@@ -103,21 +103,14 @@
              (url "https://github.com/KhronosGroup/OpenCL-CLHPP")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0h5kpg5cl8wzfnqmv6i26aig2apv06ffm9p3rh35938n9r8rladm"))
+        (base32 "1wycdbvwbdn7lqdd3sby8471qg2zdisr70218ava6cfvxdsqcp83"))
        (file-name (git-file-name name version))))
     (native-inputs
      `(("python" ,python-wrapper)))
     (propagated-inputs
      `(("opencl-headers" ,opencl-headers)))
     (arguments
-     `(#:configure-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list
-          "-DBUILD_EXAMPLES=OFF"
-          "-DBUILD_TESTS=OFF"
-          (string-append "-DCMAKE_INSTALL_PREFIX="
-                         (assoc-ref %outputs "out")
-                         "/include")))
+     `(#:configure-flags (list "-DBUILD_EXAMPLES=OFF" "-DBUILD_TESTS=OFF")
        ;; The regression tests require a lot more dependencies.
        #:tests? #f))
     (build-system cmake-build-system)
