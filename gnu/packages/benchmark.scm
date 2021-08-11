@@ -41,6 +41,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages opencl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
@@ -385,3 +386,31 @@ It is designed to measure the effect of changes in Linux kernel design or
 system configuration changes such as CPU, I/O scheduler and filesystem changes
 and options.  With careful benchmarking, different hardware can be compared.")
     (license license:gpl2+)))
+
+(define-public clpeak
+  ;; Release 1.1.0 is too old for our opencl-clhpp. This commit supports
+  ;; cl2.hpp.
+  (let ((commit "6d59cb64997a53c35207b77a63d2e9f0e84de5fd"))
+    (package
+      (name "clpeak")
+      (version (git-version "1.1.0" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/krrishnarraj/clpeak.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                  (base32
+                    "0qmhdjyhwl7gfgyqxsddqn6zpp3b57503m16h7jv6illy3lfvji1"))))
+      (build-system cmake-build-system)
+      (home-page "https://github.com/krrishnarraj/clpeak")
+      (inputs
+        `(("opencl-clhpp" ,opencl-clhpp)
+          ("opencl-icd-loader" ,opencl-icd-loader)))
+      (synopsis "OpenCL benchmark tool")
+      (description
+        "A synthetic benchmarking tool to measure peak capabilities of OpenCL
+        devices.  It only measures the peak metrics that can be achieved using
+        vector operations and does not represent a real-world use case.")
+        (license license:unlicense))))
