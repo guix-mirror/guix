@@ -121,6 +121,43 @@
      "This package provides the @dfn{host API} C++ headers for OpenCL.")
     (license license:expat)))
 
+(define-public opencl-icd-loader
+  (package
+    (name "opencl-icd-loader")
+    (version "2021.06.30")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KhronosGroup/OpenCL-ICD-Loader.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "007ws357n1ijrxal1bf9lwy68p0dz1sm9cfcfnnz5f88iwc9xd6m"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; Tests need stub loader setup.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "OCL_ICD_VENDORS")
+            (files '("etc/OpenCL/vendors")))))
+    (home-page "https://github.com/KhronosGroup/OpenCL-ICD-Loader")
+    (inputs `(("opencl-headers" ,opencl-headers)))
+    (synopsis "OpenCL Installable Client Driver")
+    (description
+     "OpenCL defines an Installable Client Driver (ICD) mechanism to allow
+developers to build applications against an Installable Client Driver loader
+(ICD loader) rather than linking their applications against a specific OpenCL
+implementation.  The ICD Loader is responsible for:
+
+@itemize
+@item Exporting OpenCL API entry points
+@item Enumerating OpenCL implementations
+@item Forwarding OpenCL API calls to the correct implementation
+@end itemize
+
+This package contains the Khronos official OpenCL ICD Loader.")
+    (license license:asl2.0)))
+
 (define-public ocl-icd
   (package
     (name "ocl-icd")
