@@ -2625,6 +2625,7 @@ different kinds of sliders, and much more.")
          (base32
           "1rm9sjkabxna67dl7myx9d9vpdyfxfdhrk9w7b94srkkjbd2d8cw"))
         (patches (search-patches "qtwebkit-pbutils-include.patch"
+                                 "qtwebkit-fix-building-with-bison-3.7.patch"
                                  "qtwebkit-fix-building-with-glib-2.68.patch"
                                  "qtwebkit-fix-building-with-icu-68.patch"
                                  "qtwebkit-fix-building-with-python-3.9.patch"))))

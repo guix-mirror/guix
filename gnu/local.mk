@@ -1657,6 +1657,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/quassel-qt-514-compat.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
+  %D%/packages/patches/qtwebkit-fix-building-with-bison-3.7.patch \
   %D%/packages/patches/qtwebkit-fix-building-with-python-3.9.patch	\
   %D%/packages/patches/qtwebkit-fix-building-with-icu-68.patch	\
   %D%/packages/patches/qtwebkit-fix-building-with-glib-2.68.patch	\
