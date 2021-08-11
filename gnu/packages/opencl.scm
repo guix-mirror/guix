@@ -23,6 +23,7 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -160,7 +161,7 @@ Loader as provided by this package.")
 (define-public clinfo
   (package
     (name "clinfo")
-    (version "2.2.18.04.06")
+    (version "3.0.21.02.21")
     (source
      (origin
        (method git-fetch)
@@ -169,26 +170,17 @@ Loader as provided by this package.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y2q0lz5yzxy970b7w7340vp4fl25vndahsyvvrywcrn51ipgplx"))))
+        (base32 "1sfxp6ai83i0vwdg7b05h0k07q6873q1z1avnyksj5zmzdnxya6j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("opencl-headers" ,opencl-headers)))
     (inputs
      `(("ocl-icd" ,ocl-icd)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (let ((cores (number->string (parallel-job-count))))
-               (setenv "CC" "gcc")
-               (invoke "make" "-j" cores))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "install" (string-append
-                                       "PREFIX="
-                                       (assoc-ref outputs "out"))))))
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
+              (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f))
     (home-page "https://github.com/Oblomov/clinfo")
     (synopsis "Print information about OpenCL platforms and devices")
