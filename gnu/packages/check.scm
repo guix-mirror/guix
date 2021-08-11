@@ -1611,9 +1611,10 @@ python-fixtures package instead.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "python" "-m" "testtools.run"
-                     "fixtures.test_suite"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "testtools.run"
+                       "fixtures.test_suite")))))))
     (propagated-inputs
      ;; Fixtures uses pbr at runtime to check versions, etc.
      `(("python-pbr" ,python-pbr)
