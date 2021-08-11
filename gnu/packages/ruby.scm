@@ -157,7 +157,7 @@ a focus on simplicity and productivity.")
     (version "2.7.4")
     (source
      (origin
-       (method url-fetch)
+       (inherit (package-source ruby))
        (uri (string-append "https://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
                            "/ruby-" version ".tar.gz"))
