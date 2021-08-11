@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
@@ -740,7 +740,7 @@ a server/client mode.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.7.1")
+    (version "3.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/sakura/trunk/"
@@ -748,7 +748,7 @@ a server/client mode.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "12wjmckf03qbnm8cb7qma0980anzajn3l92rj2yr8hhafl74x6kj"))))
+                "1r2kpvxx21r407s07m5p5x0dam6x863991nmcv6k5ap873fxqh2h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check phase
