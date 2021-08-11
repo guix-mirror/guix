@@ -1578,12 +1578,14 @@ protocol.")))
   (package
     (name "python-fixtures-bootstrap")
     (version "3.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "fixtures" version))
-              (sha256
-               (base32
-                "1vxj29bzz3rd4pcy51d05wng9q9dh4jq6wx92yklsm7i6h1ddw7w"))))
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fixtures" version))
+        (sha256
+         (base32
+          "1vxj29bzz3rd4pcy51d05wng9q9dh4jq6wx92yklsm7i6h1ddw7w"))
+        (patches (search-patches "python-fixtures-remove-monkeypatch-test.patch"))))
     (build-system python-build-system)
     (arguments
       `(#:tests? #f

@@ -1,0 +1,59 @@
+https://sources.debian.org/data/main/p/python-fixtures/3.0.0-4/debian/patches/remove-broken-monkey-patch-test.patch
+
+The last release was May 2016. This can be removed when the next release happens.
+
+Description: Remove broken monkey patch tests
+Author: Thomas Goirand <zigo@debian.org>
+Bug-Debian: https://bugs.debian.org/973239
+Forwarded: no
+Last-Update: 2020-11-12
+
+--- python-fixtures-3.0.0.orig/fixtures/tests/_fixtures/test_monkeypatch.py
++++ python-fixtures-3.0.0/fixtures/tests/_fixtures/test_monkeypatch.py
+@@ -181,22 +181,6 @@ class TestMonkeyPatch(testtools.TestCase
+         self._check_restored_static_or_class_method(oldmethod, oldmethod_inst,
+                 C, 'foo_cls')
+ 
+-    def test_patch_classmethod_with_classmethod(self):
+-        oldmethod = C.foo_cls
+-        oldmethod_inst = C().foo_cls
+-        fixture = MonkeyPatch(
+-            'fixtures.tests._fixtures.test_monkeypatch.C.foo_cls',
+-            D.bar_cls_args)
+-        with fixture:
+-            cls, target_class = C.foo_cls()
+-            self.expectThat(cls, Is(D))
+-            self.expectThat(target_class, Is(C))
+-            cls, target_class = C().foo_cls()
+-            self.expectThat(cls, Is(D))
+-            self.expectThat(target_class, Is(C))
+-        self._check_restored_static_or_class_method(oldmethod, oldmethod_inst,
+-                C, 'foo_cls')
+-
+     def test_patch_classmethod_with_function(self):
+         oldmethod = C.foo_cls
+         oldmethod_inst = C().foo_cls
+@@ -212,23 +196,6 @@ class TestMonkeyPatch(testtools.TestCase
+         self._check_restored_static_or_class_method(oldmethod, oldmethod_inst,
+                 C, 'foo_cls')
+ 
+-    def test_patch_classmethod_with_boundmethod(self):
+-        oldmethod = C.foo_cls
+-        oldmethod_inst = C().foo_cls
+-        d = D()
+-        fixture = MonkeyPatch(
+-            'fixtures.tests._fixtures.test_monkeypatch.C.foo_cls',
+-            d.bar_two_args)
+-        with fixture:
+-            slf, cls = C.foo_cls()
+-            self.expectThat(slf, Is(d))
+-            self.expectThat(cls, Is(C))
+-            slf, cls = C().foo_cls()
+-            self.expectThat(slf, Is(d))
+-            self.expectThat(cls, Is(C))
+-        self._check_restored_static_or_class_method(oldmethod, oldmethod_inst,
+-                C, 'foo_cls')
+-
+     def test_patch_function_with_staticmethod(self):
+         oldmethod = fake_no_args
+         fixture = MonkeyPatch(
