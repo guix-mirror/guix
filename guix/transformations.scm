@@ -460,19 +460,46 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
         (rewrite obj)
         obj)))
 
+(define (patched-source name source patches)
+  "Return a file-like object with the given NAME that applies PATCHES to
+SOURCE.  SOURCE must itself be a file-like object of any type, including
+<git-checkout>, <local-file>, etc."
+  (define patch
+    (module-ref (resolve-interface '(gnu packages base)) 'patch))
+
+  (computed-file name
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils))
+
+                       (setenv "PATH" #+(file-append patch "/bin"))
+
+                       ;; XXX: Assume SOURCE is a directory.  This is true in
+                       ;; most practical cases, where it's a <git-checkout>.
+                       (copy-recursively #+source #$output)
+                       (chdir #$output)
+                       (for-each (lambda (patch)
+                                   (invoke "patch" "-p1" "--batch"
+                                           "-i" patch))
+                                 '(#+@patches))))))
+
 (define (transform-package-patches specs)
   "Return a procedure that, when passed a package, returns a package with
 additional patches."
   (define (package-with-extra-patches p patches)
-    (if (origin? (package-source p))
-        (package/inherit p
-          (source (origin
-                    (inherit (package-source p))
-                    (patches (append (map (lambda (file)
-                                            (local-file file))
-                                          patches)
-                                     (origin-patches (package-source p)))))))
-        p))
+    (let ((patches (map (lambda (file)
+                          (local-file file))
+                        patches)))
+      (if (origin? (package-source p))
+          (package/inherit p
+            (source (origin
+                      (inherit (package-source p))
+                      (patches (append patches
+                                       (origin-patches (package-source p)))))))
+          (package/inherit p
+            (source (patched-source (string-append (package-full-name p "-")
+                                                   "-source")
+                                    (package-source p) patches))))))
 
   (define (coalesce-alist alist)
     ;; Coalesce multiple occurrences of the same key in ALIST.

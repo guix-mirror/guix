@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -172,15 +172,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.13.4")
+    (version "4.13.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "0y2wc7njhyhg055krp878xfv9c3wbhrhzn02d5ich30hyxilrcx1"))
-       (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
+        (base32 "00q5hf2r71dyma785dckcyksv3082mqfgyy9q6k6rc6kqjwkirzh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -281,14 +280,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mvv57srpzcc1qh6vjjyjhgpdlcw4bmmsxfz4j8pfk9qkvwkx817"))))
+                "1ala3l6v8qk2pwq97z1zdkj1isnfnrp1923srp2g22mxd0impsbb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -348,14 +347,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.10.2")
+    (version "0.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15k6i8ad5lpxfjsjyq9h64zlyws8d3cm0vwdnaw8z1xjwli7hhpq"))))
+                "1fl2pj4p8p5fa2laykwf1sfjdw7pkw9slklj3vzc5ah8x348d6pf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -368,7 +367,8 @@ destructors.  It is the core memory allocator used in Samba.")
                        (string-append "--prefix=" out)
                        "--bundled-libraries=NONE")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("which" ,which)))
     (propagated-inputs
@@ -384,14 +384,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.5.6")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nwpkqidsna4yz3vhjzzadm4hpviwnyk80yml8ay82gi1d6lg0pz"))
+                "10rd1z2llqz8xdx6m7yyxb9a118gx2xxwri18bhkkab9n1w55rvn"))
               (modules '((guix build utils)))
               (snippet
                '(begin

@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,78 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages))
+
+(define-public slscroll
+  (package
+    (name "slscroll")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.suckless.org/tools/scroll-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1mpfrvn122lnaqid1pi99ckpxd6x679b0w91pl003xmdwsfdbcly"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://tools.suckless.org/scroll/")
+    (synopsis "Scroll-back buffer program for st")
+    (description "Scroll is a program that provides a scroll back buffer for
+terminal like @code{st}.")
+    (license license:isc)))
+
+(define-public tabbed
+  (package
+    (name "tabbed")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.suckless.org/tools/tabbed-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0hhwckyzvsj9aim2l6m69wmvl2n7gzd6b1ly8qjnlpgcrcxfllbn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "config.mk"
+               (("/usr/local")
+                (assoc-ref outputs "out"))
+               (("/usr/X11R6")
+                (assoc-ref inputs "libx11"))
+               (("/usr/include/freetype2")
+                (string-append (assoc-ref inputs "freetype")
+                               "/include/freetype2"))
+               (("CC = cc")
+                (string-append "CC = " ,(cc-for-target))))))
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)))
+    (home-page "https://tools.suckless.org/tabbed/")
+    (synopsis "Tab interface for application supporting Xembed")
+    (description "Tabbed is a generic tabbed frontend to xembed-aware
+applications.  It was originally designed for surf but also usable with many
+other applications, i.e. st, uzbl, urxvt and xterm.")
+    (license
+     ;; Dual-licensed.
+     (list
+      license:expat
+      license:x11))))
 
 (define-public slstatus
   ;; No release tarballs yet.

@@ -282,14 +282,14 @@ using @url{https://github.com/saghul/pycares,pycares}.")
 (define-public python-aiorpcx
   (package
     (name "python-aiorpcx")
-    (version "0.18.3")
+    (version "0.22.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiorpcX" version))
        (sha256
         (base32
-         "0k545hc7wl6sh1svydzbv6x7sx5pig2pqkl3yxs9riwmvzawx9xp"))))
+         "0lx54bcinp44fmr8q4bbffsqbkg8kdcwykf9i5jj0bj3sfzgf9k0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)))
@@ -303,6 +303,18 @@ The package includes a module with full coverage of JSON RPC versions 1.0 and
 2.0, JSON RPC protocol auto-detection, and arbitrary message framing.  It also
 comes with a SOCKS proxy client.")
     (license (list license:expat license:bsd-2))))
+
+(define-public python-aiorpcx-0.18
+  (package
+    (inherit python-aiorpcx)
+    (version "0.18.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiorpcX" version))
+       (sha256
+        (base32
+         "1rswrspv27x33xa5bnhrkjqzhv0sknv5kd7pl1vidw9d2z4rx2l0"))))))
 
 (define-public python-asgiref
   (package
@@ -6142,3 +6154,43 @@ your code non-blocking and speedy.")
      "Socks is a library providing core proxy (SOCKS4, SOCKS5, HTTP tunneling)
  functionality.")
     (license license:asl2.0)))
+
+(define-public python-azure-nspkg
+  (package
+    (name "python-azure-nspkg")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "azure-nspkg" version ".zip"))
+       (sha256
+        (base32
+         "1l4xwdh0fcnvrv0mzig4g2kgqkfbsy64zjm1ggc6grk3mykcxlz7"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://github.com/Azure/azure-sdk-for-python")
+    (synopsis "Azure namespace internals")
+    (description
+     "This package is an internal Azure namespace package.")
+    (license license:expat)))
+
+(define-public python-azure-storage-nspkg
+  (package
+    (name "python-azure-storage-nspkg")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "azure-storage-nspkg" version))
+       (sha256
+        (base32
+         "049qcmgshz7dj9yaqma0fwcgbxwddgwyfcw4gmv45xfmaa3bwfvg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-azure-nspkg" ,python-azure-nspkg)))
+    (home-page "https://github.com/Azure/azure-storage-python")
+    (synopsis "Microsoft Azure Storage Namespace package")
+    (description
+     "This project provides a client library in Python that makes it easy to
+communicate with Microsoft Azure Storage services.")
+    (license license:expat)))

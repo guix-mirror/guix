@@ -148,6 +148,8 @@
 
    (eval . (put 'with-paginated-output-port 'scheme-indent-function 1))
 
+   (eval . (put 'with-shepherd-action 'scheme-indent-function 3))
+
    ;; This notably allows '(' in Paredit to not insert a space when the
    ;; preceding symbol is one of these.
    (eval . (modify-syntax-entry ?~ "'"))

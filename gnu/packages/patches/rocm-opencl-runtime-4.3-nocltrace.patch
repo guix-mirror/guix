@@ -1,0 +1,25 @@
+Do not build and install cltrace.
+
+diff --git a/CMakeLists.txt.orig b/CMakeLists.txt
+index c449db4..9cff673 100644
+--- a/CMakeLists.txt.orig
++++ b/CMakeLists.txt
+@@ -73,7 +73,7 @@ find_package(ROCclr REQUIRED CONFIG
+ #add_subdirectory(khronos/icd)
+ add_subdirectory(amdocl)
+ #add_subdirectory(tools/clinfo)
+-add_subdirectory(tools/cltrace)
++#add_subdirectory(tools/cltrace)
+ if(BUILD_TESTS)
+   add_subdirectory(tests/ocltst)
+ endif()
+@@ -108,9 +108,6 @@ endif()
+ #install(PROGRAMS $<TARGET_FILE:clinfo>
+ #        DESTINATION bin
+ #        COMPONENT MAIN)
+-install(PROGRAMS $<TARGET_FILE:cltrace>
+-        DESTINATION lib
+-        COMPONENT MAIN)
+ install(PROGRAMS $<TARGET_FILE:amdocl64>
+         DESTINATION lib
+         COMPONENT MAIN)

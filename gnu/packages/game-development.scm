@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1108,7 +1109,7 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "7.4.6"))
+        (renpy-version "7.4.8"))
     (package
       (inherit python-pygame)
       (name "python-pygame-sdl2")
@@ -1118,7 +1119,7 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1cay8mb5ww72mkhjp8y467i5alnjinwai2z0xypp78kjapbma9nb"))
+         (sha256 (base32 "1yyqcg7khac17jif86vi2d4j9l8x2vfg4h5pasrwwsy0g8386zsm"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1164,13 +1165,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.6")
+    (version "7.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1nnidghwi725n6kizd18fk3fdyh1fx4d48jngg8cnwgnz7i66bd6"))
+       (sha256 (base32 "1ml3gs87xxk1iflrg5ivffr4q8fi7d65l1cx462bvvpm1rs2sa8d"))
        (modules '((guix build utils)))
        (patches
         (search-patches
@@ -2110,6 +2111,56 @@ added.  The permanent goal is to create the open source Quake 3 distribution
 upon which people base their games, ports to new platforms, and other
 projects.")
       (license license:gpl2))))
+
+(define-public instead
+  (package
+    (name "instead")
+    (version "3.3.5")
+    (build-system cmake-build-system)
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/instead-hub/instead")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02j8cw623j51qmr4991i5hsbrzmnp0qfzds8m6nwwr15sjv3hv1g"))
+       (patches
+        (search-patches
+         "instead-use-games-path.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/zlib")))))
+    (arguments
+     '(#:configure-flags
+       (list (string-append
+              "-DLUA_INCLUDE_DIR="
+              (assoc-ref %build-inputs "luajit") "/include/luajit-2.1/")
+             "-DWITH_LUAJIT=1"
+             "-DWITH_GTK3=1")
+       #:tests? #f))
+    (inputs
+     `(("gtk+",gtk+)
+       ("lua" ,lua)
+       ("luajit" ,luajit)
+       ("pkg-config" ,pkg-config)
+       ("sdl2-images" ,sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("zlib" ,zlib)))
+    (home-page "https://instead3.syscall.ru/")
+    (synopsis "Text adventure interpreter")
+    (description "The STEAD (Simple TExt ADventures) interpreter provides
+functionality to play games that mix elements of visual novels, interactive
+fiction and classic point-and-click adventures.")
+    (native-search-paths
+     (list (search-path-specification
+            (variable "INSTEAD_GAMES_PATH")
+            (separator #f)                        ;single entry
+            (files '("share/instead/games")))))
+    (license license:expat)))
 
 (define-public openvr
   (package

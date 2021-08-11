@@ -5716,6 +5716,37 @@ programs.")
         ("rust-parking" ,rust-parking-1)
         ("rust-waker-fn" ,rust-waker-fn-1))))))
 
+(define-public rust-boomphf-0.5
+  (package
+    (name "rust-boomphf")
+    (version "0.5.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "boomphf" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0braniw72g9yq5006sfgc1g8d4317bb524c694jw6nggizrvg3sf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-wyhash" ,rust-wyhash-0.5))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-1))))
+    (home-page "https://github.com/10XGenomics/rust-boomphf")
+    (synopsis "Scalable and Efficient Minimal Perfect Hash Functions")
+    (description "This package provides a Rust implementation of
+@url{https://arxiv.org/abs/1702.03154, fast and scalable minimal perfect hashing
+for massive key sets}.  It generates an @acronym{MPHF, minimal perfect hash
+functions} for a collection of hashable objects.")
+    (license license:expat)))
+
 (define-public rust-boxfnonce-0.1
   (package
     (name "rust-boxfnonce")
@@ -7744,6 +7775,30 @@ clauses.")
     (home-page "https://github.com/chronotope/chrono")
     (synopsis "Date and time library for Rust")
     (description "Date and time library for Rust.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-chrono-humanize-0.2
+  (package
+    (name "rust-chrono-humanize")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chrono-humanize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jvm6fcs3zvz4kcqkp9q5hjy0i2zc17194nb63ckyn0xa0cw3p9f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4))))
+    (home-page "https://gitlab.com/imp/chrono-humanize-rs")
+    (synopsis "Human-friendly time expressions")
+    (description
+     "Chrono-Humanize provides human-friendly time expressions, similar to
+Python arrow.humanize.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-chrono-tz-0.5
@@ -18586,8 +18641,44 @@ getters and setters on fields.")
      `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1))))))
 
+(define-public rust-gfa-0.10
+  (package
+    (name "rust-gfa")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gfa" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hadm6vfjwyqw41bqci18wb4wv80rydmrag7a5c02pdp1gid14fw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-bstr" ,rust-bstr-0.2)
+        ("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/chfi/rs-gfa")
+    (synopsis "Library for graphs in the GFA (Graphical Fragment Assembly) format")
+    (description
+     "This package provides a library for working with graphs in the
+@acronym{GFA, Graphical Fragment Assembly} format.")
+    (license license:expat)))
+
 (define-public rust-gfa-0.6
   (package
+    (inherit rust-gfa-0.10)
     (name "rust-gfa")
     (version "0.6.2")
     (source
@@ -18599,7 +18690,6 @@ getters and setters on fields.")
         (sha256
          (base32
           "0ghmy4r0324s6vvmj9nmh326346nkwm7nybnpcpswnjvf02b85gw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
@@ -18609,13 +18699,7 @@ getters and setters on fields.")
         ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-criterion" ,rust-criterion-0.3))))
-    (home-page "https://github.com/chfi/rs-gfa")
-    (synopsis "Library for graphs in the GFA (Graphical Fragment Assembly) format")
-    (description
-     "This package provides a library for working with graphs in the
-@acronym{GFA, Graphical Fragment Assembly} format.")
-    (license license:expat)))
+       (("rust-criterion" ,rust-criterion-0.3))))))
 
 (define-public rust-ghash-0.3
   (package
@@ -25788,7 +25872,7 @@ parallelize and optimize.")
 (define-public rust-md-5-0.9
   (package
     (name "rust-md-5")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
       (origin
         (method url-fetch)
@@ -25797,14 +25881,14 @@ parallelize and optimize.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "14x7yxfi4pk4qy3zmn9dj69yc18fg3cyind346kribjd93077qij"))))
+          "059ajjacz1q3cms7vl6cvhdqs4qdw2nnwj9dq99ryzv0p6djfnkv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-block-buffer" ,rust-block-buffer-0.8)
+       (("rust-block-buffer" ,rust-block-buffer-0.9)
         ("rust-digest" ,rust-digest-0.9)
         ("rust-md5-asm" ,rust-md5-asm-0.4)
-        ("rust-opaque-debug" ,rust-opaque-debug-0.2))
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.9)
         ("rust-hex-literal" ,rust-hex-literal-0.2))))
@@ -34834,6 +34918,27 @@ they were parsed from")
      "This package dynamically queries a type-erased object for any trait
 implementation.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-quick-csv-0.1
+  (package
+    (name "rust-quick-csv")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quick-csv" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "131k8zzlplk2h62wz813jbvm0sk7v3mixwhhq34y9lmp3mqbgx7d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))
+    (home-page "https://github.com/tafia/quick-csv")
+    (synopsis "Quick csv reader and decoder")
+    (description "This package provides a quick csv reader and decoder in Rust.")
+    (license license:expat)))
 
 (define-public rust-quick-error-1
   (package
@@ -45510,6 +45615,30 @@ cryptographic implementations.")
         (base32
          "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
+(define-public rust-succinct-0.5
+  (package
+    (name "rust-succinct")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "succinct" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0654c9gq50x7djyf25zbzz3d2pc4x3z21wmjj3qbr6d9h4hbd63p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-num-traits" ,rust-num-traits-0.2))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/tov/succinct-rs")
+    (synopsis "Succinct data structures for Rust")
+    (description "This package provides succinct data structures for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-surf-2
   (package
     (name "rust-surf")
@@ -55620,6 +55749,29 @@ serialization.")
      "Contains function definitions for the Windows API library ws2_32.")
     (license license:expat)))
 
+(define-public rust-wyhash-0.5
+  (package
+    (name "rust-wyhash")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wyhash" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "15f26hvx6nyp4d6iswha7rm3psidxa2k2iab1f1aqgsyq9iy3xms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.6))))
+    (home-page "https://github.com/eldruin/wyhash-rs")
+    (synopsis "Rust implementation of the WyHash algorithm")
+    (description
+     "This package provides a Rust implementation of the WyHash fast portable
+non-cryptographic hashing algorithm and random number generator.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wyz-0.2
   (package
     (name "rust-wyz")
@@ -56476,7 +56628,7 @@ configuration file and/or environment variables.")
 (define-public rust-svd-parser-0.9
   (package
     (name "rust-svd-parser")
-    (version "0.9.0")
+    (version "0.10.2")
     (source
       (origin
         (method url-fetch)
@@ -56485,18 +56637,20 @@ configuration file and/or environment variables.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "1qhvdz3k76i3sfypcy8c84hhb8sqixrckba21kalzcpgy6an45ml"))))
+            "1fbr4m9cla6xvmrib7pad9hv29sn2d5hjbc77pz12lwzmm2pczk9"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
         (("rust-anyhow" ,rust-anyhow-1)
-         ("rust-either" ,rust-either-1)
+         ("rust-once-cell" ,rust-once-cell-1)
+         ("rust-rayon" ,rust-rayon-1)
+         ("rust-regex" ,rust-regex-1)
          ("rust-serde" ,rust-serde-1)
          ("rust-thiserror" ,rust-thiserror-1)
          ("rust-xmltree" ,rust-xmltree-0.8))
         #:cargo-development-inputs
         (("rust-serde-json" ,rust-serde-json-1))))
-    (home-page #f)
+    (home-page "https://github.com/rust-embedded/svd")
     (synopsis "A CMSIS-SVD file parser")
     (description
       "This package provides a CMSIS-SVD file parser")
@@ -56756,10 +56910,39 @@ variant of this library is available separately as @code{im}.")
 (define-public rust-skim-0.7
   (deprecated-package "rust-skim-0.7" skim-0.7))
 
+(define-public rust-clap-conf-0.1
+  (package
+    (name "rust-clap-conf")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clap_conf" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1n29wr6ns660hi63mc30zvs7dhidaycw35am9spzknsal3nrs0sn"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-clap" ,rust-clap-2)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-thiserror" ,rust-thiserror-1)
+         ("rust-toml" ,rust-toml-0.5))))
+    (home-page
+      "https://github.com/storyfeet/clap_conf")
+    (synopsis
+      "A library to unify commandline arguments with config files and environment variables. And make it easier for users to tell your program how to behave across the three main input sources")
+    (description
+      "This package provides a library to unify commandline arguments with config files and environment variables.  And make it easier for users to tell your program how to behave across the three main input sources")
+    (license license:expat)))
+
 (define-public svd2rust
   (package
     (name "svd2rust")
-    (version "0.17.0")
+    (version "0.19.0")
     (source
       (origin
         (method url-fetch)
@@ -56768,20 +56951,22 @@ variant of this library is available separately as @code{im}.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "0850pn92a5pmrlavdsm4s9wgrgx9gz0vylf9i594nj8sixmddjd9"))))
+            "0q8slfgjfhpljzlk2myb0i538mfq99q1ljn398jm17r1q2pjjxhv"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
-        (("rust-cast" ,rust-cast-0.2)
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-cast" ,rust-cast-0.2)
          ("rust-clap" ,rust-clap-2)
+         ("rust-clap-conf" ,rust-clap-conf-0.1)
          ("rust-env-logger" ,rust-env-logger-0.7)
-         ("rust-error-chain" ,rust-error-chain-0.12)
          ("rust-inflections" ,rust-inflections-1)
          ("rust-log" ,rust-log-0.4)
          ("rust-proc-macro2" ,rust-proc-macro2-0.4)
          ("rust-quote" ,rust-quote-1)
          ("rust-svd-parser" ,rust-svd-parser-0.9)
-         ("rust-syn" ,rust-syn-1))))
+         ("rust-syn" ,rust-syn-1)
+         ("rust-thiserror" ,rust-thiserror-1))))
     (home-page #f)
     (synopsis
       "Generate Rust register maps (`struct`s) from SVD files")

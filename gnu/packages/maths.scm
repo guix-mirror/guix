@@ -124,6 +124,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
@@ -141,6 +142,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
@@ -175,6 +177,39 @@ logical symbols and its natural deduction interface make it easy to use for
 beginners.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/aris/")))
+
+(define-public bitwise
+  (package
+    (name "bitwise")
+    (version "0.42")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mellowcandle/bitwise"
+                                  "/releases/download/v" version
+                                  "/bitwise-v" version ".tar.gz"))
+              (sha256
+               (base32 "1lniw4bsb5qs5ybf018qllf95pzixb1q3lvybzl4k3xz8zpkrm6k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("cunit" ,cunit)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Terminal based bit manipulator in ncurses")
+    (description "Bitwise is a multi base interactive calculator supporting
+dynamic base conversion and bit manipulation.  It's a handy tool for low level
+hackers, kernel developers and device drivers developers.
+
+Some of the features include:
+@itemize
+@item Interactive ncurses interface.
+@item Command line calculator supporting all bitwise operations.
+@item Individual bit manipulator.
+@item Bitwise operations such as NOT, OR, AND, XOR, and shifts.
+@end itemize")
+    (license license:gpl3+)
+    (home-page "https://github.com/mellowcandle/bitwise/")))
 
 (define-public c-graph
   (package
@@ -4610,6 +4645,154 @@ specifications.")
 revised simplex and the branch-and-bound methods.")
     (license license:lgpl2.1+)))
 
+;; Private Trilinos package for dealii-openmpi (similar to
+;; trilinos-serial-xyce and trilinos-parallel-xyce).
+;; This version is the latest known to be compatible with deal.II [1].
+;; Since the latest version of Trilinos is not necessarily supported by
+;; deal.II, it may be worth keeping this package even if and when Trilinos
+;; gets packaged separately for Guix (unless various versions of Trilinos are
+;; packaged).
+;;
+;; An insightful source of information for building Trilinos for deal.II lies
+;; in the Trilinos package for candi [2], which is a source-based installer
+;; for deal.II and its dependencies.
+;;
+;; [1]: https://www.dealii.org/current/external-libs/trilinos.html
+;; [2]: https://github.com/dealii/candi/blob/master/deal.II-toolchain/packages/trilinos.package
+(define trilinos-for-dealii-openmpi
+  (package
+    (name "trilinos-for-dealii-openmpi")
+    (version "12.18.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trilinos/Trilinos/")
+             (commit
+              (string-append "trilinos-release-"
+                             (string-replace-substring version "." "-")))))
+       (file-name (git-file-name "trilinos" version))
+       (sha256
+        (base32 "0fnwlhzsh85qj38cq3igbs8nm1b2jdgr2z734sapmyyzsy21mkgp"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ;; Trilinos's repository contains several C-shell scripts, but adding
+       ;; tcsh to the native inputs does not result in the check phase running
+       ;; any more tests than without it (nor is tcsh required to build
+       ;; Trilinos).
+       ;; It seems that Trilinos has replaced its use of C-shell test scripts
+       ;; with CMake's testing facilities.
+       ;; For example,
+       ;; packages/zoltan/doc/Zoltan_html/dev_html/dev_test_script.html [1]
+       ;; states that Zoltan's C-shell test script
+       ;; packages/zoltan/test/test_zoltan has been obsoleted by the tests now
+       ;; performed through CMake.
+       ;;
+       ;; Perl is required for some Zoltan tests and Python 2 for one ML test.
+       ;;
+       ;; [1]: https://cs.sandia.gov/zoltan/dev_html/dev_test_script.html
+       ("perl" ,perl)
+       ("python" ,python-2)))
+    (inputs
+     `(("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("mumps" ,mumps-openmpi)
+       ("scalapack" ,scalapack)))
+    (propagated-inputs
+     `(("mpi" ,openmpi)))
+    (arguments
+     `(#:build-type "Release"
+       #:configure-flags
+       `("-DBUILD_SHARED_LIBS=ON"
+         ;; Obtain the equivalent of RelWithDebInfo but with -O3 (the Release
+         ;; default) rather than -O2 (the RelWithDebInfo default), to conform
+         ;; to candi's trilinos.package's compilation flags, which are -g -O3.
+         "-DCMAKE_C_FLAGS=-g"
+         "-DCMAKE_CXX_FLAGS=-g"
+         "-DCMAKE_Fortran_FLAGS=-g"
+
+         ;; Trilinos libraries that deal.II can interface with.
+         "-DTrilinos_ENABLE_Amesos=ON"
+         "-DTrilinos_ENABLE_AztecOO=ON"
+         "-DTrilinos_ENABLE_Epetra=ON"
+         "-DTrilinos_ENABLE_EpetraExt=ON"
+         "-DTrilinos_ENABLE_Ifpack=ON"
+         "-DTrilinos_ENABLE_ML=ON"
+         "-DTrilinos_ENABLE_MueLu=ON"
+         "-DTrilinos_ENABLE_ROL=ON"
+         ;; Optional; required for deal.II's GridIn::read_exodusii, but
+         ;; depends on netcdf.
+         ;; Enable if and when someone needs it.
+         ;;"-DTrilinos_ENABLE_SEACAS=ON"
+         "-DTrilinos_ENABLE_Sacado=ON"
+         "-DTrilinos_ENABLE_Teuchos=ON"
+         "-DTrilinos_ENABLE_Tpetra=ON"
+         "-DTrilinos_ENABLE_Zoltan=ON"
+
+         ;; Third-party libraries (TPLs) that Trilinos can interface with.
+         "-DBLAS_LIBRARY_NAMES=openblas"
+         "-DTPL_ENABLE_MPI=ON"
+         "-DTPL_ENABLE_MUMPS=ON"
+         "-DTPL_ENABLE_SCALAPACK=ON"
+
+         ;; Enable the tests but not the examples (which are enabled by
+         ;; default when enabling tests).
+         ;; Although some examples are run as tests, they are otherwise
+         ;; unnecessary since this is a private package meant for
+         ;; dealii-openmpi.
+         ;; Besides, some MueLu and ROL examples require a lot of memory to
+         ;; compile.
+         ;;
+         ;; (For future reference, note that some ROL and SEACAS examples
+         ;; require removing gfortran from CPLUS_INCLUDE_PATH as in the
+         ;; dune-istl, dune-localfunctions and dune-alugrid packages.)
+         "-DTrilinos_ENABLE_TESTS=ON"
+         "-DTrilinos_ENABLE_EXAMPLES=OFF"
+         ;; MueLu tests require considerably more time and memory to compile
+         ;; than the rest of the tests.
+         "-DMueLu_ENABLE_TESTS=OFF"
+
+         ;; The following options were gleaned from candi's trilinos.package.
+         ;; (We do not enable the complex instantiations, which are anyway
+         ;; provided only as an option in trilinos.package, because they are
+         ;; costly in compilation time and memory usage, and disk space [1].)
+         ;;
+         ;; [1]: https://www.docs.trilinos.org/files/TrilinosBuildReference.html#enabling-float-and-complex-scalar-types
+         "-DTrilinos_ENABLE_Ifpack2=OFF"
+         "-DTeuchos_ENABLE_FLOAT=ON"
+         "-DTpetra_INST_INT_LONG=ON"
+         "-DTPL_ENABLE_Boost=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'fix-kokkos-config
+           (lambda _
+             ;; GNU Make 4.3 accidentally leaves the backslash preceding the
+             ;; number sign in strings containing a literal backslash–number
+             ;; sign (\#) [1, 2].
+             ;; This is still an issue in Trilinos 13.0.1, but should be fixed
+             ;; in the following version.
+             ;; (The latest versions of Kokkos incorporate the fix [2].)
+             ;;
+             ;; [1]: https://github.com/GEOSX/thirdPartyLibs/issues/136
+             ;; [2]: https://github.com/kokkos/kokkos/blob/3.4.00/Makefile.kokkos#L441
+             (substitute* "KokkosCore_config.h"
+               (("\\\\#") "#"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (home-page "https://trilinos.github.io/")
+    (synopsis "Algorithms for engineering and scientific problems")
+    (description
+     "The Trilinos Project is an effort to develop algorithms and enabling
+technologies within an object-oriented software framework for the solution of
+large-scale, complex multi-physics engineering and scientific problems.
+A unique design feature of Trilinos is its focus on packages.")
+    ;; The packages are variously licensed under more than just BSD-3 and
+    ;; LGPL-2.1+, but all the licenses are either BSD- or LGPL-compatible.
+    ;; See https://trilinos.github.io/license.html.
+    (license (list license:bsd-3 license:lgpl2.1+))))
+
 (define-public dealii
   (package
     (name "dealii")
@@ -4705,6 +4888,7 @@ in finite element programs.")
        ("p4est" ,p4est-openmpi)
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)
+       ("trilinos" ,trilinos-for-dealii-openmpi)
        ,@(alist-delete "hdf5" (package-propagated-inputs dealii))))
     (arguments
      (substitute-keyword-arguments (package-arguments dealii)
@@ -6735,3 +6919,103 @@ when an application performs repeated divisions by the same divisor.")
        "This header-only C++ library implements conversion to and from
 half-precision floating point formats.")
       (license license:expat))))
+
+(define-public optizelle
+  (let ((commit "ed4160b5287518448caeb34789d92dc6a0b7e2cc"))
+   (package
+    (name "optizelle")
+    (version (git-version "1.3.0" "0" commit))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OptimoJoe/Optizelle")
+             (commit commit)))
+       (file-name (git-file-name "optizelle" commit))
+       (sha256
+        (base32
+         "0rjrs5sdmd33a9f4xm8an7p0953aa0bxsmr4hs3ss1aad9k181vq"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Reduce the stopping tolerance in one test so that the
+           ;; convergence check returns the correct stopping
+           ;; condition.
+           (substitute*
+            "src/unit/linear_algebra/tcg_loss_of_orthogonality.cpp"
+            (("1e-13") "5e-14"))
+           ;; Skip one set of python tests.  See
+           ;; https://github.com/OptimoJoe/Optizelle/issues/2.
+           (substitute*
+            "src/examples/inequality_scaling/CMakeLists.txt"
+            (("add_unit(.*)\\$\\{interfaces\\}(.*)$" all middle end)
+             (string-append "add_unit" middle "\"cpp\"" end)))
+           ;; Install the licence for Optizelle, without also
+           ;; including the licences for the dependencies.
+           (substitute* "licenses/CMakeLists.txt"
+                        (("file.*package.*$" all)
+                         (string-append "# " all))
+                        ((".*[^l].[.]txt\\)\n") "")
+                        (("add_license.*\"\n") ""))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%cmake-build-system-modules)
+       #:modules (((guix build python-build-system) #:select
+                   (python-version))
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:configure-flags `("-DCMAKE_CXX_FLAGS:STRING=-pthread"
+                           "-DENABLE_CPP_UNIT:BOOL=ON"
+                           "-DENABLE_CPP_EXAMPLES:BOOL=ON"
+                           "-DENABLE_PYTHON:BOOL=ON"
+                           "-DENABLE_PYTHON_UNIT:BOOL=ON"
+                           "-DENABLE_PYTHON_EXAMPLES:BOOL=ON"
+                           ,(string-append "-DBLAS_LIBRARY:FILEPATH="
+                                           (assoc-ref %build-inputs
+                                                      "blas/lapack")
+                                           "/lib/libopenblas.so")
+                           ,(string-append "-DLAPACK_LIBRARY:FILEPATH="
+                                           (assoc-ref %build-inputs
+                                                      "fortran:lib")
+                                           "/lib/libgfortran.so;"
+                                           (assoc-ref %build-inputs
+                                                      "fortran:lib")
+                                           "/lib/libquadmath.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-numpy-path ; Needed for the unit tests.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((pyver (python-version (assoc-ref inputs "python")))
+                    (npdir (string-append (assoc-ref inputs "numpy")
+                                          "/lib/python" pyver
+                                          "/site-packages")))
+                (substitute* "src/cmake/Modules/Optizelle.cmake"
+                  (("PYTHONPATH=")
+                   (string-append "LD_LIBRARY_PATH=$ENV{LIBRARY_PATH};"
+                                  "PYTHONPATH=" npdir ":"))))))
+         (delete 'install-license-files)))) ; LICENSE.txt is installed.
+    (inputs
+     `(("blas/lapack" ,openblas)
+       ("fortran:lib" ,gfortran "lib")
+       ("jsoncpp" ,jsoncpp)
+       ("numpy" ,python-numpy)
+       ("python" ,python)))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.optimojoe.com/products/optizelle/")
+    (synopsis "Mathematical optimization library")
+    (description "@code{optizelle} is a software library designed to
+solve nonlinear optimization problems.  Four types of problem are
+considered: unconstrained, equality constrained, inequality
+constrained and constrained.  Constraints may be applied as values of
+functions or sets of partial differential equations (PDEs).
+
+Solution algorithms such as the preconditioned nonlinear conjugate
+gradient method, sequential quadratic programming (SQP) and the
+primal-dual interior-point method are made available.  Interfaces are
+provided for applications written in C++ and Python.  Parallel
+computation is supported via MPI.")
+    (license license:bsd-2))))

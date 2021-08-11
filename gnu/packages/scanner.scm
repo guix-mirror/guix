@@ -23,14 +23,18 @@
 (define-module (gnu packages scanner)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -189,6 +193,66 @@ package contains the library, but no drivers.")
 proving access to any raster image scanner hardware (flatbed scanner,
 hand-held scanner, video- and still-cameras, frame-grabbers, etc.).  The
 package contains the library and drivers.")))
+
+(define-public scanbd
+  (package
+    (name "scanbd")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scanbd/releases/"
+                           "scanbd-" version ".tgz"))
+       (sha256
+        (base32 "0pvy4qirfjdfm8aj6x5rkbgl7hk3jfa2s21qkk8ic5dqfjjab75n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-debug"
+             "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (conf (string-append out "/etc/scanbd")))
+               (apply invoke "make" "install"
+                      ;; Install example configuration to the store, not /etc.
+                      ;; These don't inherit from each other, so we need both.
+                      (string-append "scanbdconfdir="  conf)
+                      (string-append "scannerconfdir=" conf "/scanner.d")
+                      make-flags))))
+         (add-after 'install 'install-extra-documentation
+           ;; The README provides more detailed set-up instructions than the
+           ;; man page.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/"
+                                        ,name "-" ,version)))
+               (install-file "doc/README.txt" doc)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("libconfuse" ,libconfuse)
+       ("sane-backends" ,sane-backends)
+       ("udev" ,eudev)
+       ("zlib" ,zlib)))
+    (home-page "https://scanbd.sourceforge.io")
+    (synopsis "Configurable scanner button monitor")
+    (description "Scanbd stands for scanner button daemon.  It regulary polls
+scanners for pressed buttons, function knob changes, or other events such
+as (un)plugging the scanner or inserting and removing paper.  Then it performs
+the desired action(s) such as saving, copying, or e-mailing the image.
+
+Actions can be fully customized through scripts, based on any combination of
+switch or knob settings.  Events are also signaled over D-Bus and scans can
+even be triggered over D-Bus from foreign applications.
+
+Scanbd talks to scanners through the @acronym{SANE, Scanner Access Now Easy}
+back-end library.  This means that it supports almost all existing scanners,
+provided the driver also exposes the buttons.")
+    (license license:gpl2+)))
 
 (define-public xsane
   (package

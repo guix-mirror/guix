@@ -8516,13 +8516,13 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.5.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version))
        (sha256
-        (base32 "0ni3pdisdr8vfp5m9sw8jzr7jwzgqqmc9hq327vrf4n4ra2xb70h"))))
+        (base32 "1fqrq7gc0nn4rd4zqibw96cap75vb5nlixapkajwawp71jaz21i3"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -17377,39 +17377,6 @@ applications in seconds while maintaining all the flexibility.")
 older Pythons because it was not part of the standard library back then.")
     (license license:psfl)))
 
-(define-public python-fudge
-  (package
-    (name "python-fudge")
-    ;; 0.9.6 is the latest version suitable for testing the "fabric" Python 2
-    ;; package, which is currently the only use of this package.
-    (version "0.9.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "fudge" version))
-       (sha256
-        (base32
-         "185ia3vr3qk4f2s1a9hdxb8ci4qc0x0xidrad96pywg8j930qs9l"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))     ;XXX: Tests require the NoseJS Python package.
-    (home-page "https://github.com/fudge-py/fudge")
-    (synopsis "Replace real objects with fakes/mocks/stubs while testing")
-    (description
-     "Fudge is a Python module for using fake objects (mocks and stubs) to
-test real ones.
-
-In readable Python code, you declare the methods available on your fake object
-and how they should be called.  Then you inject that into your application and
-start testing.  This declarative approach means you don’t have to record and
-playback actions and you don’t have to inspect your fakes after running code.
-If the fake object was used incorrectly then you’ll see an informative
-exception message with a traceback that points to the culprit.")
-    (license license:expat)))
-
-(define-public python2-fudge
-  (package-with-python2 python-fudge))
-
 (define-public python-mwclient
   (package
     (name "python-mwclient")
@@ -26041,3 +26008,77 @@ enabling you to write CommonMark inside of Docutils & Sphinx projects.")
 Qhull} for the computation of the convex hull, Delaunay triangulation, and
 Voronoi diagram.")
     (license license:expat)))
+
+(define-public python-opcodes
+  ;; There are no tags in this repo, but 'opcodes/__init__.py' specifies a
+  ;; version number, which is what we use here.
+  (let ((commit "0f7c7d63f5e13ce5a89d9acc3934f1b6e247ec1f"))
+    (package
+      (name "python-opcodes")
+      (version "0.3.14")                          ;from 'opcodes/__init__.py'
+      (home-page "https://github.com/Maratyszcza/Opcodes")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1fvxkr83gfl9f0ikd2wl2lzazzya2qz1hk4yn2a0pq742brbwpys"))))
+      (build-system python-build-system)
+      (synopsis "Database of processor instructions and opcodes")
+      (description
+       "This project documents instruction sets in a format convenient for
+tools development.  An instruction set is represented by three files:
+
+@itemize
+@item an XML file that describes instructions;
+@item an XSD file that describes the structure of the XML file;
+@item a Python module that reads the XML file and represents it as a set of
+Python objects;
+@end itemize
+
+It currently provides descriptions for most user-mode x86, x86_64, and k1om
+instructions up to AVX-512 and SHA (including 3dnow!+, XOP, FMA3, FMA4, TBM
+and BMI2).")
+      (license license:bsd-2))))
+
+(define-public python-peachpy
+  ;; There is no tag in this repo.
+  (let ((commit "906d578266dc7188bf61e4cdbc9f8ea7d69edec0")
+        (version "0.2.0")                         ;from 'peachpy/__init__.py'
+        (revision "1"))
+    (package
+      (name "python-peachpy")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/PeachPy")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1yy62k3cjr6556nbp651w6v4hzl7kz4y75wy2dfqgndgbnixskx2"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (replace 'check
+                      (lambda* (#:key tests? #:allow-other-keys)
+                        (when tests?
+                          (invoke "python" "setup.py" "nosetests")))))))
+      (native-inputs
+       `(("python-nose" ,python-nose)
+         ("python-rednose" ,python-rednose)))
+      (propagated-inputs
+       `(("python-six" ,python-six)
+         ("python-opcodes" ,python-opcodes)))
+      (synopsis "Efficient assembly code generation in Python")
+      (description
+       "PeachPy is a Python framework for writing high-performance assembly kernels.
+PeachPy aims to simplify writing optimized assembly kernels while preserving
+all optimization opportunities of traditional assembly.
+
+PeachPy can generate ELF, MS-COFF, Mach-O object files, and assembly listings
+for the Go language tool chain; it adapts to different calling conventions and
+application binary interfaces (ABIs); it takes care of register allocation; it
+supports x86_64 instructions up to AVX-512 and SHA.")
+      (license license:bsd-2))))

@@ -12,7 +12,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Hui Lu <luhuins@163.com>
 ;;;
@@ -1383,14 +1383,8 @@ information on the configuration file syntax."
   (let ((security-limits
          ;; Create /etc/security containing the provided "limits.conf" file.
          (lambda (limits-file)
-           `(("security"
-              ,(computed-file
-                "security"
-                #~(begin
-                    (mkdir #$output)
-                    (stat #$limits-file)
-                    (symlink #$limits-file
-                             (string-append #$output "/limits.conf"))))))))
+           `(("security/limits.conf"
+              ,limits-file))))
         (pam-extension
          (lambda (pam)
            (let ((pam-limits (pam-entry
@@ -1700,21 +1694,21 @@ proxy of 'guix-daemon'...~%")
 
 (define (guix-activation config)
   "Return the activation gexp for CONFIG."
-  (match config
-    (($ <guix-configuration> guix build-group build-accounts authorize-key? keys)
-     ;; Assume that the store has BUILD-GROUP as its group.  We could
-     ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
-     ;; chown leads to an entire copy of the tree, which is a bad idea.
+  (match-record config <guix-configuration>
+    (guix authorize-key? authorized-keys)
+    #~(begin
+        ;; Assume that the store has BUILD-GROUP as its group.  We could
+        ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
+        ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-     ;; Generate a key pair and optionally authorize substitute server keys.
-     #~(begin
-         (unless (file-exists? "/etc/guix/signing-key.pub")
-           (system* #$(file-append guix "/bin/guix") "archive"
-                    "--generate-key"))
+        ;; Generate a key pair and optionally authorize substitute server keys.
+        (unless (file-exists? "/etc/guix/signing-key.pub")
+          (system* #$(file-append guix "/bin/guix") "archive"
+                   "--generate-key"))
 
-         #$(if authorize-key?
-               (substitute-key-authorization keys guix)
-               #~#f)))))
+        #$(if authorize-key?
+              (substitute-key-authorization authorized-keys guix)
+              #~#f))))
 
 (define* (references-file item #:optional (name "references"))
   "Return a file that contains the list of references of ITEM."

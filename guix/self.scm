@@ -872,7 +872,9 @@ itself."
                  ;; rebuilt when the version changes, which in turn means we
                  ;; can have substitutes for it.
                  #:extra-modules
-                 `(((guix config) => ,(make-config.scm)))
+                 `(((guix config)
+                    => ,(make-config.scm
+                         #:config-variables %default-config-variables)))
 
                  ;; (guix man-db) is needed at build-time by (guix profiles)
                  ;; but we don't need to compile it; not compiling it allows
@@ -974,6 +976,8 @@ itself."
                  (list *core-package-modules* *package-modules*
                        *extra-modules* *system-modules* *core-modules*
                        *cli-modules*)           ;for (guix scripts pack), etc.
+                 #:extra-files (file-imports source "gnu/tests/data"
+                                             (const #t))
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
@@ -1082,10 +1086,17 @@ itself."
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir)))
 
+(define %default-config-variables
+  ;; Default values of the configuration variables above.
+  `((%localstatedir . "/var")
+    (%storedir . "/gnu/store")
+    (%sysconfdir . "/etc")))
+
 (define* (make-config.scm #:key gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (channel-metadata #f)
+                          (config-variables %config-variables)
                           (bug-report-address "bug-guix@gnu.org")
                           (home-page-url "https://guix.gnu.org"))
 
@@ -1115,7 +1126,7 @@ itself."
                    #$@(map (match-lambda
                              ((name . value)
                               #~(define-public #$name #$value)))
-                           %config-variables)
+                           config-variables)
 
                    (define %store-directory
                      (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)

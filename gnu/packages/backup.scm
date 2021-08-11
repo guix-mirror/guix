@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +105,7 @@
        ("par2cmdline" ,par2cmdline)
        ("python-fasteners" ,python-fasteners)
        ("python-future" ,python-future) ; for tests
+       ("python-paramiko" ,python-paramiko)
        ("python-pexpect" ,python-pexpect)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)
@@ -657,12 +659,7 @@ detection, and lossless compression.")
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
-                       (list "blake2" "lz4" "msgpack" "zstd")))
-           ;; Purge some msgpack references from setup.py or the resulting
-           ;; sources will be unbuildable.
-           (substitute* "setup.py"
-             ((".*Extension\\('borg\\.algorithms\\.msgpack\\..*") "")
-             (("msgpack_packer_source, msgpack_unpacker_source") ""))
+                       (list "blake2" "lz4" "zstd")))
            #t))))
     (build-system python-build-system)
     (arguments
@@ -686,12 +683,6 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
-         (add-after 'unpack 'use-system-msgpack
-           (lambda _
-             (substitute* "src/borg/helpers.py"
-               (("prefer_system_msgpack = False")
-                "prefer_system_msgpack = True"))
-             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
@@ -755,10 +746,6 @@ detection, and lossless compression.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-llfuse" ,python-llfuse)
-       ;; The Python msgpack library changed its name so Borg requires this
-       ;; transitional package for now:
-       ;; <https://bugs.gnu.org/30662>
-       ("python-msgpack" ,python-msgpack-transitional)
        ("zstd" ,zstd "lib")))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it
@@ -927,7 +914,9 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zmh42aah32ah8w5n6ilz9bci0y2xrf8p7qshy3yf1lzm5gnbj0w"))))
+                "1zmh42aah32ah8w5n6ilz9bci0y2xrf8p7qshy3yf1lzm5gnbj0w"))
+              (patches
+               (search-patches "restic-0.9.6-fix-tests-for-go1.15.patch"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
@@ -944,11 +933,12 @@ is like a time machine for your data. ")
                (invoke "go" "run" "build.go"))))
 
          (replace 'check
-           (lambda _
-             (with-directory-excursion "src/github.com/restic/restic"
-               ;; Disable FUSE tests.
-               (setenv "RESTIC_TEST_FUSE" "0")
-               (invoke "go" "run" "build.go" "--test"))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "src/github.com/restic/restic"
+                 ;; Disable FUSE tests.
+                 (setenv "RESTIC_TEST_FUSE" "0")
+                 (invoke "go" "run" "build.go" "--test")))))
 
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

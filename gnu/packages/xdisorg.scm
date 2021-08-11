@@ -50,6 +50,7 @@
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
+;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,6 +102,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
@@ -911,6 +913,55 @@ invisible cursor.  This allows you to see all the text in an xterm or
 xedit, for example.  The human factors crowd would agree it should make
 things less distracting.")
     (license license:public-domain)))
+
+(define-public unclutter-xfixes
+  (package
+    (name "unclutter-xfixes")
+    (version "1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Airblader/unclutter-xfixes")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "148m4wx8v57s3l2wb69y9imb00y8ca2li27hsxibwnl1wrkb7z4b"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f
+                 #:make-flags
+                 (list ,(string-append "CC=" (cc-for-target))
+                       (string-append "PREFIX=" (assoc-ref %outputs "out")))
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libev" ,libev)
+       ("libxfixes" ,libxfixes)
+       ("libxi" ,libxi)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Airblader/unclutter-xfixes")
+    (synopsis "Hide idle mouse cursor")
+    (description
+     "unclutter-xfixes is a rewrite of the popular tool unclutter, but
+using the x11-xfixes extension.  This means that this rewrite doesn't
+use fake windows or pointer grabbing and hence causes less problems
+with window managers and/or applications.
+
+Unclutter is a program which runs permanently in the background of an
+X11 session.  It checks on the X11 pointer (cursor) position every few
+seconds, and when it finds it has not moved (and no buttons are pressed
+on the mouse, and the cursor is not in the root window) it creates a
+small sub-window as a child of the window the cursor is in.  The new
+window installs a cursor of size 1x1 but a mask of all 0, i.e. an
+invisible cursor.  This allows you to see all the text in an xterm or
+xedit, for example.  The human factors crowd would agree it should make
+things less distracting.")
+    (license license:expat)))
 
 (define-public xautomation
   (package

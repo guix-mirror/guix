@@ -138,9 +138,6 @@ on the Blowfish password hashing algorithm, as described in
 Password Scheme\"} by Niels Provos and David Mazieres.")
     (license license:asl2.0)))
 
-(define-public python2-bcrypt
-  (package-with-python2 python-bcrypt))
-
 (define-public python-passlib
   (package
     (name "python-passlib")
@@ -259,9 +256,6 @@ providing both client and server functionality.  While it leverages a Python C
 extension for low level cryptography (PyCrypto), Paramiko itself is a pure
 Python interface around SSH networking concepts.")
     (license license:lgpl2.1+)))
-
-(define-public python2-paramiko
-  (package-with-python2 python-paramiko))
 
 (define-public python-ecdsa
   (package
@@ -838,9 +832,6 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 Networking and Cryptography library.  These libraries have a stated goal
 of improving usability, security and speed.")
     (license license:asl2.0)))
-
-(define-public python2-pynacl
-  (package-with-python2 python-pynacl))
 
 (define-public python-blurhash
   (package

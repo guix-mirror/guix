@@ -4479,12 +4479,7 @@ than the first one.")
     `(#:phases
       (modify-phases %standard-phases
         (add-before 'build 'make-writable
-          (lambda _
-            (for-each
-              (lambda (file)
-                (chmod file #o644))
-              (find-files "." "."))
-            #t)))))
+          (lambda _ (for-each make-file-writable (find-files "." ".")))))))
    (inputs
     `(("ocaml-easy-format" ,ocaml-easy-format)))
    (native-inputs
@@ -6543,7 +6538,7 @@ combinators.")
 (define-public ocaml-bisect-ppx
   (package
     (name "ocaml-bisect-ppx")
-    (version "1.4.2")
+    (version "2.6.1")
     (source
      (origin
        (method git-fetch)
@@ -6553,24 +6548,14 @@ combinators.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0900vli5kw7s5kdam0n4cqsfsfqb7mdb3azn3i55595gilg1vyn8"))))
+         "1knglw1b2kjr9jnd8cpfzmm581abxxdcx9l3cd2balg6gnac7qk1"))))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)
-       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
-       ("ocaml-ounit" ,ocaml-ounit)))
+     `(("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-deprecated
-           (lambda _
-             ;; Fixed upstream in 22dd1ad9a0c9629f60599c22d82c6488394d6d32, but
-             ;; not in a release yet.
-             (substitute* "src/ppx/instrument.ml"
-               (("module Ast = Ast_405")
-                "module Ast = Migrate_parsetree.Ast_405
-module Ast_405 = Ast"))
-             #t)))))
+     ;; Tests require ocamlformat which would lead to circular dependencies
+     '(#:tests? #f))
     (home-page "https://github.com/aantron/bisect_ppx")
     (synopsis "Code coverage for OCaml")
     (description "Bisect_ppx helps you test thoroughly.  It is a small
@@ -6974,6 +6959,196 @@ provides support to program with time varying values: declarative events and
  signals.  React doesn't define any primitive event or signal, it lets the
 client chooses the concrete timeline.")
     (license license:lgpl2.1+)))
+
+(define-public ocaml-uucd
+  (package
+    (name "ocaml-uucd")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://erratique.ch/software/uucd/releases/"
+                           "uucd-" version ".tbz"))
+       (sha256
+        (base32
+         "1fg77hg4ibidkv1x8hhzl8z3rzmyymn8m4i35jrdibb8adigi8v2"))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:build-flags '("build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (propagated-inputs
+     `(("ocaml-xmlm" ,ocaml-xmlm)))
+    (native-inputs
+     `(("opam" ,opam)
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)))
+    (home-page "https://erratique.ch/software/uucd")
+    (synopsis "Unicode character database decoder for OCaml")
+    (description "Uucd is an OCaml module to decode the data of the Unicode
+character database from its XML representation.  It provides high-level (but
+not necessarily efficient) access to the data so that efficient
+representations can be extracted.")
+    (license license:isc)))
+
+(define-public ocaml-uucp
+  (package
+    (name "ocaml-uucp")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://erratique.ch/software/uucp/releases/"
+                           "uucp-" version ".tbz"))
+       (sha256
+        (base32
+         "19kf8ypxaakacgg1dwwfzkc2zicaj88cmw11fw2z7zl24dn4gyiq"))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:build-flags '("build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("opam" ,opam)
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)
+       ("ocaml-uucd" ,ocaml-uucd)
+       ("ocaml-uunf" ,ocaml-uunf)
+       ("ocaml-uutf" ,ocaml-uutf)))
+    (home-page "https://erratique.ch/software/uucp")
+    (synopsis "Unicode character properties for OCaml")
+    (description "Uucp is an OCaml library providing efficient access to a
+selection of character properties of the Unicode character database.")
+    (license license:isc)))
+
+(define-public ocaml-uuseg
+  (package
+    (name "ocaml-uuseg")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://erratique.ch/software/uuseg/releases/"
+                           "uuseg-" version ".tbz"))
+       (sha256
+        (base32
+         "1a635j8ra6p27g1ivfln3387lhwqmf6vq4r6bn7b6n1qsqyi1rls"))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:build-flags '("build" "--tests" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (propagated-inputs
+     `(("ocaml-uucp" ,ocaml-uucp)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (native-inputs
+     `(("opam" ,opam)
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)))
+    (home-page "https://erratique.ch/software/uuseg")
+    (synopsis "Unicode text segmentation for OCaml")
+    (description "Uuseg is an OCaml library for segmenting Unicode text.  It
+implements the locale independent Unicode text segmentation algorithms to
+detect grapheme cluster, word and sentence boundaries and the Unicode line
+breaking algorithm to detect line break opportunities.
+
+The library is independent from any IO mechanism or Unicode text data
+structure and it can process text without a complete in-memory
+representation.")
+    (license license:isc)))
+
+(define-public ocaml-fix
+  (package
+    (name "ocaml-fix")
+    (version "20201120")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.inria.fr/fpottier/fix")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1j40mg1gy03c0djzx3nzmpvnl984s14n04zwcmp2xnlidq48kvs4"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://gitlab.inria.fr/fpottier/fix")
+    (synopsis "Facilities for memoization and fixed points")
+    (description "This package provides helpers with various constructions
+that involve memoization and recursion.")
+    (license license:lgpl2.0)))
+
+(define-public ocaml-dune-build-info
+  (package
+    (inherit dune)
+    (name "ocaml-dune-build-info")
+    (build-system dune-build-system)
+    (arguments
+     '(#:package "dune-build-info"
+       ;; No separate test suite from dune.
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-odoc" ,ocaml-odoc)))
+    (synopsis "Embed build informations inside executable")
+    (description "This package allows one to access information about how the
+executable was built, such as the version of the project at which it was built
+or the list of statically linked libraries with their versions.  It supports
+reporting the version from the version control system during development to
+get an precise reference of when the executable was built.")))
+
+(define-public ocamlformat
+  (package
+    (name "ocamlformat")
+    (version "0.18.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-ppx/ocamlformat")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0n6363km8xr81pvyk453n6h2mb0256c5yxw3p1li4dn83f3lwxr1"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:package "ocamlformat"
+       ;; FIXME: The expected format is slightly different than what the
+       ;; produced format is for test/cli/stdin.t
+       #:tests? #f))
+    (propagated-inputs
+      `(("ocaml-version" ,ocaml-version)
+        ("ocaml-base" ,ocaml-base)
+        ("ocaml-cmdliner" ,ocaml-cmdliner)
+        ("ocaml-dune-build-info" ,ocaml-dune-build-info)
+        ("ocaml-fix" ,ocaml-fix)
+        ("ocaml-fpath" ,ocaml-fpath)
+        ("ocaml-menhir" ,ocaml-menhir)
+        ("ocaml-odoc" ,ocaml-odoc)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)
+        ("ocaml-re" ,ocaml-re)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-uuseg" ,ocaml-uuseg)
+        ("ocaml-uutf" ,ocaml-uutf)))
+    (native-inputs
+      `(("ocaml-alcotest" ,ocaml-alcotest)
+        ("ocaml-ocp-indent" ,ocaml-ocp-indent)
+        ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)))
+    (home-page "https://github.com/ocaml-ppx/ocamlformat")
+    (synopsis "Auto-formatter for OCaml code")
+    (description "OCamlFormat is a tool to automatically format OCaml code in
+a uniform style.")
+    (license license:expat)))
 
 (define-public ocaml-bigstringaf
   (package

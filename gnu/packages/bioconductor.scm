@@ -7128,14 +7128,14 @@ information about samples and features can be added to the plot.")
 (define-public r-gosemsim
   (package
     (name "r-gosemsim")
-    (version "2.18.0")
+    (version "2.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOSemSim" version))
        (sha256
         (base32
-         "1fzmaxjzyvq6xj5ny1sjijdwi4krzjgyaz52fczpwrxijq5pnyn1"))))
+         "00dbgkiv9x7g2i0anzcxpycwqqqry0y7jl3ad93lhvi31qnqq1sm"))))
     (properties `((upstream-name . "GOSemSim")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9932,14 +9932,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.16.2")
+    (version "6.16.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "0kbljjwm5caf2znqnkhrbmcfsv1mhppp9h491210q477y8bjlkja"))))
+         "1x6dbw4q6p9vngm256fr96r9fjxk5nik5ivkhbl5a9zqyq8wagpa"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10319,14 +10319,14 @@ regulatory networks from expression data.")
 (define-public r-roc
   (package
     (name "r-roc")
-    (version "1.68.0")
+    (version "1.68.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ROC" version))
        (sha256
         (base32
-         "0ff5rcpyybgjzsfbhaslim0m02n3bksv1r9v7bq0gg0iyzll0rjc"))))
+         "1rmsrvn6hrg9ay7xfb05mfkxknnig78p3kbk9ghsd11lhx2fjm3s"))))
     (properties `((upstream-name . "ROC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13386,14 +13386,14 @@ functionalities including parsing, graph operation, visualization and etc.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.22.0")
+    (version "1.22.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "075jncvfbn3lydg0jvfhnv5025mnw79saa0k557vpcwdvs9y4p0c"))))
+         "16vp5psmigxdkkd6fbivb6s8mvd7rsnm771wsbjvayl2y7ig7kq4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -13661,3 +13661,44 @@ starting site, start codon, stop codon and transcription ending site.")
      "This package provides flexible, quantitative, and integrative genomic
 visualizations for publication-quality multi-panel figures.")
     (license license:gpl2+)))
+
+(define-public r-tximeta
+  (package
+    (name "r-tximeta")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "tximeta" version))
+       (sha256
+        (base32
+         "0ipgpcl93cac4qff6lp9x2l3gav5kb1x1d56g32h09hlm797rvvh"))))
+    (properties `((upstream-name . "tximeta")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-biostrings" ,r-biostrings)
+       ("r-ensembldb" ,r-ensembldb)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tximport" ,r-tximport)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mikelove/tximeta")
+    (synopsis "Transcript quantification import with automatic metadata")
+    (description
+     "This package implements transcript quantification import from Salmon and
+alevin with automatic attachment of transcript ranges and release information,
+and other associated metadata.  De novo transcriptomes can be linked to the
+appropriate sources with linkedTxomes and shared for computational
+reproducibility.")
+    (license license:gpl2)))

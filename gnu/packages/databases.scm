@@ -1381,6 +1381,15 @@ including field and record folding.")))
          (delete 'configure)
          ;; The default target is only needed for tests and built on demand.
          (delete 'build)
+         (add-before 'check 'mount-tmp
+           ;; Use the provided workspace directory for test files.
+           ;; Otherwise, /tmp is used which is a mount namespace on /gnu/store.
+           ;; This speeds up the build when the host /tmp is a proper tmpfs or
+           ;; other fast filesystem, as opposed to /gnu which may be a HDD.
+           (lambda _
+             (let ((test-dir (string-append (getcwd) "/../test")))
+               (mkdir test-dir)
+               (setenv "TEST_TMPDIR" (canonicalize-path test-dir)))))
          (add-before 'check 'disable-optimizations
            (lambda _
              ;; Prevent the build from passing '-march=native' to the compiler.
@@ -1612,14 +1621,14 @@ changes.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.4.3")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06waz0k50c7v3chd08mzp2rv7w4k4q9isbxx3vhlfpx1vy9q61f8"))))
+                "0h8fkblws3d4vf37yhbrbw2nfxg5vk2v3i5mk04hhcbh9y4fvz5w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

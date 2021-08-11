@@ -691,8 +691,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "78.12.0-guix0-preview1")
-(define %icecat-build-id "20210713000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "78.13.0-guix0-preview1")
+(define %icecat-build-id "20210810000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -714,7 +714,7 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "043lplq5i4ax6nh4am3b2bm8dbn4rzzcji1zp0yy1pad4nwahmcb"))))
+              "0v2g5clp9qlsbqfjb6yz614nq8x8c4k1p6m4axyv6g27qbiaky8r"))))
 
          (upstream-icecat-base-version "78.7.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
@@ -1304,11 +1304,11 @@ standards of the IceCat project.")
        (cpe-version . ,(first (string-split version #\-)))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20210713000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20210810000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "78.12.0")
+    (version "78.13.0")
     (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
@@ -1592,7 +1592,7 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "6796ff47626a009d169a1e9fd1f307a6c14b7ed5"))
+        ,(let ((changeset "adcfedf831da719455116546865f9a5faea848a6"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
@@ -1601,7 +1601,7 @@ standards of the IceCat project.")
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "1nnz90h5w9skpdwm8ilndcwfx9d7k9cn6gzh32y4jil95da13813")))))
+               "1dahf3y8bm3kh7amf341wnmh82a2r0ksqihc6dwiakh6x86a94cm")))))
        ("autoconf" ,autoconf-2.13)
        ("cargo" ,rust "cargo")
        ("clang" ,clang)

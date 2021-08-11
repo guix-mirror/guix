@@ -1,0 +1,51 @@
+This cherry-picked patch fixes tests for Go >= 1.15. Restic v0.10 (which
+includes this patch) requires go module support from the Go build system.
+Original patch follows.
+
+---
+From 97950ab81a18de06b95384da6d8646fef87c9d97 Mon Sep 17 00:00:00 2001
+From: Alexander Neumann <alexander@bumpern.de>
+Date: Sat, 12 Sep 2020 17:36:44 +0200
+Subject: [PATCH] options: Fix test for Go >= 1.15
+
+---
+ internal/options/options_test.go | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/internal/options/options_test.go b/internal/options/options_test.go
+index de94fc90a1..8d268992a3 100644
+--- a/internal/options/options_test.go
++++ b/internal/options/options_test.go
+@@ -3,6 +3,7 @@ package options
+ import (
+ 	"fmt"
+ 	"reflect"
++	"regexp"
+ 	"testing"
+ 	"time"
+ )
+@@ -199,7 +200,7 @@ var invalidSetTests = []struct {
+ 			"timeout": "2134",
+ 		},
+ 		"ns",
+-		`time: missing unit in duration 2134`,
++		`time: missing unit in duration "?2134"?`,
+ 	},
+ }
+ 
+@@ -212,8 +213,13 @@ func TestOptionsApplyInvalid(t *testing.T) {
+ 				t.Fatalf("expected error %v not found", test.err)
+ 			}
+ 
+-			if err.Error() != test.err {
+-				t.Fatalf("expected error %q, got %q", test.err, err.Error())
++			matched, err := regexp.MatchString(test.err, err.Error())
++			if err != nil {
++				t.Fatal(err)
++			}
++
++			if !matched {
++				t.Fatalf("expected error to match %q, got %q", test.err, err.Error())
+ 			}
+ 		})
+ 	}

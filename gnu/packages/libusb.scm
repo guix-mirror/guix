@@ -225,14 +225,14 @@ implementing @code{javax.usb} (JSR-80).")
 (define-public python-libusb1
   (package
     (name "python-libusb1")
-    (version "1.6.4")
+    (version "1.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "libusb1" version))
        (sha256
         (base32
-         "03b7xrz8vqg8w0za5r503jhcmbd1ls5610jcja1rqz833nf0v4wc"))))
+         "0j8p7jb7sibiiib18vyv3w5rrk0f4d2dl99bs18nwkq6pqvwxrk0"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((srfi srfi-1)
@@ -257,7 +257,7 @@ implementing @code{javax.usb} (JSR-80).")
                                    "^libusb.*\\.so\\..*"))
                  "\"")))
              #t)))))
-    (inputs `(("libusb" ,libusb)))
+    (propagated-inputs `(("libusb" ,libusb)))
     (home-page "https://github.com/vpelletier/python-libusb1")
     (synopsis "Pure-python wrapper for libusb-1.0")
     (description "Libusb is a library that gives applications easy access to

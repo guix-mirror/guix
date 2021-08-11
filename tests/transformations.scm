@@ -29,7 +29,10 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix transformations)
-  #:use-module ((guix gexp) #:select (local-file? local-file-file))
+  #:use-module ((guix gexp)
+                #:select (local-file? local-file-file
+                          computed-file? computed-file-gexp
+                          gexp-input-thing))
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix git)
@@ -399,6 +402,31 @@
                                   (origin-patches (package-source tar))))
               (map local-file-file
                    (origin-patches (package-source dep)))))))))
+
+(test-equal "options->transformation, with-commit + with-patch"
+  '(#t #t)
+  (let* ((patch  (search-patch "glibc-locales.patch"))
+         (commit "f8934ec94df5868ee8baf1fb0f8ed0f24e7e91eb")
+         (t      (options->transformation
+                  ;; Note: options are applied in reverse order, so
+                  ;; 'with-patch' comes on top.
+                  `((with-patch . ,(string-append "guile-gcrypt=" patch))
+                    (with-commit
+                     . ,(string-append "guile-gcrypt=" commit))))))
+    (let ((new (t (@ (gnu packages gnupg) guile-gcrypt))))
+      (match (package-source new)
+        ((? computed-file? source)
+         (let* ((gexp   (computed-file-gexp source))
+                (inputs (map gexp-input-thing
+                             ((@@ (guix gexp) gexp-inputs) gexp))))
+           (list (any (lambda (input)
+                        (and (git-checkout? input)
+                             (string=? commit (git-checkout-commit input))))
+                      inputs)
+                 (any (lambda (input)
+                        (and (local-file? input)
+                             (string=? (local-file-file input) patch)))
+                      inputs))))))))
 
 (test-equal "options->transformation, with-latest"
   "42.0"

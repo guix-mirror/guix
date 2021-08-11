@@ -1119,7 +1119,7 @@ trivial to build for local use.  Portability is emphasized over performance.")
          ("automake" ,automake)
          ("libtool" ,libtool)))
       ;; WARNING: This package might need additional configure flags to run properly.
-      ;; See https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/libsecp256k1.
+      ;; See https://github.com/archlinux/svntogit-community/blob/packages/libsecp256k1/trunk/PKGBUILD.
       (synopsis "C library for EC operations on curve secp256k1")
       (description
        "Optimized C library for EC operations on curve secp256k1.

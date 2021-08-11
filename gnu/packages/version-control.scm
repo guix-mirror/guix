@@ -1036,7 +1036,7 @@ a built-in cache to decrease server I/O pressure.")
                                "'"))
                (("/usr/sbin/sendmail")
                 (search-input-file inputs
-                                   "/usr/sbin/sendmail"))))))))
+                                   "/sbin/sendmail"))))))))
     (inputs
      `(("git" ,git)
        ("sendmail" ,sendmail)))
@@ -1603,7 +1603,7 @@ execution of any hook written in any language before every commit.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "5.8")
+    (version "5.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
@@ -1611,7 +1611,7 @@ execution of any hook written in any language before every commit.")
              (patches (search-patches "mercurial-hg-extension-path.patch"))
              (sha256
               (base32
-               "17rhlmmkqz5ll3k68jfzpcifg3nndbcbc2nx7kw8xn3qcj7nlpgw"))))
+               "16xi4bmjqzi7ig8sfa5mnypfpbbbiyafmmqrs4nxmgc743za7fl1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

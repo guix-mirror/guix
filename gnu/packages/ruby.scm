@@ -154,21 +154,16 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.7
   (package
     (inherit ruby-2.6)
-    (version "2.7.2")
+    (version "2.7.4")
     (source
      (origin
-       (method url-fetch)
+       (inherit (package-source ruby-2.6))
        (uri (string-append "https://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
                            "/ruby-" version ".tar.gz"))
        (sha256
         (base32
-         "1m63461mxi3fg4y3bspbgmb0ckbbb1ldgf9xi0piwkpfsk80cmvf"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))
+         "0nxwkxh7snmjqf787qsp4i33mxd1rbf9yzyfiky5k230i680jhrh"))))
     (arguments
      `(#:test-target "test"
        #:configure-flags '("--enable-shared") ; dynamic linking
@@ -197,7 +192,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-3.0
   (package
     (inherit ruby-2.7)
-    (version "3.0.0")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -206,12 +201,12 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1cbcixwnr0y8q0lg67wjgplp06kjd6p6hjjh680csv3v0bpsxgv8"))))))
+         "0h2w2ms4gx2s96v3lzdr3add94bd2qqkhdjzaycmaqhg21rpf3jp"))))))
 
 (define-public ruby-2.5
   (package
     (inherit ruby-2.6)
-    (version "2.5.8")
+    (version "2.5.9")
     (source
      (origin
        (method url-fetch)
@@ -220,12 +215,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0vad5ah1lrdhxsyqr5iqc8c7r7qczpmm76cz8rsf4crimpzv5483"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))))
+         "1w2qncacm7h3f3il1whghdabwnv9fvwmz9f1a9vcg32006ljyzx8"))))))
 
 (define-public ruby-2.4
   (package

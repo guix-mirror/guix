@@ -1,0 +1,4502 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
+# This file is distributed under the same license as the guix manual package.
+# Marek Felšöci <marek@felsoci.sk>, 2021.
+msgid ""
+msgstr ""
+"Project-Id-Version: guix manual checkout\n"
+"Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
+"POT-Creation-Date: 2021-07-15 14:49+0200\n"
+"PO-Revision-Date: 2021-08-01 04:08+0000\n"
+"Last-Translator: Marek Felšöci <marek@felsoci.sk>\n"
+"Language-Team: Slovak <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/sk/>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 4.7.2\n"
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:7
+msgid "@documentencoding UTF-8"
+msgstr ""
+"@documentencoding UTF-8\n"
+"@documentlanguage sk"
+
+#. type: top
+#: guix-git/doc/guix-cookbook.texi:7 guix-git/doc/guix-cookbook.texi:36
+#: guix-git/doc/guix-cookbook.texi:50
+#, no-wrap
+msgid "GNU Guix Cookbook"
+msgstr "Receptár GNU Guix"
+
+#. type: copying
+#: guix-git/doc/guix-cookbook.texi:21
+msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
+msgstr "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
+
+#. type: copying
+#: guix-git/doc/guix-cookbook.texi:28
+msgid "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A copy of the license is included in the section entitled ``GNU Free Documentation License''."
+msgstr "Tento dokument môžete kopírovať, ďalej šíriť a/alebo upravovať pod podmienkami licencie GNU Free Documentation License vo verzii 1.3 alebo v akejkoľvek novšej verzii, ktorú vydáva Free Software Foundation; bez nemenných oddielov, úvodnej strany a propagačného textu.  Kópia tejto licencie je priložená v oddiele „GNU Free Documentation License“."
+
+#. type: dircategory
+#: guix-git/doc/guix-cookbook.texi:30
+#, no-wrap
+msgid "System administration"
+msgstr "Správa systému"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:33
+msgid "Guix cookbook: (guix-cookbook)"
+msgstr "Receptár Guix: (guix-cookbook)"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:33
+msgid "Tutorials and examples for GNU Guix."
+msgstr "Návody a príklady GNU Guix."
+
+#. type: subtitle
+#: guix-git/doc/guix-cookbook.texi:37
+#, no-wrap
+msgid "Tutorials and examples for using the GNU Guix Functional Package Manager"
+msgstr "Návody na používanie funkcionálneho správcu balíkov GNU Guix a príklady z praxe"
+
+#. type: author
+#: guix-git/doc/guix-cookbook.texi:38
+#, no-wrap
+msgid "The GNU Guix Developers"
+msgstr "Vývojári GNU Guix"
+
+#. type: node
+#: guix-git/doc/guix-cookbook.texi:49
+#, no-wrap
+msgid "Top"
+msgstr "Top"
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:56
+msgid "This document presents tutorials and detailed examples for GNU@tie{}Guix, a functional package management tool written for the GNU system.  Please @pxref{Top,,, guix, GNU Guix reference manual} for details about the system, its API, and related concepts."
+msgstr "Tento dokument obsahuje návody a podrobné príklady použitia GNU@tie{}Guix, funkcionálneho správcu balíkov napísaného pre systém GNU.  Získajte viac podrobností o systéme, jeho API a súvisiacich pojmoch v @pxref{Top,,, guix, GNU Guix reference manual}."
+
+#.  You can replace the following paragraph with information on
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:64
+msgid "If you would like to translate this document in your native language, consider joining @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook, Weblate}."
+msgstr "Ak chcete pomôcť s prekladom tohto dokumentu do vášho rodného jazyka, pripojte sa k @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook, Weblate}."
+
+#. type: chapter
+#: guix-git/doc/guix-cookbook.texi:71 guix-git/doc/guix-cookbook.texi:80
+#: guix-git/doc/guix-cookbook.texi:96 guix-git/doc/guix-cookbook.texi:97
+#, no-wrap
+msgid "Scheme tutorials"
+msgstr "Návody na Scheme"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:71
+msgid "Meet your new favorite language!"
+msgstr "Zoznámte sa s vašim novým najobľúbenejším jazykom!"
+
+#. type: chapter
+#: guix-git/doc/guix-cookbook.texi:71 guix-git/doc/guix-cookbook.texi:84
+#: guix-git/doc/guix-cookbook.texi:303 guix-git/doc/guix-cookbook.texi:304
+#, no-wrap
+msgid "Packaging"
+msgstr "Zadávanie balíkov"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:71
+msgid "Packaging tutorials"
+msgstr "Návody na zadávanie balíkov"
+
+#. type: chapter
+#: guix-git/doc/guix-cookbook.texi:71 guix-git/doc/guix-cookbook.texi:88
+#: guix-git/doc/guix-cookbook.texi:1346 guix-git/doc/guix-cookbook.texi:1347
+#, no-wrap
+msgid "System Configuration"
+msgstr "Nastavenie systému"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:71
+msgid "Customizing the GNU System"
+msgstr "Prispôsobenie systému GNU"
+
+#. type: chapter
+#: guix-git/doc/guix-cookbook.texi:71 guix-git/doc/guix-cookbook.texi:2441
+#: guix-git/doc/guix-cookbook.texi:2442
+#, no-wrap
+msgid "Advanced package management"
+msgstr "Pokročilá správa balíkov"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:71
+msgid "Power to the users!"
+msgstr "Moc pre používateľov!"
+
+#. type: chapter
+#: guix-git/doc/guix-cookbook.texi:71 guix-git/doc/guix-cookbook.texi:2839
+#: guix-git/doc/guix-cookbook.texi:2840
+#, no-wrap
+msgid "Environment management"
+msgstr "Správa prostredí"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:71
+msgid "Control environment"
+msgstr "Kontrolné prostredie"
+
+#. type: chapter
+#: guix-git/doc/guix-cookbook.texi:75 guix-git/doc/guix-cookbook.texi:2963
+#: guix-git/doc/guix-cookbook.texi:2964
+#, no-wrap
+msgid "Acknowledgments"
+msgstr "Poďakovanie"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:75
+msgid "Thanks!"
+msgstr "Ďakujeme!"
+
+#. type: appendix
+#: guix-git/doc/guix-cookbook.texi:75 guix-git/doc/guix-cookbook.texi:2988
+#: guix-git/doc/guix-cookbook.texi:2989
+#, no-wrap
+msgid "GNU Free Documentation License"
+msgstr "GNU Free Documentation License"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:75
+msgid "The license of this document."
+msgstr "Licencia, ktorej podlieha tento dokument."
+
+#. type: unnumbered
+#: guix-git/doc/guix-cookbook.texi:75 guix-git/doc/guix-cookbook.texi:2994
+#: guix-git/doc/guix-cookbook.texi:2995
+#, no-wrap
+msgid "Concept Index"
+msgstr "Zoznam pojmov"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:75
+msgid "Concepts."
+msgstr "Pojmy."
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:78
+msgid "--- The Detailed Node Listing ---"
+msgstr "--- Podrobný zoznam uzlov ---"
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:82 guix-git/doc/guix-cookbook.texi:110
+#: guix-git/doc/guix-cookbook.texi:111
+#, no-wrap
+msgid "A Scheme Crash Course"
+msgstr "Zrýchlené školenie jazyka Scheme"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:82
+msgid "Learn the basics of Scheme"
+msgstr "Naučte sa základy jazyka Scheme"
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:86 guix-git/doc/guix-cookbook.texi:315
+#: guix-git/doc/guix-cookbook.texi:317 guix-git/doc/guix-cookbook.texi:318
+#, no-wrap
+msgid "Packaging Tutorial"
+msgstr "Návod na zadávanie balíkov"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:86
+msgid "Let's add a package to Guix!"
+msgstr "Pridajme do Guixu nejaký balík!"
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:91 guix-git/doc/guix-cookbook.texi:1366
+#: guix-git/doc/guix-cookbook.texi:1368 guix-git/doc/guix-cookbook.texi:1369
+#, no-wrap
+msgid "Auto-Login to a Specific TTY"
+msgstr "Automatické pripojenie k určitému TTY"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:91 guix-git/doc/guix-cookbook.texi:1366
+msgid "Automatically Login a User to a Specific TTY"
+msgstr "Automaticky pripojiť používateľa k určitému TTY"
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:91 guix-git/doc/guix-cookbook.texi:1366
+#: guix-git/doc/guix-cookbook.texi:1413 guix-git/doc/guix-cookbook.texi:1414
+#, no-wrap
+msgid "Customizing the Kernel"
+msgstr "Prispôsobenie jadra"
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:91 guix-git/doc/guix-cookbook.texi:1366
+msgid "Creating and using a custom Linux kernel on Guix System."
+msgstr "Vytvorenie a používanie vlastného Linuxového jadra v systéme Guix."
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:103
+msgid "GNU@tie{}Guix is written in the general purpose programming language Scheme, and many of its features can be accessed and manipulated programmatically.  You can use Scheme to generate package definitions, to modify them, to build them, to deploy whole operating systems, etc."
+msgstr "GNU@tie{}Guix je zapísaný v programovacom jazyku Scheme. K mnohým jeho súčastiam je možné pristupovať a upravovať ich prostredníctvom programovania.  Pomocou jazyka Scheme môžete zadávať, upravovať a zostavovať balíky, nasadzovať celé operačné systémy, atď."
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:107
+msgid "Knowing the basics of how to program in Scheme will unlock many of the advanced features Guix provides --- and you don't even need to be an experienced programmer to use them!"
+msgstr "Poznať základy programovania v jazyku Scheme vám otvorí dvere k množstvu pokročilých súčastí, ktoré Guix ponúka --- a to ani nemusíte byť skúseným vývojárom, aby ste ich mohli využívať!"
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:109
+msgid "Let's get started!"
+msgstr "Poďme na to!"
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:113
+#, no-wrap
+msgid "Scheme, crash course"
+msgstr "Scheme, rýchlokurz"
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:119
+msgid "Guix uses the Guile implementation of Scheme.  To start playing with the language, install it with @code{guix install guile} and start a @dfn{REPL}---short for @uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop, @dfn{read-eval-print loop}}---by running @code{guile} from the command line."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:122
+msgid "Alternatively you can also run @code{guix environment --ad-hoc guile -- guile} if you'd rather not have Guile installed in your user profile."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:128
+msgid "In the following examples, lines show what you would type at the REPL; lines starting with ``@result{}'' show evaluation results, while lines starting with ``@print{}'' show things that get printed.  @xref{Using Guile Interactively,,, guile, GNU Guile Reference Manual}, for more details on the REPL."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:136
+msgid "Scheme syntax boils down to a tree of expressions (or @emph{s-expression} in Lisp lingo).  An expression can be a literal such as numbers and strings, or a compound which is a parenthesized list of compounds and literals.  @code{#true} and @code{#false} (abbreviated @code{#t} and @code{#f}) stand for the Booleans ``true'' and ``false'', respectively."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:138
+msgid "Examples of valid expressions:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:142
+#, no-wrap
+msgid ""
+"\"Hello World!\"\n"
+"@result{} \"Hello World!\"\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:145
+#, no-wrap
+msgid ""
+"17\n"
+"@result{} 17\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:149
+#, no-wrap
+msgid ""
+"(display (string-append \"Hello \" \"Guix\" \"\\n\"))\n"
+"@print{} Hello Guix!\n"
+"@result{} #<unspecified>\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:156
+msgid "This last example is a function call nested in another function call.  When a parenthesized expression is evaluated, the first term is the function and the rest are the arguments passed to the function.  Every function returns the last evaluated expression as its return value."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:159
+msgid "Anonymous functions are declared with the @code{lambda} term:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:163
+#, no-wrap
+msgid ""
+"(lambda (x) (* x x))\n"
+"@result{} #<procedure 120e348 at <unknown port>:24:0 (x)>\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:168
+msgid "The above procedure returns the square of its argument.  Since everything is an expression, the @code{lambda} expression returns an anonymous procedure, which can in turn be applied to an argument:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:172
+#, no-wrap
+msgid ""
+"((lambda (x) (* x x)) 3)\n"
+"@result{} 9\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:176
+msgid "Anything can be assigned a global name with @code{define}:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:182
+#, no-wrap
+msgid ""
+"(define a 3)\n"
+"(define square (lambda (x) (* x x)))\n"
+"(square a)\n"
+"@result{} 9\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:186
+msgid "Procedures can be defined more concisely with the following syntax:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:189
+#, no-wrap
+msgid "(define (square x) (* x x))\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:193
+msgid "A list structure can be created with the @code{list} procedure:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:197
+#, no-wrap
+msgid ""
+"(list 2 a 5 7)\n"
+"@result{} (2 3 5 7)\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:204
+msgid "The @dfn{quote} disables evaluation of a parenthesized expression: the first term is not called over the other terms (@pxref{Expression Syntax, quote,, guile, GNU Guile Reference Manual}).  Thus it effectively returns a list of terms."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:208
+#, no-wrap
+msgid ""
+"'(display (string-append \"Hello \" \"Guix\" \"\\n\"))\n"
+"@result{} (display (string-append \"Hello \" \"Guix\" \"\\n\"))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:211
+#, no-wrap
+msgid ""
+"'(2 a 5 7)\n"
+"@result{} (2 a 5 7)\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:217
+msgid "The @dfn{quasiquote} disables evaluation of a parenthesized expression until @dfn{unquote} (a comma) re-enables it.  Thus it provides us with fine-grained control over what is evaluated and what is not."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:221
+#, no-wrap
+msgid ""
+"`(2 a 5 7 (2 ,a 5 ,(+ a 4)))\n"
+"@result{} (2 a 5 7 (2 3 5 7))\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:225
+msgid "Note that the above result is a list of mixed elements: numbers, symbols (here @code{a}) and the last element is a list itself."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:229
+msgid "Multiple variables can be named locally with @code{let} (@pxref{Local Bindings,,, guile, GNU Guile Reference Manual}):"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:236
+#, no-wrap
+msgid ""
+"(define x 10)\n"
+"(let ((x 2)\n"
+"      (y 3))\n"
+"  (list x y))\n"
+"@result{} (2 3)\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:239
+#, no-wrap
+msgid ""
+"x\n"
+"@result{} 10\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:242
+#, no-wrap
+msgid ""
+"y\n"
+"@error{} In procedure module-lookup: Unbound variable: y\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:246
+msgid "Use @code{let*} to allow later variable declarations to refer to earlier definitions."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:252
+#, no-wrap
+msgid ""
+"(let* ((x 2)\n"
+"       (y (* x 3)))\n"
+"  (list x y))\n"
+"@result{} (2 6)\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:259
+msgid "@dfn{Keywords} are typically used to identify the named parameters of a procedure.  They are prefixed by @code{#:} (hash, colon) followed by alphanumeric characters: @code{#:like-this}.  @xref{Keywords,,, guile, GNU Guile Reference Manual}."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:264
+msgid "The percentage @code{%} is typically used for read-only global variables in the build stage.  Note that it is merely a convention, like @code{_} in C.  Scheme treats @code{%} exactly the same as any other letter."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:268
+msgid "Modules are created with @code{define-module} (@pxref{Creating Guile Modules,,, guile, GNU Guile Reference Manual}).  For instance"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:274
+#, no-wrap
+msgid ""
+"(define-module (guix build-system ruby)\n"
+"  #:use-module (guix store)\n"
+"  #:export (ruby-build\n"
+"            ruby-build-system))\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:280
+msgid "defines the module @code{guix build-system ruby} which must be located in @file{guix/build-system/ruby.scm} somewhere in the Guile load path.  It depends on the @code{(guix store)} module and it exports two variables, @code{ruby-build} and @code{ruby-build-system}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:285
+msgid "For a more detailed introduction, check out @uref{http://www.troubleshooters.com/codecorn/scheme_guile/hello.htm, Scheme at a Glance}, by Steve Litt."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:297
+msgid "One of the reference Scheme books is the seminal ``Structure and Interpretation of Computer Programs'', by Harold Abelson and Gerald Jay Sussman, with Julie Sussman.  You'll find a @uref{https://mitpress.mit.edu/sites/default/files/sicp/index.html, free copy online}, together with @uref{https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-001-structure-and-interpretation-of-computer-programs-spring-2005/video-lectures/, videos of the lectures by the authors}.  The book is available in Texinfo format as the @code{sicp} Guix package.  Go ahead, run @code{guix install sicp} and start reading with @code{info sicp} (@pxref{,,, sicp, Structure and Interpretation of Computer Programs}).  An @uref{https://sarabander.github.io/sicp/, unofficial ebook is also available}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:300
+msgid "You'll find more books, tutorials and other resources at @url{https://schemers.org/}."
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:306
+#, no-wrap
+msgid "packaging"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:312
+msgid "This chapter is dedicated to teaching you how to add packages to the collection of packages that come with GNU Guix.  This involves writing package definitions in Guile Scheme, organizing them in package modules, and building them."
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:315
+msgid "A tutorial on how to add packages to Guix."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:326
+msgid "GNU Guix stands out as the @emph{hackable} package manager, mostly because it uses @uref{https://www.gnu.org/software/guile/, GNU Guile}, a powerful high-level programming language, one of the @uref{https://en.wikipedia.org/wiki/Scheme_%28programming_language%29, Scheme} dialects from the @uref{https://en.wikipedia.org/wiki/Lisp_%28programming_language%29, Lisp family}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:330
+msgid "Package definitions are also written in Scheme, which empowers Guix in some very unique ways, unlike most other package managers that use shell scripts or simple languages."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:335
+msgid "Use functions, structures, macros and all of Scheme expressiveness for your package definitions."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:339
+msgid "Inheritance makes it easy to customize a package by inheriting from it and modifying only what is needed."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:349
+msgid "Batch processing: the whole package collection can be parsed, filtered and processed.  Building a headless server with all graphical interfaces stripped out? It's possible.  Want to rebuild everything from source using specific compiler optimization flags? Pass the @code{#:make-flags \"...\"} argument to the list of packages.  It wouldn't be a stretch to think @uref{https://wiki.gentoo.org/wiki/USE_flag, Gentoo USE flags} here, but this goes even further: the changes don't have to be thought out beforehand by the packager, they can be @emph{programmed} by the user!"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:355
+msgid "The following tutorial covers all the basics around package creation with Guix.  It does not assume much knowledge of the Guix system nor of the Lisp language.  The reader is only expected to be familiar with the command line and to have some basic programming knowledge."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:356 guix-git/doc/guix-cookbook.texi:357
+#, no-wrap
+msgid "A ``Hello World'' package"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:362
+msgid "The ``Defining Packages'' section of the manual introduces the basics of Guix packaging (@pxref{Defining Packages,,, guix, GNU Guix Reference Manual}).  In the following section, we will partly go over those basics again."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:368
+msgid "GNU@tie{}Hello is a dummy project that serves as an idiomatic example for packaging.  It uses the GNU build system (@code{./configure && make && make install}).  Guix already provides a package definition which is a perfect example to start with.  You can look up its declaration with @code{guix edit hello} from the command line.  Let's see how it looks:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:389
+#, no-wrap
+msgid ""
+"(define-public hello\n"
+"  (package\n"
+"    (name \"hello\")\n"
+"    (version \"2.10\")\n"
+"    (source (origin\n"
+"              (method url-fetch)\n"
+"              (uri (string-append \"mirror://gnu/hello/hello-\" version\n"
+"                                  \".tar.gz\"))\n"
+"              (sha256\n"
+"               (base32\n"
+"                \"0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i\"))))\n"
+"    (build-system gnu-build-system)\n"
+"    (synopsis \"Hello, GNU world: An example GNU package\")\n"
+"    (description\n"
+"     \"GNU Hello prints the message \\\"Hello, world!\\\" and then exits.  It\n"
+"serves as an example of standard GNU coding practices.  As such, it supports\n"
+"command-line arguments, multiple languages, and so on.\")\n"
+"    (home-page \"https://www.gnu.org/software/hello/\")\n"
+"    (license gpl3+)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:393
+msgid "As you can see, most of it is rather straightforward.  But let's review the fields together:"
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:395
+#, no-wrap
+msgid "name"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:398
+msgid "The project name.  Using Scheme conventions, we prefer to keep it lower case, without underscore and using dash-separated words."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:399
+#, no-wrap
+msgid "source"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:402
+msgid "This field contains a description of the source code origin.  The @code{origin} record contains these fields:"
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:404
+#, no-wrap
+msgid "The method, here @code{url-fetch} to download via HTTP/FTP, but other methods"
+msgstr ""
+
+#. type: enumerate
+#: guix-git/doc/guix-cookbook.texi:406
+msgid "exist, such as @code{git-fetch} for Git repositories."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:406
+#, no-wrap
+msgid "The URI, which is typically some @code{https://} location for @code{url-fetch}.  Here"
+msgstr ""
+
+#. type: enumerate
+#: guix-git/doc/guix-cookbook.texi:409
+msgid "the special `mirror://gnu` refers to a set of well known locations, all of which can be used by Guix to fetch the source, should some of them fail."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:409
+#, no-wrap
+msgid "The @code{sha256} checksum of the requested file.  This is essential to ensure"
+msgstr ""
+
+#. type: enumerate
+#: guix-git/doc/guix-cookbook.texi:412
+msgid "the source is not corrupted.  Note that Guix works with base32 strings, hence the call to the @code{base32} function."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:414
+#, no-wrap
+msgid "build-system"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:423
+msgid "This is where the power of abstraction provided by the Scheme language really shines: in this case, the @code{gnu-build-system} abstracts away the famous @code{./configure && make && make install} shell invocations.  Other build systems include the @code{trivial-build-system} which does not do anything and requires from the packager to program all the build steps, the @code{python-build-system}, the @code{emacs-build-system}, and many more (@pxref{Build Systems,,, guix, GNU Guix Reference Manual})."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:424
+#, no-wrap
+msgid "synopsis"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:427
+msgid "It should be a concise summary of what the package does.  For many packages a tagline from the project's home page can be used as the synopsis."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:428
+#, no-wrap
+msgid "description"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:431
+msgid "Same as for the synopsis, it's fine to re-use the project description from the homepage.  Note that Guix uses Texinfo syntax."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:432
+#, no-wrap
+msgid "home-page"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:434
+msgid "Use HTTPS if available."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:435
+#, no-wrap
+msgid "license"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:438
+msgid "See @code{guix/licenses.scm} in the project source for a full list of available licenses."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:442
+msgid "Time to build our first package! Nothing fancy here for now: we will stick to a dummy @code{my-hello}, a copy of the above declaration."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:446
+msgid "As with the ritualistic ``Hello World'' taught with most programming languages, this will possibly be the most ``manual'' approach.  We will work out an ideal setup later; for now we will go the simplest route."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:448
+msgid "Save the following to a file @file{my-hello.scm}."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:454
+#, no-wrap
+msgid ""
+"(use-modules (guix packages)\n"
+"             (guix download)\n"
+"             (guix build-system gnu)\n"
+"             (guix licenses))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:473
+#, no-wrap
+msgid ""
+"(package\n"
+"  (name \"my-hello\")\n"
+"  (version \"2.10\")\n"
+"  (source (origin\n"
+"            (method url-fetch)\n"
+"            (uri (string-append \"mirror://gnu/hello/hello-\" version\n"
+"                                \".tar.gz\"))\n"
+"            (sha256\n"
+"             (base32\n"
+"              \"0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i\"))))\n"
+"  (build-system gnu-build-system)\n"
+"  (synopsis \"Hello, Guix world: An example custom Guix package\")\n"
+"  (description\n"
+"   \"GNU Hello prints the message \\\"Hello, world!\\\" and then exits.  It\n"
+"serves as an example of standard GNU coding practices.  As such, it supports\n"
+"command-line arguments, multiple languages, and so on.\")\n"
+"  (home-page \"https://www.gnu.org/software/hello/\")\n"
+"  (license gpl3+))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:476
+msgid "We will explain the extra code in a moment."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:483
+msgid "Feel free to play with the different values of the various fields.  If you change the source, you'll need to update the checksum.  Indeed, Guix refuses to build anything if the given checksum does not match the computed checksum of the source code.  To obtain the correct checksum of the package declaration, we need to download the source, compute the sha256 checksum and convert it to base32."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:486
+msgid "Thankfully, Guix can automate this task for us; all we need is to provide the URI:"
+msgstr ""
+
+#.  This is example shell output.
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:490
+#, no-wrap
+msgid ""
+"$ guix download mirror://gnu/hello/hello-2.10.tar.gz\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:497
+#, no-wrap
+msgid ""
+"Starting download of /tmp/guix-file.JLYgL7\n"
+"From https://ftpmirror.gnu.org/gnu/hello/hello-2.10.tar.gz...\n"
+"following redirection to `https://mirror.ibcp.fr/pub/gnu/hello/hello-2.10.tar.gz'...\n"
+" …10.tar.gz  709KiB                                 2.5MiB/s 00:00 [##################] 100.0%\n"
+"/gnu/store/hbdalsf5lpf01x4dcknwx6xbn6n5km6k-hello-2.10.tar.gz\n"
+"0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:502
+msgid "In this specific case the output tells us which mirror was chosen.  If the result of the above command is not the same as in the above snippet, update your @code{my-hello} declaration accordingly."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:506
+msgid "Note that GNU package tarballs come with an OpenPGP signature, so you should definitely check the signature of this tarball with `gpg` to authenticate it before going further:"
+msgstr ""
+
+#.  This is example shell output.
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:510
+#, no-wrap
+msgid ""
+"$ guix download mirror://gnu/hello/hello-2.10.tar.gz.sig\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:525
+#, no-wrap
+msgid ""
+"Starting download of /tmp/guix-file.03tFfb\n"
+"From https://ftpmirror.gnu.org/gnu/hello/hello-2.10.tar.gz.sig...\n"
+"following redirection to `https://ftp.igh.cnrs.fr/pub/gnu/hello/hello-2.10.tar.gz.sig'...\n"
+" ….tar.gz.sig  819B                                                                                                                       1.2MiB/s 00:00 [##################] 100.0%\n"
+"/gnu/store/rzs8wba9ka7grrmgcpfyxvs58mly0sx6-hello-2.10.tar.gz.sig\n"
+"0q0v86n3y38z17rl146gdakw9xc4mcscpk8dscs412j22glrv9jf\n"
+"$ gpg --verify /gnu/store/rzs8wba9ka7grrmgcpfyxvs58mly0sx6-hello-2.10.tar.gz.sig /gnu/store/hbdalsf5lpf01x4dcknwx6xbn6n5km6k-hello-2.10.tar.gz\n"
+"gpg: Signature made Sun 16 Nov 2014 01:08:37 PM CET\n"
+"gpg:                using RSA key A9553245FDE9B739\n"
+"gpg: Good signature from \"Sami Kerola <kerolasa@@iki.fi>\" [unknown]\n"
+"gpg:                 aka \"Sami Kerola (http://www.iki.fi/kerolasa/) <kerolasa@@iki.fi>\" [unknown]\n"
+"gpg: WARNING: This key is not certified with a trusted signature!\n"
+"gpg:          There is no indication that the signature belongs to the owner.\n"
+"Primary key fingerprint: 8ED3 96E3 7E38 D471 A005  30D3 A955 3245 FDE9 B739\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:528
+msgid "You can then happily run"
+msgstr ""
+
+#.  Do not translate this command
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:532
+#, no-wrap
+msgid "$ guix package --install-from-file=my-hello.scm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:535
+msgid "You should now have @code{my-hello} in your profile!"
+msgstr ""
+
+#.  Do not translate this command
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:541
+#, no-wrap
+msgid ""
+"$ guix package --list-installed=my-hello\n"
+"my-hello\t2.10\tout\n"
+"/gnu/store/f1db2mfm8syb8qvc357c53slbvf1g9m9-my-hello-2.10\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:546
+msgid "We've gone as far as we could without any knowledge of Scheme.  Before moving on to more complex packages, now is the right time to brush up on your Scheme knowledge.  @pxref{A Scheme Crash Course} to get up to speed."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:547 guix-git/doc/guix-cookbook.texi:548
+#, no-wrap
+msgid "Setup"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:553
+msgid "In the rest of this chapter we will rely on some basic Scheme programming knowledge.  Now let's detail the different possible setups for working on Guix packages."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:555
+msgid "There are several ways to set up a Guix packaging environment."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:558
+msgid "We recommend you work directly on the Guix source checkout since it makes it easier for everyone to contribute to the project."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:560
+msgid "But first, let's look at other possibilities."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:561 guix-git/doc/guix-cookbook.texi:562
+#, no-wrap
+msgid "Local file"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:567
+msgid "This is what we previously did with @samp{my-hello}.  With the Scheme basics we've covered, we are now able to explain the leading chunks.  As stated in @code{guix package --help}:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:572
+#, no-wrap
+msgid ""
+"  -f, --install-from-file=FILE\n"
+"                         install the package that the code within FILE\n"
+"                         evaluates to\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:576
+msgid "Thus the last expression @emph{must} return a package, which is the case in our earlier example."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:580
+msgid "The @code{use-modules} expression tells which of the modules we need in the file.  Modules are a collection of values and procedures.  They are commonly called ``libraries'' or ``packages'' in other programming languages."
+msgstr ""
+
+#. type: node
+#: guix-git/doc/guix-cookbook.texi:581
+#, no-wrap
+msgid "@samp{GUIX_PACKAGE_PATH}"
+msgstr ""
+
+#. type: samp{#1}
+#: guix-git/doc/guix-cookbook.texi:582
+#, no-wrap
+msgid "GUIX_PACKAGE_PATH"
+msgstr ""
+
+#. type: emph{#1}
+#: guix-git/doc/guix-cookbook.texi:586
+msgid "Note: Starting from Guix 0.16, the more flexible Guix @dfn{channels} are the preferred way and supersede @samp{GUIX_PACKAGE_PATH}.  See next section."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:590
+msgid "It can be tedious to specify the file from the command line instead of simply calling @code{guix package --install my-hello} as you would do with the official packages."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:593
+msgid "Guix makes it possible to streamline the process by adding as many ``package declaration directories'' as you want."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:596
+msgid "Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:600
+#, no-wrap
+msgid ""
+"$ mkdir ~/guix-packages\n"
+"$ export GUIX_PACKAGE_PATH=~/guix-packages\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:603
+msgid "To add several directories, separate them with a colon (@code{:})."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:605
+msgid "Our previous @samp{my-hello} needs some adjustments though:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:612
+#, no-wrap
+msgid ""
+"(define-module (my-hello)\n"
+"  #:use-module (guix licenses)\n"
+"  #:use-module (guix packages)\n"
+"  #:use-module (guix build-system gnu)\n"
+"  #:use-module (guix download))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:632
+#, no-wrap
+msgid ""
+"(define-public my-hello\n"
+"  (package\n"
+"    (name \"my-hello\")\n"
+"    (version \"2.10\")\n"
+"    (source (origin\n"
+"              (method url-fetch)\n"
+"              (uri (string-append \"mirror://gnu/hello/hello-\" version\n"
+"                                  \".tar.gz\"))\n"
+"              (sha256\n"
+"               (base32\n"
+"                \"0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i\"))))\n"
+"    (build-system gnu-build-system)\n"
+"    (synopsis \"Hello, Guix world: An example custom Guix package\")\n"
+"    (description\n"
+"     \"GNU Hello prints the message \\\"Hello, world!\\\" and then exits.  It\n"
+"serves as an example of standard GNU coding practices.  As such, it supports\n"
+"command-line arguments, multiple languages, and so on.\")\n"
+"    (home-page \"https://www.gnu.org/software/hello/\")\n"
+"    (license gpl3+)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:638
+msgid "Note that we have assigned the package value to an exported variable name with @code{define-public}.  This is effectively assigning the package to the @code{my-hello} variable so that it can be referenced, among other as dependency of other packages."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:643
+msgid "If you use @code{guix package --install-from-file=my-hello.scm} on the above file, it will fail because the last expression, @code{define-public}, does not return a package.  If you want to use @code{define-public} in this use-case nonetheless, make sure the file ends with an evaluation of @code{my-hello}:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:649
+#, no-wrap
+msgid ""
+"; ...\n"
+"(define-public my-hello\n"
+"  ; ...\n"
+"  )\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:651
+#, no-wrap
+msgid "my-hello\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:654
+msgid "This last example is not very typical."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:657
+msgid "Now @samp{my-hello} should be part of the package collection like all other official packages.  You can verify this with:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:660
+#, no-wrap
+msgid "$ guix package --show=my-hello\n"
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:662 guix-git/doc/guix-cookbook.texi:663
+#, no-wrap
+msgid "Guix channels"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:669
+msgid "Guix 0.16 features channels, which is very similar to @samp{GUIX_PACKAGE_PATH} but provides better integration and provenance tracking.  Channels are not necessarily local, they can be maintained as a public Git repository for instance.  Of course, several channels can be used at the same time."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:671
+msgid "@xref{Channels,,, guix, GNU Guix Reference Manual} for setup details."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:672 guix-git/doc/guix-cookbook.texi:673
+#, no-wrap
+msgid "Direct checkout hacking"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:678
+msgid "Working directly on the Guix project is recommended: it reduces the friction when the time comes to submit your changes upstream to let the community benefit from your hard work!"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:684
+msgid "Unlike most software distributions, the Guix repository holds in one place both the tooling (including the package manager) and the package definitions.  This choice was made so that it would give developers the flexibility to modify the API without breakage by updating all packages at the same time.  This reduces development inertia."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:686
+msgid "Check out the official @uref{https://git-scm.com/, Git} repository:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:689
+#, no-wrap
+msgid "$ git clone https://git.savannah.gnu.org/git/guix.git\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:693
+msgid "In the rest of this article, we use @samp{$GUIX_CHECKOUT} to refer to the location of the checkout."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:697
+msgid "Follow the instructions in the manual (@pxref{Contributing,,, guix, GNU Guix Reference Manual}) to set up the repository environment."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:700
+msgid "Once ready, you should be able to use the package definitions from the repository environment."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:702
+msgid "Feel free to edit package definitions found in @samp{$GUIX_CHECKOUT/gnu/packages}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:706
+msgid "The @samp{$GUIX_CHECKOUT/pre-inst-env} script lets you use @samp{guix} over the package collection of the repository (@pxref{Running Guix Before It Is Installed,,, guix, GNU Guix Reference Manual})."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:710
+msgid "Search packages, such as Ruby:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:717
+#, no-wrap
+msgid ""
+"  $ cd $GUIX_CHECKOUT\n"
+"  $ ./pre-inst-env guix package --list-available=ruby\n"
+"      ruby    1.8.7-p374      out     gnu/packages/ruby.scm:119:2\n"
+"      ruby    2.1.6   out     gnu/packages/ruby.scm:91:2\n"
+"      ruby    2.2.2   out     gnu/packages/ruby.scm:39:2\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:721
+msgid "Build a package, here Ruby version 2.1:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:725
+#, no-wrap
+msgid ""
+"  $ ./pre-inst-env guix build --keep-failed ruby@@2.1\n"
+"  /gnu/store/c13v73jxmj2nir2xjqaz5259zywsa9zi-ruby-2.1.6\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:729
+msgid "Install it to your user profile:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:732
+#, no-wrap
+msgid "  $ ./pre-inst-env guix package --install ruby@@2.1\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:736
+msgid "Check for common mistakes:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:739
+#, no-wrap
+msgid "  $ ./pre-inst-env guix lint ruby@@2.1\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:744
+msgid "Guix strives at maintaining a high packaging standard; when contributing to the Guix project, remember to"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:748
+msgid "follow the coding style (@pxref{Coding Style,,, guix, GNU Guix Reference Manual}),"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:750
+msgid "and review the check list from the manual (@pxref{Submitting Patches,,, guix, GNU Guix Reference Manual})."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:754
+msgid "Once you are happy with the result, you are welcome to send your contribution to make it part of Guix.  This process is also detailed in the manual.  (@pxref{Contributing,,, guix, GNU Guix Reference Manual})"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:757
+msgid "It's a community effort so the more join in, the better Guix becomes!"
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:758 guix-git/doc/guix-cookbook.texi:759
+#, no-wrap
+msgid "Extended example"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:764
+msgid "The above ``Hello World'' example is as simple as it goes.  Packages can be more complex than that and Guix can handle more advanced scenarios.  Let's look at another, more sophisticated package (slightly modified from the source):"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:778
+#, no-wrap
+msgid ""
+"(define-module (gnu packages version-control)\n"
+"  #:use-module ((guix licenses) #:prefix license:)\n"
+"  #:use-module (guix utils)\n"
+"  #:use-module (guix packages)\n"
+"  #:use-module (guix git-download)\n"
+"  #:use-module (guix build-system cmake)\n"
+"  #:use-module (gnu packages ssh)\n"
+"  #:use-module (gnu packages web)\n"
+"  #:use-module (gnu packages pkg-config)\n"
+"  #:use-module (gnu packages python)\n"
+"  #:use-module (gnu packages compression)\n"
+"  #:use-module (gnu packages tls))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:838
+#, no-wrap
+msgid ""
+"(define-public my-libgit2\n"
+"  (let ((commit \"e98d0a37c93574d2c6107bf7f31140b548c6a7bf\")\n"
+"        (revision \"1\"))\n"
+"    (package\n"
+"      (name \"my-libgit2\")\n"
+"      (version (git-version \"0.26.6\" revision commit))\n"
+"      (source (origin\n"
+"                (method git-fetch)\n"
+"                (uri (git-reference\n"
+"                      (url \"https://github.com/libgit2/libgit2/\")\n"
+"                      (commit commit)))\n"
+"                (file-name (git-file-name name version))\n"
+"                (sha256\n"
+"                 (base32\n"
+"                  \"17pjvprmdrx4h6bb1hhc98w9qi6ki7yl57f090n9kbhswxqfs7s3\"))\n"
+"                (patches (search-patches \"libgit2-mtime-0.patch\"))\n"
+"                (modules '((guix build utils)))\n"
+"                (snippet '(begin\n"
+"                            ;; Remove bundled software.\n"
+"                            (delete-file-recursively \"deps\")\n"
+"                            #true))))\n"
+"      (build-system cmake-build-system)\n"
+"      (outputs '(\"out\" \"debug\"))\n"
+"      (arguments\n"
+"       `(#:tests? #true                         ; Run the test suite (this is the default)\n"
+"         #:configure-flags '(\"-DUSE_SHA1DC=ON\") ; SHA-1 collision detection\n"
+"         #:phases\n"
+"         (modify-phases %standard-phases\n"
+"           (add-after 'unpack 'fix-hardcoded-paths\n"
+"             (lambda _\n"
+"               (substitute* \"tests/repo/init.c\"\n"
+"                 ((\"#!/bin/sh\") (string-append \"#!\" (which \"sh\"))))\n"
+"               (substitute* \"tests/clar/fs.h\"\n"
+"                 ((\"/bin/cp\") (which \"cp\"))\n"
+"                 ((\"/bin/rm\") (which \"rm\")))\n"
+"               #true))\n"
+"           ;; Run checks more verbosely.\n"
+"           (replace 'check\n"
+"             (lambda _ (invoke \"./libgit2_clar\" \"-v\" \"-Q\")))\n"
+"           (add-after 'unpack 'make-files-writable-for-tests\n"
+"             (lambda _ (for-each make-file-writable (find-files \".\" \".*\")))))))\n"
+"      (inputs\n"
+"       `((\"libssh2\" ,libssh2)\n"
+"         (\"http-parser\" ,http-parser)\n"
+"         (\"python\" ,python-wrapper)))\n"
+"      (native-inputs\n"
+"       `((\"pkg-config\" ,pkg-config)))\n"
+"      (propagated-inputs\n"
+"       ;; These two libraries are in 'Requires.private' in libgit2.pc.\n"
+"       `((\"openssl\" ,openssl)\n"
+"         (\"zlib\" ,zlib)))\n"
+"      (home-page \"https://libgit2.github.com/\")\n"
+"      (synopsis \"Library providing Git core methods\")\n"
+"      (description\n"
+"       \"Libgit2 is a portable, pure C implementation of the Git core methods\n"
+"provided as a re-entrant linkable library with a solid API, allowing you to\n"
+"write native speed custom Git applications in any language with bindings.\")\n"
+"      ;; GPLv2 with linking exception\n"
+"      (license license:gpl2))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:843
+msgid "(In those cases were you only want to tweak a few fields from a package definition, you should rely on inheritance instead of copy-pasting everything.  See below.)"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:845
+msgid "Let's discuss those fields in depth."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:846
+#, no-wrap
+msgid "@code{git-fetch} method"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:853
+msgid "Unlike the @code{url-fetch} method, @code{git-fetch} expects a @code{git-reference} which takes a Git repository and a commit.  The commit can be any Git reference such as tags, so if the @code{version} is tagged, then it can be used directly.  Sometimes the tag is prefixed with a @code{v}, in which case you'd use @code{(commit (string-append \"v\" version))}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:857
+msgid "To ensure that the source code from the Git repository is stored in a directory with a descriptive name, we use @code{(file-name (git-file-name name version))}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:862
+msgid "The @code{git-version} procedure can be used to derive the version when packaging programs for a specific commit, following the Guix contributor guidelines (@pxref{Version Numbers,,, guix, GNU Guix Reference Manual})."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:866
+msgid "How does one obtain the @code{sha256} hash that's in there, you ask? By invoking @command{guix hash} on a checkout of the desired commit, along these lines:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:872
+#, no-wrap
+msgid ""
+"git clone https://github.com/libgit2/libgit2/\n"
+"cd libgit2\n"
+"git checkout v0.26.6\n"
+"guix hash -rx .\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:877
+msgid "@command{guix hash -rx} computes a SHA256 hash over the whole directory, excluding the @file{.git} sub-directory (@pxref{Invoking guix hash,,, guix, GNU Guix Reference Manual})."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:880
+msgid "In the future, @command{guix download} will hopefully be able to do these steps for you, just like it does for regular downloads."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:881
+#, no-wrap
+msgid "Snippets"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:887
+msgid "Snippets are quoted (i.e. non-evaluated) Scheme code that are a means of patching the source.  They are a Guix-y alternative to the traditional @file{.patch} files.  Because of the quote, the code in only evaluated when passed to the Guix daemon for building.  There can be as many snippets as needed."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:890
+msgid "Snippets might need additional Guile modules which can be imported from the @code{modules} field."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:891
+#, no-wrap
+msgid "Inputs"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:894
+msgid "First, a syntactic comment: See the quasi-quote / comma syntax?"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:898
+#, no-wrap
+msgid ""
+"    (native-inputs\n"
+"     `((\"pkg-config\" ,pkg-config)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:901
+msgid "is equivalent to"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:905
+#, no-wrap
+msgid ""
+"    (native-inputs\n"
+"     (list (list \"pkg-config\" pkg-config)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:908
+msgid "You'll mostly see the former because it's shorter."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:910
+msgid "There are 3 different input types.  In short:"
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:912
+#, no-wrap
+msgid "native-inputs"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:915
+msgid "Required for building but not runtime -- installing a package through a substitute won't install these inputs."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:915
+#, no-wrap
+msgid "inputs"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:918
+msgid "Installed in the store but not in the profile, as well as being present at build time."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:918
+#, no-wrap
+msgid "propagated-inputs"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:921
+msgid "Installed in the store and in the profile, as well as being present at build time."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:924
+msgid "@xref{Package Reference,,, guix, GNU Guix Reference Manual} for more details."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:928
+msgid "The distinction between the various inputs is important: if a dependency can be handled as an @emph{input} instead of a @emph{propagated input}, it should be done so, or else it ``pollutes'' the user profile for no good reason."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:935
+msgid "For instance, a user installing a graphical program that depends on a command line tool might only be interested in the graphical part, so there is no need to force the command line tool into the user profile.  The dependency is a concern to the package, not to the user.  @emph{Inputs} make it possible to handle dependencies without bugging the user by adding undesired executable files (or libraries) to their profile."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:941
+msgid "Same goes for @emph{native-inputs}: once the program is installed, build-time dependencies can be safely garbage-collected.  It also matters when a substitute is available, in which case only the @emph{inputs} and @emph{propagated inputs} will be fetched: the @emph{native inputs} are not required to install a package from a substitute."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:942
+#, no-wrap
+msgid "Outputs"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:946
+msgid "Just like how a package can have multiple inputs, it can also produce multiple outputs."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:948
+msgid "Each output corresponds to a separate directory in the store."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:951
+msgid "The user can choose which output to install; this is useful to save space or to avoid polluting the user profile with unwanted executables or libraries."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:954
+msgid "Output separation is optional.  When the @code{outputs} field is left out, the default and only output (the complete package) is referred to as @code{\"out\"}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:956
+msgid "Typical separate output names include @code{debug} and @code{doc}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:960
+msgid "It's advised to separate outputs only when you've shown it's worth it: if the output size is significant (compare with @code{guix size}) or in case the package is modular."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:961
+#, no-wrap
+msgid "Build system arguments"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:964
+msgid "The @code{arguments} is a keyword-value list used to configure the build process."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:969
+msgid "The simplest argument @code{#:tests?} can be used to disable the test suite when building the package.  This is mostly useful when the package does not feature any test suite.  It's strongly recommended to keep the test suite on if there is one."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:973
+msgid "Another common argument is @code{:make-flags}, which specifies a list of flags to append when running make, as you would from the command line.  For instance, the following flags"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:977
+#, no-wrap
+msgid ""
+"#:make-flags (list (string-append \"prefix=\" (assoc-ref %outputs \"out\"))\n"
+"                   \"CC=gcc\")\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:980
+msgid "translate into"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:983
+#, no-wrap
+msgid "$ make CC=gcc prefix=/gnu/store/...-<out>\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:989
+msgid "This sets the C compiler to @code{gcc} and the @code{prefix} variable (the installation directory in Make parlance) to @code{(assoc-ref %outputs \"out\")}, which is a build-stage global variable pointing to the destination directory in the store (something like @file{/gnu/store/...-my-libgit2-20180408})."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:991
+msgid "Similarly, it's possible to set the configure flags:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:994
+#, no-wrap
+msgid "#:configure-flags '(\"-DUSE_SHA1DC=ON\")\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:998
+msgid "The @code{%build-inputs} variable is also generated in scope.  It's an association table that maps the input names to their store directories."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1003
+msgid "The @code{phases} keyword lists the sequential steps of the build system.  Typically phases include @code{unpack}, @code{configure}, @code{build}, @code{install} and @code{check}.  To know more about those phases, you need to work out the appropriate build system definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1022
+#, no-wrap
+msgid ""
+"(define %standard-phases\n"
+"  ;; Standard build phases, as a list of symbol/procedure pairs.\n"
+"  (let-syntax ((phases (syntax-rules ()\n"
+"                         ((_ p ...) `((p . ,p) ...)))))\n"
+"    (phases set-SOURCE-DATE-EPOCH set-paths install-locale unpack\n"
+"            bootstrap\n"
+"            patch-usr-bin-file\n"
+"            patch-source-shebangs configure patch-generated-file-shebangs\n"
+"            build check install\n"
+"            patch-shebangs strip\n"
+"            validate-runpath\n"
+"            validate-documentation-location\n"
+"            delete-info-dir-file\n"
+"            patch-dot-desktop-files\n"
+"            install-license-files\n"
+"            reset-gzip-timestamps\n"
+"            compress-documentation)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1025
+msgid "Or from the REPL:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1031
+#, no-wrap
+msgid ""
+"(add-to-load-path \"/path/to/guix/checkout\")\n"
+",use (guix build gnu-build-system)\n"
+"(map first %standard-phases)\n"
+"@result{} (set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1035
+msgid "If you want to know more about what happens during those phases, consult the associated procedures."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1038
+msgid "For instance, as of this writing the definition of @code{unpack} for the GNU build system is:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1048
+#, no-wrap
+msgid ""
+"(define* (unpack #:key source #:allow-other-keys)\n"
+"  \"Unpack SOURCE in the working directory, and change directory within the\n"
+"source.  When SOURCE is a directory, copy it in a sub-directory of the current\n"
+"working directory.\"\n"
+"  (if (file-is-directory? source)\n"
+"      (begin\n"
+"        (mkdir \"source\")\n"
+"        (chdir \"source\")\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1059
+#, no-wrap
+msgid ""
+"        ;; Preserve timestamps (set to the Epoch) on the copied tree so that\n"
+"        ;; things work deterministically.\n"
+"        (copy-recursively source \".\"\n"
+"                          #:keep-mtime? #true))\n"
+"      (begin\n"
+"        (if (string-suffix? \".zip\" source)\n"
+"            (invoke \"unzip\" source)\n"
+"            (invoke \"tar\" \"xvf\" source))\n"
+"        (chdir (first-subdirectory \".\"))))\n"
+"  #true)\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1067
+msgid "Note the @code{chdir} call: it changes the working directory to where the source was unpacked.  Thus every phase following the @code{unpack} will use the source as a working directory, which is why we can directly work on the source files.  That is to say, unless a later phase changes the working directory to something else."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1071
+msgid "We modify the list of @code{%standard-phases} of the build system with the @code{modify-phases} macro as per the list of specified modifications, which may have the following forms:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1075
+msgid "@code{(add-before @var{phase} @var{new-phase} @var{procedure})}: Run @var{procedure} named @var{new-phase} before @var{phase}."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1077
+msgid "@code{(add-after @var{phase} @var{new-phase} @var{procedure})}: Same, but afterwards."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1079
+msgid "@code{(replace @var{phase} @var{procedure})}."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1081
+msgid "@code{(delete @var{phase})}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1088
+msgid "The @var{procedure} supports the keyword arguments @code{inputs} and @code{outputs}.  Each input (whether @emph{native}, @emph{propagated} or not) and output directory is referenced by their name in those variables.  Thus @code{(assoc-ref outputs \"out\")} is the store directory of the main output of the package.  A phase procedure may look like this:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1096
+#, no-wrap
+msgid ""
+"(lambda* (#:key inputs outputs #:allow-other-keys)\n"
+"  (let ((bash-directory (assoc-ref inputs \"bash\"))\n"
+"        (output-directory (assoc-ref outputs \"out\"))\n"
+"        (doc-directory (assoc-ref outputs \"doc\")))\n"
+"    ;; ...\n"
+"    #true))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1102
+msgid "The procedure must return @code{#true} on success.  It's brittle to rely on the return value of the last expression used to tweak the phase because there is no guarantee it would be a @code{#true}.  Hence the trailing @code{#true} to ensure the right value is returned on success."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:1103
+#, no-wrap
+msgid "Code staging"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1109
+msgid "The astute reader may have noticed the quasi-quote and comma syntax in the argument field.  Indeed, the build code in the package declaration should not be evaluated on the client side, but only when passed to the Guix daemon.  This mechanism of passing code around two running processes is called @uref{https://arxiv.org/abs/1709.00833, code staging}."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:1110
+#, no-wrap
+msgid "Utility functions"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1115
+msgid "When customizing @code{phases}, we often need to write code that mimics the equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.)@: commonly used during regular ``Unix-style'' installations."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1118
+msgid "Some like @code{chmod} are native to Guile.  @xref{,,, guile, Guile reference manual} for a complete list."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1121
+msgid "Guix provides additional helper functions which prove especially handy in the context of package management."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1125
+msgid "Some of those functions can be found in @samp{$GUIX_CHECKOUT/guix/guix/build/utils.scm}.  Most of them mirror the behaviour of the traditional Unix system commands:"
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1127
+#, no-wrap
+msgid "which"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1129
+msgid "Like the @samp{which} system command."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1129
+#, no-wrap
+msgid "find-files"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1131
+msgid "Akin to the @samp{find} system command."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1131
+#, no-wrap
+msgid "mkdir-p"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1133
+msgid "Like @samp{mkdir -p}, which creates all parents as needed."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1133
+#, no-wrap
+msgid "install-file"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1137
+msgid "Similar to @samp{install} when installing a file to a (possibly non-existing) directory.  Guile has @code{copy-file} which works like @samp{cp}."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1137
+#, no-wrap
+msgid "copy-recursively"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1139
+msgid "Like @samp{cp -r}."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1139
+#, no-wrap
+msgid "delete-file-recursively"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1141
+msgid "Like @samp{rm -rf}."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1141
+#, no-wrap
+msgid "invoke"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1143
+msgid "Run an executable.  This should be used instead of @code{system*}."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1143
+#, no-wrap
+msgid "with-directory-excursion"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1146
+msgid "Run the body in a different working directory, then restore the previous working directory."
+msgstr ""
+
+#. type: item
+#: guix-git/doc/guix-cookbook.texi:1146
+#, no-wrap
+msgid "substitute*"
+msgstr ""
+
+#. type: table
+#: guix-git/doc/guix-cookbook.texi:1148
+msgid "A ``@command{sed}-like'' function."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1152
+msgid "@xref{Build Utilities,,, guix, GNU Guix Reference Manual}, for more information on these utilities."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:1153
+#, no-wrap
+msgid "Module prefix"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1163
+msgid "The license in our last example needs a prefix: this is because of how the @code{license} module was imported in the package, as @code{#:use-module ((guix licenses)  #:prefix license:)}.  The Guile module import mechanism (@pxref{Using Guile Modules,,, guile, Guile reference manual})  gives the user full control over namespacing: this is needed to avoid clashes between, say, the @samp{zlib} variable from @samp{licenses.scm} (a @emph{license} value) and the @samp{zlib} variable from @samp{compression.scm} (a @emph{package} value)."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1164 guix-git/doc/guix-cookbook.texi:1165
+#, no-wrap
+msgid "Other build systems"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1172
+msgid "What we've seen so far covers the majority of packages using a build system other than the @code{trivial-build-system}.  The latter does not automate anything and leaves you to build everything manually.  This can be more demanding and we won't cover it here for now, but thankfully it is rarely necessary to fall back on this system."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1176
+msgid "For the other build systems, such as ASDF, Emacs, Perl, Ruby and many more, the process is very similar to the GNU build system except for a few specialized arguments."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1181
+msgid "@xref{Build Systems,,, guix, GNU Guix Reference Manual}, for more information on build systems, or check the source code in the @samp{$GUIX_CHECKOUT/guix/build} and @samp{$GUIX_CHECKOUT/guix/build-system} directories."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1182 guix-git/doc/guix-cookbook.texi:1183
+#, no-wrap
+msgid "Programmable and automated package definition"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1187
+msgid "We can't repeat it enough: having a full-fledged programming language at hand empowers us in ways that reach far beyond traditional package management."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1189
+msgid "Let's illustrate this with some awesome features of Guix!"
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:1190 guix-git/doc/guix-cookbook.texi:1191
+#, no-wrap
+msgid "Recursive importers"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1198
+msgid "You might find some build systems good enough that there is little to do at all to write a package, to the point that it becomes repetitive and tedious after a while.  A @emph{raison d'être} of computers is to replace human beings at those boring tasks.  So let's tell Guix to do this for us and create the package definition of an R package from CRAN (the output is trimmed for conciseness):"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1201
+#, no-wrap
+msgid ""
+"$ guix import cran --recursive walrus\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1205
+#, no-wrap
+msgid ""
+"(define-public r-mc2d\n"
+"    ; ...\n"
+"    (license gpl2+)))\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1209
+#, no-wrap
+msgid ""
+"(define-public r-jmvcore\n"
+"    ; ...\n"
+"    (license gpl2+)))\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1213
+#, no-wrap
+msgid ""
+"(define-public r-wrs2\n"
+"    ; ...\n"
+"    (license gpl3)))\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1242
+#, no-wrap
+msgid ""
+"(define-public r-walrus\n"
+"  (package\n"
+"    (name \"r-walrus\")\n"
+"    (version \"1.0.3\")\n"
+"    (source\n"
+"      (origin\n"
+"        (method url-fetch)\n"
+"        (uri (cran-uri \"walrus\" version))\n"
+"        (sha256\n"
+"          (base32\n"
+"            \"1nk2glcvy4hyksl5ipq2mz8jy4fss90hx6cq98m3w96kzjni6jjj\"))))\n"
+"    (build-system r-build-system)\n"
+"    (propagated-inputs\n"
+"      `((\"r-ggplot2\" ,r-ggplot2)\n"
+"        (\"r-jmvcore\" ,r-jmvcore)\n"
+"        (\"r-r6\" ,r-r6)\n"
+"        (\"r-wrs2\" ,r-wrs2)))\n"
+"    (home-page \"https://github.com/jamovi/walrus\")\n"
+"    (synopsis \"Robust Statistical Methods\")\n"
+"    (description\n"
+"      \"This package provides a toolbox of common robust statistical\n"
+"tests, including robust descriptives, robust t-tests, and robust ANOVA.\n"
+"It is also available as a module for 'jamovi' (see\n"
+"<https://www.jamovi.org> for more information).  Walrus is based on the\n"
+"WRS2 package by Patrick Mair, which is in turn based on the scripts and\n"
+"work of Rand Wilcox.  These analyses are described in depth in the book\n"
+"'Introduction to Robust Estimation & Hypothesis Testing'.\")\n"
+"    (license gpl3)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1246
+msgid "The recursive importer won't import packages for which Guix already has package definitions, except for the very first."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1251
+msgid "Not all applications can be packaged this way, only those relying on a select number of supported systems.  Read about the full list of importers in the guix import section of the manual (@pxref{Invoking guix import,,, guix, GNU Guix Reference Manual})."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:1252 guix-git/doc/guix-cookbook.texi:1253
+#, no-wrap
+msgid "Automatic update"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1257
+msgid "Guix can be smart enough to check for updates on systems it knows.  It can report outdated package definitions with"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1260
+#, no-wrap
+msgid "$ guix refresh hello\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1265
+msgid "In most cases, updating a package to a newer version requires little more than changing the version number and the checksum.  Guix can do that automatically as well:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1268
+#, no-wrap
+msgid "$ guix refresh hello --update\n"
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:1270 guix-git/doc/guix-cookbook.texi:1271
+#, no-wrap
+msgid "Inheritance"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1275
+msgid "If you've started browsing the existing package definitions, you might have noticed that a significant number of them have a @code{inherit} field:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1291
+#, no-wrap
+msgid ""
+"(define-public adwaita-icon-theme\n"
+"  (package (inherit gnome-icon-theme)\n"
+"    (name \"adwaita-icon-theme\")\n"
+"    (version \"3.26.1\")\n"
+"    (source (origin\n"
+"              (method url-fetch)\n"
+"              (uri (string-append \"mirror://gnome/sources/\" name \"/\"\n"
+"                                  (version-major+minor version) \"/\"\n"
+"                                  name \"-\" version \".tar.xz\"))\n"
+"              (sha256\n"
+"               (base32\n"
+"                \"17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8\"))))\n"
+"    (native-inputs\n"
+"     `((\"gtk-encode-symbolic-svg\" ,gtk+ \"bin\")))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1296
+msgid "All unspecified fields are inherited from the parent package.  This is very convenient to create alternative packages, for instance with different source, version or compilation options."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1297 guix-git/doc/guix-cookbook.texi:1298
+#, no-wrap
+msgid "Getting help"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1304
+msgid "Sadly, some applications can be tough to package.  Sometimes they need a patch to work with the non-standard file system hierarchy enforced by the store.  Sometimes the tests won't run properly.  (They can be skipped but this is not recommended.)  Other times the resulting package won't be reproducible."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1307
+msgid "Should you be stuck, unable to figure out how to fix any sort of packaging issue, don't hesitate to ask the community for help."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1309
+msgid "See the @uref{https://www.gnu.org/software/guix/contact/, Guix homepage} for information on the mailing lists, IRC, etc."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1310 guix-git/doc/guix-cookbook.texi:1311
+#, no-wrap
+msgid "Conclusion"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1317
+msgid "This tutorial was a showcase of the sophisticated package management that Guix boasts.  At this point we have mostly restricted this introduction to the @code{gnu-build-system} which is a core abstraction layer on which more advanced abstractions are based."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1322
+msgid "Where do we go from here? Next we ought to dissect the innards of the build system by removing all abstractions, using the @code{trivial-build-system}: this should give us a thorough understanding of the process before investigating some more advanced packaging techniques and edge cases."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1325
+msgid "Other features worth exploring are the interactive editing and debugging capabilities of Guix provided by the Guile REPL@."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1330
+msgid "Those fancy features are completely optional and can wait; now is a good time to take a well-deserved break.  With what we've introduced here you should be well armed to package lots of programs.  You can get started right away and hopefully we will see your contributions soon!"
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1331 guix-git/doc/guix-cookbook.texi:1332
+#, no-wrap
+msgid "References"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1337
+msgid "The @uref{https://www.gnu.org/software/guix/manual/en/html_node/Defining-Packages.html, package reference in the manual}"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1340
+msgid "@uref{https://gitlab.com/pjotrp/guix-notes/blob/master/HACKING.org, Pjotr’s hacking guide to GNU Guix}"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:1343
+msgid "@uref{https://www.gnu.org/software/guix/guix-ghm-andreas-20130823.pdf, ``GNU Guix: Package without a scheme!''}, by Andreas Enge"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1352
+msgid "Guix offers a flexible language for declaratively configuring your Guix System.  This flexibility can at times be overwhelming.  The purpose of this chapter is to demonstrate some advanced configuration concepts."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1355
+msgid "@pxref{System Configuration,,, guix, GNU Guix Reference Manual} for a complete reference."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:1653
+#: guix-git/doc/guix-cookbook.texi:1654
+#, no-wrap
+msgid "Guix System Image API"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:1366
+msgid "Customizing images to target specific platforms."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:1864
+#: guix-git/doc/guix-cookbook.texi:1865
+#, no-wrap
+msgid "Connecting to Wireguard VPN"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:1366
+msgid "Connecting to a Wireguard VPN."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:1941
+#: guix-git/doc/guix-cookbook.texi:1942
+#, no-wrap
+msgid "Customizing a Window Manager"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:1366
+msgid "Handle customization of a Window manager on Guix System."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:2032
+#: guix-git/doc/guix-cookbook.texi:2033
+#, no-wrap
+msgid "Running Guix on a Linode Server"
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:2272
+#: guix-git/doc/guix-cookbook.texi:2273
+#, no-wrap
+msgid "Setting up a bind mount"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:1366
+msgid "Setting up a bind mount in the file-systems definition."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:2321
+#: guix-git/doc/guix-cookbook.texi:2322
+#, no-wrap
+msgid "Getting substitutes from Tor"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:1366
+msgid "Configuring Guix daemon to get substitutes through Tor."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:1366 guix-git/doc/guix-cookbook.texi:2383
+#: guix-git/doc/guix-cookbook.texi:2384
+#, no-wrap
+msgid "Setting up NGINX with Lua"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:1366
+msgid "Configuring NGINX web-server to load Lua modules."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1378
+msgid "While the Guix manual explains auto-login one user to @emph{all} TTYs ( @pxref{auto-login to TTY,,, guix, GNU Guix Reference Manual}), some might prefer a situation, in which one user is logged into one TTY with the other TTYs either configured to login different users or no one at all.  Note that one can auto-login one user to any TTY, but it is usually advisable to avoid @code{tty1}, which, by default, is used to log warnings and errors."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1380
+msgid "Here is how one might set up auto login for one user to one tty:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1388
+#, no-wrap
+msgid ""
+"(define (auto-login-to-tty config tty user)\n"
+"  (if (string=? tty (mingetty-configuration-tty config))\n"
+"        (mingetty-configuration\n"
+"         (inherit config)\n"
+"         (auto-login user))\n"
+"        config))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1395
+#, no-wrap
+msgid ""
+"(define %my-services\n"
+"  (modify-services %base-services\n"
+"    ;; @dots{}\n"
+"    (mingetty-service-type config =>\n"
+"                           (auto-login-to-tty\n"
+"                            config \"tty3\" \"alice\"))))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1399
+#, no-wrap
+msgid ""
+"(operating-system\n"
+"  ;; @dots{}\n"
+"  (services %my-services))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1404
+msgid "One could also @code{compose} (@pxref{Higher-Order Functions,,, guile, The Guile Reference Manual}) @code{auto-login-to-tty} to login multiple users to multiple ttys."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1411
+msgid "Finally, here is a note of caution.  Setting up auto login to a TTY, means that anyone can turn on your computer and run commands as your regular user.  However, if you have an encrypted root partition, and thus already need to enter a passphrase when the system boots, auto-login might be a convenient option."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1423
+msgid "Guix is, at its core, a source based distribution with substitutes (@pxref{Substitutes,,, guix, GNU Guix Reference Manual}), and as such building packages from their source code is an expected part of regular package installations and upgrades.  Given this starting point, it makes sense that efforts are made to reduce the amount of time spent compiling packages, and recent changes and upgrades to the building and distribution of substitutes continues to be a topic of discussion within Guix."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1429
+msgid "The kernel, while not requiring an overabundance of RAM to build, does take a rather long time on an average machine.  The official kernel configuration, as is the case with many GNU/Linux distributions, errs on the side of inclusiveness, and this is really what causes the build to take such a long time when the kernel is built from source."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1434
+msgid "The Linux kernel, however, can also just be described as a regular old package, and as such can be customized just like any other package.  The procedure is a little bit different, although this is primarily due to the nature of how the package definition is written."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1437
+msgid "The @code{linux-libre} kernel package definition is actually a procedure which creates a package."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1449
+#, no-wrap
+msgid ""
+"(define* (make-linux-libre version hash supported-systems\n"
+"                           #:key\n"
+"                           ;; A function that takes an arch and a variant.\n"
+"                           ;; See kernel-config for an example.\n"
+"                           (extra-version #false)\n"
+"                           (configuration-file #false)\n"
+"                           (defconfig \"defconfig\")\n"
+"                           (extra-options %default-extra-linux-options)\n"
+"                           (patches (list %boot-logo-patch)))\n"
+"  ...)\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1453
+msgid "The current @code{linux-libre} package is for the 5.1.x series, and is declared like this:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1461
+#, no-wrap
+msgid ""
+"(define-public linux-libre\n"
+"  (make-linux-libre %linux-libre-version\n"
+"                    %linux-libre-hash\n"
+"                    '(\"x86_64-linux\" \"i686-linux\" \"armhf-linux\" \"aarch64-linux\")\n"
+"                    #:patches %linux-libre-5.1-patches\n"
+"                    #:configuration-file kernel-config))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1470
+msgid "Any keys which are not assigned values inherit their default value from the @code{make-linux-libre} definition.  When comparing the two snippets above, you may notice that the code comment in the first doesn't actually refer to the @code{#:extra-version} keyword; it is actually for @code{#:configuration-file}.  Because of this, it is not actually easy to include a custom kernel configuration from the definition, but don't worry, there are other ways to work with what we do have."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1476
+msgid "There are two ways to create a kernel with a custom kernel configuration.  The first is to provide a standard @file{.config} file during the build process by including an actual @file{.config} file as a native input to our custom kernel.  The following is a snippet from the custom @code{'configure} phase of the @code{make-linux-libre} package definition:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1480
+#, no-wrap
+msgid ""
+"(let ((build  (assoc-ref %standard-phases 'build))\n"
+"      (config (assoc-ref (or native-inputs inputs) \"kconfig\")))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1488
+#, no-wrap
+msgid ""
+"  ;; Use a custom kernel configuration file or a default\n"
+"  ;; configuration file.\n"
+"  (if config\n"
+"      (begin\n"
+"        (copy-file config \".config\")\n"
+"        (chmod \".config\" #o666))\n"
+"      (invoke \"make\" ,defconfig)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1493
+msgid "Below is a sample kernel package.  The @code{linux-libre} package is nothing special and can be inherited from and have its fields overridden like any other package:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1502
+#, no-wrap
+msgid ""
+"(define-public linux-libre/E2140\n"
+"  (package\n"
+"    (inherit linux-libre)\n"
+"    (native-inputs\n"
+"     `((\"kconfig\" ,(local-file \"E2140.config\"))\n"
+"      ,@@(alist-delete \"kconfig\"\n"
+"                      (package-native-inputs linux-libre))))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1509
+msgid "In the same directory as the file defining @code{linux-libre-E2140} is a file named @file{E2140.config}, which is an actual kernel configuration file.  The @code{defconfig} keyword of @code{make-linux-libre} is left blank here, so the only kernel configuration in the package is the one which was included in the @code{native-inputs} field."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1514
+msgid "The second way to create a custom kernel is to pass a new value to the @code{extra-options} keyword of the @code{make-linux-libre} procedure.  The @code{extra-options} keyword works with another function defined right below it:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1530
+#, no-wrap
+msgid ""
+"(define %default-extra-linux-options\n"
+"  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html\n"
+"   (\"CONFIG_DEVPTS_MULTIPLE_INSTANCES\" . #true)\n"
+"   ;; Modules required for initrd:\n"
+"   (\"CONFIG_NET_9P\" . m)\n"
+"   (\"CONFIG_NET_9P_VIRTIO\" . m)\n"
+"   (\"CONFIG_VIRTIO_BLK\" . m)\n"
+"   (\"CONFIG_VIRTIO_NET\" . m)\n"
+"   (\"CONFIG_VIRTIO_PCI\" . m)\n"
+"   (\"CONFIG_VIRTIO_BALLOON\" . m)\n"
+"   (\"CONFIG_VIRTIO_MMIO\" . m)\n"
+"   (\"CONFIG_FUSE_FS\" . m)\n"
+"   (\"CONFIG_CIFS\" . m)\n"
+"   (\"CONFIG_9P_FS\" . m)))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1541
+#, no-wrap
+msgid ""
+"(define (config->string options)\n"
+"  (string-join (map (match-lambda\n"
+"                      ((option . 'm)\n"
+"                       (string-append option \"=m\"))\n"
+"                      ((option . #true)\n"
+"                       (string-append option \"=y\"))\n"
+"                      ((option . #false)\n"
+"                       (string-append option \"=n\")))\n"
+"                    options)\n"
+"               \"\\n\"))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1544
+msgid "And in the custom configure script from the `make-linux-libre` package:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1552
+#, no-wrap
+msgid ""
+";; Appending works even when the option wasn't in the\n"
+";; file.  The last one prevails if duplicated.\n"
+"(let ((port (open-file \".config\" \"a\"))\n"
+"      (extra-configuration ,(config->string extra-options)))\n"
+"  (display extra-configuration port)\n"
+"  (close-port port))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1554
+#, no-wrap
+msgid "(invoke \"make\" \"oldconfig\")\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1559
+msgid "So by not providing a configuration-file the @file{.config} starts blank, and then we write into it the collection of flags that we want.  Here's another custom kernel:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1567
+#, no-wrap
+msgid ""
+"(define %macbook41-full-config\n"
+"  (append %macbook41-config-options\n"
+"          %file-systems\n"
+"          %efi-support\n"
+"          %emulation\n"
+"          (@@@@ (gnu packages linux) %default-extra-linux-options)))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1577
+#, no-wrap
+msgid ""
+"(define-public linux-libre-macbook41\n"
+"  ;; XXX: Access the internal 'make-linux-libre' procedure, which is\n"
+"  ;; private and unexported, and is liable to change in the future.\n"
+"  ((@@@@ (gnu packages linux) make-linux-libre) (@@@@ (gnu packages linux) %linux-libre-version)\n"
+"                      (@@@@ (gnu packages linux) %linux-libre-hash)\n"
+"                      '(\"x86_64-linux\")\n"
+"                      #:extra-version \"macbook41\"\n"
+"                      #:patches (@@@@ (gnu packages linux) %linux-libre-5.1-patches)\n"
+"                      #:extra-options %macbook41-config-options))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1584
+msgid "In the above example @code{%file-systems} is a collection of flags enabling different file system support, @code{%efi-support} enables EFI support and @code{%emulation} enables a x86_64-linux machine to act in 32-bit mode also.  @code{%default-extra-linux-options} are the ones quoted above, which had to be added in since they were replaced in the @code{extra-options} keyword."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1593
+msgid "This all sounds like it should be doable, but how does one even know which modules are required for a particular system? Two places that can be helpful in trying to answer this question is the @uref{https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel, Gentoo Handbook} and the @uref{https://www.kernel.org/doc/html/latest/admin-guide/README.html?highlight=localmodconfig, documentation from the kernel itself}.  From the kernel documentation, it seems that @code{make localmodconfig} is the command we want."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1596
+msgid "In order to actually run @code{make localmodconfig} we first need to get and unpack the kernel source code:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1599
+#, no-wrap
+msgid "tar xf $(guix build linux-libre --source)\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1606
+msgid "Once inside the directory containing the source code run @code{touch .config} to create an initial, empty @file{.config} to start with.  @code{make localmodconfig} works by seeing what you already have in @file{.config} and letting you know what you're missing.  If the file is blank then you're missing everything.  The next step is to run:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1609
+#, no-wrap
+msgid "guix environment linux-libre -- make localmodconfig\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1614
+msgid "and note the output.  Do note that the @file{.config} file is still empty.  The output generally contains two types of warnings.  The first start with \"WARNING\" and can actually be ignored in our case.  The second read:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1617
+#, no-wrap
+msgid "module pcspkr did not have configs CONFIG_INPUT_PCSPKR\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1622
+msgid "For each of these lines, copy the @code{CONFIG_XXXX_XXXX} portion into the @file{.config} in the directory, and append @code{=m}, so in the end it looks like this:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1626
+#, no-wrap
+msgid ""
+"CONFIG_INPUT_PCSPKR=m\n"
+"CONFIG_VIRTIO=m\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1635
+msgid "After copying all the configuration options, run @code{make localmodconfig} again to make sure that you don't have any output starting with ``module''.  After all of these machine specific modules there are a couple more left that are also needed.  @code{CONFIG_MODULES} is necessary so that you can build and load modules separately and not have everything built into the kernel.  @code{CONFIG_BLK_DEV_SD} is required for reading from hard drives.  It is possible that there are other modules which you will need."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1639
+msgid "This post does not aim to be a guide to configuring your own kernel however, so if you do decide to build a custom kernel you'll have to seek out other guides to create a kernel which is just right for your needs."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1647
+msgid "The second way to setup the kernel configuration makes more use of Guix's features and allows you to share configuration segments between different kernels.  For example, all machines using EFI to boot have a number of EFI configuration flags that they need.  It is likely that all the kernels will share a list of file systems to support.  By using variables it is easier to see at a glance what features are enabled and to make sure you don't have features in one kernel but missing in another."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1652
+msgid "Left undiscussed however, is Guix's initrd and its customization.  It is likely that you'll need to modify the initrd on a machine using a custom kernel, since certain modules which are expected to be built may not be available for inclusion into the initrd."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1659
+msgid "Historically, Guix System is centered around an @code{operating-system} structure.  This structure contains various fields ranging from the bootloader and kernel declaration to the services to install."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1665
+msgid "Depending on the target machine, that can go from a standard @code{x86_64} machine to a small ARM single board computer such as the Pine64, the image constraints can vary a lot.  The hardware manufacturers will impose different image formats with various partition sizes and offsets."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1670
+msgid "To create images suitable for all those machines, a new abstraction is necessary: that's the goal of the @code{image} record.  This record contains all the required information to be transformed into a standalone image, that can be directly booted on any target machine."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1692
+#, no-wrap
+msgid ""
+"(define-record-type* <image>\n"
+"  image make-image\n"
+"  image?\n"
+"  (name               image-name ;symbol\n"
+"                      (default #f))\n"
+"  (format             image-format) ;symbol\n"
+"  (target             image-target\n"
+"                      (default #f))\n"
+"  (size               image-size  ;size in bytes as integer\n"
+"                      (default 'guess))\n"
+"  (operating-system   image-operating-system  ;<operating-system>\n"
+"                      (default #f))\n"
+"  (partitions         image-partitions ;list of <partition>\n"
+"                      (default '()))\n"
+"  (compression?       image-compression? ;boolean\n"
+"                      (default #t))\n"
+"  (volatile-root?     image-volatile-root? ;boolean\n"
+"                      (default #t))\n"
+"  (substitutable?     image-substitutable? ;boolean\n"
+"                      (default #t)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1698
+msgid "This record contains the operating-system to instantiate. The @code{format} field defines the image type and can be @code{efi-raw}, @code{qcow2} or @code{iso9660} for instance. In the future, it could be extended to @code{docker} or other image types."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1701
+msgid "A new directory in the Guix sources is dedicated to images definition. For now there are four files:"
+msgstr ""
+
+#. type: file{#1}
+#: guix-git/doc/guix-cookbook.texi:1703
+#, no-wrap
+msgid "gnu/system/images/hurd.scm"
+msgstr ""
+
+#. type: file{#1}
+#: guix-git/doc/guix-cookbook.texi:1704
+#, no-wrap
+msgid "gnu/system/images/pine64.scm"
+msgstr ""
+
+#. type: file{#1}
+#: guix-git/doc/guix-cookbook.texi:1705
+#, no-wrap
+msgid "gnu/system/images/novena.scm"
+msgstr ""
+
+#. type: file{#1}
+#: guix-git/doc/guix-cookbook.texi:1706
+#, no-wrap
+msgid "gnu/system/images/pinebook-pro.scm"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1712
+msgid "Let's have a look to @file{pine64.scm}. It contains the @code{pine64-barebones-os} variable which is a minimal definition of an operating-system dedicated to the @b{Pine A64 LTS} board."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1736
+#, no-wrap
+msgid ""
+"(define pine64-barebones-os\n"
+"  (operating-system\n"
+"   (host-name \"vignemale\")\n"
+"   (timezone \"Europe/Paris\")\n"
+"   (locale \"en_US.utf8\")\n"
+"   (bootloader (bootloader-configuration\n"
+"                (bootloader u-boot-pine64-lts-bootloader)\n"
+"                (target \"/dev/vda\")))\n"
+"   (initrd-modules '())\n"
+"   (kernel linux-libre-arm64-generic)\n"
+"   (file-systems (cons (file-system\n"
+"                        (device (file-system-label \"my-root\"))\n"
+"                        (mount-point \"/\")\n"
+"                        (type \"ext4\"))\n"
+"                       %base-file-systems))\n"
+"   (services (cons (service agetty-service-type\n"
+"                            (agetty-configuration\n"
+"                             (extra-options '(\"-L\")) ; no carrier detect\n"
+"                             (baud-rate \"115200\")\n"
+"                             (term \"vt100\")\n"
+"                             (tty \"ttyS0\")))\n"
+"                   %base-services))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1740
+msgid "The @code{kernel} and @code{bootloader} fields are pointing to packages dedicated to this board."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1742
+msgid "Right below, the @code{pine64-image-type} variable is also defined."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1748
+#, no-wrap
+msgid ""
+"(define pine64-image-type\n"
+"  (image-type\n"
+"   (name 'pine64-raw)\n"
+"   (constructor (cut image-with-os arm64-disk-image <>))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1752
+msgid "It's using a record we haven't talked about yet, the @code{image-type} record, defined this way:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1759
+#, no-wrap
+msgid ""
+"(define-record-type* <image-type>\n"
+"  image-type make-image-type\n"
+"  image-type?\n"
+"  (name           image-type-name) ;symbol\n"
+"  (constructor    image-type-constructor)) ;<operating-system> -> <image>\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1765
+msgid "The main purpose of this record is to associate a name to a procedure transforming an @code{operating-system} to an image.  To understand why it is necessary, let's have a look to the command producing an image from an @code{operating-system} configuration file:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1768
+#, no-wrap
+msgid "guix system image my-os.scm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1774
+msgid "This command expects an @code{operating-system} configuration but how should we indicate that we want an image targeting a Pine64 board? We need to provide an extra information, the @code{image-type}, by passing the @code{--image-type} or @code{-t} flag, this way:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1777
+#, no-wrap
+msgid "guix system image --image-type=pine64-raw my-os.scm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1783
+msgid "This @code{image-type} parameter points to the @code{pine64-image-type} defined above. Hence, the @code{operating-system} declared in @code{my-os.scm} will be applied the @code{(cut image-with-os arm64-disk-image <>)} procedure to turn it into an image."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1785
+msgid "The resulting image looks like:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1795
+#, no-wrap
+msgid ""
+"(image\n"
+" (format 'disk-image)\n"
+" (target \"aarch64-linux-gnu\")\n"
+" (operating-system my-os)\n"
+" (partitions\n"
+"  (list (partition\n"
+"         (inherit root-partition)\n"
+"         (offset root-offset)))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1799
+msgid "which is the aggregation of the @code{operating-system} defined in @code{my-os.scm} to the @code{arm64-disk-image} record."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1801
+msgid "But enough Scheme madness. What does this image API bring to the Guix user?"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1803
+msgid "One can run:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1807
+#, no-wrap
+msgid ""
+"mathieu@@cervin:~$ guix system --list-image-types\n"
+"The available image types are:\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1819
+#, no-wrap
+msgid ""
+"   - pinebook-pro-raw\n"
+"   - pine64-raw\n"
+"   - novena-raw\n"
+"   - hurd-raw\n"
+"   - hurd-qcow2\n"
+"   - qcow2\n"
+"   - uncompressed-iso9660\n"
+"   - efi-raw\n"
+"   - arm64-raw\n"
+"   - arm32-raw\n"
+"   - iso9660\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1824
+msgid "and by writing an @code{operating-system} file based on @code{pine64-barebones-os}, you can customize your image to your preferences in a file (@file{my-pine-os.scm}) like this:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1828
+#, no-wrap
+msgid ""
+"(use-modules (gnu services linux)\n"
+"             (gnu system images pine64))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1839
+#, no-wrap
+msgid ""
+"(let ((base-os pine64-barebones-os))\n"
+"  (operating-system\n"
+"    (inherit base-os)\n"
+"    (timezone \"America/Indiana/Indianapolis\")\n"
+"    (services\n"
+"     (cons\n"
+"      (service earlyoom-service-type\n"
+"               (earlyoom-configuration\n"
+"                (prefer-regexp \"icecat|chromium\")))\n"
+"      (operating-system-user-services base-os)))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1842
+msgid "run:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1845
+#, no-wrap
+msgid "guix system image --image-type=pine64-raw my-pine-os.scm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1848
+msgid "or,"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1851
+#, no-wrap
+msgid "guix system image --image-type=hurd-raw my-hurd-os.scm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1855
+msgid "to get an image that can be written directly to a hard drive and booted from."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1857
+msgid "Without changing anything to @code{my-hurd-os.scm}, calling:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1860
+#, no-wrap
+msgid "guix system image --image-type=hurd-qcow2 my-hurd-os.scm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1863
+msgid "will instead produce a Hurd QEMU image."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1870
+msgid "To connect to a Wireguard VPN server you need the kernel module to be loaded in memory and a package providing networking tools that support it (e.g.  @code{wireguard-tools} or @code{network-manager})."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1874
+msgid "Here is a configuration example for Linux-Libre < 5.6, where the module is out of tree and need to be loaded manually---following revisions of the kernel have it built-in and so don't need such configuration:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1879
+#, no-wrap
+msgid ""
+"(use-modules (gnu))\n"
+"(use-service-modules desktop)\n"
+"(use-package-modules vpn)\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1888
+#, no-wrap
+msgid ""
+"(operating-system\n"
+"  ;; …\n"
+"  (services (cons (simple-service 'wireguard-module\n"
+"                                  kernel-module-loader-service-type\n"
+"                                  '(\"wireguard\"))\n"
+"                  %desktop-services))\n"
+"  (packages (cons wireguard-tools %base-packages))\n"
+"  (kernel-loadable-modules (list wireguard-linux-compat)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1892
+msgid "After reconfiguring and restarting your system you can either use Wireguard tools or NetworkManager to connect to a VPN server."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1893
+#, no-wrap
+msgid "Using Wireguard tools"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1899
+msgid "To test your Wireguard setup it is convenient to use @command{wg-quick}.  Just give it a configuration file @command{wg-quick up ./wg0.conf}; or put that file in @file{/etc/wireguard} and run @command{wg-quick up wg0} instead."
+msgstr ""
+
+#. type: quotation
+#: guix-git/doc/guix-cookbook.texi:1900
+#, no-wrap
+msgid "Note"
+msgstr ""
+
+#. type: quotation
+#: guix-git/doc/guix-cookbook.texi:1903
+msgid "Be warned that the author described this command as a: “[…] very quick and dirty bash script […]”."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1905
+#, no-wrap
+msgid "Using NetworkManager"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1913
+msgid "Thanks to NetworkManager support for Wireguard we can connect to our VPN using @command{nmcli} command.  Up to this point this guide assumes that you're using Network Manager service provided by @code{%desktop-services}.  Ortherwise you need to adjust your services list to load @code{network-manager-service-type} and reconfigure your Guix system."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1915
+msgid "To import your VPN configuration execute nmcli import command:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1919
+#, no-wrap
+msgid ""
+"# nmcli connection import type wireguard file wg0.conf\n"
+"Connection 'wg0' (edbee261-aa5a-42db-b032-6c7757c60fde) successfully added\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1924
+msgid "This will create a configuration file in @file{/etc/NetworkManager/wg0.nmconnection}.  Next connect to the Wireguard server:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1928
+#, no-wrap
+msgid ""
+"$ nmcli connection up wg0\n"
+"Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/6)\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1932
+msgid "By default NetworkManager will connect automatically on system boot.  To change that behaviour you need to edit your config:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:1935
+#, no-wrap
+msgid "# nmcli connection modify wg0 connection.autoconnect no\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1940
+msgid "For more specific information about NetworkManager and wireguard @uref{https://blogs.gnome.org/thaller/2019/03/15/wireguard-in-networkmanager/,see this post by thaller}."
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:1943
+#, no-wrap
+msgid "wm"
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1945 guix-git/doc/guix-cookbook.texi:1946
+#, no-wrap
+msgid "StumpWM"
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:1947
+#, no-wrap
+msgid "stumpwm"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1952
+msgid "You could install StumpWM with a Guix system by adding @code{stumpwm} and optionally @code{`(,stumpwm \"lib\")} packages to a system configuration file, e.g.@: @file{/etc/config.scm}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1954
+msgid "An example configuration can look like this:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1958
+#, no-wrap
+msgid ""
+"(use-modules (gnu))\n"
+"(use-package-modules wm)\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1963
+#, no-wrap
+msgid ""
+"(operating-system\n"
+"  ;; …\n"
+"  (packages (append (list sbcl stumpwm `(,stumpwm \"lib\"))\n"
+"                    %base-packages)))\n"
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:1965
+#, no-wrap
+msgid "stumpwm fonts"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1969
+msgid "By default StumpWM uses X11 fonts, which could be small or pixelated on your system.  You could fix this by installing StumpWM contrib Lisp module @code{sbcl-ttf-fonts}, adding it to Guix system packages:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1973
+#, no-wrap
+msgid ""
+"(use-modules (gnu))\n"
+"(use-package-modules fonts wm)\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1978
+#, no-wrap
+msgid ""
+"(operating-system\n"
+"  ;; …\n"
+"  (packages (append (list sbcl stumpwm `(,stumpwm \"lib\"))\n"
+"                    sbcl-ttf-fonts font-dejavu %base-packages)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1982
+msgid "Then you need to add the following code to a StumpWM configuration file @file{~/.stumpwm.d/init.lisp}:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:1989
+#, no-wrap
+msgid ""
+"(require :ttf-fonts)\n"
+"(setf xft:*font-dirs* '(\"/run/current-system/profile/share/fonts/\"))\n"
+"(setf clx-truetype:+font-cache-filename+ (concat (getenv \"HOME\") \"/.fonts/font-cache.sexp\"))\n"
+"(xft:cache-fonts)\n"
+"(set-font (make-instance 'xft:font :family \"DejaVu Sans Mono\" :subfamily \"Book\" :size 11))\n"
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:1991 guix-git/doc/guix-cookbook.texi:1992
+#, no-wrap
+msgid "Session lock"
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:1993
+#, no-wrap
+msgid "sessionlock"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:1999
+msgid "Depending on your environment, locking the screen of your session might come built in or it might be something you have to set up yourself. If you use a desktop environment like GNOME or KDE, it's usually built in. If you use a plain window manager like StumpWM or EXWM, you might have to set it up yourself."
+msgstr ""
+
+#. type: subsubsection
+#: guix-git/doc/guix-cookbook.texi:2000 guix-git/doc/guix-cookbook.texi:2001
+#, no-wrap
+msgid "Xorg"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2007
+msgid "If you use Xorg, you can use the utility @uref{https://www.mankier.com/1/xss-lock, xss-lock} to lock the screen of your session.  xss-lock is triggered by DPMS which since Xorg 1.8 is auto-detected and enabled if ACPI is also enabled at kernel runtime."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2010
+msgid "To use xss-lock, you can simple execute it and put it into the background before you start your window manager from e.g. your @file{~/.xsession}:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2014
+#, no-wrap
+msgid ""
+"xss-lock -- slock &\n"
+"exec stumpwm\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2018
+msgid "In this example, xss-lock uses @code{slock} to do the actual locking of the screen when it determines it's appropriate, like when you suspend your device."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2022
+msgid "For slock to be allowed to be a screen locker for the graphical session, it needs to be made setuid-root so it can authenticate users, and it needs a PAM service. This can be achieved by adding the following service to your @file{config.scm}:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2025
+#, no-wrap
+msgid "(screen-locker-service slock)\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2031
+msgid "If you manually lock your screen, e.g. by directly calling slock when you want to lock your screen but not suspend it, it's a good idea to notify xss-lock about this so no confusion occurs. This can be done by executing @code{xset s activate} immediately before you execute slock."
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:2034
+#, no-wrap
+msgid "linode, Linode"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2039
+msgid "To run Guix on a server hosted by @uref{https://www.linode.com, Linode}, start with a recommended Debian server.  We recommend using the default distro as a way to bootstrap Guix. Create your SSH keys."
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2042
+#, no-wrap
+msgid "ssh-keygen\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2048
+msgid "Be sure to add your SSH key for easy login to the remote server.  This is trivially done via Linode's graphical interface for adding SSH keys.  Go to your profile and click add SSH Key.  Copy into it the output of:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2051
+#, no-wrap
+msgid "cat ~/.ssh/<username>_rsa.pub\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2055
+msgid "Power the Linode down. In the Linode's Disks/Configurations tab, resize the Debian disk to be smaller. 30 GB is recommended."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2057
+msgid "In the Linode settings, \"Add a disk\", with the following:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2060
+msgid "Label: \"Guix\""
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2063
+msgid "Filesystem: ext4"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2066
+msgid "Set it to the remaining size"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2071
+msgid "On the \"configuration\" field that comes with the default image, press \"...\" and select \"Edit\", then on that menu add to @file{/dev/sdc} the \"Guix\" label."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2073
+msgid "Now \"Add a Configuration\", with the following:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2076
+msgid "Label: Guix"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2079
+msgid "Kernel:GRUB 2 (it's at the bottom! This step is @b{IMPORTANT!})"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2082
+msgid "Block device assignment:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2085
+msgid "@file{/dev/sda}: Guix"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2088
+msgid "@file{/dev/sdb}: swap"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2091
+msgid "Root device: @file{/dev/sda}"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2094
+msgid "Turn off all the filesystem/boot helpers"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2101
+msgid "Now power it back up, picking the Debian configuration.  Once it's booted up, ssh in your server via @code{ssh root@@@var{<your-server-IP-here>}}. (You can find your server IP address in your Linode Summary section.) Now you can run the \"install guix from @pxref{Binary Installation,,, guix, GNU Guix}\" steps:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2109
+#, no-wrap
+msgid ""
+"sudo apt-get install gpg\n"
+"wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | gpg --import -\n"
+"wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh\n"
+"chmod +x guix-install.sh\n"
+"./guix-install.sh\n"
+"guix pull\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2113
+msgid "Now it's time to write out a config for the server.  The key information is below. Save the resulting file as @file{guix-config.scm}."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2124
+#, no-wrap
+msgid ""
+"(use-modules (gnu)\n"
+"             (guix modules))\n"
+"(use-service-modules networking\n"
+"                     ssh)\n"
+"(use-package-modules admin\n"
+"                     certs\n"
+"                     package-management\n"
+"                     ssh\n"
+"                     tls)\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2141
+#, no-wrap
+msgid ""
+"(operating-system\n"
+"  (host-name \"my-server\")\n"
+"  (timezone \"America/New_York\")\n"
+"  (locale \"en_US.UTF-8\")\n"
+"  ;; This goofy code will generate the grub.cfg\n"
+"  ;; without installing the grub bootloader on disk.\n"
+"  (bootloader (bootloader-configuration\n"
+"               (bootloader\n"
+"                (bootloader\n"
+"                 (inherit grub-bootloader)\n"
+"                 (installer #~(const #true))))))\n"
+"  (file-systems (cons (file-system\n"
+"                        (device \"/dev/sda\")\n"
+"                        (mount-point \"/\")\n"
+"                        (type \"ext4\"))\n"
+"                      %base-file-systems))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2144
+#, no-wrap
+msgid ""
+"  (swap-devices (list \"/dev/sdb\"))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2148
+#, no-wrap
+msgid ""
+"  (initrd-modules (cons \"virtio_scsi\"    ; Needed to find the disk\n"
+"                        %base-initrd-modules))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2157
+#, no-wrap
+msgid ""
+"  (users (cons (user-account\n"
+"                (name \"janedoe\")\n"
+"                (group \"users\")\n"
+"                ;; Adding the account to the \"wheel\" group\n"
+"                ;; makes it a sudoer.\n"
+"                (supplementary-groups '(\"wheel\"))\n"
+"                (home-directory \"/home/janedoe\"))\n"
+"               %base-user-accounts))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2161
+#, no-wrap
+msgid ""
+"  (packages (cons* nss-certs            ;for HTTPS access\n"
+"                   openssh-sans-x\n"
+"                   %base-packages))\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2172
+#, no-wrap
+msgid ""
+"  (services (cons*\n"
+"             (service dhcp-client-service-type)\n"
+"             (service openssh-service-type\n"
+"                      (openssh-configuration\n"
+"                       (openssh openssh-sans-x)\n"
+"                       (password-authentication? #false)\n"
+"                       (authorized-keys\n"
+"                        `((\"janedoe\" ,(local-file \"janedoe_rsa.pub\"))\n"
+"                          (\"root\" ,(local-file \"janedoe_rsa.pub\"))))))\n"
+"             %base-services)))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2175
+msgid "Replace the following fields in the above configuration:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2183
+#, no-wrap
+msgid ""
+"(host-name \"my-server\")       ; replace with your server name\n"
+"; if you chose a linode server outside the U.S., then\n"
+"; use tzselect to find a correct timezone string\n"
+"(timezone \"America/New_York\") ; if needed replace timezone\n"
+"(name \"janedoe\")              ; replace with your username\n"
+"(\"janedoe\" ,(local-file \"janedoe_rsa.pub\")) ; replace with your ssh key\n"
+"(\"root\" ,(local-file \"janedoe_rsa.pub\")) ; replace with your ssh key\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2189
+msgid "The last line in the above example lets you log into the server as root and set the initial root password.  After you have done this, you may delete that line from your configuration and reconfigure to prevent root login."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2194
+msgid "Save your ssh public key (eg: @file{~/.ssh/id_rsa.pub}) as @file{@var{<your-username-here>}_rsa.pub} and your @file{guix-config.scm} in the same directory.  In a new terminal run these commands."
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2199
+#, no-wrap
+msgid ""
+"sftp root@@<remote server ip address>\n"
+"put /home/<username>/ssh/id_rsa.pub .\n"
+"put /path/to/linode/guix-config.scm .\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2202
+msgid "In your first terminal, mount the guix drive:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2206
+#, no-wrap
+msgid ""
+"mkdir /mnt/guix\n"
+"mount /dev/sdc /mnt/guix\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2211
+msgid "Due to the way we set things up above, we do not install GRUB completely.  Instead we install only our grub configuration file.  So we need to copy over some of the other GRUB stuff that is already there:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2215
+#, no-wrap
+msgid ""
+"mkdir -p /mnt/guix/boot/grub\n"
+"cp -r /boot/grub/* /mnt/guix/boot/grub/\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2218
+msgid "Now initialize the Guix installation:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2221
+#, no-wrap
+msgid "guix system init guix-config.scm /mnt/guix\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2225
+msgid "Ok, power it down! Now from the Linode console, select boot and select \"Guix\"."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2228
+msgid "Once it boots, you should be able to log in via SSH! (The server config will have changed though.)  You may encounter an error like:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2244
+#, no-wrap
+msgid ""
+"$ ssh root@@<server ip address>\n"
+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+"@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @\n"
+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\n"
+"Someone could be eavesdropping on you right now (man-in-the-middle attack)!\n"
+"It is also possible that a host key has just been changed.\n"
+"The fingerprint for the ECDSA key sent by the remote host is\n"
+"SHA256:0B+wp33w57AnKQuHCvQP0+ZdKaqYrI/kyU7CfVbS7R4.\n"
+"Please contact your system administrator.\n"
+"Add correct host key in /home/joshua/.ssh/known_hosts to get rid of this message.\n"
+"Offending ECDSA key in /home/joshua/.ssh/known_hosts:3\n"
+"ECDSA host key for 198.58.98.76 has changed and you have requested strict checking.\n"
+"Host key verification failed.\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2248
+msgid "Either delete @file{~/.ssh/known_hosts} file, or delete the offending line starting with your server IP address."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2250
+msgid "Be sure to set your password and root's password."
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2255
+#, no-wrap
+msgid ""
+"ssh root@@<remote ip address>\n"
+"passwd  ; for the root password\n"
+"passwd <username> ; for the user password\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2262
+msgid "You may not be able to run the above commands at this point.  If you have issues remotely logging into your linode box via SSH, then you may still need to set your root and user password initially by clicking on the ``Launch Console'' option in your linode.  Choose the ``Glish'' instead of ``Weblish''.  Now you should be able to ssh into the machine."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2266
+msgid "Horray! At this point you can shut down the server, delete the Debian disk, and resize the Guix to the rest of the size.  Congratulations!"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2271
+msgid "By the way, if you save it as a disk image right at this point, you'll have an easy time spinning up new Guix images! You may need to down-size the Guix image to 6144MB, to save it as an image.  Then you can resize it again to the max size."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2280
+msgid "To bind mount a file system, one must first set up some definitions before the @code{operating-system} section of the system definition.  In this example we will bind mount a folder from a spinning disk drive to @file{/tmp}, to save wear and tear on the primary SSD, without dedicating an entire partition to be mounted as @file{/tmp}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2283
+msgid "First, the source drive that hosts the folder we wish to bind mount should be defined, so that the bind mount can depend on it."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2290
+#, no-wrap
+msgid ""
+"(define source-drive ;; \"source-drive\" can be named anything you want.\n"
+"   (file-system\n"
+"    (device (uuid \"UUID goes here\"))\n"
+"    (mount-point \"/path-to-spinning-disk-goes-here\")\n"
+"    (type \"ext4\"))) ;; Make sure to set this to the appropriate type for your drive.\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2294
+msgid "The source folder must also be defined, so that guix will know it's not a regular block device, but a folder."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2296
+#, no-wrap
+msgid "(define (%source-directory) \"/path-to-spinning-disk-goes-here/tmp\") ;; \"source-directory\" can be named any valid variable name.\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2300
+msgid "Finally, inside the @code{file-systems} definition, we must add the mount itself."
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2303
+#, no-wrap
+msgid ""
+"(file-systems (cons*\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2305
+#, no-wrap
+msgid ""
+"                ...<other drives omitted for clarity>...\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2307
+#, no-wrap
+msgid ""
+"                source-drive ;; Must match the name you gave the source drive in the earlier definition.\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2315
+#, no-wrap
+msgid ""
+"                (file-system\n"
+"                 (device (%source-directory)) ;; Make sure \"source-directory\" matches your earlier definition.\n"
+"                 (mount-point \"/tmp\")\n"
+"                 (type \"none\") ;; We are mounting a folder, not a partition, so this type needs to be \"none\"\n"
+"                 (flags '(bind-mount))\n"
+"                 (dependencies (list source-drive)) ;; Ensure \"source-drive\" matches what you've named the variable for the drive.\n"
+"                 )\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2317
+#, no-wrap
+msgid ""
+"                 ...<other drives omitted for clarity>...\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2319
+#, no-wrap
+msgid "                ))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2326
+msgid "Guix daemon can use a HTTP proxy to get substitutes, here we are configuring it to get them via Tor."
+msgstr ""
+
+#. type: quotation
+#: guix-git/doc/guix-cookbook.texi:2327
+#, no-wrap
+msgid "Warning"
+msgstr ""
+
+#. type: quotation
+#: guix-git/doc/guix-cookbook.texi:2333
+msgid "@emph{Not all} Guix daemon's traffic will go through Tor! Only HTTP/HTTPS will get proxied; FTP, Git protocol, SSH, etc connections will still go through the clearnet.  Again, this configuration isn't foolproof some of your traffic won't get routed by Tor at all.  Use it at your own risk."
+msgstr ""
+
+#. type: quotation
+#: guix-git/doc/guix-cookbook.texi:2339
+msgid "Also note that the procedure described here applies only to package substitution. When you update your guix distribution with @command{guix pull}, you still need to use @command{torsocks} if you want to route the connection to guix's git repository servers through Tor."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2344
+msgid "Guix's substitute server is available as a Onion service, if you want to use it to get your substitutes through Tor configure your system as follow:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2348
+#, no-wrap
+msgid ""
+"(use-modules (gnu))\n"
+"(use-service-module base networking)\n"
+"\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2364
+#, no-wrap
+msgid ""
+"(operating-system\n"
+"  …\n"
+"  (services\n"
+"    (cons\n"
+"      (service tor-service-type\n"
+"              (tor-configuration\n"
+"                (config-file (plain-file \"tor-config\"\n"
+"                                         \"HTTPTunnelPort 127.0.0.1:9250\"))))\n"
+"      (modify-services %base-services\n"
+"        (guix-service-type\n"
+"          config => (guix-configuration\n"
+"                      (inherit config)\n"
+"                      ;; ci.guix.gnu.org's Onion service\n"
+"                      (substitute-urls \"https://bp7o7ckwlewr4slm.onion\")\n"
+"                      (http-proxy \"http://localhost:9250\")))))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2373
+msgid "This will keep a tor process running that provides a HTTP CONNECT tunnel which will be used by @command{guix-daemon}.  The daemon can use other protocols than HTTP(S) to get remote resources, request using those protocols won't go through Tor since we are only setting a HTTP tunnel here.  Note that @code{substitutes-urls} is using HTTPS and not HTTP or it won't work, that's a limitation of Tor's tunnel; you may want to use @command{privoxy} instead to avoid such limitations."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2377
+msgid "If you don't want to always get substitutes through Tor but using it just some of the times, then skip the @code{guix-configuration}.  When you want to get a substitute from the Tor tunnel run:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2381
+#, no-wrap
+msgid ""
+"sudo herd set-http-proxy guix-daemon http://localhost:9250\n"
+"guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …\n"
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:2385
+#, no-wrap
+msgid "nginx, lua, openresty, resty"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2388
+msgid "NGINX could be extended with Lua scripts."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2391
+msgid "Guix provides NGINX service with ability to load Lua module and specific Lua packages, and reply to requests by evaluating Lua scripts."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2395
+msgid "The following example demonstrates system definition with configuration to evaluate @file{index.lua} Lua script on HTTP request to @uref{http://localhost/hello} endpoint:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2398
+#, no-wrap
+msgid ""
+"local shell = require \"resty.shell\"\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2402
+#, no-wrap
+msgid ""
+"local stdin = \"\"\n"
+"local timeout = 1000  -- ms\n"
+"local max_size = 4096  -- byte\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2405
+#, no-wrap
+msgid ""
+"local ok, stdout, stderr, reason, status =\n"
+"   shell.run([[/run/current-system/profile/bin/ls /tmp]], stdin, timeout, max_size)\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2407
+#, no-wrap
+msgid "ngx.say(stdout)\n"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2438
+#, no-wrap
+msgid ""
+"(use-modules (gnu))\n"
+"(use-service-modules #;… web)\n"
+"(use-package-modules #;… lua)\n"
+"(operating-system\n"
+"  ;; …\n"
+"  (services\n"
+"   ;; …\n"
+"   (service nginx-service-type\n"
+"            (nginx-configuration\n"
+"             (modules\n"
+"              (list\n"
+"               (file-append nginx-lua-module \"/etc/nginx/modules/ngx_http_lua_module.so\")))\n"
+"             (lua-package-path (list lua-resty-core\n"
+"                                     lua-resty-lrucache\n"
+"                                     lua-resty-signal\n"
+"                                     lua-tablepool\n"
+"                                     lua-resty-shell))\n"
+"             (lua-package-cpath (list lua-resty-signal))\n"
+"             (server-blocks\n"
+"              (list (nginx-server-configuration\n"
+"                     (server-name '(\"localhost\"))\n"
+"                     (listen '(\"80\"))\n"
+"                     (root \"/etc\")\n"
+"                     (locations (list\n"
+"                                 (nginx-location-configuration\n"
+"                                  (uri \"/hello\")\n"
+"                                  (body (list #~(format #f \"content_by_lua_file ~s;\"\n"
+"                                                        #$(local-file \"index.lua\"))))))))))))))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2449
+msgid "Guix is a functional package manager that offers many features beyond what more traditional package managers can do.  To the uninitiated, those features might not have obvious use cases at first.  The purpose of this chapter is to demonstrate some advanced package management concepts."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2452
+msgid "@pxref{Package Management,,, guix, GNU Guix Reference Manual} for a complete reference."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:2455 guix-git/doc/guix-cookbook.texi:2457
+#: guix-git/doc/guix-cookbook.texi:2458
+#, no-wrap
+msgid "Guix Profiles in Practice"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:2455
+msgid "Strategies for multiple profiles and manifests."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2463
+msgid "Guix provides a very useful feature that may be quite foreign to newcomers: @emph{profiles}.  They are a way to group package installations together and all users on the same system are free to use as many profiles as they want."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2468
+msgid "Whether you're a developer or not, you may find that multiple profiles bring you great power and flexibility.  While they shift the paradigm somewhat compared to @emph{traditional package managers}, they are very convenient to use once you've understood how to set them up."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2474
+msgid "If you are familiar with Python's @samp{virtualenv}, you can think of a profile as a kind of universal @samp{virtualenv} that can hold any kind of software whatsoever, not just Python software.  Furthermore, profiles are self-sufficient: they capture all the runtime dependencies which guarantees that all programs within a profile will always work at any point in time."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2476
+msgid "Multiple profiles have many benefits:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2480
+msgid "Clean semantic separation of the various packages a user needs for different contexts."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2484
+msgid "Multiple profiles can be made available into the environment either on login or within a dedicated shell."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2488
+msgid "Profiles can be loaded on demand.  For instance, the user can use multiple shells, each of them running different profiles."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2493
+msgid "Isolation: Programs from one profile will not use programs from the other, and the user can even install different versions of the same programs to the two profiles without conflict."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2497
+msgid "Deduplication: Profiles share dependencies that happens to be the exact same.  This makes multiple profiles storage-efficient."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2505
+msgid "Reproducible: when used with declarative manifests, a profile can be fully specified by the Guix commit that was active when it was set up.  This means that the exact same profile can be @uref{https://guix.gnu.org/blog/2018/multi-dimensional-transactions-and-rollbacks-oh-my/, set up anywhere and anytime}, with just the commit information.  See the section on @ref{Reproducible profiles}."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2509
+msgid "Easier upgrades and maintenance: Multiple profiles make it easy to keep package listings at hand and make upgrades completely frictionless."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2512
+msgid "Concretely, here follows some typical profiles:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2516
+msgid "The dependencies of a project you are working on."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2519
+msgid "Your favourite programming language libraries."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2522
+msgid "Laptop-specific programs (like @samp{powertop}) that you don't need on a desktop."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2526
+msgid "@TeX{}live (this one can be really useful when you need to install just one package for this one document you've just received over email)."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2529
+msgid "Games."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2532
+msgid "Let's dive in the set up!"
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:2533 guix-git/doc/guix-cookbook.texi:2534
+#, no-wrap
+msgid "Basic setup with manifests"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2538
+msgid "A Guix profile can be set up @emph{via} a so-called @emph{manifest specification} that looks like this:"
+msgstr ""
+
+#. type: lisp
+#: guix-git/doc/guix-cookbook.texi:2548
+#, no-wrap
+msgid ""
+"(specifications->manifest\n"
+"  '(\"package-1\"\n"
+"    ;; Version 1.3 of package-2.\n"
+"    \"package-2@@1.3\"\n"
+"    ;; The \"lib\" output of package-3.\n"
+"    \"package-3:lib\"\n"
+"    ; ...\n"
+"    \"package-N\"))\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2552
+msgid "@pxref{Invoking guix package,,, guix, GNU Guix Reference Manual}, for the syntax details."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2554
+msgid "We can create a manifest specification per profile and install them this way:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2559
+#, no-wrap
+msgid ""
+"GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles\n"
+"mkdir -p \"$GUIX_EXTRA_PROFILES\"/my-project # if it does not exist yet\n"
+"guix package --manifest=/path/to/guix-my-project-manifest.scm --profile=\"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2563
+msgid "Here we set an arbitrary variable @samp{GUIX_EXTRA_PROFILES} to point to the directory where we will store our profiles in the rest of this article."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2569
+msgid "Placing all your profiles in a single directory, with each profile getting its own sub-directory, is somewhat cleaner.  This way, each sub-directory will contain all the symlinks for precisely one profile.  Besides, ``looping over profiles'' becomes obvious from any programming language (e.g.@: a shell script) by simply looping over the sub-directories of @samp{$GUIX_EXTRA_PROFILES}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2571
+msgid "Note that it's also possible to loop over the output of"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2574
+#, no-wrap
+msgid "guix package --list-profiles\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2577
+msgid "although you'll probably have to filter out @file{~/.config/guix/current}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2579
+msgid "To enable all profiles on login, add this to your @file{~/.bash_profile} (or similar):"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2589
+#, no-wrap
+msgid ""
+"for i in $GUIX_EXTRA_PROFILES/*; do\n"
+"  profile=$i/$(basename \"$i\")\n"
+"  if [ -f \"$profile\"/etc/profile ]; then\n"
+"    GUIX_PROFILE=\"$profile\"\n"
+"    . \"$GUIX_PROFILE\"/etc/profile\n"
+"  fi\n"
+"  unset profile\n"
+"done\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2594
+msgid "Note to Guix System users: the above reflects how your default profile @file{~/.guix-profile} is activated from @file{/etc/profile}, that latter being loaded by @file{~/.bashrc} by default."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2596
+msgid "You can obviously choose to only enable a subset of them:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2606
+#, no-wrap
+msgid ""
+"for i in \"$GUIX_EXTRA_PROFILES\"/my-project-1 \"$GUIX_EXTRA_PROFILES\"/my-project-2; do\n"
+"  profile=$i/$(basename \"$i\")\n"
+"  if [ -f \"$profile\"/etc/profile ]; then\n"
+"    GUIX_PROFILE=\"$profile\"\n"
+"    . \"$GUIX_PROFILE\"/etc/profile\n"
+"  fi\n"
+"  unset profile\n"
+"done\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2610
+msgid "When a profile is off, it's straightforward to enable it for an individual shell without \"polluting\" the rest of the user session:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2613
+#, no-wrap
+msgid "GUIX_PROFILE=\"path/to/my-project\" ; . \"$GUIX_PROFILE\"/etc/profile\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2620
+msgid "The key to enabling a profile is to @emph{source} its @samp{etc/profile} file.  This file contains shell code that exports the right environment variables necessary to activate the software contained in the profile.  It is built automatically by Guix and meant to be sourced.  It contains the same variables you would get if you ran:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2623
+#, no-wrap
+msgid "guix package --search-paths=prefix --profile=$my_profile\"\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2627
+msgid "Once again, see (@pxref{Invoking guix package,,, guix, GNU Guix Reference Manual})  for the command line options."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2629
+msgid "To upgrade a profile, simply install the manifest again:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2632
+#, no-wrap
+msgid "guix package -m /path/to/guix-my-project-manifest.scm -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2638
+msgid "To upgrade all profiles, it's easy enough to loop over them.  For instance, assuming your manifest specifications are stored in @file{~/.guix-manifests/guix-$profile-manifest.scm}, with @samp{$profile} being the name of the profile (e.g.@: \"project1\"), you could do the following in Bourne shell:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2643
+#, no-wrap
+msgid ""
+"for profile in \"$GUIX_EXTRA_PROFILES\"/*; do\n"
+"  guix package --profile=\"$profile\" --manifest=\"$HOME/.guix-manifests/guix-$profile-manifest.scm\"\n"
+"done\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2646
+msgid "Each profile has its own generations:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2649
+#, no-wrap
+msgid "guix package -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project --list-generations\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2652
+msgid "You can roll-back to any generation of a given profile:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2655
+#, no-wrap
+msgid "guix package -p \"$GUIX_EXTRA_PROFILES\"/my-project/my-project --switch-generations=17\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2659
+msgid "Finally, if you want to switch to a profile without inheriting from the current environment, you can activate it from an empty shell:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2663
+#, no-wrap
+msgid ""
+"env -i $(which bash) --login --noprofile --norc\n"
+". my-project/etc/profile\n"
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:2665 guix-git/doc/guix-cookbook.texi:2666
+#, no-wrap
+msgid "Required packages"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2671
+msgid "Activating a profile essentially boils down to exporting a bunch of environmental variables.  This is the role of the @samp{etc/profile} within the profile."
+msgstr ""
+
+#. type: emph{#1}
+#: guix-git/doc/guix-cookbook.texi:2674
+msgid "Note: Only the environmental variables of the packages that consume them will be set."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2678
+msgid "For instance, @samp{MANPATH} won't be set if there is no consumer application for man pages within the profile.  So if you need to transparently access man pages once the profile is loaded, you've got two options:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2682
+msgid "Either export the variable manually, e.g."
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2684
+#, no-wrap
+msgid "export MANPATH=/path/to/profile$@{MANPATH:+:@}$MANPATH\n"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2688
+msgid "Or include @samp{man-db} to the profile manifest."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2692
+msgid "The same is true for @samp{INFOPATH} (you can install @samp{info-reader}), @samp{PKG_CONFIG_PATH} (install @samp{pkg-config}), etc."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:2693 guix-git/doc/guix-cookbook.texi:2694
+#, no-wrap
+msgid "Default profile"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2697
+msgid "What about the default profile that Guix keeps in @file{~/.guix-profile}?"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2700
+msgid "You can assign it the role you want.  Typically you would install the manifest of the packages you want to use all the time."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2704
+msgid "Alternatively, you could keep it ``manifest-less'' for throw-away packages that you would just use for a couple of days.  This way makes it convenient to run"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2708
+#, no-wrap
+msgid ""
+"guix install package-foo\n"
+"guix upgrade package-bar\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2711
+msgid "without having to specify the path to a profile."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:2712 guix-git/doc/guix-cookbook.texi:2713
+#, no-wrap
+msgid "The benefits of manifests"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2717
+msgid "Manifests are a convenient way to keep your package lists around and, say, to synchronize them across multiple machines using a version control system."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2721
+msgid "A common complaint about manifests is that they can be slow to install when they contain large number of packages.  This is especially cumbersome when you just want get an upgrade for one package within a big manifest."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2726
+msgid "This is one more reason to use multiple profiles, which happen to be just perfect to break down manifests into multiple sets of semantically connected packages.  Using multiple, small profiles provides more flexibility and usability."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2728
+msgid "Manifests come with multiple benefits.  In particular, they ease maintenance:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2736
+msgid "When a profile is set up from a manifest, the manifest itself is self-sufficient to keep a ``package listing'' around and reinstall the profile later or on a different system.  For ad-hoc profiles, we would need to generate a manifest specification manually and maintain the package versions for the packages that don't use the default version."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2741
+msgid "@code{guix package --upgrade} always tries to update the packages that have propagated inputs, even if there is nothing to do.  Guix manifests remove this problem."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2747
+msgid "When partially upgrading a profile, conflicts may arise (due to diverging dependencies between the updated and the non-updated packages) and they can be annoying to resolve manually.  Manifests remove this problem altogether since all packages are always upgraded at once."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2753
+msgid "As mentioned above, manifests allow for reproducible profiles, while the imperative @code{guix install}, @code{guix upgrade}, etc. do not, since they produce different profiles every time even when they hold the same packages.  See @uref{https://issues.guix.gnu.org/issue/33285, the related discussion on the matter}."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2761
+msgid "Manifest specifications are usable by other @samp{guix} commands.  For example, you can run @code{guix weather -m manifest.scm} to see how many substitutes are available, which can help you decide whether you want to try upgrading today or wait a while.  Another example: you can run @code{guix pack -m manifest.scm} to create a pack containing all the packages in the manifest (and their transitive references)."
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2765
+msgid "Finally, manifests have a Scheme representation, the @samp{<manifest>} record type.  They can be manipulated in Scheme and passed to the various Guix @uref{https://en.wikipedia.org/wiki/Api, APIs}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2773
+msgid "It's important to understand that while manifests can be used to declare profiles, they are not strictly equivalent: profiles have the side effect that they ``pin'' packages in the store, which prevents them from being garbage-collected (@pxref{Invoking guix gc,,, guix, GNU Guix Reference Manual})  and ensures that they will still be available at any point in the future."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2775
+msgid "Let's take an example:"
+msgstr ""
+
+#. type: enumerate
+#: guix-git/doc/guix-cookbook.texi:2781
+msgid "We have an environment for hacking on a project for which there isn't a Guix package yet.  We build the environment using a manifest, and then run @code{guix environment -m manifest.scm}.  So far so good."
+msgstr ""
+
+#. type: enumerate
+#: guix-git/doc/guix-cookbook.texi:2787
+msgid "Many weeks pass and we have run a couple of @code{guix pull} in the mean time.  Maybe a dependency from our manifest has been updated; or we may have run @code{guix gc} and some packages needed by our manifest have been garbage-collected."
+msgstr ""
+
+#. type: enumerate
+#: guix-git/doc/guix-cookbook.texi:2792
+msgid "Eventually, we set to work on that project again, so we run @code{guix environment -m manifest.scm}.  But now we have to wait for Guix to build and install stuff!"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2798
+msgid "Ideally, we could spare the rebuild time.  And indeed we can, all we need is to install the manifest to a profile and use @code{GUIX_PROFILE=/the/profile; . \"$GUIX_PROFILE\"/etc/profile} as explained above: this guarantees that our hacking environment will be available at all times."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2801
+msgid "@emph{Security warning:} While keeping old profiles around can be convenient, keep in mind that outdated packages may not have received the latest security fixes."
+msgstr ""
+
+#. type: subsection
+#: guix-git/doc/guix-cookbook.texi:2802 guix-git/doc/guix-cookbook.texi:2803
+#, no-wrap
+msgid "Reproducible profiles"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2806
+msgid "To reproduce a profile bit-for-bit, we need two pieces of information:"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2810
+msgid "a manifest,"
+msgstr ""
+
+#. type: itemize
+#: guix-git/doc/guix-cookbook.texi:2812
+msgid "a Guix channel specification."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2816
+msgid "Indeed, manifests alone might not be enough: different Guix versions (or different channels) can produce different outputs for a given manifest."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2820
+msgid "You can output the Guix channel specification with @samp{guix describe --format=channels}.  Save this to a file, say @samp{channel-specs.scm}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2823
+msgid "On another computer, you can use the channel specification file and the manifest to reproduce the exact same profile:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2827
+#, no-wrap
+msgid ""
+"GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles\n"
+"GUIX_EXTRA=$HOME/.guix-extra\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2830
+#, no-wrap
+msgid ""
+"mkdir \"$GUIX_EXTRA\"/my-project\n"
+"guix pull --channels=channel-specs.scm --profile \"$GUIX_EXTRA/my-project/guix\"\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2833
+#, no-wrap
+msgid ""
+"mkdir -p \"$GUIX_EXTRA_PROFILES/my-project\"\n"
+"\"$GUIX_EXTRA\"/my-project/guix/bin/guix package --manifest=/path/to/guix-my-project-manifest.scm --profile=\"$GUIX_EXTRA_PROFILES\"/my-project/my-project\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2837
+msgid "It's safe to delete the Guix channel profile you've just installed with the channel specification, the project profile does not depend on it."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2844
+msgid "Guix provides multiple tools to manage environment.  This chapter demonstrate such utilities."
+msgstr ""
+
+#. type: section
+#: guix-git/doc/guix-cookbook.texi:2847 guix-git/doc/guix-cookbook.texi:2849
+#: guix-git/doc/guix-cookbook.texi:2850
+#, no-wrap
+msgid "Guix environment via direnv"
+msgstr ""
+
+#. type: menuentry
+#: guix-git/doc/guix-cookbook.texi:2847
+msgid "Setup Guix environment with direnv"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2855
+msgid "Guix provides a @samp{direnv} package, which could extend shell after directory change.  This tool could be used to prepare a pure Guix environment."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2861
+msgid "The following example provides a shell function for @file{~/.direnvrc} file, which could be used from Guix Git repository in @file{~/src/guix/.envrc} file to setup a build environment similar to described in @pxref{Building from Git,,, guix, GNU Guix Reference Manual}."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2863
+msgid "Create a @file{~/.direnvrc} with a Bash code:"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2881
+#, no-wrap
+msgid ""
+"# Thanks <https://github.com/direnv/direnv/issues/73#issuecomment-152284914>\n"
+"export_function()\n"
+"@{\n"
+"  local name=$1\n"
+"  local alias_dir=$PWD/.direnv/aliases\n"
+"  mkdir -p \"$alias_dir\"\n"
+"  PATH_add \"$alias_dir\"\n"
+"  local target=\"$alias_dir/$name\"\n"
+"  if declare -f \"$name\" >/dev/null; then\n"
+"    echo \"#!$SHELL\" > \"$target\"\n"
+"    declare -f \"$name\" >> \"$target\" 2>/dev/null\n"
+"    # Notice that we add shell variables to the function trigger.\n"
+"    echo \"$name \\$*\" >> \"$target\"\n"
+"    chmod +x \"$target\"\n"
+"  fi\n"
+"@}\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2886
+#, no-wrap
+msgid ""
+"use_guix()\n"
+"@{\n"
+"    # Set GitHub token.\n"
+"    export GUIX_GITHUB_TOKEN=\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2889
+#, no-wrap
+msgid ""
+"    # Unset 'GUIX_PACKAGE_PATH'.\n"
+"    export GUIX_PACKAGE_PATH=\"\"\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2898
+#, no-wrap
+msgid ""
+"    # Recreate a garbage collector root.\n"
+"    gcroots=\"$HOME/.config/guix/gcroots\"\n"
+"    mkdir -p \"$gcroots\"\n"
+"    gcroot=\"$gcroots/guix\"\n"
+"    if [ -L \"$gcroot\" ]\n"
+"    then\n"
+"        rm -v \"$gcroot\"\n"
+"    fi\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2913
+#, no-wrap
+msgid ""
+"    # Miscellaneous packages.\n"
+"    PACKAGES_MAINTENANCE=(\n"
+"        direnv\n"
+"        git\n"
+"        git:send-email\n"
+"        git-cal\n"
+"        gnupg\n"
+"        guile-colorized\n"
+"        guile-readline\n"
+"        less\n"
+"        ncurses\n"
+"        openssh\n"
+"        xdot\n"
+"    )\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2916
+#, no-wrap
+msgid ""
+"    # Environment packages.\n"
+"    PACKAGES=(help2man guile-sqlite3 guile-gcrypt)\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2919
+#, no-wrap
+msgid ""
+"    # Thanks <https://lists.gnu.org/archive/html/guix-devel/2016-09/msg00859.html>\n"
+"    eval \"$(guix environment --search-paths --root=\"$gcroot\" --pure guix --ad-hoc $@{PACKAGES[@@]@} $@{PACKAGES_MAINTENANCE[@@]@} \"$@@\")\"\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2926
+#, no-wrap
+msgid ""
+"    # Predefine configure flags.\n"
+"    configure()\n"
+"    @{\n"
+"        ./configure --localstatedir=/var --prefix=\n"
+"    @}\n"
+"    export_function configure\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2937
+#, no-wrap
+msgid ""
+"    # Run make and optionally build something.\n"
+"    build()\n"
+"    @{\n"
+"        make -j 2\n"
+"        if [ $# -gt 0 ]\n"
+"        then\n"
+"            ./pre-inst-env guix build \"$@@\"\n"
+"        fi\n"
+"    @}\n"
+"    export_function build\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2944
+#, no-wrap
+msgid ""
+"    # Predefine push Git command.\n"
+"    push()\n"
+"    @{\n"
+"        git push --set-upstream origin\n"
+"    @}\n"
+"    export_function push\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2947
+#, no-wrap
+msgid ""
+"    clear                        # Clean up the screen.\n"
+"    git-cal --author='Your Name' # Show contributions calendar.\n"
+"\n"
+msgstr ""
+
+#. type: example
+#: guix-git/doc/guix-cookbook.texi:2955
+#, no-wrap
+msgid ""
+"    # Show commands help.\n"
+"    echo \"\n"
+"build          build a package or just a project if no argument provided\n"
+"configure      run ./configure with predefined parameters\n"
+"push           push to upstream Git repository\n"
+"\"\n"
+"@}\n"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2959
+msgid "Every project containing @file{.envrc} with a string @code{use guix} will have predefined environment variables and procedures."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2961
+msgid "Run @command{direnv allow} to setup the environment for the first time."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2973
+msgid "Guix is based on the @uref{https://nixos.org/nix/, Nix package manager}, which was designed and implemented by Eelco Dolstra, with contributions from other people (see the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package management, and promoted unprecedented features, such as transactional package upgrades and rollbacks, per-user profiles, and referentially transparent build processes.  Without this work, Guix would not exist."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2976
+msgid "The Nix-based software distributions, Nixpkgs and NixOS, have also been an inspiration for Guix."
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2982
+msgid "GNU@tie{}Guix itself is a collective work with contributions from a number of people.  See the @file{AUTHORS} file in Guix for more information on these fine people.  The @file{THANKS} file lists people who have helped by reporting bugs, taking care of the infrastructure, providing artwork and themes, making suggestions, and more---thank you!"
+msgstr ""
+
+#. type: Plain text
+#: guix-git/doc/guix-cookbook.texi:2985
+msgid "This document includes adapted sections from articles that have previously been published on the Guix blog at @uref{https://guix.gnu.org/blog}."
+msgstr ""
+
+#. type: cindex
+#: guix-git/doc/guix-cookbook.texi:2990
+#, no-wrap
+msgid "license, GNU Free Documentation License"
+msgstr ""
+
+#. type: include
+#: guix-git/doc/guix-cookbook.texi:2991
+#, no-wrap
+msgid "fdl-1.3.texi"
+msgstr ""
+
+#~ msgid "Creating and using a custom Linux kernel"
+#~ msgstr "Tvorba a používanie prispôsobeného Linuxového jadra"

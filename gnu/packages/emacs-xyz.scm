@@ -138,6 +138,7 @@
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages chez)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
   #:use-module (gnu packages cpp)
@@ -209,6 +210,7 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages shellutils)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnupg)
@@ -408,6 +410,49 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
 a generic Scheme interaction mode for the GNU Emacs editor.")
     (license license:bsd-3)))
 
+(define-public emacs-geiser-chez
+  (package
+    (name "emacs-geiser-chez")
+    (version "0.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/emacs-geiser/chez")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cc1z5z5cpvxa5f3n8kvms0wxlybzcg4l1bh3rwv1l1sb0lk1xzx"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^src/" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'make-autoloads 'patch-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (string-append
+                           (elpa-directory (assoc-ref outputs "out"))
+                           "/geiser-chez-autoloads.el")
+               ;; Activating implementations fails when Geiser is not yet
+               ;; loaded, so let's defer that until it is.
+               ;; See <https://gitlab.com/emacs-geiser/chez/-/issues/7>.
+               (("\\(geiser-activate-implementation .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")"))
+               (("\\(geiser-implementation-extension .*\\)" all)
+                (string-append
+                 "(eval-after-load 'geiser-impl '" all ")"))))))))
+    (inputs
+     `(("chez-scheme" ,chez-scheme)))
+    (propagated-inputs
+     `(("emacs-geiser" ,emacs-geiser)))
+    (home-page "https://nongnu.org/geiser/")
+    (synopsis "Support for Chez Scheme in Geiser")
+    (description
+     "This package adds support for using Chez Scheme in Emacs with Geiser.")
+    (license license:bsd-3)))
+
 (define-public emacs-vc-hgcmd
   (package
     (name "emacs-vc-hgcmd")
@@ -585,13 +630,13 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public emacs-project
   (package
     (name "emacs-project")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/project-" version ".tar"))
        (sha256
-        (base32 "0m0r1xgz1ffx6mi2gjz1dkgrn89sh4y5ysi0gj6p1w05bf8p0lc0"))))
+        (base32 "174fli3swbn67qcs9isv70vwrf6r41mak6dbs98gia89rlb71c8v"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xref" ,emacs-xref)))
     (home-page "http://elpa.gnu.org/packages/project.html")
@@ -733,7 +778,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method git-fetch)
@@ -742,7 +787,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ig4yzvd9hzvajjc46wk2g4xyg1ign92wgasa4wgn4hh878i3r1y"))))
+        (base32 "179mgh8l5p7fhfmbg5rz810mhbzsxqsxd66jdb2a68vsazs1jw2m"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs-no-x             ;module support is required
@@ -2045,14 +2090,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "7.5")
+    (version "7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "0d7nsx2idzbp6d5im5rrsnwppbr2cimvxgx31bhwsm2aq3ya5v2j"))))
+        (base32 "03cp6mr0kxy41dg4ri5ymbzpkw7bd8zg7hx0a2rb4axiss5qmx7i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
@@ -2808,7 +2853,7 @@ of bibliographic references.")
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method git-fetch)
@@ -2817,7 +2862,7 @@ of bibliographic references.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1z61qrwjg1d28vhh39yrbrxsjbmnqws74bs3dwbw7d854d5wsy9q"))))
+        (base32 "0x4aa5fk1ywlfs8gvwj3v2bycyl4nx7mzz1ci37x69bdjl9wal80"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
@@ -2841,6 +2886,18 @@ overlay below or above the point.  Corfu can be considered the minimalistic
        (sha256
         (base32 "0xkqn4604k2imas6azy1www56br8ls4iv9a44pxcd8h94j1fp44d"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-in-direnv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((direnv-path (assoc-ref inputs "direnv"))
+                    (direnv-bin (string-append
+                                 "\"" direnv-path "/bin/direnv\"")))
+               (substitute* "direnv.el"
+                 (("\"direnv\"") direnv-bin))))))))
+    (inputs
+     `(("direnv" ,direnv)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("with-editor" ,emacs-with-editor)))
@@ -3687,7 +3744,7 @@ a command.")
 (define-public emacs-olivetti
   (package
     (name "emacs-olivetti")
-    (version "1.11.4")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -3696,7 +3753,7 @@ a command.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pw1zc0pdwwi9dv8fypfxgn6xbfvm88qzhss880lspialff1wcxn"))))
+        (base32 "0c0nkxik74p6s1pbf1l8pix5yy4xgnakqkwrrmf2ic1x1m4xv3hj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/olivetti")
     (synopsis "Emacs minor mode for a nice writing environment")
@@ -3949,7 +4006,7 @@ files and directories.")
 (define-public emacs-fountain-mode
   (package
     (name "emacs-fountain-mode")
-    (version "3.5.0")
+    (version "3.5.1")
     (source
      (origin
        (method git-fetch)
@@ -3958,7 +4015,7 @@ files and directories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xlg5b0sa4qbv68sza23fr5khv36860jbhzfbcqcw1d420xllryx"))))
+        (base32 "0y7dd6qq4b95scj7fay4zzhkf0g0x89npylc4v1hz59b1yyylfqy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/fountain-mode")
     (synopsis "Major mode for screenwriting in Fountain markup")
@@ -4511,15 +4568,16 @@ appropriate console.")
 (define-public emacs-znc
   (package
     (name "emacs-znc")
-    (version "0.0.2")
+    (version "0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://marmalade-repo.org/packages/znc-"
-                           version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sshirokov/ZNC.el")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1d8lqvybgyazin5z0g1c4l3rg1vzrrvf0saqs53jr1zcdg0lianh"))))
+        (base32 "1ran86ycnays9s23wk3iczqqgnpbyx0lijiarx65am3jc1yzg5ia"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/sshirokov/ZNC.el")
     (synopsis "Make ERC and ZNC get along better")
@@ -8143,7 +8201,7 @@ style, or as multiple word prefixes.")
 (define-public emacs-consult
   (package
     (name "emacs-consult")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -8151,7 +8209,7 @@ style, or as multiple word prefixes.")
              (url "https://github.com/minad/consult")
              (commit version)))
        (sha256
-        (base32 "0iy6lrqbpi4lv7141rdawpn278rxinfxspwb81n04azyxrk28vlw"))
+        (base32 "131342149xvmrcr3iwmx05id7358158i6m9an8izdpggsnwhs3i4"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -8191,7 +8249,7 @@ and present results either as single emails or full trees.")
 (define-public emacs-marginalia
   (package
     (name "emacs-marginalia")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method git-fetch)
@@ -8200,7 +8258,7 @@ and present results either as single emails or full trees.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yn6dybvsdhr37hnadmbfqi7pf7scxr9z6a6ghsqbrghycddd0mc"))))
+        (base32 "1d6xbidxcxd5gxs5cjxbx1i1wdcmgdnn3hh7fxz0sgf1gaxyp5kv"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/marginalia")
     (synopsis "Marginalia in the minibuffer completions")
@@ -10087,7 +10145,7 @@ with Elfeed.")
 (define-public emacs-elfeed-score
   (package
     (name "emacs-elfeed-score")
-    (version "0.7.9")
+    (version "0.7.10")
     (source
      (origin
        (method git-fetch)
@@ -10096,8 +10154,7 @@ with Elfeed.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17hf6b5db4d0cm1996z4sl00y4c8gl3rga97xxp2bmwbhdr7kaxw"))))
+        (base32 "15gjsp4whrdw9yx3mw1517wfynv9yya5yhalqqdb738q5c32p9lm"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elfeed" ,emacs-elfeed)))
@@ -10466,6 +10523,29 @@ names, e.g., @samp{#0000ff} is displayed in white with a blue background.")
       (description "RYO modal provides a convenient way of defining modal
 keybindings in Emacs, and does not come with any predefined bindings.")
       (license license:expat))))
+
+(define-public emacs-valign
+  (package
+    (name "emacs-valign")
+    (version "3.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/casouri/valign")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11ks6z532i7vxi6f9g32zhimvikhsqywa2bd5fnnj2ahfx3msa95"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/casouri/valign")
+    (synopsis "Pixel-perfect visual alignment for Org and Markdown tables")
+    (description
+     "Valign provides visual alignment for Org mode, Markdown and Table.el
+tables on GUI Emacs.  It can properly align tables containing variable-pitch
+font, CJK characters and images.  Meanwhile, the text-based alignment
+generated by Org mode (or Markdown mode) is left untouched.")
+    (license license:gpl3+)))
 
 (define-public emacs-visual-fill-column
   (package
@@ -11309,7 +11389,7 @@ using package inferred style.")
 (define-public emacs-lua-mode
   (package
     (name "emacs-lua-mode")
-    (version "20201010")
+    (version "20210802")
     (home-page "https://github.com/immerrr/lua-mode/")
     (source
      (origin
@@ -11319,7 +11399,7 @@ using package inferred style.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zf43f7fkrgki6pbc09zak975p4jx1yf3ipfs38hypfl9s5d6xrf"))))
+        (base32 "0r3svhggdml2n256k3b0zmbjnw51p46gan6dg07bhavpfrqs5196"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -13559,13 +13639,13 @@ containing words from the Rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "3.9.3")
+    (version "3.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/pyim-" version ".tar"))
        (sha256
-        (base32 "0rjaimvbh0fadbqiq4ggyxr0y4pfzld76wb64v7l5874qczn8dfr"))))
+        (base32 "0ggnl2jidcklyhqd5av5kk1f855gsq29wq2nhvp1yjzn35hz6xij"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -20887,28 +20967,26 @@ server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
 
 (define-public emacs-so-long
-  (let ((commit "cfae473b1bf65f78ddb015159e667ec0103d881c")
-        (revision "2"))
-    (package
-      (name "emacs-so-long")
-      (version (git-version "1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.savannah.gnu.org/git/so-long.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0g943n5cl9lz5s7hszg6yvp10xd1xvd8mfgxyg0yckmp8fqkswin"))))
-      (build-system emacs-build-system)
-      (home-page "https://www.emacswiki.org/emacs/SoLong")
-      (synopsis "Improve performance in files with long lines")
-      (description "This package improves the performance of Emacs when
+  (package
+    (name "emacs-so-long")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.savannah.gnu.org/git/so-long")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d886fgsbly7wpm6ppll45yq3y87a27wy5c6m0gqxq5jb4q0q7d2"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/SoLong")
+    (synopsis "Improve performance in files with long lines")
+    (description "This package improves the performance of Emacs when
 viewing files with long lines.  It is included as standard with Emacs 27 or
 later.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-github-review
   (let ((commit "a13a3b4f1b6114a32af843971a145ab880f51232")
@@ -25407,40 +25485,37 @@ it forcibly
       (license license:gpl3+))))
 
 (define-public emacs-elpher
-  ;; No tagged release upstream, but the commit below corresponds to the 2.10.3
-  ;; release.
-  (let ((commit "b0272de36cea3e1cd41cd15a012c8141b4b04575"))
-    (package
-      (name "emacs-elpher")
-      (version "2.10.3")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "git://thelambdalab.xyz/elpher.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1m6lq47i4j6k76f81vcch6akab9mqph7kna3fn356295fvgm7j7q"))))
-      (build-system emacs-build-system)
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'build-doc
-             (lambda _
-               (invoke "makeinfo" "elpher.texi"))))))
-      (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
-      (synopsis "Gopher and gemini client for Emacs")
-      (description "Elpher is a full-featured gopher and gemini client for
+  (package
+    (name "emacs-elpher")
+    (version "3.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://thelambdalab.xyz/elpher.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fzqm5gpadqzsl71r1bq72ki8dw8125v4nmhdd3b4rz9jy1rqm2g"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build-doc
+           (lambda _
+             (invoke "makeinfo" "elpher.texi"))))))
+    (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
+    (synopsis "Gopher and gemini client for Emacs")
+    (description "Elpher is a full-featured gopher and gemini client for
 Emacs.  Its features include intuitive keyboard and mouse-driven browsing,
 out-of-the-box compatibility with evil-mode, clickable links in plain text,
 caching of visited sites, pleasant and configurable visualization of Gopher
 directories, direct visualisation of image files, jumping directly to links by
 name (with autocompletion), a simple bookmark management system and
 connections using TLS encryption.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-zerodark-theme
   (package
@@ -25675,14 +25750,14 @@ federated microblogging social network.")
 (define-public emacs-ebdb
   (package
     (name "emacs-ebdb")
-    (version "0.7")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "ebdb-" version ".tar"))
        (sha256
-        (base32 "0q4ywgh87d6hjac3031s21w91gld2hh7s8nbva94dnzwn6y9d0v1"))))
+        (base32 "1z5lh1mib60mvs5kbdsrw2h4whz4n5ad4qkpphs2xjvaz92jgq6s"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/girzel/ebdb")
     (synopsis "EIEIO port of BBDB, Emacs's contact-management package")
@@ -28912,7 +28987,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method git-fetch)
@@ -28921,7 +28996,7 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09zrrjbfbvj5lfrgjq21nsavdm69iwdsa0a80618v7xlkfk56wf1"))))
+        (base32 "0rddk76ih44b574lsr6d6r9wa2l7c9zlb9kcyw5xvly17ciiq16h"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))

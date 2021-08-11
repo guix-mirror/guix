@@ -781,7 +781,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.1.1")
+    (version "3.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -790,7 +790,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11fy2xw35ladkjcz71samhcpqlqr3y0n1n17nk90i13aydrll66f"))))
+                "1c7yrhb56qj5c3lz54n1f9cbrvdr32g2yrrdiiy72sib8ycq9hz2"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -4752,7 +4752,7 @@ and audio capture, network stream playback, and many more.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
       (origin
         (method git-fetch)
@@ -4761,7 +4761,7 @@ and audio capture, network stream playback, and many more.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0ki3wlyaqr80gl1srbbd18dd5bs1sl9icxym8ar62abpvgzxl5yk"))))
+         (base32 "15ngaqyjbwkj0rd9mvxaqf3i9vzsnlrqgr50cnxxjqnpf7xdmslj"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

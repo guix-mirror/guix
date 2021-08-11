@@ -1253,6 +1253,45 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
      "This package provides a Python binding to LLVM for use in Numba.")
     (license license:bsd-3)))
 
+(define-public (clang-python-bindings clang)
+  "Return a package for the Python bindings of CLANG."
+  (package
+    (inherit clang)
+    (name "python-clang")
+    (build-system python-build-system)
+    (outputs '("out"))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'change-directory
+                    (lambda _
+                      (chdir "bindings/python")))
+                  (add-before 'build 'create-setup-py
+                    (lambda _
+                      ;; Generate a basic "setup.py", enough so it can be
+                      ;; built and installed.
+                      (with-output-to-file "setup.py"
+                        (lambda ()
+                          (display "from setuptools import setup
+setup(name=\"clang\", packages=[\"clang\"])\n")))))
+                  (add-before 'build 'set-libclang-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Record the absolute file name of libclang.so.
+                      (let ((clang (assoc-ref inputs "clang")))
+                        (substitute* "clang/cindex.py"
+                          (("libclang\\.so")
+                           (string-append clang "/lib/libclang.so")))))))))
+    (inputs `(("clang" ,clang)))
+    (synopsis "Python bindings to libclang")))
+
+(define-public python-clang-10
+  (clang-python-bindings clang-10))
+
+(define-public python-clang-11
+  (clang-python-bindings clang-11))
+
+(define-public python-clang-12
+  (clang-python-bindings clang-12))
+
 (define-public emacs-clang-format
   (package
     (inherit clang)

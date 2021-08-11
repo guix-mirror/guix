@@ -116,7 +116,7 @@ are useful when writing automated tests in Python.")
 (define-public python-coveralls
   (package
     (name "python-coveralls")
-    (version "3.1.0")
+    (version "3.2.0")
     (home-page "https://github.com/coveralls-clients/coveralls-python")
     (source
      (origin
@@ -126,7 +126,7 @@ are useful when writing automated tests in Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rpdv7rhs4xy6q4s63krrfhwihli9vla0qsw64vls0naail9yjn3"))))
+         "1915ab77nfb1rfw4i2ps0zy19wpf20lwxn81qxxbwyd2gy7m0fn8"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

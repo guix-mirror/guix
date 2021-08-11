@@ -90,7 +90,7 @@
 (define-public mit-scheme
   (package
     (name "mit-scheme")
-    (version "10.1.3")
+    (version "11.2")
     (source #f)                                   ; see below
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
@@ -173,11 +173,14 @@
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-tex-texinfo)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-tex-texinfo
+                                             texlive-epsf)))
        ("texinfo" ,texinfo)
+       ("ghostscript" ,ghostscript)
        ("m4" ,m4)))
     (inputs
      `(("libx11" ,libx11)
+       ("ncurses" ,ncurses)
 
        ("source"
 
@@ -193,8 +196,8 @@
                               (match (%current-system)
                                 ("x86_64-linux"
                                  (string-append version "-x86-64"))
-                                ("i686-linux"
-                                 (string-append version "-i386"))
+                                ("aarch64-linux"
+                                 (string-append version "-aarch64le"))
                                 (_
                                  (string-append "c-" version)))
                               ".tar.gz"))
@@ -202,10 +205,10 @@
            (match (%current-system)
              ("x86_64-linux"
               (base32
-               "03m7cc035w3avs91j2pcz9f15ssgvgp3rm045d1vbydqrkzfyw8k"))
-             ("i686-linux"
+               "17822hs9y07vcviv2af17p3va7qh79dird49nj50bwi9rz64ia3w"))
+             ("aarch64-linux"
               (base32
-               "05sjyz90xxfnmi87qv8x0yx0fcallnzl1dciygdafp317pn489is"))
+               "11maixldk20wqb5js5p4imq221zz9nf27649v9pqkdf8fv7rnrs9"))
              (_
               (base32
                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))))))))

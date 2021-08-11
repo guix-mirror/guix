@@ -947,14 +947,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "5.3.2")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "0dhlq25lig8wmn72ambfmb1njwwp980d98i9q7a24d79bxyl8vwb"))))
+                "0pl1l167fqb1lgmrmkx8i140l41wgnfwr6h3awxv4cw4p5qzcjjk"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments

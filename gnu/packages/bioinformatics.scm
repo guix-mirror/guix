@@ -10380,7 +10380,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.17")
+    (version "0.0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -10388,7 +10388,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0k9zj50bij3sjwq08v8l8waddcx8k66m3vdq8mx5vc23p19qz42s"))))
+                "1622l6grmsk0wm859rvllngx29q3v16jjvzcdq2bmrlamccrj82y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -10671,7 +10671,7 @@ based methods.")
 (define-public pigx-sars-cov2-ww
   (package
     (name "pigx-sars-cov2-ww")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_sarscov2_ww/"
@@ -10679,7 +10679,7 @@ based methods.")
                                   "/pigx_sars-cov2-ww-" version ".tar.gz"))
               (sha256
                (base32
-                "0yrbza7lbzijjc8ifk06b646n959a4k7id94x3ndz795892f64l0"))))
+                "1hhdbwsnl0d37lrmisw5hr630xr8s41qvxflm05anh11rj8n22yw"))))
     (build-system gnu-build-system)
     (inputs
      `(("bash-minimal" ,bash-minimal)
@@ -14735,3 +14735,75 @@ ploidy and allele-specific copy number profiles.")
 copy number estimation, as described by
 @url{doi:10.1016/j.cell.2012.04.023,Nik-Zainal et al.}")
    (license license:gpl3)))
+
+(define-public r-spectre
+  (let ((commit "f6648ab3eb9499300d86502b5d60ec370ae9b61a")
+        (revision "1"))
+    (package
+      (name "r-spectre")
+      (version (git-version "0.5.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ImmuneDynamics/Spectre")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0g38grrhbqqa4bmcilvdyawbkcnax6k4vffx2giywp18mbirmj0x"))))
+      (properties `((upstream-name . "Spectre")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-biobase" ,r-biobase)
+         ("r-biocmanager" ,r-biocmanager)
+         ("r-caret" ,r-caret)
+         ("r-class" ,r-class)
+         ("r-colorramps" ,r-colorramps)
+         ("r-data-table" ,r-data-table)
+         ("r-devtools" ,r-devtools)
+         ("r-dplyr" ,r-dplyr)
+         ("r-exactextractr" ,r-exactextractr)
+         ("r-factoextra" ,r-factoextra)
+         ("r-flowcore" ,r-flowcore)
+         ("r-flowsom" ,r-flowsom)
+         ("r-flowviz" ,r-flowviz)
+         ("r-fnn" ,r-fnn)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-ggpointdensity" ,r-ggpointdensity)
+         ("r-ggpubr" ,r-ggpubr)
+         ("r-ggraph" ,r-ggraph)
+         ("r-ggthemes" ,r-ggthemes)
+         ("r-gridextra" ,r-gridextra)
+         ("r-gridextra" ,r-gridextra)
+         ("r-gtools" ,r-gtools)
+         ("r-hdf5array" ,r-hdf5array)
+         ("r-irlba" ,r-irlba)
+         ("r-pheatmap" ,r-pheatmap)
+         ("r-plyr" ,r-plyr)
+         ("r-qs" ,r-qs)
+         ("r-raster" ,r-raster)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-rgeos" ,r-rgeos)
+         ("r-rhdf5" ,r-rhdf5)
+         ("r-rstudioapi" ,r-rstudioapi)
+         ("r-rsvd" ,r-rsvd)
+         ("r-rtsne" ,r-rtsne)
+         ("r-s2" ,r-s2)
+         ("r-scales" ,r-scales)
+         ("r-sf" ,r-sf)
+         ("r-sp" ,r-sp)
+         ("r-stars" ,r-stars)
+         ("r-stringr" ,r-stringr)
+         ("r-tidygraph" ,r-tidygraph)
+         ("r-tidyr" ,r-tidyr)
+         ("r-tidyr" ,r-tidyr)
+         ("r-tiff" ,r-tiff)
+         ("r-umap" ,r-umap)))
+      (home-page "https://github.com/ImmuneDynamics/Spectre")
+      (synopsis "High-dimensional cytometry and imaging analysis")
+      (description
+       "This package provides a computational toolkit in R for the
+integration, exploration, and analysis of high-dimensional single-cell
+cytometry and imaging data.")
+      (license license:expat))))

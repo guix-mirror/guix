@@ -32,7 +32,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages certs)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
@@ -273,7 +272,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 (define-public julia
   (package
     (name "julia")
-    (version "1.6.1")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -281,7 +280,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "1mfzbjyqcmx7wb1sa7qab5fl78yzd7ap088krqbphbwvpn880srn"))
+                "0plbj4laifzz8ppk889iv3gaxj1mdddzv7yad6ghml6bfnn24r6m"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
@@ -341,6 +340,26 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (("\\$\\$\\(build_depsbindir\\)/libwhich")
                 (search-input-file inputs "/bin/libwhich")))
              #t))
+         (add-after 'unpack 'change-number-of-precompile-statements
+           (lambda _
+             ;; Remove nss-certs drops the number of statements below 1200,
+             ;; causing the build to fail prematurely.
+             (substitute* "contrib/generate_precompile.jl"
+               (("1200") "1100"))
+             #t))
+         ;; For some reason libquadmath is unavailable on this architecture.
+         ;; https://github.com/JuliaLang/julia/issues/41613
+         ,@(if (target-aarch64?)
+             '((add-after 'unpack 'drop-libquadmath-on-aarch64
+                 (lambda _
+                   (substitute* '("contrib/fixup-libgfortran.sh"
+                                  "deps/csl.mk"
+                                  "base/Makefile")
+                     ((".*libquadmath.*") ""))
+                   (substitute* "Makefile"
+                     (("libquadmath ") ""))
+                   #t)))
+             '())
          (add-before 'check 'set-home
            ;; Some tests require a home directory to be set.
            (lambda _ (setenv "HOME" "/tmp") #t))
@@ -484,9 +503,6 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                 "@test_broken ispath(ca_roots_path())")
                (("@test ca_roots_path\\(\\) \\!= bundled_ca_roots\\(\\)")
                 "@test_broken ca_roots_path() != bundled_ca_roots()"))
-             ;; Some digraphs are too wide for some terminals during testing.
-             (substitute* "stdlib/Unicode/test/runtests.jl"
-               (("test collect\\(graphemes") "test_broken collect(grapemes"))
              ;; WARNING: failed to select UTF-8 encoding, using ASCII
              ;; Using 'setlocale' doesn't affect the test failures.
              ;(setlocale LC_ALL "en_US.utf8")
@@ -644,8 +660,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
        ("dsfmt" ,dsfmt)
        ("libwhich" ,libwhich)))
     (native-inputs
-     `(("nss-certs" ,nss-certs)
-       ("openssl" ,openssl)
+     `(("openssl" ,openssl)
        ("perl" ,perl)
        ("patchelf" ,patchelf)
        ("pkg-config" ,pkg-config)

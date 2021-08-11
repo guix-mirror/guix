@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -141,13 +141,19 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
      (let* ((opts         (parse-args args))
             (channels     (channel-list opts))
             (command-line (assoc-ref opts 'exec))
+            (substitutes?  (assoc-ref opts 'substitutes?))
             (authenticate? (assoc-ref opts 'authenticate-channels?)))
        (when command-line
          (let* ((directory
                  (with-store store
                    (with-status-verbosity (assoc-ref opts 'verbosity)
-                     (set-build-options-from-command-line store opts)
-                     (cached-channel-instance store channels
-                                              #:authenticate? authenticate?))))
+                     (with-build-handler (build-notifier #:use-substitutes?
+                                                         substitutes?
+                                                         #:verbosity
+                                                         (assoc-ref opts 'verbosity)
+                                                         #:dry-run? #f)
+                       (set-build-options-from-command-line store opts)
+                       (cached-channel-instance store channels
+                                                #:authenticate? authenticate?)))))
                 (executable (string-append directory "/bin/guix")))
            (apply execl (cons* executable executable command-line))))))))

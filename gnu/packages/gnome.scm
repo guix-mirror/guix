@@ -11950,7 +11950,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.29.2")
+    (version "0.30.0")
     (source
      (origin
        (method git-fetch)
@@ -11960,7 +11960,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0g1whk0y3k1cy6ix20gz226ww1vzpb9hinn5d24z6j38mdgqqa5l"))))
+         "1l6iqxa497fisn64mn2qgia4y6zryfa5pbnd8609flfi9qmgrzn7"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11998,6 +11998,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        ("python-keyring" ,python-keyring)
        ("python-lxml" ,python-lxml)
        ("python-magic" ,python-magic)
+       ("python-natsort" ,python-natsort)
        ("python-pillow" ,python-pillow)
        ("python-pure-protobuf" ,python-pure-protobuf)
        ("python-pycairo" ,python-pycairo)

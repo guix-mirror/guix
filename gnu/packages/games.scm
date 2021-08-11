@@ -63,6 +63,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -551,6 +552,47 @@ Instead, it uses a special algorithm to choose the worst brick possible.
 Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
+
+(define-public tetrinet
+  (package
+    (name "tetrinet")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://tetrinet.or.cz/download/tetrinet-" version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "0b4pddqz6is1771qmvcj8qqlr4in2djdbkk13agvp9yhfah2v8x7"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'fix-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (substitute* "Makefile"
+                 (("/usr/games") (string-append out "/bin"))))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (file)
+                           (install-file file doc))
+                         (list "README" "tetrinet.txt"))))))))
+    (home-page "http://tetrinet.or.cz")
+    (synopsis "Terminal-based multiplayer Tetris clone")
+    (description "Tetrinet is a multiplayer Tetris-like game with powerups and
+attacks you can use on opponents.")
+    (license license:public-domain)))
 
 (define-public vitetris
   (package
@@ -6530,14 +6572,14 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.26.1")
+    (version "0.27.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/crawl/crawl/releases/download/"
                            version "/stone_soup-" version "-nodeps.tar.xz"))
        (sha256
-        (base32 "1d8p2np2q5951wqphq2f4dyvv976m2lh82b0qp7w9pp1h8zzi1ff"))
+        (base32 "0hzkzpqmydxm1zjkdm7k4w3hldsqin3pwkj7jmfj4jijkr0zg9nq"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -6917,7 +6959,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.7.3")
+    (version "1.7.4")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6925,7 +6967,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1rik17r01glq3944sdb06xjf0xppgqkjk564wrh22slm4mi3fifz"))
+        (base32 "197jmd99l3w3sig32pvdlq9fcgdjjx7g9csy08kz174cyhrlyly3"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6934,8 +6976,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
               (string-append
                line " || defined(__GNUC__)")))
            (substitute* '("src/tgl.h")
-             (("#include <GL/glext.h>") ""))
-           #t))))
+             (("#include <GL/glext.h>") ""))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -6958,8 +6999,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                   (delete 'bootstrap)
                   (replace 'configure
                     (lambda _
-                      (invoke "premake4" "gmake")
-                      #t))
+                      (invoke "premake4" "gmake")))
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
@@ -7024,8 +7064,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                          #:comment ,synopsis
                          #:exec ,name
                          #:icon icon
-                         #:categories '("Game" "RolePlaying")))
-                      #t)))))
+                         #:categories '("Game" "RolePlaying"))))))))
     (home-page "https://te4.org")
     (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
 combat and advanced character building.  Play as one of many unique races and
@@ -7152,15 +7191,26 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
      `(#:tests? #f
        #:make-flags
        (list "CC=gcc"
-             ;; link openAL instead of using dlopen at runtime
-             "DLOPEN_OPENAL=\"no\""
-             ;; an optional directory where it will look for quake2 data files
-             ;; in addition to the current working directory
+             ;; An optional directory where it will look for quake2 data files
+             ;; in addition to the current working directory.
              "WITH_SYSTEMWIDE=yes"
              "WITH_SYSTEMDIR=\"/opt/quake2\"")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'patch-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The game writes paths to openal.so and curl.so to ~/.yq2/...
+             ;; Workaround: hard-code the compiled paths where it loads them;
+             ;; this prevents loading old or garbage collected libraries.
+             (substitute* "src/client/sound/qal.c"
+               (("al_driver->string")
+                (string-append "\"" (assoc-ref inputs "openal")
+                               "/lib/libopenal.so\"")))
+             (substitute* "src/client/curl/qcurl.c"
+               (("cl_libcurl->string")
+                (string-append "\"" (assoc-ref inputs "curl")
+                               "/lib/libcurl.so\"")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -8332,38 +8382,33 @@ your score gets higher, you level up and the blocks fall faster.")
 (define-public endless-sky
   (package
     (name "endless-sky")
-    (version "0.9.12")
+    (version "0.9.14")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/endless-sky/endless-sky")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "18nkl4s3r5sy3sd9lhbdg9160c7fggklklprx0d5azifc8g6k0wj"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/endless-sky/endless-sky")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12iganf8dxiyrjznnabsarxjsr0h717j3k4mz15p0k67wxyahhmf"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
        #:scons-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-resource-locations
+         (add-after 'unpack 'fix-paths
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Look for resources in the store directory.
              (substitute* "source/Files.cpp"
-               (("/usr/local/")
-                (string-append (assoc-ref outputs "out") "/")))
-             #t))
-         (add-after 'unpack 'patch-scons
-           (lambda _
+               (("/usr/local") (assoc-ref outputs "out")))
+             ;; Install game binary into %out/bin.
              (substitute* "SConstruct"
-               ;; Keep environmental variables
-               (("Environment\\(\\)")
-                "Environment(ENV = os.environ)")
-               ;; Install into %out/bin
-               (("games\"") "bin\""))
-             #t)))))
+               (("games\"") "bin\""))))
+         (add-before 'build 'use-gcc-ar
+           ;; Use gcc-ar to support LTO.
+           (lambda _ (setenv "AR" "gcc-ar"))))))
     (inputs
      `(("glew" ,glew)
        ("libjpeg" ,libjpeg-turbo)
@@ -8995,7 +9040,7 @@ fight each other on an arena-like map.")
 (define-public flare-engine
   (package
     (name "flare-engine")
-    (version "1.11")
+    (version "1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9004,7 +9049,7 @@ fight each other on an arena-like map.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mqr1s72p5bdh4kq2a8hg72dk8lwnddicjnd2cdp1sbfa9lmjym8"))))
+                "0h4xxj6r194pw68m3ngrnzkh6xgiblyrsc54z8abwba8m0mqbvmk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -9023,7 +9068,7 @@ action RPGs.")
 (define-public flare-game
   (package
     (name "flare-game")
-    (version "1.11")
+    (version "1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9032,7 +9077,7 @@ action RPGs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bd5g7sd89a9176ilr408hdqzdfv4j7wj0idd685c1n6s01c3h6p"))))
+                "0h9i128kq6disppbrplkf13zdmsg4cq23nim53mgwpawc4mqz7ga"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -11996,7 +12041,7 @@ etc.  You can also play games on FICS or against an engine.")
                                            ,(match (%current-system)
                                               ("x86_64-linux" "x86-64")
                                               ("i686-linux" "x86-32")
-                                              ("aarch64-linux" "general-64")
+                                              ("aarch64-linux" "armv8")
                                               ("armhf-linux" "armv7")
                                               ("mips64el-linux" "general-64")
                                               (_ "general-32"))))

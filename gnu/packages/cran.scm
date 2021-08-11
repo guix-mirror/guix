@@ -591,14 +591,14 @@ variables.")
 (define-public r-ggpp
   (package
     (name "r-ggpp")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpp" version))
        (sha256
         (base32
-         "17j8b46vn0kdpm7x6xyfqzz3la8mwzhjql6dbgyvqnrylbx4svyl"))))
+         "0m2wq9kqlxqxlzyx9fd0c4iw6qb7kpjrq7fqqa2kvwyj79vx6ahj"))))
     (properties `((upstream-name . "ggpp")))
     (build-system r-build-system)
     (propagated-inputs
@@ -638,21 +638,19 @@ variables.")
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggpmisc" version))
               (sha256
                (base32
-                "1vfzhpd4bqskq1sxh60dkab02m51g0dhj9i8mfqqbakhmkqggxa3"))))
+                "0ma0xcwjgj0sp9483s2y62ylv992dqjxqfgb3zl8f1pksypqdbac"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-generics" ,r-generics)
-       ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggpp" ,r-ggpp)
-       ("r-gridextra" ,r-gridextra)
        ("r-lubridate" ,r-lubridate)
        ("r-mass" ,r-mass)
        ("r-plyr" ,r-plyr)
@@ -661,10 +659,7 @@ variables.")
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-splus2r" ,r-splus2r)
-       ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-xts" ,r-xts)
-       ("r-zoo" ,r-zoo)))
+       ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://www.r4photobiology.info/")
@@ -2774,20 +2769,18 @@ including functions for geolocation and routing.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "2.4.1")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "1san6dc7kg2wy6f1jr5p1br28zdrand8wwgg7p6xxnx45h773320"))
+         "0pr9jcdk1r9pi9iz0xm1g5yy5qyjk5r7hh9467abx4kpwx3hzdwm"))
        (modules '((guix build utils)))
        (snippet
-        '(begin
-            ;; unvendor readstat
-           (delete-file-recursively "src/readstat")
-           #t))))
+        ;; unvendor readstat
+        '(delete-file-recursively "src/readstat"))))
     (build-system r-build-system)
     (arguments
      '(#:phases
@@ -2796,8 +2789,7 @@ including functions for geolocation and routing.")
            (lambda _
              ;; Not required, since we’re not building readstat.
              (substitute* "src/Makevars"
-               (("-lz") "-lreadstat"))
-             #t)))))
+               (("-lz") "-lreadstat")))))))
     (inputs
      `(("readstat" ,readstat)))
     (native-inputs
@@ -2812,10 +2804,10 @@ including functions for geolocation and routing.")
        ("r-tidyselect" ,r-tidyselect)
        ("r-vctrs" ,r-vctrs)))
     (home-page "https://haven.tidyverse.org")
-    (synopsis "Import and Export 'SPSS', 'Stata' and 'SAS' Files")
+    (synopsis "Import and export SPSS, Stata and SAS files")
     (description
-     "This package lets you mport foreign statistical formats into R via the
-embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
+     "This package lets you import foreign statistical formats into R via the
+@url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
     (license license:expat)))
 
 (define-public r-amap
@@ -8427,14 +8419,14 @@ hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
 (define-public r-rbibutils
   (package
     (name "r-rbibutils")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rbibutils" version))
        (sha256
         (base32
-         "16z79rvxkgdg0xq21f5aykikg6vjaiw1p9j9q42k2bz8qdswfd3b"))))
+         "0ks43z6vvdz0d0jv5d2qrm12yb4cwvi7p3kjk6byi4farhh368di"))))
     (properties `((upstream-name . "rbibutils")))
     (build-system r-build-system)
     (home-page "https://geobosh.github.io/rbibutils/")
@@ -10296,24 +10288,24 @@ analysis.")
 (define-public r-tab
   (package
     (name "r-tab")
-    (version "4.1.1")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tab" version))
        (sha256
         (base32
-         "0ds8n6gncidb66in7hlqkcmil5yfsf7ihqvmls789hrm2iz9xlfm"))))
+         "1kg8c1safi9klkx2mdkmsf5dn9piy4jljwd4ma7g4jz2rwl4jzhv"))))
     (properties `((upstream-name . "tab")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-gee" ,r-gee)
+       ("r-kableextra" ,r-kableextra)
        ("r-knitr" ,r-knitr)
        ("r-mass" ,r-mass)
-       ("r-survey" ,r-survey)
-       ("r-survival" ,r-survival)
-       ("r-xtable" ,r-xtable)))
+       ("r-survey" ,r-survey)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/tab/")
     (synopsis "Create summary tables for statistical reports")
     (description
@@ -11723,14 +11715,14 @@ address a bug.")
 (define-public r-rcppannoy
   (package
     (name "r-rcppannoy")
-    (version "0.0.18")
+    (version "0.0.19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppAnnoy" version))
        (sha256
         (base32
-         "0n68cf77gz34iq6w6ad87pbqwqam45nxp1gjzns4g6qhf7qdvrz4"))))
+         "12k8ny981dmky5js8yl6bih5r5mq3w43f2f9admhkwqn0n80kcl9"))))
     (properties `((upstream-name . "RcppAnnoy")))
     (build-system r-build-system)
     (propagated-inputs
@@ -16990,14 +16982,14 @@ package.")
 (define-public r-ggplotify
   (package
     (name "r-ggplotify")
-    (version "0.0.7")
+    (version "0.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplotify" version))
        (sha256
         (base32
-         "1vx2fg91ivssrxr4kzs9737hr8bsfs0q5pvd7lck7ffjpkjbclhh"))))
+         "08c9vxm8pg6l5g3r7wsfgzsq00xdrc6v4xnn7pd3qcyw7cc8s969"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -21003,14 +20995,14 @@ provided as well.")
 (define-public r-tuner
   (package
     (name "r-tuner")
-    (version "1.3.3")
+    (version "1.3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tuneR" version))
        (sha256
         (base32
-         "0av978m4h2iqazyfq6n2cgkh4wpllihh7s29lah2nb8ngc0w5hxx"))))
+         "12nixpqrc5gp7p2clr7ia6jwb0jq2i3brlxiwlp00ixmnm5g1jyd"))))
     (properties `((upstream-name . "tuneR")))
     (build-system r-build-system)
     (propagated-inputs `(("r-signal" ,r-signal)))
@@ -25815,14 +25807,14 @@ simple interface for all functions.")
 (define-public r-iml
   (package
     (name "r-iml")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "iml" version))
        (sha256
         (base32
-         "0xm3q42qahq798ilgg050df0mahhbdfd3fx3i7cpx606h38si0x7"))))
+         "1wz6xqhvqkzj723nw7qrlwb1171wvvpxhv3pa8cq7vcbkiflq37r"))))
     (properties `((upstream-name . "iml")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25832,7 +25824,7 @@ simple interface for all functions.")
        ("r-future" ,r-future)
        ("r-future-apply" ,r-future-apply)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)
+       ("r-keras" ,r-keras)
        ("r-metrics" ,r-metrics)
        ("r-prediction" ,r-prediction)
        ("r-r6" ,r-r6)))
@@ -27716,16 +27708,18 @@ data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
 (define-public r-maldiquant
   (package
     (name "r-maldiquant")
-    (version "1.19.3")
+    (version "1.20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MALDIquant" version))
        (sha256
         (base32
-         "0b7kdz3x4sdq413h1q09l1qhcvdnnwv6fqsqwllks1cd3xy34c57"))))
+         "1h9i158czlzwbn5zakkqd2ggc9g90r73vdspmp6kgfcmy9frvwzz"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/MALDIquant")
     (synopsis "Quantitative analysis of mass spectrometry data")
     (description
@@ -29957,3 +29951,231 @@ applications.  The OpenCPU server runs either as a single-user development
 server within the interactive R session, or as a multi-user stack based on
 Apache2.")
     (license license:asl2.0)))
+
+(define-public r-exactextractr
+  (package
+    (name "r-exactextractr")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "exactextractr" version))
+       (sha256
+        (base32
+         "1xnccadbj03h7m81ix5qn0hx918xc9hbxnzgv5lr3hf8b26i9wni"))))
+    (properties `((upstream-name . "exactextractr")))
+    (build-system r-build-system)
+    (inputs `(("geos" ,geos)))
+    (propagated-inputs
+     `(("r-raster" ,r-raster)
+       ("r-rcpp" ,r-rcpp)
+       ("r-sf" ,r-sf)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://isciences.gitlab.io/exactextractr/")
+    (synopsis "Fast extraction from raster datasets using polygons")
+    (description
+     "This package provides a replacement for the @code{extract} function from
+the @code{raster} package that is suitable for extracting raster values using
+@code{sf} polygons.")
+    (license license:asl2.0)))
+
+(define-public r-stringfish
+  (package
+    (name "r-stringfish")
+    (version "0.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stringfish" version))
+       (sha256
+        (base32
+         "0m8485p1gb5z2n2g5nyr38zixw4iv8xxm7bxspxlxvx6alhn03pn"))))
+    (properties `((upstream-name . "stringfish")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/traversc/stringfish")
+    (synopsis "Alternative string implementation")
+    (description
+     "This package provides an extendable, performant and multithreaded
+@code{alt-string} implementation backed by C++ vectors and strings.")
+    (license license:gpl3)))
+
+(define-public r-rapiserialize
+  (package
+    (name "r-rapiserialize")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RApiSerialize" version))
+       (sha256
+        (base32
+         "0gm2j8kh40imhncwwx1sx9kmraaxcxycvgwls53lcyy2ap344k9j"))))
+    (properties `((upstream-name . "RApiSerialize")))
+    (build-system r-build-system)
+    (home-page
+     "https://cran.r-project.org/package=RApiSerialize")
+    (synopsis "R API serialization")
+    (description
+     "This package provides other packages with access to the internal R
+serialization code.  Access to this code is provided at the C function level
+by using the registration of native function mechanism.  Client packages
+simply include a single header file RApiSerializeAPI.h provided by this
+package.")
+    (license license:gpl2+)))
+
+(define-public r-qs
+  (package
+    (name "r-qs")
+    (version "0.25.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qs" version))
+       (sha256
+        (base32
+         "0qzrhc5jsygj813k956b00h4b6haynz44rk6a4v34fv4ywq9ba7w"))))
+    (properties `((upstream-name . "qs")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-rapiserialize" ,r-rapiserialize)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringfish" ,r-stringfish)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/traversc/qs")
+    (synopsis "Quick serialization of R objects")
+    (description
+     "This package provides functions for quickly writing and reading any R
+object to and from disk.")
+    (license license:gpl3)))
+
+(define-public r-rgeos
+  (package
+    (name "r-rgeos")
+    (version "0.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rgeos" version))
+       (sha256
+        (base32
+         "086l0qk3p4jq23bs91c4a65x4qz99z0hy0vsnvfqfvppdzz0vajb"))))
+    (properties `((upstream-name . "rgeos")))
+    (build-system r-build-system)
+    (inputs
+     `(("geos" ,geos)))
+    (propagated-inputs
+     `(("r-sp" ,r-sp)))
+    (home-page "https://cran.r-project.org/package=rgeos")
+    (synopsis "Interface to Geometry Engine (GEOS)")
+    (description
+     "This package provides an R interface to Geometry Engine (GEOS) using the
+C API for topology operations on geometries.")
+    (license license:gpl2+)))
+
+(define-public r-tfruns
+  (package
+    (name "r-tfruns")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tfruns" version))
+       (sha256
+        (base32
+         "04lfckg1if3kfwcl4s4fcc9aw04crwk4m1qr55ag22j2x2jlb2l9"))))
+    (properties `((upstream-name . "tfruns")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-config" ,r-config)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rlang" ,r-rlang)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-whisker" ,r-whisker)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/rstudio/tfruns")
+    (synopsis "Training run tools for TensorFlow")
+    (description
+     "Create and manage unique directories for each TensorFlow training run.
+This package provides a unique, time stamped directory for each run along with
+functions to retrieve the directory of the latest run or latest several
+runs.")
+    (license license:asl2.0)))
+
+(define-public r-tensorflow
+  (package
+    (name "r-tensorflow")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tensorflow" version))
+       (sha256
+        (base32
+         "00g9w4xmdyjl4578kmhng58k7afjkj2vwgcq2ik8rqwljkcz5pph"))))
+    (properties `((upstream-name . "tensorflow")))
+    (build-system r-build-system)
+    (inputs `(("tensorflow" ,tensorflow)))
+    (propagated-inputs
+     `(("r-config" ,r-config)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-processx" ,r-processx)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-tfruns" ,r-tfruns)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/rstudio/tensorflow")
+    (synopsis "R interface to TensorFlow")
+    (description
+     "R interface to TensorFlow a library for numerical computation using data
+flow graphs.  Nodes in the graph represent mathematical operations, while the
+graph edges represent the multidimensional data arrays (tensors) communicated
+between them.")
+    (license license:asl2.0)))
+
+(define-public r-keras
+  (package
+    (name "r-keras")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "keras" version))
+       (sha256
+        (base32
+         "00bw5f5d81md8db1k6bf2a91by4k25xvlwxiwv188y4vw3bfc7md"))))
+    (properties `((upstream-name . "keras")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-generics" ,r-generics)
+       ("r-magrittr" ,r-magrittr)
+       ("r-r6" ,r-r6)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rlang" ,r-rlang)
+       ("r-tensorflow" ,r-tensorflow)
+       ("r-tfruns" ,r-tfruns)
+       ("r-zeallot" ,r-zeallot)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://keras.rstudio.com")
+    (synopsis "R Interface to 'Keras'")
+    (description
+     "This package provides an interface to Keras, a high-level neural
+networks API.  Keras was developed with a focus on enabling fast
+experimentation, supports both convolution based networks and recurrent
+networks (as well as combinations of the two), and runs seamlessly on both CPU
+and GPU devices.")
+    (license license:expat)))

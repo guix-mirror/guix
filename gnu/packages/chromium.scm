@@ -58,8 +58,6 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-web)
-  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
@@ -111,7 +109,10 @@
     "third_party/catapult" ;BSD-3
     "third_party/catapult/common/py_vulcanize/third_party/rcssmin" ;ASL2.0
     "third_party/catapult/common/py_vulcanize/third_party/rjsmin" ;ASL2.0
+    "third_party/catapult/third_party/beautifulsoup4" ;Expat
+    "third_party/catapult/third_party/html5lib-python" ;Expat
     "third_party/catapult/third_party/polymer" ;BSD-3
+    "third_party/catapult/third_party/six" ;Expat
     ;; XXX: This is a minified version of <https://d3js.org/>.
     "third_party/catapult/tracing/third_party/d3" ;BSD-3
     "third_party/catapult/tracing/third_party/gl-matrix" ;Expat
@@ -138,7 +139,7 @@
     "third_party/devtools-frontend/src/front_end/third_party/axe-core" ;MPL2.0
     "third_party/devtools-frontend/src/front_end/third_party/chromium" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/codemirror" ;Expat
-    "third_party/devtools-frontend/src/front_end/third_party/fabricjs" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/diff" ;ASL2.0
     "third_party/devtools-frontend/src/front_end/third_party/i18n" ;ASL2.0
     "third_party/devtools-frontend/src/front_end/third_party/intl-messageformat" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/lighthouse" ;ASL2.0
@@ -299,6 +300,7 @@
 
     "third_party/zlib/google" ;BSD-3
     "third_party/zxcvbn-cpp" ;Expat
+    "tools/grit/third_party/six" ;Expat
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
     "v8/src/third_party/siphash" ;Public domain
     "v8/src/third_party/utf8-decoder" ;Expat
@@ -322,11 +324,11 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "91.0.4472.164")
+(define %chromium-version "92.0.4515.131")
 (define %debian-revision "debian/90.0.4430.85-1")
 ;; Note: use 'git describe --long' even for exact tags to placate the
 ;; custom version format for ungoogled-chromium.
-(define %ungoogled-revision "91.0.4472.114-1-0-ga9eb6fd")
+(define %ungoogled-revision "92.0.4515.131-1-0-g4a9534c")
 
 (define %debian-patches
   (list (debian-patch "fixes/nomerge.patch"
@@ -346,7 +348,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "1xb5g3hybaiwn3y1zw1fxd3g0zwmvplrs06sdqnxzsr1qm8b874h"))))
+      "1nbgknj5ba116y47sxbp7pbma1bp0lmkyi3vk915x837ysaf6mrd"))))
 
 (define %guix-patches
   (list (local-file
@@ -401,11 +403,6 @@
 
           (format #t "Replacing GN files...~%")
           (force-output)
-          ;; XXX: Chromium no longer relies on overriding ICU's UCHAR_TYPE,
-          ;; but the unbundling code was not updated.  Remove for M92.
-          (substitute* "build/linux/unbundle/icu.gn"
-            (("\"UCHAR_TYPE=uint16_t\",")
-             ""))
           (substitute* "tools/generate_shim_headers/generate_shim_headers.py"
             ;; The "is_official_build" configure option enables certain
             ;; release optimizations like those used in the commercial
@@ -417,8 +414,7 @@
                   "--system-libraries" "ffmpeg" "flac" "fontconfig"
                   "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
                   "libjpeg" "libpng" "libwebp" "libxml" "libxslt"
-                  "openh264" "opus" "snappy" "zlib")
-          #t))))
+                  "openh264" "opus" "snappy" "zlib")))))
 
 (define opus+custom
   (package/inherit opus
@@ -488,7 +484,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1g96hk72ds2b0aymgw7yjr0akgx7mkp17i99nk511ncnmni6zrc4"))
+                "0fnfyh61w6dmavvfbf2x1zzrby0xpx4jd4ifjsgyc39rsl789b5n"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -654,9 +650,7 @@
                (("third_party/vulkan_headers/include/") ""))
 
              (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
-               (("include/third_party/vulkan/") ""))
-
-             #t))
+               (("include/third_party/vulkan/") ""))))
          (add-after 'patch-stuff 'add-absolute-references
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((cups (assoc-ref inputs "cups"))
@@ -684,8 +678,7 @@
                  (("libEGL\\.so\\.1")
                   (string-append mesa "/lib/libEGL.so.1"))
                  (("libGLESv2\\.so\\.2")
-                  (string-append mesa "/lib/libGLESv2.so.2")))
-               #t)))
+                  (string-append mesa "/lib/libGLESv2.so.2"))))))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
 
@@ -722,9 +715,7 @@
              ;; XXX: How portable is this.
              (mkdir-p "third_party/node/linux/node-linux-x64")
              (symlink (string-append (assoc-ref inputs "node") "/bin")
-                      "third_party/node/linux/node-linux-x64/bin")
-
-             #t))
+                      "third_party/node/linux/node-linux-x64/bin")))
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (let ((args (string-join configure-flags " ")))
@@ -752,8 +743,7 @@
                        (setrlimit 'nofile 2048 #f))
                    (format #t
                            "increased maximum number of open files from ~d to ~d~%"
-                           soft (if hard (min hard 2048) 2048)))))
-             #t))
+                           soft (if hard (min hard 2048) 2048)))))))
          (replace 'build
            (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
              (invoke "ninja" "-C" "out/Release"
@@ -830,8 +820,7 @@
                       (mkdir-p icons)
                       (copy-file (string-append "product_logo_" size ".png")
                                  (string-append icons "/chromium.png"))))
-                  '("24" "48" "64" "128" "256")))
-               #t))))))
+                  '("24" "48" "64" "128" "256")))))))))
     (native-inputs
      `(("bison" ,bison)
        ("clang" ,clang-11)
@@ -842,13 +831,14 @@
        ("node" ,node)
        ("pkg-config" ,pkg-config)
        ("which" ,which)
-
        ;; This file contains defaults for new user profiles.
        ("master-preferences" ,(local-file "aux-files/chromium/master-preferences.json"))
 
-       ("python-beautifulsoup4" ,python2-beautifulsoup4)
-       ("python-html5lib" ,python2-html5lib)
-       ("python" ,python-2)
+       ;; Try unbundling these when upstream has completed its Python 3 transition.
+       ;; ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ;; ("python-html5lib" ,python-html5lib)
+       ("python2" ,python-2)
+       ("python" ,python-wrapper)
        ("wayland-scanner" ,wayland)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -888,6 +878,9 @@
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxslt" ,libxslt)
        ("libxtst" ,libxtst)
+       ;; Newer kernel headers are required for userfaultfd support; remove
+       ;; after 'core-updates' merge.
+       ("linux-libre-headers" ,linux-libre-headers-5.10)
        ("mesa" ,mesa)
        ("minizip" ,minizip)
        ("mit-krb5" ,mit-krb5)

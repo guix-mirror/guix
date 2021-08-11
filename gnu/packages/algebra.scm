@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -343,7 +343,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.7.0-23")
+    (version "1.7.0-25")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "06dv46y4lh8f9pzj7vcimdl2rp1kk5d16q94zq0iajzzcwppqdz1"))))
+        (base32 "0d11shsifnd5p23iym5h0kqa7bp7p0p25rwvya7hdji2kwvgr3cl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -1070,6 +1070,33 @@ features, and more.")
                       (("add_subdirectory\\(test.*")
                        "# Do not build the tests for unsupported features.\n"))
                     #t)))))))
+
+(define-public eigen-for-tensorflow-lite
+  ;; This commit was taken from
+  ;; tensorflow/lite/tools/cmake/modules/eigen.cmake
+  (let ((commit "d10b27fe37736d2944630ecd7557cefa95cf87c9")
+        (revision "1"))
+    (package (inherit eigen)
+      (name "eigen-for-tensorflow-lite")
+      (version (git-version "3.3.7" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/libeigen/eigen")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0v8a20cwvwmp3hw4275b37frw33v92z0mr8f4dn6y8k0rz92hrrf"))
+                (file-name (git-file-name name version))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; Ther are test failures in the "unsupported" directory, but
+                 ;; maintainers say it's unsupported anyway, so just skip
+                 ;; them.
+                 '(begin
+                    (substitute* "unsupported/CMakeLists.txt"
+                      (("add_subdirectory\\(test.*")
+                       "# Do not build the tests for unsupported features.\n")))))))))
 
 (define-public xtensor
   (package

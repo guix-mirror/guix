@@ -40,6 +40,7 @@
 ;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,18 +178,19 @@
 (define-public audacious
   (package
     (name "audacious")
-    (version "4.0.5")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://distfiles.audacious-media-player.org/"
                            "audacious-" version ".tar.bz2"))
        (sha256
-        (base32 "028zjgz0p7ys15lk2a30m5zcv9xrx3ga50wjsh4m4zxilgkakbji"))))
+        (base32 "0p734psjjvjcmla2hg5h6a9v1prvy63jj9xm2g2ngs49jy7qan0z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
+             "--disable-gtk")
        #:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
@@ -228,7 +230,7 @@
            (uri (string-append "https://distfiles.audacious-media-player.org/"
                                "audacious-plugins-" version ".tar.bz2"))
            (sha256
-            (base32 "0ny5w1agr9jaz5w3wyyxf1ygmzmd1sivaf97lcm4z4w6529520lz"))))
+            (base32 "0k0xnqmxi5lna034i2cnzvfzrykxmv4fbs1nkrc9sd2ma1igrmns"))))
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")         ; for gdbus-codegen
        ("pkg-config" ,pkg-config)))
@@ -248,9 +250,9 @@
        ("libcddb" ,libcddb)
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libcue" ,libcue)
-       ("libmodplug" ,libmodplug)
        ("libnotify" ,libnotify)
        ("libogg" ,libogg)
+       ("libopenmpt" ,libopenmpt)
        ("libsamplerate" ,libsamplerate)
        ("libsndfile" ,libsndfile)
        ("libvorbis" ,libvorbis)
