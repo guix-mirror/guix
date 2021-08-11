@@ -54,6 +54,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
+    (replacement mit-krb5-1.19.2)
     (version "1.19.1")
     (source (origin
               (method url-fetch)
@@ -116,6 +117,23 @@ cryptography.")
                                    "See NOTICE in the distribution."))
     (home-page "https://web.mit.edu/kerberos/")
     (properties '((cpe-name . "kerberos")))))
+
+(define mit-krb5-1.19.2
+  (package
+    (inherit mit-krb5)
+    (version "1.19.2")
+    (source (origin
+              (inherit (package-source mit-krb5))
+              (uri (list
+                    (string-append "https://web.mit.edu/kerberos/dist/krb5/"
+                                   (version-major+minor version)
+                                   "/krb5-" version ".tar.gz")
+                    (string-append "https://kerberos.org/dist/krb5/"
+                                   (version-major+minor version)
+                                   "/krb5-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0snz1jm2w4dkk65zcz953jmmv9mqa30fanch2bk8r3rs9vp3yi8h"))))))
 
 (define-public shishi
   (package
