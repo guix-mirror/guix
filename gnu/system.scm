@@ -268,8 +268,9 @@
 
   (pam-services operating-system-pam-services     ; list of PAM services
                 (default (base-pam-services)))
-  (setuid-programs %operating-system-setuid-programs
-                   (default %setuid-programs))    ; list of string-valued gexps
+  (setuid-programs operating-system-setuid-programs
+                   (default %setuid-programs)     ; list of <setuid-program>
+                   (sanitize ensure-setuid-program-list))
 
   (sudoers-file operating-system-sudoers-file     ; file-like
                 (default %sudoers-specification))
@@ -672,7 +673,7 @@ bookkeeping."
             (operating-system-environment-variables os))
            host-name procs root-fs
            (service setuid-program-service-type
-                    (%operating-system-setuid-programs os))
+                    (operating-system-setuid-programs os))
            (service profile-service-type
                     (operating-system-packages os))
            other-fs
@@ -702,7 +703,7 @@ bookkeeping."
           (pam-root-service (operating-system-pam-services os))
           (operating-system-etc-service os)
           (service setuid-program-service-type
-                   (%operating-system-setuid-programs os))
+                   (operating-system-setuid-programs os))
           (service profile-service-type (operating-system-packages os)))))
 
 (define* (operating-system-services os)
@@ -1066,10 +1067,27 @@ use 'plain-file' instead~%")
     ;; TODO: Remove when glibc@2.23 is long gone.
     ("GUIX_LOCPATH" . "/run/current-system/locale")))
 
-(define (operating-system-setuid-programs os)
-  "Return the setuid programs for OS, as a list of setuid-program record."
-  (map file-like->setuid-program
-         (%operating-system-setuid-programs os)))
+(define-syntax-rule (ensure-setuid-program-list lst)
+  "Ensure LST is a list of <setuid-program> records and warn otherwise."
+  (%ensure-setuid-program-list lst (current-source-location)))
+
+(define (%ensure-setuid-program-list lst location)
+  (define warned? #f)
+
+  (define (warn-once)
+    (unless warned?
+      (warning (source-properties->location location)
+               (G_ "representing setuid programs with file-like objects is \
+deprecated; use 'setuid-program' instead~%"))
+      (set! warned? #t)))
+
+  (map (match-lambda
+         ((? file-like? program)
+          (warn-once)
+          (setuid-program (program program)))
+         ((? setuid-program? program)
+          program))
+       lst))
 
 (define %setuid-programs
   ;; Default set of setuid-root programs.
