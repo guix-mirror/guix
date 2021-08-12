@@ -878,6 +878,7 @@ variants.")
     (inputs
      `(("gtk3" ,gtk+)
        ("gettext" ,gettext-minimal)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libgee" ,libgee)
        ("libhandy" ,libhandy)
        ("libsoup" ,libsoup)
