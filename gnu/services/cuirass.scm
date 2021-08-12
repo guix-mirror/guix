@@ -25,6 +25,7 @@
   #:use-module (guix channels)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages ci)
@@ -338,6 +339,8 @@
                     (default "/var/log/cuirass-remote-worker.log"))
   (publish-port     cuirass-remote-worker-configuration-publish-port ;int
                     (default 5558))
+  (substitute-urls  cuirass-remote-worker-configuration-substitute-urls
+                    (default %default-substitute-urls)) ;list of strings
   (public-key       cuirass-remote-worker-configuration-public-key ;string
                     (default #f))
   (private-key      cuirass-remote-worker-configuration-private-key ;string
@@ -348,7 +351,7 @@
 CONFIG."
   (match-record config <cuirass-remote-worker-configuration>
     (cuirass workers server systems log-file publish-port
-             public-key private-key)
+             substitute-urls public-key private-key)
     (list (shepherd-service
            (documentation "Run Cuirass remote build worker.")
            (provision '(cuirass-remote-worker))
@@ -370,6 +373,11 @@ CONFIG."
                                   (list (string-append
                                          "--publish-port="
                                          (number->string publish-port)))
+                                  '())
+                           #$@(if substitute-urls
+                                  (string-append
+                                   "--substitute-urls="
+                                   (string-join substitute-urls))
                                   '())
                            #$@(if public-key
                                   (list

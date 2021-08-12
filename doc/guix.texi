@@ -27928,6 +27928,9 @@ Location of the log file.
 @item @code{publish-port} (default: @code{5558})
 The TCP port of the publish server.  It defaults to @code{5558}.
 
+@item @code{substitute-urls} (default: @code{%default-substitute-urls})
+The list of URLs where to look for substitutes by default.
+
 @item @code{public-key}
 @item @code{private-key}
 Use the specific @var{file}s as the public/private key pair used to sign
