@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,14 @@
   #:use-module (ice-9 match)
   #:export (%chicken-build-system-modules
             chicken-build
-            chicken-build-system))
+            chicken-build-system
+            egg-uri))
+
+(define* (egg-uri name version #:optional (extension ".tar.gz"))
+  "Return a URI string for the CHICKEN egg corresponding to NAME and VERSION.
+EXTENSION is the file name extension, such as '.tar.gz'."
+  (string-append "https://code.call-cc.org/egg-tarballs/5/"
+                 name "/" name "-" version extension))
 
 (define %chicken-build-system-modules
   ;; Build-side modules imported and used by default.
