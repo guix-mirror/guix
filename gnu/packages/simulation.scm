@@ -863,13 +863,6 @@ tools and a collection of Python modules for programmatic use.")
             ;; The extra reference is unnecessary and is removed.
             (substitute* "setup.cfg"
               (("^[[:blank:]]+setuptools>=42\n") ""))
-            ;; FIXME: gmsh version 4.7.0 introduces new field option
-            ;; names.  See gmsh commit 6eab8028.  pygmsh needs to use
-            ;; one of the old option names for compatibility with gmsh
-            ;; version 4.6.0.
-            (with-directory-excursion "pygmsh/common"
-              (substitute* "size_field.py"
-                (("NumPointsPerCurve") "NNodesByEdge")))
             #t))))
     (build-system python-build-system)
     (native-inputs
