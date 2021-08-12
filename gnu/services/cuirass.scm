@@ -375,9 +375,9 @@ CONFIG."
                                          (number->string publish-port)))
                                   '())
                            #$@(if substitute-urls
-                                  (string-append
-                                   "--substitute-urls="
-                                   (string-join substitute-urls))
+                                  (list (string-append
+                                         "--substitute-urls="
+                                         (string-join substitute-urls)))
                                   '())
                            #$@(if public-key
                                   (list
