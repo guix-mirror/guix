@@ -805,6 +805,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/abseil-cpp-fix-gtest.patch		\
   %D%/packages/patches/abseil-cpp-fix-strerror_test.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
+  %D%/packages/patches/adb-libssl_11-compatibility.patch	\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\
   %D%/packages/patches/aegis-perl-tempdir2.patch           	\
