@@ -2278,10 +2278,10 @@ displayed at the end of the run (with the full logs ready to inspect), with a
 simple (yet expressive) query language to select the tests to run.")
     (license license:isc)))
 
-(define-public ocaml4.07-ppx-tools
+(define-public ocaml-ppx-tools
   (package
-    (name "ocaml4.07-ppx-tools")
-    (version "5.1+4.06.0")
+    (name "ocaml-ppx-tools")
+    (version "6.4")
     (source
      (origin
        (method git-fetch)
@@ -2289,18 +2289,21 @@ simple (yet expressive) query language to select the tests to run.")
              (url "https://github.com/alainfrisch/ppx_tools")
              (commit version)))
        (file-name (git-file-name name version))
-       (sha256 (base32
-                "1ww4cspdpgjjsgiv71s0im5yjkr3544x96wsq1vpdacq7dr7zwiw"))))
-    (build-system ocaml-build-system)
+       (sha256
+        (base32
+         "15v7yfv6gyp8lzlgwi9garz10wpg34dk4072jdv19n6v20zfg7n1"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib))
+     ;; No tests
+     `(#:tests? #f))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)))
     (properties `((upstream-name . "ppx_tools")))
     (home-page "https://github.com/alainfrisch/ppx_tools")
     (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
-    (description "Tools for authors of ppx rewriters and other syntactic tools.")
+    (description
+     "Ppx_tools provides tools for authors of ppx rewriters and other
+syntactic tools.")
     (license license:expat)))
 
 (define-public ocaml-react
