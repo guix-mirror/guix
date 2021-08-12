@@ -1733,38 +1733,28 @@ ac_cv_c_float_format='IEEE (little-endian)'
               "gawk" "grep" "guile" "make" "sed" "tar"))))
 
 (define gmp-boot
-  (package
-    (inherit gmp)
-    (version "4.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gmp/gmp-" version
-                                  ".tar.gz"))
-              (sha256 (base32
-                       "15rwq54fi3s11izas6g985y9jklm3xprfsmym3v1g6xr84bavqvv"))))))
+  (let ((version "4.3.2"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gmp/gmp-" version ".tar.gz"))
+      (sha256
+       (base32 "15rwq54fi3s11izas6g985y9jklm3xprfsmym3v1g6xr84bavqvv")))))
 
 (define mpfr-boot
-  (package
-    (inherit mpfr)
-    (version "2.4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/mpfr/mpfr-" version
-                                  ".tar.gz"))
-              (sha256 (base32
-                       "0dxn4904dra50xa22hi047lj8kkpr41d6vb9sd4grca880c7wv94"))))))
+  (let ((version "2.4.2"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/mpfr/mpfr-" version ".tar.gz"))
+      (sha256
+       (base32 "0dxn4904dra50xa22hi047lj8kkpr41d6vb9sd4grca880c7wv94")))))
 
 (define mpc-boot
-  (package
-    (inherit mpc)
-    (version "1.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://gnu/mpc/mpc-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1hzci2zrrd7v3g1jk35qindq05hbl0bhjcyyisq9z209xb3fqzb1"))))))
+  (let ((version "1.0.3"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/mpc/mpc-" version ".tar.gz"))
+      (sha256
+       (base32 "1hzci2zrrd7v3g1jk35qindq05hbl0bhjcyyisq9z209xb3fqzb1")))))
 
 (define gcc-core-mesboot1
   ;; GCC 4.6.4 is the latest modular distribution.  This package is not
@@ -1782,9 +1772,9 @@ ac_cv_c_float_format='IEEE (little-endian)'
               (sha256
                (base32
                 "173kdb188qg79pcz073cj9967rs2vzanyjdjyxy9v0xb0p5sad75"))))
-    (inputs `(("gmp-source" ,(package-source gmp-boot))
-              ("mpfr-source" ,(package-source mpfr-boot))
-              ("mpc-source" ,(package-source mpc-boot))))
+    (inputs `(("gmp-source" ,gmp-boot)
+              ("mpfr-source" ,mpfr-boot)
+              ("mpc-source" ,mpc-boot)))
     (native-inputs (%boot-mesboot1-inputs))
     (arguments
      (list #:implicit-inputs? #f
@@ -1857,14 +1847,17 @@ ac_cv_c_float_format='IEEE (little-endian)'
                                (list gmp mpfr mpc))
 
                      ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
-                     #$@(map (lambda (lib)
+                     #$@(map (lambda (lib package)
                                ;; Drop trailing letters, as gmp-6.0.0a unpacks
                                ;; into gmp-6.0.0.
                                #~(symlink #$(string-trim-right
-                                             (package-full-name lib "-")
+                                             (basename
+                                              (origin-actual-file-name lib)
+                                              ".tar.gz")
                                              char-set:letter)
-                                          #$(package-name lib)))
-                             (list gmp-boot mpfr-boot mpc-boot)))))
+                                          #$package))
+                             (list gmp-boot mpfr-boot mpc-boot)
+                             '("gmp" "mpfr" "mpc")))))
                (add-before 'configure 'setenv
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let* ((out (assoc-ref outputs "out"))
