@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,7 @@
   #:use-module (gnu services hurd)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system)
+  #:use-module (gnu system setuid)
   #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:export (%base-packages/hurd
@@ -92,14 +93,15 @@
 
 (define %setuid-programs/hurd
   ;; Default set of setuid-root programs.
-  (list (file-append shadow "/bin/passwd")
-        (file-append shadow "/bin/sg")
-        (file-append shadow "/bin/su")
-        (file-append shadow "/bin/newgrp")
-        (file-append shadow "/bin/newuidmap")
-        (file-append shadow "/bin/newgidmap")
-        (file-append sudo "/bin/sudo")
-        (file-append sudo "/bin/sudoedit")))
+  (map file-like->setuid-program
+       (list (file-append shadow "/bin/passwd")
+             (file-append shadow "/bin/sg")
+             (file-append shadow "/bin/su")
+             (file-append shadow "/bin/newgrp")
+             (file-append shadow "/bin/newuidmap")
+             (file-append shadow "/bin/newgidmap")
+             (file-append sudo "/bin/sudo")
+             (file-append sudo "/bin/sudoedit"))))
 
 (define %hurd-default-operating-system
   (operating-system

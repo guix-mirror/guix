@@ -25,6 +25,7 @@
 (define-module (gnu system install)
   #:use-module (gnu)
   #:use-module (gnu system)
+  #:use-module (gnu system setuid)
   #:use-module (gnu bootloader u-boot)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -502,7 +503,8 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
 
     ;; We don't need setuid programs, except for 'passwd', which can be handy
     ;; if one is to allow remote SSH login to the machine being installed.
-    (setuid-programs (list (file-append shadow "/bin/passwd")))
+    (setuid-programs (list (setuid-program
+                            (program (file-append shadow "/bin/passwd")))))
 
     (pam-services
      ;; Explicitly allow for empty passwords.
