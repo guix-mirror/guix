@@ -1082,11 +1082,13 @@ deprecated; use 'setuid-program' instead~%"))
       (set! warned? #t)))
 
   (map (match-lambda
-         ((? file-like? program)
-          (warn-once)
-          (setuid-program (program program)))
          ((? setuid-program? program)
-          program))
+          program)
+         (program
+          ;; PROGRAM is a file-like or a gexp like #~(string-append #$foo
+          ;; "/bin/bar").
+          (warn-once)
+          (setuid-program (program program))))
        lst))
 
 (define %setuid-programs
