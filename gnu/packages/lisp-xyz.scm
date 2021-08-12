@@ -8136,8 +8136,8 @@ functions for arrays and vectors.  Originally from Plump.")
   (sbcl-package->ecl-package sbcl-array-utils))
 
 (define-public sbcl-plump
-  (let ((commit "34f890fe46efdebe7bb70d218f1937e98f632bf9")
-        (revision "1"))
+  (let ((commit "3584275f0be9d06c0c51b5c08f89005deafc4ada")
+        (revision "2"))
     (package
       (name "sbcl-plump")
       (version (git-version "2.0.0" revision commit))
@@ -8151,7 +8151,7 @@ functions for arrays and vectors.  Originally from Plump.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0a0x8wn6vv1ylxcwck12k18gy0a366kdm6ddxxk7yynl4mwnqgkh"))))
+           "1w4wz7f6dc2ckdq9wq9r5014bg2nxjifj9yz1zzn41r8h1h5xfcd"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("array-utils" ,sbcl-array-utils)
