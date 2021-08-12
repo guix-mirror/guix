@@ -9978,6 +9978,38 @@ detailed properties.  It is an easy way to find the character you might
 only know by its Unicode name or code point.")
       (license license:gpl3+))))
 
+(define-public gcolor3
+  (package
+    (name "gcolor3")
+    (version "2.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/World/gcolor3")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1igqmach1vhcrvbpw346pmkbb5kabbb806ssswrvkp569n700wmc"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("libportal" ,libportal)))
+    (home-page "https://www.hjdskes.nl/projects/gcolor3/")
+    (synopsis "Simple color chooser written in GTK3")
+    (description "Color Picker is a simple color chooser written in GTK3.  It
+supports both X and Wayland display servers.")
+    (license license:gpl2+)))
+
 (define-public bluefish
   (package
     (name "bluefish")
