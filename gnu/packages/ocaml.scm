@@ -4997,6 +4997,38 @@ a more consistent API.")
                          "0pqbp2wy5fgmc38irwvmj9nlcvclb1ix1mp4y7l39bgvvlz303h9"))
      (properties '()))))
 
+(define-public ocaml-ppx-deriving
+  (package
+    (name "ocaml-ppx-deriving")
+    (version "5.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml-ppx/ppx_deriving")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1wqcnw4wi6pfjjhixpakckm03dpj990259za432804471a6spm2j"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (propagated-inputs
+     `(("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)
+       ("ocaml-result" ,ocaml-result)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-ounit2" ,ocaml-ounit2)))
+    (properties `((upstream-name . "ppx_deriving")))
+    (home-page "https://github.com/ocaml-ppx/ppx_deriving")
+    (synopsis "Type-driven code generation for OCaml")
+    (description
+     "Ppx_deriving provides common infrastructure for generating code based
+on type definitions, and a set of useful plugins for common tasks.")
+    (license license:expat)))
+
 (define-public ocaml-ppx-derivers
   (package
     (name "ocaml-ppx-derivers")
