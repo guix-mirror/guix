@@ -17982,27 +17982,25 @@ mode.")
       (license license:gpl3+))))
 
 (define-public emacs-crux
-  (let ((commit "308f17d914e2cd79cbc809de66d02b03ceb82859")
-        (revision "2"))
-    (package
-      (name "emacs-crux")
-      (version (git-version "0.3.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/bbatsov/crux")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0rf84finwlvmy0xpgyljjvnrijlmkzjyw9rh97svgxp9c1rzfk0x"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/bbatsov/crux")
-      (synopsis "Collection of useful functions for Emacs")
-      (description
-       "@code{crux} provides a collection of useful functions for Emacs.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-crux")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bbatsov/crux")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1h28chpyq61k72qh749r5kqq1y70wx3xw9c3zyfzmy750wlw6nyj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bbatsov/crux")
+    (synopsis "Collection of useful functions for Emacs")
+    (description
+     "@code{crux} provides a collection of useful functions for Emacs.")
+    (license license:gpl3+)))
 
 (define-public emacs-edit-server
   (package
