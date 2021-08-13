@@ -72,7 +72,9 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
@@ -2288,3 +2290,74 @@ To install the rfcat udev rules, you must extend @code{udev-service-type} with
 this package.  E.g.: @code{(udev-rules-service 'rfcat rfcat)}")
       (license (list license:bsd-3
                      license:gpl2)))))
+
+(define-public gnss-sdr
+  (package
+    (name "gnss-sdr")
+    (version "0.0.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnss-sdr/gnss-sdr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1kjh9bnf6h9q71bnn8nrwlc80wcnkib97ylzvb102acii4p0fm08"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("googletest-source" ,(package-source googletest))
+       ("orc" ,orc)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-mako" ,python-mako)))
+    (inputs
+     `(("armadillo" ,armadillo)
+       ("boost" ,boost)
+       ("gflags" ,gflags)
+       ("glog" ,glog)
+       ("gmp" ,gmp)
+       ("gnuradio" ,gnuradio)
+       ("gr-osmosdr" ,gr-osmosdr)
+       ("lapack" ,lapack)
+       ("libpcap" ,libpcap)
+       ("log4cpp" ,log4cpp)
+       ("matio" ,matio)
+       ("openblas" ,openblas)
+       ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
+       ("pugixml" ,pugixml)
+       ("volk" ,volk)))
+    (arguments
+     `(#:configure-flags
+       (list "-DENABLE_GENERIC_ARCH=ON"
+             "-DENABLE_OSMOSDR=ON"
+             (string-append "-DGFLAGS_ROOT="
+                            (assoc-ref %build-inputs "gflags"))
+             (string-append "-DGLOG_ROOT="
+                            (assoc-ref %build-inputs "glog"))
+             (string-append "-DGTEST_DIR="
+                            (assoc-ref %build-inputs "googletest-source")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Some tests fail to compile when the FILESYSTEM package is
+             ;; available, so we disable it (and the tests will use Boost
+             ;; Filesystem instead).
+             (substitute* "CMakeLists.txt"
+               (("find_package\\(FILESYSTEM COMPONENTS Final Experimental\\)")
+                ""))))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
+    (home-page "https://gnss-sdr.org/")
+    (synopsis "Global Navigation Satellite Systems software-defined receiver")
+    (description
+     "This program is a software-defined receiver which is able to process
+(that is, to perform detection, synchronization, demodulation and decoding of
+the navigation message, computation of observables and, finally, computation of
+position fixes) the signals of the BeiDou, Galileo, GLONASS and GPS Global
+Navigation Satellite System.")
+    (license license:gpl3+)))
