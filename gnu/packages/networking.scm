@@ -3401,12 +3401,11 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (license license:bsd-3)))
 
 (define-public opendht
-  ;; Jami requires unreleased features of OpenDHT.
-  (let ((commit "c8a0b443f3117e2fa1343d2cb3c091f502b1a24e")
+  (let ((commit "6c58d4f2e9b7f1de15db8d3a736c8cf1ea5f2886")
         (revision "1"))
     (package
       (name "opendht")
-      (version (git-version "2.2.0rc7" revision commit))
+      (version (git-version "2.3.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3415,7 +3414,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "062irb9yii66n2fzbpsjf7v2v53zzvakr1wjmi4l1jaz33fwx5by"))))
+                  "06l0z1dmxyjh8gdrmxyq4vnfnv3x400bhx0lxm7l90f8zc5r2bim"))))
       ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
       (outputs '("out" "tools" "debug"))
       (build-system cmake-build-system)
