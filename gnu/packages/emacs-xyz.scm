@@ -231,7 +231,7 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method git-fetch)
@@ -240,7 +240,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18gx7ak2ldpmqbimnq221dn2qg7qwm5n1mj6ajymwkgvqwcrsl2r"))))
+        (base32 "07g1zlf9kmfish2wa6m376xba0nv6n4spw8wbmr90a56xj0qpswc"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
@@ -252,10 +252,12 @@
              (let ((el-files (find-files "./elisp" ".*\\.el$")))
                (for-each (lambda (f)
                            (rename-file f (basename f)))
-                         el-files))
-             #t))
+                         el-files))))
          (add-before 'install 'make-info
            (lambda _
+             ;; XXX: Fix a typo in the ".texi" file below.
+             (substitute* "doc/install.texi"
+               (("\\}\\{NonGNU ELPA\\}") ",NonGNU ELPA}"))
              (with-directory-excursion "doc"
                (invoke "makeinfo" "--no-split"
                        "-o" "geiser.info" "geiser.texi")))))))
