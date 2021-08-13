@@ -73,8 +73,8 @@
                     (default "/var/log/cuirass-remote-server.log"))
   (cache            cuirass-remote-server-configuration-cache ;string
                     (default "/var/cache/cuirass/remote/"))
-  (no-publish?      cuirass-remote-server-configuration-no-publish? ;boolean
-                    (default #f))
+  (publish?         cuirass-remote-server-configuration-publish? ;boolean
+                    (default #t))
   (trigger-url      cuirass-remote-server-trigger-url ;string
                     (default #f))
   (public-key       cuirass-remote-server-configuration-public-key ;string
@@ -194,7 +194,7 @@
         (stop #~(make-kill-destructor)))
       ,@(if remote-server
             (match-record remote-server <cuirass-remote-server-configuration>
-              (backend-port publish-port log-file cache no-publish?
+              (backend-port publish-port log-file cache publish?
                             trigger-url public-key private-key)
               (list
                (shepherd-service
@@ -228,9 +228,9 @@
                                          "--trigger-substitute-url="
                                          trigger-url))
                                        '())
-                                #$@(if no-publish?
-                                       (list "--no-publish")
-                                       '())
+                                #$@(if publish?
+                                       '()
+                                       (list "--no-publish"))
                                 #$@(if public-key
                                        (list
                                         (string-append "--public-key="

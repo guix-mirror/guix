@@ -27889,10 +27889,10 @@ Use @var{cache} directory to cache build log files.
 Once a substitute is successfully fetched, trigger substitute baking at
 @var{trigger-url}.
 
-@item @code{no-publish} (default: @code{#f})
-Do not start a publish server and ignore the @code{publish-port}
-argument. This can be useful if there is already a standalone publish
-server standing next to the remote server.
+@item @code{publish?} (default: @code{#t})
+If set to false, do not start a publish server and ignore the
+@code{publish-port} argument.  This can be useful if there is already a
+standalone publish server standing next to the remote server.
 
 @item @code{public-key}
 @item @code{private-key}
