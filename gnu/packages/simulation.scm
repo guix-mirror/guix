@@ -843,7 +843,7 @@ tools and a collection of Python modules for programmatic use.")
 (define-public python-pygmsh
   (package
     (name "python-pygmsh")
-    (version "7.1.9")
+    (version "7.1.10")
     (source
       (origin
         (method git-fetch)
@@ -853,7 +853,7 @@ tools and a collection of Python modules for programmatic use.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-           "1lq16v31sifd9n1bb8yxnp3vhafrxz1rvydk9hh1add96fbjgj29"))
+           "03a949nl99ny9h0ni8lqgaljgkgicd305ls6zy1vkwgfa4mzsgqh"))
         (modules '((guix build utils)))
         (snippet
          '(begin
@@ -883,10 +883,7 @@ tools and a collection of Python modules for programmatic use.")
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               ;; The readme test is skipped.  It requires the exdown
-               ;; module which is not available.
-               (invoke "python" "-m" "pytest" "-v" "test"
-                       "--ignore" "test/test_readme.py"))
+               (invoke "python" "-m" "pytest" "-v" "tests"))
              #t)))))
     (home-page "https://github.com/nschloe/pygmsh")
     (synopsis "Python frontend for Gmsh")
