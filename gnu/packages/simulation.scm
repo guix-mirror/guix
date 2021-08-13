@@ -846,11 +846,14 @@ tools and a collection of Python modules for programmatic use.")
     (version "7.1.9")
     (source
       (origin
-        (method url-fetch)
-        (uri (pypi-uri "pygmsh" version))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/nschloe/pygmsh")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
           (base32
-           "1q7nr0cq581wlif537y6awj7vz9jywxg14c8znmsx5ip8x24754j"))
+           "1lq16v31sifd9n1bb8yxnp3vhafrxz1rvydk9hh1add96fbjgj29"))
         (modules '((guix build utils)))
         (snippet
          '(begin
