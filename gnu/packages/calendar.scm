@@ -180,13 +180,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.10.3")
+    (version "0.10.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "khal" version))
               (sha256
                (base32
-                "0cm4xn871w3i99l3qmhv0bnv8q6rd1w3rip9sskyb5z59z0qzp9g"))))
+                "17qj1n2l39pnzk4vjrmql90z7908nivnzcc2g9nj1h31k859inrz"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; The test suite is unreliable. See <https://bugs.gnu.org/44197>
