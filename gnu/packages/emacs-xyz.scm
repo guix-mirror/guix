@@ -10239,7 +10239,7 @@ maximizes flexibility (at the expense of conciseness).")
 (define-public emacs-find-file-in-project
   (package
     (name "emacs-find-file-in-project")
-    (version "6.0.7")
+    (version "6.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10248,7 +10248,7 @@ maximizes flexibility (at the expense of conciseness).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qkfijqr839y605ssyalr2v9n6b86hr64mxikc96lx6nzdyjyyl0"))))
+                "13vsmi02v1rv5h2m62s36dw21781nxsj9dj4hlaxfz2v5avmp00c"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
