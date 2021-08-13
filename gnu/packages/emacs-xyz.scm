@@ -21076,6 +21076,31 @@ viewing files with long lines.  It is included as standard with Emacs 27 or
 later.")
     (license license:gpl3+)))
 
+(define-public emacs-srfi
+  ;; SRFI data gets updated quite frequently; lastest tag is from
+  ;; 2020; commit from 2021-08-12.
+  (let ((commit "e31bf04a3be3aad1286b7fe919c2e4810aae751e")
+        (revision "0"))
+    (package
+      (name "emacs-srfi")
+      (version (git-version "0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/srfi-explorations/emacs-srfi")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "01n3yrjrdl2gdhvgd56lpjqg9d82mmrnb0h6hxdx4h5hy8sbk2p4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/srfi-explorations/emacs-srfi")
+      (synopsis "Scheme Requests for Implementation browser in Emacs")
+      (description
+       "This package shows a list of all SRFIs and provides commands to visit
+them in your web browser.")
+      (license license:expat))))
+
 (define-public emacs-github-review
   (let ((commit "a13a3b4f1b6114a32af843971a145ab880f51232")
         (revision "2"))
