@@ -3154,7 +3154,7 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.31.1-r1")
+    (version "3.36.0-r1")
     (source
       (origin
         (method url-fetch)
@@ -3162,7 +3162,7 @@ PickleShare.")
                             "/download/" version "/apsw-" version ".zip"))
         (sha256
           (base32
-           "1gap5lr6c7bp134nzvfwr693i6d0fqyaysg3ms2cayjldv616yfx"))))
+           "0w8q73147hv77dlpqrx6h1gx03acc8xqhvdpfp6vkffdm0wmqd8p"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
