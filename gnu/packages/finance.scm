@@ -530,6 +530,9 @@ do so.")
        ("python-cryptography" ,python-cryptography)
        ("python-qdarkstyle" ,python-qdarkstyle)
        ("python-dnspython" ,python-dnspython)
+       ("python-hidapi" ,python-hidapi)
+       ("python-ledgerblue" ,python-ledgerblue)
+       ("python-btchip-python" ,python-btchip-python)
        ("libsecp256k1" ,libsecp256k1)))
     (arguments
      `(#:tests? #f                      ; no tests
