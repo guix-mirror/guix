@@ -1298,8 +1298,8 @@ and the notification, WiFi, and Bluetooth LED.")
     (license license:gpl2)))
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "059e06a51be025fde5b2bec6565540b3d9981b0b")
-        (revision "4"))
+  (let ((commit "b8167e66b4ac046b3b76c2c40008d84528e91594")
+        (revision "5"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1311,7 +1311,7 @@ and the notification, WiFi, and Bluetooth LED.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0h6l2r3yj7j9zf11dw0zcdyn50ajnjw8yvv86dzlfj80dn75n98f"))
+          (base32 "1940f2yz5c4q2fhcd91zfzl32fhdsgr297vzamm7nd8kdk0gymi2"))
          (modules '((guix build utils)))
          (snippet
           '(begin
