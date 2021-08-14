@@ -3484,21 +3484,20 @@ type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-guix
-  (let ((commit "8ce6d219e87c5097abff9ce6f1f5a4293cdfcb31")
-        (revision "4"))
+  (let ((commit "c9aef52121b458297e70bb50f49f7276b4a8d759")
+        (revision "5"))
     (package
       (name "emacs-guix")
       (version (git-version "0.5.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      ;; TODO: Use the official version when it has a new home
-                      (url "https://github.com/alezost/guix.el")
+                      (url "https://gitlab.com/emacs-guix/emacs-guix.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0awbd8x154c4dk4av7inpgd63n07xzng84vvc8qckmgljknc0j7k"))))
+                  "00xdxadbi9fxpfp60zah9190rcz3w08vl1blbhmaiy7c1hd2gi39"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
