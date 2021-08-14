@@ -37,7 +37,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
@@ -26082,3 +26082,27 @@ for the Go language tool chain; it adapts to different calling conventions and
 application binary interfaces (ABIs); it takes care of register allocation; it
 supports x86_64 instructions up to AVX-512 and SHA.")
       (license license:bsd-2))))
+
+(define-public python-sgmllib3k
+  (let ((commit "799964676f35349ca2dd04503e34c2b3ad522c0d")
+        (revision "1"))
+    (package
+      (name "python-sgmllib3k")
+      (version
+       (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hsoft/sgmllib")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bzf6pv85dzfxfysm6zbj8m40hp0xzr9h8qlk4hp3nmy88rznqvr"))))
+      (build-system python-build-system)
+      (home-page "https://github.com/hsoft/sgmllib")
+      (synopsis "Python 3 port of sgmllib")
+      (description "This package is a port of sgmllib that is no longer part
+of Python 3.")
+      (license license:bsd-3))))
