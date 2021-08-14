@@ -4759,15 +4759,17 @@ their web site.")
 (define-public python-feedparser
   (package
     (name "python-feedparser")
-    (version "6.0.2")
+    (version "6.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "feedparser" version ".tar.gz"))
        (sha256
         (base32
-         "0x0hm9brh3j71645pydvlkrwxaaca9dnwd7xahwjyjaz882s200v"))))
+         "0qcnkyjjfj5gg5rhd1j4zzlqx5h34bma18zwgj68q95b0l543q2w"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sgmllib3k" ,python-sgmllib3k)))
     (arguments
      '(#:tests? #f))
     (home-page
