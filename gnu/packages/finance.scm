@@ -936,6 +936,30 @@ Ledger Blue/Nano S.")
 (define-public python2-ledgerblue
   (package-with-python2 python-ledgerblue))
 
+(define-public python-btchip-python
+  (package
+    (name "python-btchip-python")
+    (version "0.1.32")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "btchip-python" version))
+        (sha256
+          (base32
+            "0mcg3gfd0qk8lhral3vy9cfd4pii9kzs42q71pf6b3y0c70y1x9l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; those require PyQt4
+    (propagated-inputs
+      `(("python-ecdsa" ,python-ecdsa)
+        ("python-hidapi" ,python-hidapi)))
+    (home-page "https://github.com/LedgerHQ/btchip-python")
+    (synopsis "Python library to communicate with Ledger Nano dongle")
+    (description
+      "This package provides a Python library to communicate with Ledger
+Nano dongle.")
+    (license license:asl2.0)))
+
 (define-public python-trezor
   (package
     (name "python-trezor")
