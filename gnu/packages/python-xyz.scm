@@ -15278,40 +15278,77 @@ characters, mouse support, and auto suggestions.")
   (package-with-python2 python-prompt-toolkit-1))
 
 (define-public python-jedi
-  (package
-    (name "python-jedi")
-    (version "0.17.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "jedi" version))
-       (sha256
-        (base32 "080xyf97ifabdz7jp8clg00b8zv5g33fva1fb2xf80q6fndpvvc6"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (setenv "HOME" "/tmp")
-               (invoke "python" "-m" "pytest" "-vv"))
-             #t)))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-docopt" ,python-docopt)))
-    (propagated-inputs
-     `(("python-parso" ,python-parso)))
-    (home-page "https://github.com/davidhalter/jedi")
-    (synopsis "Autocompletion and static analysis library for Python")
-    (description
-     "Jedi is a static analysis tool for Python that can be used in Integrated
+  ;; The 0.18.0 release tests do not work with Python 3.9.6. Use a more
+  ;; recent commit.
+  (let ((commit "1d944943c311b2d71655432f8870d68b2cf7d44b")
+        (revision "1"))
+    (package
+      (name "python-jedi")
+      (version
+       (git-version "0.18.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/davidhalter/jedi")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "052szkbv2pf9hy21any6zb4dhx3c5w1v6b9hn5grlc84zfm350vq"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (copy-recursively (assoc-ref inputs "python-django-stubs")
+                                 "jedi/third_party/django-stubs")
+               (copy-recursively (assoc-ref inputs "python-typeshed")
+                                 "jedi/third_party/typeshed")
+               #t))
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (setenv "HOME" "/tmp")
+                 ;; Disable the pytest tests that fail with pytest 6.  See:
+                 ;; https://github.com/davidhalter/jedi/issues/1660.
+                 (invoke "pytest" "-vv" "-k"
+                         "not test_completion[pytest"))
+               #t)))))
+      (native-inputs
+       `(("python-pytest" ,python-pytest)
+         ("python-docopt" ,python-docopt)
+         ("python-django-stubs"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/davidhalter/django-stubs")
+                   (commit "3d2534ea8d8300c4c9db8f18e300355d5fd5488b")))
+             (file-name "django-stubs-checkout")
+             (sha256
+              (base32 "1fpvn4lcqkd2q18z29rcnwakm649fccw2k6jik5d64j7p6xns08r"))))
+         ("python-typeshed"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/davidhalter/typeshed")
+                   (commit "ae9d4f4b21bb5e1239816c301da7b1ea904b44c3")))
+             (file-name "typeshed-checkout")
+             (sha256
+              (base32 "02xdip4amj0a7z9xph2mj46x1k55bjxl8d0gkpy25575acyx1kjq"))))))
+      (propagated-inputs
+       `(("python-parso" ,python-parso)))
+      (home-page "https://github.com/davidhalter/jedi")
+      (synopsis "Autocompletion and static analysis library for Python")
+      (description
+       "Jedi is a static analysis tool for Python that can be used in Integrated
 Development Environments (@dfn{IDE}s) and text editors.  It understands Python
 on a deeper level than many other static analysis frameworks for Python.
 
 Jedi understands docstrings and you can use Jedi autocompletion in your REPL as
 well.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public python2-jedi
   (package-with-python2 python-jedi))
