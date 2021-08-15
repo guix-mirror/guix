@@ -6925,3 +6925,38 @@ an existing user-specified one, writes a cookie to it, and then starts the
 the server and cleaning up before returning the exit status of the command.")
     (license (list license:x11                    ; the script
                    license:gpl2+))))              ; the man page
+
+(define-public setroot
+  (package
+    (name "setroot")
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ttzhou/setroot")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w95828v0splk7bj5kfacp4pq6wxpyamvyjmahyvn5hc3ycq21mq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             "PREFIX="
+             "xinerama=1")
+       #:tests? #f                       ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("imlib2" ,imlib2)
+       ("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)))
+    (home-page "https://github.com/ttzhou/setroot")
+    (synopsis "Simple X background setter inspired by imlibsetroot and feh")
+    (description "Setroot is a lightweight X background setter with feh's
+syntax without its image viewing capabilities.  It supports multiple monitors
+and can restore previously set wallpapers and options.")
+    (license license:gpl3+)))
