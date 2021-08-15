@@ -24,7 +24,7 @@
 ;;; Copyright © 2019, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
-;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2019 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>

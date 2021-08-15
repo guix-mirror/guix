@@ -16,7 +16,7 @@ Copyright @copyright{} 2020 Matthew Brooks@*
 Copyright @copyright{} 2020 Marcin Karpezo@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
 Copyright @copyright{} 2020 André Batista@*
-Copyright @copyright{} 2020 Christopher Lemmer Webber
+Copyright @copyright{} 2020 Christine Lemmer-Webber@*
 Copyright @copyright{} 2021 Joshua Branson@*
 
 Permission is granted to copy, distribute and/or modify this document
