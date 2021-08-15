@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -1351,10 +1351,15 @@ channels.")
        (sha256
         (base32 "0klhxkxvkzzzcqpzv8jb56pykq0gyhb6rk9vc2kzjahngjx6sdl4"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))          ; no test suite
+    (arguments
+     '(#:test-target "tests"
+       #:configure-flags (list "-DEXIV2_BUILD_UNIT_TESTS=ON")))
     (propagated-inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("python" ,python)))
     (home-page "https://www.exiv2.org/")
     (synopsis "Library and command-line utility to manage image metadata")
     (description
