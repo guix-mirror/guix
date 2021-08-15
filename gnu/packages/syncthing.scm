@@ -45,9 +45,9 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.15.1")
+    (version "1.16.1")
     ; XXX After the go-build-system can use "Go modules", stop using bundled
-    ; dependenices for Syncthing.
+    ; dependencies for Syncthing.
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -55,11 +55,11 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "04b90zwinl7frxrpjliq41mkbhpnkszmhdc5j2vbqwyhd82warxq"))))
+                "0m5k37sp3px8acs3y9an5wzy1wbcbdvqq74jy0pwzfk4bjbr999j"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
-    ;; of "out" by ~80 MiB.
+    ;; of "out" by ~144 MiB.
     (outputs '("out" "utils"))
     (arguments
      `(#:modules ((srfi srfi-26) ; for cut
@@ -104,7 +104,7 @@
                            '("stcompdirs" "stcrashreceiver"
                              "stdisco" "stdiscosrv" "stevents" "stfileinfo"
                              "stfinddevice" "stfindignored" "stgenfiles"
-                             "stindex" "strelaypoolsrv" "strelaysrv" "stsigtool"
+                             "strelaypoolsrv" "strelaysrv" "stsigtool"
                              "stvanity" "stwatchfile" "uraggregate" "ursrv"))
                  #t))))
 
