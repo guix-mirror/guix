@@ -76,14 +76,6 @@
                (("120s") "999s"))
              #t))
 
-         (add-before 'build 'pre-build
-           (lambda _
-             (with-directory-excursion "src/github.com/syncthing/syncthing"
-               ;; Don't set a local GOBIN, it breaks cross compiling.
-               (substitute* "build.go"
-                 ((".*GOBIN.*") "")))
-             #t))
-
          (replace 'build
            (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
@@ -92,7 +84,7 @@
                ;; "build syncthing" again with -no-upgrade.
                ;; https://github.com/syncthing/syncthing/issues/6118
                (invoke "go" "run" "build.go")
-               (for-each delete-file (find-files "../../../../bin" "syncthing"))
+               (delete-file "bin/syncthing")
                (invoke "go" "run" "build.go" "-no-upgrade" "build" "syncthing"))))
 
          (replace 'check
@@ -106,11 +98,15 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (utils (assoc-ref outputs "utils")))
-               (with-directory-excursion "src/github.com/syncthing/syncthing"
-                 (install-file "syncthing" (string-append out "/bin")))
-               (for-each (cut install-file <> (string-append utils "/bin/"))
-                         (find-files "bin"))
-               #t)))
+               (with-directory-excursion "src/github.com/syncthing/syncthing/bin"
+                 (install-file "../syncthing" (string-append out "/bin"))
+                 (for-each (cut install-file <> (string-append utils "/bin/"))
+                           '("stcompdirs" "stcrashreceiver"
+                             "stdisco" "stdiscosrv" "stevents" "stfileinfo"
+                             "stfinddevice" "stfindignored" "stgenfiles"
+                             "stindex" "strelaypoolsrv" "strelaysrv" "stsigtool"
+                             "stvanity" "stwatchfile" "uraggregate" "ursrv"))
+                 #t))))
 
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
