@@ -591,7 +591,7 @@ packages.
 Guix makes it possible to streamline the process by adding as many ``package
 declaration directories'' as you want.
 
-Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
+Create a directory, say @file{~/guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
 environment variable:
 
 @example
