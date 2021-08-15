@@ -1087,14 +1087,14 @@ transparent text on your screen.")
 (define-public wob
   (package
     (name "wob")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/francma/wob/releases/download/"
                            version "/wob-" version ".tar.gz"))
        (sha256
-        (base32 "1vgngcg8wxn6zfg34czn9w55ia0zmhlgnpzf0gh31dc72li9353k"))))
+        (base32 "080pwz8pvqqq068lavzz48dl350iszpdswjd86bjk6zra5h5d10q"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
