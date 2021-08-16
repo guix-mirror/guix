@@ -5069,7 +5069,7 @@ displays the priority part of a heading as your preferred string value.")
 (define-public emacs-org-fragtog
   (package
     (name "emacs-org-fragtog")
-    (version "0.3.3")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -5078,7 +5078,7 @@ displays the priority part of a heading as your preferred string value.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02g4a5lsmalc5mcybimx7ils43w3ac6269n9kzcnw59bj0i5kkcj"))))
+        (base32 "0ra4sfy48p8pm1c7h8wlmbl68r4s0f4qc49xapvs550pm4mf3hiq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
