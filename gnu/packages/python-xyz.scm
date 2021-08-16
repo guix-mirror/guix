@@ -26143,3 +26143,28 @@ supports x86_64 instructions up to AVX-512 and SHA.")
       (description "This package is a port of sgmllib that is no longer part
 of Python 3.")
       (license license:bsd-3))))
+
+(define-public python-cwcwidth
+  (package
+    (name "python-cwcwidth")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cwcwidth" version))
+       (sha256
+        (base32
+         "1azrphpkcyggg38xvkfb9dpc4xmmm90p02kf8dkqd4d6j5w96aj8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (home-page
+     "https://github.com/sebastinas/cwcwidth")
+    (synopsis "Python bindings for wc(s)width")
+    (description "This package provides bindings for wcwidth and wcswidth
+functions defined in POSIX.1-2001 and POSIX.1-2008.")
+    (license license:expat)))
