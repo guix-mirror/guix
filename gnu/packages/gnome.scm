@@ -2181,6 +2181,8 @@ offline sources, providing a centralized place for managing your contacts.")
              ;; Tests require a running X server and locales.
              (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1")
+             (setenv "XDG_CACHE_HOME" "/tmp/xdg-cache")
+             (setenv "XDG_CONFIG_HOME" "/tmp")
              (setenv "GUIX_LOCPATH"
                      (search-input-directory inputs
                                              "lib/locale")))))))
