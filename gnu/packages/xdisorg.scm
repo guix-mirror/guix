@@ -1692,30 +1692,45 @@ Saver extension) library.")
     (license license:gpl3+)))
 
 (define-public xsel
-  (package
-    (name "xsel")
-    (version "1.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.vergenet.net/~conrad/software"
-                                  "/xsel/download/xsel-" version ".tar.gz"))
-              (sha256
-               (base32
-                "070lbcpw77j143jrbkh0y1v10ppn1jwmjf92800w7x42vh4cw9xr"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("libxt" ,libxt)))
-    (home-page "http://www.vergenet.net/~conrad/software/xsel/")
-    (synopsis "Manipulate X selection")
-    (description
-     "XSel is a command-line program for getting and setting the contents of
+  ;; The 1.2.0 release no longer compiles with GCC 8 and upper, see:
+  ;; https://github.com/kfish/xsel/commit/d88aa9a8dba9228e6780d6bb5a5720a36f854918.
+  (let ((commit "062e6d373537c60829fa9b5dcddbcd942986b3c3")
+        (revision "1"))
+    (package
+      (name "xsel")
+      (version (git-version "1.2.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/kfish/xsel")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fbf80zsc22vcqp59r9fdx4icxhrkv7l3lphw83326jrmkzy6kri"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               (invoke "autoreconf" "-vfi"))))))
+      (native-inputs `(("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)))
+      (inputs
+       `(("libxt" ,libxt)))
+      (home-page "http://www.vergenet.net/~conrad/software/xsel/")
+      (synopsis "Manipulate X selection")
+      (description
+       "XSel is a command-line program for getting and setting the contents of
 the X selection.  Normally this is only accessible by manually highlighting
 information and pasting it with the middle mouse button.
 
 XSel reads from standard input and writes to standard output by default,
 but can also follow a growing file, display contents, delete entries and more.")
-    (license (license:x11-style "file://COPYING"
-                                "See COPYING in the distribution."))))
+      (license (license:x11-style "file://COPYING"
+                                  "See COPYING in the distribution.")))))
 
 (define-public xdpyprobe
   (package
