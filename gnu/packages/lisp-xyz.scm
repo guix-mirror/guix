@@ -18243,6 +18243,49 @@ functions allow Lisp programs to explore the web.")
 (define-public cl-aserve
   (sbcl-package->cl-source-package sbcl-aserve))
 
+(define-public sbcl-yxorp
+  (let ((commit "d2e8f9304549e47ae5c7fa35a6b114804603eac9")
+        (revision "1"))
+    (package
+      (name "sbcl-yxorp")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charJe/cl-yxorp")
+               (commit commit)))
+         (file-name (git-file-name "cl-yxorp" version))
+         (sha256
+          (base32 "1zz1j678vzwkf817h2z0pf0fcyf4mldv4hiv1wyam58hd4bcrjsw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl+ssl" ,sbcl-cl+ssl)
+         ("cl-binding-arrows" ,sbcl-binding-arrows)
+         ("cl-str" ,sbcl-cl-str)
+         ("cl-usocket" ,sbcl-usocket)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://github.com/charje/cl-yxorp")
+      (synopsis
+       "Reverse proxy server written in and configurable in Common Lisp")
+      (description
+       "This is a reverse proxy server written in and configurable in
+Common Lisp.  It supports WebSocket, HTTP, HTTPS, HTTP to HTTPS
+redirecting, port and host forwarding configuration using a real programming
+language, HTTP header and body manipulation (also using a real programming
+language).")
+      (license license:agpl3))))
+
+(define-public ecl-yxorp
+  ;; Note that due to a bug in ECL this package does not build.
+  ;; The bug has already been fixed on the development branch,
+  ;; so this package will work work in the version after 21.2.1.
+  (sbcl-package->ecl-package sbcl-yxorp))
+
+(define-public cl-yxorp
+  (sbcl-package->cl-source-package sbcl-yxorp))
+
 (define-public sbcl-rss
   ;; No release.
   (let ((commit "51d0145e91b86327ae5c36364f9c3048052e7a58"))
