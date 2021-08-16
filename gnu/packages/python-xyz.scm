@@ -142,6 +142,7 @@
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
@@ -20009,13 +20010,13 @@ Included are implementations of:
 (define-public bpython
   (package
     (name "bpython")
-    (version "0.20.1")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpython" version))
        (sha256
-        (base32 "00vmkkc79mlnkyvwww1cr7bpwmf4p61704dhayz6kd0kc203hxvf"))))
+        (base32 "11wlf12nm6ggn9512y4yqs26s8gdgpx0h9ls94k7fsjgjy4rpal8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -20041,14 +20042,17 @@ Included are implementations of:
        ("python-curtsies" ,python-curtsies)
        ("python-greenlet" ,python-greenlet)
        ("python-six" ,python-six)
-       ("python-wcwidth" ,python-wcwidth)
+       ("python-cwcwidth" ,python-cwcwidth)
+       ("python-pyxdg" ,python-pyxdg)
        ;; optional dependencies
        ("python-urwid" ,python-urwid)   ; for bpython-urwid only
        ("python-watchdog" ,python-watchdog)
        ("python-jedi" ,python-jedi)))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)
-       ("python-mock" ,python-mock)))
+       ("python-mock" ,python-mock)
+       ("python-tox" ,python-tox)
+       ("python-wheel" ,python-wheel)))
     (home-page "https://bpython-interpreter.org/")
     (synopsis "Fancy interface to the Python interpreter")
     (description "Bpython is a fancy interface to the Python
