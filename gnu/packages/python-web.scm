@@ -1177,7 +1177,8 @@ and written in Python.")
      `(("libxml2" ,libxml2)))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
-       ("python-beautifulsoup4" ,python-beautifulsoup4)))
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-chardet" ,python-chardet)))
     (home-page "https://html5-parser.readthedocs.io")
     (synopsis "Fast C-based HTML5 parsing for Python")
     (description "This package provides a fast implementation of the HTML5
