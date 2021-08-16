@@ -966,14 +966,14 @@ than a terminal.")
 (define-public python-curtsies
   (package
     (name "python-curtsies")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "curtsies" version))
        (sha256
         (base32
-         "019bpf5wmng4f6ic2ykg893ypfihpfvzi6dhblcagfwbincl79ac"))))
+         "1g8dwafx4vx06isjkn28r3cwb0hw1bv67lgygaz34yk66lrzz1x5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -983,7 +983,7 @@ than a terminal.")
              (invoke "nosetests" "-v"))))))
     (propagated-inputs
      `(("python-blessings" ,python-blessings)
-       ("python-wcwidth" ,python-wcwidth)))
+       ("python-cwcwidth" ,python-cwcwidth)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pyte" ,python-pyte)
