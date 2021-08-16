@@ -5631,21 +5631,20 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "3.1.2")
+    (version "3.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32 "1nmshfqh7wyg15i16hx1yiylcvzkws29ivn66n3i0wyqwcpjr3lf"))
-       (patches
-        (search-patches "python-matplotlib-run-under-wayland-gtk3.patch"))))
+        (base32 "06032j0ccjxldx4z9kf97qps2g36mfgvy1nap3b9n75kzmnm4kzw"))))
     (build-system python-build-system)
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
        ("python-kiwisolver" ,python-kiwisolver)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
+       ("python-certifi" ,python-certifi)
        ("gobject-introspection" ,gobject-introspection)
        ("python-tkinter" ,python "tk")
        ("python-dateutil" ,python-dateutil)
@@ -5662,6 +5661,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
     (inputs
      `(("libpng" ,libpng)
        ("freetype" ,freetype)
+       ("qhull" ,qhull)
        ("cairo" ,cairo)
        ("glib" ,glib)
        ;; FIXME: Add backends when available.
@@ -5672,6 +5672,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
      `(("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)
        ("python-mock" ,python-mock)
+       ("python-wheel" ,python-wheel)
        ("unzip" ,unzip)
        ("jquery-ui"
         ,(origin
@@ -5694,7 +5695,8 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
                                               "test_.*\\.py$"))
                (("^from matplotlib" match)
                 (string-append "import pytest\n" match))
-               (("( *)@image_comparison" match indent)
+               (("( *)@([^_]+_)*(image_comparison|check_figures_equal)" match
+                 indent)
                 (string-append indent
                                "@pytest.mark.skip(reason=\"unknown minor image differences\")\n"
                                match)))
@@ -5703,7 +5705,9 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
              (for-each delete-file
                        ;; test_normal_axes, test_get_tightbbox_polar
                        '("lib/matplotlib/tests/test_axes.py"
-                         ;; We don't use the webagg backend and this test forces it.
+                         "lib/matplotlib/tests/test_polar.py"
+                         ;; We don't use the webagg backend and this test
+                         ;; forces it.
                          "lib/matplotlib/tests/test_backend_webagg.py"
                          ;; test_outward_ticks
                          "lib/matplotlib/tests/test_tightlayout.py"
@@ -5718,9 +5722,11 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((python-version (python-version
                                       (assoc-ref inputs "python")))
-                    (dir (string-append (assoc-ref outputs "out")
-                                       "/lib/python" python-version "/site-packages"
-                                       "/matplotlib/backends/web_backend/")))
+                    (dir
+                     (string-append (assoc-ref outputs "out")
+                                    "/lib/python" python-version
+                                    "/site-packages"
+                                    "/matplotlib/backends/web_backend/")))
                (mkdir-p dir)
                (invoke "unzip"
                        (assoc-ref inputs "jquery-ui")
@@ -5743,7 +5749,10 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
                  (setenv "CFLAGS" "-ffloat-store"))
                (call-with-output-file "setup.cfg"
                  (lambda (port)
-                   (format port "[directories]~%
+                   (format port "[libs]~%
+system_freetype = true
+system_qhull = true
+[directories]~%
 basedirlist = ~a,~a~%
 [packages]~%
 tests = True~%"
