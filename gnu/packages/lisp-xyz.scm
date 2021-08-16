@@ -57,6 +57,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system asdf)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages c)
@@ -18285,6 +18286,36 @@ language).")
 
 (define-public cl-yxorp
   (sbcl-package->cl-source-package sbcl-yxorp))
+
+(define-public cl-yxorp-cli
+  (package
+    (inherit sbcl-yxorp)
+    (name "cl-yxorp-cli")
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:strip-binaries? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (replace 'build
+           (lambda _
+             (invoke
+              "sbcl" "--noinform"
+              "--non-interactive"
+              "--no-userinit"
+              "--eval" "(require :asdf)"
+              "--eval" "(pushnew (uiop:getcwd) asdf:*central-registry*)"
+              "--load" "build.lisp")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "cl-yxorp" bin)))))))
+    (inputs (cons (list "sbcl" sbcl) (package-inputs sbcl-yxorp)))))
 
 (define-public sbcl-rss
   ;; No release.
