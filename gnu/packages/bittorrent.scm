@@ -90,6 +90,10 @@
        (list (string-append "--localedir="
                             (assoc-ref %outputs "gui")
                             "/share/locale"))
+       ;; Some tests segfault when using libevent 2.12 without internet
+       ;; connection. This has been reported mainstream but not fixed yet:
+       ;; https://github.com/transmission/transmission/issues/1437.
+       #:tests? #f
        #:glib-or-gtk-wrap-excluded-outputs '("out")
        #:phases
        (modify-phases %standard-phases
