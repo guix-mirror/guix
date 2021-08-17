@@ -95,6 +95,7 @@
             target-aarch64?
             target-arm?
             target-ppc32?
+            target-ppc64le?
             target-powerpc?
             target-64bit?
             cc-for-target
@@ -694,6 +695,10 @@ architecture (x86_64)?"
 (define* (target-ppc32? #:optional (target (or (%current-target-system)
                                                (%current-system))))
   (string-prefix? "powerpc-" target))
+
+(define* (target-ppc64le? #:optional (target (or (%current-target-system)
+                                               (%current-system))))
+  (string-prefix? "powerpc64le-" target))
 
 (define* (target-powerpc? #:optional (target (or (%current-target-system)
                                                  (%current-system))))
