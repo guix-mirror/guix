@@ -45,6 +45,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 lasnesne <lasnesne@lagunposprasihopre.org>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,6 +411,43 @@ from many programming languages.")
      "i3lock is a simple X11 screen locker developed alongside the i3 project.
 Despite the name it should work with any X11 window manager.")
     (license license:bsd-3)))
+
+(define-public i3lock-blur
+  (package
+    (name "i3lock-blur")
+    (version "2.10")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/karulont/i3lock-blur")
+                (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bd5nrlga5g1sz1f64gnc3dqy8yfrr4q1ss59krymbpxa1hhf55c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("mesa" ,mesa)
+       ("libev" ,libev)
+       ("linux-pam" ,linux-pam)
+       ("libxcb" ,libxcb)
+       ("libxkbcommon" ,libxkbcommon)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-xrm" ,xcb-util-xrm)))
+    (home-page "https://github.com/karulont/i3lock-blur")
+    (synopsis "Lightweight screen locker with transparent blurring background")
+    (description
+     "Simple X11 screen locker with transparent blurring background developed
+alongside the i3 project.  Despite the name it should work with any X11 window
+manager.")
+    (license license:expat)))
 
 (define-public i3blocks
   (package
