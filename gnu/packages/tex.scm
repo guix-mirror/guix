@@ -385,6 +385,15 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
                 "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
              #t))
+         ,@(if (target-ppc32?)
+             ;; Some mendex tests fail on some architectures.
+             `((add-after 'unpack 'skip-mendex-tests
+                 (lambda _
+                   (substitute* '("texk/mendexk/tests/mendex.test"
+                                  "texk/upmendex/tests/upmendex.test")
+                     (("srcdir/tests/pprecA-0.ind pprecA-0.ind1 \\|\\| exit 1")
+                      "srcdir/tests/pprecA-0.ind pprecA-0.ind1 || exit 77")))))
+             '())
          (add-after 'unpack 'unpack-texlive-extra
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir "texlive-extra")
