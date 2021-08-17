@@ -26,7 +26,7 @@
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
@@ -175,14 +175,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.32.0")
+   (version "2.33.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "08rnm3ipjqdd2n31dw7mxl3iv9g4nxgc409krmz892a37kd43a38"))))
+              "0kqcs8nj5h7rh3q86pw5777awq7gn77lgxk88ynjl1rfz2snlg5z"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -202,7 +202,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1hba3wh1fmhrwzw93a0m7q4kb3kwwwi1bx4457c4lkf94l2cpqqr"))))
+            "0cdwqhj6yx3rlzvvfh0jamzjva9svd8kxmb5kqsp8nz47yz8mlyn"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
