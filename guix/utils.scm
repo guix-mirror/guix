@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
@@ -94,6 +94,7 @@
             target-arm32?
             target-aarch64?
             target-arm?
+            target-ppc32?
             target-powerpc?
             target-64bit?
             cc-for-target
@@ -689,6 +690,10 @@ architecture (x86_64)?"
 (define* (target-arm? #:optional (target (or (%current-target-system)
                                              (%current-system))))
   (or (target-arm32? target) (target-aarch64? target)))
+
+(define* (target-ppc32? #:optional (target (or (%current-target-system)
+                                               (%current-system))))
+  (string-prefix? "powerpc-" target))
 
 (define* (target-powerpc? #:optional (target (or (%current-target-system)
                                                  (%current-system))))
