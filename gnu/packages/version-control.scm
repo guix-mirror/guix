@@ -538,6 +538,13 @@ as well as the classic centralized workflow.")
    (description
     "Git is a free distributed version control system designed to handle
 everything from small to very large projects with speed and efficiency.")
+   ;; XXX: Ignore this CVE to work around a name clash with the unrelated
+   ;; "cpe:2.3:a:jenkins:git" package.  The proper fix is for (guix cve) to
+   ;; account for "vendor names".
+   (properties '((lint-hidden-cve . ("CVE-2018-1000182"
+                                     "CVE-2018-1000110"
+                                     "CVE-2019-1003010"
+                                     "CVE-2020-2136"))))
    (license license:gpl2)
    (home-page "https://git-scm.com/")))
 
