@@ -4581,8 +4581,7 @@ and RDP protocols.")
                       ;; much longer than the default of 30 seconds.
                       (substitute* "tests/meson.build"
                         (("test\\(unit_test\\[0\\], exe" all)
-                         (string-append all ", timeout : 90")))
-                      #t)))))
+                         (string-append all ", timeout: 300"))))))))
     (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
