@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
 (define-module (gnu packages python-crypto)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -938,6 +940,22 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python2-josepy
   (package-with-python2 python-josepy))
 
+(define pycryptodome-unbundle-tomcrypt-snippet
+  #~(begin
+      ;; Unbundle libtomcrypt.
+      (delete-file-recursively "src/libtom")
+      (substitute* "src/DES.c"
+        (("#include \"libtom/tomcrypt_des.c\"")
+         "#include <tomcrypt.h>"))
+      (substitute* "setup.py"
+        (("include_dirs=\\['src/', 'src/libtom/'\\]")
+         ;; FIXME: why does '-ltomcrypt' need to be added
+         ;; manually, even when 'tomcrypt' is added to 'libraries'?
+         ;; This behaviour is not documented at
+         ;; <https://docs.python.org/3/extending/building.html>.
+         "include_dirs=['src/'], libraries=['tomcrypt', 'tommath'],
+ extra_link_args=['-ltomcrypt', '-ltommath']"))))
+
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
@@ -948,8 +966,13 @@ protocol (Javascript Object Signing and Encryption).")
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "1i4m74f88qj9ci8rpyzrbk2slmsdj5ipmwdkq6qk24byalm203li"))))
+         "1i4m74f88qj9ci8rpyzrbk2slmsdj5ipmwdkq6qk24byalm203li"))
+       (modules '((guix build utils)))
+       (snippet pycryptodome-unbundle-tomcrypt-snippet)))
     (build-system python-build-system)
+    (inputs
+     `(("libtomcrypt" ,libtomcrypt)
+       ("libtommath" ,libtommath)))
     (home-page "https://www.pycryptodome.org")
     (synopsis "Low-level cryptographic Python library")
     (description
