@@ -337,13 +337,13 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
          "--with-system-teckit"
          "--with-system-zlib"
          "--with-system-zziplib"
-         ;; LuaJIT is not ported to powerpc64le* yet.
-         ,@(if (string-prefix? "powerpc64le" (or (%current-target-system)
-                                                 (%current-system)))
-               '("--disable-luajittex"
-                 "--disable-luajithbtex"
-                 "--disable-mfluajit")
-               '()))
+         ;; LuaJIT is not ported to some architectures yet.
+         ,@(if (or (target-ppc64le?)
+                   (target-riscv64?))
+             '("--disable-luajittex"
+               "--disable-luajithbtex"
+               "--disable-mfluajit")
+             '()))
 
       ;; Disable tests on some architectures to cope with a failure of
       ;; luajiterr.test.
@@ -381,7 +381,8 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
              (substitute* "texk/web2c/omegafonts/check.test"
                (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
                 "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))))
-         ,@(if (target-ppc32?)
+         ,@(if (or (target-ppc32?)
+                   (target-riscv64?))
              ;; Some mendex tests fail on some architectures.
              `((add-after 'unpack 'skip-mendex-tests
                  (lambda _
