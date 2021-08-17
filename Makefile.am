@@ -517,6 +517,8 @@ SCM_TESTS =					\
 
 if HAVE_GUILE_LIB
 SCM_TESTS += tests/go.scm
+else
+EXTRA_DIST += tests/go.scm
 endif
 
 if BUILD_DAEMON_OFFLOAD
