@@ -384,14 +384,14 @@ from many programming languages.")
 (define-public i3lock
   (package
     (name "i3lock")
-    (version "2.11.1")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/i3lock/i3lock-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "015dn534m7cxjvqdncpvaq9p8b2r4w5hp1yanbdy2abmhbcc7a7j"))))
+                "02szjsaz7rqrdkd0r2nwgwa85c4hwfrcskxw7ryk695kmjcfhzv3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
