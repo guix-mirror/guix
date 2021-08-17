@@ -645,6 +645,7 @@ Features include:
     (inputs
      `(("imagemagick" ,imagemagick)
        ("wmctrl" ,wmctrl)
+       ("i3lock" ,i3lock)
        ("gawk" ,gawk)))
     (home-page "https://github.com/meskarune/i3lock-fancy")
     (synopsis "Screen locker with screenshot function")
