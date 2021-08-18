@@ -457,13 +457,13 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
               #t))
          (add-after 'unpack 'adjust-test-suite
            (lambda* (#:key inputs #:allow-other-keys)
-             (let (;(pcre2 (assoc-ref inputs "pcre2"))
+             (let ((pcre2 (assoc-ref inputs "pcre2"))
                    (mbedtls-apache (assoc-ref inputs "mbedtls"))
                    (mpfr (assoc-ref inputs "mpfr"))
                    (suitesparse (assoc-ref inputs "suitesparse")))
                ;; Some tests only check to see if the input is the correct version.
-               ;(substitute* "stdlib/PCRE2_jll/test/runtests.jl"
-               ;  (("10.36.0") ,(package-version pcre2)))
+               (substitute* "stdlib/PCRE2_jll/test/runtests.jl"
+                 (("10.36.0") ,(package-version pcre2)))
                (substitute* "stdlib/MbedTLS_jll/test/runtests.jl"
                  (("2.24.0") ,(package-version mbedtls-apache)))
                (substitute* "stdlib/MPFR_jll/test/runtests.jl"
@@ -647,9 +647,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
        ("openblas" ,openblas)
        ("openlibm" ,openlibm)
        ("p7zip" ,p7zip)
-       ;; pcre2-10.35 has a bug with the JIT regex parser:
-       ;; https://github.com/JuliaLang/julia/issues/40231#issuecomment-812753324
-       ("pcre2" ,pcre2-10.36)
+       ("pcre2" ,pcre2)
        ("suitesparse" ,suitesparse)
        ("utf8proc" ,utf8proc-2.6.1)
        ("wget" ,wget)
