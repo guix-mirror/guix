@@ -1025,7 +1025,9 @@ PyCryptodome variants, the other being python-pycryptodomex.")
        (method url-fetch)
        (uri (pypi-uri "pycryptodomex" version))
        (sha256
-        (base32 "0lbx4qk3xmwqiidhmkj8qa7bh2lf8bwzg0xjpsh2w5zqjrc7qnvv"))))
+        (base32 "0lbx4qk3xmwqiidhmkj8qa7bh2lf8bwzg0xjpsh2w5zqjrc7qnvv"))
+       (modules '((guix build utils)))
+       (snippet pycryptodome-unbundle-tomcrypt-snippet)))
     (description
      "PyCryptodome is a self-contained Python package of low-level
 cryptographic primitives.  It's not a wrapper to a separate C library like
