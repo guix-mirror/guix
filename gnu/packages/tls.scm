@@ -380,6 +380,14 @@ OpenSSL for TARGET."
                                #$(target->openssl-target
                                   (%current-target-system))))))
                 #~())
+         ;; This test seems to be dependant on kernel features.
+         ;; https://github.com/openssl/openssl/issues/12242
+         #$@(if (target-arm?)
+              #~((replace 'check
+                   (lambda* (#:key tests? test-target #:allow-other-keys)
+                     (when tests?
+                       (invoke "make" "TESTS=-test_afalg" test-target)))))
+              #~())
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (let* ((out #$output)
