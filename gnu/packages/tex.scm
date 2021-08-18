@@ -4074,7 +4074,7 @@ configuration of a base set of packages plus PACKAGES."
                   (file-name "updmap.cfg")
                   (sha256
                    (base32
-                    "1q3l7yx5sng080ibfb8z3rdah0hhq170j6xw8z1w8i4w9m37lp94"))))
+                    "0zhpyld702im6352fwp41f2hgfkpj2b4j1kfsjqbkijlcmvb6w2c"))))
         (name "texlive-updmap.cfg")
         (build-system copy-build-system)
         (arguments
