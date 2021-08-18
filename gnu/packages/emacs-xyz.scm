@@ -28411,6 +28411,28 @@ Features:
 @end itemize\n")
     (license license:gpl3+)))
 
+(define-public emacs-pcmpl-args
+  (package
+    (name "emacs-pcmpl-args")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JonWaltman/pcmpl-args.el")
+             (commit version)))
+       (sha256
+        (base32 "19xwwpfcf0l9jh7xixyjd5adivj27jw00zvxb7n1240k5p332pzi"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/JonWaltman/pcmpl-args.el")
+    (synopsis "Enhanced shell command completion")
+    (description
+     "pcmpl-args extends option and argument completion of shell commands read
+by Emacs.  It is intended to make shell completion in Emacs comparable to the
+rather excellent completion provided by both Bash and Zsh.")
+    (license license:gpl3+)))
+
 (define-public emacs-shell-command+
   (package
     (name "emacs-shell-command+")
