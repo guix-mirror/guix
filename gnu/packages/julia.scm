@@ -460,6 +460,8 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              (let ((pcre2 (assoc-ref inputs "pcre2"))
                    (mbedtls-apache (assoc-ref inputs "mbedtls"))
                    (mpfr (assoc-ref inputs "mpfr"))
+                   (gmp (assoc-ref inputs "gmp"))
+                   (nghttp2 (assoc-ref inputs "libnghttp2"))
                    (suitesparse (assoc-ref inputs "suitesparse")))
                ;; Some tests only check to see if the input is the correct version.
                (substitute* "stdlib/PCRE2_jll/test/runtests.jl"
@@ -468,6 +470,10 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                  (("2.24.0") ,(package-version mbedtls-apache)))
                (substitute* "stdlib/MPFR_jll/test/runtests.jl"
                  (("4.1.0") ,(package-version mpfr)))
+               (substitute* "stdlib/GMP_jll/test/runtests.jl"
+                 (("6.2.0") ,(package-version gmp)))
+               (substitute* "stdlib/nghttp2_jll/test/runtests.jl"
+                 (("1.41.0") ,(package-version nghttp2)))
                (substitute* "stdlib/SuiteSparse_jll/test/runtests.jl"
                  (("5004") ,(string-replace-substring
                               (version-major+minor
