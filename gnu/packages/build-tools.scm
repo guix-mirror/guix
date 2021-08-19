@@ -264,7 +264,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.59.0")
+    (version "0.59.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -272,7 +272,7 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xp45ihjkl90s4crzh9qmaajxq7invbv5k0yw3gl7dk4vycc4xp3"))))
+                "0v9m0bazhj48kwc8x3gkxg5c3kcvknvqfjlq22z6pm2h2r2nln6v"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs and patching many
