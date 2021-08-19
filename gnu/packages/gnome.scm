@@ -2851,15 +2851,15 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
-    (version "3.34.3")
+    (version "40.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "025rj1fskw1y448hiar4a9icyzpyr242nlh9xhsmyp8jb71dihp7"))))
+                "1xpqa1rgmixlp953938d08xvf7kv36h747ysial8g65dsrp46v0b"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
 
