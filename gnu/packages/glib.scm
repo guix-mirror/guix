@@ -178,7 +178,7 @@ shared NFS home directories.")
 (define glib
   (package
     (name "glib")
-    (version "2.68.0")
+    (version "2.68.3")
     (source
      (origin
        (method url-fetch)
@@ -187,7 +187,7 @@ shared NFS home directories.")
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1sh3h6b734cxhdd1qlzvhxq6rc7k73dsisap5y3s419s9xc4ywv7"))
+        (base32 "0f1iprj7v0b5wn9njj39dkl25g6filfs7i4ybk20jq821k1a7qg7"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
@@ -291,10 +291,6 @@ shared NFS home directories.")
                  (("bindir=\\$\\{prefix\\}/bin") "")
                  (("=\\$\\{bindir\\}/") "="))
                #t))))))
-    ;; TODO: see above for explanation.
-    ;; #:configure-flags (list (string-append "--bindir="
-    ;;                                        (assoc-ref %outputs "bin")
-    ;;                                        "/bin"))
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)
        ("gettext" ,gettext-minimal)
