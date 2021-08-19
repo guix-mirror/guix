@@ -7088,7 +7088,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.58.3")
+    (version "1.68.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7096,30 +7096,26 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bkksx362007zs8c31ydygb29spwa5g5kch1ad2grc2sp53wv7ya"))))
-    (build-system gnu-build-system)
+                "0c7fclm53v41n5vfndymp35fbh1x218lrk65iqrk1wc2lsnh5zvh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "installed-tests/scripts/testCommandLine.sh"
+                    (("Valentín") "")
+                    (("☭") ""))))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags '("-Dinstalled_tests=false")
+       #:phases
        (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
-          (lambda _
-            ;; The test suite requires a running X server.
-            (system "Xvfb :1 &")
-            (setenv "DISPLAY" ":1")
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; The test suite requires a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
 
-            ;; For the missing /etc/machine-id.
-            (setenv "DBUS_FATAL_WARNINGS" "0")
-
-            ;; Our mozjs-38 package does not compile the required Intl API
-            ;; support for these failing tests.
-            (substitute* "installed-tests/js/testLocale.js"
-              ((".*toBeDefined.*") "")
-              ((".*expect\\(datestr\\).*") ""))
-            (substitute* "installed-tests/scripts/testCommandLine.sh"
-              (("Valentín") "")
-              (("☭") ""))
-            #t)))))
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
        ("pkg-config" ,pkg-config)
@@ -7133,7 +7129,7 @@ configuration program to choose applications starting on login.")
      ;; These are all in the Requires.private field of gjs-1.0.pc.
      `(("cairo" ,cairo)
        ("gobject-introspection" ,gobject-introspection)
-       ("mozjs" ,mozjs-60)))
+       ("mozjs" ,mozjs-78)))
     (inputs
      `(("gtk+" ,gtk+)
        ("readline" ,readline)))
