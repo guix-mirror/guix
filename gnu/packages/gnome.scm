@@ -10874,7 +10874,7 @@ tabs, and it supports drag and drop re-ordering of terminals.")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method git-fetch)
@@ -10883,14 +10883,26 @@ tabs, and it supports drag and drop re-ordering of terminals.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0345x7gif6yjm95y62lww71lj84wfwsr2p32r3iww8shavb8scyk"))))
+        (base32 "1ng2607cp4dfl169rj7zi8q5p6fzxy3a4l0glm7mj75yd1a603rz"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        '("-Dglade_catalog=enabled"
-         "-Dgtk_doc=true")
+         ;; XXX: Generating the documentation fails because the
+         ;; libhandy.devhelp2 document cannot be created. This seems to be
+         ;; caused by a problem during the XSL transformation.
+         "-Dgtk_doc=false")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each
+              (lambda (file)
+                (substitute* file
+                  (("http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd")
+                   (search-input-file inputs
+                                      "/xml/dtd/docbook/docbookx.dtd"))))
+              (find-files "doc" "\\.xml"))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -10899,12 +10911,15 @@ tabs, and it supports drag and drop re-ordering of terminals.")
              #t)))))
     (inputs
      `(("gtk+" ,gtk+)
-       ("glade" ,glade3)
-       ("libxml2" ,libxml2)))
+       ("glade" ,glade3)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
        ("vala" ,vala)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.3)
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
