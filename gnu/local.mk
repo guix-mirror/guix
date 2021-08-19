@@ -1107,6 +1107,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/giara-fix-login.patch                      \
+  %D%/packages/patches/glade-gls-set-script-name.patch	        \
+  %D%/packages/patches/glade-test-widget-null-icon.patch	\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-networking-gnutls-binding.patch	\
   %D%/packages/patches/glib-skip-failing-test.patch		\

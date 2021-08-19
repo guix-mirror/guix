@@ -3169,7 +3169,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.36.0")
+    (version "3.38.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3177,14 +3177,28 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "023gx8rj51njn8fsb6ma5kz1irjpxi4js0n8rwy22inc4ysldd8r"))))
-    (build-system glib-or-gtk-build-system)
+                "1dxsiz9ahqkxg2a1dw9sbd8jg59y5pdz4c1gvnbmql48gmj8gz4q"))
+              (patches (search-patches
+                        "glade-gls-set-script-name.patch"
+                        "glade-test-widget-null-icon.patch"))))
+    (build-system meson-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))))
+         ;; XXX: Remove it once this issue is fixed:
+         ;; https://issues.guix.gnu.org/50105.
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "tests/meson.build"
+               (("\\['modules") "#['modules"))))
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "man/Makefile.in"
+             (substitute* "man/meson.build"
                (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
                 (string-append (assoc-ref inputs "docbook-xsl")
                                "/xml/xsl/docbook-xsl-"
@@ -3208,7 +3222,10 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
        ("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("python" ,python-2)
+       ("glib:bin" ,glib "bin")
+       ("python-pygobject" ,python-pygobject)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gjs" ,gjs)
        ("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://glade.gnome.org")

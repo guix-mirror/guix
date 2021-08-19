@@ -1,0 +1,30 @@
+Taken from upstream:
+https://gitlab.gnome.org/GNOME/glade/-/commit/6cf1d3e11d4f8035f33c3003d33f6465896025a5.
+
+From eb0429d318c017b57b9e59de1d5b3f142a0f455e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marco=20Trevisan=20=28Trevi=C3=B1o=29?= <mail@3v1n0.net>
+Date: Wed, 19 May 2021 00:10:29 +0200
+Subject: [PATCH] tests: Do not create a file icon when no filename is provided
+
+This would fail otherwise as GFileIcon requires a GFile parameter on
+construction.
+---
+ tests/create-widgets.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tests/create-widgets.c b/tests/create-widgets.c
+index 2094059d..db8311f8 100644
+--- a/tests/create-widgets.c
++++ b/tests/create-widgets.c
+@@ -106,6 +106,8 @@ main (int   argc,
+       if (G_TYPE_IS_INSTANTIATABLE (adaptor_type) && !G_TYPE_IS_ABSTRACT (adaptor_type) &&
+           /* FIXME: can not create a themed icon without a name */
+           !g_type_is_a (adaptor_type, G_TYPE_THEMED_ICON) &&
++          /* FIXME: can not create a file icon without a file name */
++          !g_type_is_a (adaptor_type, G_TYPE_FILE_ICON) &&
+           /* FIXME: GtkPopoverMenu gives a few warnings */
+           !g_type_is_a (adaptor_type, GTK_TYPE_POPOVER_MENU) &&
+           /* FIXME: GtkFileChooserNative is hard to test here */
+-- 
+GitLab
+
