@@ -2047,7 +2047,7 @@ information.")
 (define-public gtk-doc
   (package
     (name "gtk-doc")
-    (version "1.32")
+    (version "1.33.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2055,9 +2055,10 @@ information.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0z4h1dggpimygdp719l457jvqilps4qcfpk31jmj3jqpzcsg03ny"))))
-    (build-system glib-or-gtk-build-system)
-    (outputs '("out" "help"))
+                "0hxza8qp52lrq7s1vbilz2vh4170cail560zi8khl0zb42d706yc"))
+              (patches
+               (search-patches "gtk-doc-respect-xml-catalog.patch"))))
+    (build-system meson-build-system)
     (arguments
      `(#:parallel-tests? #f
        #:phases
@@ -2078,24 +2079,9 @@ information.")
              #t))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "tests/Makefile.in"
+             (substitute* "tests/Makefile.am"
                (("annotations.sh bugs.sh empty.sh fail.sh gobject.sh program.sh")
                 ""))
-             #t))
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "configure"
-               ;; The configure check is overzealous about making sure that
-               ;; things are in place -- it uses the xmlcatalog tool to make
-               ;; sure that docbook-xsl is available, but this tool can only
-               ;; look in one catalog file, unlike the $XML_CATALOG_FILES
-               ;; variable that Guix defines.  Fool the test by using the
-               ;; docbook-xsl catalog explicitly and get on with life.
-               (("\"\\$XML_CATALOG_FILE\" \
-\"http://docbook.sourceforge.net/release/xsl/")
-                (string-append (car (find-files (assoc-ref inputs "docbook-xsl")
-                                                "^catalog.xml$"))
-                               " \"http://docbook.sourceforge.net/release/xsl/")))
              #t))
          (add-after 'install 'wrap-executables
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2103,15 +2089,7 @@ information.")
                (for-each (lambda (prog)
                            (wrap-program prog
                              `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
-                         (find-files (string-append out "/bin")))
-               #t))))
-       #:configure-flags
-       (list (string-append "--with-xml-catalog="
-                            (assoc-ref %build-inputs "docbook-xml")
-                            "/xml/dtd/docbook/catalog.xml")
-             (string-append "--with-help-dir="
-                            (assoc-ref %outputs "help")
-                            "/share/help"))))
+                         (find-files (string-append out "/bin")))))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
