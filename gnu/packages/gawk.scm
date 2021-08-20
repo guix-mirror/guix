@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,3 +94,30 @@ language for the easy manipulation of formatted text, such as tables of data.
 Gawk features many extensions beyond the traditional implementation,
 including network access, sorting, and large libraries.")
    (license gpl3+)))
+
+(define-public mawk
+  (package
+    (name "mawk")
+    (version "1.3.4-20200120")
+    (home-page "https://invisible-island.net/mawk/mawk.html")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://invisible-mirror.net/archives/mawk"
+                                  "/mawk-" version ".tgz"))
+              (sha256
+               (base32
+                "0dw2icf8bnqd9y0clfd9pkcxz4b2phdihwci13z914mf3wgcvm3z"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Prevent tests from hard coding PATH to a bogus value.
+                  (substitute* '("test/mawktest" "test/fpe_test")
+                    (("^PATH=.*")
+                     ""))))))
+    (build-system gnu-build-system)
+    (synopsis "Text scanning and processing language")
+    (description
+     "@command{mawk} is an interpreter for the Awk programming language.
+This version aims to be smaller and faster than GNU Awk, at the expense
+of fewer features and extensions.")
+    (license gpl2))) ;version 2 only
