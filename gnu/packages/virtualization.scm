@@ -2073,14 +2073,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20201218")
+    (version "20210809")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ydbindwgw7kg861rqii5036gq0dbbbmv35dzrmmv937ddfsxwh0"))))
+                "16gas6ahxwim1vdjlc4p1gm6q5gfy25h82ngykcm94x69sl6qsan"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
