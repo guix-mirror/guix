@@ -4137,28 +4137,23 @@ cross-platform SDL C library.")
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "make")
-             #t))
-         (replace 'check
-           (lambda _
-             (invoke "make" "tests")
-             #t))
-         (add-before 'install 'set-binpath
-           ;; Change binary path in the makefile
-           (lambda _
-             (let ((out (assoc-ref %outputs "out")))
-               (substitute* "GNUmakefile"
-                 (("BINDIR = (.*)$")
-                  (string-append "BINDIR = " out "/bin"))))
-             #t))
-         (replace 'install
-           (lambda _
-             (invoke "make" "install")
-             #t)))))
+       ,#~(modify-phases %standard-phases
+            (delete 'configure)
+            (replace 'build
+              (lambda _
+                (invoke "make")))
+            (replace 'check
+              (lambda _
+                (invoke "make" "tests")))
+            (add-before 'install 'set-binpath
+              ;; Change binary path in the makefile
+              (lambda _
+                (substitute* "GNUmakefile"
+                  (("BINDIR = (.*)$")
+                   (string-append "BINDIR = " #$output "/bin")))))
+            (replace 'install
+              (lambda _
+                (invoke "make" "install"))))))
     (synopsis "Proof-checker for the λΠ-calculus modulo theory, an extension of
 the λ-calculus")
     (description "Dedukti is a proof-checker for the λΠ-calculus modulo
