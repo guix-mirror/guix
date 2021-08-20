@@ -44,6 +44,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -644,13 +645,11 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
     (build-system ocaml-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "SHELL="
-                            (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))
+       ,#~(list (string-append "SHELL="
+                               #+(file-append (canonical-package bash-minimal)
+                                              "/bin/sh")))
        #:make-flags
-       (list (string-append "LIBDIR="
-                            (assoc-ref %outputs "out")
-                            "/lib/ocaml/site-lib"))
+       ,#~(list (string-append "LIBDIR=" #$output "/lib/ocaml/site-lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-test-script
