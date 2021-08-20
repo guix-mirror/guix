@@ -31,7 +31,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix build utils) #:select (alist-replace))
@@ -77,7 +77,7 @@
      "DocBook is general purpose XML and SGML document type particularly well
 suited to books and papers about computer hardware and software (though it is
 by no means limited to these applications.)  This package provides XML DTDs.")
-    (license (x11-style "" "See file headers."))))
+    (license (license:x11-style "" "See file headers."))))
 
 (define-public docbook-xml
   (package
@@ -215,7 +215,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (synopsis "DocBook XSL style sheets for document authoring")
     (description
      "This package provides XSL style sheets for DocBook.")
-    (license (x11-style "" "See 'COPYING' file."))))
+    (license (license:x11-style "" "See 'COPYING' file."))))
 
 (define-public docbook-dsssl
   (package
@@ -256,7 +256,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (home-page "https://docbook.org/")
     (synopsis "DSSSL style sheets for DocBook")
     (description "This package provides DSSSL style sheets for DocBook.")
-    (license (non-copyleft "file://README"))))
+    (license (license:non-copyleft "file://README"))))
 
 ;;; Private variable, used as the 'doc' output of the docbook-dsssl package.
 (define docbook-dsssl-doc
@@ -294,7 +294,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (home-page "https://docbook.org/")
     (synopsis "DocBook DSSSL style sheets documentation")
     (description "Documentation for the DocBook DSSSL style sheets.")
-    (license (non-copyleft "file://doc/LEGALNOTICE.htm"))))
+    (license (license:non-copyleft "file://doc/LEGALNOTICE.htm"))))
 
 (define-public docbook-sgml
   (package
@@ -336,7 +336,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (home-page "https://docbook.org")
     (synopsis "DocBook SGML style sheets for document authoring")
     (description "This package provides SGML style sheets for DocBook.")
-    (license (x11-style "" "See file headers."))))
+    (license (license:x11-style "" "See file headers."))))
 
 (define-public docbook-sgml-3.1
   (package
@@ -377,7 +377,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (synopsis "ISO 8879 character entities")
     (description "ISO 8879 character entities that are typically used in
 the in DocBook SGML DTDs.")
-    (license (x11-style "" "See file headers."))))
+    (license (license:x11-style "" "See file headers."))))
 
 (define-public dblatex
   (package
@@ -461,7 +461,7 @@ to DVI, PostScript or PDF by translating them in pure LaTeX as a first
 process.  MathML 2.0 markups are supported too.  It started as a clone of
 DB2LaTeX.")
     ;; lib/contrib/which is under an X11 license
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 ;; This is a variant of the 'dblatex' package that is not updated often.  It
 ;; is intended to be used as a native-input at build-time only, e.g. by
