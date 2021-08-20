@@ -228,7 +228,7 @@ snapshots).")
 (define-public libdqlite
   (package
     (name "libdqlite")
-    (version "1.7.0")
+    (version "1.9.0")
     (home-page "https://github.com/canonical/dqlite")
     (source (origin
               (method git-fetch)
@@ -237,7 +237,7 @@ snapshots).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15cg8yl3n7lcg0qyg0byciz8v6y200ghmzzkwpdzggy3m6c168wl"))))
+                "0zalsvr0vy7632nhm96a29lrfy18iqsmbxpyz2lvq80mrjlbrzsn"))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
