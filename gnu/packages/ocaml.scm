@@ -583,10 +583,9 @@ for day to day programming.")
         ("ocaml-ounit" ,ocaml-ounit)))
     (arguments
      `(#:make-flags
-       (list
-         "all" "opt"
-         (string-append "BINDIR=" (assoc-ref %outputs "out")
-                        "/bin"))
+       ,#~(list
+           "all" "opt"
+           (string-append "BINDIR=" #$output "/bin"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
