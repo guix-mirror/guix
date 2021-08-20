@@ -3715,30 +3715,6 @@ in different ways.")
     (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
-(define-public minetest-mineclone
-  (package
-    (name "minetest-mineclone")
-    (version "0.71.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.minetest.land/Wuzzy/MineClone2")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0qm809dqvxc7pa1cr9skmglq9vrbq5hhm4c4m5yi46ldh1v96dgf"))))
-    (build-system copy-build-system)
-    (arguments
-     `(#:install-plan
-       '(("." "share/minetest/games/mineclone"))))
-    (synopsis "Minecraft clone based on Minetest engine")
-    (description
-     "MineClone is a Minetest subgame, that aims to recreate Minecraft as
-closely as the engine allows.")
-    (home-page "https://content.minetest.net/packages/Wuzzy/mineclone2/")
-    (license license:gpl3+)))
-
 (define glkterm
   (package
    (name "glkterm")

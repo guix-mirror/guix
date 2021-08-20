@@ -16,6 +16,7 @@
 (define-module (gnu packages minetest)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system minetest)
   #:use-module ((guix licenses) #:prefix license:))
 
@@ -173,6 +174,30 @@ with different rules and mechanics.")
     ;; <https://github.com/minetest-mods/mesecons/issues/575>.
     (license (list license:lgpl3+ license:cc-by-sa3.0))
     (properties `((upstream-name . "Jeija/mesecons"))))))
+
+(define-public minetest-mineclone
+  (package
+    (name "minetest-mineclone")
+    (version "0.71.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.minetest.land/Wuzzy/MineClone2")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qm809dqvxc7pa1cr9skmglq9vrbq5hhm4c4m5yi46ldh1v96dgf"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("." "share/minetest/games/mineclone"))))
+    (synopsis "Minecraft clone based on Minetest engine")
+    (description
+     "MineClone is a Minetest subgame, that aims to recreate Minecraft as
+closely as the engine allows.")
+    (home-page "https://content.minetest.net/packages/Wuzzy/mineclone2/")
+    (license license:gpl3+)))
 
 (define-public minetest-mobs
   (package
