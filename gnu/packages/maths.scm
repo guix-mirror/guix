@@ -1083,6 +1083,8 @@ computations.")
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags (list "--enable-shared"
+                               "FCFLAGS=-fallow-argument-mismatch"
+                               "FFLAGS=-fallow-argument-mismatch"
                                (string-append "CPPFLAGS=-I"
                                               (assoc-ref %build-inputs "libtirpc")
                                               "/include/tirpc"))
@@ -1116,7 +1118,7 @@ computations.")
              ;; .so-files.  We truncate the hashes to avoid
              ;; unnecessary store references to those compilers:
              (substitute* "libhdf4.settings"
-               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+               (("(/gnu/store/)([0-9A-Za-z]*)" all prefix hash)
                 (string-append prefix (string-take hash 10) "...")))
              #t))
          (add-after 'install 'provide-absolute-libjpeg-reference
