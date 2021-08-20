@@ -2231,7 +2231,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.8")
+    (version "5.13")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -2239,23 +2239,31 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "1abs3svkg9985f4jrxx34sj1dcpsf95vv1a0g01c777zgygncjnz"))))
+               "0mmns22bjjvakxj29si0x4dcylcgy26llpcimkb0llcxif439k2s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
            (lambda _
-             (substitute* "strace.c"
+             (substitute* "src/strace.c"
                (("/bin/sh") (which "sh")))
              #t))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             ;; XXX These hang forever even if the test time-out is extended.
              (substitute* "tests/Makefile.in"
-               (("^\tstrace-DD?D?\\.test \\\\.*") ""))
+               ;; XXX: This test fails because an extra readlink call is made
+               ;; by the glibc when using the ld.so cache.
+               (("readlink.gen.test[^:]") " ")
+
+               ;; XXX: These hang forever even if the test time-out is
+               ;; extended.
+               (("^\tstrace-DD?D?\\.test \\\\.*") "")
+               (("^\tpidns-cache.test \\\\.*") "")
+               (("^\t.*--pidns-translation.test \\\\.*") ""))
              #t)))
-       ;; Don't fail if the architecture doesn't support different personalities.
+       ;; Don't fail if the architecture doesn't support different
+       ;; personalities.
        #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
        #:parallel-tests? #f))           ; undeterministic failures
