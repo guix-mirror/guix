@@ -1746,7 +1746,9 @@ sharing of scientific data.")
                 "0x4acvfhbsx1q79dkkwrwbgfhm0w5ngnp4zj5kk92s1khihmqfhj"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f))
+     `(#:configure-flags '("FCFLAGS=-fallow-argument-mismatch"
+                           "FFLAGS=-fallow-argument-mismatch")
+       #:parallel-tests? #f))
     (inputs
      `(("netcdf" ,netcdf)))
     (native-inputs
