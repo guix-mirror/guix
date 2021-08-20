@@ -28,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages libevent)
@@ -188,7 +189,7 @@ independently or together to provide resilient infrastructures.")
 (define-public libraft
   (package
     (name "libraft")
-    (version "0.10.1")
+    (version "0.11.2")
     (home-page "https://github.com/canonical/raft")
     (source (origin
               (method git-fetch)
@@ -197,7 +198,7 @@ independently or together to provide resilient infrastructures.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18idj53vnl5fx1ja1zlp8kiwmdxgwjxsi88rdql0pbh0484b92a3"))))
+                "050dwy34jh8dihfwfm0r1by2i3sy9crapipp9idw32idm79y4izb"))))
     (arguments '(#:configure-flags '("--enable-uv")
                  #:phases
                  (modify-phases %standard-phases
@@ -207,7 +208,8 @@ independently or together to provide resilient infrastructures.")
                          ((".*test_uv_append.c.*") ""))
                        #t)))))
     (inputs
-     `(("libuv" ,libuv)))
+     `(("libuv" ,libuv)
+       ("lz4" ,lz4)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
