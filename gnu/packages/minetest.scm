@@ -1,3 +1,12 @@
+;;; Copyright © 2014, 2015, 2016 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; This file is part of GNU Guix.
 ;;;
@@ -14,11 +23,163 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 (define-module (gnu packages minetest)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages games)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system trivial)
   #:use-module (guix build-system minetest)
   #:use-module ((guix licenses) #:prefix license:))
+
+(define-public minetest
+  (package
+    (name "minetest")
+    (version "5.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/minetest/minetest")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "062ilb7s377q3hwfhl8q06vvcw2raydz5ljzlzwy2dmyzmdcndb8"))
+              (modules '((guix build utils)))
+              (patches
+               (search-patches
+                "minetest-add-MINETEST_MOD_PATH.patch"))
+              (snippet
+               '(begin
+                  ;; Delete bundled libraries.
+                  (delete-file-recursively "lib")
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DRUN_IN_PLACE=0"
+             "-DENABLE_FREETYPE=1"
+             "-DENABLE_GETTEXT=1"
+             "-DENABLE_SYSTEM_JSONCPP=TRUE"
+             (string-append "-DIRRLICHT_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "irrlicht")
+                            "/include/irrlicht")
+             (string-append "-DCURL_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "curl")
+                            "/include/curl"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/filesys.cpp"
+               ;; Use store-path for "rm" instead of non-existing FHS path.
+               (("\"/bin/rm\"")
+                (string-append "\"" (assoc-ref inputs "coreutils") "/bin/rm\"")))
+             (substitute* "src/CMakeLists.txt"
+               ;; Let minetest binary remain in build directory.
+               (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
+             (substitute* "src/unittest/test_servermodmanager.cpp"
+               ;; do no override MINETEST_SUBGAME_PATH
+               (("(un)?setenv\\(\"MINETEST_SUBGAME_PATH\".*\\);")
+                "(void)0;"))
+             (setenv "MINETEST_SUBGAME_PATH"
+                     (string-append (getcwd) "/games")) ; for check
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             ;; Thanks to our substitutions, the tests should also run
+             ;; when invoked on the target outside of `guix build'.
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (invoke "src/minetest" "--run-unittests")))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "MINETEST_SUBGAME_PATH")
+            (files '("share/minetest/games")))
+           (search-path-specification
+            (variable "MINETEST_MOD_PATH")
+            (files '("share/minetest/mods")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("curl" ,curl)
+       ("freetype" ,freetype)
+       ("gettext" ,gettext-minimal)
+       ("gmp" ,gmp)
+       ("irrlicht" ,irrlicht)
+       ("jsoncpp" ,jsoncpp)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("libxxf86vm" ,libxxf86vm)
+       ("luajit" ,luajit)
+       ("mesa" ,mesa)
+       ("ncurses" ,ncurses)
+       ("openal" ,openal)
+       ("sqlite" ,sqlite)))
+    (propagated-inputs
+     `(("minetest-data" ,minetest-data)))
+    (synopsis "Infinite-world block sandbox game")
+    (description
+     "Minetest is a sandbox construction game.  Players can create and destroy
+various types of blocks in a three-dimensional open world.  This allows
+forming structures in every possible creation, on multiplayer servers or as a
+single player.  Mods and texture packs allow players to personalize the game
+in different ways.")
+    (home-page "https://www.minetest.net/")
+    (license license:lgpl2.1+)))
+
+(define minetest-data
+  (package
+    (name "minetest-data")
+    (version (package-version minetest))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/minetest/minetest_game")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0i45lbnikvgj9kxdp0yphpjjwjcgp4ibn49xkj78j5ic1s9n8jd4"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("source" ,source)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((install-dir (string-append
+                                       %output
+                                       "/share/minetest/games/minetest_game")))
+                     (mkdir-p install-dir)
+                     (copy-recursively
+                       (assoc-ref %build-inputs "source")
+                       install-dir)
+                     #t))))
+    (synopsis "Main game data for the Minetest game engine")
+    (description
+     "Game data for the Minetest infinite-world block sandbox game.")
+    (home-page "https://www.minetest.net/")
+    (license license:lgpl2.1+)))
 
 (define-public (minetest-topic topic-id)
   "Return an URL (as a string) pointing to the forum topic with

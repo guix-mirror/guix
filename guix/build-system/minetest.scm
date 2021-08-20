@@ -35,7 +35,7 @@
   (module-ref (resolve-interface '(gnu packages image)) 'optipng))
 
 (define (default-minetest)
-  (module-ref (resolve-interface '(gnu packages games)) 'minetest))
+  (module-ref (resolve-interface '(gnu packages minetest)) 'minetest))
 
 (define (default-xvfb-run)
   (module-ref (resolve-interface '(gnu packages xorg)) 'xvfb-run))

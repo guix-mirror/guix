@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
@@ -52,7 +52,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020, 2021 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
@@ -3581,139 +3581,6 @@ attractive physics.  Players can battle each other or computer controlled
 enemies in different game modes such as space ball, death match, team death
 match, cannon keep, and grave-itation pit.")
       (license license:gpl3+))))
-
-(define-public minetest
-  (package
-    (name "minetest")
-    (version "5.4.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/minetest/minetest")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "062ilb7s377q3hwfhl8q06vvcw2raydz5ljzlzwy2dmyzmdcndb8"))
-              (modules '((guix build utils)))
-              (patches
-               (search-patches
-                "minetest-add-MINETEST_MOD_PATH.patch"))
-              (snippet
-               '(begin
-                  ;; Delete bundled libraries.
-                  (delete-file-recursively "lib")
-                  #t))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "-DRUN_IN_PLACE=0"
-             "-DENABLE_FREETYPE=1"
-             "-DENABLE_GETTEXT=1"
-             "-DENABLE_SYSTEM_JSONCPP=TRUE"
-             (string-append "-DIRRLICHT_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "irrlicht")
-                            "/include/irrlicht")
-             (string-append "-DCURL_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "curl")
-                            "/include/curl"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/filesys.cpp"
-               ;; Use store-path for "rm" instead of non-existing FHS path.
-               (("\"/bin/rm\"")
-                (string-append "\"" (assoc-ref inputs "coreutils") "/bin/rm\"")))
-             (substitute* "src/CMakeLists.txt"
-               ;; Let minetest binary remain in build directory.
-               (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
-             (substitute* "src/unittest/test_servermodmanager.cpp"
-               ;; do no override MINETEST_SUBGAME_PATH
-               (("(un)?setenv\\(\"MINETEST_SUBGAME_PATH\".*\\);")
-                "(void)0;"))
-             (setenv "MINETEST_SUBGAME_PATH"
-                     (string-append (getcwd) "/games")) ; for check
-             #t))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             ;; Thanks to our substitutions, the tests should also run
-             ;; when invoked on the target outside of `guix build'.
-             (when tests?
-               (setenv "HOME" "/tmp")
-               (invoke "src/minetest" "--run-unittests")))))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "MINETEST_SUBGAME_PATH")
-            (files '("share/minetest/games")))
-           (search-path-specification
-            (variable "MINETEST_MOD_PATH")
-            (files '("share/minetest/mods")))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("coreutils" ,coreutils)
-       ("curl" ,curl)
-       ("freetype" ,freetype)
-       ("gettext" ,gettext-minimal)
-       ("gmp" ,gmp)
-       ("irrlicht" ,irrlicht)
-       ("jsoncpp" ,jsoncpp)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("libxxf86vm" ,libxxf86vm)
-       ("luajit" ,luajit)
-       ("mesa" ,mesa)
-       ("ncurses" ,ncurses)
-       ("openal" ,openal)
-       ("sqlite" ,sqlite)))
-    (propagated-inputs
-     `(("minetest-data" ,minetest-data)))
-    (synopsis "Infinite-world block sandbox game")
-    (description
-     "Minetest is a sandbox construction game.  Players can create and destroy
-various types of blocks in a three-dimensional open world.  This allows
-forming structures in every possible creation, on multiplayer servers or as a
-single player.  Mods and texture packs allow players to personalize the game
-in different ways.")
-    (home-page "https://www.minetest.net/")
-    (license license:lgpl2.1+)))
-
-(define minetest-data
-  (package
-    (name "minetest-data")
-    (version (package-version minetest))
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/minetest/minetest_game")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0i45lbnikvgj9kxdp0yphpjjwjcgp4ibn49xkj78j5ic1s9n8jd4"))))
-    (build-system trivial-build-system)
-    (native-inputs
-     `(("source" ,source)))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((install-dir (string-append
-                                       %output
-                                       "/share/minetest/games/minetest_game")))
-                     (mkdir-p install-dir)
-                     (copy-recursively
-                       (assoc-ref %build-inputs "source")
-                       install-dir)
-                     #t))))
-    (synopsis "Main game data for the Minetest game engine")
-    (description
-     "Game data for the Minetest infinite-world block sandbox game.")
-    (home-page "https://www.minetest.net/")
-    (license license:lgpl2.1+)))
 
 (define glkterm
   (package
