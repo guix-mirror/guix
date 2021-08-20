@@ -4583,7 +4583,7 @@ The main functions of FastQC are:
 (define-public fastp
   (package
     (name "fastp")
-    (version "0.14.1")
+    (version "0.20.1")
     (source
      (origin
        (method git-fetch)
@@ -4593,19 +4593,18 @@ The main functions of FastQC are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1r6ms5zbf5rps4rgp4z73nczadl00b5rqylw8f684isfz27dp0xh"))))
+         "0ly8mxdvrcy23jwxyppysx3dhb1lwsqhfbgpyvargxhfk6k700x4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are none
        #:make-flags
-       (list (string-append "BINDIR=" (assoc-ref %outputs "out") "/bin"))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'install 'create-target-dir
            (lambda* (#:key outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
-             #t)))))
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin")))))))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/OpenGene/fastp/")
