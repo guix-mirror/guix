@@ -456,13 +456,11 @@ depend: $(STDLIB_MLIS) $(STDLIB_DEPS)"))
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
-                            "/bin")
-             (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
-                            "/lib/ocaml/site-lib")
-             (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
-                            "/share/man"))
+       ,#~(list (string-append "OCAMLBUILD_PREFIX=" #$output)
+                (string-append "OCAMLBUILD_BINDIR=" #$output "/bin")
+                (string-append "OCAMLBUILD_LIBDIR=" #$output
+                               "/lib/ocaml/site-lib")
+                (string-append "OCAMLBUILD_MANDIR=" #$output "/share/man"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))
