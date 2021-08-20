@@ -701,8 +701,8 @@ repository-wide uninstallability checks.")
        (modify-phases %standard-phases
          (delete 'configure))
        #:build-flags
-       (list "build" "--lib-dir"
-             (string-append (assoc-ref %outputs "out") "/lib/ocaml/site-lib"))))
+       ,#~(list "build" "--lib-dir"
+                (string-append #$output "/lib/ocaml/site-lib"))))
     (native-inputs
      `(("ocaml-findlib" ,ocaml-findlib)
        ("ocamlbuild" ,ocamlbuild)
