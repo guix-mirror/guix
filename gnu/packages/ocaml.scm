@@ -2141,8 +2141,8 @@ dates and times.")
      `(("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:tests? #f
-       #:make-flags (list (string-append "LIBDIR=" (assoc-ref %outputs "out")
-                                         "/lib/ocaml/site-lib/cmdliner"))
+       #:make-flags ,#~(list (string-append "LIBDIR=" #$output
+                                            "/lib/ocaml/site-lib/cmdliner"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
