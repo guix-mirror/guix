@@ -1697,7 +1697,7 @@ similar to MATLAB, GNU Octave or SciPy.")
              ;; filenames to avoid unnecessary references to the corresponding
              ;; store items.
              (substitute* "libnetcdf.settings"
-               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+               (("(/gnu/store/)([0-9A-Za-z]*)" all prefix hash)
                 (string-append prefix (string-take hash 10) "...")))
              #t)))
 
