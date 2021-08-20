@@ -6829,9 +6829,15 @@ directly generate PDF documents instead of DVI.")
                      (share (string-append out "/share"))
                      (texmfroot (string-append share "/texmf-dist/web2c"))
                      (texmfcnf (string-append texmfroot "/texmf.cnf"))
+                     (fmtutilcnf (string-append texmfroot "/fmtutil.cnf"))
                      (texlive-bin (assoc-ref inputs "texlive-bin"))
                      (texbin (string-append texlive-bin "/bin"))
                      (tlpkg (string-append texlive-bin "/share/tlpkg")))
+                ;; LuaJIT is not ported to powerpc64* yet.
+                (if ,(target-ppc64le?)
+                    (substitute* fmtutilcnf
+                      (("^(luajittex|luajithbtex|mfluajit)" m)
+                       (string-append "#! " m))))
                 ;; Register SHARE as TEXMFROOT in texmf.cnf.
                 (substitute* texmfcnf
                   (("TEXMFROOT = \\$SELFAUTOPARENT")
