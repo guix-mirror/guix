@@ -5263,7 +5263,19 @@ Linux Device Mapper multipathing driver:
            #:test-target "partcheck"    ; need root for a full 'check'
            #:phases
            #~(modify-phases %standard-phases
-               (delete 'configure)))) ; no configure script
+               (delete 'configure)    ; no configure script
+               ;; TODO: Make this phase unconditional on core-updates.
+               #$@(if (target-riscv64?)
+                    '((add-before 'check 'patch-for-riscv-support
+                        (lambda _
+                          ;; Taken from the upstream repo:
+                          ;; https://pagure.io/libaio/c/f322f467c3cd2ac4d8d08a19bd281eabb65433b1?branch=master
+                          (substitute* "harness/cases/16.t"
+                            (("(elif defined\\(__aarch64__\\))" all)
+                             (string-append all " || defined(__riscv)"))
+                            (("(endif /* __aarch64__)" all)
+                             (string-append all " || __riscv "))))))
+                    '()))))
     (home-page "https://pagure.io/libaio")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
