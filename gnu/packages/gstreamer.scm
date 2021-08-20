@@ -489,7 +489,12 @@ the GStreamer multimedia framework.")
                        (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
                       ""))
                      #t)))
-               '()))))
+               '())
+         ;; XXX: This test fails undeterministically.
+         (add-after 'unpack 'disable-test
+           (lambda _
+             (substitute* "tests/check/meson.build"
+               ((".*libs/gstnetclientclock\\.c.*") "")))))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
