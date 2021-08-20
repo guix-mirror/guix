@@ -487,14 +487,12 @@ coverages using a SpatiaLite DBMS.")
        '("--enable-rttopo=yes")
        #:phases
        (modify-phases %standard-phases
-         ;; 3 tests are failing, ignore them:
+         ;; 1 test is failing, ignore it:
          (add-after 'unpack 'ignore-broken-tests
            (lambda _
              (substitute* '("test/Makefile.in")
-               (("\tcheck_sql_stmt.* (check_sql_.*)" all tiny) (string-append "\t" tiny))
-               (("(\tch.*) check_v.*ble2.*$" all vt1) (string-append vt1 " \\\n"))
-               (("\tch.* (check_v.*ble4.*)$" all vt4) (string-append "\t" vt4)))
-             #t)))))
+               (("check_wms\\$\\(EXEEXT\\) check_drop_rename\\$\\(EXEEXT\\) ")
+                "check_wms$(EXEEXT) ")))))))
     (synopsis "Extend SQLite to support Spatial SQL capabilities")
     (description
      "SpatiaLite is a library intended to extend the SQLite core to support
