@@ -761,8 +761,8 @@ let () = String.split_on_char ':' (Sys.getenv \"OCAMLPATH\")
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; No tests
-       #:make-flags (list (string-append "LIBDIR=" (assoc-ref %outputs "out")
-                                         "/lib/ocaml/site-lib"))
+       #:make-flags ,#~(list (string-append "LIBDIR=" #$output
+                                            "/lib/ocaml/site-lib"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
