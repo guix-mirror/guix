@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2021 Dion Mendel <guix@dm9.info>
+;;; Copyright © 2021 Andrew Whatson <whatson@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cluster)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
@@ -102,6 +104,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
@@ -1076,6 +1079,116 @@ manage system or application containers.")
 of making Linux containers feel more like a virtual machine.
 It started as a side project of LXC but can be used by any run-time.")
     (license license:lgpl2.1+)))
+
+(define-public lxd
+  (package
+    (name "lxd")
+    (version "4.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/lxc/lxd/releases/download/"
+                    "lxd-" version "/lxd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kzmgyg5kw3zw9qa6jabld6rmb53b6yy69h7y9znsdlf74jllljl"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/lxc/lxd"
+       #:tests? #f ;; tests fail due to missing /var, cgroups, etc.
+       #:modules ((guix build go-build-system)
+                  (guix build union)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-dist
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               ;; remove the link back to the top level
+               (delete-file (string-append "_dist/src/" import-path))
+               ;; move all the deps into the src directory
+               (copy-recursively "_dist/src" "../../.."))
+             #t))
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (invoke "make" "build" "CC=gcc" "TAG_SQLITE3=libsqlite3")
+               #t)))
+         (replace 'check
+           (lambda* (#:key tests? import-path #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion (string-append "src/" import-path)
+                 (invoke "make" "check" "CC=gcc" "TAG_SQLITE3=libsqlite3")))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs import-path #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin-dir
+                     (string-append out "/bin/"))
+                    (doc-dir
+                     (string-append out "/share/doc/lxd-" ,version))
+                    (completions-dir
+                     (string-append out "/share/bash-completion/completions")))
+               (with-directory-excursion (string-append "src/" import-path)
+                 ;; wrap lxd with runtime dependencies
+                 (wrap-program (string-append bin-dir "lxd")
+                   `("PATH" ":" prefix
+                     ,(fold (lambda (input paths)
+                              (let* ((in (assoc-ref inputs input))
+                                     (bin (string-append in "/bin"))
+                                     (sbin (string-append in "/sbin")))
+                                (append (filter file-exists?
+                                                (list bin sbin)) paths)))
+                            '()
+                            '("bash" "acl" "rsync" "tar" "xz" "btrfs-progs"
+                              "gzip" "dnsmasq" "squashfs-tools" "iproute2"
+                              "criu" "iptables"))))
+                 ;; remove unwanted binaries
+                 (for-each (lambda (prog)
+                             (delete-file (string-append bin-dir prog)))
+                           '("deps" "macaroon-identity" "generate"))
+                 ;; install documentation
+                 (for-each (lambda (file)
+                             (install-file file doc-dir))
+                           (find-files "doc"))
+                 ;; install bash completion
+                 (rename-file "scripts/bash/lxd-client" "scripts/bash/lxd")
+                 (install-file "scripts/bash/lxd" completions-dir)))
+             #t)))))
+    (native-inputs
+     `(;; test dependencies:
+       ;; ("go-github-com-rogpeppe-godeps" ,go-github-com-rogpeppe-godeps)
+       ;; ("go-github-com-tsenart-deadcode" ,go-github-com-tsenart-deadcode)
+       ;; ("go-golang-org-x-lint" ,go-golang-org-x-lint)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("acl" ,acl)
+       ("eudev" ,eudev)
+       ("libdqlite" ,libdqlite)
+       ("libraft" ,libraft)
+       ("libcap" ,libcap)
+       ("lxc" ,lxc)
+       ;; runtime dependencies:
+       ("bash" ,bash-minimal)
+       ("rsync" ,rsync)
+       ("tar" ,tar)
+       ("xz" ,xz)
+       ("btrfs-progs" ,btrfs-progs)
+       ("gzip" ,gzip)
+       ("dnsmasq" ,dnsmasq)
+       ("squashfs-tools" ,squashfs-tools)
+       ("iproute2" ,iproute)
+       ("criu" ,criu)
+       ("iptables" ,iptables)))
+    (synopsis "Daemon based on liblxc offering a REST API to manage containers")
+    (home-page "https://linuxcontainers.org/lxd/")
+    (description "LXD is a next generation system container manager.  It
+offers a user experience similar to virtual machines but using Linux
+containers instead.  It's image based with pre-made images available for a
+wide number of Linux distributions and is built around a very powerful, yet
+pretty simple, REST API.")
+    (license license:asl2.0)))
 
 (define-public libvirt
   (package
