@@ -311,8 +311,8 @@
                          (when (file-exists? dir)
                            (delete-file-recursively dir))))
                      '("email/test" "ctypes/test" "unittest/test" "tkinter/test"
-                       "sqlite3/test" "bsddb/test" "lib-tk/test" "lib2to3/tests"
-                       "json/tests" "distutils/tests"))))))))
+                       "sqlite3/test" "bsddb/test" "lib-tk/test" "json/tests"
+                       "distutils/tests"))))))))
          (add-after 'remove-tests 'move-tk-inter
            (lambda* (#:key outputs #:allow-other-keys)
              ;; When Tkinter support is built move it to a separate output so
