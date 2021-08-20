@@ -1392,9 +1392,8 @@ other XUnit testing frameworks.")
                    (format port "directory=\"../zip\"\n")))))))
        #:install-target "install-findlib"
        #:make-flags
-       (list "all" "allopt"
-             (string-append "INSTALLDIR=" (assoc-ref %outputs "out")
-                            "/lib/ocaml"))))
+       ,#~(list "all" "allopt"
+                (string-append "INSTALLDIR=" #$output "/lib/ocaml"))))
     (home-page "https://github.com/xavierleroy/camlzip")
     (synopsis "Provides easy access to compressed files")
     (description "Provides easy access to compressed files in ZIP, GZIP and
