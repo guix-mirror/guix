@@ -22,6 +22,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +88,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -1620,10 +1622,10 @@ full_split, cut, rcut, etc..")
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
-       #:make-flags (list "release"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
-                                         "/lib/ocaml/site-lib"))
+       #:make-flags ,#~(list "release"
+                             (string-append "PREFIX=" #$output)
+                             (string-append "LIBDIR=" #$output
+                                            "/lib/ocaml/site-lib"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
