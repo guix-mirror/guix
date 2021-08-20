@@ -1498,9 +1498,8 @@ archive(byte) = \"frontc.cma\"
 archive(native) = \"frontc.cmxa\""))))
                (symlink (string-append out "/lib/ocaml/frontc")
                         (string-append out "/lib/ocaml/FrontC"))))))
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          "OCAML_SITE=$(LIB_DIR)/ocaml/")))
+       #:make-flags ,#~(list (string-append "PREFIX=" #$output)
+                             "OCAML_SITE=$(LIB_DIR)/ocaml/")))
     (properties `((upstream-name . "FrontC")))
     (home-page "https://www.irit.fr/FrontC")
     (synopsis "C parser and lexer library")
