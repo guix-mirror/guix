@@ -1107,7 +1107,11 @@ Some codes examples can be find at:
            (lambda _
              (substitute* "libappstream-glib/as-self-test.c"
                (("g_test_add_func.*as_test_store_local_appdata_func);") ""))
-             #t)))))
+             #t))
+         (add-before 'check 'set-home
+           (lambda _
+             ;; Some tests want write access there.
+             (setenv "HOME" "/tmp"))))))
     (home-page "https://github.com/hughsie/appstream-glib")
     (synopsis "Library for reading and writing AppStream metadata")
     (description "This library provides objects and helper methods to help
