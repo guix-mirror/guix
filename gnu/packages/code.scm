@@ -310,6 +310,10 @@ cloc can handle a greater variety of programming languages.")
                (base32
                 "0w1icjqd8hd45rn1y6nbfznk1a6ip54whwbfbhxp7ws2hn3ilqnr"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Required since GCC 10, see:
+     ;; https://gcc.gnu.org/gcc-10/porting_to.html.
+     `(#:configure-flags (list "CFLAGS=-fcommon")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
