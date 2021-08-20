@@ -81,6 +81,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system ocaml)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
@@ -96,6 +97,7 @@
   #:use-module (gnu packages coq)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages datamash)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
@@ -1011,6 +1013,67 @@ banded linear systems, least squares problems, eigenvalue problems, and
 singular value problems.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
+
+(define-public feedgnuplot
+  (package
+    (name "feedgnuplot")
+    (version "1.60")
+    (home-page "https://github.com/dkogan/feedgnuplot")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0403hwlian2s431m36qdzcczhvfjvh7128m64hmmwbbrgh0n7md7"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'adjust-tests
+           (lambda _
+             (substitute* "t/plots.t"
+               ;; XXX: The vnlog tests uses 'echo' with escaped strings,
+               ;; but does not enable escape interpretation.
+               (("echo -n ")
+                "echo -ne "))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/feedgnuplot")))
+               (mkdir-p doc)
+               (invoke "pod2html" "--title=feedgnuplot" "bin/feedgnuplot"
+                       "--outfile" (string-append doc "/feedgnuplot.html")))))
+       (add-after 'install 'wrap
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (gnuplot (search-input-file inputs "/bin/gnuplot"))
+                  ;; XXX: We need List::MoreUtils as well as its supporting
+                  ;; (propagated) modules; for now just refer to labels.
+                  (modules '("perl-list-moreutils" "perl-exporter-tiny"))
+                  (PERL5LIB (string-join
+                             (map (lambda (input)
+                                    (string-append (assoc-ref inputs input)
+                                                   "/lib/perl5/site_perl"))
+                                  modules)
+                             ":")))
+             (wrap-program (string-append out "/bin/feedgnuplot")
+               `("PERL5LIB" ":" suffix (,PERL5LIB))
+               `("PATH" ":" suffix (,(dirname gnuplot))))))))))
+    (inputs
+     (list gnuplot perl-list-moreutils vnlog))
+    (native-inputs
+     ;; For tests.
+     (list perl-ipc-run perl-string-shellquote))
+    (synopsis "Pipe-oriented plotting tool")
+    (description
+     "@command{feedgnuplot} is a tool to plot realtime and stored data
+from the command line, using @command{gnuplot}.  It can read data from
+a pipe or file, make a variety of transformations, and render the result
+in the terminal or with an external viewer.")
+    (license license:gpl1+))) ;any version
 
 (define-public gnuplot
   (package
