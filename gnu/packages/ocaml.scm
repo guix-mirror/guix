@@ -3704,9 +3704,10 @@ and 4 (random based) according to RFC 4122.")
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
-             (string-append "SHELL=" (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))
+       ,#~(list (string-append "DESTDIR=" #$output)
+                (string-append "SHELL="
+                               #+(file-append (canonical-package bash-minimal)
+                                              "/bin/sh")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-files-writable
