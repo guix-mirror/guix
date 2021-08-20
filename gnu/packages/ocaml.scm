@@ -3029,7 +3029,7 @@ OCaml code.")
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ,#~(list (string-append "PREFIX=" #$output))
        #:tests? #f ; no test target
        #:phases
        (modify-phases %standard-phases
