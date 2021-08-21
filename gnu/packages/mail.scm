@@ -156,6 +156,7 @@
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix deprecation)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
@@ -1045,53 +1046,58 @@ content (body).  The program is able to learn from the user's classifications
 and corrections.  It is based on a Bayesian filter.")
     (license license:gpl3+)))
 
-(define-public offlineimap
-  (package
-    (name "offlineimap")
-    (version "7.3.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OfflineIMAP/offlineimap")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1gg8ry67i20qapj4z20am9bm67m2q28kixcj7ja75m897vhzarnq"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("asciidoc" ,asciidoc)))
-    (inputs
-     `(("python2-pysqlite" ,python2-pysqlite)
-       ("python2-rfc6555" ,python2-rfc6555)
-       ("python2-six" ,python2-six)))
-    (arguments
-     ;; The setup.py script expects python-2.
-     `(#:python ,python-2
-      ;; Tests require a modifiable IMAP account.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'build-documentation
-           (lambda _
-             (substitute* "docs/Makefile"
-               ;; Prevent xmllint and xsltproc from downloading a DTD file.
-               (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
-             (invoke "make" "-C" "docs" "man")))
-         (add-after 'install 'install-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man (string-append out "/share/man")))
-               (install-file "docs/offlineimap.1" (string-append man "/man1"))
-               (install-file "docs/offlineimapui.7" (string-append man "/man7"))
-               #t))))))
-    (home-page "https://www.offlineimap.org")
-    (synopsis "Sync emails between two repositories")
-    (description
-     "OfflineImap synchronizes emails between two repositories, so that you
+(define-public offlineimap3
+  ;; The OfflineIMAP3 fork does not yet have a release, but it's likely to be
+  ;; 8.0.0 but the source still reports 7.3.0, see
+  ;; https://github.com/OfflineIMAP/offlineimap3/issues/10.
+  (let ((commit "4ca9c75c6f9a0cc8dc7b69dd6abf073e494cc0e5")
+        (revision "0"))
+    (package
+      (name "offlineimap3")
+      (version (git-version "7.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/OfflineIMAP/offlineimap3")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0nzh5dcc559jfw4yy12gc98s17w82b15zxikspc6apd8filmk9xg"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("asciidoc" ,asciidoc)))
+      (inputs
+       `(("python-distro" ,python-distro)
+         ("python-imaplib2" ,python-imaplib2)
+         ("python-rfc6555" ,python-rfc6555)))
+      (arguments
+       `(;; Tests require a modifiable IMAP account.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'build-documentation
+             (lambda _
+               (substitute* "docs/Makefile"
+                 ;; Prevent xmllint and xsltproc from downloading a DTD file.
+                 (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
+               (invoke "make" "-C" "docs" "man")))
+           (add-after 'install 'install-documentation
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (man (string-append out "/share/man")))
+                 (install-file "docs/offlineimap.1" (string-append man "/man1"))
+                 (install-file "docs/offlineimapui.7" (string-append man "/man7"))))))))
+      (home-page "https://www.offlineimap.org")
+      (synopsis "Sync emails between two repositories")
+      (description
+       "OfflineImap synchronizes emails between two repositories, so that you
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
+
+(define-public offlineimap
+  (deprecated-package "offlineimap" offlineimap3))
 
 (define-public emacs-mew
   (package
