@@ -11668,9 +11668,10 @@ which will be searched for packages.  It accepts as valid arguments:
 @item the name of a known repository - can be one of @code{opam},
       @code{coq} (equivalent to @code{coq-released}),
 	  @code{coq-core-dev}, @code{coq-extra-dev} or @code{grew}.
-@item the URL of a repository as expected by the @code{opam repository
-      add} command (for instance, the URL equivalent of the above
-	  @code{opam} name would be @uref{https://opam.ocaml.org}).
+@item the URL of a repository as expected by the
+      @code{opam repository add} command (for instance, the URL equivalent
+	  of the above @code{opam} name would be
+	  @uref{https://opam.ocaml.org}).
 @item the path to a local copy of a repository (a directory containing a
       @file{packages/} sub-directory).
 @end itemize
