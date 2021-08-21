@@ -1747,12 +1747,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/rocm-opencl-runtime-4.3-nocltrace.patch \
   %D%/packages/patches/rocm-opencl-runtime-4.3-noopencl.patch \
   %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
+  %D%/packages/patches/rustc-1.39.0-src.patch			\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-ndarray-remove-blas-src-dep.patch	\
   %D%/packages/patches/rust-ndarray-0.13-remove-blas-src.patch	\
   %D%/packages/patches/rust-nettle-disable-vendor.patch		 \
   %D%/packages/patches/rust-nettle-sys-disable-vendor.patch	 \
-  %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/sbc-fix-build-non-x86.patch		\
   %D%/packages/patches/sbcl-burgled-batteries3-fix-signals.patch	\

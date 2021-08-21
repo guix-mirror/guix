@@ -118,37 +118,43 @@
                                    (package-native-inputs base-rust))))))
 
 ;;; Note: mrustc's only purpose is to be able to bootstap Rust; it's designed
-;;; to be used in source form.
+;;; to be used in source form.  The latest support for bootstrapping from
+;;; 1.39.0 is not yet released so use the latest commit (see:
+;;; https://github.com/thepowersgang/mrustc/issues/185).
+(define %mrustc-commit "474bec9cfd7862a20e7288cecd7fcf5e18648b9a")
 (define %mrustc-source
-  (let ((name "mrustc")
-        (version "0.9"))
+  (let* ((version "0.9")
+         (commit %mrustc-commit)
+         (revision "1")
+         (name "mrustc"))
     (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/thepowersgang/mrustc")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
+            (commit commit)))
+      (file-name (git-file-name name (git-version version revision commit)))
       (sha256
        (base32
-        "194ny7vsks5ygiw7d8yxjmp1qwigd71ilchis6xjl6bb2sj97rd2")))))
+        "1zacz5qia0r457mv74wvrvznnv4az5g2w9j8ji9ssy727wljhvz7")))))
 
-;;; Rust 1.29 is special in that it is built with mrustc, which shortens the
-;;; bootstrap path.  Note: the build is non-deterministic.
-(define-public rust-1.29
+;;; Rust 1.39 is special in that it is built with mrustc, which shortens the
+;;; bootstrap path.
+(define rust-1.39
   (package
     (name "rust")
-    (version "1.29.2")
+    (version "1.39.0")
     (source
      (origin
        (method url-fetch)
        (uri (rust-uri version))
-       (sha256 (base32 "1jb787080z754caa2w3w1amsygs4qlzj9rs1vy64firfmabfg22h"))
+       (sha256 (base32 "0mwkc1bnil2cfyf6nglpvbn2y0zfbv44zfhsd5qg4c9rm6vgd8dl"))
        (modules '((guix build utils)))
        (snippet '(for-each delete-file-recursively
-                           '("src/jemalloc"
-                             "src/llvm"
-                             "src/llvm-emscripten")))
-       (patches (search-patches "rust-reproducible-builds.patch"))))
+                           '("src/llvm-emscripten"
+                             "src/llvm-project"
+                             "vendor/jemalloc-sys/jemalloc")))
+       (patches (search-patches "rustc-1.39.0-src.patch"))
+       (patch-flags '("-p0"))))         ;default is -p1
     (outputs '("out" "cargo"))
     (properties '((timeout . 72000)           ;20 hours
                   (max-silent-time . 18000))) ;5 hours (for armel)
@@ -156,9 +162,7 @@
     (inputs
      `(("libcurl" ,curl)
        ("libssh2" ,libssh2)
-       ;; Use llvm-7, which enables rust to be built reproducibly.
-       ;; Versions newer than 7 fail to compile.
-       ("llvm" ,llvm-7)
+       ("llvm" ,llvm)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
@@ -180,7 +184,10 @@
        (list ,(string-append "RUSTC_TARGET="
                              (or (%current-target-system)
                                  (nix-system->gnu-triplet-for-rust)))
-             ,(string-append "RUSTCSRC=../"))
+             ,(string-append "RUSTC_VERSION=" version)
+             ,(string-append "MRUSTC_TARGET_VER="
+                             (version-major+minor version))
+             "OUTDIR_SUF=")           ;do not add version suffix to output dir
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-reference-to-cc
@@ -191,11 +198,15 @@
                (substitute* (find-files "." "^link.rs$")
                  (("\"cc\".as_ref")
                   (format #f "~s.as_ref" (string-append gcc "/bin/gcc")))))))
-         (add-after 'unpack 'copy-mrustc-and-patch
+         (add-after 'unpack 'setup-mrustc-sources
            (lambda* (#:key inputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "mrustc-source") "mrustc")
-             (invoke "patch" "-p0" "-i" "mrustc/rustc-1.29.0-src.patch")))
-         (add-after 'copy-mrustc-and-patch 'patch-makefiles
+             (copy-recursively (assoc-ref inputs "mrustc-source") "../mrustc")
+             ;; The Makefile of mrustc expects the sources directory of rustc
+             ;; to be at this location, and it simplifies things to make it
+             ;; so.
+             (symlink (getcwd)
+                      (string-append "../mrustc/rustc-" ,version "-src"))))
+         (add-after 'setup-mrustc-sources 'patch-makefiles
            ;; This disables building the (unbundled) LLVM.
            (lambda* (#:key inputs parallel-build? #:allow-other-keys)
              (let ((llvm (assoc-ref inputs "llvm"))
@@ -203,7 +214,7 @@
                                      (if parallel-build?
                                          (number->string (parallel-job-count))
                                          "1"))))
-               (with-directory-excursion "mrustc"
+               (with-directory-excursion "../mrustc"
                  (substitute* '("minicargo.mk"
                                 "run_rustc/Makefile")
                    ;; Use the system-provided LLVM.
@@ -213,27 +224,40 @@
                     "$(LLVM_CONFIG):\n")
                    (("\\$Vcd \\$\\(RUSTCSRC\\)build && \\$\\(MAKE\\).*")
                     "true\n"))
-                 ;; Patch date.
                  (substitute* "Makefile"
-                   (("shell date")
-                    "shell date -d @1"))
+                   ;; Patch date and git obtained version information.
+                   ((" -D VERSION_GIT_FULLHASH=.*")
+                    (string-append
+                     " -D VERSION_GIT_FULLHASH=\\\"" ,%mrustc-commit "\\\""
+                     " -D VERSION_GIT_BRANCH=\\\"master\\\""
+                     " -D VERSION_GIT_SHORTHASH=\\\""
+                     ,(string-take %mrustc-commit 7) "\\\""
+                     " -D VERSION_BUILDTIME="
+                     "\"\\\"Thu, 01 Jan 1970 00:00:01 +0000\\\"\""
+                     " -D VERSION_GIT_ISDIRTY=0\n"))
+                   ;; Do not try to fetch sources from the Internet.
+                   ((": \\$\\(RUSTC_SRC_DL\\)")
+                    ":"))
                  (substitute* "run_rustc/Makefile"
                    (("[$]Vtime ")
                     "$V ")
                    ;; Unlock the number of parallel jobs for cargo.
                    (("-j [[:digit:]]+ ")
                     "")
-                   ;; Patch the shebang of a generated wrapper for rustc, and
-                   ;; make sure that \n newline escapes get interpreted
-                   ;; correctly, specifying the '-e' option of echo.
-                   (("echo '#!/bin/sh")
-                    (string-append "echo -e '#!" (which "sh"))))))))
-         (add-after 'patch-source-shebangs 'patch-cargo-checksums
+                   ;; Patch the shebang of a generated wrapper for rustc
+                   (("#!/bin/sh")
+                    (string-append "#!" (which "sh"))))))))
+         (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
            (lambda* _
-             (substitute* "src/Cargo.lock"
-               (("(\"checksum .* = )\".*\"" all name)
+             (substitute* "Cargo.lock"
+               (("(checksum = )\".*\"" all name)
                 (string-append name "\"" ,%cargo-reference-hash "\"")))
-             (generate-all-checksums "src/vendor")))
+             (generate-all-checksums "vendor")))
+         (add-before 'configure 'configure-cargo-home
+           (lambda _
+             (let ((cargo-home (string-append (getcwd) "/.cargo")))
+               (mkdir-p cargo-home)
+               (setenv "CARGO_HOME" cargo-home))))
          (replace 'configure
            (lambda _
              (setenv "CC" "gcc")
@@ -242,29 +266,35 @@
              (setenv "LLVM_LINK_SHARED" "1")
              ;; This is a workaround for
              ;; https://github.com/thepowersgang/mrustc/issues/138.
-             (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "yes")))
+             (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "yes")
+             ;; rustc still insists on having 'cc' on PATH in some places
+             ;; (e.g. when building the 'test' library crate).
+             (mkdir-p "/tmp/bin")
+             (symlink (which "gcc") "/tmp/bin/cc")
+             (setenv "PATH" (string-append "/tmp/bin:" (getenv "PATH")))))
          (delete 'patch-generated-file-shebangs)
          (replace 'build
            (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
-             (let* ((job-count (if parallel-build?
+             (let* ((src-root (getcwd))
+                    (job-count (if parallel-build?
                                    (parallel-job-count)
                                    1))
-                    (job-spec (string-append "-j" (number->string job-count)))
-                    (make-flags* (cons job-spec make-flags)))
+                    (job-spec (string-append "-j" (number->string job-count))))
                ;; Adapted from:
                ;; https://github.com/dtolnay/bootstrap/blob/master/build.sh.
-               (chdir "mrustc")
+               (chdir "../mrustc")
                (setenv "MINICARGO_FLAGS" job-spec)
                (setenv "CARGO_BUILD_JOBS" (number->string job-count))
                (display "Building rustc...\n")
                (apply invoke "make" "-f" "minicargo.mk" "output/rustc"
-                      make-flags*)
+                      job-spec make-flags)
                (display "Building cargo...\n")
                (apply invoke "make" "-f" "minicargo.mk" "output/cargo"
-                      make-flags*)
+                      job-spec make-flags)
                (display "Rebuilding stdlib with rustc...\n")
-               (with-directory-excursion "run_rustc"
-                 (apply invoke "make" "RUST_SRC=../../src/" make-flags*)))))
+               ;; Note: invoking make with -j would cause a compiler error
+               ;; (unexpected panic).
+               (apply invoke "make" "-C" "run_rustc" make-flags))))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -291,31 +321,43 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-1.30
+(define-public rust-1.40
   (package
     (name "rust")
-    (version "1.30.1")
-    (source (origin
-              (inherit (package-source rust-1.29))
-              (uri (rust-uri version))
-              (sha256
-               (base32 "0aavdc1lqv0cjzbqwl5n59yd0bqdlhn0zas61ljf38yrvc18k8rn"))
-              (snippet '(for-each delete-file-recursively
-                                  '("src/jemalloc"
-                                    "src/llvm"
-                                    "src/llvm-emscripten"
-                                    "src/tools/clang"
-                                    "src/tools/lldb")))))
+    (version "1.40.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rust-uri version))
+       (sha256 (base32 "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx"))
+       (modules '((guix build utils)))
+       ;; llvm-emscripten is no longer bundled, as that codegen backend got
+       ;; removed.
+       (snippet '(for-each delete-file-recursively
+                           '("src/llvm-project"
+                             "vendor/jemalloc-sys/jemalloc")))))
     (outputs '("out" "cargo"))
     (properties '((timeout . 72000)           ;20 hours
                   (max-silent-time . 18000))) ;5 hours (for armel)
     (build-system gnu-build-system)
+    ;; Rust 1.40 does not ship rustc-internal libraries by default (see
+    ;; rustc-dev-split). This means that librustc_driver.so is no longer
+    ;; available in lib/rustlib/$target/lib, which is the directory
+    ;; included in the runpath of librustc_codegen_llvm-llvm.so.  This is
+    ;; detected by our validate-runpath phase as an error, but it is
+    ;; harmless as the codegen backend is loaded by librustc_driver.so
+    ;; itself, which must at that point have been already loaded.  As such,
+    ;; we skip validating the runpath for Rust 1.40.  Rust 1.41 stopped
+    ;; putting the codegen backend in a separate library, which makes this
+    ;; workaround only necessary for this release.
     (arguments
-     ;; Only the final Rust is tested, not the intermediate bootstrap ones,
-     ;; for performance and simplicity.
-     `(#:tests? #f
+     `(#:validate-runpath? #f
+       ;; Only the final Rust is tested, not the intermediate bootstrap ones,
+       ;; for performance and simplicity.
+       #:tests? #f
        #:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
-       #:modules ((guix build utils)
+       #:modules ((guix build cargo-utils)
+                  (guix build utils)
                   (guix build gnu-build-system)
                   (ice-9 match)
                   (srfi srfi-1))
@@ -328,6 +370,11 @@ safety and thread safety guarantees.")
              (setenv "CC" (search-input-file inputs "/bin/gcc"))
              ;; The Guix LLVM package installs only shared libraries.
              (setenv "LLVM_LINK_SHARED" "1")))
+         (add-after 'unpack 'add-cc-shim-to-path
+           (lambda _
+             (mkdir-p "/tmp/bin")
+             (symlink (which "gcc") "/tmp/bin/cc")
+             (setenv "PATH" (string-append "/tmp/bin:" (getenv "PATH")))))
          (add-after 'unpack 'neuter-tidy
            ;; We often need to patch tests with various Guix-specific paths.
            ;; This often increases the line length and makes tidy, rustc's
@@ -341,13 +388,6 @@ safety and thread safety guarantees.")
              (substitute* "src/bootstrap/builder.rs"
                ((".*::Tidy,.*")
                 ""))))
-         (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
-           (lambda* _
-             (use-modules (guix build cargo-utils))
-             (substitute* "src/Cargo.lock"
-               (("(\"checksum .* = )\".*\"" all name)
-                (string-append name "\"" ,%cargo-reference-hash "\"")))
-             (generate-all-checksums "src/vendor")))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -358,6 +398,14 @@ safety and thread safety guarantees.")
                     (cargo (assoc-ref inputs "cargo-bootstrap"))
                     (llvm (assoc-ref inputs "llvm"))
                     (jemalloc (assoc-ref inputs "jemalloc")))
+               ;; The compiler is no longer directly built against jemalloc, but
+               ;; rather via the jemalloc-sys crate (which vendors the jemalloc
+               ;; source). To use jemalloc we must enable linking to it (otherwise
+               ;; it would use the system allocator), and set an environment
+               ;; variable pointing to the compiled jemalloc.
+               (setenv "JEMALLOC_OVERRIDE"
+                       (search-input-file inputs
+                                          "/lib/libjemalloc_pic.a"))
                (call-with-output-file "config.toml"
                  (lambda (port)
                    (display (string-append "
@@ -373,6 +421,7 @@ submodules = false
 prefix = \"" out "\"
 sysconfdir = \"etc\"
 [rust]
+jemalloc=true
 default-linker = \"" gcc "/bin/gcc" "\"
 channel = \"stable\"
 rpath = true
@@ -381,7 +430,6 @@ llvm-config = \"" llvm "/bin/llvm-config" "\"
 cc = \"" gcc "/bin/gcc" "\"
 cxx = \"" gcc "/bin/g++" "\"
 ar = \"" binutils "/bin/ar" "\"
-jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 [dist]
 ") port))))))
          (replace 'build
@@ -390,20 +438,25 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                               "-j" (if parallel-build?
                                        (number->string (parallel-job-count))
                                        "1"))))
-               (invoke "./x.py" job-spec "build")
-               (invoke "./x.py" job-spec "build" "src/tools/cargo"))))
+               (invoke "./x.py" job-spec "build" "--stage=1"
+                       "src/libstd"
+                       "src/tools/cargo"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (cargo-out (assoc-ref outputs "cargo")))
-               (mkdir-p out)
-               (invoke "./x.py" "install")
-               (substitute* "config.toml"
-                 ;; Adjust the prefix to the 'cargo' output.
-                 (("prefix = \"[^\"]*\"")
-                  (format #f "prefix = ~s" cargo-out)))
-               (mkdir-p cargo-out)
-               (invoke "./x.py" "install" "cargo"))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (cargo-out (assoc-ref outputs "cargo"))
+                    (gnu-triplet ,(or (%current-target-system)
+                                      (nix-system->gnu-triplet-for-rust)))
+                    (build (string-append "build/" gnu-triplet)))
+               ;; Manually do the installation instead of calling './x.py
+               ;; install', as that is slow and needlessly rebuilds some
+               ;; things.
+               (install-file (string-append build "/stage1/bin/rustc")
+                             (string-append out "/bin"))
+               (copy-recursively (string-append build "/stage1/lib")
+                                 (string-append out "/lib"))
+               (install-file (string-append build "/stage1-tools-bin/cargo")
+                             (string-append cargo-out "/bin")))))
          (add-after 'install 'delete-install-logs
            (lambda* (#:key outputs #:allow-other-keys)
              (for-each (lambda (f)
@@ -427,12 +480,12 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
      `(("cmake" ,cmake-minimal)
        ("pkg-config" ,pkg-config)       ; For "cargo"
        ("python" ,python-wrapper)
-       ("rustc-bootstrap" ,rust-1.29)
-       ("cargo-bootstrap" ,rust-1.29 "cargo")
+       ("rustc-bootstrap" ,rust-1.39)
+       ("cargo-bootstrap" ,rust-1.39 "cargo")
        ("which" ,which)))
     (inputs
-     `(("jemalloc" ,jemalloc-4.5.0)
-       ("llvm" ,llvm-7)
+     `(("jemalloc" ,jemalloc)
+       ("llvm" ,llvm)
        ("openssl" ,openssl)
        ("libssh2" ,libssh2)             ; For "cargo"
        ("libcurl" ,curl)))              ; For "cargo"
@@ -450,7 +503,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
     (supported-systems
-     (delete "i686-linux"  ; fails to build, see bug #35519
+     (delete "i686-linux"               ; fails to build, see bug #35519
              %supported-systems))
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
@@ -458,171 +511,6 @@ safety and thread safety guarantees.")
     (home-page "https://www.rust-lang.org")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
-
-(define-public rust-1.31
-  (rust-bootstrapped-package
-   rust-1.30 "1.31.1" "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"))
-
-(define-public rust-1.32
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.31 "1.32.0"
-                    "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac")))
-    (package
-      (inherit base-rust)
-      (source
-       (origin
-         (inherit (package-source base-rust))
-         (snippet '(for-each delete-file-recursively
-                             '("src/llvm"
-                               "src/llvm-emscripten"
-                               "src/tools/clang"
-                               "src/tools/lldb"
-                               "vendor/jemalloc-sys/jemalloc")))
-          ;; the vendor directory has moved to the root of
-          ;; the tarball, so we have to strip an extra prefix
-         (patch-flags '("-p2"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ;; The test suite fails due to LLVM 7, required for the build to be
-         ;; reproducible.
-         ((#:tests? _ #t)
-          #f)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             ;; Cargo.lock and the vendor/ directory have been moved to the
-             ;; root of the rust tarball
-             (replace 'patch-cargo-checksums
-               (lambda* _
-                 (use-modules (guix build cargo-utils))
-                 (substitute* "Cargo.lock"
-                   (("(\"checksum .* = )\".*\"" all name)
-                    (string-append name "\"" ,%cargo-reference-hash "\"")))
-                 (generate-all-checksums "vendor")))
-             (add-after 'configure 'override-jemalloc
-               (lambda* (#:key inputs #:allow-other-keys)
-                 ;; The compiler is no longer directly built against jemalloc,
-                 ;; but rather via the jemalloc-sys crate (which vendors the
-                 ;; jemalloc source). To use jemalloc we must enable linking to
-                 ;; it (otherwise it would use the system allocator), and set
-                 ;; an environment variable pointing to the compiled jemalloc.
-                 (substitute* "config.toml"
-                   (("^jemalloc =.*$") "")
-                   (("[[]rust[]]") "\n[rust]\njemalloc=true\n"))
-                 (setenv "JEMALLOC_OVERRIDE"
-                         (search-input-file inputs
-                                            "/lib/libjemalloc_pic.a")))))))))))
-
-(define-public rust-1.33
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.32 "1.33.0"
-                    "152x91mg7bz4ygligwjb05fgm1blwy2i70s2j03zc9jiwvbsh0as")))
-    (package
-      (inherit base-rust)
-      (source
-       (origin
-         (inherit (package-source base-rust))
-         (patches '())
-         (patch-flags '("-p1"))))
-      (inputs
-       ;; Upgrade jemalloc.
-       (alist-replace "jemalloc" (list jemalloc) (package-inputs base-rust))))))
-
-(define-public rust-1.34
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.33 "1.34.1"
-                    "19s09k7y5j6g3y4d2rk6kg9pvq6ml94c49w6b72dmq8p9lk8bixh")))
-    (package
-      (inherit base-rust)
-      (source
-       (origin
-         (inherit (package-source base-rust))
-         (snippet '(for-each delete-file-recursively
-                             '("src/llvm-emscripten"
-                               "src/llvm-project"
-                               "vendor/jemalloc-sys/jemalloc"))))))))
-
-(define-public rust-1.35
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.34 "1.35.0"
-                    "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
-    (package
-      (inherit base-rust)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'disable-codegen-tests))))))))
-
-(define-public rust-1.36
-  (rust-bootstrapped-package
-   rust-1.35 "1.36.0" "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04"))
-
-(define-public rust-1.37
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.36 "1.37.0"
-                    "1hrqprybhkhs6d9b5pjskfnc5z9v2l2gync7nb39qjb5s0h703hj")))
-    (package
-      (inherit base-rust)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'configure 'configure-cargo-home
-               (lambda _
-                 (let ((cargo-home (string-append (getcwd) "/.cargo")))
-                   (mkdir-p cargo-home)
-                   (setenv "CARGO_HOME" cargo-home)))))))))))
-
-(define-public rust-1.38
-  (rust-bootstrapped-package
-    rust-1.37 "1.38.0" "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4"))
-
-(define-public rust-1.39
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.38 "1.39.0"
-                    "0mwkc1bnil2cfyf6nglpvbn2y0zfbv44zfhsd5qg4c9rm6vgd8dl")))
-    (package
-      (inherit base-rust)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'patch-cargo-checksums
-               ;; The Cargo.lock format changed.
-               (lambda* _
-                 (use-modules (guix build cargo-utils))
-                 (substitute* "Cargo.lock"
-                   (("(checksum = )\".*\"" all name)
-                    (string-append name "\"" ,%cargo-reference-hash "\"")))
-                 (generate-all-checksums "vendor"))))))))))
-
-(define-public rust-1.40
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.39 "1.40.0"
-                    "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx")))
-    (package
-      (inherit base-rust)
-      (source
-       (origin
-         (inherit (package-source base-rust))
-         ;; llvm-emscripten is no longer bundled, as that codegen backend
-         ;; got removed.
-         (snippet '(for-each delete-file-recursively
-                             '("src/llvm-project"
-                               "vendor/jemalloc-sys/jemalloc")))))
-       ;; Rust 1.40 does not ship rustc-internal libraries by default (see
-       ;; rustc-dev-split). This means that librustc_driver.so is no longer
-       ;; available in lib/rustlib/$target/lib, which is the directory
-       ;; included in the runpath of librustc_codegen_llvm-llvm.so.  This is
-       ;; detected by our validate-runpath phase as an error, but it is
-       ;; harmless as the codegen backend is loaded by librustc_driver.so
-       ;; itself, which must at that point have been already loaded.  As such,
-       ;; we skip validating the runpath for Rust 1.40.  Rust 1.41 stopped
-       ;; putting the codegen backend in a separate library, which makes this
-       ;; workaround only necessary for this release.
-      (arguments (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:validate-runpath? _ #f)
-          #f))))))
 
 (define-public rust-1.41
   (let ((base-rust (rust-bootstrapped-package
@@ -633,7 +521,16 @@ safety and thread safety guarantees.")
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:validate-runpath? _ #t)
-          #t))))))
+          #t)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'add-cc-shim-to-path)
+             (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
+               (lambda* _
+                 (substitute* "Cargo.lock"
+                   (("(checksum = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (generate-all-checksums "vendor"))))))))))
 
 (define-public rust-1.42
   (rust-bootstrapped-package
@@ -687,9 +584,10 @@ safety and thread safety guarantees.")
                                   "-j" (if parallel-build?
                                            (number->string (parallel-job-count))
                                            "1"))))
-                   (invoke "./x.py" job-spec "build")
-                   (invoke "./x.py" job-spec "build" "src/tools/cargo")
-                   (invoke "./x.py" job-spec "build" "src/tools/rustfmt"))))
+                   (invoke "./x.py" job-spec "build"
+                           "library/std" ;rustc
+                           "src/tools/cargo"
+                           "src/tools/rustfmt"))))
              (replace 'check
                ;; Phase overridden to also test rustfmt.
                (lambda* (#:key tests? parallel-build? #:allow-other-keys)
@@ -698,9 +596,10 @@ safety and thread safety guarantees.")
                                     "-j" (if parallel-build?
                                              (number->string (parallel-job-count))
                                              "1"))))
-                     (invoke "./x.py" job-spec "test" "-vv")
-                     (invoke "./x.py" job-spec "test" "src/tools/cargo")
-                     (invoke "./x.py" job-spec "test" "src/tools/rustfmt")))))
+                     (invoke "./x.py" job-spec "test" "-vv"
+                             "library/std"
+                             "src/tools/cargo"
+                             "src/tools/rustfmt")))))
              (replace 'install
                ;; Phase overridden to also install rustfmt.
                (lambda* (#:key outputs #:allow-other-keys)
@@ -717,8 +616,24 @@ safety and thread safety guarantees.")
                  (invoke "./x.py" "install" "rustfmt"))))))))))
 
 (define-public rust-1.47
-  (rust-bootstrapped-package
-    rust-1.46 "1.47.0" "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i"))
+  (let ((base-rust (rust-bootstrapped-package
+                    rust-1.46 "1.47.0"
+                    "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
+    (package/inherit base-rust
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'build
+               ;; The standard library source location moved in this release.
+               (lambda* (#:key parallel-build? #:allow-other-keys)
+                 (let ((job-spec (string-append
+                                  "-j" (if parallel-build?
+                                           (number->string (parallel-job-count))
+                                           "1"))))
+                   (invoke "./x.py" job-spec "build" "--stage=1"
+                           "library/std"
+                           "src/tools/cargo")))))))))))
 
 (define-public rust-1.48
   (rust-bootstrapped-package
