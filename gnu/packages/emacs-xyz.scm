@@ -29187,6 +29187,18 @@ and preferred services can easily be configured.")
        (sha256
         (base32 "0rddk76ih44b574lsr6d6r9wa2l7c9zlb9kcyw5xvly17ciiq16h"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Move the extensions source files to the top level, which is included in
+         ;; the EMACSLOADPATH.
+         (add-after 'unpack 'move-source-files
+           (lambda _
+             (let ((el-files (find-files "./extensions" ".*\\.el$")))
+               (for-each (lambda (f)
+                           (rename-file f (basename f)))
+                         el-files))
+             #t)))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/minad/vertico")
