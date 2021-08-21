@@ -60,7 +60,7 @@ guix/scripts/git.scm
 guix/scripts/git/authenticate.scm
 guix/scripts/hash.scm
 guix/scripts/import.scm
-guix/scripts/import/contentdb.scm
+guix/scripts/import/minetest.scm
 guix/scripts/import/cran.scm
 guix/scripts/import/elpa.scm
 guix/scripts/pull.scm
