@@ -3794,15 +3794,19 @@ in the center.")
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
-    (version "0.7.5")
+    (version "0.8.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/"
-                           "undo-tree-" version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/tsc25/undo-tree")
+             (commit (string-append "release/" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "00admi87gqm0akhfqm4dcp9fw8ihpygy030955jswkha4zs7lw2p"))))
+        (base32 "1khkwrrbwaimspc013n4k9mpv8g302r0zkrsqnza2x1d3qznn08y"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-queue" ,emacs-queue)))
     (home-page "https://www.dr-qubit.org/undo-tree.html")
     (synopsis "Treat undo history as a tree")
     (description
