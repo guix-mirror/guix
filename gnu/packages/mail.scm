@@ -4360,6 +4360,24 @@ based on asyncio.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
 
+(define-public python-imaplib2
+  (package
+    (name "python-imaplib2")
+    (version "3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "imaplib2" version))
+       (sha256
+        (base32
+         "0nqyb274hq30agg1c0zkb5ijmcirgg35sp4dp4n292l665dlijwn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jazzband/imaplib2/")
+    (synopsis "Threaded Python IMAP4 client")
+    (description "This package provides a threaded Python IMAP4 client, based
+on RFC 3501 and original @code{imaplib} module.")
+    (license license:expat)))
+
 (define-public rspamd
   (package
     (name "rspamd")
