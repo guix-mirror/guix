@@ -1048,12 +1048,7 @@ the KeepKey Hardware Wallet.")
        ("python-trezor-agent" ,python-trezor-agent)))
     (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Ledger as hardware SSH/GPG agent")
-    (description "This package allows using Ledger as hardware SSH/GPG agent.
-
-Usage for SSH: trezor-agent foo@@example.com --connect
-Usage for GPG: Initialize using trezor-gpg init \"Foo <foo@@example.com>\"
-Then set the environment variable GNUPGHOME to
-\"${HOME}/.gnupg/trezor\".")
+    (description "This package allows using Ledger as hardware SSH/GPG agent.")
     (license license:lgpl3)))
 
 (define-public trezor-agent
