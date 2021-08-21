@@ -62,7 +62,7 @@
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -18335,15 +18335,7 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
        "Python implementation of the Happy Eyeballs Algorithm described in RFC
 6555.  Provided with a single file and dead-simple API to allow easy vendoring
 and integration into other projects.")
-      (properties `((python2-variant . ,(delay python2-rfc6555))))
       (license license:asl2.0))))
-
-(define-public python2-rfc6555
-  (let ((base (package-with-python2
-               (strip-python2-variant python-rfc6555))))
-    (package/inherit base
-      (propagated-inputs
-       `(("python2-selectors2" ,python2-selectors2))))))
 
 (define-public python-bagit
   (package
