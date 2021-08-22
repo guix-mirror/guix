@@ -10206,14 +10206,14 @@ samples is large and the number of mixture components is not too large.")
 (define-public r-magick
   (package
     (name "r-magick")
-    (version "2.7.2")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "magick" version))
        (sha256
         (base32
-         "1ckp85wk9lj6jjm92ww4mg1r4h4zm2cm68y6fyb1hz4mr3nihmji"))))
+         "0h942bn7wfnzbbgq9hrs75c7igmg5r1c5sad2v0znhza4cp7p1w3"))))
     (build-system r-build-system)
     (inputs
      `(("imagemagick" ,imagemagick)
