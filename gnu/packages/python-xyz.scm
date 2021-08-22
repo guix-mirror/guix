@@ -3334,8 +3334,10 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (invoke "trial" "jsonschema"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (setenv "JSON_SCHEMA_TEST_SUITE" "json")
+               (invoke "trial" "jsonschema")))))))
     (native-inputs
      `(("python-setuptools_scm" ,python-setuptools-scm)
        ("python-twisted" ,python-twisted)))
