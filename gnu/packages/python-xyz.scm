@@ -3343,7 +3343,6 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
        ("python-twisted" ,python-twisted)))
     (propagated-inputs
      `(("python-attrs" ,python-attrs)
-       ("python-importlib-metadata" ,python-importlib-metadata) ;; python < 3.8
        ("python-pyrsistent" ,python-pyrsistent)
        ("python-six" ,python-six)))
     (home-page "https://github.com/Julian/jsonschema")
@@ -3359,6 +3358,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
     (package/inherit jsonschema
              (propagated-inputs
               `(("python2-functools32" ,python2-functools32)
+                ("python2-importlib-metadata" ,python2-importlib-metadata)
                 ,@(package-propagated-inputs jsonschema))))))
 
 (define-public python-schema
