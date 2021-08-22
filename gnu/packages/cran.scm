@@ -28325,20 +28325,20 @@ implemented as @code{R6} classes.")
 (define-public r-mlr3
   (package
     (name "r-mlr3")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3" version))
               (sha256
                (base32
-                "0qh9vdac1als2123wf51bwa7spdqk33iydlawi5n5dpci892iahl"))))
+                "0nimwczsgrj29r9qrlz32qc3fkj02369zql7jhkrn3lk3mfy5zmz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-r6" ,r-r6)
        ("r-backports" ,r-backports)
        ("r-checkmate" ,r-checkmate)
        ("r-data-table" ,r-data-table)
-       ("r-digest" ,r-digest)
+       ("r-future" ,r-future)
        ("r-future-apply" ,r-future-apply)
        ("r-lgr" ,r-lgr)
        ("r-mlbench" ,r-mlbench)
