@@ -24402,14 +24402,14 @@ climate data.")
 (define-public r-rlinsolve
   (package
     (name "r-rlinsolve")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rlinsolve" version))
        (sha256
         (base32
-         "1x02xxbkchcwwfa2123n9yqfzinfi0zba8zxhp977czzwysy75cc"))))
+         "1xv500n1480qyakw0isanw1s5ywykhc207hqja4804s5s2m8zfjw"))))
     (properties `((upstream-name . "Rlinsolve")))
     (build-system r-build-system)
     (propagated-inputs
