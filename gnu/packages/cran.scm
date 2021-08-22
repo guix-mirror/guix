@@ -13277,14 +13277,14 @@ preparing, executing, and processing HTTP requests.")
 (define-public r-bigrquery
   (package
     (name "r-bigrquery")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bigrquery" version))
        (sha256
         (base32
-         "16whccv7f94vf57dvbbrhdskz3nnbmpa11a14kp7aynckldlfy0v"))))
+         "02msq61l7vamzpvbhvalh3qil1aa7pr68pwpsivbb6pvz6p4zyns"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -13295,6 +13295,7 @@ preparing, executing, and processing HTTP requests.")
        ("r-glue" ,r-glue)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-prettyunits" ,r-prettyunits)
        ("r-progress" ,r-progress)
        ("r-rapidjsonr" ,r-rapidjsonr)
