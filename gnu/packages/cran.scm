@@ -187,18 +187,20 @@ etc.")
 (define-public r-datawizard
   (package
     (name "r-datawizard")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "datawizard" version))
        (sha256
         (base32
-         "1fc27arvm6ks65kl9nrl2vnprpz7j8d0r2yassgxnnvr3p3ba043"))))
+         "1brbkjl0ds3gd0x6jl6vggzl1nfrn76z63vhj2gbl9l168iss5z3"))))
     (properties `((upstream-name . "datawizard")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-insight" ,r-insight)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://easystats.github.io/datawizard/")
     (synopsis "Easy data wrangling")
     (description
