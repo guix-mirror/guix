@@ -18544,14 +18544,14 @@ classification and regression models.")
 (define-public r-dae
   (package
     (name "r-dae")
-    (version "3.1-37")
+    (version "3.2-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dae" version))
        (sha256
         (base32
-         "102fgbdpn7yvm1zj180cv4sr1096sz35d4gndsv7w9kriqyi1c1l"))))
+         "1z5vxxzzpqfl78c2c60109jdr003j48qjisj3mrhsxa89wdv9hs9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
