@@ -3745,13 +3745,13 @@ temporary files and directories during tests.")
 (define-public ruby-test-unit
   (package
     (name "ruby-test-unit")
-    (version "3.2.5")
+    (version "3.4.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "test-unit" version))
               (sha256
                (base32
-                "05bx36fw01iqz0xqhvjfrwjgnj1zx3b2vn6w1fzp19rchd7zqc52"))))
+                "15isy7vhppbfd0032klirj9gxp65ygkzjdwrmm28xpirlcsk6qpd"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-power-assert" ,ruby-power-assert)))
