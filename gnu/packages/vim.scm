@@ -1035,3 +1035,35 @@ specification.")
 This package includes commands such as @code{SudoWrite} and @code{SudoEdit} and
 help working on Vim buffers and the files they reference with one command.")
       (license license:vim))))
+
+(define-public vim-slime
+  ;; No tagged releases.
+  (let ((commit "a522fed677e50175f52efc5848cc35209af33216")
+        (revision "1"))
+    (package
+      (name "vim-slime")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/jpalardy/vim-slime")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0k4b629jn6xlxyjxdl3cgm06v9dmx967rqnslv5m82c9kscwpyh4"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("autoload" "share/vim/vimfiles/")
+           ("doc" "share/vim/vimfiles/")
+           ("ftplugin" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (home-page "https://technotales.wordpress.com/2007/10/03/like-slime-for-vim/")
+      (synopsis "Vim plugin to give you some slime")
+      (description "SLIME is an Emacs plugin to turn Emacs into a Lisp IDE.  You
+can type text in a file, send it to a live REPL, and avoid having to reload all
+your code every time you make a change.  @code{Vim-slime} is an attempt at
+getting some of these features into Vim.  It works with any REPL and isn't tied
+to Lisp.")
+      (license license:expat))))
