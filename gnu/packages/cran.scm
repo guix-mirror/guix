@@ -5920,14 +5920,14 @@ packages that work with genomic data.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.32")
+    (version "0.33")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "17y20kb5xgmz77n4rrkqmcm0cnjwfi4mn84h6zabij76b8cjiykh"))))
+         "10lqn704dqv5k5v6y964l8c77rwy4ilrc1hcb99j4vxpx3p4nd43"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-xfun" ,r-xfun)))
