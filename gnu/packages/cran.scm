@@ -25417,21 +25417,21 @@ multi-state models.")
 (define-public r-scatterpie
   (package
     (name "r-scatterpie")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "scatterpie" version))
        (sha256
         (base32
-         "1lilzybbxqhrjpwwf9050wf5f896pn5d93llp5da7ssrcn5bm9i8"))))
+         "1pmspv8a7k20zyd5xvmav2k9mnjrkfhdij3rr9k504zyki8hfy1z"))))
     (properties `((upstream-name . "scatterpie")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggforce" ,r-ggforce)
+       ("r-ggfun" ,r-ggfun)
        ("r-ggplot2" ,r-ggplot2)
        ("r-rlang" ,r-rlang)
-       ("r-rvcheck" ,r-rvcheck)
        ("r-tidyr" ,r-tidyr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
