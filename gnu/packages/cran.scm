@@ -17552,6 +17552,31 @@ matrix and displays the significance level on the plot.  It also includes a
 function for computing a matrix of correlation p-values.")
     (license license:gpl2)))
 
+(define-public r-ggfun
+  (package
+    (name "r-ggfun")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggfun" version))
+       (sha256
+        (base32
+         "0bf8pl3scy5fx15h1fx0799cb9sg9spjapqif9gcz27pmmgdc0n9"))))
+    (properties `((upstream-name . "ggfun")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/package=ggfun")
+    (synopsis "Miscellaneous functions for ggplot2")
+    (description
+     "This package provides useful functions to edit ggplot object (e.g.,
+setting fonts for theme and layers, adding rounded rectangle as background for
+each of the legends).")
+    (license license:artistic2.0)))
+
 (define-public r-gridtext
   (package
     (name "r-gridtext")
