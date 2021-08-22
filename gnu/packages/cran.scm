@@ -16979,6 +16979,26 @@ improvements over the @code{convertColor} function in the @code{grDevices}
 package.")
     (license license:expat)))
 
+(define-public r-yulab-utils
+  (package
+    (name "r-yulab-utils")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "yulab.utils" version))
+       (sha256
+        (base32
+         "1haq6k0r64gs76p2vvrm42m64r8s32kzyz573pw9789y32zn0s5q"))))
+    (properties `((upstream-name . "yulab.utils")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=yulab.utils")
+    (synopsis "Supporting functions for packages maintained by YuLab-SMU")
+    (description
+     "Miscellaneous functions commonly used by YuLab-SMU, such as
+@code{install_zip_gh} to install R packages from Github ZIP files.")
+    (license license:artistic2.0)))
+
 (define-public r-ggplotify
   (package
     (name "r-ggplotify")
