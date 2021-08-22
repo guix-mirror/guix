@@ -30316,18 +30316,20 @@ between them.")
 (define-public r-keras
   (package
     (name "r-keras")
-    (version "2.4.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "keras" version))
        (sha256
         (base32
-         "00bw5f5d81md8db1k6bf2a91by4k25xvlwxiwv188y4vw3bfc7md"))))
+         "1pgdcypp9x9dw7aa5ka7qqgd24jdcp3ja94jpm7j6l6j4930k5vd"))))
     (properties `((upstream-name . "keras")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-generics" ,r-generics)
+     `(("r-ellipsis" ,r-ellipsis)
+       ("r-generics" ,r-generics)
+       ("r-glue" ,r-glue)
        ("r-magrittr" ,r-magrittr)
        ("r-r6" ,r-r6)
        ("r-reticulate" ,r-reticulate)
