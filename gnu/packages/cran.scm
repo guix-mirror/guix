@@ -30245,6 +30245,29 @@ functions to retrieve the directory of the latest run or latest several
 runs.")
     (license license:asl2.0)))
 
+(define-public r-tfautograph
+  (package
+    (name "r-tfautograph")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tfautograph" version))
+       (sha256
+        (base32
+         "1fgpvv330g61ghzhkwnzx04gd9l3d6x1vxd1xqslb05h5acagwqn"))))
+    (properties `((upstream-name . "tfautograph")))
+    (build-system r-build-system)
+    (inputs `(("tensorflow" ,tensorflow)))
+    (propagated-inputs
+     `(("r-reticulate" ,r-reticulate)))
+    (home-page "https://t-kalinowski.github.io/tfautograph/")
+    (synopsis "Autograph R for Tensorflow")
+    (description
+     "This package lets you translate R control flow expressions into
+Tensorflow graphs.")
+    (license license:gpl3)))
+
 (define-public r-tensorflow
   (package
     (name "r-tensorflow")
