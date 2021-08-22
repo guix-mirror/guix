@@ -8426,14 +8426,14 @@ hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
 (define-public r-rbibutils
   (package
     (name "r-rbibutils")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rbibutils" version))
        (sha256
         (base32
-         "0ks43z6vvdz0d0jv5d2qrm12yb4cwvi7p3kjk6byi4farhh368di"))))
+         "1rzc2icik26qlnrbq58c24lc9m0grl83p0hyr70whallqfipa174"))))
     (properties `((upstream-name . "rbibutils")))
     (build-system r-build-system)
     (home-page "https://geobosh.github.io/rbibutils/")
