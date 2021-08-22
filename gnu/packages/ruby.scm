@@ -6739,8 +6739,11 @@ other things and it comes with a command line interface.")
            (lambda _
              (for-each (lambda (file)
                          (invoke "ruby" "-Itest" file))
-                       (find-files "./test" "test_.*\\.rb"))
-             #t)))))
+                       (find-files "./test" "test_.*\\.rb"))))
+         (add-before 'check 'patch-tests-for-newer-ruby
+           (lambda _
+             (substitute* "test/test_netrc.rb"
+               (("Dir.pwd, '.netrc'") "Netrc.home_path, '.netrc'")))))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Library to read and update netrc files")
