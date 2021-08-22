@@ -17011,19 +17011,19 @@ package.")
 (define-public r-ggplotify
   (package
     (name "r-ggplotify")
-    (version "0.0.8")
+    (version "0.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplotify" version))
        (sha256
         (base32
-         "08c9vxm8pg6l5g3r7wsfgzsq00xdrc6v4xnn7pd3qcyw7cc8s969"))))
+         "1irm8pmf20bfl2djr591jfs7g8l7vw2673ri76pimz3285l74bp0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-gridgraphics" ,r-gridgraphics)
-       ("r-rvcheck" ,r-rvcheck)))
+       ("r-yulab-utils" ,r-yulab-utils)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/GuangchuangYu/ggplotify")
