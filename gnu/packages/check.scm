@@ -2808,7 +2808,8 @@ portable to just about any platform.")
                         ;; indefinitely.  See README.packagers for more information.
                         ;; There are specific instructions to not enable more flags
                         ;; than absolutely needed.
-                        ,(if (target-ppc64le?)
+                        ,(if (or (target-ppc64le?)
+                                 (target-riscv64?))
                            `(setenv "FAKETIME_COMPILE_CFLAGS"
                                     "-DFORCE_MONOTONIC_FIX -DFORCE_PTHREAD_NONVER")
                            `(setenv "FAKETIME_COMPILE_CFLAGS"
