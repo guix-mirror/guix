@@ -20006,14 +20006,14 @@ server-side.")
 (define-public r-sysfonts
   (package
     (name "r-sysfonts")
-    (version "0.8.4")
+    (version "0.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sysfonts" version))
        (sha256
         (base32
-         "0bq48hf2h4dkxymc36ypqvbwx5lbyj2m6fsikmgqiy4ixjpbvz8h"))))
+         "1fhf0x5sqx3mv72j9d0clkq1qzqiqxbxn1h808f7ccf0mb04v43y"))))
     (properties `((upstream-name . "sysfonts")))
     (build-system r-build-system)
     (inputs
