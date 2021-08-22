@@ -7787,12 +7787,12 @@ without using the configuration machinery.")
          (add-after 'unpack 'patch-testsuite
            (lambda _
              ;; test_not_on_path() and test_path_priority() try to run a test
-             ;; that loads jupyter_core, so we need PYTHONPATH
+             ;; that loads jupyter_core, so we need GUIX_PYTHONPATH
              (substitute* "jupyter_core/tests/test_command.py"
                (("env = \\{'PATH': ''\\}")
-                "env = {'PATH': '', 'PYTHONPATH': os.environ['PYTHONPATH']}")
+                "env = {'PATH': '', 'PYTHONPATH': os.environ['GUIX_PYTHONPATH']}")
                (("env = \\{'PATH':  str\\(b\\)\\}")
-                "env = {'PATH': str(b), 'PYTHONPATH': os.environ['PYTHONPATH']}"))
+                "env = {'PATH': str(b), 'PYTHONPATH': os.environ['GUIX_PYTHONPATH']}"))
              #t))
          ;; Migration is running whenever etc/jupyter exists, but the
          ;; Guix-managed directory will never contain any migratable IPython
