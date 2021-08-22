@@ -2261,14 +2261,14 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
 (define-public r-d3r
   (package
     (name "r-d3r")
-    (version "0.9.1")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "d3r" version))
        (sha256
         (base32
-         "0kc82vvyfxhxvqfalngn36prn3sxdiinsx04rn99ha6zdc27zp5k"))))
+         "1qijkllfaaw0lb29j8mappm8jz9kg8gkihxq5wqhb4gabsazdwva"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -2289,7 +2289,9 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
                         (,(assoc-ref inputs "d3.v5.js")
                          "v5/dist/d3.min.js")
                         (,(assoc-ref inputs "d3.v6.js")
-                         "v6/dist/d3.min.js"))))
+                         "v6/dist/d3.min.js")
+                        (,(assoc-ref inputs "d3.v7.js")
+                         "v7/dist/d3.min.js"))))
                  (lambda (sources targets)
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
@@ -2297,8 +2299,7 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
                                (delete-file target)
                                (invoke "esbuild" source "--minify"
                                        (string-append "--outfile=" target)))
-                             sources targets))))
-             #t)))))
+                             sources targets)))))))))
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-htmltools" ,r-htmltools)
@@ -2333,7 +2334,14 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
            (uri "https://d3js.org/d3.v6.js")
            (sha256
             (base32
-             "1x6432ca7p1pfxhz3airzw943fincn9izzxkclc1wmphcvv2n2p9"))))))
+             "1x6432ca7p1pfxhz3airzw943fincn9izzxkclc1wmphcvv2n2p9"))))
+       ("d3.v7.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v7.js")
+           (sha256
+            (base32
+             "0sd6vavxs8mx5xyb8xahlqghdiczqd284a7d5wravhqnrj0bw097"))))))
     (home-page "https://github.com/timelyportfolio/d3r")
     (synopsis "d3.js utilities for R")
     (description
