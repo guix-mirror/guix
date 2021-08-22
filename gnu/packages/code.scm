@@ -64,6 +64,7 @@
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
@@ -137,17 +138,26 @@ highlighting your own code that seemed comprehensible when you wrote it.")
               (base32
                "0g4aslm2zajq605py11s4rs1wdnzcqhkh7bc2xl5az42adzzg839"))))
     (build-system gnu-build-system)
-    (inputs `(("coreutils" ,coreutils)
-              ("ncurses" ,ncurses)
-              ("libltdl" ,libltdl)
-              ("sqlite" ,sqlite)
-              ("python-wrapper" ,python-wrapper)))
+    (inputs
+      `(("bash" ,bash-minimal)                    ; for wrap-program
+        ("coreutils" ,coreutils)
+        ("ctags" ,universal-ctags)
+        ("libltdl" ,libltdl)
+        ("ncurses" ,ncurses)
+        ("python-pygments" ,python-pygments)
+        ("python-wrapper" ,python-wrapper)
+        ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ncurses="
                             (assoc-ref %build-inputs "ncurses"))
              (string-append "--with-sqlite3="
                             (assoc-ref %build-inputs "sqlite"))
+             (string-append "--with-universal-ctags="
+                            (assoc-ref %build-inputs "ctags") "/bin/ctags")
+             (string-append "--sysconfdir="
+                            (assoc-ref %outputs "out") "/share/gtags")
+             "--localstatedir=/var"         ; This needs to be a writable location.
              "--disable-static")
 
        #:phases
@@ -158,6 +168,20 @@ highlighting your own code that seemed comprehensible when you wrote it.")
                            (assoc-ref inputs "coreutils") "/bin/echo")))
                (substitute* "globash/globash.in"
                  (("/bin/echo") echo)))))
+         (add-after 'post-install 'install-plugins
+           (lambda _
+             (with-directory-excursion "plugin-factory"
+               (invoke "make" "install"))))
+         (add-before 'install 'dont-install-to-/var
+           (lambda _
+             (substitute* "gozilla/Makefile"
+               (("DESTDIR\\)\\$\\{localstatedir\\}") "TMPDIR)"))))
+         (add-after 'install-plugins 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program
+               (string-append (assoc-ref outputs "out")
+                              "/share/gtags/script/pygments_parser.py")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))))
         (add-after 'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Install the plugin files in the right place.
