@@ -42,13 +42,13 @@
 (define-public trytond
   (package
     (name "trytond")
-    (version "5.8.2")
+    (version "6.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond" version))
        (sha256
-        (base32 "1h1x0cmmmxvjclbglvvxkv634jw6av5ilymbix1lln5lq0gd39yy"))))
+        (base32 "1jp5cadqpwkcnml8r1hj6aak5kc8an2d5ai62p96x77nn0dp3ny4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -63,7 +63,8 @@
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     `(("python-mock" ,python-mock)
+       ("python-pillow" ,python-pillow)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -86,13 +87,13 @@ and security.")
 (define-public tryton
   (package
     (name "tryton")
-    (version "5.8.2")
+    (version "6.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tryton" version))
        (sha256
-        (base32 "0kr5ngmmldgb9a9d5ylkmppy5p8vlf9d8iwv9lnci2fyxg2705wh"))))
+        (base32 "15cbp2r25pkr7lp4yliqgb6d0n779z70d4gckv56bx5aw4z27f66"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -127,13 +128,13 @@ and security.")
 (define-public python-proteus
   (package
     (name "python-proteus")
-    (version "5.8.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "proteus" version))
        (sha256
-        (base32 "03z5ssvjcvxv1p10y7c1y0jah0k3yyc9hlyi7xax98sfqyk13bnw"))))
+        (base32 "0qr7rir7ysxvy2kyfzp2d2kcw9qzq4vdkddbwswzgddxjpycksdh"))))
     (build-system python-build-system)
     ;; Tests require python-trytond-party which requires python-proteus.
     (arguments
@@ -188,13 +189,13 @@ the build system."
 (define-public trytond-account
   (package
     (name "trytond-account")
-    (version "5.8.1")
+    (version "6.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_account" version))
        (sha256
-        (base32 "16ny67vcnxk9ngcxd56cfixm441vs9jxv3apmb16xsi47yk2xd7w"))))
+        (base32 "0j1mn8sd5n8rkwgfvcy9kf8s7s3qxvnilnc72i83ac573zj922xc"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -217,13 +218,13 @@ most of accounting needs.")
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
-    (version "5.8.1")
+    (version "6.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_account_invoice" version))
        (sha256
-        (base32 "0drccambg6855p7ai8654c7f9v85jzwicwpxmagyrr09qz6qzgcz"))))
+        (base32 "0r8zigb4qmv40kf835x8jd7049nnhk5g7g0aibvfd0y9p28lspnz"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account_invoice"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -248,15 +249,13 @@ term.")
 (define-public trytond-account-invoice-stock
   (package
     (name "trytond-account-invoice-stock")
-    (version "5.8.1")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri
-             "trytond_account_invoice_stock"
-             version))
+       (uri (pypi-uri "trytond_account_invoice_stock" version))
        (sha256
-        (base32 "02m6ikcc38ac41ddzg5xp5l9jz0k6j7j1g2xa62ki4v093yn4z5v"))))
+        (base32 "1228n6vsx0rdjsy3idvpyssa3n21nhvz9gqaacwa46c0hp2251bp"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account_invoice_stock"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -280,13 +279,13 @@ average price of the posted invoice lines that are linked to it.")
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
-    (version "5.8.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_account_product" version))
        (sha256
-        (base32 "10bpbkkmllbh9lm5ajydmc5nvqm9bbdn9rmm03jqgik23s5kyx2z"))))
+        (base32 "1z0dn1p22smzb4a9v451224wrpxcw94inl7jxkarc0q088gasn7d"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account_product"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -309,13 +308,13 @@ and category.")
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
-    (version "5.8.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_analytic_account" version))
        (sha256
-        (base32 "10rn2rf1ji7d1gxmgca368yvabql1ahklqg7p8sh5bl79vn5qx5x"))))
+        (base32 "09j9xz41n5hk3j7w63xbw1asd3p00prqvl652qcm9x1nrlmqiw3r"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "analytic_account"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -339,13 +338,13 @@ required to analyse accounting using multiple different axes.")
 (define-public trytond-company
   (package
     (name "trytond-company")
-    (version "5.8.1")
+    (version "6.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_company" version))
        (sha256
-        (base32 "1bwy2rkgfw32cwhq5fh3rpy7bx425h44ap10i9kjx5ak86bfnpz9"))))
+        (base32 "1q4qdyg32dn00pn3pj2yjl3jhxaqpv7a1cv5s5c95cpy5p46p02n"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "company"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -366,13 +365,13 @@ company and employee and extend the user model.")
 (define-public trytond-country
   (package
     (name "trytond-country")
-    (version "5.8.1")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_country" version))
        (sha256
-        (base32 "1lkspk5w5pb0gg2h27zb7vwcj993gkm1f84qdxmqlpkc8raqvicj"))))
+        (base32 "1ksinysac7p0k8avsz8xqzfkmm21s6i93qyrsma5h4y5477cwmw7"))))
     (build-system python-build-system)
     ;; Doctest contains one test that requires internet access.
     (arguments (tryton-arguments "country" "--no-doctest"))
@@ -392,15 +391,16 @@ company and employee and extend the user model.")
 (define-public trytond-currency
   (package
     (name "trytond-currency")
-    (version "5.8.1")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_currency" version))
        (sha256
-        (base32 "0b5p7ibil7nlsv7f31j69rka4xj5za798262algx7xa88a6h7mmx"))))
+        (base32 "0fs2wvhgvc0l4yzs5m9l8z4lbzazr42hgz0859malhnlp1sya2kq"))))
     (build-system python-build-system)
-    (arguments (tryton-arguments "currency"))
+    ;; Doctest 'scenario_currency_rate_update.rst' fails.
+    (arguments (tryton-arguments "currency" "--no-doctest"))
     (native-inputs
      `(,@%standard-trytond-native-inputs
        ("python-forex-python" ,python-forex-python)
@@ -421,13 +421,13 @@ currency and rate.")
 (define-public trytond-party
   (package
     (name "trytond-party")
-    (version "5.8.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_party" version))
        (sha256
-        (base32 "1hapfq7ip99s4qp9xra1m40q4n379p9pmfnz2x4ggd79ss76bghc"))))
+        (base32 "0aikzpr0ambc98v76dl6xqa42b08dy3b011y33lvxjp5mcha3f7y"))))
     (build-system python-build-system)
     ;; Doctest 'scenario_party_phone_number.rst' fails.
     (arguments (tryton-arguments "party" "--no-doctest"))
@@ -449,13 +449,13 @@ addresses.")
 (define-public trytond-product
   (package
     (name "trytond-product")
-    (version "5.8.1")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_product" version))
        (sha256
-        (base32 "0x18ngpjyrdwjwg17bz98jph4jv5gcv0qc0p2kxpam4lqsy34ic2"))))
+        (base32 "1xvvqxkvzyqy6fn2sj5h3zj0g17igzwx6s18sxkdz72vqz6kpv0l"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "product"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -476,13 +476,13 @@ Template and Product.")
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
-    (version "5.8.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_purchase" version))
        (sha256
-        (base32 "0na74zijj46b12gypy9si3las02a96rh5ygl503c7razha61g1b0"))))
+        (base32 "12drjw30ik3alckn6xrny4814vzi3ysh17wgiawiy9319yahsvay"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "purchase"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -509,13 +509,13 @@ Template and Product.")
 (define-public trytond-purchase-request
   (package
     (name "trytond-purchase-request")
-    (version "5.8.1")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_purchase_request" version))
        (sha256
-        (base32 "1m92snnvgisnv083nml6cz5qgnfdg539rd5bwg3lqrknm7343w16"))))
+        (base32 "0yhf3lh5b24qpk80r5pbmmswf5757bxa0s7ckl40vf6lkjkccv5i"))))
     (build-system python-build-system)
     ;; Doctest 'scenario_purchase_request.rst' fails.
     (arguments (tryton-arguments "purchase_request" "--no-doctest"))
@@ -539,13 +539,13 @@ generated by other process from Tryton.")
 (define-public trytond-stock
   (package
     (name "trytond-stock")
-    (version "5.8.2")
+    (version "6.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_stock" version))
        (sha256
-        (base32 "0yb8kd3alwqkivrlpx0ni4jxv3x14i37lmwism9yi81xwchyrcjk"))))
+        (base32 "1v6pvkwj6vhjqbz2zn0609kb7kx4g0dsn1xhvax4z2dqigh7ywpx"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "stock"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -571,13 +571,13 @@ inventory to control and update stock levels.")
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
-    (version "5.8.2")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_stock_lot" version))
        (sha256
-        (base32 "0w2f62cfzm7j8wnw8igmjslpxc1a8s82dkdizyvim5qhjg6mrsym"))))
+        (base32 "18cwrvnrzjk1wb765gr6hp3plpdpwz1a7cwimjhxi47iw7w5c84g"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "stock_lot"))
     (native-inputs `(,@%standard-trytond-native-inputs))
@@ -597,13 +597,13 @@ inventory to control and update stock levels.")
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
-    (version "5.8.1")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_stock_supply" version))
        (sha256
-        (base32 "01cgpxlznldrba79a3xmj4d0csyfc3ccgs66c490j8v8rdnqpbww"))))
+        (base32 "1p5l3yjjy6l25kk9xnhbl691l3v8gfg9fhc87jc6qszhxlqxk730"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "stock_supply"))
     (native-inputs `(,@%standard-trytond-native-inputs))
