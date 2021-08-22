@@ -7572,22 +7572,20 @@ it.")
 (define-public r-rgexf
   (package
     (name "r-rgexf")
-    (version "0.16.0")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgexf" version))
        (sha256
         (base32
-         "1vj5ha1qx0xzflchxf25ycys6clfn9y32m1717afzkvhmkwisrra"))
+         "00c2zka1n3k7p1l0mlchr063s6x58p9r3fb64d4wgl4rvsq55q3f"))
+       ;; Delete minified JavaScript files
        (snippet
-        '(begin
-           ;; Delete minified JavaScript files
-           (for-each delete-file
-                     '("inst/gexf-js/js/jquery-2.0.2.min.js"
-                       "inst/gexf-js/js/jquery-ui-1.10.3.custom.min.js"
-                       "inst/gexf-js/js/jquery.mousewheel.min.js"))
-           #true))))
+        '(for-each delete-file
+                   '("inst/gexf-js/js/jquery-2.0.2.min.js"
+                     "inst/gexf-js/js/jquery-ui-1.10.3.custom.min.js"
+                     "inst/gexf-js/js/jquery.mousewheel.min.js")))))
     (properties `((upstream-name . "rgexf")))
     (build-system r-build-system)
     (arguments
@@ -7616,8 +7614,7 @@ it.")
                                        source target)
                                (invoke "esbuild" source "--minify"
                                        (string-append "--outfile=" target)))
-                             sources targets))))
-             #t)))))
+                             sources targets)))))))))
     (propagated-inputs
      `(("r-igraph" ,r-igraph)
        ("r-servr" ,r-servr)
