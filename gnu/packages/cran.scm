@@ -29937,14 +29937,14 @@ time zone manipulations.")
 (define-public r-vroom
   (package
     (name "r-vroom")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "vroom" version))
         (sha256
           (base32
-            "0hjb9qxv1ma7c38pihqhypc9l55ad1i1dfzxsz56jn3jsiw29ya4"))))
+            "15gbr35pmbnxjy0la2h20c0vf64q69gk7k996gn8b5wn3klxvg7n"))))
     (properties `((upstream-name . "vroom")))
     (build-system r-build-system)
     (propagated-inputs
