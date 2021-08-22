@@ -372,6 +372,7 @@ server and embedded PowerPC, and S390 guests.")
   (package
     (inherit qemu)
     (name "qemu-minimal")
+    (outputs '("out" "doc"))
     (synopsis
      "Machine emulator and virtualizer (without GUI) for the host architecture")
     (arguments
@@ -407,11 +408,16 @@ server and embedded PowerPC, and S390 guests.")
                    "--target-list=riscv32-softmmu,riscv64-softmmu")
                   (else       ; An empty list actually builds all the targets.
                    '()))))
-          `(cons ,target-list-arg ,configure-flags)))))
+          `(cons ,target-list-arg ,configure-flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'configure-user-static)
+           (delete 'build-user-static)
+           (delete 'install-user-static)))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (native-inputs (fold alist-delete (package-native-inputs qemu)
-                         '("gettext")))
+                         '("gettext" "glib:static" "pcre:static" "zlib:static")))
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2"
