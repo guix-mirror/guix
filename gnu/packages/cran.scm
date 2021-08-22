@@ -25236,6 +25236,43 @@ packages, but other reference models can also be used.  See the package
 vignette for more information and examples.")
     (license license:gpl3)))
 
+(define-public r-distributional
+  (package
+    (name "r-distributional")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "distributional" version))
+       (sha256
+        (base32
+         "0ps30ijlf0xwranxkq1z29d76d3zgy8drwxpnxp6ffmyma8mm3h2"))))
+    (properties
+     `((upstream-name . "distributional")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-ellipsis" ,r-ellipsis)
+       ("r-farver" ,r-farver)
+       ("r-generics" ,r-generics)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-numderiv" ,r-numderiv)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-vctrs" ,r-vctrs)))
+    (home-page "https://pkg.mitchelloharawild.com/distributional/")
+    (synopsis "Vectorized probability distributions")
+    (description
+     "This package provides vectorized distribution objects with tools for
+manipulating, visualizing, and using probability distributions.  It was
+designed to allow model prediction outputs to return distributions rather than
+their parameters, allowing users to directly interact with predictive
+distributions in a data-oriented workflow.  In addition to providing generic
+replacements for p/d/q/r functions, other useful statistics can be computed
+including means, variances, intervals, and highest density regions.")
+    (license license:gpl3)))
+
 (define-public r-brms
   (package
     (name "r-brms")
