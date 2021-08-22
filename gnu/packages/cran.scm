@@ -29715,14 +29715,14 @@ quantitative real-time polymerase chain reaction (qPCR).")
 (define-public r-textplot
   (package
     (name "r-textplot")
-    (version "0.1.4")
+    (version "0.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "textplot" version))
         (sha256
           (base32
-            "1sgkndy2cxk8c76h8hwajn6f78w5jj2n8vsmaxh9kj931crzn8cy"))))
+            "1fhnwbcgkliq71lry21762djhlbap1qg4mgil0np46aa6619l21m"))))
     (properties `((upstream-name . "textplot")))
     (build-system r-build-system)
     (propagated-inputs
