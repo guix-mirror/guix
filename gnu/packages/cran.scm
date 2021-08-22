@@ -29024,14 +29024,14 @@ and word lists.")
 (define-public r-english
   (package
     (name "r-english")
-    (version "1.2-5")
+    (version "1.2-6")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "english" version))
         (sha256
           (base32
-            "0d6rin40wy2y6k75x8d5qvf03rfy139f309wrl8xwbdb1h8fjkd1"))))
+            "1g3nmy5p8wj3ix1vp1qmkmy3dyqisrw0md8cjrx4klqkp0wqlms9"))))
     (properties `((upstream-name . "english")))
     (build-system r-build-system)
     (native-inputs `(("r-knitr" ,r-knitr)))
