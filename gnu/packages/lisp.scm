@@ -46,6 +46,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
@@ -65,20 +66,21 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
-  #:use-module (gnu packages m4)
-  #:use-module (gnu packages maths)
-  #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages libffcall)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libsigsegv)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tex)
-  #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
@@ -127,33 +129,52 @@ Definition Facility.")
     (license license:expat)))
 
 (define-public gcl
-  (let ((commit "d3335e2b3deb63f930eb0328e9b05377744c9512")
-        (revision "2")) ;Guix package revision
+  (let ((commit "ff7ef981765cc0efdb4b1db27c292f5c11a72753")
+        (revision "3")) ;Guix package revision
     (package
       (name "gcl")
-      (version (string-append "2.6.12-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "2.6.12" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://git.savannah.gnu.org/r/gcl.git")
                (commit commit)))
-         (file-name (string-append "gcl-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "05v86lhvsby05nzvcd3c4k0wljvgdgd0i6arzd2fx1yd67dl6fgj"))))
+          (base32 "0z64fxxcaial2i1s1hms8r095dm1ff3wd8ivwdx894a3yln9c0an"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f  ; The build system seems not to be thread safe.
          #:test-target "ansi-tests/test_results"
-         #:configure-flags '("--enable-ansi") ; required for use by the maxima package
-         #:make-flags (list
-                       (string-append "GCL_CC=" (assoc-ref %build-inputs "gcc")
-                                      "/bin/gcc")
-                       (string-append "CC=" (assoc-ref %build-inputs "gcc")
-                                      "/bin/gcc"))
+         #:configure-flags ,#~(list
+                               "--enable-ansi" ; required by the maxima package
+                               (string-append "CFLAGS=-I"
+                                              #$libtirpc
+                                              "/include/tirpc")
+                               (string-append "LDFLAGS=-L"
+                                              #$libtirpc
+                                              "/lib")
+                               "LIBS=-ltirpc")
+         #:make-flags ,#~(list
+                          (string-append "GCL_CC=" #$gcc "/bin/gcc")
+                          (string-append "CC=" #$gcc "/bin/gcc"))
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'realpath-workaround
+             ;; Calls to the realpath function can set errno even if the return
+             ;; value of the function indicates that there is no error, which
+             ;; make massert consider that there was an error.
+             (lambda _
+               (substitute* "gcl/o/main.c"
+                 (("massert\\(realpath\\(s,o\\)\\);" all)
+                  "massert((realpath(s, o) != NULL) && ((errno = 0) == 0));"))))
+           (add-after 'unpack 'fix-makefile
+             ;; The "final" target doesn't exist.
+             (lambda _
+               (substitute* "gcl/makefile"
+                 (("\\$\\(MAKE\\) -C \\$\\(PORTDIR\\) final")
+                  "$(MAKE) -C $(PORTDIR)"))))
            (add-before 'configure 'pre-conf
              (lambda* (#:key inputs #:allow-other-keys)
                (chdir "gcl")
@@ -208,7 +229,9 @@ Definition Facility.")
            ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
            (delete 'strip))))
       (inputs
-       `(("gmp" ,gmp)
+       `(("bash-minimal" ,bash-minimal)
+         ("gmp" ,gmp)
+         ("libtirpc" ,libtirpc)
          ("readline" ,readline)))
       (native-inputs
        `(("m4" ,m4)
