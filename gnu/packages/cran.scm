@@ -28361,16 +28361,17 @@ computational operations, add-on packages provide additional functionality.")
 (define-public r-mlr3learners
   (package
     (name "r-mlr3learners")
-    (version "0.4.5")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3learners" version))
               (sha256
                (base32
-                "02v4y32yn1m0akkqzhfg65ib21rgy9iz8db4kdcrvi949clkxnfk"))))
+                "1gkbbn5ah2iv4pv5q2jf4lrqkga744d4y9jlyhyjqf0x75y9wkg2"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-data-table" ,r-data-table)
+     `(("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
        ("r-mlr3" ,r-mlr3)
        ("r-mlr3misc" ,r-mlr3misc)
        ("r-paradox" ,r-paradox)
