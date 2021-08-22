@@ -2694,7 +2694,13 @@ portable to just about any platform.")
 
                         ;; XXX: Without this flag, the CLOCK_REALTIME test hangs
                         ;; indefinitely.  See README.packagers for more information.
-                        (setenv "FAKETIME_COMPILE_CFLAGS" "-DFORCE_MONOTONIC_FIX"))))
+                        ;; There are specific instructions to not enable more flags
+                        ;; than absolutely needed.
+                        ,(if (target-ppc64le?)
+                           `(setenv "FAKETIME_COMPILE_CFLAGS"
+                                    "-DFORCE_MONOTONIC_FIX -DFORCE_PTHREAD_NONVER")
+                           `(setenv "FAKETIME_COMPILE_CFLAGS"
+                                    "-DFORCE_MONOTONIC_FIX")))))
                   (add-before 'check 'pre-check
                     (lambda _
                       (substitute* "test/functests/test_exclude_mono.sh"
