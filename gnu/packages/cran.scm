@@ -25079,20 +25079,19 @@ infinite-precision rational arithmetic.")
 (define-public r-rxnat
   (package
     (name "r-rxnat")
-    (version "1.0.14")
+    (version "1.0.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rxnat" version))
        (sha256
         (base32
-         "00fl68pa0c2vy4xlny67pn41lzgm7b97wgg3dwm6z35izca62l11"))))
+         "0siylypjd8cgcmr2c443w8krg8sgr5gz4zapbinanp8vsfzivdv2"))))
     (properties
      `((upstream-name . "Rxnat")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
-       ("r-httr" ,r-httr)
+     `(("r-httr" ,r-httr)
        ("r-rcurl" ,r-rcurl)
        ("r-tibble" ,r-tibble)))
     (native-inputs
