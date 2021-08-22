@@ -980,6 +980,34 @@ asynchronous adapters (including tmux, screen, and a headless mode), and when
 the job completes, errors will be loaded and parsed automatically.")
     (license license:vim)))
 
+(define-public vim-gemini-vim
+  ;; No releases have been tagged.
+  (let ((commit "f300c54174fc0db8fb68f1bc04307b58612e9630")
+        (revision "1"))
+    (package
+      (name "vim-gemini-vim")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://git.sr.ht/~torresjrjr/gemini.vim")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "05ffhhfahjqwxyrqmsinsahrs15wknzl2qbj8mznyv319mn2civ2"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("ftdetect" "share/vim/vimfiles/")
+           ("syntax" "share/vim/vimfiles/"))))
+      (home-page "https://git.sr.ht/~torresjrjr/gemini.vim")
+      (synopsis "Vim syntax highlighting plugin for Gemini")
+      (description "This Vim plugin provides a Vim syntax highlighting plugin
+for Gemini Text, the text/gemini media type, as defined in the Gemini protocol
+specification.")
+      (license license:gpl3))))
+
 (define-public vim-eunuch
   (let ((commit "33e875b31c8b811a0a47908884a5e2339106bbe8")
         (revision "1"))
