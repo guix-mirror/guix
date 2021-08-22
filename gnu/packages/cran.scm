@@ -25273,6 +25273,52 @@ replacements for p/d/q/r functions, other useful statistics can be computed
 including means, variances, intervals, and highest density regions.")
     (license license:gpl3)))
 
+(define-public r-posterior
+  (package
+    (name "r-posterior")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "posterior" version))
+       (sha256
+        (base32
+         "000k2sih7r89nmw3nwndx5jljcvkyr61b96mdkqrw83rs74lnh6f"))))
+    (properties `((upstream-name . "posterior")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-checkmate" ,r-checkmate)
+       ("r-distributional" ,r-distributional)
+       ("r-pillar" ,r-pillar)
+       ("r-rlang" ,r-rlang)
+       ("r-tensora" ,r-tensora)
+       ("r-tibble" ,r-tibble)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://mc-stan.org/posterior/")
+    (synopsis "Tools for working with posterior distributions")
+    (description
+     "This package provides useful tools for both users and developers of
+packages for fitting Bayesian models or working with output from Bayesian
+models.  The primary goals of the package are to:
+
+@enumerate
+@item Efficiently convert between many different useful formats of
+draws (samples) from posterior or prior distributions.
+
+@item Provide consistent methods for operations commonly performed on draws,
+for example, subsetting, binding, or mutating draws.
+
+@item Provide various summaries of draws in convenient formats.
+
+@item Provide lightweight implementations of state of the art posterior
+inference diagnostics.
+@end enumerate
+")
+    (license license:bsd-3)))
+
 (define-public r-brms
   (package
     (name "r-brms")
