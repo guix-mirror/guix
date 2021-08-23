@@ -843,27 +843,27 @@ tools and a collection of Python modules for programmatic use.")
 (define-public python-pygmsh
   (package
     (name "python-pygmsh")
-    (version "7.1.10")
+    (version "7.1.11")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
               (url "https://github.com/nschloe/pygmsh")
-              (commit (string-append "v" version))))
+              (commit version)))
         (file-name (git-file-name name version))
         (sha256
           (base32
-           "03a949nl99ny9h0ni8lqgaljgkgicd305ls6zy1vkwgfa4mzsgqh"))
+           "0g4yllmxks7yb50vild5xi1cma0yl16vsq6rfvdwmqaj4hwxcabk"))
         (modules '((guix build utils)))
         (snippet
          '(begin
             (let ((file (open-file "setup.py" "a")))
               (display "from setuptools import setup\nsetup()" file)
               (close-port file))
-            ;; setuptools is supplied by the build system.  An extra
-            ;; reference in the original configuration file triggers
-            ;; an attempt to download the package again.  This fails.
-            ;; The extra reference is unnecessary and is removed.
+            ;; A reference to setuptools in the configuration file
+            ;; triggers an attempt to download the package from pypi.
+            ;; The reference is not needed since the package is
+            ;; provided by the build system.
             (substitute* "setup.cfg"
               (("^[[:blank:]]+setuptools>=42\n") ""))
             #t))))
