@@ -5689,14 +5689,14 @@ multiplication.")
 (define-public r-treeio
   (package
     (name "r-treeio")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "treeio" version))
        (sha256
         (base32
-         "0ypl4h80m08sf7r4zfvqgvpsz46x15wvcl1idq5pd813bp1w2sws"))))
+         "1y60yvg1rl21cab9xrkns0209pg44mwr90qj099dvk97wsjkx67g"))))
     (properties `((upstream-name . "treeio")))
     (build-system r-build-system)
     (propagated-inputs
