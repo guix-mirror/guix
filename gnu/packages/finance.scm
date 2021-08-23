@@ -55,6 +55,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system qt)
   #:use-module (guix deprecation)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
@@ -790,10 +791,9 @@ the Monero command line client and daemon.")
     (arguments
      `(#:tests? #f ; No tests
        #:configure-flags
-       (list "-DARCH=default"
-             "-DENABLE_PASS_STRENGTH_METER=ON"
-             (string-append "-DReadline_ROOT_DIR="
-                            (assoc-ref %build-inputs "readline")))
+       ,#~(list "-DARCH=default"
+                "-DENABLE_PASS_STRENGTH_METER=ON"
+                (string-append "-DReadline_ROOT_DIR=" #$readline))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extract-monero-sources
@@ -801,9 +801,8 @@ the Monero command line client and daemon.")
            ;; to build the GUI.
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "monero")
-             (invoke "tar" "-xv" "--strip-components=1"
-                     "-C" "monero"
-                     "-f" (assoc-ref inputs "monero-source"))))
+             (copy-recursively (assoc-ref inputs "monero-source")
+                               "monero")))
          (add-after 'extract-monero-sources 'fix-build
            (lambda _
              (substitute* "src/version.js.in"
