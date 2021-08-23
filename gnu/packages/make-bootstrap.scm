@@ -225,7 +225,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    ;; plug-in mechanism just fail on static builds:
                    ;;
                    ;; ./fts.awk:1: error: can't open shared library `filefuncs' for reading (No such file or directory)
-                   #:tests? #f
+                   ;;
+                   ;; Therefore disable extensions support.
+                   #:configure-flags (list "--disable-extensions")
 
                    ,@(substitute-keyword-arguments (package-arguments gawk)
                        ((#:phases phases)
