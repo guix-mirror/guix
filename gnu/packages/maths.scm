@@ -48,6 +48,7 @@
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix build-system cmake)
@@ -84,6 +86,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -3790,8 +3793,9 @@ to BMP, JPEG or PNG image formats.")
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gcl" ,gcl)
+     `(("bash" ,bash-minimal)
        ("gnuplot" ,gnuplot)                       ;for plots
+       ("sbcl" ,sbcl)
        ("sed" ,sed)
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
@@ -3800,15 +3804,11 @@ to BMP, JPEG or PNG image formats.")
        ("python" ,python)))
     (arguments
      `(#:configure-flags
-       (list "--enable-gcl"
-             (string-append "--with-posix-shell="
-                            (assoc-ref %build-inputs "bash")
-                            "/bin/sh")
-             (string-append "--with-wish="
-                            (assoc-ref %build-inputs "tk")
-                            "/bin/wish"
-                            (let ((v ,(package-version tk)))
-                              (string-take v (string-index-right v #\.)))))
+       ,#~(list "--enable-sbcl"
+                (string-append "--with-sbcl=" #$sbcl "/bin/sbcl")
+                (string-append "--with-posix-shell=" #$bash-minimal "/bin/sh")
+                (string-append "--with-wish=" #$tk "/bin/wish"
+                               #$(version-major+minor (package-version tk))))
        ;; By default Maxima attempts to write temporary files to
        ;; '/tmp/nix-build-maxima-*', which won't exist at run time.
        ;; Work around that.
@@ -3845,7 +3845,7 @@ to BMP, JPEG or PNG image formats.")
              (invoke "sh" "-c"
                      (string-append
                       "./maxima-local "
-                      "--lisp=gcl "
+                      "--lisp=sbcl "
                       "--batch-string=\"run_testsuite();\" "
                       "| grep -q \"No unexpected errors found\""))))
          ;; Make sure the doc and emacs files are found in the
