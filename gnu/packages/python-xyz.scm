@@ -25276,10 +25276,16 @@ process.")
     (inputs
      `(("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("python2-wxpython" ,python2-wxpython)
        ("zlib" ,zlib)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-wx-support
+           (lambda _
+             (substitute* "setup.py"
+               (("no_wx = False")
+                "no_wx = True")))))))
     (synopsis "Framework for building document analysis applications")
     (description
      "Gamera is a toolkit for building document image recognition systems.")
