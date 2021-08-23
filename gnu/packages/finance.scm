@@ -657,6 +657,11 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
             delete-file-recursively
             '("external/miniupnp" "external/rapidjson"
               "external/unbound"))
+           ;; TODO: Remove the following when upgrading to a newer tagged
+           ;; version as it will already contain the fix for Boost 1.76.
+           (substitute* "contrib/epee/include/storages/portable_storage.h"
+             (("#include \"int-util.h\"" all)
+              (string-append all "\n#include <boost/mpl/contains.hpp>")))
            #t))
        (sha256
         (base32 "0jwlmrpzisvw1c06cvd5b3s3hd4w0pa1qmrypfwah67qj3x6hnb6"))))
