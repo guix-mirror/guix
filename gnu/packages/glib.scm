@@ -393,6 +393,42 @@ functions for strings and common data structures.")
                   (string-append doc html))
                  #t)))))))))
 
+(define (python-extension-suffix python triplet)
+  "Determine the suffix for C extensions for PYTHON when compiled
+for TRIPLET."
+  ;; python uses strings like 'x86_64-linux-gnu' instead of
+  ;; 'x86_64-unknown-linux-gnu'.
+  (define normalised-system
+    (string-replace-substring triplet "-unknown-" "-"))
+  (define major.minor (version-major+minor (package-version python)))
+  (define majorminor (string-delete #\. major.minor))
+  (string-append
+    ;; If guix' python package used "--with-pydebug", a #\d would
+    ;; need to be added, likewise "--with-pymalloc" and "--with-wide-unicode"
+    ;; would require a #\m and #\u, see cpython's configure.ac.
+    ".cpython-" majorminor "-" normalised-system
+    (if (target-mingw? triplet)
+        ".dll"
+        ".so")))
+
+(define (correct-library-name-phase python name)
+  "Return a G-exp evaluating to a phase renaming the python extension NAME
+from what Meson thinks its name should be to what python expects its name
+to be.  NAME must not include the platform-specific suffix.  This can only
+be used when cross-compiling."
+  #~(lambda _
+      (define name #$name)
+      (define native-suffix
+        #$(python-extension-suffix python
+                                   (nix-system->gnu-triplet (%current-system))))
+      (define target-suffix
+        #$(python-extension-suffix python (%current-target-system)))
+      (define native-name
+        (string-append name native-suffix))
+      (define target-name
+        (string-append name target-suffix))
+      (rename-file native-name target-name)))
+
 (define gobject-introspection
   (package
     (name "gobject-introspection")
@@ -421,21 +457,32 @@ functions for strings and common data structures.")
                  "-Dbuild_introspection_data=false"))
              '())
        #:phases
+       ,#~
        (modify-phases %standard-phases
-         ,@(if (%current-target-system)
-               ;; 'typelibs' is undefined.
-               `((add-after 'unpack 'set-typelibs
-                   (lambda _
-                     (substitute* "meson.build"
-                       (("\\bsources: typelibs\\b")
-                        "sources: []")))))
-               '())
+         #$@(if (%current-target-system)
+                ;; 'typelibs' is undefined.
+                `((add-after 'unpack 'set-typelibs
+                    (lambda _
+                      (substitute* "meson.build"
+                        (("\\bsources: typelibs\\b")
+                         "sources: []")))))
+                '())
          (add-after 'unpack 'do-not-use-/usr/bin/env
            (lambda _
              (substitute* "tools/g-ir-tool-template.in"
                (("#!@PYTHON_CMD@")
                 (string-append "#!" (which "python3"))))
-             #t)))))
+             #t))
+         #$@(if (%current-target-system)
+               ;; Meson gives python extensions an incorrect name, see
+               ;; <https://github.com/mesonbuild/meson/issues/7049>.
+                #~((add-after 'install 'rename-library
+                     #$(correct-library-name-phase
+                         (this-package-input "python")
+                         #~(string-append #$output
+                                          "/lib/gobject-introspection/giscanner"
+                                          "/_giscanner"))))
+                #~()))))
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)
