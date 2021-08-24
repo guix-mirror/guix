@@ -2996,20 +2996,32 @@ configuration (iptunnel, ipmaddr).")
               (base32
                "1ych13qc1mvzv8iscbims5b317vxcmy5ffpmfy98zk7bgamz62b6"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases
-                 (modify-phases %standard-phases
-                   (replace 'configure
-                            ;; Add $libdir to the RUNPATH of executables.
-                            (lambda _
-                              (substitute* "Make.Rules"
-                                (("LDFLAGS \\?= #-g")
-                                 (string-append "LDFLAGS ?= -Wl,-rpath="
-                                                %output "/lib"))))))
+    (arguments `(#:phases
+                 ,#~(modify-phases %standard-phases
+                      (replace 'configure
+                        ;; Add $libdir to the RUNPATH of executables.
+                        (lambda _
+                          (substitute* "Make.Rules"
+                            (("LDFLAGS \\?= #-g")
+                             (string-append "LDFLAGS ?= -Wl,-rpath="
+                                            ;; TODO(core-updates): Use #$output
+                                            ;; unconditionally.
+                                            #$(if (%current-target-system)
+                                                  #~#$output
+                                                  '%output)
+                                            "/lib"))))))
                  #:test-target "test"
-                 #:make-flags (list "lib=lib"
-                                    (string-append "prefix="
-                                                   (assoc-ref %outputs "out"))
-                                    "RAISE_SETFCAP=no")))
+                 #:make-flags
+                 (list "lib=lib"
+                       (string-append "prefix=" (assoc-ref %outputs "out"))
+                       "RAISE_SETFCAP=no"
+                       ;; Tell the makefile to use TARGET-gcc and friends
+                       ;; when cross-compiling.
+                       ,@(if (%current-target-system)
+                             `(,(string-append "CROSS_COMPILE="
+                                               (%current-target-system) "-")
+                               "BUILD_CC=gcc")
+                             '()))))
     (native-inputs `(("perl" ,perl)))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sites.google.com/site/fullycapable/")
