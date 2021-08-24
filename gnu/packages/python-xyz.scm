@@ -10188,6 +10188,40 @@ files with Python and JavaScript style inline comments.  Its API is very
 similar to the Python standard library's @code{json} module.")
     (license license:expat)))
 
+(define-public python-resolvelib
+  (package
+    (name "python-resolvelib")
+    (version "0.7.1")
+    (source
+     (origin
+       ;; Tests are missing from the PyPI release.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sarugaku/resolvelib")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fqz75riagizihvf4j7wc3zjw6kmg1dd8sf49aszyml105kb33n8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-commentjson" ,python-commentjson)
+       ("python-packaging" ,python-packaging)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sarugaku/resolvelib")
+    (synopsis "Abstract dependencies resolver")
+    (description "The ResolveLib library provides a @code{Resolver} class that
+includes dependency resolution logic.")
+    (license license:isc)))
+
 (define-public python-commonmark
   (package
     (name "python-commonmark")
