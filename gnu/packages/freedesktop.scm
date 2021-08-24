@@ -26,6 +26,7 @@
 ;;; Copyright © 2021 pineapples <guixuser6392@protonmail.com>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Robby Zambito <contact@robbyzambito.me>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -581,33 +583,33 @@ the freedesktop.org XDG Base Directory specification.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (let* ((out (assoc-ref %outputs "out"))
-              (sysconf (string-append out "/etc"))
-              (libexec (string-append out "/libexec/elogind"))
-              (dbuspolicy (string-append out "/etc/dbus-1/system.d"))
-              (shadow (assoc-ref %build-inputs "shadow"))
-              (shepherd (assoc-ref %build-inputs "shepherd"))
-              (halt-path (string-append shepherd "/sbin/halt"))
-              (kexec-path "")           ;not available in Guix yet
-              (nologin-path (string-append shadow "/sbin/nologin"))
-              (poweroff-path (string-append shepherd "/sbin/shutdown"))
-              (reboot-path (string-append shepherd "/sbin/reboot")))
-         (list
-          (string-append "-Drootprefix=" out)
-          (string-append "-Dsysconfdir=" sysconf)
-          (string-append "-Drootlibexecdir=" libexec)
-          (string-append "-Ddbuspolicydir=" dbuspolicy)
-          (string-append "-Dc_link_args=-Wl,-rpath=" libexec)
-          (string-append "-Dcpp_link_args=-Wl,-rpath=" libexec)
-          (string-append "-Dhalt-path=" halt-path)
-          (string-append "-Dkexec-path=" kexec-path)
-          (string-append "-Dpoweroff-path=" poweroff-path)
-          (string-append "-Dreboot-path=" reboot-path)
-          (string-append "-Dnologin-path=" nologin-path)
-          "-Dcgroup-controller=elogind"
-          "-Dman=true"
-          ;; Disable some tests.
-          "-Dslow-tests=false"))
+       ,#~(let* ((out (assoc-ref %outputs "out"))
+                 (sysconf (string-append out "/etc"))
+                 (libexec (string-append out "/libexec/elogind"))
+                 (dbuspolicy (string-append out "/etc/dbus-1/system.d"))
+                 (shadow (assoc-ref %build-inputs "shadow"))
+                 (shepherd (assoc-ref %build-inputs "shepherd"))
+                 (halt-path (string-append shepherd "/sbin/halt"))
+                 (kexec-path "")           ;not available in Guix yet
+                 (nologin-path (string-append shadow "/sbin/nologin"))
+                 (poweroff-path (string-append shepherd "/sbin/shutdown"))
+                 (reboot-path (string-append shepherd "/sbin/reboot")))
+            (list
+             (string-append "-Drootprefix=" out)
+             (string-append "-Dsysconfdir=" sysconf)
+             (string-append "-Drootlibexecdir=" libexec)
+             (string-append "-Ddbuspolicydir=" dbuspolicy)
+             (string-append "-Dc_link_args=-Wl,-rpath=" libexec)
+             (string-append "-Dcpp_link_args=-Wl,-rpath=" libexec)
+             (string-append "-Dhalt-path=" halt-path)
+             (string-append "-Dkexec-path=" kexec-path)
+             (string-append "-Dpoweroff-path=" poweroff-path)
+             (string-append "-Dreboot-path=" reboot-path)
+             (string-append "-Dnologin-path=" nologin-path)
+             "-Dcgroup-controller=elogind"
+             "-Dman=true"
+             ;; Disable some tests.
+             "-Dslow-tests=false"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-pkttyagent-path
