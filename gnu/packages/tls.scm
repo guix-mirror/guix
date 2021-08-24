@@ -356,7 +356,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.1.1j")
-   (replacement openssl-1.1.1k)
+   (replacement openssl-1.1.1l)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -490,11 +490,11 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
-;; Replacement package to fix CVE-2021-3449 and CVE-2021-3450.
-(define openssl-1.1.1k
+;; Replacement package to fix multiple CVEs.
+(define openssl-1.1.1l
   (package
     (inherit openssl)
-    (version "1.1.1k")
+    (version "1.1.1l")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -507,7 +507,7 @@ required structures.")
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))))
+                "1lbblxps2fhmz7bqh058iywh5wxfignbfx1s1kz2fj63b5g3wyhb"))))))
 
 ;; We will not add any new uses of this package. If you add new code that uses
 ;; this package, your change will be reverted!
