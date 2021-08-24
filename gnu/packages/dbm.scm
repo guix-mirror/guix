@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 
 (define-module (gnu packages dbm)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -57,6 +59,19 @@
        #:disallowed-references ("doc")
        #:phases
        (modify-phases %standard-phases
+         ;; The configure script is too old to recognise aarch64 and
+         ;; powerpc64le as valid architectures.  The trick below works
+         ;; for "--build", but not for "--host", so update config.sub.
+         ,@(if (and (%current-target-system)
+                    (or (target-ppc64le? (%current-target-system))
+                        (target-aarch64? (%current-target-system))))
+               `((add-after 'unpack 'update-config.sub
+                   (lambda* (#:key native-inputs #:allow-other-keys)
+                     (delete-file "dist/config.sub")
+                     (symlink
+                      (search-input-file native-inputs "/bin/config.sub")
+                      "dist/config.sub"))))
+               '())
          (replace 'configure
            (lambda* (#:key target outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -97,6 +112,12 @@
                        ;; of db_cxx.h into C++ files works; it leads to
                        ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
                        "--enable-cxx")))))))
+    (native-inputs
+     (if (and (%current-target-system)
+              (or (target-ppc64le? (%current-target-system))
+                  (target-aarch64? (%current-target-system))))
+         `(("config" ,config)) ; for config.sub
+         '()))
     (synopsis "Berkeley database")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
