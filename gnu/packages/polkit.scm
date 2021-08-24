@@ -101,7 +101,12 @@
        ("gobject-introspection" ,gobject-introspection)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
-                           "--enable-man-pages")
+                           "--enable-man-pages"
+                           ;; Prevent ‘configure: error: cannot check for
+                           ;; file existence when cross compiling’.
+                           ,@(if (%current-target-system)
+                                 '("--with-os-type=unknown")
+                                 '()))
        #:phases
        (modify-phases %standard-phases
          (add-after
