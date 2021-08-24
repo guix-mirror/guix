@@ -53,7 +53,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2015, 2018 Pjotr Prins <pjotr.guix@thebird.nl>
@@ -10133,6 +10133,60 @@ Supported netlink families and protocols include:
 
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
+
+(define-public python-commentjson
+  (package
+    (name "python-commentjson")
+    (version "0.9.0")
+    (source (origin
+              ;; The PyPI release is missing some test files.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vaidik/commentjson")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01iscgrc6bkyrxbzmf46csbf9c0n7g6dygdmxs3fq8fkzrrciybl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build python-build-system)
+                  (guix build utils)
+                  (ice-9 ftw)
+                  (ice-9 textual-ports))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("lark-parser>=0.7.1,<0.8.0")
+                "lark-parser>=0.7.1"))))
+         (add-after 'unpack 'delete-unspported-tests
+           ;; Some tests rely on the 'test' module of Python itself,
+           ;; which is not available with the Python package in Guix;
+           ;; remove them.
+           (lambda _
+             ;; XXX: Copied from (guix build dub-build-system).
+             (define (grep string file-name)
+               (string-contains (call-with-input-file file-name get-string-all)
+                                string))
+
+             (with-directory-excursion "commentjson/tests/test_json"
+               (let* ((dot? (lambda (x) (member x '("." ".."))))
+                      (test-files (scandir "." (negate dot?))))
+                 (for-each delete-file
+                           (filter (lambda (f) (grep "from test." f))
+                                   test-files)))))))))
+    (propagated-inputs
+     `(("python-lark-parser" ,python-lark-parser)))
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/vaidik/commentjson")
+    (synopsis "Python library for adding comments to JSON files")
+    (description "Comment JSON is a Python package that helps you create JSON
+files with Python and JavaScript style inline comments.  Its API is very
+similar to the Python standard library's @code{json} module.")
+    (license license:expat)))
 
 (define-public python-commonmark
   (package
