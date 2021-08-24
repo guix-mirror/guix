@@ -410,8 +410,26 @@ functions for strings and common data structures.")
                        "gobject-introspection-absolute-shlib-path.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(,@(if (%current-target-system)
+             `(#:configure-flags
+               '("-Dgi_cross_use_prebuilt_gi=true"
+                 ;; Building introspection data requires running binaries
+                 ;; for ‘host’ on ‘build’, so don't do that.
+                 ;;
+                 ;; TODO: it would be nice to have introspection data anyways
+                 ;; as discussed here: https://issues.guix.gnu.org/50201#60.
+                 "-Dbuild_introspection_data=false"))
+             '())
+       #:phases
        (modify-phases %standard-phases
+         ,@(if (%current-target-system)
+               ;; 'typelibs' is undefined.
+               `((add-after 'unpack 'set-typelibs
+                   (lambda _
+                     (substitute* "meson.build"
+                       (("\\bsources: typelibs\\b")
+                        "sources: []")))))
+               '())
          (add-after 'unpack 'do-not-use-/usr/bin/env
            (lambda _
              (substitute* "tools/g-ir-tool-template.in"
