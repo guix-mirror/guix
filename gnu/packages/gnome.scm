@@ -62,6 +62,7 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11244,6 +11245,13 @@ repository and commit your work.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; The 'config.sub' is too old to recognise aarch64.
+         ,@(if (and=> (%current-target-system) target-aarch64?)
+               `((add-after 'unpack 'replace-config.sub
+                   (lambda _
+                     (delete-file "config.sub")
+                     (symlink (which "config.sub") "config.sub"))))
+               '())
          (add-after 'unpack 'remove-deprecated-macro
            (lambda _
              (substitute* '("server/gam_node.c"
@@ -11255,7 +11263,10 @@ repository and commit your work.")
     (inputs
      `(("glib" ,glib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ,@(if (and=> (%current-target-system) target-aarch64?)
+             `(("config" ,config))
+             '())))
     (home-page "https://people.gnome.org/~veillard/gamin/")
     (synopsis "File alteration monitor")
     (description
