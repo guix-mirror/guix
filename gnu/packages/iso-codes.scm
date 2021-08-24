@@ -44,10 +44,19 @@
               (base32
                "1q6x9c5x4x0x4q11iygldsmxdyzhz1mb4n8im76glwsgqsqyjs80"))))
     (build-system gnu-build-system)
+    ;; TODO(staging): Unconditionally move inputs to native-inputs.
+    (native-inputs
+     (if (%current-target-system)
+         `(("python" ,python-wrapper)
+           ("perl" ,perl)
+           ("gettext" ,gettext-minimal))
+         '()))
     (inputs
-     `(("gettext" ,gettext-minimal)
-       ("perl" ,perl)
-       ("python" ,python-wrapper)))
+     `(,@(if (%current-target-system)
+             '()
+             `(("gettext" ,gettext-minimal)
+               ("perl" ,perl)
+               ("python" ,python-wrapper)))))
     (synopsis "Various ISO standards")
     (description
      "This package provides lists of various ISO standards (e.g. country,
