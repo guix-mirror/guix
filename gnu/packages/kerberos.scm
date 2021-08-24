@@ -207,7 +207,7 @@ After installation, the system administrator should generate keys using
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list
+     `(#:configure-flags (list
                           ;; Avoid 7 MiB of .a files.
                           "--disable-static"
 
@@ -222,8 +222,13 @@ After installation, the system administrator should generate keys using
                           ;; Do not build sqlite.
                           (string-append
                            "--with-sqlite3="
-                           (assoc-ref %build-inputs "sqlite")))
+                           (assoc-ref %build-inputs "sqlite"))
 
+                          ;; The configure script is too pessimistic.
+                          ;; Setting this also resolves a linking error.
+                          ,@(if (%current-target-system)
+                                '("ac_cv_func_getpwnam_r_posix=yes")
+                                '()))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
                     (lambda _
