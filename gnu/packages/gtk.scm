@@ -2291,7 +2291,11 @@ Parcellite and adds bugfixes and features.")
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:configure-flags
        (list
-        "-Dinstalled_tests=false")))
+        "-Dinstalled_tests=false"
+        ,@(if (%current-target-system)
+              ;; Introspection requires running binaries for 'host' on 'build'.
+              '("-Dintrospection=false")
+              '()))))
     (native-inputs
      `(("git" ,git-minimal)
        ("gobject-introspection" ,gobject-introspection)
