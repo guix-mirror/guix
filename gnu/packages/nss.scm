@@ -26,10 +26,12 @@
 (define-module (gnu packages nss)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
@@ -48,10 +50,24 @@
               (base32
                "1j5b2m8cjlhnnv8sq34587avaagkqvh521w4f95miwgvsn3xlaap"))))
     (build-system gnu-build-system)
+    (inputs
+     ;; TODO(core-updates): Make these inputs unconditional.
+     ;; For 'compile-et.pl' and 'nspr-config'.
+     (if (%current-target-system)
+         `(("perl" ,perl) ; for 'compile-et.pl'
+           ("bash-minimal" ,bash-minimal)) ; for 'nspr-config'
+         '()))
     (native-inputs
      `(("perl" ,perl)))
     (arguments
-     `(#:tests? #f ; no check target
+     `(;; Prevent the 'native' perl from sneaking into the closure.
+       ;; XXX it would be nice to do the same for 'bash-minimal',
+       ;; but using 'canonical-package' causes loops.
+       ,@(if (%current-target-system)
+             `(#:disallowed-references
+               (,(gexp-input (this-package-native-input "perl") #:native? #t)))
+             '())
+       #:tests? #f ; no check target
        #:configure-flags
        (list "--disable-static"
              "--enable-64bit"
