@@ -240,9 +240,15 @@ After installation, the system administrator should generate keys using
                           '(#:key inputs #:allow-other-keys)
                           '_)
                      ,@(if (%current-target-system)
-                           '((substitute* '("appl/afsutil/pagsh.c")
+                           '((substitute* '("appl/afsutil/pagsh.c" "appl/su/su.c")
                                (("/bin/sh")
-                                (search-input-file inputs "bin/sh")))
+                                (search-input-file inputs "bin/sh"))
+                               ;; Use the cross-compiled bash instead of the
+                               ;; native bash (XXX shouldn't _PATH_BSHELL point
+                               ;; to a cross-compiled bash?).
+                               (("_PATH_BSHELL")
+                                (string-append
+                                 "\"" (search-input-file inputs "bin/sh") "\"")))
                              (substitute* '("tools/Makefile.in")
                                (("/bin/sh") (which "sh"))))
                            '((substitute* '("appl/afsutil/pagsh.c"
