@@ -562,6 +562,16 @@ translated.")
               (base32
                "09g8swvc95bk1z6j8sw463p2v0dqmgm2zjfndf7i8sbcyq67dr3w"))))
     (build-system gnu-build-system)
+    (arguments
+     (if (%current-target-system)
+         `(#:configure-flags
+           ;; Run a native 'dbus-binding-tool' instead of a cross-compiled
+           ;; 'dbus-binding-tool' when cross-compiling.
+           ,#~(list
+               (string-append
+                "--with-dbus-binding-tool="
+                #+(file-append this-package "/bin/dbus-binding-tool"))))
+         '()))
     (propagated-inputs ; according to dbus-glib-1.pc
      `(("dbus" ,dbus)
        ("glib" ,glib)))
