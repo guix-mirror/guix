@@ -11259,7 +11259,31 @@ repository and commit your work.")
                             "server/gam_node.h"
                             "server/gam_subscription.c")
                (("G_CONST_RETURN") "const"))
-             #t)))))
+             #t))
+         ;; The configure script runs a test program unconditionally,
+         ;; without an option to manually set the test result.
+         ;; Override this test anyway.
+         ,@(if (%current-target-system)
+               `((add-after 'bootstrap 'set-have-abstract-sockets
+                   (lambda _
+                     (define in-abstract-sockets-test? #f)
+                     (substitute* "configure"
+                       (("^#### Abstract sockets\n$")
+                        (set! in-abstract-sockets-test? #t)
+                        "#### Abstract sockets\n")
+                       (("^have_abstract_sockets=no\n$")
+                        (set! in-abstract-sockets-test? #f)
+                        ;; ‘Abstract sockets’ appear to be Linux-only.
+                        (string-append "have_abstract_sockets="
+                                       ,(if (target-linux?)
+                                            "yes"
+                                            "no")
+                                       "\nif false; then\nif false; then :\n"))
+                       (("^(.*\n)$" line)
+                        (if in-abstract-sockets-test?
+                            "" ; delete
+                            line))))))
+               '()))))
     (inputs
      `(("glib" ,glib)))
     (native-inputs
