@@ -61,6 +61,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages texinfo)
@@ -174,7 +175,11 @@ tools have full access to view and control running applications.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("drm" ,libdrm)
+     ;; TODO(core-updates): make this unconditional
+     `(,@(if (%current-target-system)
+             `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
+             '())
+       ("drm" ,libdrm)
        ("ghostscript" ,ghostscript)
        ("libspectre" ,libspectre)
        ("poppler" ,poppler)))
