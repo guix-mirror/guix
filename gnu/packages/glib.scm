@@ -438,11 +438,19 @@ functions for strings and common data structures.")
              #t)))))
     (native-inputs
      `(("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ;; TODO(core-updates): Unconditionally place "flex" and "bison"
+       ;; in 'native-inputs'.
+       ,@(if (%current-target-system)
+             `(("bison" ,bison)
+               ("flex" ,flex))
+             '())))
     (inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("python" ,python-wrapper)
+     `(,@(if (%current-target-system)
+             `(("python" ,python))
+             `(("bison" ,bison)
+               ("flex" ,flex)
+               ("python" ,python-wrapper)))
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("glib" ,glib)
