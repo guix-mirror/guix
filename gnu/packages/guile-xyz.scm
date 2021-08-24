@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -182,11 +182,20 @@
        ("pkgconfig"  ,pkg-config)
        ("util-linux" ,util-linux))) ;for the `script' command
     (arguments
-     '(#:make-flags
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:make-flags
        ;; TODO: The documentation must be built with the `docs' target.
        (let* ((out (assoc-ref %outputs "out"))
-              (scm (string-append out "/share/guile/site/2.2"))
-              (go  (string-append out "/lib/guile/2.2/site-ccache")))
+              ;; We pass guile explicitly here since this executes before the
+              ;; set-paths phase and therefore guile is not yet in PATH.
+              (effective-version (target-guile-effective-version
+                                  (assoc-ref %build-inputs "guile")))
+              (scm (string-append out "/share/guile/site/" effective-version))
+              (go (string-append out "/lib/guile/" effective-version "/site-ccache")))
          ;; Don't use (%site-dir) for site paths.
          (list (string-append "MOD_PATH=" scm)
                (string-append "MOD_COMPILED_PATH=" go)))
@@ -199,7 +208,9 @@
                (("\\(%site-dir\\)")
                 (string-append "\""
                                (assoc-ref outputs "out")
-                               "/share/guile/site/2.2\"")))))
+                               "/share/guile/site/"
+                               (target-guile-effective-version)
+                               "\"")))))
          (add-after 'unpack 'patch-reference-to-libnss
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "artanis/security/nss.scm"
@@ -221,9 +232,11 @@
          (add-after 'install 'wrap-art
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (effective-version (target-guile-effective-version))
                     (bin (string-append out "/bin"))
-                    (scm (string-append out "/share/guile/site/2.2"))
-                    (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                    (scm (string-append out "/share/guile/site/" effective-version))
+                    (go (string-append out "/lib/guile/" effective-version
+                                       "/site-ccache")))
                (wrap-program (string-append bin "/art")
                  `("GUILE_LOAD_PATH" ":" prefix
                    (,scm ,(getenv "GUILE_LOAD_PATH")))
