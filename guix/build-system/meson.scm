@@ -212,7 +212,10 @@ has a 'meson.build' file."
                                                 (map search-path-specification->sexp
                                                      search-paths))
                              #:phases build-phases
-                             #:configure-flags #$(sexp->gexp configure-flags)
+                             #:configure-flags
+                             #$(if (pair? configure-flags)
+                                   (sexp->gexp configure-flags)
+                                   configure-flags)
                              #:build-type #$build-type
                              #:tests? #$tests?
                              #:test-target #$test-target
@@ -309,7 +312,9 @@ SOURCE has a 'meson.build' file."
                        #:phases build-phases
                        #:make-dynamic-linker-cache? #$make-dynamic-linker-cache?
                        #:configure-flags `("--cross-file" #+cross-file
-                                           ,@#$(sexp->gexp configure-flags))
+                                           ,@#$(if (pair? configure-flags)
+                                                   (sexp->gexp configure-flags)
+                                                   configure-flags))
                        #:build-type #$build-type
                        #:tests? #$tests?
                        #:test-target #$test-target
