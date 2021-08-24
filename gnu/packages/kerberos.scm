@@ -231,11 +231,24 @@ After installation, the system administrator should generate keys using
                                 '()))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
-                    (lambda _
-                      (substitute* '("appl/afsutil/pagsh.c"
-                                     "tools/Makefile.in")
-                        (("/bin/sh") (which "sh")))
-                      #t))
+                    ;; TODO(core-updates): Unconditionally use the
+                    ;; %current-target-system branch.
+                    (,(if (%current-target-system)
+                          'lambda*
+                          'lambda)
+                     ,(if (%current-target-system)
+                          '(#:key inputs #:allow-other-keys)
+                          '_)
+                     ,@(if (%current-target-system)
+                           '((substitute* '("appl/afsutil/pagsh.c")
+                               (("/bin/sh")
+                                (search-input-file inputs "bin/sh")))
+                             (substitute* '("tools/Makefile.in")
+                               (("/bin/sh") (which "sh"))))
+                           '((substitute* '("appl/afsutil/pagsh.c"
+                                            "tools/Makefile.in")
+                               (("/bin/sh") (which "sh")))
+                             #t))))
                   (add-before 'check 'pre-check
                     (lambda _
                       ;; For 'getxxyyy-test'.
