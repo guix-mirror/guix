@@ -6,6 +6,7 @@
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,11 +52,20 @@
      `(("perl" ,perl)))
     (arguments
      `(#:tests? #f ; no check target
-       #:configure-flags (list "--disable-static"
-                               "--enable-64bit"
-                               (string-append "LDFLAGS=-Wl,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib"))
+       #:configure-flags
+       (list "--disable-static"
+             "--enable-64bit"
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib")
+             ;; Mozilla deviates from Autotools conventions
+             ;; due to historical reasons.  Adjust to Mozilla conventions,
+             ;; otherwise the Makefile will try to use TARGET-gcc
+             ;; as a ‘native’ compiler.
+             ,@(if (%current-target-system)
+                   `(,(string-append "--host="
+                                     (nix-system->gnu-triplet (%current-system)))
+                     ,(string-append "--target=" (%current-target-system)))
+                   '()))
        ;; Use fixed timestamps for reproducibility.
        #:make-flags '("SH_DATE='1970-01-01 00:00:01'"
                       ;; This is epoch 1 in microseconds.
