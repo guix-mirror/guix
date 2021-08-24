@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -368,22 +369,44 @@ in C/C++.")
      `(#:tests? #f ; FIXME: all tests pass, but then the check phase fails anyway.
        #:test-target "check-jstests"
        #:configure-flags
-       '("--enable-ctypes"
-         "--enable-optimize"
-         "--enable-pie"
-         "--enable-readline"
-         "--enable-shared-js"
-         "--enable-system-ffi"
-         "--with-system-nspr"
-         "--with-system-zlib"
-         "--with-system-icu"
-         "--with-intl-api"
-         ;; This is important because without it gjs will segfault during the
-         ;; configure phase.  With jemalloc only the standalone mozjs console
-         ;; will work.
-         "--disable-jemalloc")
+       ;; TODO(core-updates): unconditionally use 'quasiquote
+       ,#~(#$(if (%current-target-system)
+                 #~quasiquote
+                 #~quote)
+           ("--enable-ctypes"
+            "--enable-optimize"
+            "--enable-pie"
+            "--enable-readline"
+            "--enable-shared-js"
+            "--enable-system-ffi"
+            "--with-system-nspr"
+            #$@(if (%current-target-system)
+                   #~(,(string-append "--with-nspr-prefix="
+                                      #$(this-package-input "nspr")))
+                   #~())
+            "--with-system-zlib"
+            "--with-system-icu"
+            "--with-intl-api"
+            ;; This is important because without it gjs will segfault during the
+            ;; configure phase.  With jemalloc only the standalone mozjs console
+            ;; will work.
+            "--disable-jemalloc"
+            ;; Mozilla deviates from Autotools conventions due to historical
+            ;; reasons.
+            #$@(if (%current-target-system)
+                   #~(#$(string-append
+                         "--host="
+                         (nix-system->gnu-triplet (%current-system)))
+                      #$(string-append "--target=" (%current-target-system)))
+                   #~())))
        #:phases
        (modify-phases %standard-phases
+         ;; Make sure pkg-config will be found.
+         ,@(if (%current-target-system)
+               `((add-before 'configure 'set-PKG-CONFIG
+                   (lambda _
+                     (setenv "PKG_CONFIG" ,(pkg-config-for-target)))))
+               '())
          (replace 'configure
            (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
              ;; The configure script does not accept environment variables as
