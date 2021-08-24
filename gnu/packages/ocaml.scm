@@ -3408,7 +3408,7 @@ big- and little-endian, with their unsafe counter-parts.")
 (define-public ocaml-cstruct
   (package
     (name "ocaml-cstruct")
-    (version "4.0.0")
+    (version "6.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3417,11 +3417,13 @@ big- and little-endian, with their unsafe counter-parts.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m4bz0digcsc8l2msfikwcbi1y371kccx6xnkwrz212mf5mp98bv"))))
+                "0gpyr3cf393j1ir7i2m2qhx75l21w6ad7imdd73xn0jy3pjg4wsj"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "cstruct"
        #:test-target "."))
+    (propagated-inputs
+     `(("ocaml-bigarray-compat" ,ocaml-bigarray-compat)))
     (native-inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)))
     (home-page "https://github.com/mirage/ocaml-cstruct")
