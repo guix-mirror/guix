@@ -27,6 +27,7 @@
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,7 +121,13 @@
                 "1217cmmykjgkkim0zr1lv5j13733m4w5vipmy4ivw0ll6rz28xpv"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t))  ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t ; To wrap binaries and/or compile schemas
+       ,@(if (%current-target-system)
+             `(#:configure-flags
+               ;; introspection requires running binaries for the host system
+               ;; on the build system.
+               '("-Dintrospection=false"))
+             '())))
     (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
     (native-inputs
      `(("gettext" ,gettext-minimal)
