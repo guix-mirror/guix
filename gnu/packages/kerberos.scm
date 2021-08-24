@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 (define-module (gnu packages kerberos)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages perl)
@@ -244,8 +246,15 @@ After installation, the system administrator should generate keys using
        #:parallel-tests? #f))
     (native-inputs `(("e2fsprogs" ,e2fsprogs)     ;for 'compile_et'
                      ("texinfo" ,texinfo)
-                     ("unzip" ,unzip)))           ;for tests
+                     ("unzip" ,unzip)             ;for tests
+                     ,@(if (%current-target-system)
+                           `(("perl" ,perl))
+                           '())))
     (inputs `(("readline" ,readline)
+              ;; TODO(core-updates): Make this input unconditional.
+              ,@(if (%current-target-system)
+                    `(("bash-minimal" ,bash-minimal))
+                    '())
               ("bdb" ,bdb)
               ("e2fsprogs" ,e2fsprogs)            ;for libcom_err
               ("sqlite" ,sqlite)))
