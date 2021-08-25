@@ -52,6 +52,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5089,6 +5090,12 @@ fast and flexible way of exploring HTML from the terminal.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libsoup" ,libsoup)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-home-for-tests
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
     (home-page "https://gitlab.com/groups/uhttpmock")
     (synopsis "Library for mocking web service APIs which use HTTP or HTTPS")
     (description
