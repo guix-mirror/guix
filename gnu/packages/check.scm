@@ -1002,14 +1002,14 @@ and many external plugins.")
 (define-public python-pytest-6
   (package
     (inherit (strip-python2-variant python-pytest))
-    (version "6.1.2")
+    (version "6.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "0gl2sdm322vzmsh5k4f8kj9raiq2y7kdinnca4m45ifvii5fk9y0"))))
+         "0jy5f83la1864ss42dhsi1mcm5nl79d8bjg7wk474nlw1c5avg2h"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1019,24 +1019,24 @@ and many external plugins.")
              (if tests?
                  (invoke "pytest" "-vv" "-k"
                          (string-append
-                          ;; This test involve the /usr directory, and fails.
+                          ;; This test involves the /usr directory, and fails.
                           " not test_argcomplete"
                           ;; These test do not honor the isatty detection and
                           ;; fail.
                           " and not test_code_highlight"
                           " and not test_color_yes"))
-                 (format #t "test suite not run~%"))
-             #t)))))
+                 (format #t "test suite not run~%")))))))
     (propagated-inputs
      (append (alist-delete "python-py"
                            (package-propagated-inputs python-pytest))
-             `(("python-py" ,python-py-next))))
+         `(("python-iniconfig" ,python-iniconfig)
+           ("python-py" ,python-py-next))))
     (native-inputs
-     (append (alist-delete "python-pytest"
-                           (package-native-inputs python-pytest))
-             `(("python-pytest" ,python-pytest-6-bootstrap)
-               ("python-toml" ,python-toml)
-               ("python-iniconfig" ,python-iniconfig))))))
+     (append (fold alist-delete (package-native-inputs python-pytest)
+                   '("python-mock"
+                     "python-pytest"))
+         `(("python-pytest" ,python-pytest-6-bootstrap)
+           ("python-toml" ,python-toml))))))
 
 ;; Pytest 4.x are the last versions that support Python 2.
 (define-public python2-pytest
