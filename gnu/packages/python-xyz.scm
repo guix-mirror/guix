@@ -3070,14 +3070,14 @@ code introspection, and logging.")
 (define-public python-py-next
   (package
     (inherit python-py)
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "0hpk0gzd4v1pcnq7zinwg5n219czi23qghcswykqskkbwly8i9lw"))))))
+         "1lqvkqk3b440g9z82gqbzlzas84wrm6ir8kplzhzavmn2pd1pf11"))))))
 
 (define-public python2-py
   (package-with-python2 python-py))
