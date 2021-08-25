@@ -845,7 +845,8 @@ doctest.")
     (description
      "Mock is a library for testing in Python.  It allows you to replace parts
 of your system under test with mock objects and make assertions about how they
-have been used.")
+have been used.  This library is now part of Python (since Python 3.3),
+available via the @code{unittest.mock} module.")
     (properties `((python2-variant . ,(delay python2-mock))))
     (license license:expat)))
 
