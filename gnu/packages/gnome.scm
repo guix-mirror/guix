@@ -60,6 +60,7 @@
 ;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1947,13 +1948,15 @@ formats like PNG, SVG, PDF and EPS.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'set-home-for-tests
+           (lambda _
+             (setenv "HOME" "/tmp")))
          (add-before 'check 'disable-failing-tests
            (lambda _
              ;; The PicasaWeb API tests fail with gnome-online-accounts@3.24.2.
              ;; They have been removed in libgdata 0.17.6, so just do the same.
              (substitute* "gdata/tests/Makefile"
-               (("picasaweb\\$\\(EXEEXT\\) ") ""))
-             #t)))))
+               (("picasaweb\\$\\(EXEEXT\\) ") "")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
