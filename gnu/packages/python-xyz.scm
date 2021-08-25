@@ -26721,3 +26721,37 @@ spreadsheet), CSV, TSV, XLS, XLSX (Microsoft Excel spreadsheet), and YAML.")
     (description "This package provides a module to parse Coded statement of
 account (CODA) files as defined be the Belgian Febelfin bank standard.")
     (license license:bsd-3)))
+
+(define-public python-ofxparse
+  (package
+    (name "python-ofxparse")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ofxparse" version))
+       (sha256
+        (base32 "19y4sp5l9jqiqzzlbqdfiab42qx7d84n4xm4s7jfq397666vcyh5"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "nosetests" "-v")))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-lxml" ,python-lxml)
+       ("python-six" ,python-six)))
+    (home-page "http://sites.google.com/site/ofxparse")
+    (synopsis "Tools for working with the OFX (Open Financial Exchange) file
+format")
+    (description "@code{ofxparse} is a parser for Open Financial
+Exchange (.ofx) format files.  OFX files are available from almost any online
+banking site, so they work well if you want to pull together your finances
+from multiple sources.  Online trading accounts also often provide account
+statements in OFX files.")
+    (license license:expat)))
