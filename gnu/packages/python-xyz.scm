@@ -26630,3 +26630,49 @@ Braintree Gateway.  Braintree is a US-based payments service provider.")
 HTML/XML from a Python program in an intuitive, lightweight, customizable and
 pythonic way.")
     (license license:expat)))
+
+(define-public python-tablib
+  (package
+    (name "python-tablib")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tablib" version))
+       (sha256
+       (base32 "03f1z6jq6rf67gwhbm9ma4rydm8h447a5nh5lcs5l8jg8l4aqg7q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) "/build/lib:"
+                                      (getenv "PYTHONPATH")))
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)  ;; required for test-suite
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-markuppy" ,python-markuppy)
+       ("python-odfpy" ,python-odfpy)
+       ("python-openpyxl" ,python-openpyxl)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-tabulate" ,python-tabulate)
+       ("python-xlrd" ,python-xlrd)
+       ("python-xlwt" ,python-xlwt)))
+    (home-page "https://tablib.readthedocs.io")
+    (synopsis "Format agnostic tabular data library")
+    (description "@code{tablib} is a format-agnostic tabular dataset library,
+written in Python.  Supported output formats are Excel (Sets + Books),
+JSON (Sets + Books), YAML (Sets + Books), HTML (Sets), Jira (Sets),
+TSV (Sets), ODS (Sets), CSV (Sets), and DBF (Sets).
+
+@code{tablib} also supports Pandas DataFrames (Sets).  Anyhow, since pandas is
+quite huge, this Guix package doesn't depend on pandas.  In case, just also
+install @code{python-pandas}.")
+    (license license:expat)))
