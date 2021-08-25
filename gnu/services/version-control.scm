@@ -54,6 +54,7 @@
             <gitolite-rc-file>
             gitolite-rc-file
             gitolite-rc-file-umask
+            gitolite-rc-file-unsafe-pattern
             gitolite-rc-file-git-config-keys
             gitolite-rc-file-roles
             gitolite-rc-file-enable
@@ -226,6 +227,8 @@ access to exported repositories under @file{/srv/git}."
   gitolite-rc-file?
   (umask           gitolite-rc-file-umask
                    (default #o0077))
+  (unsafe-pattern  gitolite-rc-file-unsafe-pattern
+                   (default #f))
   (git-config-keys gitolite-rc-file-git-config-keys
                    (default ""))
   (roles           gitolite-rc-file-roles
@@ -245,7 +248,7 @@ access to exported repositories under @file{/srv/git}."
 (define-gexp-compiler (gitolite-rc-file-compiler
                        (file <gitolite-rc-file>) system target)
   (match file
-    (($ <gitolite-rc-file> umask git-config-keys roles enable)
+    (($ <gitolite-rc-file> umask unsafe-pattern git-config-keys roles enable)
      (apply text-file* "gitolite.rc"
       `("%RC = (\n"
         "    UMASK => " ,(format #f "~4,'0o" umask) ",\n"
@@ -264,6 +267,9 @@ access to exported repositories under @file{/srv/git}."
         "    ],\n"
         ");\n"
         "\n"
+        ,(if unsafe-pattern
+             (string-append "$UNSAFE_PATT = qr(" unsafe-pattern ");")
+             "")
         "1;\n")))))
 
 (define-record-type* <gitolite-configuration>

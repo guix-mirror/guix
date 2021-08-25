@@ -31517,6 +31517,19 @@ A value like @code{#o0027} will give read access to the group used by Gitolite
 (by default: @code{git}).  This is necessary when using Gitolite with software
 like cgit or gitweb.
 
+@item @code{unsafe-pattern} (default: @code{#f})
+An optional Perl regular expression for catching unsafe configurations in
+the configuration file.  See
+@uref{https://gitolite.com/gitolite/git-config.html#compensating-for-unsafe_patt,
+Gitolite's documentation} for more information.
+
+When the value is not @code{#f}, it should be a string containing a Perl
+regular expression, such as @samp{"[`~#\$\&()|;<>]"}, which is the default
+value used by gitolite.  It rejects any special character in configuration
+that might be interpreted by a shell, which is useful when sharing the
+administration burden with other people that do not otherwise have shell
+access on the server.
+
 @item @code{git-config-keys} (default: @code{""})
 Gitolite allows you to set git config values using the @samp{config}
 keyword.  This setting allows control over the config keys to accept.
