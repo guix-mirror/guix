@@ -1414,6 +1414,39 @@ to users of that module.")
     ;; by the Expat license.
     (license (list license:isc license:expat))))
 
+(define-public python-ncclient
+  (package
+    (name "python-ncclient")
+    (version "0.6.12")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/ncclient/ncclient")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cb568z5syg6hh0dv813bw7s1mjy7ga5xzxbm9naf4zz2qfdg4js"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-paramiko" ,python-paramiko)))
+    (home-page "https://github.com/ncclient/ncclient")
+    (synopsis "Python library for NETCONF clients")
+    (description "@code{ncclient} is a Python library that facilitates
+client-side scripting and application development around the NETCONF
+protocol.")
+    (license license:asl2.0)))
+
 (define-public python-license-expression
   (package
     (name "python-license-expression")
