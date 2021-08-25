@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Dale Mellor <guix-devel-0brg6b@rdmp.org>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (gnu packages)
@@ -333,4 +335,31 @@ PUT, FTP uploading, kerberos, HTTP form based upload, proxies, cookies,
 user+password authentication, file transfer resume, http proxy tunneling and
 more!")
     (home-page "http://www.curlpp.org")
+    (license license:expat)))
+
+(define-public h2c
+  (package
+    (name "h2c")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/curl/h2c")
+             (commit version)))
+       (sha256
+        (base32
+         "1n8z6avzhg3yb330di2y9zymsps1qp1235p29kidcp4fkmn7fgb2"))
+       (file-name (git-file-name name version))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("./h2c" "bin/"))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "https://curl.se/h2c/")
+    (synopsis "Convert HTTP headers to a curl command line")
+    (description
+     "Provided a set of HTTP request headers, h2c outputs how to invoke
+curl to obtain exactly that HTTP request.")
     (license license:expat)))
