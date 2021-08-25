@@ -14265,39 +14265,25 @@ respectively.")
 Python.  It generates C++ code and a Makefile."))
   (license (list license:gpl3 license:bsd-3 license:expat))))
 
-(define-public python2-rope
+(define-public python-rope
   (package
-    (name "python2-rope")
-    (version "0.11.0")
+    (name "python-rope")
+    (version "0.19.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (pypi-uri "rope" version))
-      (sha256
+       (method url-fetch)
+       (uri (pypi-uri "rope" version))
+       (sha256
         (base32
-         "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
-    (arguments
-     ;; Rope has only partial python3 support, see `python-rope'
-     `(#:python ,python-2))
+         "1nlhkmsfvn2p1msrmwqnypnvr993alzawnpc1605q7rfad3xgrk4"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python2-unittest2" ,python2-unittest2)))
     (home-page "https://github.com/python-rope/rope")
     (synopsis "Refactoring library for Python")
     (description "Rope is a refactoring library for Python.  It facilitates
 the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurrences in strings and comments.")
-    (license license:gpl2)))
-
-(define-public python-rope
-  (package/inherit python2-rope
-    (name "python-rope")
-    (arguments `(#:python ,python-wrapper
-                 ;; XXX: Only partial python3 support, results in some failing
-                 ;; tests: <https://github.com/python-rope/rope/issues/247>.
-                 #:tests? #f))
-    (properties `((python2-variant . ,(delay python2-rope))))))
+    (license license:lgpl3+)))
 
 (define-public python-py3status
   (package
