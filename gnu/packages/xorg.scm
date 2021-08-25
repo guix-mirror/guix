@@ -5240,7 +5240,7 @@ new API's in libXft, or the legacy API's in libX11.")
             "08z0mqywrm7ij8bxlfrx0d2wy6kladdmkva1nw5k6qix82z0xsla"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
     (propagated-inputs
       ;; In accordance with xrandr.pc.
       `(("libx11" ,libx11)
