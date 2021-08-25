@@ -14272,6 +14272,32 @@ sequencing (e.g. mapping or base/indel alignment uncertainty), which are
 usually ignored by other methods or only used for filtering.")
     (license license:expat)))
 
+(define-public ivar
+  (package
+    (name "ivar")
+    (version "1.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/andersen-lab/ivar")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "044xa0hm3b8fga64csrdx05ih8w7kwmvcdrdrhkg8j11ml4bi4xv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("htslib" ,htslib)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://andersen-lab.github.io/ivar/html/")
+    (synopsis "Tools for amplicon-based sequencing")
+    (description "iVar is a computational package that contains functions
+broadly useful for viral amplicon-based sequencing. ")
+    (license license:gpl3+)))
+
 (define-public python-pyliftover
   (package
     (name "python-pyliftover")
