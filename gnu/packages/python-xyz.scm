@@ -26581,3 +26581,21 @@ YYYY-MM-DD at the beginning of the file or directory name.")
     (description "The Braintree Python SDK provides integration access to the
 Braintree Gateway.  Braintree is a US-based payments service provider.")
     (license license:expat)))
+
+(define-public python-markuppy
+  (package
+    (name "python-markuppy")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MarkupPy" version))
+       (sha256
+        (base32 "0pqdmpxbr8iq22b4css2gz5z6s01ddpzyj25x27kgbs2lp0f5phs"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tylerbakke/MarkupPy")
+    (synopsis "A pythonic HTML/XML generator")
+    (description "This Python module attempts to make it easier to generate
+HTML/XML from a Python program in an intuitive, lightweight, customizable and
+pythonic way.")
+    (license license:expat)))
