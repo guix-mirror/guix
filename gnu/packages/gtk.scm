@@ -383,7 +383,11 @@ applications.")
        ("libxft" ,libxft)
        ("libxrender" ,libxrender)))
     (inputs
-     `(("zlib" ,zlib)))
+     ;; TODO(core-updates): Unconditionally add "bash-minimal"
+     `(,@(if (%current-target-system)
+             `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
+             '())
+       ("zlib" ,zlib)))
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
