@@ -26755,3 +26755,26 @@ banking site, so they work well if you want to pull together your finances
 from multiple sources.  Online trading accounts also often provide account
 statements in OFX files.")
     (license license:expat)))
+
+(define-public python-stripe
+  (package
+    (name "python-stripe")
+    (version "2.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stripe" version))
+       (sha256
+        (base32 "0258lzh4qikhinfggnlfh5aklcvg7lrvl8giqrh0yf0l61wvfrl9"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))  ;; tests require network
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/stripe/stripe-python")
+    (synopsis "Python bindings for the Stripe financial services' API")
+    (description "This package provides access to the Stripe financial
+services' API.  It includes a pre-defined set of classes for API resources
+that initialize themselves dynamically from API responses which makes it
+compatible with a wide range of versions of the Stripe API.")
+    (license license:expat)))
