@@ -983,14 +983,22 @@ Python.")
         #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook-xml
-           (lambda* (#:key inputs #:allow-other-keys)
+           ;; TODO(core-updates): Use 'native-inputs' unconditionally
+           (lambda* (#:key ,@(if (%current-target-system)
+                                 '(native-inputs)
+                                 '())
+                     inputs #:allow-other-keys)
              (with-directory-excursion "doc"
                (substitute* (find-files "." "\\.xml$")
                  (("http://www.oasis-open.org/docbook/xml/4\\.5/")
-                  (string-append (assoc-ref inputs "docbook-xml")
+                  (string-append (assoc-ref ,(if (%current-target-system)
+                                                 '(or native-inputs inputs)
+                                                 'inputs) "docbook-xml")
                                  "/xml/dtd/docbook/"))
                  (("http://www.oasis-open.org/docbook/xml/4\\.2/")
-                  (string-append (assoc-ref inputs "docbook-xml-4.2")
+                  (string-append (assoc-ref ,(if (%current-target-system)
+                                                 '(or native-inputs inputs)
+                                                 'inputs) "docbook-xml-4.2")
                                  "/xml/dtd/docbook/"))))
              #t))
          (add-after 'install 'move-doc
