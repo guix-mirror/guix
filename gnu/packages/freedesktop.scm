@@ -1010,7 +1010,11 @@ Python.")
        ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)
        ("xmlto" ,xmlto)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ,@(if (%current-target-system)
+             `(("pkg-config-for-build" ,pkg-config-for-build)
+               ("wayland" ,this-package)) ; for wayland-scanner
+             '())))
     (inputs
      `(("expat" ,expat)
        ("libxml2" ,libxml2)))           ; for XML_CATALOG_FILES
