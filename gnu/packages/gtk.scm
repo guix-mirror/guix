@@ -856,6 +856,10 @@ is part of the GNOME accessibility project.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       ;; Compiling tests requires "libxml2" to be in 'inputs'.
+       ,@(if (%current-target-system)
+             `(#:configure-flags '("-Dtests=false"))
+             '())
        #:phases
        (modify-phases %standard-phases
          (replace 'check
