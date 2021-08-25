@@ -781,6 +781,11 @@ scaled, composited, modified, saved, or rendered.")
              (setenv "DBUS_FATAL_WARNINGS" "0") ;
              (invoke "dbus-launch" "ninja" "test")))
          (delete 'check))))
+    (inputs
+     ;; TODO(core-updates): Make this input unconditional.
+     (if (%current-target-system)
+         `(("bash-minimal" ,bash-minimal))
+         '()))
     (propagated-inputs
      ;; atspi-2.pc refers to all these.
      `(("dbus" ,dbus)
