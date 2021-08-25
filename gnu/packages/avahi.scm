@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,7 @@
                  #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-distro=none"
+     `(#:configure-flags '("--with-distro=none"
                            "--disable-static"
                            "--localstatedir=/var" ; for the DBus socket
                            "--disable-python"
@@ -68,7 +69,10 @@
                            "--enable-tests"
                            "--disable-qt4" "--disable-qt5"
                            "--disable-gtk" "--disable-gtk3"
-                           "--enable-compat-libdns_sd")))
+                           "--enable-compat-libdns_sd"
+                           ,@(if (%current-target-system)
+                                 '("ac_cv_prog_have_pkg_config=yes")
+                                 '()))))
     (inputs
      `(("dbus" ,dbus)
        ("expat" ,expat)
