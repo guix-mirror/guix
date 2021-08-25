@@ -50,6 +50,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -207,28 +208,33 @@ After installation, the system administrator should generate keys using
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list
-                          ;; Avoid 7 MiB of .a files.
-                          "--disable-static"
+     `(#:configure-flags
+       ,#~(list
+           ;; Avoid 7 MiB of .a files.
+           "--disable-static"
 
-                          ;; Do not build libedit.
-                          (string-append
-                           "--with-readline-lib="
-                           (assoc-ref %build-inputs "readline") "/lib")
-                          (string-append
-                           "--with-readline-include="
-                           (assoc-ref %build-inputs "readline") "/include")
+           ;; Do not build libedit.
+           (string-append
+            "--with-readline-lib="
+            (assoc-ref %build-inputs "readline") "/lib")
+           (string-append
+            "--with-readline-include="
+            (assoc-ref %build-inputs "readline") "/include")
 
-                          ;; Do not build sqlite.
-                          (string-append
-                           "--with-sqlite3="
-                           (assoc-ref %build-inputs "sqlite"))
+           ;; Do not build sqlite.
+           (string-append
+            "--with-sqlite3="
+            (assoc-ref %build-inputs "sqlite"))
 
-                          ;; The configure script is too pessimistic.
-                          ;; Setting this also resolves a linking error.
-                          ,@(if (%current-target-system)
-                                '("ac_cv_func_getpwnam_r_posix=yes")
-                                '()))
+           #$@(if (%current-target-system)
+                  ;; The configure script is too pessimistic.
+                  ;; Setting this also resolves a linking error.
+                  #~("ac_cv_func_getpwnam_r_posix=yes"
+                     ;; Allow 'slc' and 'asn1_compile' to be found.
+                     (string-append "--with-cross-tools="
+                                    #+(file-append this-package
+                                                   "/libexec/heimdal")))
+                  #~()))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
                     ;; TODO(core-updates): Unconditionally use the
@@ -239,6 +245,13 @@ After installation, the system administrator should generate keys using
                      ,(if (%current-target-system)
                           '(#:key inputs #:allow-other-keys)
                           '_)
+                     ,@(if (%current-target-system)
+                           `((substitute* "configure"
+                               ;; Our 'compile_et' is not in --with-cross-tools,
+                               ;; which confuses heimdal.
+                               (("ac_cv_prog_COMPILE_ET=\\$\\{with_cross_tools\\}compile_et")
+                                "ac_cv_PROG_COMPILE_ET=compile_et")))
+                           '())
                      ,@(if (%current-target-system)
                            '((substitute* '("appl/afsutil/pagsh.c" "appl/su/su.c")
                                (("/bin/sh")
