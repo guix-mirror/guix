@@ -102,6 +102,16 @@
 
 
 
+;; When cross-compiling certain packages, "--disable-malloc0returnsnull"
+;; needs to be passed.  Otherwise, the configure script will try to run a
+;; binary for the host on the build machine.
+(define (malloc0-flags)
+  (if (%current-target-system)
+      ;; At least on glibc-based systems, malloc(0) evaluates to a non-NULL
+      ;; pointer (except in out-of-memory situations).  On other systems,
+      ;; --enable-malloc0returnsnull might be required instead.
+      '("--disable-malloc0returnsnull")
+      '()))
 
 ;; packages without propagated input
 ;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
@@ -4791,10 +4801,7 @@ cannot be adequately worked around on the client side of the wire.")
              (string-append "--mandir="
                             (assoc-ref %outputs "doc")
                             "/share/man")
-             ;; Disable zero malloc check that fails when cross-compiling.
-             ,@(if (%current-target-system)
-                   '("--disable-malloc0returnsnull")
-                   '()))))
+             ,@(malloc0-flags))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
@@ -4884,11 +4891,7 @@ cannot be adequately worked around on the client side of the wire.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--disable-static"
-             ;; Disable zero malloc check that fails when cross-compiling.
-             ,@(if (%current-target-system)
-                   '("--disable-malloc0returnsnull")
-                   '()))))
+       (list "--disable-static" ,@(malloc0-flags))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
@@ -5561,11 +5564,7 @@ draggable titlebars and borders.")
                             (assoc-ref %outputs "doc")
                             "/share/man")
              "--disable-static"
-
-             ;; Disable zero malloc check that fails when cross-compiling.
-             ,@(if (%current-target-system)
-                   '("--disable-malloc0returnsnull")
-                   '()))))
+             ,@(malloc0-flags))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)
         ("libxcb" ,libxcb)))
@@ -5643,10 +5642,7 @@ draggable titlebars and borders.")
                             (assoc-ref %outputs "doc")
                             "/share/man")
              "--disable-static"
-             ;; Disable zero malloc check that fails when cross-compiling.
-             ,@(if (%current-target-system)
-                   '("--disable-malloc0returnsnull")
-                   '()))))
+             ,@(malloc0-flags))))
     (propagated-inputs
       `(("libx11" ,libx11)
         ("libice" ,libice)
