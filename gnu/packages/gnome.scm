@@ -4599,7 +4599,10 @@ configuration storage systems.")
         ,@(if (%current-target-system)
               ;; If enabled, gtkdoc-scangobj will try to execute a
               ;; cross-compiled binary.
-              '("-Dgtk_doc=disabled")
+              '("-Dgtk_doc=disabled"
+                ;; Trying to build introspection data when cross-compiling
+                ;; causes errors during linking.
+                "-Dintrospection=disabled")
               '()))
        #:phases
        (modify-phases %standard-phases
