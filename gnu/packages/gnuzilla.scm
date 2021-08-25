@@ -353,7 +353,7 @@ in C/C++.")
   ;; we take the Debian version instead, because it is easier to work with.
   (package
     (inherit mozjs-38)
-    (version "60.2.3-2")
+    (version "60.2.3-4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -362,7 +362,7 @@ in C/C++.")
               (file-name (git-file-name "mozjs" version))
               (sha256
                (base32
-                "091w050rwzrdcbgyi934k2viyccmlqxrp13sm2mql71mabb5dai6"))))
+                "1xl6avsj9gkgma71p56jzs7nasc767k3n1frnmri5pad4rj94bij"))))
     (arguments
      `(#:tests? #f ; FIXME: all tests pass, but then the check phase fails anyway.
        #:test-target "check-jstests"
