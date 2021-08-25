@@ -4595,7 +4595,12 @@ configuration storage systems.")
        #:configure-flags
        (list
         "-Ddocs=true"
-        "-Dman=true")
+        "-Dman=true"
+        ,@(if (%current-target-system)
+              ;; If enabled, gtkdoc-scangobj will try to execute a
+              ;; cross-compiled binary.
+              '("-Dgtk_doc=disabled")
+              '()))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook
@@ -4619,15 +4624,21 @@ configuration storage systems.")
                                                  'inputs) "docbook-xsl")
                                  "/xml/xsl/docbook-xsl-1.79.2/"))))
              #t))
-         (add-after 'install 'move-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share"))
-               (rename-file
-                (string-append out "/share/gtk-doc")
-                (string-append doc "/share/gtk-doc"))
-               #t))))))
+         ;; When cross-compiling, there are no docs to move.
+         ,(if (%current-target-system)
+              '(add-after 'install 'stub-docs
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; The daemon doesn't like empty output paths.
+                   (mkdir (assoc-ref outputs "doc"))))
+              '(add-after 'install 'move-docs
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (doc (assoc-ref outputs "doc")))
+                     (mkdir-p (string-append doc "/share"))
+                     (rename-file
+                      (string-append out "/share/gtk-doc")
+                      (string-append doc "/share/gtk-doc"))
+                     #t)))))))
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)
