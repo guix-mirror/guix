@@ -26704,3 +26704,20 @@ used by multiple Spanish banks (standard 43 of the Spanish Banking Council
 Supported output formats are: OFX, HomeBank CSV, HTML, JSON, ODS (OpenDocument
 spreadsheet), CSV, TSV, XLS, XLSX (Microsoft Excel spreadsheet), and YAML.")
     (license license:lgpl3)))
+
+(define-public python-febelfin-coda
+  (package
+    (name "python-febelfin-coda")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "febelfin-coda" version))
+       (sha256
+        (base32 "10nf4hdwldqgdmh4g613vx55sbsw1x1yzpvs3crwlggbp75fjjfi"))))
+    (build-system python-build-system)
+    (home-page "https://coda.b2ck.com/")
+    (synopsis "A module to parse Belgian CODA files")
+    (description "This package provides a module to parse Coded statement of
+account (CODA) files as defined be the Belgian Febelfin bank standard.")
+    (license license:bsd-3)))
