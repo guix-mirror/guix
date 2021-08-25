@@ -1378,26 +1378,45 @@ timeout has been exceeded.")
 (define-public python-pytest-forked
   (package
     (name "python-pytest-forked")
-    (version "1.1.3")
+    (version "1.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pytest-forked" version))
+       (method git-fetch)               ;for tests
+       (uri (git-reference
+             (url "https://github.com/pytest-dev/pytest-forked")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "000i4q7my2fq4l49n8idx2c812dql97qv6qpm2vhrrn9v6g6j18q"))))
+         "1aip4kx50ynvykl7kq2mlbsi82vx701dvb8mm64lhp69bbv105rc"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pytest" ,python-pytest)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-setuptools-scm
+           (lambda _
+             (substitute* "setup.py"
+               (("use_scm_version=True")
+                (format #f "version=~s" ,version))
+               (("setup_requires=\\['setuptools_scm'\\],.*")
+                ""))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (home-page
-     "https://github.com/pytest-dev/pytest-forked")
-    (synopsis
-     "Run tests in isolated forked subprocesses")
-    (description
-     "Pytest plugin which will run each test in a subprocess and will report if
-a test crashed the process.")
+     ;; XXX: The bootstrap variant of Pytest is used to ensure the
+     ;; 'hypothesis' plugin is not in the environment (due to
+     ;; <http://issues.guix.gnu.org/25235>), which would cause the test suite
+     ;; to fail (see: https://github.com/pytest-dev/pytest-forked/issues/54).
+     `(("python-pytest" ,python-pytest-bootstrap)))
+    (home-page "https://github.com/pytest-dev/pytest-forked")
+    (synopsis "Pytest plugin to run tests in isolated forked subprocesses")
+    (description "This package provides a Pytest plugin which enables running
+each test in a subprocess and will report if a test crashed the process.  It
+can be useful to isolate tests against undesirable global environment
+side-effects (such as setting environment variables).")
     (license license:expat)))
 
 (define-public python-scripttest
