@@ -26561,3 +26561,23 @@ files and directories and adds a datestamp in standard ISO 8601+ format
 YYYY-MM-DD at the beginning of the file or directory name.")
       (home-page "https://github.com/novoid/date2name")
       (license license:gpl3+))))
+
+(define-public python-braintree
+  (package
+    (name "python-braintree")
+    (version "4.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "braintree" version))
+       (sha256
+        (base32 "19kli85q18p80nsn8fm4ql6axpr7bllfqg5chv2ywhr8zr8bssll"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://developers.braintreepayments.com/python/sdk/server/overview")
+    (synopsis "Braintree Python Library")
+    (description "The Braintree Python SDK provides integration access to the
+Braintree Gateway.  Braintree is a US-based payments service provider.")
+    (license license:expat)))
