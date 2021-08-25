@@ -13666,6 +13666,40 @@ starting site, start codon, stop codon and transcription ending site.")
 visualizations for publication-quality multi-panel figures.")
     (license license:gpl2+)))
 
+(define-public r-ballgown
+  (package
+    (name "r-ballgown")
+    (version "2.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ballgown" version))
+       (sha256
+        (base32
+         "0ff8z4pfgzai2q4aafclg36bhsi9jwl9xhh1p9fqhmikisscq7i1"))))
+    (properties `((upstream-name . "ballgown")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-sva" ,r-sva)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/ballgown")
+    (synopsis "Flexible, isoform-level differential expression analysis")
+    (description
+     "This package provides tools for statistical analysis of assembled
+transcriptomes, including flexible differential expression analysis,
+visualization of transcript structures, and matching of assembled transcripts
+to annotation.")
+    (license license:artistic2.0)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
