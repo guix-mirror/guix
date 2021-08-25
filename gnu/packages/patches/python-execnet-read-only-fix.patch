@@ -1,0 +1,77 @@
+From 0d6562a20b0610c5a83d1c66ac879223b84a2746 Mon Sep 17 00:00:00 2001
+From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
+Date: Thu, 26 Aug 2021 00:43:26 -0400
+Subject: [PATCH] rsync_remote: Fix a problem when receiving read-only
+ directories.
+
+Before this change, when the source directories hierarchy was
+read-only, the read-only mode would be preserved at the destination,
+preventing child directories to be recreated by a normal user (a
+permission denied error, EACCES would be raised).
+
+* execnet/rsync_remote.py (serve_rsync.receive_directory_structure):
+Bitwise OR to ensure the write bit is set on received directories.
+* testing/test_rsync.py (TestRSync)
+<test_read_only_directories>: New test.
+---
+ execnet/rsync_remote.py |  8 ++++++--
+ testing/test_rsync.py   | 17 +++++++++++++++++
+ 2 files changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/execnet/rsync_remote.py b/execnet/rsync_remote.py
+index cd5e765..55d154c 100644
+--- a/execnet/rsync_remote.py
++++ b/execnet/rsync_remote.py
+@@ -35,7 +35,11 @@ def serve_rsync(channel):
+                 os.makedirs(path)
+             mode = msg.pop(0)
+             if mode:
+-                os.chmod(path, mode)
++                # Ensure directories are writable, otherwise a
++                # permission denied error (EACCES) would be raised
++                # when attempting to receive read-only directory
++                # structures.
++                os.chmod(path, mode | 0o700)
+             entrynames = {}
+             for entryname in msg:
+                 destpath = os.path.join(path, entryname)
+@@ -59,7 +63,7 @@ def serve_rsync(channel):
+                         checksum = md5(f.read()).digest()
+                         f.close()
+                     elif msg_mode and msg_mode != st.st_mode:
+-                        os.chmod(path, msg_mode)
++                        os.chmod(path, msg_mode | 0o700)
+                         return
+                     else:
+                         return  # already fine
+diff --git a/testing/test_rsync.py b/testing/test_rsync.py
+index 995f229..1d6c30c 100644
+--- a/testing/test_rsync.py
++++ b/testing/test_rsync.py
+@@ -157,6 +157,23 @@ class TestRSync:
+         mode = destdir.stat().mode
+         assert mode & 511 == 504
+ 
++    @py.test.mark.skipif("sys.platform == 'win32' or getattr(os, '_name', '') == 'nt'")
++    def test_read_only_directories(self, dirs, gw1):
++        source = dirs.source
++        dest = dirs.dest1
++        source.ensure("sub", "subsub", dir=True)
++        source.join("sub").chmod(0o500)
++        source.join("sub", "subsub").chmod(0o500)
++
++        # The destination directories should be created with the write
++        # permission forced, to avoid raising an EACCES error.
++        rsync = RSync(source)
++        rsync.add_target(gw1, dest)
++        rsync.send()
++
++        assert dest.join("sub").stat().mode & 0o700
++        assert dest.join("sub").join("subsub").stat().mode & 0o700
++
+     @needssymlink
+     def test_symlink_rsync(self, dirs, gw1):
+         source = dirs.source
+-- 
+2.32.0
+

@@ -12193,24 +12193,26 @@ pure Python module that works on virtually all Python versions.")
 (define-public python-execnet
   (package
     (name "python-execnet")
-    (version "1.4.1")
+    (version "1.9.0")
     (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "execnet" version))
-             (sha256
-              (base32
-               "1rpk1vyclhg911p3hql0m0nrpq7q7mysxnaaw6vs29cpa6kx8vgn"))))
+              (method url-fetch)
+              (uri (pypi-uri "execnet" version))
+              (sha256
+               (base32
+                "1ia7dvrh0gvzzpi758mx55f9flr16bzdqlmi12swm4ncm4xlyscg"))
+              (patches (search-patches "python-execnet-read-only-fix.patch"))))
     (build-system python-build-system)
     (arguments
-     `(;; 2 failed, 275 passed, 670 skipped, 4 xfailed
-       ;; The two test failures are caused by the lack of an `ssh` executable.
-       ;; The test suite can be run with pytest after the 'install' phase.
-       #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+                      (when tests?
+                        (add-installed-pythonpath inputs outputs)
+                        (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (propagated-inputs
-     `(("python-apipkg" ,python-apipkg)))
     (synopsis "Rapid multi-Python deployment")
     (description "Execnet provides a share-nothing model with
 channel-send/receive communication for distributing execution across many
