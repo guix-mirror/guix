@@ -10222,6 +10222,22 @@ similar to the Python standard library's @code{json} module.")
 includes dependency resolution logic.")
     (license license:isc)))
 
+;;; This older version is required by ansible-core.
+(define-public python-resolvelib-0.5
+  (package/inherit python-resolvelib
+    (name "python-resolvelib")
+    (version "0.5.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sarugaku/resolvelib")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0697y330sqhiclk25v151qxg7aixzpj434lbg5qib0qlna5zg9la"))))))
+
 (define-public python-commonmark
   (package
     (name "python-commonmark")
