@@ -4599,15 +4599,24 @@ configuration storage systems.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
+           ;; TODO(core-updates): Use (or native-inputs inputs)
+           ;; unconditionally.
+           (lambda* (#:key ,@(if (%current-target-system)
+                                 '(native-inputs)
+                                 '()) inputs #:allow-other-keys)
              (with-directory-excursion "doc"
                (substitute* (find-files "." "\\.xml$")
                  (("http://www.oasis-open.org/docbook/xml/4\\.3/")
-                  (string-append (assoc-ref inputs "docbook-xml")
+                  (string-append (assoc-ref ,(if (%current-target-system)
+                                                 '(or native-inputs inputs)
+                                                 'inputs)
+                                            "docbook-xml")
                                  "/xml/dtd/docbook/")))
                (substitute* "meson.build"
                  (("http://docbook.sourceforge.net/release/xsl/current/")
-                  (string-append (assoc-ref inputs "docbook-xsl")
+                  (string-append (assoc-ref ,(if (%current-target-system)
+                                                 '(or native-inputs inputs)
+                                                 'inputs) "docbook-xsl")
                                  "/xml/xsl/docbook-xsl-1.79.2/"))))
              #t))
          (add-after 'install 'move-docs
