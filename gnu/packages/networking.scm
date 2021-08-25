@@ -47,6 +47,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Milkey Mouse <milkeymouse@meme.institute>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2253,8 +2254,13 @@ sockets in Perl.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-                  (lambda _
-                    (invoke "ctest" "-E" "url-test"))))))
+           ;; TODO(core-updates): Make this unconditional.
+           ,(if (%current-target-system)
+                '(lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "ctest" "-E" "url-test")))
+                '(lambda _
+                   (invoke "ctest" "-E" "url-test")))))))
     (synopsis "Library providing automatic proxy configuration management")
     (description "Libproxy handles the details of HTTP/HTTPS proxy
 configuration for applications across all scenarios.  Applications using
