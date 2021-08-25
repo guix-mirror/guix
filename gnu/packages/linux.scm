@@ -7676,90 +7676,90 @@ the superuser to make device nodes.")
     (license license:gpl2)))
 
 (define-public fakeroot
-  (package
-    (name "fakeroot")
-    (version "1.25.3")
-    (source (origin
-              ;; There are no tags in the repository, so take this snapshot.
-              (method url-fetch)
-              (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
-                                  "fakeroot/fakeroot_" version ".orig.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v4m3v1bdqvblwj3vqsb3mllgbci6dsgsydq6765nzvz6n1kd44f"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             ;; The "preroll" script takes care of Autoconf and also
-             ;; prepares the translated manuals.
-             (invoke "sh" "./preroll")))
-        (add-after 'configure 'patch-Makefile
-          (lambda _
-            ;; Note: The root of the problem is already in "Makefile.am".
-            (substitute* "Makefile"
-             (("/bin/sh") (which "sh")))
-            #t))
-        (add-after 'unpack 'patch-script
-          (lambda*  (#:key inputs #:allow-other-keys)
-            (substitute* "scripts/fakeroot.in"
-             (("getopt")
-              (search-input-file inputs "/bin/getopt"))
-             (("sed")
-              (search-input-file inputs "/bin/sed"))
-             (("cut")
-              (search-input-file inputs "/bin/cut")) )))
-        (add-before 'configure 'setenv
-          (lambda _
-            (setenv "LIBS" "-lacl")
-            #t))
-        (add-before 'check 'prepare-check
-          (lambda _
-            (setenv "SHELL" (which "bash"))
-            (setenv "VERBOSE" "1")
-            (substitute* "test/t.touchinstall"
-             ;; We don't have the name of the root user, so use ID=0.
-             (("grep root") "grep \"\\<0\\>\""))
-            (substitute* "test/tartest"
-             ;; We don't have the name of the root group, so use ID=0.
-             (("ROOTGROUP=root") "ROOTGROUP=0")
-             ;; We don't have the name of the daemon user, so use IDs.
-             (("daemon:sys") "1:3")
-             (("daemon:") "1:"))
-            ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
-            (substitute* "test/compare-tar"
-             (("tar -tvf") "tar --numeric-owner -tvf"))
-            #t)))))
-    (native-inputs
-     `(;; For bootstrapping the package.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("gettext" ,gettext-minimal)
-       ("po4a" ,po4a)
+  ;; glibc-2.33 compatibility was added since the last release.
+  (let ((commit "24d6b0857396cad87b2cabd32fb8af9ef4799915")
+        (revision "1"))
+    (package
+      (name "fakeroot")
+      (version (git-version "1.25.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://salsa.debian.org/clint/fakeroot.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0rg9m30k6v930cmj16qwk1k2vn1l2irxj7r3pp3k1i1sdhfkm3df"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               ;; The "preroll" script takes care of Autoconf and also
+               ;; prepares the translated manuals.
+               (invoke "sh" "./preroll")))
+          (add-after 'configure 'patch-Makefile
+            (lambda _
+              ;; Note: The root of the problem is already in "Makefile.am".
+              (substitute* "Makefile"
+               (("/bin/sh") (which "sh")))))
+          (add-after 'unpack 'patch-script
+            (lambda*  (#:key inputs #:allow-other-keys)
+              (substitute* "scripts/fakeroot.in"
+               (("getopt")
+                (search-input-file inputs "/bin/getopt"))
+               (("sed")
+                (search-input-file inputs "/bin/sed"))
+               (("cut")
+                (search-input-file inputs "/bin/cut")) )))
+          (add-before 'configure 'setenv
+            (lambda _
+              (setenv "LIBS" "-lacl")))
+          (add-before 'check 'prepare-check
+            (lambda _
+              (setenv "SHELL" (which "bash"))
+              (setenv "VERBOSE" "1")
+              (substitute* "test/t.touchinstall"
+               ;; We don't have the name of the root user, so use ID=0.
+               (("grep root") "grep \"\\<0\\>\""))
+              (substitute* "test/tartest"
+               ;; We don't have the name of the root group, so use ID=0.
+               (("ROOTGROUP=root") "ROOTGROUP=0")
+               ;; We don't have the name of the daemon user, so use IDs.
+               (("daemon:sys") "1:3")
+               (("daemon:") "1:"))
+              ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
+              (substitute* "test/compare-tar"
+               (("tar -tvf") "tar --numeric-owner -tvf")))))))
+      (native-inputs
+       `(;; For bootstrapping the package.
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("gettext" ,gettext-minimal)
+         ("po4a" ,po4a)
 
-       ;; For tests.
-       ("sharutils" ,sharutils)
-       ("xz" ,xz)))
-    (inputs
-     `(("acl" ,acl)
-       ("libcap" ,libcap)
-       ("util-linux" ,util-linux)
-       ("sed" ,sed)
-       ("coreutils" ,coreutils)))
-    (synopsis "Provides a fake root environment")
-    (description "@command{fakeroot} runs a command in an environment where
+         ;; For tests.
+         ("sharutils" ,sharutils)
+         ("xz" ,xz)))
+      (inputs
+       `(("acl" ,acl)
+         ("libcap" ,libcap)
+         ("util-linux" ,util-linux)
+         ("sed" ,sed)
+         ("coreutils" ,coreutils)))
+      (synopsis "Provides a fake root environment")
+      (description "@command{fakeroot} runs a command in an environment where
 it appears to have root privileges for file manipulation. This is useful
 for allowing users to create archives (tar, ar, .deb etc.) with files in
 them with root permissions/ownership. Without fakeroot one would have to
 have root privileges to create the constituent files of the archives with
 the correct permissions and ownership, and then pack them up, or one would
 have to construct the archives directly, without using the archiver.")
-    (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
-    (license license:gpl3+)))
+      (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
+      (license license:gpl3+))))
 
 (define-public fakechroot
   (package
