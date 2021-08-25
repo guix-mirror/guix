@@ -247,6 +247,10 @@ After installation, the system administrator should generate keys using
                           '_)
                      ,@(if (%current-target-system)
                            `((substitute* "configure"
+                               ;; The e2fsprogs input is included for libcom_err,
+                               ;; let's use it even if cross-compiling.
+                               (("test \"\\$\\{krb_cv_com_err\\}\" = \"yes\"")
+                                ":")
                                ;; Our 'compile_et' is not in --with-cross-tools,
                                ;; which confuses heimdal.
                                (("ac_cv_prog_COMPILE_ET=\\$\\{with_cross_tools\\}compile_et")
