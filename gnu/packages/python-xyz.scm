@@ -5332,6 +5332,42 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python2-spectra
   (package-with-python2 python-spectra))
 
+(define-public python-pyspnego
+  (package
+    (name "python-pyspnego")
+    (version "0.1.6")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/jborean93/pyspnego")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pfh2x0539f0k2qi2pbjm64b2fqp64c63xxpinvg1yfaw915kgpb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-gssapi" ,python-gssapi)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+    (home-page "https://github.com/jborean93/pyspnego")
+    (synopsis "Python SPNEGO library")
+    (description "The @code{pyspnego} Python library handles Negotiate, NTLM,
+Kerberos (SPNEGO) and CredSSP authentication.  It also includes a packet
+parser that can be used to decode raw NTLM/SPNEGO/Kerberos tokens into a human
+readable format.")
+    (license license:expat)))
+
 (define-public python-numpy-documentation
   (package
     (name "python-numpy-documentation")
