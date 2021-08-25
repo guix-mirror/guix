@@ -724,9 +724,13 @@ scaled, composited, modified, saved, or rendered.")
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
-     '(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:configure-flags
-       (list "-Ddocs=true")
+       ;; Generating documentation requires running binaries for the host
+       ;; on the build machine.
+       (list ,(if (%current-target-system)
+                  "-Ddocs=false"
+                  "-Ddocs=true"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-documentation-path
@@ -748,16 +752,18 @@ scaled, composited, modified, saved, or rendered.")
                  (("http://.*/docbookx\\.dtd")
                   (string-append xmldoc "/docbookx.dtd")))
                #t)))
-         (add-after 'install 'move-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (copy-recursively
-                (string-append out "/share/gtk-doc")
-                (string-append doc "/share/gtk-doc"))
-               (delete-file-recursively
-                (string-append out "/share/gtk-doc")))
-             #t))
+         ,@(if (%current-target-system)
+               '()
+               '((add-after 'install 'move-documentation
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out"))
+                           (doc (assoc-ref outputs "doc")))
+                       (copy-recursively
+                        (string-append out "/share/gtk-doc")
+                        (string-append doc "/share/gtk-doc"))
+                       (delete-file-recursively
+                        (string-append out "/share/gtk-doc")))
+                     #t))))
          (add-after 'install 'check
            (lambda _
              (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
