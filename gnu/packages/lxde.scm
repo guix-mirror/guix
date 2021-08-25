@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,6 +227,8 @@ performance, all instances of the terminal are sharing a single process.")
     (inputs `(("glib"  ,glib)
               ("libfm" ,libfm-extra)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "LXDE implementation of the freedesktop menu's cache")
     (description "Menu-cache is a library creating and utilizing caches to
 speed up the access to freedesktop.org defined application menus.")
