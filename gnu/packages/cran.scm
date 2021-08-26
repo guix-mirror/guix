@@ -30424,3 +30424,32 @@ calculated, functions for testing distributions using inversion tests and the
 Massart inequality.  Also included is an implementation of the incomplete
 Bessel K function.")
     (license license:gpl2+)))
+
+(define-public r-ztpln
+  (package
+    (name "r-ztpln")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ztpln" version))
+       (sha256
+        (base32
+         "18rbfdp22jaxg4nkqzj2393nhjdl1gzv4xhmr6aci76ymdixsfnl"))))
+    (properties `((upstream-name . "ztpln")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-distributionutils" ,r-distributionutils)
+       ("r-mixtools" ,r-mixtools)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcppnumerical" ,r-rcppnumerical)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mattocci27/ztpln")
+    (synopsis "Zero-truncated Poisson lognormal distribution")
+    (description
+     "This package provides functions for obtaining the density, random
+variates and maximum likelihood estimates of the Zero-truncated Poisson
+lognormal distribution and their mixture distribution.")
+    (license license:expat)))
