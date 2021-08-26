@@ -31193,3 +31193,32 @@ or 53.  MMWR week #1 of an MMWR year is the first week of the year that has at
 least four days in the calendar year.  This package provides functionality to
 convert dates to MMWR day, week, and year and the reverse.")
     (license license:gpl2+)))
+
+(define-public r-crul
+  (package
+    (name "r-crul")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "crul" version))
+       (sha256
+        (base32
+         "1kjsc5gkx5k5cfwlfjp2cjm9cdzq2l1m68bnrjmahw3lkz8wzdph"))))
+    (properties `((upstream-name . "crul")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-httpcode" ,r-httpcode)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-mime" ,r-mime)
+       ("r-r6" ,r-r6)
+       ("r-urltools" ,r-urltools)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ropensci/crul")
+    (synopsis "HTTP client")
+    (description
+     "This package provides a simple HTTP client, with tools for making HTTP
+requests, and mocking HTTP requests.  The package is built on R6, and takes
+inspiration from Ruby's @code{faraday} gem.")
+    (license license:expat)))
