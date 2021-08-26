@@ -30480,3 +30480,26 @@ head circumference-for-age, age circumference-for-age, subscapular
 skinfold-for-age, triceps skinfold-for-age based on the WHO Child Growth
 Standards.")
     (license license:agpl3+)))
+
+(define-public r-zra
+  (package
+    (name "r-zra")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ZRA" version))
+       (sha256
+        (base32
+         "1sx1q5yf68hhlb5j1hicpj594rmgajqr25llg7ax416j0m2rnagi"))))
+    (properties `((upstream-name . "ZRA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dygraphs" ,r-dygraphs)
+       ("r-forecast" ,r-forecast)))
+    (home-page "https://cran.r-project.org/package=ZRA")
+    (synopsis "Dynamic plots for time series forecasting")
+    (description
+     "This package combines a forecast of a time series, using the function @code{forecast},
+with the dynamic plots from @code{dygraphs}.")
+    (license license:gpl2+)))
