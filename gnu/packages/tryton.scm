@@ -110,7 +110,7 @@ and security.")
     (native-inputs
      `(("glib-compile-schemas" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)))
-    (inputs
+    (propagated-inputs
      `(("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
