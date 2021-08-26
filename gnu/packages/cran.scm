@@ -30621,3 +30621,27 @@ requests, and receiving responses.  They are designed to help build
 higher-level interfaces to individual services, such as Simple Storage
 Service (S3).")
     (license license:asl2.0)))
+
+(define-public r-paws-customer-engagement
+  (package
+    (name "r-paws-customer-engagement")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.customer.engagement" version))
+       (sha256
+        (base32
+         "0ac6hzn4ilfjhzdmc9x80999fl18cz16mky31qd3y09m93w2xkdj"))))
+    (properties
+     `((upstream-name . "paws.customer.engagement")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services customer engagement services")
+    (description
+     "This package provides an interface to Amazon Web Services customer
+engagement services, including Simple Email Service, Connect contact center
+service, and more.")
+    (license license:asl2.0)))
