@@ -31170,3 +31170,26 @@ concentric rings and radial lines emanating from a central point.")
      "Create new analysis setups and deal with results of Zonation
 conservation prioritization software.")
     (license license:bsd-2)))
+
+(define-public r-mmwrweek
+  (package
+    (name "r-mmwrweek")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MMWRweek" version))
+       (sha256
+        (base32
+         "1l1ks44v52iggw9nhs56lfj6804yab5b17k8fzrc6h1kvj3vda0s"))))
+    (properties `((upstream-name . "MMWRweek")))
+    (build-system r-build-system)
+    (home-page "http://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf")
+    (synopsis "Convert dates to MMWR day, week, and year")
+    (description
+     "The first day of any MMWR week is Sunday.  MMWR week numbering is
+sequential beginning with 1 and incrementing with each week to a maximum of 52
+or 53.  MMWR week #1 of an MMWR year is the first week of the year that has at
+least four days in the calendar year.  This package provides functionality to
+convert dates to MMWR day, week, and year and the reverse.")
+    (license license:gpl2+)))
