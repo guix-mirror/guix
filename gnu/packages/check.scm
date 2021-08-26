@@ -1261,19 +1261,33 @@ contacting the real http server.")
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
-    (version "1.10.1")
+    (version "3.6.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pytest-mock" version))
-        (sha256
-         (base32
-          "1i5mg3ff1qk0wqfcxfz60hwy3q5dskdp36i10ckigkzffg8hc3ad"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-mock" version))
+       (sha256 (base32
+                "0qhfmd05z3g88bnwq6644jl6p5wy01i4yy7h8883z9jjih2pl8a0"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Skip the assertion rewriting tests, which don't work in the
+               ;; presence of read-only Python modules (a limitation of
+               ;; Pytest).  Also skip the "test_standalone_mock" test, which
+               ;; can only work when 'python-mock' is not available
+               ;; (currently propagated by Pytest 5).
+               (invoke "pytest" "--assert=plain"
+                       "-k" "not test_standalone_mock")))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
     (home-page "https://github.com/pytest-dev/pytest-mock/")
     (synopsis "Thin-wrapper around the mock package for easier use with py.test")
     (description
