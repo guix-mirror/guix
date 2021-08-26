@@ -31284,3 +31284,31 @@ request conditions and response conditions.  You can match on HTTP method,
 query parameters, request body, headers and more.  It can be used for unit
 tests or outside of a testing context.")
     (license license:expat)))
+
+(define-public r-mockery
+  (package
+    (name "r-mockery")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mockery" version))
+       (sha256
+        (base32
+         "16zayzi2qdmiy513hvlci9f4p8jwry24006yfzrgmrvf6sf293lq"))))
+    (properties `((upstream-name . "mockery")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-testthat" ,r-testthat)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/jfiksel/mockery")
+    (synopsis "Mocking library for R")
+    (description
+     "The two main functionalities of this package are creating mock
+objects (functions) and selectively intercepting calls to a given function
+that originate in some other function.  It can be used with any testing
+framework available for R.  Mock objects can be injected with either this
+package's own @code{stub} function or a similar @code{with_mock} facility
+present in the @code{testthat} package.")
+    (license license:expat)))
