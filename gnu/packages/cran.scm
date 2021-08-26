@@ -30592,3 +30592,32 @@ of known occurrences of a species.")
 runs full species distribution modelling workflows and returns output that is
 fully reproducible.")
     (license license:bsd-3)))
+
+(define-public r-paws-common
+  (package
+    (name "r-paws-common")
+    (version "0.3.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.common" version))
+       (sha256
+        (base32
+         "1khq1rv0yij4l0vi2x6hslnzpsd6m5n6nipfac7g3na9ah93h8i9"))))
+    (properties `((upstream-name . "paws.common")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-digest" ,r-digest)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://cran.r-project.org/package=paws.common")
+    (synopsis "Paws low-level Amazon Web Services API")
+    (description
+     "This package provides functions for making low-level API requests to
+Amazon Web Services.  The functions handle building, signing, and sending
+requests, and receiving responses.  They are designed to help build
+higher-level interfaces to individual services, such as Simple Storage
+Service (S3).")
+    (license license:asl2.0)))
