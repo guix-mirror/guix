@@ -30669,3 +30669,27 @@ service, and more.")
 management services, including cost and usage reports, budgets, pricing, and
 more.")
     (license license:asl2.0)))
+
+(define-public r-paws-application-integration
+  (package
+    (name "r-paws-application-integration")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.application.integration" version))
+       (sha256
+        (base32
+         "0llyd9hc679pad1ih0rcc38q5xxpzinhwrl8cvrkgsjgbc3agq42"))))
+    (properties
+     `((upstream-name . "paws.application.integration")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services application integration services")
+    (description
+     "This package provides an interface to Amazon Web Services application
+integration services, including Simple Queue Service (SQS) message queue,
+Simple Notification Service (SNS) publish/subscribe messaging, and more.")
+    (license license:asl2.0)))
