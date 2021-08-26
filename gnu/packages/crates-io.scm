@@ -56688,8 +56688,33 @@ implementation that works everywhere, even WASM!")
      "This package provides a library for parsing compiled zoneinfo files.")
     (license license:expat)))
 
+(define-public rust-zstd-0.9
+  (package
+    (name "rust-zstd")
+    (version "0.9.0+zstd.1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zstd" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k9caa048d8x9asksjaf62xkpv0m1wsmw94h29k3csybq9frlx07"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-zstd-safe" ,rust-zstd-safe-4))))
+    (home-page "https://github.com/gyscos/zstd-rs")
+    (synopsis "Binding to the zstd compression library")
+    (description
+     "This package provides a binding to the Zstd compression library.")
+    (license license:expat)))
+
 (define-public rust-zstd-0.8
   (package
+    (inherit rust-zstd-0.9)
     (name "rust-zstd")
     (version "0.8.3+zstd.1.5.0")
     (source
@@ -56699,18 +56724,12 @@ implementation that works everywhere, even WASM!")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1gy2rc3hmqpzfkh9f5d395lhwjk8qwpll3gb73bznn2agd60k9sy"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1)
-        ("rust-zstd-safe" ,rust-zstd-safe-4))))
-    (home-page "https://github.com/gyscos/zstd-rs")
-    (synopsis "Binding to the zstd compression library")
-    (description
-     "This package provides a binding to the zstd compression library.")
-    (license license:expat)))
+        ("rust-zstd-safe" ,rust-zstd-safe-4))))))
 
 (define-public rust-zstd-0.6
   (package
