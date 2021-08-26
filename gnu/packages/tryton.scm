@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,9 +171,9 @@ the build system."
 ;;;  Tryton modules - please sort alphabetically
 ;;;
 
-(define-public python-trytond-account
+(define-public trytond-account
   (package
-    (name "python-trytond-account")
+    (name "trytond-account")
     (version "5.8.1")
     (source
      (origin
@@ -196,12 +197,10 @@ the build system."
      `(("python-dateutil" ,python-dateutil)
        ("python-simpleeval" ,python-simpleeval)
        ("python-sql" ,python-sql)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for accounting")
     (description
@@ -209,9 +208,12 @@ the build system."
 most of accounting needs.")
     (license license:gpl3+)))
 
-(define-public python-trytond-account-invoice
+(define-public python-trytond-account
+  (deprecated-package "python-trytond-account" trytond-account))
+
+(define-public trytond-account-invoice
   (package
-    (name "python-trytond-account-invoice")
+    (name "trytond-account-invoice")
     (version "5.8.1")
     (source
      (origin
@@ -234,18 +236,13 @@ most of accounting needs.")
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-account-product"
-        ,python-trytond-account-product)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for invoicing")
     (description
@@ -253,9 +250,12 @@ most of accounting needs.")
 term.")
     (license license:gpl3+)))
 
-(define-public python-trytond-account-invoice-stock
+(define-public python-trytond-account-invoice
+  (deprecated-package "python-trytond-account-invoice" trytond-account-invoice))
+
+(define-public trytond-account-invoice-stock
   (package
-    (name "python-trytond-account-invoice-stock")
+    (name "trytond-account-invoice-stock")
     (version "5.8.1")
     (source
      (origin
@@ -280,12 +280,10 @@ term.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond-account-invoice"
-        ,python-trytond-account-invoice)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to link stock and invoice")
     (description
@@ -294,9 +292,13 @@ lines and stock moves.  The unit price of the stock move is updated with the
 average price of the posted invoice lines that are linked to it.")
     (license license:gpl3+)))
 
-(define-public python-trytond-account-product
+(define-public python-trytond-account-invoice-stock
+  (deprecated-package
+   "python-trytond-account-invoice-stock" trytond-account-invoice-stock))
+
+(define-public trytond-account-product
   (package
-    (name "python-trytond-account-product")
+    (name "trytond-account-product")
     (version "5.8.1")
     (source
      (origin
@@ -319,15 +321,11 @@ average price of the posted invoice lines that are linked to it.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-analytic-account"
-        ,python-trytond-analytic-account)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-analytic-account" ,trytond-analytic-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to add accounting on product")
     (description
@@ -335,9 +333,12 @@ average price of the posted invoice lines that are linked to it.")
 and category.")
     (license license:gpl3+)))
 
-(define-public python-trytond-analytic-account
+(define-public python-trytond-account-product
+  (deprecated-package "python-trytond-account-product" trytond-account-product))
+
+(define-public trytond-analytic-account
   (package
-    (name "python-trytond-analytic-account")
+    (name "trytond-analytic-account")
     (version "5.8.1")
     (source
      (origin
@@ -360,14 +361,11 @@ and category.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for analytic accounting")
     (description
@@ -375,9 +373,13 @@ and category.")
 required to analyse accounting using multiple different axes.")
     (license license:gpl3+)))
 
-(define-public python-trytond-company
+(define-public python-trytond-analytic-account
+  (deprecated-package
+   "python-trytond-analytic-account" trytond-analytic-account))
+
+(define-public trytond-company
   (package
-    (name "python-trytond-company")
+    (name "trytond-company")
     (version "5.8.1")
     (source
      (origin
@@ -400,10 +402,9 @@ required to analyse accounting using multiple different axes.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with companies and employees")
     (description
@@ -411,9 +412,12 @@ required to analyse accounting using multiple different axes.")
 company and employee and extend the user model.")
     (license license:gpl3+)))
 
-(define-public python-trytond-country
+(define-public python-trytond-company
+  (deprecated-package "python-trytond-company" trytond-company))
+
+(define-public trytond-country
   (package
-    (name "python-trytond-country")
+    (name "trytond-country")
     (version "5.8.1")
     (source
      (origin
@@ -445,9 +449,12 @@ company and employee and extend the user model.")
      "This package provides a Tryton module with countries.")
     (license license:gpl3+)))
 
-(define-public python-trytond-currency
+(define-public python-trytond-country
+  (deprecated-package "python-trytond-country" trytond-country))
+
+(define-public trytond-currency
   (package
-    (name "python-trytond-currency")
+    (name "trytond-currency")
     (version "5.8.1")
     (source
      (origin
@@ -480,9 +487,12 @@ company and employee and extend the user model.")
 currency and rate.")
     (license license:gpl3+)))
 
-(define-public python-trytond-party
+(define-public python-trytond-currency
+  (deprecated-package "python-trytond-currency" trytond-currency))
+
+(define-public trytond-party
   (package
-    (name "python-trytond-party")
+    (name "trytond-party")
     (version "5.8.1")
     (source
      (origin
@@ -507,8 +517,8 @@ currency and rate.")
     (propagated-inputs
      `(("python-sql" ,python-sql)
        ("python-stnum" ,python-stdnum)
-       ("python-trytond-country" ,python-trytond-country)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-country" ,trytond-country)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for parties and addresses")
     (description
@@ -516,9 +526,12 @@ currency and rate.")
 addresses.")
     (license license:gpl3+)))
 
-(define-public python-trytond-product
+(define-public python-trytond-party
+  (deprecated-package "python-trytond-party" trytond-party))
+
+(define-public trytond-product
   (package
-    (name "python-trytond-product")
+    (name "trytond-product")
     (version "5.8.1")
     (source
      (origin
@@ -542,9 +555,8 @@ addresses.")
     (propagated-inputs
      `(("python-sql" ,python-sql)
        ("python-stdnum" ,python-stdnum)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with products")
     (description
@@ -552,9 +564,12 @@ addresses.")
 Template and Product.")
     (license license:gpl3+)))
 
-(define-public python-trytond-purchase
+(define-public python-trytond-product
+  (deprecated-package "python-trytond-product" trytond-product))
+
+(define-public trytond-purchase
   (package
-    (name "python-trytond-purchase")
+    (name "trytond-purchase")
     (version "5.8.1")
     (source
      (origin
@@ -577,32 +592,28 @@ Template and Product.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-account-invoice"
-        ,python-trytond-account-invoice)
-       ("python-trytond-account-invoice-stock"
-        ,python-trytond-account-invoice-stock)
-       ("python-trytond-account-product"
-        ,python-trytond-account-product)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase")
     (description
      "This package provides a Tryton module that defines the Purchase model.")
     (license license:gpl3+)))
 
-(define-public python-trytond-purchase-request
+(define-public python-trytond-purchase
+  (deprecated-package "python-trytond-purchase" trytond-purchase))
+
+(define-public trytond-purchase-request
   (package
-    (name "python-trytond-purchase-request")
+    (name "trytond-purchase-request")
     (version "5.8.1")
     (source
      (origin
@@ -626,11 +637,9 @@ Template and Product.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-purchase"
-        ,python-trytond-purchase)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase requests")
     (description
@@ -639,9 +648,13 @@ Purchase Requests which are central points to collect purchase requests
 generated by other process from Tryton.")
     (license license:gpl3+)))
 
-(define-public python-trytond-stock
+(define-public python-trytond-purchase-request
+  (deprecated-package
+   "python-trytond-purchase-request" trytond-purchase-request))
+
+(define-public trytond-stock
   (package
-    (name "python-trytond-stock")
+    (name "trytond-stock")
     (version "5.8.2")
     (source
      (origin
@@ -664,14 +677,11 @@ generated by other process from Tryton.")
     (propagated-inputs
      `(("python-simpleeval" ,python-simpleeval)
        ("python-sql" ,python-sql)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock and inventory")
     (description
@@ -681,9 +691,12 @@ between these locations, shipments for product arrivals and departures and
 inventory to control and update stock levels.")
     (license license:gpl3+)))
 
-(define-public python-trytond-stock-lot
+(define-public python-trytond-stock
+  (deprecated-package "python-trytond-stock" trytond-stock))
+
+(define-public trytond-stock-lot
   (package
-    (name "python-trytond-stock-lot")
+    (name "trytond-stock-lot")
     (version "5.8.2")
     (source
      (origin
@@ -706,19 +719,21 @@ inventory to control and update stock levels.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for lot of products")
     (description
      "This package provides a Tryton module that defines lot of products.")
     (license license:gpl3+)))
 
-(define-public python-trytond-stock-supply
+(define-public python-trytond-stock-lot
+  (deprecated-package "python-trytond-stock-lot" trytond-stock-lot))
+
+(define-public trytond-stock-supply
   (package
-    (name "python-trytond-stock-supply")
+    (name "trytond-stock-supply")
     (version "5.8.1")
     (source
      (origin
@@ -741,20 +756,19 @@ inventory to control and update stock levels.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-purchase"
-        ,python-trytond-purchase)
-       ("python-trytond-purchase-request"
-        ,python-trytond-purchase-request)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-request" ,trytond-purchase-request)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock supply")
     (description
      "This package provides a Tryton module that adds automatic supply
 mechanisms and introduces the concepts of order point.")
     (license license:gpl3+)))
+
+(define-public python-trytond-stock-supply
+  (deprecated-package "python-trytond-stock-supply" trytond-stock-supply))
