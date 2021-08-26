@@ -31026,3 +31026,30 @@ to be treated much like environments and lists are already used in R.  These
 utilities are provided to encourage interactive and exploratory analysis on
 large datasets.")
     (license license:gpl2+)))
+
+(define-public r-mlearning
+  (package
+    (name "r-mlearning")
+    (version "1.0-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mlearning" version))
+       (sha256
+        (base32
+         "0r8xfaxw83s2r27b8x5qd0k4r5ayxpkafzn9b1a0jvsr87i6520r"))))
+    (properties `((upstream-name . "mlearning")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)
+       ("r-e1071" ,r-e1071)
+       ("r-ipred" ,r-ipred)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-randomforest" ,r-randomforest)))
+    (home-page "http://www.sciviews.org/zooimage")
+    (synopsis "Machine learning algorithms with unified interface")
+    (description
+     "This package provides a unified interface to various machine learning
+algorithms.  Confusion matrices are provided too.")
+    (license license:gpl2+)))
