@@ -31349,3 +31349,29 @@ functions for working with the Zoltar API, including connecting and
 authenticating, getting information about projects, models, and forecasts,
 deleting and uploading forecast data, and downloading scores.")
     (license license:gpl3)))
+
+(define-public r-zoib
+  (package
+    (name "r-zoib")
+    (version "1.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zoib" version))
+       (sha256
+        (base32
+         "0inm7f2pc68ksqxvq12xp9jc99vj7ydylvs24ip12nksbj5k1n8f"))))
+    (properties `((upstream-name . "zoib")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-coda" ,r-coda)
+       ("r-formula" ,r-formula)
+       ("r-rjags" ,r-rjags)))
+    (home-page "https://www.r-project.org")
+    (synopsis "Bayesian inference for beta regression")
+    (description
+     "This package lets you fit beta regression and zero-or-one inflated beta
+regression and obtain Bayesian inference of the model via the Markov Chain
+Monte Carlo approach implemented in JAGS.")
+    (license license:gpl3+)))
