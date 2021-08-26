@@ -2356,8 +2356,49 @@ ArrayVec and ArrayString.")
         ("rust-matches" ,rust-matches-0.1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-arrow-5
+  (package
+    (name "rust-arrow")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arrow" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zj2sjlnkwz2sdfc83zcz75vg1d3900h8ix15nkjsbz5hd1pzvri"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-flatbuffers" ,rust-flatbuffers-2)
+        ("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lexical-core" ,rust-lexical-core-0.7)
+        ("rust-multiversion" ,rust-multiversion-0.6)
+        ("rust-num" ,rust-num-0.4)
+        ("rust-packed-simd-2" ,rust-packed-simd-2-0.3)
+        ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/apache/arrow-rs")
+    (synopsis "Rust implementation of Apache Arrow")
+    (description
+     "This crate is a Rust implementation of Apache Arrow in-memory columnar
+format.")
+    (license license:asl2.0)))
+
 (define-public rust-arrow-4
   (package
+    (inherit rust-arrow-5)
     (name "rust-arrow")
     (version "4.4.0")
     (source
@@ -2367,7 +2408,6 @@ ArrayVec and ArrayString.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "141qb0yqk179n324qrhbv14ysz13mcfsw00d6m09882gx9637wzn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -2387,13 +2427,7 @@ ArrayVec and ArrayString.")
         ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
-        ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page "https://github.com/apache/arrow-rs")
-    (synopsis "Rust implementation of Apache Arrow")
-    (description
-     "This crate is a Rust implementation of Apache Arrow in-memory columnar
-format.")
-    (license license:asl2.0)))
+        ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-askama-escape-0.10
   (package
