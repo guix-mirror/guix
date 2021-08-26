@@ -23345,7 +23345,7 @@ recursively.  The results are cached for speed.")
 (define-public emacs-orgit
   (package
     (name "emacs-orgit")
-    (version "1.7.0")
+    (version "1.7.1")
     (home-page "https://github.com/magit/orgit")
     (source (origin
               (method git-fetch)
@@ -23355,7 +23355,7 @@ recursively.  The results are cached for speed.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xd58yqqsb79lgxkhxs4s50jq8f3639k6fhlza9hsy53apfczkal"))))
+                "0mbcr98xq3zim01dk1fbyc1vajnjwx90k62mygv343rhrd05v44m"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
