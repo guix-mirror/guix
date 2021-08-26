@@ -30860,3 +30860,26 @@ database, and more.")
      "This package provides an interface to Amazon Web Services storage
 services, including Simple Storage Service (S3).")
     (license license:asl2.0)))
+
+(define-public r-paws-compute
+  (package
+    (name "r-paws-compute")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.compute" version))
+       (sha256
+        (base32
+         "1km6fng6il5fcjlrbbndahsw2dr2ql83hwac9wlpd67zm3wy9lky"))))
+    (properties `((upstream-name . "paws.compute")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services compute services")
+    (description
+     "This package provides an interface to Amazon Web Services compute
+services, including Elastic Compute Cloud (EC2), Lambda
+functions-as-a-service, containers, batch processing, and more.")
+    (license license:asl2.0)))
