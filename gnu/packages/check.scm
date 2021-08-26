@@ -1310,38 +1310,32 @@ same arguments.")
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
-    (version "2.1.0")
+    ;; There is an issue that causes all releases after 1.34 to fail on Pytest
+    ;; 5 (see: https://github.com/pytest-dev/pytest-xdist/issues/697).
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-xdist" version))
        (sha256
         (base32
-         "0wh6pn66nncfs6ay0n863bgyriwsgppn8flx5l7551j1lbqkinc2"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Remove pre-compiled .pyc files from source.
-           (for-each delete-file-recursively
-                     (find-files "." "__pycache__" #:directories? #t))
-           (for-each delete-file (find-files "." "\\.pyc$"))
-           #t))))
+         "1vh4ps32lp5ignch5adbl3pgchvigdfmrl6qpmhxih54wa1qw3il"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ;FIXME: Some tests are failing.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (delete 'check)
-       ;;   (add-after 'install 'check
-       ;;     (lambda* (#:key inputs outputs #:allow-other-keys)
-       ;;       (add-installed-pythonpath inputs outputs)
-       ;;       (zero? (system* "py.test" "-v")))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv"
+                       "-n" (number->string (parallel-job-count)))))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-execnet" ,python-execnet)
        ("python-pytest" ,python-pytest)
-       ("python-py" ,python-py)))
+       ("python-pytest-forked" ,python-pytest-forked)))
     (home-page
      "https://github.com/pytest-dev/pytest-xdist")
     (synopsis
