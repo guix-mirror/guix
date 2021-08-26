@@ -30557,3 +30557,38 @@ to archive and assign DOIs to data, software, figures, and more.")
 predicting the environmental similarity of any site to that of the locations
 of known occurrences of a species.")
     (license license:gpl3+)))
+
+(define-public r-zoon
+  (package
+    (name "r-zoon")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zoon" version))
+       (sha256
+        (base32
+         "02y29vr2yn8al69km8faiqrwjrc1r3hsvw3dg8lwjr65cxw1krip"))))
+    (properties `((upstream-name . "zoon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dismo" ,r-dismo)
+       ("r-plyr" ,r-plyr)
+       ("r-randomforest" ,r-randomforest)
+       ("r-raster" ,r-raster)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rfigshare" ,r-rfigshare)
+       ("r-rgdal" ,r-rgdal)
+       ("r-roxygen2" ,r-roxygen2)
+       ("r-rworldmap" ,r-rworldmap)
+       ("r-sp" ,r-sp)
+       ("r-testthat" ,r-testthat)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/zoonproject/zoon")
+    (synopsis "Reproducible, accessible and shareable species distribution modelling")
+    (description
+     "This package reads user submitted modules from an online repository,
+runs full species distribution modelling workflows and returns output that is
+fully reproducible.")
+    (license license:bsd-3)))
