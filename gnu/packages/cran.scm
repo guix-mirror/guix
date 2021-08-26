@@ -30971,3 +30971,33 @@ participants and their emotional expressions throughout the meeting.")
      "This package provides @code{zm}, a utility that allows you to
 zoom/navigate any plot when called with any active plot.")
     (license license:gpl3+)))
+
+(define-public r-zoolog
+  (package
+    (name "r-zoolog")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zoolog" version))
+       (sha256
+        (base32
+         "1lgdr4hbpdh1b468i3l9msbj8wcd20m323lv5an9y6dnfb9pm986"))))
+    (properties `((upstream-name . "zoolog")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rdpack" ,r-rdpack)
+       ("r-stringi" ,r-stringi)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://josempozo.github.io/zoolog/")
+    (synopsis "Zooarchaeological analysis with log-ratios")
+    (description
+     "This package includes functions and reference data to generate and
+manipulate log-ratios (also known as @dfn{log size index} (LSI) values) from
+measurements obtained on zooarchaeological material.  Log ratios are used to
+compare the relative (rather than the absolute) dimensions of animals from
+archaeological contexts.  The zoolog package is also able to seamlessly
+integrate data and references with heterogeneous nomenclature, which is
+internally managed by a zoolog thesaurus.")
+    (license license:gpl3)))
