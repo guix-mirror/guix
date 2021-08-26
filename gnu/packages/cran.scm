@@ -30814,3 +30814,27 @@ monitoring, Auto Scaling for automatically scaling resources, and more.")
 content delivery services, including Route 53 Domain Name System service,
 CloudFront content delivery, load balancing, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-database
+  (package
+    (name "r-paws-database")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.database" version))
+       (sha256
+        (base32
+         "08jpwz95fw3f68j0wxh2lg57nn60khflldab0ryhkkbcw1iy0qyz"))))
+    (properties `((upstream-name . "paws.database")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis
+     "Amazon Web Services Database Services")
+    (description
+     "This package provides an interface to Amazon Web Services database
+services, including Relational Database Service (RDS), DynamoDB NoSQL
+database, and more.")
+    (license license:asl2.0)))
