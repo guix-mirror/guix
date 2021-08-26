@@ -30742,3 +30742,27 @@ more.")
 services, including Elastic MapReduce Hadoop and Spark big data service,
 Elasticsearch search engine, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-machine-learning
+  (package
+    (name "r-paws-machine-learning")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.machine.learning" version))
+       (sha256
+        (base32
+         "01w2y5952pk50xjbzby2pc51xrkrzjpfxbmii1b10cl2xgzfkxsa"))))
+    (properties
+     `((upstream-name . "paws.machine.learning")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services machine learning services")
+    (description
+     "This package provides an interface to Amazon Web Services machine
+learning services, including SageMaker managed machine learning service,
+natural language processing, speech recognition, translation, and more.")
+    (license license:asl2.0)))
