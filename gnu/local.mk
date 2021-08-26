@@ -74,6 +74,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
   %D%/home-services.scm                         \
+  %D%/home-services/symlink-manager.scm         \
   %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
