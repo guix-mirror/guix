@@ -33059,8 +33059,33 @@ applications.")
      "Additional trait for Read and Write to read and write Plain Old Data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-polars-0.15
+  (package
+    (name "rust-polars")
+    (version "0.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polars" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sl7vs6ck05f8w8jp7v75431b4v5j2rvvvw53jqgxc5226i7a2h8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-polars-core" ,rust-polars-core-0.15)
+        ("rust-polars-io" ,rust-polars-io-0.15)
+        ("rust-polars-lazy" ,rust-polars-lazy-0.15))))
+    (home-page "https://github.com/ritchie46/polars")
+    (synopsis "DataFrame Library based on Apache Arrow")
+    (description
+     "Polars is a dataframe Library based on Apache Arrow.")
+    (license license:expat)))
+
 (define-public rust-polars-0.14
   (package
+    (inherit rust-polars-0.15)
     (name "rust-polars")
     (version "0.14.8")
     (source
@@ -33070,18 +33095,12 @@ applications.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0mjp68cjya17gfvc0kqy7wkcggrnjn1pd2pgxpn8ba5b7mgn9lcy"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-polars-core" ,rust-polars-core-0.14)
         ("rust-polars-io" ,rust-polars-io-0.14)
-        ("rust-polars-lazy" ,rust-polars-lazy-0.14))))
-    (home-page "https://github.com/ritchie46/polars")
-    (synopsis "DataFrame Library based on Apache Arrow")
-    (description
-     "Polars is a dataframe Library based on Apache Arrow.")
-    (license license:expat)))
+        ("rust-polars-lazy" ,rust-polars-lazy-0.14))))))
 
 (define-public rust-polars-0.13
   (package
