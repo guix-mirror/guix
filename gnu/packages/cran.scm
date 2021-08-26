@@ -31252,3 +31252,35 @@ names.  It supports the ability to adjust behavior to stop, message or
 warning.  It includes the ability to use a custom whisker template to have any
 configuration of status code, short description, and verbose message.")
     (license license:expat)))
+
+(define-public r-webmockr
+  (package
+    (name "r-webmockr")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "webmockr" version))
+       (sha256
+        (base32
+         "0j40srwi0yasmllb9wsww4m6zkiyzqd549cis4dxd7c7p24hak8j"))))
+    (properties `((upstream-name . "webmockr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-crul" ,r-crul)
+       ("r-curl" ,r-curl)
+       ("r-fauxpas" ,r-fauxpas)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-r6" ,r-r6)
+       ("r-urltools" ,r-urltools)))
+    (home-page "https://github.com/ropensci/webmockr")
+    (synopsis "Stubbing and setting expectations on HTTP Requests")
+    (description
+     "This is a package for stubbing and setting expectations on HTTP
+requests.  It includes tools for stubbing HTTP requests, including expected
+request conditions and response conditions.  You can match on HTTP method,
+query parameters, request body, headers and more.  It can be used for unit
+tests or outside of a testing context.")
+    (license license:expat)))
