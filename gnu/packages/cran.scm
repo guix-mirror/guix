@@ -31115,3 +31115,31 @@ package provides analytical tools to make inferences on zooarchaeological
 data.  Functions in this package allow users to read, manipulate, visualize,
 and analyze zooarchaeological data.")
     (license license:gpl2+)))
+
+(define-public r-zonebuilder
+  (package
+    (name "r-zonebuilder")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zonebuilder" version))
+       (sha256
+        (base32
+         "0mxf3dz0d6bi5wwjilqivdxhy5ypnq5svky8zygha0clv45l4dmn"))))
+    (properties `((upstream-name . "zonebuilder")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-sf" ,r-sf)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/zonebuilders/zonebuilder")
+    (synopsis "Create and explore geographic zoning systems")
+    (description
+     "This package provides functions, documentation and example data to help
+divide geographic space into discrete polygons (zones).  The functions are
+motivated by research into the merits of different zoning systems.  A flexible
+@code{ClockBoard} zoning system is provided, which breaks-up space by
+concentric rings and radial lines emanating from a central point.")
+    (license license:gpl3)))
