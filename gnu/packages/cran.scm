@@ -30790,3 +30790,27 @@ natural language processing, speech recognition, translation, and more.")
 governance services, including CloudWatch application and infrastructure
 monitoring, Auto Scaling for automatically scaling resources, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-networking
+  (package
+    (name "r-paws-networking")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.networking" version))
+       (sha256
+        (base32
+         "02hxaa5nlj70mdggh379ij3fn09xm8h5ldzsyf45c342prpl6zwj"))))
+    (properties
+     `((upstream-name . "paws.networking")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services networking and content delivery services")
+    (description
+     "This package provides an interface to Amazon Web Services networking and
+content delivery services, including Route 53 Domain Name System service,
+CloudFront content delivery, load balancing, and more.")
+    (license license:asl2.0)))
