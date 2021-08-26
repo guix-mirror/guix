@@ -30397,3 +30397,30 @@ files, images, movie formats, etc., etc.) through an R session.")
 files which are written by the proprietary program z-Tree for developing and
 carrying out economic experiments.")
     (license license:gpl3)))
+
+(define-public r-distributionutils
+  (package
+    (name "r-distributionutils")
+    (version "0.6-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DistributionUtils" version))
+       (sha256
+        (base32
+         "08vq54pyqxlqsj6q6gsg5ikqa0z3x842j52ld5dxaq272p6xchvl"))))
+    (properties
+     `((upstream-name . "DistributionUtils")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/package=DistributionUtils")
+    (synopsis "Distribution utilities")
+    (description
+     "This package provides utilities for dealing with distributions.
+Functionality includes sample skewness and kurtosis, log-histogram, tail
+plots, moments by integration, changing the point about which a moment is
+calculated, functions for testing distributions using inversion tests and the
+Massart inequality.  Also included is an implementation of the incomplete
+Bessel K function.")
+    (license license:gpl2+)))
