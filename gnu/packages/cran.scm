@@ -30718,3 +30718,27 @@ identity, and compliance services, including the Identity and Access
 Management (IAM) service for managing access to services and resources, and
 more.")
     (license license:asl2.0)))
+
+(define-public r-paws-analytics
+  (package
+    (name "r-paws-analytics")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.analytics" version))
+       (sha256
+        (base32
+         "04gnaxmj21l312xkrsd9bisi0bz9h6h5fyhwlqylcxi077z1yb2g"))))
+    (properties
+     `((upstream-name . "paws.analytics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services analytics services")
+    (description
+     "This package provides an interface to Amazon Web Services analytics
+services, including Elastic MapReduce Hadoop and Spark big data service,
+Elasticsearch search engine, and more.")
+    (license license:asl2.0)))
