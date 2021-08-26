@@ -30645,3 +30645,27 @@ Service (S3).")
 engagement services, including Simple Email Service, Connect contact center
 service, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-cost-management
+  (package
+    (name "r-paws-cost-management")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.cost.management" version))
+       (sha256
+        (base32
+         "0in4f8ygw5g2v6vl3lz2y0v51llglh8b1ymbd04d54xxlgn83knh"))))
+    (properties
+     `((upstream-name . "paws.cost.management")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services cost management services")
+    (description
+     "This package provides an interface to Amazon Web Services cost
+management services, including cost and usage reports, budgets, pricing, and
+more.")
+    (license license:asl2.0)))
