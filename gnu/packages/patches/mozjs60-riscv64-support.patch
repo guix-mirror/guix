@@ -1,0 +1,122 @@
+This is a combination of several upstream patches which weren't accepted.
+They were proposed by Fedora for spidermonkey 52 and were ultimately
+accepted years later after some changes for a later version. It was
+adapted slightly from both sets of patches to apply cleanly to mozjs-60.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=1318905
+https://bug1318905.bmoattachments.org/attachment.cgi?id=8812602
+https://bug1318905.bmoattachments.org/attachment.cgi?id=8812603
+https://bug1318905.bmoattachments.org/attachment.cgi?id=8812604
+https://phabricator.services.mozilla.com/D78623
+https://phabricator.services.mozilla.com/D78624
+https://phabricator.services.mozilla.com/D78625
+
+
+diff --git a/build/moz.configure/init.configure b/build/moz.configure/init.configure
+index 83b8d705..59131525 100644
+--- a/build/moz.configure/init.configure
++++ b/build/moz.configure/init.configure
+@@ -676,6 +676,9 @@ def split_triplet(triplet, allow_unknown=False):
+     elif cpu == 'sh4':
+         canonical_cpu = 'sh4'
+         endianness = 'little'
++    elif cpu.startswith('riscv64'):
++        canonical_cpu = 'riscv64'
++        endianness = 'little'
+     elif allow_unknown:
+         canonical_cpu = cpu
+         endianness = 'unknown'
+diff --git a/js/src/jit/AtomicOperations.h b/js/src/jit/AtomicOperations.h
+index a8970b0d..6b947a3f 100644
+--- a/js/src/jit/AtomicOperations.h
++++ b/js/src/jit/AtomicOperations.h
+@@ -375,7 +375,7 @@ AtomicOperations::isLockfreeJS(int32_t size)
+ # endif
+ #elif defined(__ppc__) || defined(__PPC__)
+ # include "jit/none/AtomicOperations-feeling-lucky.h"
+-#elif defined(__sparc__)
++#elif defined(__sparc__) || defined(__riscv)
+ # include "jit/none/AtomicOperations-feeling-lucky.h"
+ #elif defined(__ppc64__) || defined(__PPC64__) || defined(__ppc64le__) || defined(__PPC64LE__)
+ # include "jit/none/AtomicOperations-feeling-lucky.h"
+diff --git a/js/src/jit/none/AtomicOperations-feeling-lucky.h b/js/src/jit/none/AtomicOperations-feeling-lucky.h
+index da572284..6ce40c89 100644
+--- a/js/src/jit/none/AtomicOperations-feeling-lucky.h
++++ b/js/src/jit/none/AtomicOperations-feeling-lucky.h
+@@ -49,6 +49,12 @@
+ #  define GNUC_COMPATIBLE
+ #endif
+ 
++#if defined(__riscv) && __riscv_xlen == 64
++#  define HAS_64BIT_ATOMICS
++#  define HAS_64BIT_LOCKFREE
++#  define GNUC_COMPATIBLE
++#endif
++
+ #ifdef __sparc__
+ #  define GNUC_COMPATIBLE
+ #  ifdef  __LP64__
+diff --git a/js/src/jit/none/MacroAssembler-none.h b/js/src/jit/none/MacroAssembler-none.h
+index 80143dc8..b430fedb 100644
+--- a/js/src/jit/none/MacroAssembler-none.h
++++ b/js/src/jit/none/MacroAssembler-none.h
+@@ -402,6 +402,10 @@ class MacroAssemblerNone : public Assembler
+ #endif
+ };
+ 
++    struct AutoPrepareForPatching {
++        explicit AutoPrepareForPatching(MacroAssemblerNone&) {}
++    };
++
+ typedef MacroAssemblerNone MacroAssemblerSpecific;
+ 
+ class ABIArgGenerator
+diff --git a/mfbt/tests/TestPoisonArea.cpp b/mfbt/tests/TestPoisonArea.cpp
+index 06c24ed0..c3fed0df 100644
+--- a/mfbt/tests/TestPoisonArea.cpp
++++ b/mfbt/tests/TestPoisonArea.cpp
+@@ -160,6 +160,9 @@
+ #elif defined __aarch64__
+ #define RETURN_INSTR 0xd65f03c0 /* ret */
+ 
++#elif defined __riscv
++#define RETURN_INSTR 0x80828082 /* ret; ret */
++
+ #elif defined __ia64
+ struct ia64_instr { uint32_t mI[4]; };
+ static const ia64_instr _return_instr =
+diff --git a/python/mozbuild/mozbuild/configure/constants.py b/python/mozbuild/mozbuild/configure/constants.py
+index 33ae5a45..11a01d3b 100644
+--- a/python/mozbuild/mozbuild/configure/constants.py
++++ b/python/mozbuild/mozbuild/configure/constants.py
+@@ -50,6 +50,7 @@ CPU_bitness = {
+     'mips64': 64,
+     'ppc': 32,
+     'ppc64': 64,
++    'riscv64': 64,
+     's390': 32,
+     's390x': 64,
+     'sh4': 32,
+@@ -82,6 +84,7 @@ CPU_preprocessor_checks = OrderedDict((
+     ('s390', '__s390__'),
+     ('ppc64', '__powerpc64__'),
+     ('ppc', '__powerpc__'),
++    ('riscv64', '__riscv && __riscv_xlen == 64'),
+     ('Alpha', '__alpha__'),
+     ('hppa', '__hppa__'),
+     ('sparc64', '__sparc__ && __arch64__'),
+diff --git a/python/mozbuild/mozbuild/test/configure/test_toolchain_configure.py b/python/mozbuild/mozbuild/test/configure/test_toolchain_configure.py
+index cb7ff709..9da41adf 100755
+--- a/python/mozbuild/mozbuild/test/configure/test_toolchain_configure.py
++++ b/python/mozbuild/mozbuild/test/configure/test_toolchain_configure.py
+@@ -1165,6 +1165,10 @@ class LinuxCrossCompileToolchainTest(BaseToolchainTest):
+         'sh4-unknown-linux-gnu': little_endian + {
+             '__sh__': 1,
+         },
++        'riscv64-unknown-linux-gnu': little_endian + {
++            '__riscv': 1,
++            '__riscv_xlen': 64,
++        },
+     }
+ 
+     PLATFORMS['powerpc64le-unknown-linux-gnu'] = \

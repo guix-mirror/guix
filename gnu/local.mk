@@ -1512,6 +1512,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-shell-version.patch		\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
+  %D%/packages/patches/mozjs60-riscv64-support.patch		\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
   %D%/packages/patches/mtools-mformat-uninitialized.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
