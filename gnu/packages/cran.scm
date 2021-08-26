@@ -30374,3 +30374,26 @@ file conversion API.  The wrappers makes it easy to utilize the API and thus
 convert between more than 100 different file formats (ranging from audio
 files, images, movie formats, etc., etc.) through an R session.")
     (license license:gpl3)))
+
+(define-public r-ztree
+  (package
+    (name "r-ztree")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zTree" version))
+       (sha256
+        (base32
+         "1mywxrx6bw7dzhrdwyxbjzc8ikgvw423zycyji0jjr69cfhpmywv"))))
+    (properties `((upstream-name . "zTree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-plyr" ,r-plyr)))
+    (home-page "https://cran.r-project.org/package=zTree")
+    (synopsis "Functions to import data from z-Tree into R")
+    (description
+     "This package provides tools for reading @code{.xls} and @code{.sbj}
+files which are written by the proprietary program z-Tree for developing and
+carrying out economic experiments.")
+    (license license:gpl3)))
