@@ -30766,3 +30766,27 @@ Elasticsearch search engine, and more.")
 learning services, including SageMaker managed machine learning service,
 natural language processing, speech recognition, translation, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-management
+  (package
+    (name "r-paws-management")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.management" version))
+       (sha256
+        (base32
+         "09k7wg0jlj40zs2yb3vldffpkdcjg7ap98n7c5lxr5plpca08swg"))))
+    (properties
+     `((upstream-name . "paws.management")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services management and governance services")
+    (description
+     "This package provides an interface to Amazon Web Services management and
+governance services, including CloudWatch application and infrastructure
+monitoring, Auto Scaling for automatically scaling resources, and more.")
+    (license license:asl2.0)))
