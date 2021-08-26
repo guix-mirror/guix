@@ -56759,7 +56759,7 @@ implementation that works everywhere, even WASM!")
 (define-public rust-zstd-safe-4
   (package
     (name "rust-zstd-safe")
-    (version "4.1.0+zstd.1.5.0")
+    (version "4.1.1+zstd.1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -56767,7 +56767,7 @@ implementation that works everywhere, even WASM!")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rssk1njcy9vz40ja0rpjyi9lbqnq2i2xx1h374s8p0qivvpa0yk"))))
+        (base32 "0yghr94blhnfigzsynm2km3g93886z49612y7rh07c4kqpr90769"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
