@@ -31001,3 +31001,28 @@ archaeological contexts.  The zoolog package is also able to seamlessly
 integrate data and references with heterogeneous nomenclature, which is
 internally managed by a zoolog thesaurus.")
     (license license:gpl3)))
+
+(define-public r-filehash
+  (package
+    (name "r-filehash")
+    (version "2.4-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "filehash" version))
+       (sha256
+        (base32
+         "14zv7h5195dmfksgk8qvjgc2qq8253vga6267aa1bqs5bpvmdl5n"))))
+    (properties `((upstream-name . "filehash")))
+    (build-system r-build-system)
+    (home-page "http://github.com/rdpeng/filehash")
+    (synopsis "Simple key-value database")
+    (description
+     "This package implements a simple key-value style database where
+character string keys are associated with data values that are stored on the
+disk.  A simple interface is provided for inserting, retrieving, and deleting
+data from the database.  Utilities are provided that allow filehash databases
+to be treated much like environments and lists are already used in R.  These
+utilities are provided to encourage interactive and exploratory analysis on
+large datasets.")
+    (license license:gpl2+)))
