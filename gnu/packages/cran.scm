@@ -31053,3 +31053,39 @@ large datasets.")
      "This package provides a unified interface to various machine learning
 algorithms.  Confusion matrices are provided too.")
     (license license:gpl2+)))
+
+(define-public r-zooimage
+  (package
+    (name "r-zooimage")
+    (version "5.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zooimage" version))
+       (sha256
+        (base32
+         "0ck8w0zb9l1n9xvjwqshq9q9l8pigy3yslq2hnfbgcwk17kk9mp8"))))
+    (properties `((upstream-name . "zooimage")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-dt" ,r-dt)
+       ("r-filehash" ,r-filehash)
+       ("r-jpeg" ,r-jpeg)
+       ("r-mass" ,r-mass)
+       ("r-mda" ,r-mda)
+       ("r-mlearning" ,r-mlearning)
+       ("r-png" ,r-png)
+       ("r-shiny" ,r-shiny)
+       ("r-svdialogs" ,r-svdialogs)
+       ("r-svmisc" ,r-svmisc)
+       ("r-tiff" ,r-tiff)))
+    (home-page "http://www.sciviews.org/zooimage")
+    (synopsis "Analysis of numerical plankton images")
+    (description
+     "This package provides a solution for analyzing digital images of
+plankton.  In combination with ImageJ, an image analysis system, it processes
+digital images, measures individuals, trains for automatic classification of
+taxa, and finally, measures plankton samples (abundances, total and partial
+size spectra or biomasses, etc.).")
+    (license license:gpl2+)))
