@@ -30951,3 +30951,23 @@ captured through video cameras and microphones, the text-based chat, and
 meta-data.  You can analyze aspects of the conversation among meeting
 participants and their emotional expressions throughout the meeting.")
     (license license:expat)))
+
+(define-public r-zoom
+  (package
+    (name "r-zoom")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zoom" version))
+       (sha256
+        (base32
+         "03f5rxfr6ncf1j6vpn7pip21q7ylj4bx0a5xphqb6x6i33lxf1g5"))))
+    (properties `((upstream-name . "zoom")))
+    (build-system r-build-system)
+    (home-page "https://github.com/cbarbu/R-package-zoom")
+    (synopsis "Spatial data visualization tool")
+    (description
+     "This package provides @code{zm}, a utility that allows you to
+zoom/navigate any plot when called with any active plot.")
+    (license license:gpl3+)))
