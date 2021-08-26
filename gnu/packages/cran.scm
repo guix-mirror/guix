@@ -30545,7 +30545,6 @@ to archive and assign DOIs to data, software, figures, and more.")
          "1jj9d78f251bxgrwbv1ycn677qnhvl40bfan12x8fhlaq4d36rgx"))))
     (properties `((upstream-name . "dismo")))
     (build-system r-build-system)
-;    (inputs `(("java" ,java)))
     (propagated-inputs
      `(("r-raster" ,r-raster)
        ("r-rcpp" ,r-rcpp)
