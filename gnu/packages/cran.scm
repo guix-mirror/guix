@@ -31312,3 +31312,40 @@ framework available for R.  Mock objects can be injected with either this
 package's own @code{stub} function or a similar @code{with_mock} facility
 present in the @code{testthat} package.")
     (license license:expat)))
+
+(define-public r-zoltr
+  (package
+    (name "r-zoltr")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zoltr" version))
+       (sha256
+        (base32
+         "12zh7y3pwidclscgvd0b0iaqq9j5y8mc8xd6pz4vs0jy5qs3ahar"))))
+    (properties `((upstream-name . "zoltr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64url" ,r-base64url)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mmwrweek" ,r-mmwrweek)
+       ("r-mockery" ,r-mockery)
+       ("r-readr" ,r-readr)
+       ("r-rlang" ,r-rlang)
+       ("r-webmockr" ,r-webmockr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/reichlab/zoltr")
+    (synopsis "Interface to the Zoltar forecast repository API")
+    (description
+     "Zoltar is a website that provides a repository of model forecast results
+in a standardized format and a central location.  It supports storing,
+retrieving, comparing, and analyzing time series forecasts for prediction
+challenges of interest to the modeling community.  This package provides
+functions for working with the Zoltar API, including connecting and
+authenticating, getting information about projects, models, and forecasts,
+deleting and uploading forecast data, and downloading scores.")
+    (license license:gpl3)))
