@@ -976,7 +976,7 @@ Alternatively the menu can be bound globally, for example:
 (define-public emacs-moody
   (package
     (name "emacs-moody")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -985,7 +985,7 @@ Alternatively the menu can be bound globally, for example:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b4kg4dxy4ywwin96vz6x3rpvgr718y5rgrdarmwym9wv1qz0a0c"))))
+        (base32 "14x3hd0z0nh0dyfi434vqywi7aawfxhlqj6sp7m17np56zq32yhi"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/moody")
     (synopsis "Tabs and ribbons for Emacs mode-line")
