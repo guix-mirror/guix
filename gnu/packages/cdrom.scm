@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -925,7 +925,14 @@ Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0g2zyzb56czh429qy87lvaddzjnlcq8c616ddxsmsshz3clhyzrh"))))
+                "0g2zyzb56czh429qy87lvaddzjnlcq8c616ddxsmsshz3clhyzrh"))
+              (modules '((guix build utils)))
+              (snippet
+                #~(begin
+                    ;; Fix building with gcc-10.
+                    (substitute* "genisoimage/genisoimage.h"
+                      (("char\t\t\\*outfile")
+                       "extern char\t*outfile"))))))
     (build-system cmake-build-system)
     (inputs
      `(("bzip2" ,bzip2)
