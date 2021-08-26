@@ -23867,7 +23867,7 @@ strings.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.96")
+    (version "0.2.101")
     (source
      (origin
        (method url-fetch)
@@ -23875,7 +23875,7 @@ strings.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z5l4rdk44sx1vaq69x1mbwi5zh75q46p2hkl90ihhn5xzkb802n"))))
+         "08dsmvn397ph8gnj552k12gmpp2rk6p60jyliqnfvr8vhwv07c1w"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
