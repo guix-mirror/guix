@@ -16284,17 +16284,17 @@ cross platform API.")
      "A procedural macro to insert @code{flame::start_guard(_)} calls.")
     (license license:asl2.0)))
 
-(define-public rust-flatbuffers-0.8
+(define-public rust-flatbuffers-2
   (package
     (name "rust-flatbuffers")
-    (version "0.8.4")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "flatbuffers" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0sc0ngk9xim7xgqydx36xz4a1sqxq2fv7fmqn6z76vbx5cs05if3"))))
+        (base32 "1xp5ppif0hvgh9kfvy1199gdmjc3dw1517022l1x3ynpphw5fk7g"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -16307,6 +16307,25 @@ cross platform API.")
     (description
      "This crates provides FlatBuffers runtime serialization library.")
     (license license:asl2.0)))
+
+(define-public rust-flatbuffers-0.8
+  (package
+    (inherit rust-flatbuffers-2)
+    (name "rust-flatbuffers")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "flatbuffers" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sc0ngk9xim7xgqydx36xz4a1sqxq2fv7fmqn6z76vbx5cs05if3"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-thiserror" ,rust-thiserror-1))))))
 
 (define-public rust-flate2-1
   (package
