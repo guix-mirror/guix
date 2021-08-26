@@ -30838,3 +30838,25 @@ CloudFront content delivery, load balancing, and more.")
 services, including Relational Database Service (RDS), DynamoDB NoSQL
 database, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-storage
+  (package
+    (name "r-paws-storage")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.storage" version))
+       (sha256
+        (base32
+         "06m887vpqp5d6k3zxdlga599dsv8v3rladk7xqaxqnld1f17am04"))))
+    (properties `((upstream-name . "paws.storage")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services storage services")
+    (description
+     "This package provides an interface to Amazon Web Services storage
+services, including Simple Storage Service (S3).")
+    (license license:asl2.0)))
