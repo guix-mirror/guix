@@ -1730,14 +1730,29 @@ executed.")
 (define-public python-pytest-asyncio
   (package
     (name "python-pytest-asyncio")
+    ;; Version 0.10.0 is the last version which is compatible with Pytest <=
+    ;; 5.4.0.
     (version "0.10.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pytest-asyncio" version))
+       (method git-fetch)               ;for tests
+       (uri (git-reference
+             (url "https://github.com/pytest-dev/pytest-asyncio")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1bysy4nii13bm7h345wxf8fxcjhab7l374pqdv7vwv3izl053b4z"))))
+        (base32
+         "1m63b7nbph5z20mn8jgh6j9ac873i1k4in29x44vrkw3qwfwg13y"))
+       (patches (search-patches "python-pytest-asyncio-python-3.8.patch"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-async-generator" ,python-async-generator)
