@@ -30883,3 +30883,36 @@ services, including Simple Storage Service (S3).")
 services, including Elastic Compute Cloud (EC2), Lambda
 functions-as-a-service, containers, batch processing, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws
+  (package
+    (name "r-paws")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws" version))
+       (sha256
+        (base32
+         "1pkwjdrziyh6bhpilx29zsv2nmv60z6fqxgx2kvjqvl8z36yqfhw"))))
+    (properties `((upstream-name . "paws")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-analytics" ,r-paws-analytics)
+       ("r-paws-application-integration" ,r-paws-application-integration)
+       ("r-paws-compute" ,r-paws-compute)
+       ("r-paws-cost-management" ,r-paws-cost-management)
+       ("r-paws-customer-engagement" ,r-paws-customer-engagement)
+       ("r-paws-database" ,r-paws-database)
+       ("r-paws-machine-learning" ,r-paws-machine-learning)
+       ("r-paws-management" ,r-paws-management)
+       ("r-paws-networking" ,r-paws-networking)
+       ("r-paws-security-identity" ,r-paws-security-identity)
+       ("r-paws-storage" ,r-paws-storage)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services software development kit")
+    (description
+     "This package provides an interface to Amazon Web Services, including
+storage, database, and compute services, such as Simple Storage Service (S3),
+DynamoDB NoSQL database, and Lambda functions-as-a-service.")
+    (license license:asl2.0)))
