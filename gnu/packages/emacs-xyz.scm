@@ -15106,7 +15106,7 @@ buffer's environment.")
 (define-public emacs-envrc
   (package
     (name "emacs-envrc")
-    (version "0.2")
+    (version "0.4")
     (source
      (origin
        (method git-fetch)
@@ -15116,8 +15116,10 @@ buffer's environment.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ssf9i6iym2rb530k2w5aj392qa73i6p5y0vwrs5qhkv9lagqq7p"))))
+         "0nqqx4qlw75lmbn0v927sg3xyjkk86ihw1q3rdbbn59va41grds4"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-inheritenv" ,emacs-inheritenv)))
     (home-page "https://github.com/purcell/envrc")
     (synopsis "Support for Direnv which operates buffer-locally")
     (description
