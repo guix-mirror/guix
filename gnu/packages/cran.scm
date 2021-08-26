@@ -31222,3 +31222,33 @@ convert dates to MMWR day, week, and year and the reverse.")
 requests, and mocking HTTP requests.  The package is built on R6, and takes
 inspiration from Ruby's @code{faraday} gem.")
     (license license:expat)))
+
+(define-public r-fauxpas
+  (package
+    (name "r-fauxpas")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fauxpas" version))
+       (sha256
+        (base32
+         "129fzqb7wsskbn50s8x0marr4wm8jrns6hiycqcsk166k3dnyyy8"))))
+    (properties `((upstream-name . "fauxpas")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httpcode" ,r-httpcode)
+       ("r-r6" ,r-r6)
+       ("r-whisker" ,r-whisker)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/fauxpas")
+    (synopsis "HTTP error helpers")
+    (description
+     "This package provides HTTP error helpers.  Methods are included for
+general purpose HTTP error handling, as well as individual methods for every
+HTTP status code, both via status code numbers as well as their descriptive
+names.  It supports the ability to adjust behavior to stop, message or
+warning.  It includes the ability to use a custom whisker template to have any
+configuration of status code, short description, and verbose message.")
+    (license license:expat)))
