@@ -30503,3 +30503,31 @@ Standards.")
      "This package combines a forecast of a time series, using the function @code{forecast},
 with the dynamic plots from @code{dygraphs}.")
     (license license:gpl2+)))
+
+(define-public r-rfigshare
+  (package
+    (name "r-rfigshare")
+    (version "0.3.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rfigshare" version))
+       (sha256
+        (base32
+         "1qgzn0mpjy4czy0pnbi395fxxx84arkg8r7rk8aidmd34584gjiq"))))
+    (properties `((upstream-name . "rfigshare")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-httpuv" ,r-httpuv)
+       ("r-httr" ,r-httr)
+       ("r-plyr" ,r-plyr)
+       ("r-rjsonio" ,r-rjsonio)
+       ("r-xml" ,r-xml)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/ropensci/rfigshare")
+    (synopsis "R Interface to figshare")
+    (description
+     "This package provides an interface to figshare, a scientific repository
+to archive and assign DOIs to data, software, figures, and more.")
+    (license license:cc0)))
