@@ -48204,7 +48204,7 @@ handle Unicode characters correctly.")
 (define-public rust-thiserror-impl-1
   (package
     (name "rust-thiserror-impl")
-    (version "1.0.25")
+    (version "1.0.26")
     (source
      (origin
        (method url-fetch)
@@ -48213,7 +48213,7 @@ handle Unicode characters correctly.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "139i3bxidyncjd1sphkn4c577nkba8lzmphhr9gb26xz1y67cdla"))))
+         "0ia72qiynlws5avb8f1xqlazp4g6bqgzjbwy5vs6nyg7myh6j386"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
