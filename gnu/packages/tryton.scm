@@ -49,7 +49,7 @@
        (sha256
         (base32 "1h1x0cmmmxvjclbglvvxkv634jw6av5ilymbix1lln5lq0gd39yy"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
        ("python-lxml" ,python-lxml)
