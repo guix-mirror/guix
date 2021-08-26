@@ -56821,7 +56821,7 @@ library.")
 (define-public rust-zstd-sys-1
   (package
     (name "rust-zstd-sys")
-    (version "1.6.0+zstd.1.5.0")
+    (version "1.6.1+zstd.1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -56829,8 +56829,7 @@ library.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "19rs3vvwlzr9v6qfmfxh43x99njmybpvysqf8xhpfhibjbcbwh91"))))
+        (base32 "0cra76lginz5k659rch7axg5nyms67yffygr3k7ic7a3lb3j0lb1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
