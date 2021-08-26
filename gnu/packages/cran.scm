@@ -30693,3 +30693,28 @@ more.")
 integration services, including Simple Queue Service (SQS) message queue,
 Simple Notification Service (SNS) publish/subscribe messaging, and more.")
     (license license:asl2.0)))
+
+(define-public r-paws-security-identity
+  (package
+    (name "r-paws-security-identity")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.security.identity" version))
+       (sha256
+        (base32
+         "092lz2ipn5iqr593x7ra8c0bj64yf6315mdc3llgwrjyb4vfxif9"))))
+    (properties
+     `((upstream-name . "paws.security.identity")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services security, identity, and compliance services")
+    (description
+     "This package provides an interface to Amazon Web Services security,
+identity, and compliance services, including the Identity and Access
+Management (IAM) service for managing access to services and resources, and
+more.")
+    (license license:asl2.0)))
