@@ -30916,3 +30916,38 @@ functions-as-a-service, containers, batch processing, and more.")
 storage, database, and compute services, such as Simple Storage Service (S3),
 DynamoDB NoSQL database, and Lambda functions-as-a-service.")
     (license license:asl2.0)))
+
+(define-public r-zoomgroupstats
+  (package
+    (name "r-zoomgroupstats")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zoomGroupStats" version))
+       (sha256
+        (base32
+         "0gndiq92cy6gi7f833hdjvqii3cn83wz5rjvygcvjl3dw4pwv966"))))
+    (properties
+     `((upstream-name . "zoomGroupStats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magick" ,r-magick)
+       ("r-openxlsx" ,r-openxlsx)
+       ("r-paws" ,r-paws)
+       ("r-pbapply" ,r-pbapply)
+       ("r-stringr" ,r-stringr)
+       ("r-syuzhet" ,r-syuzhet)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "http://zoomgroupstats.org")
+    (synopsis "Analyze text, audio, and video from Zoom meetings")
+    (description
+     "This package provides utilities for processing and analyzing the files
+that are exported from a recorded Zoom meeting.  This includes analyzing data
+captured through video cameras and microphones, the text-based chat, and
+meta-data.  You can analyze aspects of the conversation among meeting
+participants and their emotional expressions throughout the meeting.")
+    (license license:expat)))
