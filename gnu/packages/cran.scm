@@ -30531,3 +30531,29 @@ with the dynamic plots from @code{dygraphs}.")
      "This package provides an interface to figshare, a scientific repository
 to archive and assign DOIs to data, software, figures, and more.")
     (license license:cc0)))
+
+(define-public r-dismo
+  (package
+    (name "r-dismo")
+    (version "1.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dismo" version))
+       (sha256
+        (base32
+         "1jj9d78f251bxgrwbv1ycn677qnhvl40bfan12x8fhlaq4d36rgx"))))
+    (properties `((upstream-name . "dismo")))
+    (build-system r-build-system)
+;    (inputs `(("java" ,java)))
+    (propagated-inputs
+     `(("r-raster" ,r-raster)
+       ("r-rcpp" ,r-rcpp)
+       ("r-sp" ,r-sp)))
+    (home-page "https://rspatial.org/raster/sdm/")
+    (synopsis "Species distribution modeling")
+    (description
+     "This package provides methods for species distribution modeling, i.e.,
+predicting the environmental similarity of any site to that of the locations
+of known occurrences of a species.")
+    (license license:gpl3+)))
