@@ -31088,3 +31088,30 @@ digital images, measures individuals, trains for automatic classification of
 taxa, and finally, measures plankton samples (abundances, total and partial
 size spectra or biomasses, etc.).")
     (license license:gpl2+)))
+
+(define-public r-zooarch
+  (package
+    (name "r-zooarch")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zooaRch" version))
+       (sha256
+        (base32
+         "0grc378xppv0303sf4flfqz5002vq5a23nzbq4bsff41rww7dihc"))))
+    (properties `((upstream-name . "zooaRch")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://cran.r-project.org/package=zooaRch")
+    (synopsis
+     "Analytical Tools for Zooarchaeological Data")
+    (description
+     "The analysis and inference of faunal remains recovered from
+archaeological sites concerns the field of zooarchaeology.  The zooaRch
+package provides analytical tools to make inferences on zooarchaeological
+data.  Functions in this package allow users to read, manipulate, visualize,
+and analyze zooarchaeological data.")
+    (license license:gpl2+)))
