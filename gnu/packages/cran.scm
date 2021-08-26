@@ -30453,3 +30453,30 @@ Bessel K function.")
 variates and maximum likelihood estimates of the Zero-truncated Poisson
 lognormal distribution and their mixture distribution.")
     (license license:expat)))
+
+(define-public r-zscorer
+  (package
+    (name "r-zscorer")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zscorer" version))
+       (sha256
+        (base32
+         "0aijhs0fyird5gq68x4dxchb02mxa7ijk10k9zjhngghxbjj7iqn"))))
+    (properties `((upstream-name . "zscorer")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/nutriverse/zscorer")
+    (synopsis "Child Anthropometry z-Score Calculator")
+    (description
+     "This package provides a tool for calculating z-scores and centiles for
+weight-for-age, length/height-for-age, weight-for-length/height, BMI-for-age,
+head circumference-for-age, age circumference-for-age, subscapular
+skinfold-for-age, triceps skinfold-for-age based on the WHO Child Growth
+Standards.")
+    (license license:agpl3+)))
