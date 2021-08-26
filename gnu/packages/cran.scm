@@ -30347,3 +30347,30 @@ experimentation, supports both convolution based networks and recurrent
 networks (as well as combinations of the two), and runs seamlessly on both CPU
 and GPU devices.")
     (license license:expat)))
+
+(define-public r-zzlite
+  (package
+    (name "r-zzlite")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zzlite" version))
+       (sha256
+        (base32
+         "0vi1slx2s4r5zf82lazqv0c3m12xq73wlgsbz6af4y00h0bkr3ps"))))
+    (properties `((upstream-name . "zzlite")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/package=zzlite")
+    (synopsis "Wrapper for the Zamzar file conversion API")
+    (description
+     "This package provides a minor collection of HTTP wrappers for the Zamzar
+file conversion API.  The wrappers makes it easy to utilize the API and thus
+convert between more than 100 different file formats (ranging from audio
+files, images, movie formats, etc., etc.) through an R session.")
+    (license license:gpl3)))
