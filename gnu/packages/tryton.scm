@@ -2273,6 +2273,36 @@ and assets.")
 cost price of products to be calculated separately for each warehouse.")
     (license license:gpl3+)))
 
+(define-public trytond-product-kit
+  (package
+    (name "trytond-product-kit")
+    (version "6.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_kit" version))
+       (sha256
+        (base32 "1xr1vd66lrnzj16ycbw5xnz4ai44ml77akhsvxvihf09zdz09yd7"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_kit"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-company" ,trytond-company)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-product-kit")
+    (synopsis "Tryton module to manage product kits and components")
+    (description "The @emph{Product Kit} Tryton Module adds kits and
+components to products.  This enables a defined set of products to be sold or
+purchased using a single line.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
