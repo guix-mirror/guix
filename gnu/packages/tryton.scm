@@ -3422,6 +3422,36 @@ price are kept synchronized with the quantity and unit price.  The secondary
 unit is defined on the product with its factor against the sale unit.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-shipment-cost
+  (package
+    (name "trytond-sale-shipment-cost")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_shipment_cost" version))
+       (sha256
+        (base32 "1h1qhp90f8mzx2px48fa8xsgwhbf2gkg8q94vghy696a3hh1xzxb"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_shipment_cost"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-sale-promotion" ,trytond-sale-promotion)
+       ("trytond-stock-shipment-cost" ,trytond-stock-shipment-cost)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-shipment-cost")
+    (synopsis "Tryton module for sale shipment cost")
+    (description "The @emph{Sale Shipment Cost} Tryton module adds shipment
+cost for sale.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
