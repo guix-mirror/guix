@@ -2147,6 +2147,30 @@ Template and Product.")
 models `Attribute` and `Attribute Set` for products.")
     (license license:gpl3+)))
 
+(define-public trytond-product-classification
+  (package
+    (name "trytond-product-classification")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_classification" version))
+       (sha256
+        (base32 "1sq42siqq8w6dd8jnqnkzy3npaf9g2nrdzazkl6nw5dysvpsz8cr"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_classification"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-product-classification")
+    (synopsis "Tryton module to implement product classification")
+    (description "The @emph{Product Classification} Tryton module defines the
+tools for other modules to create classifications of products.  It adds a
+reference field classification to the product template.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
