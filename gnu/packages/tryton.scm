@@ -2969,6 +2969,40 @@ the product with its factor against the purchase unit.")
 shipment costs to Supplier Shipment.")
     (license license:gpl3+)))
 
+(define-public trytond-sale
+  (package
+    (name "trytond-sale")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale" version))
+       (sha256
+        (base32 "0wk5lhj74vl7zs4l3x176iwfqr3jnq37xhiksgnajsrjrl54bgfg"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-company" ,trytond-company)
+       ("trytond-country" ,trytond-country)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale")
+    (synopsis "Tryton module for sale")
+    (description "The @emph{Sale} Tryton module helps organise and manage
+sales made by the company.  It adds the concept of a sale to Tryton and allows
+it to be tracked through its states from draft to done.  It also oversees the
+creation of customer shipments and invoices for the sales, and allows reports
+to be generated that contain aggregated sales figures.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
