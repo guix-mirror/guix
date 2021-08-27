@@ -3262,6 +3262,32 @@ option to define how invoice lines generated from sales will be grouped.")
 lead/opportunity model.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-payment
+  (package
+    (name "trytond-sale-payment")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_payment" version))
+       (sha256
+        (base32 "0i38766m9a0arhwybsqgk11zmmr982mmcsn0fswq695gb0zlwl0f"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_payment"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-payment-clearing" ,trytond-account-payment-clearing)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-payment" ,trytond-account-payment)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-payment")
+    (synopsis "Tryton module that manage payments on sale")
+    (description "The @emph{Sale Payment} Tryton module extends Sale to allow
+payments prior to the creation of any invoice.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
