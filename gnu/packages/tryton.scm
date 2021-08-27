@@ -563,6 +563,40 @@ accounting requirements in Europe.  It includes:
 for Tryton.")
     (license license:gpl3+)))
 
+(define-public trytond-account-fr-chorus
+  (package
+    (name "trytond-account-fr-chorus")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_fr_chorus" version))
+       (sha256
+        (base32 "13z30390zinv6ps0zr3k7mdmxrw2nhr49k248yjk0c0qh9rwifll"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_fr_chorus"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-edocument-uncefact" ,trytond-edocument-uncefact)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)
+       ("trytond-party-siret" ,trytond-party-siret)))
+    (home-page "https://docs.tryton.org/projects/modules-account-fr-chorus")
+    (synopsis "Tryton module to communicate with the French Chorus Pro
+portal")
+    (description "This package provides a Tryton module to send invoices
+through the French Chorus Pro portal.
+
+If the party is checked for Chorus Pro, all posted customer invoices are
+queued to be sent.  A cron job will send them every 15 minutes by default,
+using the credential from the accounting configuration.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
