@@ -1542,6 +1542,36 @@ These can be used to restrict the usage of a carrier to a specific subdivision
 or a specific postal code.")
     (license license:gpl3+)))
 
+(define-public trytond-carrier-weight
+  (package
+    (name "trytond-carrier-weight")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_carrier_weight" version))
+       (sha256
+        (base32 "0l2gg4syym7jk0vjqnw7invh0gngrfmg9zmmvc1k6110aryr77yi"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "carrier_weight"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-purchase-shipment-cost" ,trytond-purchase-shipment-cost)
+       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-product" ,trytond-product)
+       ("trytond-product-measurements" ,trytond-product-measurements)))
+    (home-page "https://docs.tryton.org/projects/modules-carrier-weight")
+    (synopsis "Tryton module to add cost method based on weight")
+    (description "The @emph{Carrier Weight} Tryton module adds a cost method
+\"on weight\" on carrier.  The price is computed by finding the line for which
+the weight is greater or equal but smaller than the next line.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
