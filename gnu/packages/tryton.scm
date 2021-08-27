@@ -4468,3 +4468,25 @@ Vue Storefront 1.x.")
     (description "The @emph{Web Shop Vue Storefront Stripe} Tryton module
 provides support of Stripe payment for Vue Storefront integration.")
     (license license:gpl3+)))
+
+(define-public trytond-web-shortener
+  (package
+    (name "trytond-web-shortener")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_web_shortener" version))
+       (sha256
+        (base32 "0vxwnsy7xzxawn7fmm6ykdrhih6ahrwwx6fzd6kz7qbwh4nmqcpk"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "web_shortener"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-web-shortener")
+    (synopsis "Tryton module to plug a URL to an action")
+    (description "The @emph{Web Shortener} Tryton module allows URLs to be
+shortened.  It also counts the number of times the URL is accessed and
+optionally triggers action.")
+    (license license:gpl3+)))
