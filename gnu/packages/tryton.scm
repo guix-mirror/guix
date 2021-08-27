@@ -3003,6 +3003,34 @@ creation of customer shipments and invoices for the sales, and allows reports
 to be generated that contain aggregated sales figures.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-advance-payment
+  (package
+    (name "trytond-sale-advance-payment")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_advance_payment" version))
+       (sha256
+        (base32 "1h7jjh0ddfhk8b2rlmizlv5x31k14zz0xccm846kc4idvcsaqcy4"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_advance_payment"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-sale-supply" ,trytond-sale-supply)))
+    (propagated-inputs
+     `(("python-simpleeval" ,python-simpleeval)
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-advance-payment")
+    (synopsis "Tryton module for sale advance payment")
+    (description "The @emph{Sale Advance Payment} Tryton module adds support
+for advance payment management on the sale.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
