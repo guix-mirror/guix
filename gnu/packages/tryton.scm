@@ -444,6 +444,32 @@ emails.")
 accounting moves as fees when processing dunning.")
     (license license:gpl3+)))
 
+(define-public trytond-account-dunning-letter
+  (package
+    (name "trytond-account-dunning-letter")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_dunning_letter" version))
+       (sha256
+        (base32 "0xb0mpf7n8jjgm8sb52q5sb2fjs1ap1gc0p33csdgz2lyh66lh3b"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_dunning_letter"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-dunning" ,trytond-account-dunning)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-dunning-letter")
+    (synopsis "Tryton module for account dunning letter")
+    (description "This package provides a Tryton module for generating dunning
+letters.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
