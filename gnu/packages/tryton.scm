@@ -4103,6 +4103,29 @@ reducing stock level by proposing to consume earlier.")
 stock quantity issues.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-secondary-unit
+  (package
+    (name "trytond-stock-secondary-unit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_secondary_unit" version))
+       (sha256
+        (base32 "0s4nryiirdbndm2sz5aqpk2mzw9zxah92gmh6433sj5zyc6a22if"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_secondary_unit"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-secondary-unit")
+    (synopsis "Tryton module to add a secondary unit on stock move")
+    (description "The @emph{Stock Secondary Unit} Tryton module adds a
+secondary unit of measure on the stock move.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
