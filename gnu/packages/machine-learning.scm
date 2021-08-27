@@ -2719,3 +2719,39 @@ PyTorch when needed.
 
 Note: currently this package does not provide GPU support.")
     (license license:bsd-3)))
+
+(define-public python-hmmlearn
+  (package
+    (name "python-hmmlearn")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hmmlearn" version))
+       (sha256
+        (base32
+         "1my0j3rzp17438idr32ssh0j969a98yjblx5igx5kgiiigr9qa1a"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion (string-append (assoc-ref outputs "out") "/lib")
+                 (invoke "python" "-m" "pytest"))))))))
+    (propagated-inputs
+     `(("python-cython" ,python-cython)
+       ("python-numpy" ,python-numpy)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/hmmlearn/hmmlearn")
+    (synopsis "Hidden Markov Models with scikit-learn like API")
+    (description
+     "Hmmlearn is a set of algorithms for unsupervised learning and inference
+of Hidden Markov Models.")
+    (license license:bsd-3)))
