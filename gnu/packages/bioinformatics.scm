@@ -14903,3 +14903,42 @@ copy number estimation, as described by
 integration, exploration, and analysis of high-dimensional single-cell
 cytometry and imaging data.")
       (license license:expat))))
+
+(define-public r-cytonorm
+  (let ((commit "e4b9d343ee65db3c422800f1db3e77c25abde987")
+        (revision "1"))
+    (package
+      (name "r-cytonorm")
+      (version (git-version "0.0.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/saeyslab/CytoNorm")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0h2rdy15i4zymd4dv60n5w0frbsdbmzpv99dgm0l2dn041qv7fah"))))
+      (properties `((upstream-name . "CytoNorm")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-cytoml" ,r-cytoml)
+         ("r-dplyr" ,r-dplyr)
+         ("r-emdist" ,r-emdist)
+         ("r-flowcore" ,r-flowcore)
+         ("r-flowsom" ,r-flowsom)
+         ("r-flowworkspace" ,r-flowworkspace)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-gridextra" ,r-gridextra)
+         ("r-pheatmap" ,r-pheatmap)
+         ("r-stringr" ,r-stringr)))
+      (home-page "https://github.com/saeyslab/CytoNorm")
+      (synopsis "Normalize cytometry data measured across multiple batches")
+      (description
+       "This package can be used to normalize cytometry samples when a control
+sample is taken along in each of the batches.  This is done by first
+identifying multiple clusters/cell types, learning the batch effects from the
+control samples and applying quantile normalization on all markers of
+interest.")
+      (license license:gpl2+))))
