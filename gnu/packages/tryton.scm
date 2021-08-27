@@ -470,6 +470,46 @@ accounting moves as fees when processing dunning.")
 letters.")
     (license license:gpl3+)))
 
+(define-public trytond-account-es
+  (package
+    (name "trytond-account-es")
+    (version "6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_es" version))
+       (sha256
+        (base32 "19qflzfwbbwz7jxxbah2l8z89m1rwsgvm80w2qsjw93chzabz802"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_es"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-asset" ,trytond-account-asset)
+       ("trytond-account-payment-sepa" ,trytond-account-payment-sepa)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-eu" ,trytond-account-eu)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-es")
+    (synopsis "Tryton with Spanish chart of accounts")
+    (description "This package provides the following Spanish charts of
+accounts for Tryton:
+@itemize
+@item Plan General Contable Español 2008
+@item Plan Contable para PYMES 2008
+@end itemize
+
+A wizard allows to generate the following AEAT files:
+
+@itemize
+@item Modelo 111
+@item Modelo 115
+@item Modelo 303
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
