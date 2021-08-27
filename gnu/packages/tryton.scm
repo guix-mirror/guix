@@ -725,6 +725,30 @@ the historization of the invoice and its related fields.")
 allows to create invoice line not linked to an invoice.")
     (license license:gpl3+)))
 
+(define-public trytond-account-invoice-secondary-unit
+  (package
+    (name "trytond-account-invoice-secondary-unit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_invoice_secondary_unit" version))
+       (sha256
+        (base32 "0wam7v92ldajpx3529x2cfvczgwv8ayr6hi6bwj8fi736p9x2kbp"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_invoice_secondary_unit"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-product" ,trytond-product)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-invoice-secondary-unit")
+    (synopsis "Tryton module to add a secondary unit on invoice line")
+    (description "The @emph{Account Invoice Secondary Unit} Tryton module adds
+a secondary unit of measure on invoice line.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice-stock
   (package
     (name "trytond-account-invoice-stock")
