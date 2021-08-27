@@ -2217,6 +2217,33 @@ adds the taxonomic classification to the products.")
 first-in-first-out option in the `Cost Method` field of the product form.")
     (license license:gpl3+)))
 
+(define-public trytond-product-cost-history
+  (package
+    (name "trytond-product-cost-history")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_cost_history" version))
+       (sha256
+        (base32 "01cxx1lmcxwangk3q8lhbkd97w208qxpk96mqxv2hgds77xr42cj"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_cost_history"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-product-cost-history")
+    (synopsis "Tryton module to historize product cost")
+    (description "The @emph{Product Cost History} Tryton module adds a `Cost
+History` relate on the product form, showing the cost price evolution of the
+product.  The history is based on the cost price stored on the incoming stock
+moves for goods and assets and based on the history table for service.  When a
+historic cost price is needed, the value is taken from this history for goods
+and assets.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
