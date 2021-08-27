@@ -3731,6 +3731,37 @@ on shipments and production that allows you to decide from which precise
 location to pick products.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-consignment
+  (package
+    (name "trytond-stock-consignment")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_consignment" version))
+       (sha256
+        (base32 "0c2wa0d8msam77nd4c79f71jaznsprnlvv1jqrmkl1qf3lvgq4a2"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_consignment"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-stock-supply" ,trytond-stock-supply)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-line-standalone"
+        ,trytond-account-invoice-line-standalone)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-consignment")
+    (synopsis "Tryton module to manage consignment stock")
+    (description "The @emph{Stock Consignment} Tryton module allow to manage
+consignment stock from supplier or at customer warehouse.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
