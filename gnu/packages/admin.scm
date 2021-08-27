@@ -2600,66 +2600,35 @@ provides the following commands:
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.9.18")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "0g6rsnh02zq5nizamgakl2wvgz7hk1lpnjn9akldrcpa55vygzjm"))))
+        (base32 "031n22j0lsmh69x6i6gkva81j68b4yzh1pbg3q2h4bknl85q46ag"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-bcrypt" ,python-bcrypt)
-       ("python-pynacl" ,python-pynacl)
-       ("python-httplib2" ,python-httplib2)
-       ("python-passlib" ,python-passlib)
-       ("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-paramiko" ,python-paramiko)))
-    (inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-paramiko" ,python-paramiko)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Several ansible commands (ansible-config, ansible-console, etc.)
-         ;; are just symlinks to a single ansible executable. The ansible
-         ;; executable behaves differently based on the value of
-         ;; sys.argv[0]. This does not work well with our wrap phase, and
-         ;; therefore the following two phases are required as a workaround.
-         (add-after 'unpack 'hide-wrapping
-           (lambda _
-             ;; Overwrite sys.argv[0] to hide the wrapper script from it.
-             (substitute* "bin/ansible"
-               (("import traceback" all)
-                (string-append all "
-import re
-sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
-")))
-             #t))
-         (add-after 'install 'replace-symlinks
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Replace symlinks with duplicate copies of the ansible
-             ;; executable.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each
-                (lambda (subprogram)
-                  (delete-file (string-append out "/bin/ansible-" subprogram))
-                  (copy-file (string-append out "/bin/ansible")
-                             (string-append out "/bin/ansible-" subprogram)))
-                (list "config" "console" "doc" "galaxy"
-                      "inventory" "playbook" "pull" "vault")))
-             #t)))))
+    (propagated-inputs
+     `(("ansible-core" ,ansible-core)))
+    ;; The Ansible collections are found by ansible-core via PYTHONPATH; the
+    ;; following search path ensures that they are found even when Python is
+    ;; not present in the profile.
+    (native-search-paths
+     ;; XXX: Attempting to use (package-native-search-paths python)
+     ;; here would cause an error about python being an unbound
+     ;; variable in the tests/cpan.scm test.
+     (list (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list "lib/python3.8/site-packages")))))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
-    (description "Ansible is a radically simple IT automation system.  It
-handles configuration management, application deployment, cloud provisioning,
-ad hoc task execution, and multinode orchestration---including trivializing
-things like zero-downtime rolling updates with load balancers.")
+    (description "Ansible aims to be a radically simple IT automation system.
+It handles configuration management, application deployment, cloud
+provisioning, ad-hoc task execution, network automation, and multi-node
+orchestration.  Ansible facilitates complex changes like zero-downtime rolling
+updates with load balancers.  This package provides a curated set of
+community-maintained Ansible collections, which contain playbooks, roles,
+modules and plugins that extend Ansible.")
     (license license:gpl3+)))
 
 (define-public debops
