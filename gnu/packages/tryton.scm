@@ -4256,3 +4256,27 @@ list on the Product Supplier form.  This allow to restrict the supply week
 days for each supplier on each product.  If no days are defined for a supplier
 a supplying may happens at any day of the week.")
     (license license:gpl3+)))
+
+(define-public trytond-stock-supply-forecast
+  (package
+    (name "trytond-stock-supply-forecast")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_supply_forecast" version))
+       (sha256
+        (base32 "0i5dc9ddd6mfx3zjlcq16isw52b8qy7igaj2lv8jqvkdrc19yfha"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_supply_forecast"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-stock-forecast" ,trytond-stock-forecast)
+       ("trytond-stock-supply" ,trytond-stock-supply)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-supply-forecast")
+    (synopsis "Tryton module to add forecast to supply computation")
+    (description "The @emph{Stock Supply Forecast} Tryton module takes
+forecast into account to compute purchase requests.")
+    (license license:gpl3+)))
