@@ -4442,3 +4442,29 @@ configuration of an online web shop.")
     (description "This Tryton module provides the back-end to integrate with
 Vue Storefront 1.x.")
     (license license:gpl3+)))
+
+(define-public trytond-web-shop-vue-storefront-stripe
+  (package
+    (name "trytond-web-shop-vue-storefront-stripe")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_web_shop_vue_storefront_stripe" version))
+       (sha256
+        (base32 "0j4yv9q0f39bkyqlcn7kpnlqi9wc4qfjs8zic69za6xw2c86zgzm"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "web_shop_vue_storefront_stripe"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-payment-stripe" ,trytond-account-payment-stripe)
+       ("trytond-sale-payment" ,trytond-sale-payment)
+       ("trytond-web-shop" ,trytond-web-shop)
+       ("trytond-web-shop-vue-storefront" ,trytond-web-shop-vue-storefront)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-web-shop-vue-storefront-stripe")
+    (synopsis "Tryton module to support Stripe payment with Vue Storefront")
+    (description "The @emph{Web Shop Vue Storefront Stripe} Tryton module
+provides support of Stripe payment for Vue Storefront integration.")
+    (license license:gpl3+)))
