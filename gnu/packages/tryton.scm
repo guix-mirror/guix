@@ -2076,6 +2076,28 @@ party.")
 different types of relations between parties.")
     (license license:gpl3+)))
 
+(define-public trytond-party-siret
+  (package
+    (name "trytond-party-siret")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_party_siret" version))
+       (sha256
+        (base32 "1xmfjiqn7wzwja34abrxn3bj39z0799pdxd8bcz7l5dxrnqxwc38"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "party_siret"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-party-siret")
+    (synopsis "Tryton module to add SIRET/SIREN on parties")
+    (description "The @emph{Party SIRET} Tryton module adds the French company
+identification numbers SIREN and SIRET on party and address.")
+    (license license:gpl3+)))
+
 (define-public trytond-product
   (package
     (name "trytond-product")
