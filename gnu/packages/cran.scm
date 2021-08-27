@@ -231,6 +231,26 @@ wrangling backend for the packages in the @code{easystats} ecosystem.")
 visualization of their differences.")
     (license license:gpl2+)))
 
+(define-public r-emdist
+  (package
+    (name "r-emdist")
+    (version "0.3-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emdist" version))
+       (sha256
+        (base32
+         "1z14pb9z9nkd0f2c8pln4hzkfqa9dk9n3vg8czc8jiv0ndnqi7rq"))))
+    (properties `((upstream-name . "emdist")))
+    (build-system r-build-system)
+    (home-page "http://www.rforge.net/emd")
+    (synopsis "Earth mover's distance")
+    (description
+     "This package provides tools to calculate the Earth Mover's
+Distance (EMD).")
+    (license license:expat)))
+
 (define-public r-googledrive
   (package
     (name "r-googledrive")
