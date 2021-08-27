@@ -3938,6 +3938,30 @@ it is no more used to compute the forecast quantity of the stock.")
 unit and quantity on stock lot.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-package
+  (package
+    (name "trytond-stock-package")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_package" version))
+       (sha256
+        (base32 "1jbpl141wyc19v27bcyqsph8p2zf9yqprm55yl642mvwq55bshq8"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_package"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-package")
+    (synopsis "Tryton module for stock packaging")
+    (description "The @emph{Stock Package} Tryton module allows to store
+packaging information about customer and supplier return shipments.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
