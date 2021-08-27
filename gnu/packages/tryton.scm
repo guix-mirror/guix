@@ -3313,6 +3313,32 @@ payments prior to the creation of any invoice.")
 price list on sale.  A price list can be set per party or as default.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-product-customer
+  (package
+    (name "trytond-sale-product-customer")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_product_customer" version))
+       (sha256
+        (base32 "0yys6mc52v62v51wkg3wngmz9jhqb2lq9v5jvb93j0yh5ah07a4v"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_product_customer"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-sale-amendment" ,trytond-sale-amendment)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-product-customer")
+    (synopsis "Tryton module to manage customer product on sale")
+    (description "The @emph{Sale Product_Customer} Tryton module defines
+customer's names and codes for products or variants.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
