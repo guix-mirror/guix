@@ -1879,6 +1879,28 @@ Incoterms on sales, purchases and shipments.  The module contains the Incoterm
 versions of 2010 and 2020.")
     (license license:gpl3+)))
 
+(define-public trytond-ldap-authentication
+  (package
+    (name "trytond-ldap-authentication")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_ldap_authentication" version))
+       (sha256
+        (base32 "1iylbpp66qjff1mkp0w3a703pracpcv3bv25i2bafkmcjiv9b4jl"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "ldap_authentication"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-ldap3" ,python-ldap3)
+       ("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-ldap-authentication")
+    (synopsis "Tryton module to authenticate users through LDAP")
+    (description "The @emph{LDAP Authentication} Tryton module allows to
+authenticate users via a LDAP server.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
