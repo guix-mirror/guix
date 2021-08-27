@@ -2873,6 +2873,37 @@ suppliers.  Each request will collect quotation information from the
 supplier.")
     (license license:gpl3+)))
 
+(define-public trytond-purchase-requisition
+  (package
+    (name "trytond-purchase-requisition")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_requisition" version))
+       (sha256
+        (base32 "0hiz4q4cq7zz6xxl6bkk0vn71hc2wgasnhda5h41cmi69jphhzzk"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_requisition"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-request" ,trytond-purchase-request)))
+    (home-page "https://docs.tryton.org/projects/modules-purchase-requisition")
+    (synopsis "Tryton module to enter requests for product
+supply (requisition)")
+    (description "The @emph{Purchase Requisition} Tryton module allows users
+to create their requests for product supply (purchase requisitions).  Those
+requisitions will be approved or rejected by the approval group, whoich
+typically is the purchasing department.  On approval, purchase requests will
+be created.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
