@@ -1684,7 +1684,8 @@ intended for people who want to learn receiving and sending morse code.")
        ("osm-gps-map" ,osm-gps-map)
        ("pulseaudio" ,pulseaudio)))
     (arguments
-     `(#:tests? #f ; No test suite
+     `(#:configure-flags '("-DCMAKE_C_FLAGS=-fcommon")
+       #:tests? #f ; No test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
