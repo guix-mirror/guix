@@ -4126,6 +4126,30 @@ stock quantity issues.")
 secondary unit of measure on the stock move.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-shipment-cost
+  (package
+    (name "trytond-stock-shipment-cost")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_shipment_cost" version))
+       (sha256
+        (base32 "13c940pz5ivqj9qk6b5nbid2xfkjnnijjmbz1bn7ic7ydfpiqy8j"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_shipment_cost"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-shipment-cost")
+    (synopsis "Tryton module for stock shipment cost")
+    (description "The @emph{Stock Shipment Cost} Tryton Module adds a shipment
+cost on the outgoing moves which is calculated from the carrier purchase
+price.  This cost is added to the product margin reports.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
