@@ -653,6 +653,31 @@ corrected.  A new invoice is created with those lines in double: once with the
 original quantity, once with the inverted quantity.")
     (license license:gpl3+)))
 
+(define-public trytond-account-invoice-defer
+  (package
+    (name "trytond-account-invoice-defer")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_invoice_defer" version))
+       (sha256
+        (base32 "1ay9cpf6z8j3gamwy52z88qg31s09wkp6k5flv20f9c00hvly452"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_invoice_defer"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-invoice-defer")
+    (synopsis "Tryton module to defer expense and revenue")
+    (description "The @emph{Account Invoice Defer} Tryton module allows to
+defer the expense or the revenue of an invoice line over many periods.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice-stock
   (package
     (name "trytond-account-invoice-stock")
