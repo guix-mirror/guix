@@ -3390,6 +3390,38 @@ on sale based on criteria.")
 to the promotions.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-secondary-unit
+  (package
+    (name "trytond-sale-secondary-unit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_secondary_unit" version))
+       (sha256
+        (base32 "0w7jw6ih4ypwqy83r5qrpclp3yalsrvnz65z2kn5yqaj95b4dpy8"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_secondary_unit"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice-secondary-unit"
+        ,trytond-account-invoice-secondary-unit)
+       ("trytond-sale-product-customer" ,trytond-sale-product-customer)
+       ("trytond-stock-secondary-unit" ,trytond-stock-secondary-unit)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-secondary-unit")
+    (synopsis "Tryton module to add a secondary unit on sale line")
+    (description "The @emph{Sale Secondary Unit} Tryton module adds a
+secondary unit of measure on sale lines.  The secondary quantity and unit
+price are kept synchronized with the quantity and unit price.  The secondary
+unit is defined on the product with its factor against the sale unit.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
