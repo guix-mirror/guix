@@ -2398,6 +2398,30 @@ parent to the price list and the keyword `parent_unit_price` for the formula
 which contains the unit price computed by the parent price list.")
     (license license:gpl3+)))
 
+(define-public trytond-production
+  (package
+    (name "trytond-production")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_production" version))
+       (sha256
+        (base32 "0ys1wg52bs3i7yjrrkm9ycn07xz7fsb2pqc4a2bj44691pvrclpk"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "production"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-production")
+    (synopsis "Tryton module for production")
+    (description "The @emph{Production} Tryton module defines basics
+for production management: Bill of material and production order.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
