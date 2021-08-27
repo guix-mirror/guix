@@ -4178,6 +4178,30 @@ weight and volume on shipments and packages.  They are computed using the
 measurement and the quantity of their moves.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-split
+  (package
+    (name "trytond-stock-split")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_split" version))
+       (sha256
+        (base32 "0ynvmmdxgzgg6mn8ckhl7jr9ircq4bpwsl0xpzk83r6mhlvlrxpm"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_split"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-split")
+    (synopsis "Tryton module to split stock move")
+    (description "The @emph{Stock Split} Tryton module adds on the stock move
+a wizard that allows to split them.  The move is split into moves of Quantity.
+If Counts is set, it will be split only this number of times.  On occasion
+there can be a move with the remaining quantity.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
