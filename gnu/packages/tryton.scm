@@ -1901,6 +1901,27 @@ versions of 2010 and 2020.")
 authenticate users via a LDAP server.")
     (license license:gpl3+)))
 
+(define-public trytond-marketing
+  (package
+    (name "trytond-marketing")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_marketing" version))
+       (sha256
+        (base32 "0mh85sx5xj06zjmf9fhcislkwlp7k54fz14k3ia1xxpw5f953y3c"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "marketing"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-marketing")
+    (synopsis "Tryton module to group marketing features")
+    (description "The @emph{Marketing} Tryton module defines the
+fundamentals for marketing modules.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
