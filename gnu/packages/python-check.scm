@@ -1133,6 +1133,38 @@ also ensuring that the notebooks are running without errors.")
      "This package provides a pytest plugin for testing console scripts.")
     (license license:expat)))
 
+(define-public python-pytest-tornasync
+  (package
+    (name "python-pytest-tornasync")
+    (version "0.6.0.post2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-tornasync" version))
+       (sha256
+        (base32
+         "0pdyddbzppkfqwa7g17sdfl4w2v1hgsky78l8f4c1rx2a7cvd0fp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false ; TODO: fails at "from test import MESSAGE, PAUSE_TIME"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "--verbose")))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/eukaryote/pytest-tornasync")
+    (synopsis "Pytest plugin for testing Tornado code")
+    (description
+     "This package provides a simple pytest plugin that provides some helpful
+fixtures for testing Tornado (version 5.0 or newer) apps and easy handling of
+plain (undecoratored) native coroutine tests.")
+    (license license:expat)))
+
 (define-public python-pytest-env
   (package
     (name "python-pytest-env")
