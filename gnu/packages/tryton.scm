@@ -4408,3 +4408,37 @@ user for a period of time only.")
     (description "The @emph{Web Shop} Tryton module facilitates storing
 configuration of an online web shop.")
     (license license:gpl3+)))
+
+(define-public trytond-web-shop-vue-storefront
+  (package
+    (name "trytond-web-shop-vue-storefront")
+    (version "6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_web_shop_vue_storefront" version))
+       (sha256
+        (base32 "0hccvk5i2qrczvbm66mnp8vcgr9zbnwqmbqmavqlkk7r7bqa1gch"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "web_shop_vue_storefront"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-product-attribute" ,trytond-product-attribute)
+       ("trytond-sale-promotion-coupon" ,trytond-sale-promotion-coupon)
+       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
+    (propagated-inputs
+     `(("python-elasticsearch" ,python-elasticsearch)
+       ("python-stdnum" ,python-stdnum)
+       ("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-web-shop" ,trytond-web-shop)
+       ("trytond-web-user" ,trytond-web-user)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-web-shop-vue-storefront")
+    (synopsis "Tryton module to integrate with Vue Storefront")
+    (description "This Tryton module provides the back-end to integrate with
+Vue Storefront 1.x.")
+    (license license:gpl3+)))
