@@ -1051,6 +1051,32 @@ the import of @emph{CODA} files as statement.  @emph{CODA} is a standard
 defined by Belgian \"febelfin\".")
     (license license:gpl3+)))
 
+(define-public trytond-account-statement-ofx
+  (package
+    (name "trytond-account-statement-ofx")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_statement_ofx" version))
+       (sha256
+        (base32 "1n24lwp1lfw59xdd7mqaz6ncr5b0bldr2qniqdnkvyaav0h8h5px"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_statement_ofx"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-ofxparse" ,python-ofxparse)
+       ("trytond" ,trytond)
+       ("trytond-account-statement" ,trytond-account-statement)
+       ("trytond-bank" ,trytond-bank)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-statement-ofx")
+    (synopsis "Tryton module to import OFX statements")
+    (description "The @emph{Account Statement OFX} Tryton module implements
+the import of the @emph{OFX} files as statement.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
