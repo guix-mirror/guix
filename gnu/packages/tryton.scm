@@ -3812,6 +3812,31 @@ other stock mecanisms to anticipate customer demand.")
 wizard \"Create Inventories\" under the \"Inventories\" sub-menu.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-location-move
+  (package
+    (name "trytond-stock-location-move")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_location_move" version))
+       (sha256
+        (base32 "1mljb97abwcmsl3zmz20b2kfa8wm9q405kr1lag7j5587j2b2h6f"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_location_move"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-stock-supply" ,trytond-stock-supply)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-location-move")
+    (synopsis "Tryton module to move storage locations")
+    (description "The @emph{Stock Location} move Tryton module allows to
+define some Locations as movable
+(like palette).")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
