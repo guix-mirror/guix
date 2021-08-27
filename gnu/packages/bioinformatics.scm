@@ -14773,6 +14773,28 @@ produced by Oxford Nanopore Technologies’ MinION, GridION or PromethION
 instruments, or Pacific Biosciences RSII or Sequel sequencers.")
    (license license:expat)))
 
+(define-public python-strawc
+  (package
+    (name "python-strawc")
+    (version "0.0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "strawC" version))
+       (sha256
+        (base32
+         "1z1gy8n56lhriy6hdkh9r82ndikndipq2cy2wh8q185qig4rimr6"))))
+    (build-system python-build-system)
+    (inputs
+     `(("curl" ,curl)
+       ("pybind11" ,pybind11)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/aidenlab/straw")
+    (synopsis "Stream data from .hic files")
+    (description "Straw is library which allows rapid streaming of contact
+data from @file{.hic} files.  This package provides Python bindings.")
+    (license license:expat)))
+
 (define-public r-ascat
   (package
    (name "r-ascat")
