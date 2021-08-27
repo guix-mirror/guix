@@ -2761,6 +2761,31 @@ historization of the purchase and adds a revision counter which increases each
 time the purchase is reset to draft.")
     (license license:gpl3+)))
 
+(define-public trytond-purchase-invoice-line-standalone
+  (package
+    (name "trytond-purchase-invoice-line-standalone")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_invoice_line_standalone" version))
+       (sha256
+        (base32 "1qwa8a1vxalvb6r3d1w5wwpa9kx7w8c879x1zb4wwc9nqpdji8v0"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_invoice_line_standalone"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice-line-standalone"
+        ,trytond-account-invoice-line-standalone)
+       ("trytond-purchase" ,trytond-purchase)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-purchase-invoice-line-standalone")
+    (synopsis "Tryton module for standalone invoice line from purchase")
+    (description "The @emph{Purchase Invoice Line Standalone} Tryton module
+makes purchase to generate invoice lines instead of invoices.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase-request
   (package
     (name "trytond-purchase-request")
