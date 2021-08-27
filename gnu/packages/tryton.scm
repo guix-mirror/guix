@@ -2786,6 +2786,32 @@ time the purchase is reset to draft.")
 makes purchase to generate invoice lines instead of invoices.")
     (license license:gpl3+)))
 
+(define-public trytond-purchase-price-list
+  (package
+    (name "trytond-purchase-price-list")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_price_list" version))
+       (sha256
+        (base32 "0y54b677dy1jpmclgxvbzs2zsypzkyvmdbx1i58j16hs24l8h0c8"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_price_list"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product-price-list" ,trytond-product-price-list)
+       ("trytond-purchase" ,trytond-purchase)))
+    (home-page "https://docs.tryton.org/projects/modules-purchase-price-list")
+    (synopsis "Tryton module to add price list on purchase")
+    (description "The @emph{Purchase Price List} Tryton Module allows price
+lists to be defined for suppliers.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase-request
   (package
     (name "trytond-purchase-request")
