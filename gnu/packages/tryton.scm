@@ -1842,6 +1842,43 @@ from the UNECE.  Supported formats are:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public trytond-incoterm
+  (package
+    (name "trytond-incoterm")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_incoterm" version))
+       (sha256
+        (base32 "09x53kqi7dvmr4kcri2b3f0lxyv99pi731vhk6581f3vy2bby97s"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "incoterm"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-request-quotation"
+        ,trytond-purchase-request-quotation)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-invoice-grouping" ,trytond-sale-invoice-grouping)
+       ("trytond-sale-opportunity" ,trytond-sale-opportunity)
+       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)
+       ("trytond-stock" ,trytond-stock)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-incoterm")
+    (synopsis "Tryton module for incoterms")
+    (description "The @emph{Incoterm} Tryton module is used to manage the
+Incoterms on sales, purchases and shipments.  The module contains the Incoterm
+versions of 2010 and 2020.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
