@@ -3912,6 +3912,32 @@ the shelf life of a lot expires in less than the configured shelf life delay,
 it is no more used to compute the forecast quantity of the stock.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-lot-unit
+  (package
+    (name "trytond-stock-lot-unit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_lot_unit" version))
+       (sha256
+        (base32 "1acvrj9af83gmfcp7kgyi37kv3v5910rh1q73scd37xbv7h8dyrm"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_lot_unit"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-production" ,trytond-production)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)
+       ("trytond-stock-lot" ,trytond-stock-lot)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-lot-unit")
+    (synopsis "Tryton module to define unit on stock lot")
+    (description "The @emph{Stock Lot Unit} Tryton module allows to define a
+unit and quantity on stock lot.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
