@@ -3082,6 +3082,33 @@ composed of action lines which can:")
 @code{Complaint} model.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-credit-limit
+  (package
+    (name "trytond-sale-credit-limit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_credit_limit" version))
+       (sha256
+        (base32 "1qj4lg5gjsqg27sv6l5afb3rgw46y008ywy6742w9ab6misy57dh"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_credit_limit"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-credit-limit" ,trytond-account-credit-limit)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-credit-limit")
+    (synopsis "Tryton module for sale credit limit")
+    (description "The @emph{Sale Credit Limit} Tryton module adds confirmed
+sale but not yet invoiced to the credit amount of the party and check the
+credit limit of the party when confirming a sale.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
