@@ -2938,6 +2938,37 @@ and unit price.  The secondary unit is defined on the product supplier or on
 the product with its factor against the purchase unit.")
     (license license:gpl3+)))
 
+(define-public trytond-purchase-shipment-cost
+  (package
+    (name "trytond-purchase-shipment-cost")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_shipment_cost" version))
+       (sha256
+        (base32 "0n54mkw8fbhyxn8sxrkn97bkx2c1j7bngsc7isc3md5c3kyi50nf"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_shipment_cost"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-account-stock-anglo-saxon" ,trytond-account-stock-anglo-saxon)
+       ("trytond-account-stock-continental" ,trytond-account-stock-continental)
+       ("trytond-purchase" ,trytond-purchase)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-purchase-shipment-cost")
+    (synopsis "Tryton module for purchase shipment costs")
+    (description "The @emph{Purchase Shipment Cost} Tryton module adds
+shipment costs to Supplier Shipment.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
