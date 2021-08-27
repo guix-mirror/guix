@@ -1457,6 +1457,30 @@ configuration file.")
 and account.")
     (license license:gpl3+)))
 
+(define-public trytond-carrier
+  (package
+    (name "trytond-carrier")
+    (version "6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_carrier" version))
+       (sha256
+        (base32 "0kp08jb5f86bzfyn99qs4k1047svdrkhz3jxv3jw46vrpc2s0c1y"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "carrier"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-country" ,trytond-country)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-carrier")
+    (synopsis "Tryton module with carriers")
+    (description "The @emph{Carrier} Tryton module defines the concept
+of carrier.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
