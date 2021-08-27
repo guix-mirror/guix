@@ -2125,6 +2125,28 @@ Template and Product.")
 (define-public python-trytond-product
   (deprecated-package "python-trytond-product" trytond-product))
 
+(define-public trytond-product-attribute
+  (package
+    (name "trytond-product-attribute")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_attribute" version))
+       (sha256
+        (base32 "0brvwvm3q2ik4vjb9cwd6jxddrmpp2vcafw8k675gy0xbbp1ddik"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_attribute"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-product-attribute")
+    (synopsis "Tryton module with product attributes")
+    (description "The @emph{Product Attribute} Tryton module defines the
+models `Attribute` and `Attribute Set` for products.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
