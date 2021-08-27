@@ -4355,3 +4355,26 @@ periods.")
     (description "The @emph{Timesheet Cost} Tryton module adds cost price per
 employee.")
     (license license:gpl3+)))
+
+(define-public trytond-user-role
+  (package
+    (name "trytond-user-role")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_user_role" version))
+       (sha256
+        (base32 "11sjz46kagrpig5n05pp52yph4z0l1zm140q9wsagjcmzkx7s6gf"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "user_role"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-user-role")
+    (synopsis "Tryton module to manage roles on users")
+    (description "This package provides a Tryton module for assigning roles to
+user instead of groups.  A Role is defined by a set of groups.  When a role is
+added to a user, it overrides the existing groups.  A role can be added to a
+user for a period of time only.")
+    (license license:gpl3+)))
