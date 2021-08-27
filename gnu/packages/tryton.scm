@@ -1384,6 +1384,32 @@ analytic accounts on purchase line.")
 analytic accounts on sale line.")
     (license license:gpl3+)))
 
+(define-public trytond-attendance
+  (package
+    (name "trytond-attendance")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_attendance" version))
+       (sha256
+        (base32 "1kwbxblpwjw9sv9axfp29vqgdkwkzf0c0vw8qx1fx8mfwv1hba5c"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "attendance"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-timesheet" ,trytond-timesheet)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)))
+    (home-page "https://docs.tryton.org/projects/modules-attendance")
+    (synopsis "Tryton module for recording employee attendance")
+    (description "The @emph{Attendance} Tryton module allows you to track the
+entry and exit time of employees.  The module also comes with a sheet that
+shows for each employee the total duration per day in the company and the
+detail of the time of entrance and exit")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
