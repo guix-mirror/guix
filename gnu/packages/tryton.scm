@@ -341,6 +341,35 @@ credit limit of parties.")
 Tryton.")
     (license license:gpl3+)))
 
+(define-public trytond-account-deposit
+  (package
+    (name "trytond-account-deposit")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_deposit" version))
+       (sha256
+        (base32 "005yw868wxv8fhp7dlqd2z19hhjlmk4cgqa36axdfjmbwxvh1r6r"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_deposit"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-deposit")
+    (synopsis "Tryton module for accounting deposit")
+    (description "The @emph{Account Deposit} Tryton module adds support for
+deposit accounting.
+
+A deposit is an amount paid by the customer prior to the company providing it
+with services or goods.  A wizard on invoice allows to recall prior deposit of
+the party.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
