@@ -3505,6 +3505,35 @@ line is over shipped more than the tolerance percentage, then a warning is
 raised.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-stock-quantity
+  (package
+    (name "trytond-sale-stock-quantity")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_stock_quantity" version))
+       (sha256
+        (base32 "0xi79nmizly3hfc1ppcid622nvby50524jflisfvmjb651ixpfl8"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_stock_quantity"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-stock-supply" ,trytond-stock-supply)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-stock-quantity")
+    (synopsis "Tryton module to add stock warning on sale")
+    (description "The @emph{Sale Stock Quantity} Tryton module checks the
+stock quantity of the products when quoting a sale.  The check will warn the
+user if the forecast quantity at the sale date (and further dates until next
+supply) is lower than the quantity sold by considering other sales and the
+stock forecasts.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
