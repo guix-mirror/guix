@@ -3561,6 +3561,30 @@ stock forecasts.")
 services and recurrence rule models.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-subscription-asset
+  (package
+    (name "trytond-sale-subscription-asset")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_subscription_asset" version))
+       (sha256
+        (base32 "1j160sqfvzqv0ah85w2bsc4fixrxhzjq0lbin2bgasmdm3yqfqdj"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_subscription_asset"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-sale-subscription" ,trytond-sale-subscription)
+       ("trytond-stock-lot" ,trytond-stock-lot)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-subscription-asset")
+    (synopsis "Tryton module to handle asset in the sale subscriptions")
+    (description "The @emph{Sale Subscription Asset} Tryton module adds the
+notion of asset to the sale subscription module.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
