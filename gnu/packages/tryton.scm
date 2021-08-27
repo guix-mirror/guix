@@ -2374,6 +2374,30 @@ to compute prices per product or category.")
 date and end date conditions to the price list lines.")
     (license license:gpl3+)))
 
+(define-public trytond-product-price-list-parent
+  (package
+    (name "trytond-product-price-list-parent")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_price_list_parent" version))
+       (sha256
+        (base32 "15jdw9qj2fffml9x4vdlzp3iz5gs2l597hpf5y5p887mmx9aa8cn"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_price_list_parent"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product-price-list" ,trytond-product-price-list)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-product-price-list-parent")
+    (synopsis "Tryton module to use price from another price list")
+    (description "The @emph{Product Price List Parent} Tryton module adds a
+parent to the price list and the keyword `parent_unit_price` for the formula
+which contains the unit price computed by the parent price list.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
