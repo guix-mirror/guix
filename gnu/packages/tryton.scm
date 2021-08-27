@@ -3585,6 +3585,35 @@ services and recurrence rule models.")
 notion of asset to the sale subscription module.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-supply
+  (package
+    (name "trytond-sale-supply")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_supply" version))
+       (sha256
+        (base32 "0lk4pj2fr1q603wnia96i7fzym8pncpvy0hg41q4dkr380nm3qzs"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_supply"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-request" ,trytond-purchase-request)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-supply")
+    (synopsis "Tryton module for sale supply")
+    (description "The @emph{Sale Supply} Tryton module adds a \"supply on sale
+option\" to purchasable products.  If checked, it will generate a purchase
+request for each sale line of this product regardless of the stock levels.
+Once the purchased products are received they are assigned on the customer
+shipments.  If the purchase is cancelled the sale goes back to the default
+supply method.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
