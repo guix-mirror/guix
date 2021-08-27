@@ -3534,6 +3534,33 @@ supply) is lower than the quantity sold by considering other sales and the
 stock forecasts.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-subscription
+  (package
+    (name "trytond-sale-subscription")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_subscription" version))
+       (sha256
+        (base32 "092ljl0ywybwchp4qfki752nclqc6hkx2h99cd1h3g998jv3l72x"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_subscription"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-subscription")
+    (synopsis "Tryton module for subscription")
+    (description "The @emph{Sale Subscription} module defines subscription,
+services and recurrence rule models.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
