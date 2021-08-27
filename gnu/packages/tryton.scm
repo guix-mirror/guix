@@ -1949,6 +1949,31 @@ marketing actions to be automated.  It is based on scenarios and activities
 that are executed on selected records.")
     (license license:gpl3+)))
 
+(define-public trytond-marketing-email
+  (package
+    (name "trytond-marketing-email")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_marketing_email" version))
+       (sha256
+        (base32 "07zh1pni4kpm6bsgyizz0a5k64nyxc9laxxaih9py7d24p9pgvky"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "marketing_email"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-marketing" ,trytond-marketing)
+       ("trytond-party" ,trytond-party)
+       ("trytond-web-shortener" ,trytond-web-shortener)
+       ("trytond-web-user" ,trytond-web-user)))
+    (home-page "https://docs.tryton.org/projects/modules-marketing-email")
+    (synopsis "Tryton module to manage marketing mailing lists")
+    (description "This package provides a Tryton module for managing marketing
+mailing lists.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
