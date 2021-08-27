@@ -3339,6 +3339,33 @@ price list on sale.  A price list can be set per party or as default.")
 customer's names and codes for products or variants.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-promotion
+  (package
+    (name "trytond-sale-promotion")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_promotion" version))
+       (sha256
+        (base32 "1bvk14sjlqrlg2wakihrcbz8vl40hr6isbc3ijdsv5g1khl3j74i"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_promotion"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-simpleeval" ,python-simpleeval)
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-product-price-list" ,trytond-product-price-list)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-price-list" ,trytond-sale-price-list)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-promotion")
+    (synopsis "Tryton module for sale promotion")
+    (description "The @emph{Sale Promotion} module allows to apply promotions
+on sale based on criteria.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
