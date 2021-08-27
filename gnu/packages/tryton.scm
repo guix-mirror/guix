@@ -4051,6 +4051,32 @@ use as default destination the preferred locations associated to the current
 warehouse.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-quantity-early-planning
+  (package
+    (name "trytond-stock-quantity-early-planning")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_quantity_early_planning" version))
+       (sha256
+        (base32 "05djbhz82wjkgvfvlzkhzi94nfg0cif3jfmh1jv0zixzfv87chqs"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_quantity_early_planning"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-production" ,trytond-production)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-quantity-early-planning")
+    (synopsis "Tryton module to plan earlier shipments and productions")
+    (description "The @emph{Stock Quantity Early Planning} Tryton module helps
+reducing stock level by proposing to consume earlier.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
