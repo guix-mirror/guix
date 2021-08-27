@@ -3452,6 +3452,31 @@ unit is defined on the product with its factor against the sale unit.")
 cost for sale.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-shipment-grouping
+  (package
+    (name "trytond-sale-shipment-grouping")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_shipment_grouping" version))
+       (sha256
+        (base32 "0n1h50j6c4za7a16pgn916cqjxxrd2qs16hb2h42wsp5p2bkfww2"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_shipment_grouping"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-shipment-grouping")
+    (synopsis "Tryton module to group sale stock moves")
+    (description "The @emph{Sale Shipment Grouping} module adds an option to
+define how stock moves generated from sales will be grouped.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
