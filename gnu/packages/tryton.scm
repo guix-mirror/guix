@@ -1251,6 +1251,36 @@ from the Product Measurements")
 report on cash basis.")
     (license license:gpl3+)))
 
+(define-public trytond-account-tax-rule-country
+  (package
+    (name "trytond-account-tax-rule-country")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_tax_rule_country" version))
+       (sha256
+        (base32 "0gy2zp023d2wqcivaiw5db5d8f4wrpqdnd6jywjhpkvqk4ay6i27"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_tax_rule_country"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-country" ,trytond-country)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-tax-rule-country")
+    (synopsis "Tryton module to add countries on tax rules")
+    (description "The @emph{Account Tax Rule Country} Tryton module extends
+the tax rule to add origin and destination countries and subdivisions as
+criteria.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
