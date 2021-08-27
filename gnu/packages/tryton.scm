@@ -1360,6 +1360,30 @@ analytic accounts on invoice line.")
 analytic accounts on purchase line.")
     (license license:gpl3+)))
 
+(define-public trytond-analytic-sale
+  (package
+    (name "trytond-analytic-sale")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_analytic_sale" version))
+       (sha256
+        (base32 "07l97jmg67468pihymfcjagqbbfdcmry3654f24zbmnljxy2qm1x"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "analytic_sale"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-analytic-account" ,trytond-analytic-account)
+       ("trytond-analytic-invoice" ,trytond-analytic-invoice)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-analytic-sale")
+    (synopsis "Tryton module to add analytic accounting on sale")
+    (description "The @emph{Analytic Sale} Tryton module allows to set
+analytic accounts on sale line.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
