@@ -1199,6 +1199,34 @@ continental accounting model for stock valuation.")
 allocate landed cost on Supplier Shipments after their reception.")
     (license license:gpl3+)))
 
+(define-public trytond-account-stock-landed-cost-weight
+  (package
+    (name "trytond-account-stock-landed-cost-weight")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_stock_landed_cost_weight" version))
+       (sha256
+        (base32 "10i0ww3k2cgdg227lv6h8ag2j6rm07maylbh3n0grwxfy8dbq34m"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_stock_landed_cost_weight"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-stock-landed-cost" ,trytond-account-stock-landed-cost)
+       ("trytond-product" ,trytond-product)
+       ("trytond-product-measurements" ,trytond-product-measurements)
+       ("trytond-stock-shipment-measurements"
+        ,trytond-stock-shipment-measurements)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-stock-landed-cost-weight")
+    (synopsis "Tryton module for landed cost per weight")
+    (description "The @emph{Account Stock Landed Cost Weight} Tryton module
+adds an allocation method based on weight of each line.  The Weight is taken
+from the Product Measurements")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
