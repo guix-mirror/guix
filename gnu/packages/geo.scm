@@ -1407,7 +1407,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "17329")
+    (version "18118")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1416,7 +1416,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "0bq6mirdsi0kmhjfzfp3innxi5a4395d7mas7ikxaz0cziljrz1i"))
+                "0109ddpxilm7f57n1kl4nf4lw0lh7jfmhfwf724nzlcz4k23mrs0"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1432,6 +1432,7 @@ to the OSM opening hours specification.")
        ("java-jmapviewer" ,java-jmapviewer)
        ("java-jsonp-api" ,java-jsonp-api)
        ("java-jsonp-impl" ,java-jsonp-impl); runtime dependency
+       ("java-jsr305" ,java-jsr305)
        ("java-metadata-extractor" ,java-metadata-extractor)
        ("java-opening-hours-parser" ,java-opening-hours-parser)
        ("java-openjfx-media" ,java-openjfx-media)
@@ -1461,7 +1462,8 @@ to the OSM opening hours specification.")
              ;; which has renamed its classes to another namespace.  Rename them
              ;; back so they can be used with our version of jcs.
              (substitute* (find-files "." ".*.java$")
-               (("jcs3") "jcs"))
+               (("jcs3") "jcs")
+               (("ICache.NAME_COMPONENT_DELIMITER") "\":\""))
              #t))
          (add-before 'build 'fix-classpath
            (lambda* (#:key inputs #:allow-other-keys)
