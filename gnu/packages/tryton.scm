@@ -702,6 +702,29 @@ defer the expense or the revenue of an invoice line over many periods.")
 the historization of the invoice and its related fields.")
     (license license:gpl3+)))
 
+(define-public trytond-account-invoice-line-standalone
+  (package
+    (name "trytond-account-invoice-line-standalone")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_invoice_line_standalone" version))
+       (sha256
+        (base32 "1affxhinyzz1lqfq621f76fixnx523fi7qrxwsqa4f1b6g31651a"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_invoice_line_standalone"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-invoice-line-standalone")
+    (synopsis "Tryton module to have standalone invoice lines")
+    (description "The @emph{Account Invoice Line Standalone} Tryton module
+allows to create invoice line not linked to an invoice.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice-stock
   (package
     (name "trytond-account-invoice-stock")
