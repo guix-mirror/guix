@@ -14795,6 +14795,53 @@ instruments, or Pacific Biosciences RSII or Sequel sequencers.")
 data from @file{.hic} files.  This package provides Python bindings.")
     (license license:expat)))
 
+(define-public python-pybbi
+  (package
+    (name "python-pybbi")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pybbi" version))
+       (sha256
+        (base32
+         "1hvy2f28i2b41l1pq15vciqbj538n0lichp8yr6413jmgg06xdsk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false ; tests require network access
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-cc
+           (lambda _ (setenv "CC" "gcc")))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (copy-recursively "tests" "/tmp/tests")
+               (with-directory-excursion "/tmp/tests"
+                 (invoke "python" "-m" "pytest" "-v"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("python-cython" ,python-cython)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/nvictus/pybbi")
+    (synopsis "Python bindings to UCSC Big Binary file library")
+    (description
+     "This package provides Python bindings to the UCSC Big
+Binary (bigWig/bigBed) file library.  This provides read-level access to local
+and remote bigWig and bigBed files but no write capabilitites.  The main
+feature is fast retrieval of range queries into numpy arrays.")
+    (license license:expat)))
+
 (define-public r-ascat
   (package
    (name "r-ascat")
