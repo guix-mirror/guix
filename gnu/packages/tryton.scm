@@ -806,6 +806,34 @@ average price of the posted invoice lines that are linked to it.")
 payments for receivable or payable Account Move Lines.")
     (license license:gpl3+)))
 
+(define-public trytond-account-payment-braintree
+  (package
+    (name "trytond-account-payment-braintree")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_payment_braintree" version))
+       (sha256
+        (base32 "0dgw47q4m5l13bhfl1kdpajh0q94pazdrq9sqzf1vg9mggai2gvi"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_payment_braintree"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-braintree" ,python-braintree)
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-payment" ,trytond-account-payment)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-payment-braintree")
+    (synopsis "Tryton module for Braintree payment")
+    (description "The @emph{Account Payment Braintree} Tryton module allows
+receipt of payments using Braintree.  It uses the Drop-in UI in a checkout
+form to handle the payment method nonce for card and other supported payment
+methods.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
