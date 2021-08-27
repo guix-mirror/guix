@@ -540,6 +540,29 @@ accounting requirements in Europe.  It includes:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public trytond-account-fr
+  (package
+    (name "trytond-account-fr")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_fr" version))
+       (sha256
+        (base32 "1zpzdnd68gsjrz4as019amygdh8yad8wvwrm22dbccwmbbnyvqpg"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_fr"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-party-siret" ,trytond-party-siret)))
+    (home-page "https://docs.tryton.org/projects/modules-account-fr")
+    (synopsis "Tryton module with French chart of accounts")
+    (description "This package provides the French standard chart of account
+for Tryton.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
