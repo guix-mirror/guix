@@ -4150,6 +4150,34 @@ cost on the outgoing moves which is calculated from the carrier purchase
 price.  This cost is added to the product margin reports.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-shipment-measurements
+  (package
+    (name "trytond-stock-shipment-measurements")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_shipment_measurements" version))
+       (sha256
+        (base32 "1h9ijs7yc0013w7cwa4i7ny3dndbgycxxpkai7qw0ygqf9ajmh8c"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_shipment_measurements"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-stock-package" ,trytond-stock-package)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-product-measurements" ,trytond-product-measurements)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-shipment-measurements")
+    (synopsis "Tryton module to add measurements to shipment")
+    (description "The @emph{Stock Shipment Measurements} Tryton module adds
+weight and volume on shipments and packages.  They are computed using the
+measurement and the quantity of their moves.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
