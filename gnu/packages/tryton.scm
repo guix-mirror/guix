@@ -4490,3 +4490,25 @@ provides support of Stripe payment for Vue Storefront integration.")
 shortened.  It also counts the number of times the URL is accessed and
 optionally triggers action.")
     (license license:gpl3+)))
+
+(define-public trytond-web-user
+  (package
+    (name "trytond-web-user")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_web_user" version))
+       (sha256
+        (base32 "1k07d1kcfm2hwwqcyy8k5mjbhhgrnji0hadn487zsx1zp50r6rds"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "web_user"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-web-user")
+    (synopsis "Tryton module to manage Web users")
+    (description "The @emph{Web User} Tryton module provides facilities to
+manage external user accessing from the web.")
+    (license license:gpl3+)))
