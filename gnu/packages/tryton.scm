@@ -1433,6 +1433,30 @@ used in the list of authentications in the session section of the
 configuration file.")
     (license license:gpl3+)))
 
+(define-public trytond-bank
+  (package
+    (name "trytond-bank")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_bank" version))
+       (sha256
+        (base32 "0qwgp2s88n4hcqqxg1g34lmmvq5spdlkm978gzn6s96kmmzang0c"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "bank"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-stdnum" ,python-stdnum)
+       ("trytond" ,trytond)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-bank")
+    (synopsis "Tryton module with banks")
+    (description "The @emph{Bank} Tryton module defines the concept of bank
+and account.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
