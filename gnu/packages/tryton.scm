@@ -1227,6 +1227,30 @@ adds an allocation method based on weight of each line.  The Weight is taken
 from the Product Measurements")
     (license license:gpl3+)))
 
+(define-public trytond-account-tax-cash
+  (package
+    (name "trytond-account-tax-cash")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_tax_cash" version))
+       (sha256
+        (base32 "1di8brrj4jpx99i0553whyh2fddayvwq06dwdshb3iibgv4357cr"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_tax_cash"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-tax-cash")
+    (synopsis "Tryton module to support tax report on cash basis")
+    (description "The @emph{Account Tax Cash} Tryton module allows to make tax
+report on cash basis.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
