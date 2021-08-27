@@ -26799,3 +26799,28 @@ services' API.  It includes a pre-defined set of classes for API resources
 that initialize themselves dynamically from API responses which makes it
 compatible with a wide range of versions of the Stripe API.")
     (license license:expat)))
+
+(define-public python-platformdirs
+  (package
+    (name "python-platformdirs")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "platformdirs" version))
+       (sha256
+        (base32 "07hq5qrp7pqj63iczg01wbf5ii6f0ncd0dq5mzkdhsslmg9slbb3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "https://github.com/platformdirs/platformdirs")
+    (synopsis "Determine the appropriate platform-specific directories")
+    (description "When writing applications, finding the right location to
+store user data and configuration varies per platform.  Even for
+single-platform apps, there may by plenty of nuances in figuring out the right
+location.  This small Python module determines the appropriate
+platform-specific directories, e.g. the ``user data dir''.")
+    (license license:expat)))
