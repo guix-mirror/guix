@@ -3288,6 +3288,31 @@ lead/opportunity model.")
 payments prior to the creation of any invoice.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-price-list
+  (package
+    (name "trytond-sale-price-list")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_price_list" version))
+       (sha256
+        (base32 "0xg0i12a7billpdv13arvc3j5jsbn9gzis8snkl84315ayz3irq4"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_price_list"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product-price-list" ,trytond-product-price-list)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-price-list")
+    (synopsis "Tryton module to add price list on sale")
+    (description "The @emph{Sale Price List} Tryton module adds support for
+price list on sale.  A price list can be set per party or as default.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
