@@ -678,6 +678,30 @@ original quantity, once with the inverted quantity.")
 defer the expense or the revenue of an invoice line over many periods.")
     (license license:gpl3+)))
 
+(define-public trytond-account-invoice-history
+  (package
+    (name "trytond-account-invoice-history")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_invoice_history" version))
+       (sha256
+        (base32 "0pq1raj6v76vqsb2mk1bfv1vg1ngfk9iiai30rlzj2zcl53phcvj"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_invoice_history"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-invoice-history")
+    (synopsis "Tryton module to historize invoices")
+    (description "The @emph{Account Invoice History} Tryton module activates
+the historization of the invoice and its related fields.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice-stock
   (package
     (name "trytond-account-invoice-stock")
