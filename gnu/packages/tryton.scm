@@ -3962,6 +3962,36 @@ unit and quantity on stock lot.")
 packaging information about customer and supplier return shipments.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-package-shipping
+  (package
+    (name "trytond-stock-package-shipping")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_package_shipping" version))
+       (sha256
+        (base32 "09j7v64wmpiw1bh9byjq4shsd5474rq0mfx7wwak8hn0v5ni7imn"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_package_shipping"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-product" ,trytond-product)
+       ("trytond-product-measurements" ,trytond-product-measurements)
+       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)
+       ("trytond-stock" ,trytond-stock)
+       ("trytond-stock-package" ,trytond-stock-package)
+       ("trytond-stock-shipment-measurements"
+        ,trytond-stock-shipment-measurements)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-package-shipping")
+    (synopsis "Tryton base module for interacting with shipping services")
+    (description "This Tryton module is the Fundamental module required to
+interact with shipping service providers.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
