@@ -1507,6 +1507,41 @@ of carrier.")
 method \"on percentage\" on carrier.")
     (license license:gpl3+)))
 
+(define-public trytond-carrier-subdivision
+  (package
+    (name "trytond-carrier-subdivision")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_carrier_subdivision" version))
+       (sha256
+        (base32 "1mmbz541yywdgm16ij2xfvm50xad24plmqdb739ssg6jj0skmji4"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "carrier_subdivision"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-carrier" ,trytond-carrier)))
+    (home-page "https://docs.tryton.org/projects/modules-carrier-subdivision")
+    (synopsis "Tryton module that allows carriers selection to be restricted
+by subdivision")
+    (description "The @emph{Carrier Subdivision} Tryton module extends the
+carrier selection pattern with
+
+@itemize
+@item the warehouse Subdivision,
+@item the customer Subdivision,
+@item a regular expression to match against warehouse postal code and
+@item A regular expression to match against customer postal code.
+@end itemize
+
+These can be used to restrict the usage of a carrier to a specific subdivision
+or a specific postal code.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
