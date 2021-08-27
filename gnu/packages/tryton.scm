@@ -3366,6 +3366,30 @@ customer's names and codes for products or variants.")
 on sale based on criteria.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-promotion-coupon
+  (package
+    (name "trytond-sale-promotion-coupon")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_promotion_coupon" version))
+       (sha256
+        (base32 "1hkbsamsf6swx05ij2yh7b3nvmcnlvf9xbz9r7hfs6blx2jkxs3p"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_promotion_coupon"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-promotion" ,trytond-sale-promotion)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-promotion-coupon")
+    (synopsis "Tryton module for sale promotion coupon")
+    (description "The @emph{Sale Promotion Coupon} Tryton module adds coupon
+to the promotions.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
