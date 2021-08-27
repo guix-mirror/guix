@@ -14842,6 +14842,30 @@ and remote bigWig and bigBed files but no write capabilitites.  The main
 feature is fast retrieval of range queries into numpy arrays.")
     (license license:expat)))
 
+(define-public python-dna-features-viewer
+  (package
+    (name "python-dna-features-viewer")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dna_features_viewer" version))
+       (sha256
+        (base32
+         "0vci6kg2id6r6rh3cifq7ccnh7j0mb8iqg3hji6rva0ayrdqzafc"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; there are none
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-matplotlib" ,python-matplotlib)))
+    (home-page
+     "https://github.com/Edinburgh-Genome-Foundry/DnaFeaturesViewer")
+    (synopsis "Plot features from DNA sequences")
+    (description
+     "DNA Features Viewer is a Python library to visualize DNA features,
+e.g. from GenBank or Gff files, or Biopython SeqRecords.")
+    (license license:expat)))
+
 (define-public r-ascat
   (package
    (name "r-ascat")
