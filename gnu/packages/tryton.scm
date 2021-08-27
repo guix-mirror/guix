@@ -628,6 +628,31 @@ term.")
 (define-public python-trytond-account-invoice
   (deprecated-package "python-trytond-account-invoice" trytond-account-invoice))
 
+(define-public trytond-account-invoice-correction
+  (package
+    (name "trytond-account-invoice-correction")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_invoice_correction" version))
+       (sha256
+        (base32 "152jxsl6v2wclk1wjhykbyvianh47cp2yg575hkx18dfynyp7nmw"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_invoice_correction"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-invoice-correction")
+    (synopsis "Tryton module to correct invoice")
+    (description "The @emph{Account Invoice Correction} Tryton module adds a
+wizard on invoice which allows select lines for which the unit price must be
+corrected.  A new invoice is created with those lines in double: once with the
+original quantity, once with the inverted quantity.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice-stock
   (package
     (name "trytond-account-invoice-stock")
