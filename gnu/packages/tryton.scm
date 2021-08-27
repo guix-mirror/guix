@@ -2576,6 +2576,43 @@ enter timesheet for production works.")
 project and task and the basis for simple project management.")
     (license license:gpl3+)))
 
+(define-public trytond-project-invoice
+  (package
+    (name "trytond-project-invoice")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_project_invoice" version))
+       (sha256
+        (base32 "0wxgpsn5kwfz4f51icmc0p7r615lpr286ifwyz0xnd6rrh0glvmw"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "project_invoice"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-product" ,trytond-product)
+       ("trytond-project" ,trytond-project)
+       ("trytond-project-revenue" ,trytond-project-revenue)
+       ("trytond-timesheet" ,trytond-timesheet)))
+    (home-page "https://docs.tryton.org/projects/modules-project-invoice")
+    (synopsis "Tryton module to invoice projects")
+    (description "The @emph{Project Invoice} Tryton module adds invoice
+methods on projects.  The methods are:
+@itemize
+@item Manual: Tryton doesn’t create any invoice.
+@item On Effort: The invoices are created based on the Effort hours
+      for all children works with 100% progress.
+@item On Progress: The invoices are create proportionally to the Progress
+      of the Effort hours of each children work.
+@item On Timesheet: The invoices are created based on the timesheets
+      encoded on all children works.
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
