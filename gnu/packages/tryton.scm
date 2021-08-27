@@ -4077,6 +4077,32 @@ warehouse.")
 reducing stock level by proposing to consume earlier.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-quantity-issue
+  (package
+    (name "trytond-stock-quantity-issue")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_quantity_issue" version))
+       (sha256
+        (base32 "1fk250l09l2q4jcx1vh9nkkpn419ng993bkp2bmk6dpk7xs1qv0v"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_quantity_issue"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-production" ,trytond-production)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-quantity-issue")
+    (synopsis "Tryton module to manage quantity issue with stock")
+    (description "The @emph{Stock Quantity Issue} Tryton module helps to solve
+stock quantity issues.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
