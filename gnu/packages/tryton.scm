@@ -2499,6 +2499,33 @@ of times.  On occasion there can be a production with the remaining
 quantity.")
     (license license:gpl3+)))
 
+(define-public trytond-production-work
+  (package
+    (name "trytond-production-work")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_production_work" version))
+       (sha256
+        (base32 "01a09snawlr224s5aqhrdkal14qry4hlfsglnsk09yzbw6fx196b"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "production_work"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-production" ,trytond-production)
+       ("trytond-production-routing" ,trytond-production-routing)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-production-work")
+    (synopsis "Tryton module for production work")
+    (description "The @emph{Production Work} Tryton module allows to manage
+work order for each production.  It also adds in the production cost for the
+work cost.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
