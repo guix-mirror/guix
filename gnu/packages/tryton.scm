@@ -2526,6 +2526,31 @@ work order for each production.  It also adds in the production cost for the
 work cost.")
     (license license:gpl3+)))
 
+(define-public trytond-production-work-timesheet
+  (package
+    (name "trytond-production-work-timesheet")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_production_work_timesheet" version))
+       (sha256
+        (base32 "1r7k25wddd381g0p5pj3m8jqvbg8g6ss0ifnhhjya3b6x0d41jz9"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "production_work_timesheet"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-production-routing" ,trytond-production-routing)
+       ("trytond-production-work" ,trytond-production-work)
+       ("trytond-timesheet" ,trytond-timesheet)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-production-work-timesheet")
+    (synopsis "Tryton module for timesheet on production work")
+    (description "The @emph{Production Work Timesheet} Tryton module allows to
+enter timesheet for production works.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
