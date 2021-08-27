@@ -1602,6 +1602,31 @@ commission for sale's agents.  A commission move is created when posting the
 invoice, following the agent's commission plan.")
     (license license:gpl3+)))
 
+(define-public trytond-commission-waiting
+  (package
+    (name "trytond-commission-waiting")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_commission_waiting" version))
+       (sha256
+        (base32 "113wzwjip8virdh9bnh14vl29wb3w7a32skk5yibja819s19ycdn"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "commission_waiting"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-commission" ,trytond-commission)))
+    (home-page "https://docs.tryton.org/projects/modules-commission-waiting")
+    (synopsis "Tryton module for commission waiting")
+    (description "The @emph{Commission Waiting} Tryton module allows to
+generate account move for each commission between the expense/revenue account
+to a waiting account defined on the agent.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
