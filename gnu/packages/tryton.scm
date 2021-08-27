@@ -3109,6 +3109,29 @@ sale but not yet invoiced to the credit amount of the party and check the
 credit limit of the party when confirming a sale.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-discount
+  (package
+    (name "trytond-sale-discount")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_discount" version))
+       (sha256
+        (base32 "0ss976dcx6k2z2gdbhcgdp6d561b2vwwgf83xdl2pc28q2d3rmh6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_discount"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-discount")
+    (synopsis "Tryton module that manages discount on sale")
+    (description "The @emph{Sale Discount} Tryton module adds discount on sale
+line.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
