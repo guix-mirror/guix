@@ -4306,3 +4306,28 @@ forecast into account to compute purchase requests.")
     (description "The @emph{Stock Supply Production} module adds automatic
 supply mechanisms via production request.")
     (license license:gpl3+)))
+
+(define-public trytond-timesheet
+  (package
+    (name "trytond-timesheet")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_timesheet" version))
+       (sha256
+        (base32 "0airh5jvcdjbkb71p684dr5qgsnpam2hhmq6gswclgnx3nd1lz6a"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "timesheet"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-company-work-time" ,trytond-company-work-time)))
+    (home-page "https://docs.tryton.org/projects/modules-timesheet")
+    (synopsis "Tryton module with timesheets")
+    (description "The @emph{Timesheet} Tryton module allows to track the time
+spent by employees on various works.  This module also comes with several
+reports that show the time spent by employees on works following various time
+periods.")
+    (license license:gpl3+)))
