@@ -1481,6 +1481,32 @@ and account.")
 of carrier.")
     (license license:gpl3+)))
 
+(define-public trytond-carrier-percentage
+  (package
+    (name "trytond-carrier-percentage")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_carrier_percentage" version))
+       (sha256
+        (base32 "0glgjf733qliqxbr1sykxn2rlphagnpixhkg84my7bv6cxfmvkh6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "carrier_percentage"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-purchase-shipment-cost" ,trytond-purchase-shipment-cost)
+       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-carrier" ,trytond-carrier)
+       ("trytond-currency" ,trytond-currency)))
+    (home-page "https://docs.tryton.org/projects/modules-carrier-percentage")
+    (synopsis "Tryton module to add cost method based on percentage")
+    (description "The @emph{Carrier Percentage} Tryton module adds a cost
+method \"on percentage\" on carrier.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
