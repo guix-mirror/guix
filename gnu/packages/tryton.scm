@@ -1572,6 +1572,36 @@ or a specific postal code.")
 the weight is greater or equal but smaller than the next line.")
     (license license:gpl3+)))
 
+(define-public trytond-commission
+  (package
+    (name "trytond-commission")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_commission" version))
+       (sha256
+        (base32 "0a5grn6gvvwn0prr5fpgyj4kz283w08a8svmv3b4a4c5pchik3hv"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "commission"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-sale" ,trytond-sale)))
+    (propagated-inputs
+     `(("python-simpleeval" ,python-simpleeval)
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-commission")
+    (synopsis "Tryton module for commission")
+    (description "The @emph{Commission} Tryton module allows to manageq
+commission for sale's agents.  A commission move is created when posting the
+invoice, following the agent's commission plan.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
