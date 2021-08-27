@@ -862,6 +862,32 @@ receivable/payable account to a clearing account defined on the payment
 journal.")
     (license license:gpl3+)))
 
+(define-public trytond-account-payment-sepa
+  (package
+    (name "trytond-account-payment-sepa")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_payment_sepa" version))
+       (sha256
+        (base32 "0clnl2lql5q0gh48lad3vw47xajgd3cdj4kbmvdi72jh775p174w"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_payment_sepa"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-stdnum" ,python-stdnum)
+       ("trytond" ,trytond)
+       ("trytond-account-payment" ,trytond-account-payment)
+       ("trytond-bank" ,trytond-bank)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-payment-sepa")
+    (synopsis "Tryton module for SEPA payment")
+    (description "The @emph{Account Payment SEPA} Tryton module allows to
+generate SEPA files for a Payment Group.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
