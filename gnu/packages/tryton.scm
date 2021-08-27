@@ -1077,6 +1077,38 @@ defined by Belgian \"febelfin\".")
 the import of the @emph{OFX} files as statement.")
     (license license:gpl3+)))
 
+(define-public trytond-account-statement-rule
+  (package
+    (name "trytond-account-statement-rule")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_statement_rule" version))
+       (sha256
+        (base32 "0kg6lf2wa5scwxggr8p7r7j6jd3a34qv2dcs9w18ra1qvg6p4kmp"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_statement_rule"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-statement" ,trytond-account-statement)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-statement-rule")
+    (synopsis "Tryton module to automate statement import with rules")
+    (description "The @emph{Account Statement Rule} Tryton module allows rules
+to be defined to complete statement lines from imported files.
+
+When the @emph{Apply Rule} button is clicked on a statement, each rule is
+tested in order against each origin that does not have any lines until one is
+found that matches.  Then the rule found is used to create the statement lines
+linked to the origin.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
