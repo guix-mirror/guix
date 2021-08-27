@@ -1812,6 +1812,36 @@ electronic document from UN/CEFACT.  Supported formats are:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public trytond-edocument-unece
+  (package
+    (name "trytond-edocument-unece")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_edocument_unece" version))
+       (sha256
+        (base32 "1ri3gjvk0h0sljbgh7h2j0rbr3953p3k21l8x6rhrnh1q2rqgi70"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "edocument_unece"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-edocument-unece")
+    (synopsis "Tryton module for electronic document UNECE codes")
+    (description "The @emph{Edocument UNECE} Tryton module adds several codes
+from the UNECE.  Supported formats are:
+
+@itemize
+@item Recommendation N°. 20 Codes for
+      Units of Measure Used in International Trade
+@item 5153  Duty or tax or fee type name code
+@item 5305  Duty or tax or fee category code
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
