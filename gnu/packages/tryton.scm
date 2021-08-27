@@ -2474,6 +2474,31 @@ the production.")
 routings for production: Routing, Step and Operation.")
     (license license:gpl3+)))
 
+(define-public trytond-production-split
+  (package
+    (name "trytond-production-split")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_production_split" version))
+       (sha256
+        (base32 "0jl2jnm0lwybwjw2w4nb7ih2s3z7lp00l6zm5vsx4phcvfvzcxgi"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "production_split"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-production" ,trytond-production)))
+    (home-page "https://docs.tryton.org/projects/modules-production-split")
+    (synopsis "Tryton module to split production")
+    (description "The @emph{Production Split} Tryton module adds on the
+production a wizard that allows to split it.  The production is split into
+productions of Quantity.  If a count is set, it will be split only this number
+of times.  On occasion there can be a production with the remaining
+quantity.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
