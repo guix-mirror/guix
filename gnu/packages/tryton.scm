@@ -3233,6 +3233,35 @@ time the sale is reset to draft.")
 option to define how invoice lines generated from sales will be grouped.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-opportunity
+  (package
+    (name "trytond-sale-opportunity")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_opportunity" version))
+       (sha256
+        (base32 "0rvj73382h2ha6jqhini0fzpn40w190qij1r7k2fa0c9ls15rrp5"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_opportunity"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-opportunity")
+    (synopsis "Tryton module with leads and opportunities")
+    (description "The @emph{Sale Opportunity} Tryton module defines the
+lead/opportunity model.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
