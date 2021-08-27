@@ -915,6 +915,33 @@ generate SEPA files for a Payment Group.")
 CFONB flavors to SEPA messages.")
     (license license:gpl3+)))
 
+(define-public trytond-account-payment-stripe
+  (package
+    (name "trytond-account-payment-stripe")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_payment_stripe" version))
+       (sha256
+        (base32 "18hr2lrrx9asb0d3cjcpska4bv825yjln9cbqjzg0xbl36z6w3s2"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_payment_stripe"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-stripe" ,python-stripe)
+       ("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-payment" ,trytond-account-payment)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-payment-stripe")
+    (synopsis "Tryton module for Stripe payment")
+    (description "The @emph{Account Payment Stripe} Tryton module for
+receiving payments from Stripe.  It uses Stripe.js and Stripe Elements in a
+checkout form to handle Setup Intent and Payment Intent by card.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
