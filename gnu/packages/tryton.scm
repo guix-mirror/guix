@@ -3477,6 +3477,34 @@ cost for sale.")
 define how stock moves generated from sales will be grouped.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-shipment-tolerance
+  (package
+    (name "trytond-sale-shipment-tolerance")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_shipment_tolerance" version))
+       (sha256
+        (base32 "0zigl695hyw7zyk86y1ng6mnvd9v8dbk05c5n6q14yvh4gz3ri5l"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_shipment_tolerance"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-shipment-tolerance")
+    (synopsis "Tryton module to define tolerance for sale shipment")
+    (description "The @emph{Sale Shipment Tolerance} module adds under and
+over shipment tolerance on the sale.  If the quantity of a sale line is under
+shipped but inside the tolerance percentage, then the line will be considered
+as fully shipped and no back-order will be created.  If the quantity of a sale
+line is over shipped more than the tolerance percentage, then a warning is
+raised.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
