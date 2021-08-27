@@ -3837,6 +3837,29 @@ define some Locations as movable
 (like palette).")
     (license license:gpl3+)))
 
+(define-public trytond-stock-location-sequence
+  (package
+    (name "trytond-stock-location-sequence")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_location_sequence" version))
+       (sha256
+        (base32 "0lpvgk5s7v30c0hicqc2m6apv8gzd1d6229yv1lrp2g62yp9pa9f"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_location_sequence"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-location-sequence")
+    (synopsis "Tryton module to add sequence on location")
+    (description "The @emph{Stock Location Sequence} Tryton module adds
+ordering to location.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
