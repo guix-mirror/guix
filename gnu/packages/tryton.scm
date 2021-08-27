@@ -1974,6 +1974,34 @@ that are executed on selected records.")
 mailing lists.")
     (license license:gpl3+)))
 
+(define-public trytond-notification-email
+  (package
+    (name "trytond-notification-email")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_notification_email" version))
+       (sha256
+        (base32 "12hi2p400b15vsmq2a4yifxppc08zdf5l64svv987mxxqv6403ma"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "notification_email"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-commission" ,trytond-commission)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)
+       ("trytond-web-user" ,trytond-web-user)))
+    (propagated-inputs
+     `(("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-notification-email")
+    (synopsis "Tryton module for sending email notifications")
+    (description "The @emph{Notification Email} Tryton module allows to define
+email templates which will be sent to a list of recipients when a trigger is
+fired on a record event.  Extra reports from the same record can be attached
+to the email.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
