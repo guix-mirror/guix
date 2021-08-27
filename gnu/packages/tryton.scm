@@ -510,6 +510,36 @@ A wizard allows to generate the following AEAT files:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public trytond-account-eu
+  (package
+    (name "trytond-account-eu")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_eu" version))
+       (sha256
+        (base32 "1x3w7iijkckv20q8lpqb5fnfrvddm130f51mcpnh4hlyx14q1c5i"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_eu"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-eu")
+    (synopsis "Tryton module for european accounting")
+    (description "This package provides a Tryton module implementing common
+accounting requirements in Europe.  It includes:
+
+@itemize
+@item EC Sales List (ESL)
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
