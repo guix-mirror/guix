@@ -1654,6 +1654,33 @@ company and employee and extend the user model.")
 (define-public python-trytond-company
   (deprecated-package "python-trytond-company" trytond-company))
 
+(define-public trytond-company-work-time
+  (package
+    (name "trytond-company-work-time")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_company_work_time" version))
+       (sha256
+        (base32 "0aasp12l66zcys9w3qc4ysi2krd5c9x3xxaxvr29j7zl7nz05bwx"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "company_work_time"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)))
+    (home-page "https://docs.tryton.org/projects/modules-company-work-time")
+    (synopsis "Tryton module to add work time on company")
+    (description "The @emph{Company Work Time} Tryton module adds work time
+management.
+
+The Company Work Time module adds 4 new fields (Hours per Work Day, Hours per
+Work Week, Hours per Work Month, Hours per Work Year) on the company form that
+allow to define how much hours are spent by an employee in a day, a week, a
+month and a year of work.")
+    (license license:gpl3+)))
+
 (define-public trytond-country
   (package
     (name "trytond-country")
