@@ -4378,3 +4378,33 @@ user instead of groups.  A Role is defined by a set of groups.  When a role is
 added to a user, it overrides the existing groups.  A role can be added to a
 user for a period of time only.")
     (license license:gpl3+)))
+
+(define-public trytond-web-shop
+  (package
+    (name "trytond-web-shop")
+    (version "6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_web_shop" version))
+       (sha256
+        (base32 "0gnq9hyx4x681hcmqsm2d6rga7chbaf2r2k2nmnkjq6izg5ivas2"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "web_shop"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-product-attribute" ,trytond-product-attribute)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)
+       ("trytond-web-user" ,trytond-web-user)))
+    (home-page "https://docs.tryton.org/projects/modules-web-shop")
+    (synopsis "Tryton module that provides a common base for webshops")
+    (description "The @emph{Web Shop} Tryton module facilitates storing
+configuration of an online web shop.")
+    (license license:gpl3+)))
