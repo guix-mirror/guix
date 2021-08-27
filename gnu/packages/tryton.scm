@@ -1410,6 +1410,29 @@ shows for each employee the total duration per day in the company and the
 detail of the time of entrance and exit")
     (license license:gpl3+)))
 
+(define-public trytond-authentication-sms
+  (package
+    (name "trytond-authentication-sms")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_authentication_sms" version))
+       (sha256
+        (base32 "1g46mimgjkz2lvh90p2ffmkfgwl7w03iqnvqlcghwpxk5vyxw3sj"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "authentication_sms"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-authentication-sms")
+    (synopsis "Tryton module to authenticate users via SMS")
+    (description "The @emph{Authentication SMS} Tryton module allows users to
+authenticate via SMS.  It adds a new authentication method sms, which can be
+used in the list of authentications in the session section of the
+configuration file.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
