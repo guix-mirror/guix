@@ -265,6 +265,34 @@ of fixed assets.")
 chart of account for Belgium.")
     (license license:gpl3+)))
 
+(define-public trytond-account-cash-rounding
+  (package
+    (name "trytond-account-cash-rounding")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_cash_rounding" version))
+       (sha256
+        (base32 "15xl36929zgfw9rlwaqdqs5l4ijspfx8i060z6884p2nizhh69s5"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_cash_rounding"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-sale" ,trytond-sale)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-currency" ,trytond-currency)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-cash-rounding")
+    (synopsis "Tryton module to round cash amount")
+    (description "The @emph{Account Cash Rounding} Tryton module allows cash
+amounts to be rounded using the cash rounding factor of the currency.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
