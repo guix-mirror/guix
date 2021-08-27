@@ -215,6 +215,33 @@ most of accounting needs.")
 (define-public python-trytond-account
   (deprecated-package "python-trytond-account" trytond-account))
 
+(define-public trytond-account-asset
+  (package
+    (name "trytond-account-asset")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_asset" version))
+       (sha256
+        (base32 "12qf6f4hpxi6c3mx18d07ljbzzr58h0lg8yz95nby3g3mpx2mlaz"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_asset"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-purchase" ,trytond-purchase)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-account-asset")
+    (synopsis "Tryton module for assets management")
+    (description "The @emph{Account Asset} Tryton module adds the depreciation
+of fixed assets.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
