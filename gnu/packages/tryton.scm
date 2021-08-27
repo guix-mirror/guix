@@ -2702,6 +2702,42 @@ the linked time sheets and the linked purchase lines.")
 (define-public python-trytond-purchase
   (deprecated-package "python-trytond-purchase" trytond-purchase))
 
+(define-public trytond-purchase-amendment
+  (package
+    (name "trytond-purchase-amendment")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_amendment" version))
+       (sha256
+        (base32 "0bgk5ib7y1nzdrfx00g9qr2lxmjkascvh1caps21r12czz0iz5fx"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_amendment"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-history" ,trytond-purchase-history)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-purchase-amendment")
+    (synopsis "Tryton module to amend purchases")
+    (description "The @emph{Purchase Amendment} Tryton module allows you to
+change purchases that are being processed and keep track of the changes.  An
+amendment is composed of action lines which can:
+
+@itemize
+@item recompute taxes (if the supplier tax rules or product taxes have
+      changed),
+@item change the payment term,
+@item change the party and the address,
+@item change the warehouse, or
+@item change a purchase line: (product, quantity and unit of measure,
+      unit price or description).
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase-request
   (package
     (name "trytond-purchase-request")
