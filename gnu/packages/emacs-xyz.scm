@@ -3442,7 +3442,7 @@ restore the saved place.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.19.0")
+    (version "2.19.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3451,7 +3451,7 @@ restore the saved place.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wycrcl79mv253vzf2y92qz9i52mi5xa82f9i4rgnqa02f2m633h"))))
+                "0z6f8y1m9amhg427iz1d4xcyr6n0kj5w7kmiz134p320ixsdnzd8"))))
     (build-system emacs-build-system)
     (arguments `(#:tests? #t))
     (home-page "https://github.com/magnars/dash.el")
