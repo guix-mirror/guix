@@ -1136,14 +1136,14 @@ pictures, sounds, or video.")
 (define-public postgresql-9.6
   (package
     (inherit postgresql-10)
-    (version "9.6.22")
+    (version "9.6.23")
     (source (origin
               (inherit (package-source postgresql-10))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0c19kzrj5ib5ygmavf5d6qvxdwrxzzz6jz1r2dl5b815208cscix"))))))
+                "1fa735lrmv2vrfiixg73nh024gxlagcbrssklvgwdf0s82cgfjd8"))))))
 
 (define-public postgresql postgresql-13)
 
