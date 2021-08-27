@@ -1352,6 +1352,22 @@ result back.")
 (define-public python2-pytest-xdist
   (package-with-python2 python-pytest-xdist))
 
+(define-public python-pytest-xdist-next
+  (package/inherit python-pytest-xdist
+    (name "python-pytest-xdist")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-xdist" version))
+       (sha256
+        (base32
+         "19cy57jrf3pwi7x6fnbxryjvqagsl0yv736jnynvr3yqhlpxxv78"))))
+    (propagated-inputs
+     `(("python-execnet" ,python-execnet)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-forked" ,python-pytest-forked)))))
+
 (define-public python-pytest-timeout
   (package
     (name "python-pytest-timeout")
