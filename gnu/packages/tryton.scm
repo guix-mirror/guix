@@ -3787,6 +3787,31 @@ to create stock moves toward customers with a date in the future.  This allows
 other stock mecanisms to anticipate customer demand.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-inventory-location
+  (package
+    (name "trytond-stock-inventory-location")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_inventory_location" version))
+       (sha256
+        (base32 "0mvgday5qhmx89xikklr2ad2xa7zxkiysxa2bqsf76imvx4801q6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_inventory_location"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-inventory-location")
+    (synopsis "Tryton module to create inventories by locations")
+    (description "The @emph{Stock Inventory Location} Tryton module adds a new
+wizard \"Create Inventories\" under the \"Inventories\" sub-menu.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
