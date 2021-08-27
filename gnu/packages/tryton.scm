@@ -2349,6 +2349,31 @@ following measurements to Product:")
 to compute prices per product or category.")
     (license license:gpl3+)))
 
+(define-public trytond-product-price-list-dates
+  (package
+    (name "trytond-product-price-list-dates")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_price_list_dates" version))
+       (sha256
+        (base32 "0p1n4qivj9gfhdy0357n53wswyi14rnanc2bkayiv3zfr7qkf2m1"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_price_list_dates"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-sale-price-list" ,trytond-sale-price-list)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product-price-list" ,trytond-product-price-list)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-product-price-list-dates")
+    (synopsis "Tryton module to add dates on price list")
+    (description "The @emph{Product Price List Dates} Tryton module adds start
+date and end date conditions to the price list lines.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
