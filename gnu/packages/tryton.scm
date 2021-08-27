@@ -3208,6 +3208,31 @@ historization of the sale and adds a revision counter which increases each
 time the sale is reset to draft.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-invoice-grouping
+  (package
+    (name "trytond-sale-invoice-grouping")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_invoice_grouping" version))
+       (sha256
+        (base32 "1h8lcm8dg3i6644c50d9y1lca9x7k8l6cvwzkabvzixm54mflqsx"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_invoice_grouping"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-party" ,trytond-party)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-invoice-grouping")
+    (synopsis "Tryton module to group sale invoices")
+    (description "The @emph{Sale Invoice Grouping} Tryton module adds an
+option to define how invoice lines generated from sales will be grouped.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
