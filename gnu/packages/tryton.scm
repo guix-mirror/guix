@@ -834,6 +834,34 @@ form to handle the payment method nonce for card and other supported payment
 methods.")
     (license license:gpl3+)))
 
+(define-public trytond-account-payment-clearing
+  (package
+    (name "trytond-account-payment-clearing")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_payment_clearing" version))
+       (sha256
+        (base32 "0dvjfgp0lrqn838wchkmhbbg4990xx2jv337rivnis164nw84dn0"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_payment_clearing"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-statement" ,trytond-account-statement)
+       ("trytond-account-statement-rule" ,trytond-account-statement-rule)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-payment" ,trytond-account-payment)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-payment-clearing")
+    (synopsis "Tryton module for payment clearing")
+    (description "The @emph{Account Payment Clearing} Tryton module allows to
+generate account move when a payment is succeeded between the
+receivable/payable account to a clearing account defined on the payment
+journal.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
