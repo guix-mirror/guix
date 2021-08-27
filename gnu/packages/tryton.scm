@@ -2303,6 +2303,28 @@ components to products.  This enables a defined set of products to be sold or
 purchased using a single line.")
     (license license:gpl3+)))
 
+(define-public trytond-product-measurements
+  (package
+    (name "trytond-product-measurements")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_measurements" version))
+       (sha256
+        (base32 "0za3p0wxh2kb6f49455pggnpmy0vfiwj95j5c3l63x8q5yp8vdjl"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_measurements"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-product-measurements")
+    (synopsis "Tryton module to add measurements to product")
+    (description "The @emph{Product Measurements} Tryton module adds this
+following measurements to Product:")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
