@@ -2325,6 +2325,30 @@ purchased using a single line.")
 following measurements to Product:")
     (license license:gpl3+)))
 
+(define-public trytond-product-price-list
+  (package
+    (name "trytond-product-price-list")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_price_list" version))
+       (sha256
+        (base32 "1csr2g7wx89kykhm76dyrjn0nicvjmc4razqfqpj9rhdpwppdgr6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_price_list"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-simpleeval" ,python-simpleeval)
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-product-price-list")
+    (synopsis "Tryton module with price list")
+    (description "The @emph{Product Price List} Tryton module provides formula
+to compute prices per product or category.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
