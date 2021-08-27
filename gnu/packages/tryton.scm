@@ -4022,6 +4022,35 @@ interact with shipping service providers.")
 you to generate the UPS labels per package using the UPS webservices.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-product-location
+  (package
+    (name "trytond-stock-product-location")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_product_location" version))
+       (sha256
+        (base32 "1r0a9pkyjh1n0xhax583v80fawnszxaf9q8r3851325an2rmndx8"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_product_location"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-production" ,trytond-production)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-product-location")
+    (synopsis "Tryton module to add default location on product")
+    (description "The @emph{Stock Product Location} Tryton module adds on the
+product form a list of preferred location by warehouse.  This list is used
+when a supplier shipment is received: the auto-generated Inventory Moves will
+use as default destination the preferred locations associated to the current
+warehouse.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
