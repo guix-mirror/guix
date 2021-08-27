@@ -2030,6 +2030,30 @@ addresses.")
 (define-public python-trytond-party
   (deprecated-package "python-trytond-party" trytond-party))
 
+(define-public trytond-party-avatar
+  (package
+    (name "trytond-party-avatar")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_party_avatar" version))
+       (sha256
+        (base32 "1g0f4522bfw2ycr05yq9k570amwcfxf9sza89lhhpzg0kxx0mpq2"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "party_avatar"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-company" ,trytond-company)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-party-avatar")
+    (synopsis "Tryton module that adds avatars to parties")
+    (description "The @emph{Party Avatar} Tryton module adds an avatar to each
+party.")
+    (license license:gpl3+)))
+
 (define-public trytond-product
   (package
     (name "trytond-product")
