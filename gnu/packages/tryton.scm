@@ -3031,6 +3031,32 @@ to be generated that contain aggregated sales figures.")
 for advance payment management on the sale.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-amendment
+  (package
+    (name "trytond-sale-amendment")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_amendment" version))
+       (sha256
+        (base32 "1vkcyfp30hng2vj1h1pvwrlvp9b59pkzzlmgnj6gvs867l8f2zva"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_amendment"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-history" ,trytond-sale-history)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-amendment")
+    (synopsis "Tryton module to amend sales")
+    (description "The @emph{Sale Amendment} Tryton module allows you to change
+sales that are being processed and keep track of the changes.  An amendment is
+composed of action lines which can:")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
