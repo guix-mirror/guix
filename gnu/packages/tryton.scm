@@ -3132,6 +3132,32 @@ credit limit of the party when confirming a sale.")
 line.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-extra
+  (package
+    (name "trytond-sale-extra")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_extra" version))
+       (sha256
+        (base32 "0n6fxv573bszhfw1ik16y9754jfp6r2rrliprm6iv7v5ld3r1yqi"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_extra"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-product-price-list" ,trytond-product-price-list)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-price-list" ,trytond-sale-price-list)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-extra")
+    (synopsis "Tryton module for sale extra")
+    (description "The @emph{Sale Extra} Tryton module allows to add extra line
+on sale based on criteria.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
