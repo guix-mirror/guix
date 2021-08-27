@@ -2194,6 +2194,29 @@ reference field classification to the product template.")
 adds the taxonomic classification to the products.")
     (license license:gpl3+)))
 
+(define-public trytond-product-cost-fifo
+  (package
+    (name "trytond-product-cost-fifo")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_cost_fifo" version))
+       (sha256
+        (base32 "1zksnawvnbf1l2hkyxw4m85ysjy6i8kbx103sz4p9a9bgvjn3ai6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_cost_fifo"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-product-cost-fifo")
+    (synopsis "Tryton module to add FIFO cost method")
+    (description "The @emph{Product Cost FIFO} Tryton module add a
+first-in-first-out option in the `Cost Method` field of the product form.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
