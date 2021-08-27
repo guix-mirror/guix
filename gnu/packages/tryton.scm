@@ -2054,6 +2054,28 @@ addresses.")
 party.")
     (license license:gpl3+)))
 
+(define-public trytond-party-relationship
+  (package
+    (name "trytond-party-relationship")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_party_relationship" version))
+       (sha256
+        (base32 "03lkjmhinxm75schfn596vyg8459fx2spdyh372ikra3zdp8pg75"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "party_relationship"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-party-relationship")
+    (synopsis "Party Relationship module for Tryton")
+    (description "The @emph{Party Relationship} Tryton module allows to define
+different types of relations between parties.")
+    (license license:gpl3+)))
+
 (define-public trytond-product
   (package
     (name "trytond-product")
