@@ -1173,6 +1173,32 @@ anglo-saxon accounting model for stock valuation.")
 continental accounting model for stock valuation.")
     (license license:gpl3+)))
 
+(define-public trytond-account-stock-landed-cost
+  (package
+    (name "trytond-account-stock-landed-cost")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_stock_landed_cost" version))
+       (sha256
+        (base32 "1p5xgd76585i55zcwvsi2gqhl0br9gbw398ap7m0cvadxfa6nxch"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_stock_landed_cost"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-stock-landed-cost")
+    (synopsis "Tryton module for landed cost")
+    (description "The @emph{Account Stock Landed Cost} Tryton module allows to
+allocate landed cost on Supplier Shipments after their reception.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
