@@ -888,6 +888,33 @@ journal.")
 generate SEPA files for a Payment Group.")
     (license license:gpl3+)))
 
+(define-public trytond-account-payment-sepa-cfonb
+  (package
+    (name "trytond-account-payment-sepa-cfonb")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_payment_sepa_cfonb" version))
+       (sha256
+        (base32 "0ccn5s360w78wqnq86qfyci8wii4n1n3pd9wvwsnbrpmabj1byv1"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_payment_sepa_cfonb"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-payment" ,trytond-account-payment)
+       ("trytond-account-payment-sepa" ,trytond-account-payment-sepa)
+       ("trytond-bank" ,trytond-bank)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-payment-sepa-cfonb")
+    (synopsis "Tryton module for CFONB SEPA payment")
+    (description "The @emph{account payment sepa cfonb} Tryton module adds
+CFONB flavors to SEPA messages.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
