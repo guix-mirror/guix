@@ -2171,6 +2171,29 @@ tools for other modules to create classifications of products.  It adds a
 reference field classification to the product template.")
     (license license:gpl3+)))
 
+(define-public trytond-product-classification-taxonomic
+  (package
+    (name "trytond-product-classification-taxonomic")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_classification_taxonomic" version))
+       (sha256
+        (base32 "1pkk0z4bl1pz2yxs46b18fj35zwa80dnbickjg1ad66n9yrmifk6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_classification_taxonomic"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product-classification" ,trytond-product-classification)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-product-classification-taxonomic")
+    (synopsis "Tryton module to implement product classification taxonomic")
+    (description "The @emph{Product Classification Taxonomic} Tryton module
+adds the taxonomic classification to the products.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
