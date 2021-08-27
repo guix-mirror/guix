@@ -2613,6 +2613,30 @@ methods on projects.  The methods are:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public trytond-project-plan
+  (package
+    (name "trytond-project-plan")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_project_plan" version))
+       (sha256
+        (base32 "0yanvfmg4nmbc322h6w9m7asv4bm95y2wksi4rrvlbs84njgvhnq"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "project_plan"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-project" ,trytond-project)
+       ("trytond-timesheet" ,trytond-timesheet)))
+    (home-page "https://docs.tryton.org/projects/modules-project-plan")
+    (synopsis "Tryton module to add planning capabilities on projects")
+    (description "The @emph{Project Plan} Tryton module adds planning features
+on top of the Project module.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
