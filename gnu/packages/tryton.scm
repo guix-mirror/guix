@@ -3158,6 +3158,33 @@ line.")
 on sale based on criteria.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-gift-card
+  (package
+    (name "trytond-sale-gift-card")
+    (version "6.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_gift_card" version))
+       (sha256
+        (base32 "0bbcgm7xs5hmn3axz62jkarhl9v43nk9mk9zldlf9qrfqy89fd80"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_gift_card"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-gift-card")
+    (synopsis "Tryton module to manage gift cards")
+    (description "The @emph{Sale Gift Card} Tryton module manages the selling
+and redeeming of gift cards.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
