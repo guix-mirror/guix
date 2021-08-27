@@ -293,6 +293,32 @@ chart of account for Belgium.")
 amounts to be rounded using the cash rounding factor of the currency.")
     (license license:gpl3+)))
 
+(define-public trytond-account-credit-limit
+  (package
+    (name "trytond-account-credit-limit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_credit_limit" version))
+       (sha256
+        (base32 "1ni4cfydypxrkdj7fc0j4js9ygfkxa22ii5db2p89z2izbg1hxd8"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_credit_limit"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-dunning" ,trytond-account-dunning)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-credit-limit")
+    (synopsis "Tryton module for account credit limit")
+    (description "The @emph{Account Credit Limit} Tryton module for manages
+credit limit of parties.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
