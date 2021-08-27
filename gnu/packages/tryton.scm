@@ -3992,6 +3992,36 @@ packaging information about customer and supplier return shipments.")
 interact with shipping service providers.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-package-shipping-ups
+  (package
+    (name "trytond-stock-package-shipping-ups")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_package_shipping_ups" version))
+       (sha256
+        (base32 "1dw6amd1kvpsldk14m656c0hpazf1ljzz2zri00nqq11d9x8xab5"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_package_shipping_ups"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("trytond" ,trytond)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)
+       ("trytond-stock-package" ,trytond-stock-package)
+       ("trytond-stock-package-shipping" ,trytond-stock-package-shipping)
+       ("trytond-stock-shipment-measurements"
+        ,trytond-stock-shipment-measurements)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-package-shipping-ups")
+    (synopsis "UPS connector for the Tryton application plateform")
+    (description "The @emph{Stock Package Shipping UPS} Tryton module allows
+you to generate the UPS labels per package using the UPS webservices.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
