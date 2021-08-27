@@ -3886,6 +3886,32 @@ ordering to location.")
 (define-public python-trytond-stock-lot
   (deprecated-package "python-trytond-stock-lot" trytond-stock-lot))
 
+(define-public trytond-stock-lot-sled
+  (package
+    (name "trytond-stock-lot-sled")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_lot_sled" version))
+       (sha256
+        (base32 "1x8sjhgbakqbgfhrrl7b1b0961riqibs6q6lmgmyrvjyrxx0hpig"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_lot_sled"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)
+       ("trytond-stock-lot" ,trytond-stock-lot)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-lot-sled")
+    (synopsis "Tryton module for shelf life expiration date of product lots")
+    (description "The @emph{Stock Lot Sled} Tryton module adds the \"Shelf
+Live Expiration Date\" anf \"Expiration Date\" on \"lot of products\".  When
+the shelf life of a lot expires in less than the configured shelf life delay,
+it is no more used to compute the forecast quantity of the stock.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-supply
   (package
     (name "trytond-stock-supply")
