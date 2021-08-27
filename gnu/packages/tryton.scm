@@ -4280,3 +4280,29 @@ a supplying may happens at any day of the week.")
     (description "The @emph{Stock Supply Forecast} Tryton module takes
 forecast into account to compute purchase requests.")
     (license license:gpl3+)))
+
+(define-public trytond-stock-supply-production
+  (package
+    (name "trytond-stock-supply-production")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_supply_production" version))
+       (sha256
+        (base32 "1qyvj61hwn3xgjqagnr7d28qkiniw5fp0b5vmn9wii9grf7p4m8d"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_supply_production"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-production" ,trytond-production)
+       ("trytond-stock" ,trytond-stock)
+       ("trytond-stock-supply" ,trytond-stock-supply)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-stock-supply-production")
+    (synopsis "Tryton module for stock supply of production")
+    (description "The @emph{Stock Supply Production} module adds automatic
+supply mechanisms via production request.")
+    (license license:gpl3+)))
