@@ -2637,6 +2637,38 @@ methods on projects.  The methods are:
 on top of the Project module.")
     (license license:gpl3+)))
 
+(define-public trytond-project-revenue
+  (package
+    (name "trytond-project-revenue")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_project_revenue" version))
+       (sha256
+        (base32 "0gji7kpq4l1smxvj6dqdpcyp2ml4ywfhagf6xm813y71mrlfvmka"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "project_revenue"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-purchase" ,trytond-purchase)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-project" ,trytond-project)
+       ("trytond-timesheet" ,trytond-timesheet)
+       ("trytond-timesheet-cost" ,trytond-timesheet-cost)))
+    (home-page "https://docs.tryton.org/projects/modules-project-revenue")
+    (synopsis "Tryton module to add revenue on project")
+    (description "The @emph{Project Revenue} Tryton module computes revenue
+and cost per task and project.  The revenue uses the list price of the
+product.  If the product's unit of measure is time based, the revenue is
+computed as the product of the price and the hours of effort otherwise the
+price is considered as fixed.  The cost is computed by summing the cost of all
+the linked time sheets and the linked purchase lines.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
