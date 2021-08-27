@@ -76,6 +76,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/home-services.scm                         \
   %D%/home-services/symlink-manager.scm         \
   %D%/home-services/fontutils.scm               \
+  %D%/home-services/configuration.scm           \
   %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
