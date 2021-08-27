@@ -1109,6 +1109,39 @@ found that matches.  Then the rule found is used to create the statement lines
 linked to the origin.")
     (license license:gpl3+)))
 
+(define-public trytond-account-stock-anglo-saxon
+  (package
+    (name "trytond-account-stock-anglo-saxon")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_stock_anglo_saxon" version))
+       (sha256
+        (base32 "090a4ykrlk2xpqxqhmpa2jrbjkrvhibm60ilp1n28wisbgv9d3di"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_stock_anglo_saxon"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-supply-drop-shipment"
+        ,trytond-sale-supply-drop-shipment)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-account-stock-continental"
+        ,trytond-account-stock-continental)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-stock-anglo-saxon")
+    (synopsis "Tryton module for anglo-saxon real-time stock valuation")
+    (description "The @emph{Account Stock Anglo Saxon} Tryton module adds the
+anglo-saxon accounting model for stock valuation.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
