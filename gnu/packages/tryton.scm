@@ -319,6 +319,28 @@ amounts to be rounded using the cash rounding factor of the currency.")
 credit limit of parties.")
     (license license:gpl3+)))
 
+(define-public trytond-account-de-skr03
+  (package
+    (name "trytond-account-de-skr03")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_de_skr03" version))
+       (sha256
+        (base32 "1dhgspabr2bm0y6qkzh5kz6badhf23arzkw7lra1zsn52r23j9dl"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_de_skr03"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)))
+    (home-page "https://docs.tryton.org/projects/modules-account-de-skr03")
+    (synopsis "Tryton module with German chart of accounts SKR03")
+    (description "This package provides the German SKR03 chart of accounts for
+Tryton.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
