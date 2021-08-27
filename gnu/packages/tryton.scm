@@ -394,6 +394,31 @@ the party.")
 receivable move lines.")
     (license license:gpl3+)))
 
+(define-public trytond-account-dunning-email
+  (package
+    (name "trytond-account-dunning-email")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_dunning_email" version))
+       (sha256
+        (base32 "0sbh2rnziw5fhlbaq4n8q9rwqcgz35rik77dbvhflyyjdxh51vfq"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_dunning_email"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-dunning" ,trytond-account-dunning)
+       ("trytond-account-dunning-letter" ,trytond-account-dunning-letter)
+       ("trytond-party" ,trytond-party)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-dunning-email")
+    (synopsis "Tryton module for account dunning email")
+    (description "This package provides a Tryton module for sending dunning
+emails.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
