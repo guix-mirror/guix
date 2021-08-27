@@ -242,6 +242,29 @@ most of accounting needs.")
 of fixed assets.")
     (license license:gpl3+)))
 
+(define-public trytond-account-be
+  (package
+    (name "trytond-account-be")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_be" version))
+       (sha256
+        (base32 "1l4zxsh9f3ndsgj3224xv23nr7gbg5kwrydwgv34nlkyxp5557dk"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_be"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-eu" ,trytond-account-eu)))
+    (home-page "https://docs.tryton.org/projects/modules-account-be")
+    (synopsis "Tryton module with Belgian chart of accounts")
+    (description "The @emph{Account BE} Tryton module defines the standard
+chart of account for Belgium.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
