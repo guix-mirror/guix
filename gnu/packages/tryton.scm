@@ -4331,3 +4331,27 @@ spent by employees on various works.  This module also comes with several
 reports that show the time spent by employees on works following various time
 periods.")
     (license license:gpl3+)))
+
+(define-public trytond-timesheet-cost
+  (package
+    (name "trytond-timesheet-cost")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_timesheet_cost" version))
+       (sha256
+        (base32 "0pjsdgad2plbx8k6mh6mpa6qbz6lp30nnpv7ydyz0gsgb6jz7li6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "timesheet_cost"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)
+       ("trytond-timesheet" ,trytond-timesheet)))
+    (home-page "https://docs.tryton.org/projects/modules-timesheet-cost")
+    (synopsis "Tryton module to add cost on timesheet")
+    (description "The @emph{Timesheet Cost} Tryton module adds cost price per
+employee.")
+    (license license:gpl3+)))
