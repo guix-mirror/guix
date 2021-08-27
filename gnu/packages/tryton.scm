@@ -2738,6 +2738,29 @@ amendment is composed of action lines which can:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public trytond-purchase-history
+  (package
+    (name "trytond-purchase-history")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_history" version))
+       (sha256
+        (base32 "18mb1vqmf9c934jp2qjwj4mi0sx99m8005vxc42mjj1f5qkxxsgg"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_history"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-purchase" ,trytond-purchase)))
+    (home-page "https://docs.tryton.org/projects/modules-purchase-history")
+    (synopsis "Tryton module to historize purchases")
+    (description "The @emph{Purchase History} Tryton module activates the
+historization of the purchase and adds a revision counter which increases each
+time the purchase is reset to draft.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase-request
   (package
     (name "trytond-purchase-request")
