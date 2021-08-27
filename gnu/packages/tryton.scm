@@ -4232,3 +4232,27 @@ mechanisms and introduces the concepts of order point.")
 
 (define-public python-trytond-stock-supply
   (deprecated-package "python-trytond-stock-supply" trytond-stock-supply))
+
+(define-public trytond-stock-supply-day
+  (package
+    (name "trytond-stock-supply-day")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_supply_day" version))
+       (sha256
+        (base32 "1b6q2zk0qnsxdhlqgsnb49prgn6sgqlpr84vy31a2p83mwiz0fqr"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_supply_day"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-purchase" ,trytond-purchase)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-supply-day")
+    (synopsis "Tryton module to add supply weekdays")
+    (description "The @emph{Stock Supply Day} Tryton module adds a Week Days
+list on the Product Supplier form.  This allow to restrict the supply week
+days for each supplier on each product.  If no days are defined for a supplier
+a supplying may happens at any day of the week.")
+    (license license:gpl3+)))
