@@ -1336,6 +1336,30 @@ required to analyse accounting using multiple different axes.")
 analytic accounts on invoice line.")
     (license license:gpl3+)))
 
+(define-public trytond-analytic-purchase
+  (package
+    (name "trytond-analytic-purchase")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_analytic_purchase" version))
+       (sha256
+        (base32 "1yx3w3p98y11qw99jy02kal9393y6jpxazsfcznsffgigw2vl3y6"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "analytic_purchase"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-analytic-account" ,trytond-analytic-account)
+       ("trytond-analytic-invoice" ,trytond-analytic-invoice)
+       ("trytond-purchase" ,trytond-purchase)))
+    (home-page "https://docs.tryton.org/projects/modules-analytic-purchase")
+    (synopsis "Tryton module to add analytic accounting on purchase")
+    (description "The @emph{Analytic Purchase} Tryton module allows to set
+analytic accounts on purchase line.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
