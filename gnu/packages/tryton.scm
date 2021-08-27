@@ -2450,6 +2450,30 @@ set to @code{waiting}, a purchase order is created and its cost is added to
 the production.")
     (license license:gpl3+)))
 
+(define-public trytond-production-routing
+  (package
+    (name "trytond-production-routing")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_production_routing" version))
+       (sha256
+        (base32 "0qypqsf36lf02wrbv7pwhg2vv7004g7c6vxd1z2aiwj58g8q7894"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "production_routing"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-stock-supply-production" ,trytond-stock-supply-production)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-production" ,trytond-production)))
+    (home-page "https://docs.tryton.org/projects/modules-production-routing")
+    (synopsis "Tryton module for production routing")
+    (description "The @emph{Production Routing} Tryton module defines the
+routings for production: Routing, Step and Operation.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
