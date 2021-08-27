@@ -3706,6 +3706,31 @@ inventory to control and update stock levels.")
 (define-public python-trytond-stock
   (deprecated-package "python-trytond-stock" trytond-stock))
 
+(define-public trytond-stock-assign-manual
+  (package
+    (name "trytond-stock-assign-manual")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_assign_manual" version))
+       (sha256
+        (base32 "0106x21ncxiyd4jsbdapmf6gfix6infjf59807j2lqmrblb3z25f"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_assign_manual"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-production" ,trytond-production)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-assign-manual")
+    (synopsis "Tryton module to assign manually stock move")
+    (description "The @emph{Stock Assign Manual} Tryton module adds a wizard
+on shipments and production that allows you to decide from which precise
+location to pick products.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
