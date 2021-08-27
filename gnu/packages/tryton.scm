@@ -419,6 +419,31 @@ receivable move lines.")
 emails.")
     (license license:gpl3+)))
 
+(define-public trytond-account-dunning-fee
+  (package
+    (name "trytond-account-dunning-fee")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_dunning_fee" version))
+       (sha256
+        (base32 "1h8qlrdvpyyf36cdss5lv3qp4h4xs6kp3ybh9ci14mhwy0jyni75"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_dunning_fee"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-dunning-letter" ,trytond-account-dunning-letter)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-dunning" ,trytond-account-dunning)
+       ("trytond-account-product" ,trytond-account-product)))
+    (home-page "https://docs.tryton.org/projects/modules-account-dunning-fee")
+    (synopsis "Tryton module for account dunning fee")
+    (description "This package provides a Tryton module for generating
+accounting moves as fees when processing dunning.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
