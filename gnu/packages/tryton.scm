@@ -2422,6 +2422,34 @@ which contains the unit price computed by the parent price list.")
 for production management: Bill of material and production order.")
     (license license:gpl3+)))
 
+(define-public trytond-production-outsourcing
+  (package
+    (name "trytond-production-outsourcing")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_production_outsourcing" version))
+       (sha256
+        (base32 "08pp80d4jfw7qmhvds60i63pb2nad489xwkf2ybbzdkrzhcgrrjk"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "production_outsourcing"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-production" ,trytond-production)
+       ("trytond-production-routing" ,trytond-production-routing)
+       ("trytond-purchase" ,trytond-purchase)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-production-outsourcing")
+    (synopsis "Tryton module to outsource production")
+    (description "The @emph{Production Outsourcing} Tryton module allows to
+outsource production order per routing.  When such outsourced production is
+set to @code{waiting}, a purchase order is created and its cost is added to
+the production.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
