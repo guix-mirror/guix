@@ -1762,6 +1762,27 @@ currency and rate.")
 duty based on the tariff code.")
     (license license:gpl3+)))
 
+(define-public trytond-dashboard
+  (package
+    (name "trytond-dashboard")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_dashboard" version))
+       (sha256
+        (base32 "1drqiks8r7y58wz0skfa39v9yqx9fi5x0ymrrjd87wybw9q3kv46"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "dashboard"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)))
+    (home-page "https://docs.tryton.org/projects/modules-dashboard")
+    (synopsis "Tryton module for dashboard")
+    (description "The @emph{Dashboard} Tryton module allows users to
+configure their dashboard.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
