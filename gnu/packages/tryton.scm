@@ -2244,6 +2244,35 @@ historic cost price is needed, the value is taken from this history for goods
 and assets.")
     (license license:gpl3+)))
 
+(define-public trytond-product-cost-warehouse
+  (package
+    (name "trytond-product-cost-warehouse")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product_cost_warehouse" version))
+       (sha256
+        (base32 "12fcnmcx4m5wyw1hi3k175iiis5m18fcs72b04y14km583s6jcfr"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "product_cost_warehouse"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-stock-continental" ,trytond-account-stock-continental)
+       ("trytond-product-cost-fifo" ,trytond-product-cost-fifo)
+       ("trytond-product-cost-history" ,trytond-product-cost-history)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-product-cost-warehouse")
+    (synopsis "Tryton module to compute product cost per warehouse")
+    (description "The @emph{Product Cost Warehouse} Trython module allows the
+cost price of products to be calculated separately for each warehouse.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
