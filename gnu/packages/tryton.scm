@@ -1142,6 +1142,37 @@ linked to the origin.")
 anglo-saxon accounting model for stock valuation.")
     (license license:gpl3+)))
 
+(define-public trytond-account-stock-continental
+  (package
+    (name "trytond-account-stock-continental")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_stock_continental" version))
+       (sha256
+        (base32 "1i7cyxqs2vxxvg5iyplhai4g8pi0nmh90i5kxqhbnhich6myfr4n"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_stock_continental"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-supply-drop-shipment"
+        ,trytond-sale-supply-drop-shipment)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-stock-continental")
+    (synopsis "Tryton module for continental real-time stock valuation")
+    (description "The @emph{Account Stock Continental} Tryton module adds the
+continental accounting model for stock valuation.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
