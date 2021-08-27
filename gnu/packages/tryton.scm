@@ -370,6 +370,30 @@ with services or goods.  A wizard on invoice allows to recall prior deposit of
 the party.")
     (license license:gpl3+)))
 
+(define-public trytond-account-dunning
+  (package
+    (name "trytond-account-dunning")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_dunning" version))
+       (sha256
+        (base32 "0d5wabn5g1gzmllihkdhzqix934184v303pp20927qxpzb2pm3qw"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_dunning"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-dunning")
+    (synopsis "Tryton module for account dunning")
+    (description "The @emph{Account Dunning} Tryton module adds dunning for
+receivable move lines.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-invoice
   (package
     (name "trytond-account-invoice")
