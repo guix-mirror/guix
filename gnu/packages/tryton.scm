@@ -2904,6 +2904,40 @@ typically is the purchasing department.  On approval, purchase requests will
 be created.")
     (license license:gpl3+)))
 
+(define-public trytond-purchase-secondary-unit
+  (package
+    (name "trytond-purchase-secondary-unit")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase_secondary_unit" version))
+       (sha256
+        (base32 "0vyvdrshlikp9m3gxn1yyi15qxgih0cccxndr9d257fap9nilip5"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "purchase_secondary_unit"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice-secondary-unit"
+        ,trytond-account-invoice-secondary-unit)
+       ("trytond-stock-secondary-unit" ,trytond-stock-secondary-unit)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-purchase-secondary-unit")
+    (synopsis "Tryton module to add a secondary unit on purchase line")
+    (description "The @emph{Purchase Secondary Unit} Tryton module adds a
+secondary unit of measure on purchase lines.
+
+The secondary quantity and unit price are kept synchronized with the quantity
+and unit price.  The secondary unit is defined on the product supplier or on
+the product with its factor against the purchase unit.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
