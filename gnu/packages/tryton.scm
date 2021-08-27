@@ -3646,6 +3646,34 @@ customer as Delivery Address; at the confirmation of the purchase a drop
 shipment is created and linked to both the purchase and the sale.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-supply-production
+  (package
+    (name "trytond-sale-supply-production")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_supply_production" version))
+       (sha256
+        (base32 "03v702r4sfmql5yv6414gi2y72psvr3zq3xmx049w5nsywc2585v"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_supply_production"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-production" ,trytond-production)
+       ("trytond-sale-supply" ,trytond-sale-supply)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-supply-production")
+    (synopsis "Tryton module to supply sales from production")
+    (description "The @emph{Sale Supply Production} Tryton module adds a
+\"supply on sale\" option to producible products.  If checked, it will
+generate a production request for each sale line of this product regardless of
+the stock levels.  Once the products are produced they are assigned to the
+customer shipments.  If the production request is cancelled, the sale goes
+back to the default supply method.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
