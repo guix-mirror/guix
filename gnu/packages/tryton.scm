@@ -3762,6 +3762,31 @@ location to pick products.")
 consignment stock from supplier or at customer warehouse.")
     (license license:gpl3+)))
 
+(define-public trytond-stock-forecast
+  (package
+    (name "trytond-stock-forecast")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_forecast" version))
+       (sha256
+        (base32 "1l3ks2jbz95qqbv9jsvakrxgazyq1kkk3fspwvrg1d10rv6xmb58"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "stock_forecast"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page "https://docs.tryton.org/projects/modules-stock-forecast")
+    (synopsis "Tryton module with stock forecasts")
+    (description "The @emph{Stock Forecast} Tryton module provide a simple way
+to create stock moves toward customers with a date in the future.  This allows
+other stock mecanisms to anticipate customer demand.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock-lot
   (package
     (name "trytond-stock-lot")
