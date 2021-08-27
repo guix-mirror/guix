@@ -78,6 +78,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/home-services/fontutils.scm               \
   %D%/home-services/configuration.scm           \
   %D%/home-services/shells.scm                  \
+  %D%/home-services/xdg.scm                     \
   %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
