@@ -1039,14 +1039,14 @@ and high-availability (HA).")
 (define-public postgresql-13
   (package
     (name "postgresql")
-    (version "13.3")
+    (version "13.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "18dliq7h2l8irffhyyhdmfwx3si515q6gds3cxdjb9n7m17lbn9w"))
+                "1kf0gcsrl5n25rjlvkh87aywmn28kbwvakm5c7j1qpr4j01y34za"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
