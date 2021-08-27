@@ -2551,6 +2551,31 @@ work cost.")
 enter timesheet for production works.")
     (license license:gpl3+)))
 
+(define-public trytond-project
+  (package
+    (name "trytond-project")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_project" version))
+       (sha256
+        (base32 "1xlqzg07csr9a89jjgmk5n4d9dd2s3qahg2x8arf3vqqnrqw1g0f"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "project"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-company-work-time" ,trytond-company-work-time)
+       ("trytond-party" ,trytond-party)
+       ("trytond-timesheet" ,trytond-timesheet)))
+    (home-page "https://docs.tryton.org/projects/modules-project")
+    (synopsis "Tryton module with projects")
+    (description "The @emph{Project} Tryton module provides the concepts of
+project and task and the basis for simple project management.")
+    (license license:gpl3+)))
+
 (define-public trytond-purchase
   (package
     (name "trytond-purchase")
