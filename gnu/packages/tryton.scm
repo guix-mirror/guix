@@ -1025,6 +1025,32 @@ the import of @emph{Norm 43} files as statement.  @emph{Norm 43} is a standard
 defined by the Spanish banking association.")
     (license license:gpl3+)))
 
+(define-public trytond-account-statement-coda
+  (package
+    (name "trytond-account-statement-coda")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_statement_coda" version))
+       (sha256
+        (base32 "11gryxh2b2py0h6f89nj2y42cwb8rrxjn0r5jbhrcsfhb2kh1x3w"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_statement_coda"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-febelfin-coda" ,python-febelfin-coda)
+       ("trytond" ,trytond)
+       ("trytond-account-statement" ,trytond-account-statement)
+       ("trytond-bank" ,trytond-bank)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-account-statement-coda")
+    (synopsis "Tryton module to import CODA statements")
+    (description "The @emph{Account Statement CODA} Tryton module implements
+the import of @emph{CODA} files as statement.  @emph{CODA} is a standard
+defined by Belgian \"febelfin\".")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
