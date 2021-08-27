@@ -1014,7 +1014,8 @@ all common programming languages.  Vala bindings are also provided.")
                 "0qz4l7mlhq7hx53q606qgvkyzyr01glsw290v8ppzvxn1fydlrci"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("docbook2x" ,docbook2x)))
     (inputs
      `(("gnutls" ,gnutls)
        ("libcap" ,libcap)
