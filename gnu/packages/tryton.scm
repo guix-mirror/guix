@@ -3185,6 +3185,29 @@ on sale based on criteria.")
 and redeeming of gift cards.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-history
+  (package
+    (name "trytond-sale-history")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_history" version))
+       (sha256
+        (base32 "1pp5lmmpiqakcmwxv392v1miiisbb0yl55gjb618ngx6ayrd0vdv"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_history"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-history")
+    (synopsis "Tryton module to historize sales")
+    (description "The @emph{Sale History} Tryton module activates the
+historization of the sale and adds a revision counter which increases each
+time the sale is reset to draft.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
