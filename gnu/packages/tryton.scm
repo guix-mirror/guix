@@ -779,6 +779,33 @@ average price of the posted invoice lines that are linked to it.")
   (deprecated-package
    "python-trytond-account-invoice-stock" trytond-account-invoice-stock))
 
+(define-public trytond-account-payment
+  (package
+    (name "trytond-account-payment")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_payment" version))
+       (sha256
+        (base32 "006d78kcml65mxikqp80igln118vkxfs9ah03lq5j9bvnfr6bb2m"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_payment"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-invoice" ,trytond-account-invoice)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-payment")
+    (synopsis "Tryton module for payment")
+    (description "This package provides a Tryton module for generating grouped
+payments for receivable or payable Account Move Lines.")
+    (license license:gpl3+)))
+
 (define-public trytond-account-product
   (package
     (name "trytond-account-product")
