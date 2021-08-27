@@ -971,6 +971,33 @@ and category.")
 (define-public python-trytond-account-product
   (deprecated-package "python-trytond-account-product" trytond-account-product))
 
+(define-public trytond-account-statement
+  (package
+    (name "trytond-account-statement")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_statement" version))
+       (sha256
+        (base32 "0nlak4kv2ampb5v2zbsvabnirvdi53h6vr35kp2zmrv4alpjsla0"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "account_statement"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-bank" ,trytond-bank)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
+    (home-page "https://docs.tryton.org/projects/modules-account-statement")
+    (synopsis "Tryton module with account statements")
+    (description "The @emph{Account Statement} Tryton module allows to book
+statements.  Statement can be used for bank statement, cash daybook etc.")
+    (license license:gpl3+)))
+
 (define-public trytond-analytic-account
   (package
     (name "trytond-analytic-account")
