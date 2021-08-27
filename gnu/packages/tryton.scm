@@ -1311,6 +1311,31 @@ required to analyse accounting using multiple different axes.")
   (deprecated-package
    "python-trytond-analytic-account" trytond-analytic-account))
 
+(define-public trytond-analytic-invoice
+  (package
+    (name "trytond-analytic-invoice")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_analytic_invoice" version))
+       (sha256
+        (base32 "151vwcn5sgpqma9kjxbznx4v4wlhfc97dcyb432brxnswf5glcir"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "analytic_invoice"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-account-asset" ,trytond-account-asset)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-analytic-account" ,trytond-analytic-account)))
+    (home-page "https://docs.tryton.org/projects/modules-analytic-invoice")
+    (synopsis "Tryton module to add analytic accounting on invoice")
+    (description "The @emph{Analytic Invoice} Tryton module allows to set
+analytic accounts on invoice line.")
+    (license license:gpl3+)))
+
 (define-public trytond-company
   (package
     (name "trytond-company")
