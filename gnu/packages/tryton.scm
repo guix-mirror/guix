@@ -3614,6 +3614,38 @@ shipments.  If the purchase is cancelled the sale goes back to the default
 supply method.")
     (license license:gpl3+)))
 
+(define-public trytond-sale-supply-drop-shipment
+  (package
+    (name "trytond-sale-supply-drop-shipment")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_supply_drop_shipment" version))
+       (sha256
+        (base32 "0gm2m5zm7vrm1vb34svqby7h91ka3mhln3367zmwr17yfyqf68dk"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_supply_drop_shipment"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-request" ,trytond-purchase-request)
+       ("trytond-sale" ,trytond-sale)
+       ("trytond-sale-supply" ,trytond-sale-supply)
+       ("trytond-stock" ,trytond-stock)))
+    (home-page
+     "https://docs.tryton.org/projects/modules-sale-supply-drop-shipment")
+    (synopsis "Tryton module for sale supply drop shipment")
+    (description "The @emph{Sale Supply Drop Shipment} Tryton module adds a
+drop shipment option on product supplier if \"supply on request\" is checked.
+When checked, the purchase request and the linked purchase have the address of
+customer as Delivery Address; at the confirmation of the purchase a drop
+shipment is created and linked to both the purchase and the sale.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
