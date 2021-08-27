@@ -1922,6 +1922,33 @@ authenticate users via a LDAP server.")
 fundamentals for marketing modules.")
     (license license:gpl3+)))
 
+(define-public trytond-marketing-automation
+  (package
+    (name "trytond-marketing-automation")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_marketing_automation" version))
+       (sha256
+        (base32 "0c2bjkxkpkjqm5zqk0r0gcxm1cxgixm6xxhh16j46vy7d4zssgsp"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "marketing_automation"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("trytond-party" ,trytond-party)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-marketing" ,trytond-marketing)
+       ("trytond-web-shortener" ,trytond-web-shortener)))
+    (home-page "https://docs.tryton.org/projects/modules-marketing-automation")
+    (synopsis "Tryton module to plan, coordinate and manage marketing
+campaigns")
+    (description "The @emph{Marketing Automation} Tryton module allows
+marketing actions to be automated.  It is based on scenarios and activities
+that are executed on selected records.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
