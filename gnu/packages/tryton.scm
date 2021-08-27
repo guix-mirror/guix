@@ -1783,6 +1783,35 @@ duty based on the tariff code.")
 configure their dashboard.")
     (license license:gpl3+)))
 
+(define-public trytond-edocument-uncefact
+  (package
+    (name "trytond-edocument-uncefact")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_edocument_uncefact" version))
+       (sha256
+        (base32 "0b5qhkirfkrh5g1d7m42f7niiz86favf352i403fdi4j532sl3i2"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "edocument_uncefact"))
+    (native-inputs
+     `(,@%standard-trytond-native-inputs
+       ("python-lxml" ,python-lxml)
+       ("trytond-account-invoice" ,trytond-account-invoice)))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-edocument-unece" ,trytond-edocument-unece)))
+    (home-page "https://docs.tryton.org/projects/modules-edocument-uncefact")
+    (synopsis "Tryton module for electronic document UN/CEFACT")
+    (description "The @emph{Edocument UN/CEFACT} Tryton module implements
+electronic document from UN/CEFACT.  Supported formats are:
+
+@itemize
+@item Cross-Industry-Invoice (16B-CII)
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
