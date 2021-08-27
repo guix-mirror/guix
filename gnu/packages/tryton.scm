@@ -3057,6 +3057,31 @@ sales that are being processed and keep track of the changes.  An amendment is
 composed of action lines which can:")
     (license license:gpl3+)))
 
+(define-public trytond-sale-complaint
+  (package
+    (name "trytond-sale-complaint")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_sale_complaint" version))
+       (sha256
+        (base32 "0wbs7kawrzz39z0jw34ygdb85qja49xfb75ahbwgqd185wf3jvgz"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "sale_complaint"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-company" ,trytond-company)
+       ("trytond-party" ,trytond-party)
+       ("trytond-sale" ,trytond-sale)))
+    (home-page "https://docs.tryton.org/projects/modules-sale-complaint")
+    (synopsis "Tryton module for sale complaints")
+    (description "The @emph{Sale Complaint} Tryton module defines the
+@code{Complaint} model.")
+    (license license:gpl3+)))
+
 (define-public trytond-stock
   (package
     (name "trytond-stock")
