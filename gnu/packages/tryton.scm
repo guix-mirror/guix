@@ -1737,6 +1737,31 @@ currency and rate.")
 (define-public python-trytond-currency
   (deprecated-package "python-trytond-currency" trytond-currency))
 
+(define-public trytond-customs
+  (package
+    (name "trytond-customs")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_customs" version))
+       (sha256
+        (base32 "1qilj1b9zr35z15313xbvgklf87dgxddvkcnymklwp9n7vs7hrz5"))))
+    (build-system python-build-system)
+    (arguments (tryton-arguments "customs"))
+    (native-inputs `(,@%standard-trytond-native-inputs))
+    (propagated-inputs
+     `(("python-simpleeval" ,python-simpleeval)
+       ("trytond" ,trytond)
+       ("trytond-country" ,trytond-country)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-product" ,trytond-product)))
+    (home-page "https://docs.tryton.org/projects/modules-customs")
+    (synopsis "Tryton module for customs")
+    (description "The @emph{Customs} Tryton module allows to define customs
+duty based on the tariff code.")
+    (license license:gpl3+)))
+
 (define-public trytond-party
   (package
     (name "trytond-party")
