@@ -4612,3 +4612,49 @@ the XMODEM/YMODEM/ZMODEM file transfer protocols.")
 setup, maintenance, supervision, or any long-running processes.")
     (home-page "https://github.com/leahneukirchen/nq")
     (license license:public-domain)))
+
+(define-public lsofgraph
+  (let ((commit "1d414bdc727c00a8c6cbfffc3c43128c60d6f0de")
+        (revision "1"))
+    (package
+      (name "lsofgraph")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/zevv/lsofgraph")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "058x04yp6bc77hbl3qchqm7pa8f9vqfl9jryr88m8pzl7kvpif54"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("lua" ,lua)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           ;; copy source
+           (copy-recursively (assoc-ref %build-inputs "source") ".")
+           ;; patch-shebang phase
+           (setenv "PATH"
+                   (string-append (assoc-ref %build-inputs "lua") "/bin"
+                                  ":" (getenv "PATH")))
+           (substitute* "lsofgraph"
+             (("#!/usr/bin/env lua")
+              (string-append "#!" (which "lua"))))
+           ;; install phase
+           (install-file "lsofgraph" (string-append %output "/bin"))
+           (let ((doc (string-append
+                       %output "/share/doc/" ,name "-" ,version)))
+             (mkdir-p doc)
+             (install-file "LICENSE" doc)
+             (install-file "README.md" doc))
+           #t)))
+      (home-page "https://github.com/zevv/lsofgraph")
+      (synopsis "Convert @code{lsof} output to @code{graphviz}")
+      (description "Utility to convert @code{lsof} output to a graph showing
+FIFO and UNIX interprocess communication.")
+      (license license:bsd-2))))
