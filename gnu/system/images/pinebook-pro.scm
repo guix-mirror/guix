@@ -49,7 +49,7 @@
     (services (cons (service agetty-service-type
                              (agetty-configuration
                               (extra-options '("-L")) ; no carrier detect
-                              (baud-rate "115200")
+                              (baud-rate "1500000")
                               (term "vt100")
                               (tty "ttyS2")))
                     %base-services))))
