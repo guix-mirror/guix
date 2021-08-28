@@ -266,16 +266,15 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.7")
+   (version "3.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))
-            (patches (search-patches "coreutils-gnulib-tests.patch"
-                                     "diffutils-fix-signal-processing.patch"))))
+              "1v4g8gi0lgakqa7iix8s4fq7lq6l92vw3rjd9wfd2rhjng8xggd6"))
+            (patches (search-patches "diffutils-fix-signal-processing.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list perl))
    (synopsis "Comparing and merging files")

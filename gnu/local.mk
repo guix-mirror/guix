@@ -1003,7 +1003,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffoscope-fix-llvm-test.patch		\
   %D%/packages/patches/diffutils-fix-signal-processing.patch	\
-  %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/docbook-xsl-support-old-url.patch	\
