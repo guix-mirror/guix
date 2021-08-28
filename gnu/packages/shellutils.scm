@@ -42,6 +42,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages libunistring)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages shells)
@@ -307,19 +309,20 @@ between various shells or commands.")
 (define-public trash-cli
   (package
     (name "trash-cli")
-    (version "0.17.1.14")
+    (version "0.21.10.24")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "trash-cli" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/andreafrancia/trash-cli")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01q0cl04ljf214z6s3g256gsxx3pqsgaf6ac1zh0vrq5bnhnr85h"))))
+         "01is32lk6prwhajvlmgn3xs4fcpmiqivizcqkj9k80jx6mqjifzs"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f ; no tests
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-path-constants
            (lambda* (#:key inputs #:allow-other-keys)
@@ -329,8 +332,22 @@ between various shells or commands.")
                  (("\"/lib/libc.so.6\".*")
                   (string-append "\"" libc "/lib/libc.so.6\"\n"))
                  (("\"df\"")
-                  (string-append "\"" coreutils "/bin/df\"")))))))))
+                  (string-append "\"" coreutils "/bin/df\""))))))
+         (add-before 'build 'fix-setup.py
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (substitute* "setup.py"
+                 (("add_script\\('")
+                  (string-append "add_script('" bin "/" )))))))))
+    (native-inputs
+     (list python-pytest
+           python-mock
+           python-six))
     (inputs (list coreutils))
+    (propagated-inputs
+     (list python-psutil))
     (home-page "https://github.com/andreafrancia/trash-cli")
     (synopsis "Trash can management tool")
     (description
