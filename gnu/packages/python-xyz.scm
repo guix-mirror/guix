@@ -23609,7 +23609,10 @@ Python.")
         (base32 "0v8vg0naa9rywvd31cpq65ljbdclpsrx09788v4xj7lg10np8nk0"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; TODO: package dependencies required for tests.
+     ;; TODO: package dependencies required for tests.
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'sanity-check))))
     (synopsis "Interface for Open Geospatial Consortium web service")
     (description
      "OWSLib is a Python package for client programming with Open Geospatial
