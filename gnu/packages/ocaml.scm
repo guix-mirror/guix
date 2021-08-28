@@ -3350,7 +3350,7 @@ standard iterator type starting from 4.07.")
 (define-public ocaml-re
   (package
     (name "ocaml-re")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)
@@ -3359,7 +3359,7 @@ standard iterator type starting from 4.07.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07ycb103mr4mrkxfd63cwlsn023xvcjp0ra0k7n2gwrg0mwxmfss"))))
+        (base32 "04y7wwa8qbvapciiqd1qzn995xzb1g6rb39hs41jqsb55zdg3gfi"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f))
