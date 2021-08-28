@@ -14570,9 +14570,6 @@ etc.")
 objects, patterned after the Mocha library for Ruby.")
     (license license:bsd-3)))
 
-(define-public python2-chai
-  (package-with-python2 python-chai))
-
 (define-public python-inflection
   (package
     (name "python-inflection")
