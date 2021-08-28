@@ -2166,6 +2166,7 @@ growing set of geoscientific methods.")
                              "PyCoreAdittions"
                              "PyQgsAnnotation"
                              "PyQgsAppStartup"
+                             "PyQgsAuthBasicMethod"
                              "PyQgsAuthenticationSystem"
                              "PyQgsAuxiliaryStorage"
                              "PyQgsDBManagerGpkg"
