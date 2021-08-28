@@ -28726,6 +28726,30 @@ label references and citations in LaTeX.  It is based on RefTeX, which is
 included with Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-company-org-block
+  (let ((commit "115af0a3625f4669358eca568466d468cacc78bd")
+        (revision "1"))
+    (package
+      (name "emacs-company-org-block")
+      (version (git-version "0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/xenodium/company-org-block")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "13kdwi4d1pvba6wv9yn1s0dl4cnq61zwf3j647d1s5ybqlrw5f4r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/xenodium/company-org-block")
+      (synopsis "Emacs @code{company-complete} for Org blocks")
+      (description
+       "Insert Emacs Org blocks with completion via @code{company} mode.")
+      (license license:gpl3+))))
+
 (define-public emacs-html-to-hiccup
   ;; Package has no release.  Version is extracted from "Version:" keyword in
   ;; main file.
