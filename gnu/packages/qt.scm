@@ -2677,7 +2677,19 @@ different kinds of sliders, and much more.")
                                ;; libraries and test executables in a
                                ;; reasonable amount of memory.
                                "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--no-keep-memory"
-                               "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-keep-memory")))
+                               "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-keep-memory")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; This is a workaround for the build failing with the error:
+           ;;   ld: error adding symbols: Malformed archive
+           ;; Increasing the maximum number of open file descriptors
+           ;; makes the build succeed.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (let ((cmd (format #f
+                                "ulimit -n 4096; make ~{~a~^ ~}"
+                                make-flags)))
+               (invoke "sh" "-c" cmd)))))))
     (home-page "https://www.webkit.org")
     (synopsis "Web browser engine and classes to render and interact with web
 content")
