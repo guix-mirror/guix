@@ -16,6 +16,7 @@
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Calum Irwin <calumirwin1@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,7 +164,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2020.09.01")
+    (version "2021.08.28")
     (source
      (origin
        (method url-fetch)
@@ -171,7 +172,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "0x81rxy7bqnhd9374g5ypy4w4nxmm0vnqw6b52bf62jxdg2qj6l6"))))
+        (base32 "1jvn4b9rma5jjvg3xz8nf224pbq3ry570j6qvc834wn5v3gxfvkg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -194,11 +195,10 @@ based command language.")
          (add-before 'build 'chdir
            (lambda _ (chdir "src") #t)))))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
+     `(("gcc", gcc-10) ; See https://github.com/mawww/kakoune/issues/4318
+       ("asciidoc" ,asciidoc)
        ("pkg-config" ,pkg-config)
        ("ruby" ,ruby)))
-    (inputs
-     `(("ncurses" ,ncurses)))
     (synopsis "Vim-inspired code editor")
     (description
      "Kakoune is a code editor heavily inspired by Vim, as such most of its
