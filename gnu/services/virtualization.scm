@@ -594,13 +594,6 @@ potential infinite waits blocking libvirt."))
    (magic (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x03\x00"))
    (mask (bv "\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff"))))
 
-(define %i486
-  (qemu-platform
-   (name "i486")
-   (family "i386")
-   (magic (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x06\x00"))
-   (mask (bv "\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff"))))
-
 (define %alpha
   (qemu-platform
    (name "alpha")
@@ -757,7 +750,7 @@ potential infinite waits blocking libvirt."))
    (mask (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff"))))
 
 (define %qemu-platforms
-  (list %i386 %i486 %alpha %arm %sparc32plus %ppc %ppc64 %ppc64le %m68k
+  (list %i386 %alpha %arm %sparc32plus %ppc %ppc64 %ppc64le %m68k
         %mips %mipsel %mipsn32 %mipsn32el %mips64 %mips64el
         %riscv32 %riscv64 %sh4 %sh4eb %s390x %aarch64 %hppa))
 
