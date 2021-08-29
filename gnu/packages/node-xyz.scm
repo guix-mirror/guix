@@ -357,3 +357,32 @@ function with browser support.")
 Subsequent calls will either return the cached previous value or throw an error
 if desired.")
     (license license:isc)))
+
+(define-public node-irc-colors
+  (package
+    (name "node-irc-colors")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fent/irc-colors.js")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0q3y34rbnlc55jcakmdxkicwazyvyph9r6gaf6hi8k7wj2nfwfli"))))
+    (build-system node-build-system)
+    (arguments
+     '(#:tests? #f                      ; FIXME: tests depend on node-istanbul
+       #:phases
+       (modify-phases %standard-phases
+         ;; The default configure phase fails due to various packages
+         ;; being missing, as we don't have them packaged yet.
+         (delete 'configure))))
+    (home-page "https://github.com/fent/irc-colors.js")
+    (synopsis "Node.js module providing color and formatting for IRC")
+    (description "@code{node-irc-colors} is a Node.js module that
+allows you to easily use colored output and formatting in IRC bots.
+It contains functions for colours as well as more complex formatting
+such as rainbows.")
+    (license license:expat)))
