@@ -32,7 +32,7 @@
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
@@ -1740,15 +1740,15 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/DaveDavenport/rofi/"
+              (uri (string-append "https://github.com/davatorium/rofi/"
                                   "releases/download/"
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "12p9z8bl1gg8k024m4a6zfz7gf1zbyffardh98raqgabn6knwk22"))))
+                "1929q3dks8fqd3pfkzs0ba06gwzhlgcrfar9fpga43f3byrrbfxa"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1760,6 +1760,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
        ("libxkbcommon" ,libxkbcommon)
        ("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
+       ("xcb-util-cursor" ,xcb-util-cursor)
        ("xcb-util-xrm" ,xcb-util-xrm)
        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
@@ -1779,7 +1780,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                (("~") "")
                (("g_get_home_dir \\(\\)") "\"/\""))
              #t)))))
-    (home-page "https://github.com/DaveDavenport/rofi")
+    (home-page "https://github.com/davatorium/rofi")
     (synopsis "Application launcher")
     (description "Rofi is a minimalist application launcher.  It memorizes which
 applications you regularly use and also allows you to search for an application
