@@ -9686,6 +9686,27 @@ lints.")
     (description "This package provides a Flake8 lint for quotes.")
     (license license:expat)))
 
+(define-public python-flake8-todo
+  (package
+    (name "python-flake8-todo")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-todo" version))
+       (sha256
+        (base32
+         "05arm0sch3r8248035kilmf01z0mxsahw6vpbbz0d343zy8m8k3f"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/schlamar/flake8-todo")
+    (synopsis "TODO notes checker, plugin for flake8")
+    (description
+     "This package provides the @code{flake8-todo} Python module, a
+TODO notes checker plugin for flake8.")
+    (license license:expat)))
+
 (define-public python-autoflake
   (package
     (name "python-autoflake")
