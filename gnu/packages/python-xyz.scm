@@ -9315,6 +9315,28 @@ PEP 8.")
 (define-public python2-pep8
   (package-with-python2 python-pep8))
 
+(define-public python-pep8-naming
+  (package
+    (name "python-pep8-naming")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pep8-naming" version))
+       (sha256
+        (base32
+         "04kyh9hkpyc8jzj16d1kkk29b5n8miqdvbs0zm035n1z5z5kx6hz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-flake8-polyfill" ,python-flake8-polyfill)))
+    (home-page "https://github.com/PyCQA/pep8-naming")
+    (synopsis "Check PEP-8 naming conventions")
+    (description
+     "This package provides the @code{pep8-naming} Python module, a
+plugin for flake8 to check PEP-8 naming conventions.")
+    (license license:expat)))
+
 (define-public python-pep517
   (package
     (inherit python-pep517-bootstrap)
