@@ -801,6 +801,14 @@ useful for C++.")
                        '("test_atoms.py" "test_overrides_gtk.py"))
              #t)))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; The default 90 seconds can be too low on slower machines.
+               (invoke "meson" "test" "--timeout-multiplier" "5")))))))
     (native-inputs
      `(("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
