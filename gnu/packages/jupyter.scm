@@ -29,11 +29,13 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages monitoring)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages rdf)
@@ -248,6 +250,73 @@ the JupyterLab CSS variables.")
 Jupyter Python packages that require a pre-build step that may include
 JavaScript build steps.")
     (license license:bsd-3)))
+
+(define-public python-jupyter-server
+  (package
+    (name "python-jupyter-server")
+    (version "1.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_server" version))
+       (sha256
+        (base32
+         "1gvjbsw5nl94hz02rnkr4g4kkvh9fz7i45vz17hzwyvdpj7bd8yk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (let ((home (string-append (getcwd) "/guix-home")))
+                 (setenv "HOME" home))
+               ;; Add jupyter-server executable to PATH.
+               (setenv "PATH"
+                       (string-append (assoc-ref outputs "out") "/bin:"
+                                      (getenv "PATH")))
+               (with-directory-excursion "jupyter_server"
+                 ;; The pytest fixtures are only loaded when the file is
+                 ;; called conftest.py.
+                 (rename-file "pytest_plugin.py" "conftest.py")
+                 (invoke "pytest" "-vv"
+                         ;; Fails with internal server error
+                         "-k" "not test_list_formats"
+                         ;; Integration tests require a server.
+                         "-m" "not integration_test"))))))))
+    (propagated-inputs
+     `(("python-anyio" ,python-anyio)
+       ("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-nbformat" ,python-nbformat)
+       ("python-prometheus-client" ,python-prometheus-client)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-requests-unixsocket" ,python-requests-unixsocket)
+       ("python-send2trash" ,python-send2trash)
+       ("python-terminado" ,python-terminado)
+       ("python-tornado" ,python-tornado-6)
+       ("python-traitlets" ,python-traitlets)
+       ("python-websocket-client" ,python-websocket-client)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-console-scripts" ,python-pytest-console-scripts)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-tornasync" ,python-pytest-tornasync)
+       ("python-requests" ,python-requests)))
+    (home-page "https://jupyter.org")
+    (synopsis "Core services, APIs, and REST endpoints for Jupyter web applications")
+    (description
+     "This package provides the backend—i.e. core services, APIs, and REST
+endpoints—to Jupyter web applications.")
+    (license license:expat)))
 
 (define-public python-jupyterlab-widgets
   (package
