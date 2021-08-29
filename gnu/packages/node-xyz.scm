@@ -386,3 +386,32 @@ allows you to easily use colored output and formatting in IRC bots.
 It contains functions for colours as well as more complex formatting
 such as rainbows.")
     (license license:expat)))
+
+(define-public node-irc
+  (package
+    (name "node-irc")
+    (version "0.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/martynsmith/node-irc")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ln4qfx20jbwg4cp8lp0vf27m5281z2sz16d15xd6150n26cbi4x"))))
+    (build-system node-build-system)
+    (arguments
+     '(#:tests? #f                      ; FIXME: tests depend on node-faucet
+       #:phases
+       (modify-phases %standard-phases
+         ;; The default configure phase fails due to various packages
+         ;; being missing, as we don't have them packaged yet.
+         (delete 'configure))))
+    (inputs
+     `(("node-irc-colors" ,node-irc-colors)))
+    (home-page "https://github.com/martynsmith/node-irc")
+    (synopsis "IRC client library for Node.js")
+    (description "@code{node-irc} is an IRC client library for Node.js.
+It has functions for joining, parting, talking, and many other IRC commands.")
+    (license license:gpl3+)))
