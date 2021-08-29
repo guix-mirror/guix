@@ -23036,6 +23036,87 @@ bindings for Python 3.")
 standard error channel (stderr) in your program.")
       (license license:expat))))
 
+(define-public python-anyio
+  (package
+    (name "python-anyio")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "anyio" version))
+       (sha256
+        (base32
+         "0x03hsprdrs86wjjkj96zm2jswy3a5bgyrknyi58pzz5hdsscmxf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-compatibility
+           (lambda _
+             (substitute* "tests/test_taskgroups.py"
+               (("import pytest")
+                "import pytest\nimport _pytest\nfrom _pytest import logging")
+               (("pytest.LogCaptureFixture")
+                "_pytest.logging.LogCaptureFixture"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "-k"
+                       (string-append
+                        "not test_is_block_device"
+
+                        ;; These fail because of network (or specifically
+                        ;; IPv6 network) access.
+                        " and not test_accept"
+                        " and not test_accept_after_close"
+                        " and not test_close_during_receive"
+                        " and not test_close_from_other_task"
+                        " and not test_concurrent_receive"
+                        " and not test_concurrent_send"
+                        " and not test_connect_tcp_with_tls"
+                        " and not test_connect_tcp_with_tls_cert_check_fail"
+                        " and not test_connection_refused"
+                        " and not test_extra_attributes"
+                        " and not test_getaddrinfo"
+                        " and not test_getnameinfo"
+                        " and not test_happy_eyeballs"
+                        " and not test_iterate"
+                        " and not test_receive_after_close"
+                        " and not test_receive_timeout"
+                        " and not test_reuse_port"
+                        " and not test_run_process"
+                        " and not test_send_after_close"
+                        " and not test_send_after_eof"
+                        " and not test_send_after_peer_closed"
+                        " and not test_send_eof"
+                        " and not test_send_large_buffer"
+                        " and not test_send_receive"
+                        " and not test_socket_options"))))))))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-sniffio" ,python-sniffio)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-mock" ,python-pytest-mock-3)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-trustme" ,python-trustme)
+       ("python-uvloop" ,python-uvloop)))
+    (home-page "https://github.com/agronholm/anyio")
+    (synopsis "Compatibility layer for multiple asynchronous event loops")
+    (description
+     "AnyIO is an asynchronous networking and concurrency library that works
+on top of either asyncio or trio.  It implements trio-like structured
+concurrency on top of asyncio, and works in harmony with the native SC of trio
+itself.")
+    (license license:expat)))
+
 (define-public python-argh
   ;; There are 21 commits since the latest release containing important
   ;; improvements.
