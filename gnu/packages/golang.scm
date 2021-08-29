@@ -1191,6 +1191,35 @@ standardized in RFC 7539.")
     (description "Set is the set collection for the Go language.")
     (license license:expat)))
 
+(define-public go-github-com-dhowett-go-plist
+  (let ((commit "1454fab16a0642638feb0ae98c41f79eccb2a20a")
+        (revision "1"))
+    (package
+      (name "go-github-com-dhowett-go-plist")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/DHowett/go-plist")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "01c9wmhny2rxywcjipq1xa0xw4qm7yd001239grwxcja3b4n45v8"))))
+      (build-system go-build-system)
+      (arguments `(#:import-path "howett.net/plist"))
+      (inputs
+       `(("go-github.com-jessevdk-go-flags" ,go-github.com-jessevdk-go-flags)
+         ("go-github-com-kr-pretty" ,go-github-com-kr-pretty)
+         ("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)
+         ("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+      (home-page "https://github.com/DHowett/go-plist")
+      (synopsis "Apple property list transcoder")
+      (description "This list transcoder supports encoding/decoding property
+lists (Apple XML, Apple Binary, OpenStep, and GNUStep) from/to arbitrary Go
+types.")
+      (license license:giftware))))
+
 (define-public go-github-com-blanu-dust
   (package
     (name "go-github-com-blanu-dust")
