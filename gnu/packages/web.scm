@@ -1672,13 +1672,17 @@ used to validate and fix HTML data.")
            #t))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/evanw/esbuild/cmd/esbuild"
+     `(#:import-path "github.com/evanw/esbuild/cmd/esbuild"
        #:unpack-path "github.com/evanw/esbuild"
        #:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key tests? unpack-path #:allow-other-keys)
              (when tests?
+               ;; The "Go Race Detector" is only supported on 64-bit
+               ;; platforms, this variable disables it.
+               (unless ,(target-64bit?)
+                 (setenv "ESBUILD_RACE" ""))
                (with-directory-excursion (string-append "src/" unpack-path)
                  (invoke "make" "test-go")))
              #t)))))
