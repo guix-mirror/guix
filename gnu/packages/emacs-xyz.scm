@@ -27508,6 +27508,31 @@ with Helm and displays a buffer of all the different result types available to
 Wordnet.")
       (license license:gpl3+))))
 
+(define-public emacs-helm-xref
+  (let ((commit "23f1174cfca7667d95828dcd388c655a4a9c877d")
+        (revision "1"))
+    (package
+      (name "emacs-helm-xref")
+      (version (git-version "0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/brotzeit/helm-xref")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0v0lkabpi1n4hgnp28jk19f7b78yk93ssm0gr0fr25yqx5zskdnk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/brotzeit/helm-xref")
+      (synopsis "Helm interface for @code{xref}")
+      (description "This package provides a Helm interface for selecting
+@code{xref} results.")
+      (license license:gpl3+))))
+
 (define-public emacs-metal-mercury-mode
   (let ((commit "99e2d8fb7177cae3bfa2dec2910fc28216d5f5a8")
 	(revision "1")
