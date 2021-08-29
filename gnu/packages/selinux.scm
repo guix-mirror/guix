@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
                (string-append "MAN3DIR=" out "/share/man/man3")
                (string-append "MAN5DIR=" out "/share/man/man5")
                (string-append "MAN8DIR=" out "/share/man/man8")
+               (string-append "CFLAGS=-Wno-error")
                (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
                (string-append "CC=" ,(cc-for-target))))
        #:phases
