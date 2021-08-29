@@ -26845,3 +26845,26 @@ single-platform apps, there may by plenty of nuances in figuring out the right
 location.  This small Python module determines the appropriate
 platform-specific directories, e.g. the ``user data dir''.")
     (license license:expat)))
+
+(define-public python-box
+  (package
+    (name "python-box")
+    (version "5.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-box" version))
+       (sha256
+        (base32
+         "0jhrdif57khx2hsw1q6a9x42knwcvq8ijgqyq1jmll6y6ifyzm2f"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-msgpack" ,python-msgpack)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-toml" ,python-toml)))
+    (home-page "https://github.com/cdgriffith/Box")
+    (synopsis "Advanced Python dictionaries with dot notation access")
+    (description
+     "This package provides the @code{python-box} Python module.
+It implements advanced Python dictionaries with dot notation access.")
+    (license license:expat)))
