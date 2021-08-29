@@ -18873,6 +18873,28 @@ blank slate) and is clearly highlighted with respect to the rest of the
 buffer.")
     (license license:gpl2+)))
 
+(define-public emacs-hideshowvis
+  (let ((commit "614e856620445166a60c00a1c4653dbd59c871c9")
+        (revision "1"))
+    (package
+      (name "emacs-hideshowvis")
+      (version (git-version "0.7" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sheijk/hideshowvis")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0ykj5jwcm03p5h7sd52qndmzihyan09lqg6rzgmyabvw7p56y90m"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/sheijk/hideshowvis")
+      (synopsis "Add icons in the Emacs fringe which @code{hideshow} can hide")
+      (description "Emacs package to add clickable icons in the fringe for
+regions which @code{hideshow} can hide.")
+      (license license:gpl2+))))
+
 (define-public emacs-know-your-http-well
   (package
     (name "emacs-know-your-http-well")
