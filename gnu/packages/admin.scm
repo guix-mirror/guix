@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2021 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
@@ -824,6 +824,17 @@ hostname.")
 
        #:phases
        (modify-phases %standard-phases
+         ,@(if (%current-target-system)
+               '((add-before 'configure 'set-runtime-shell
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((shell (string-append
+                                   (assoc-ref inputs "bash")
+                                   "/bin/bash")))
+                       (setenv "RUNTIME_SHELL" shell)
+                       (substitute* "configure.ac"
+                         (("\\$SHELL")
+                          "$RUNTIME_SHELL"))))))
+               '())
          (add-before 'build 'set-nscd-file-name
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Use the right file name for nscd.
@@ -848,7 +859,10 @@ hostname.")
     (inputs
      `(,@(if (hurd-target?)
            '()
-           `(("linux-pam" ,linux-pam)))))
+           `(("linux-pam" ,linux-pam)))
+       ,@(if (%current-target-system)
+             `(("bash" ,bash-minimal))
+             '())))
     (home-page "https://github.com/shadow-maint/shadow")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
