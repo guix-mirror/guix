@@ -96,7 +96,7 @@ before each retry."
                  (list key value)))
               alist))
 
-(define account-fingerprint-rx (make-regexp "[0-9A-f]{40}"))
+(define account-fingerprint-rx (make-regexp "[0-9A-Fa-f]{40}"))
 
 (define (account-fingerprint? val)
   "A Jami account fingerprint is 40 characters long and only contains
