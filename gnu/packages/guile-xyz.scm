@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016, 2021 Amirouche <amirouche@hypermove.net>
-;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -4090,42 +4090,29 @@ Relay Chat} (IRC).")
       (license license:lgpl2.1+))))
 
 (define-public guile-websocket
-  (let ((commit "c854e0f84a40d972cbd532bbb89c97ca0126a7cf"))
+  (let ((commit "d17878f6c12c10a49196bb08f737f36b11e61c31")
+        (revision "1"))
     (package
       (name "guile-websocket")
-      (version "0.1")
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "git://dthompson.us/guile-websocket.git")
+               (url "https://git.dthompson.us/guile-websocket.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1hymvsfrmq9qxr5cxnsgdz7y757yp1cpsgxmdp3f5wxxxpqgsmzx"))))
+           "0kcmhjyb6amm4b9k4ng0r5s38m041mvh5jgmjbz6ichz39k255v7"))))
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0")
-         #:phases
-         (modify-phases %standard-phases
-           ;; The package was developed for Guile 2.0 and has this version
-           ;; hardcoded in the configure.ac and Makefile.am files. Substitute
-           ;; 3.0 instead so it can support Guile 3.0.
-           (add-after 'unpack 'update-guile-version
-             (lambda _
-               (substitute* "configure.ac"
-                 (("2.0.9") "3.0.0"))
-               (substitute* "Makefile.am"
-                 (("2.0") "3.0")
-
-                 ;; Install .go files where they belong.
-                 (("/ccache") "/site-ccache"))
-               #t)))))
+         '("GUILE_AUTO_COMPILE=0")))
       (native-inputs
        `(("autoconf" ,autoconf)
-         ("automake" ,automake)))
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
       (inputs
        `(("guile" ,guile-3.0)))
       (synopsis "Websocket server/client for Guile")
