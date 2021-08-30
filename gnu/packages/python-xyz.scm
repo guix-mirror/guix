@@ -21386,15 +21386,18 @@ N-dimensional arrays for Python.")
     (version "0.7.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "anndata" version))
+       ;; The tarball from PyPi doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/theislab/anndata")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ch8yp0xmag6z0kl01pljm35lbbwax7lrimfhiclpkd4m6xngk53"))))
+         "1q30bsfsq9xfqm8nmabg3bjh9gix3yng0170xiiyw1lin4xncf0q"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; The tarball from PyPi doesn't include tests.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'check)
          (add-before 'build 'relax-dependency-requirements
@@ -21405,6 +21408,7 @@ N-dimensional arrays for Python.")
                (("pandas>=1.1.1") "pandas>=1.0.5"))))
          (replace 'build
            (lambda _
+             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)
              ;; ZIP does not support timestamps before 1980.
              (setenv "SOURCE_DATE_EPOCH" "315532800")
              (invoke "flit" "build")))
