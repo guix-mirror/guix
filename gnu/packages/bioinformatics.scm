@@ -103,6 +103,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages jupyter)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
@@ -14898,6 +14899,54 @@ feature is fast retrieval of range queries into numpy arrays.")
      "DNA Features Viewer is a Python library to visualize DNA features,
 e.g. from GenBank or Gff files, or Biopython SeqRecords.")
     (license license:expat)))
+
+(define-public python-coolbox
+  (package
+    (name "python-coolbox")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "coolbox" version))
+       (sha256
+        (base32
+         "0gqp76285w9klswr47y6kxbzwhv033b26jfa179kccfhiaq5p2xa"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; there are none
+    (inputs
+     `(("pybind11" ,pybind11)))
+    (propagated-inputs
+     `(("python-cooler" ,python-cooler)
+       ("python-dna-features-viewer" ,python-dna-features-viewer)
+       ("python-fire" ,python-fire)
+       ("python-h5py" ,python-h5py)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("jupyter" ,jupyter)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-nbformat" ,python-nbformat)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-pandas" ,python-pandas)
+       ("python-pybbi" ,python-pybbi)
+       ("python-pytest" ,python-pytest)
+       ("python-scipy" ,python-scipy)
+       ("python-statsmodels" ,python-statsmodels)
+       ("python-strawc" ,python-strawc)
+       ("python-svgutils" ,python-svgutils)
+       ("python-termcolor" ,python-termcolor)
+       ("python-voila" ,python-voila)))
+    (home-page "https://github.com/GangCaoLab/CoolBox")
+    (synopsis "Genomic data visualization toolkit")
+    (description
+     "CoolBox is a toolkit for visual analysis of genomics data.  It aims to
+be highly compatible with the Python ecosystem, easy to use and highly
+customizable with a well-designed user interface.  It can be used in various
+visualization situations, for example, to produce high-quality genome track
+plots or fetch common used genomic data files with a Python script or command
+line, interactively explore genomic data within Jupyter environment or web
+browser.")
+    (license license:gpl3+)))
 
 (define-public r-ascat
   (package
