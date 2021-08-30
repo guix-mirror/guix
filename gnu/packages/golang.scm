@@ -5257,6 +5257,37 @@ formatting.  It also favors portability, and includes support for all POSIX
 systems.")
       (license license:asl2.0))))
 
+(define-public go-github-com-gdamore-tcell-v2
+    (package
+      (inherit go-github-com-gdamore-tcell)
+      (name "go-github-com-gdamore-tcell")
+      (version "2.3.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gdamore/tcell")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ypbl5080q9sd3irad8mv7zlg4242i8pmg5xyhbyq95kymwibaid"))))
+      (arguments
+       `(#:import-path "github.com/gdamore/tcell/v2"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-files-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Make sure .gz files are writable so that the
+               ;; 'reset-gzip-timestamps' phase can do its work.
+               (let ((out (assoc-ref outputs "out")))
+                 (for-each make-file-writable
+                           (find-files out "\\.gz$"))))))))
+      (propagated-inputs
+       `(("go-golang-org-x-term" ,go-golang-org-x-term)
+         ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+         ,@(package-inputs go-github-com-gdamore-tcell)))))
+
 (define-public go-github-com-mattn-go-shellwords
   (let ((commit "2444a32a19f450fabaa0bb3e96a703f15d9a97d2")
         (version "1.0.5")
