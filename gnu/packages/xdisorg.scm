@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2019, 2021y Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -766,7 +766,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method git-fetch)
@@ -776,14 +776,16 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x64b7xqi5cbq29pb8s8r2kzbxaday1f5k0j70n3s2p7sahjxy72"))))
+        (base32 "1qanx2xx9m5l995csqzfcm1ks2nhk90zga1wzbkjjl75ga4iik2h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
-       ("automake" ,automake)))
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("giblib" ,giblib)
+       ("imlib2" ,imlib2)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxext" ,libxext)
