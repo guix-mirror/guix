@@ -540,15 +540,11 @@ safety and thread safety guarantees.")
   (rust-bootstrapped-package
    rust-1.42 "1.43.0" "18akhk0wz1my6y9vhardriy2ysc482z0fnjdcgs9gy59kmnarxkm"))
 
-;; This version needs llvm >= 8.0 and NOT 11
+;; This version requires llvm <= 11.
 (define-public rust-1.44
-  (let ((base-rust  (rust-bootstrapped-package
-                      rust-1.43 "1.44.1"
-                      "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky")))
-    (package
-      (inherit base-rust)
-      (inputs
-       (alist-replace "llvm" (list llvm-10) (package-inputs base-rust))))))
+  (rust-bootstrapped-package
+   rust-1.43 "1.44.1"
+   "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky"))
 
 (define-public rust-1.45
   (let ((base-rust (rust-bootstrapped-package
@@ -567,53 +563,8 @@ safety and thread safety guarantees.")
                     "linker.env(\"LC_ALL\", \"en_US.UTF-8\");")))))))))))
 
 (define-public rust-1.46
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.45 "1.46.0"
-                    "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid")))
-    (package
-      (inherit base-rust)
-      (outputs (cons "rustfmt" (package-outputs base-rust)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'build
-               ;; Phase overridden to also build rustfmt.
-               (lambda* (#:key parallel-build? #:allow-other-keys)
-                 (let ((job-spec (string-append
-                                  "-j" (if parallel-build?
-                                           (number->string (parallel-job-count))
-                                           "1"))))
-                   (invoke "./x.py" job-spec "build"
-                           "library/std" ;rustc
-                           "src/tools/cargo"
-                           "src/tools/rustfmt"))))
-             (replace 'check
-               ;; Phase overridden to also test rustfmt.
-               (lambda* (#:key tests? parallel-build? #:allow-other-keys)
-                 (when tests?
-                   (let ((job-spec (string-append
-                                    "-j" (if parallel-build?
-                                             (number->string (parallel-job-count))
-                                             "1"))))
-                     (invoke "./x.py" job-spec "test" "-vv"
-                             "library/std"
-                             "src/tools/cargo"
-                             "src/tools/rustfmt")))))
-             (replace 'install
-               ;; Phase overridden to also install rustfmt.
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (invoke "./x.py" "install")
-                 (substitute* "config.toml"
-                   ;; Adjust the prefix to the 'cargo' output.
-                   (("prefix = \"[^\"]*\"")
-                    (format #f "prefix = ~s" (assoc-ref outputs "cargo"))))
-                 (invoke "./x.py" "install" "cargo")
-                 (substitute* "config.toml"
-                   ;; Adjust the prefix to the 'rustfmt' output.
-                   (("prefix = \"[^\"]*\"")
-                    (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
-                 (invoke "./x.py" "install" "rustfmt"))))))))))
+  (rust-bootstrapped-package
+   rust-1.45 "1.46.0" "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
 
 (define-public rust-1.47
   (let ((base-rust (rust-bootstrapped-package
@@ -640,12 +591,44 @@ safety and thread safety guarantees.")
    rust-1.47 "1.48.0" "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf"))
 
 (define-public rust-1.49
+  (rust-bootstrapped-package
+   rust-1.48 "1.49.0" "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
+
+(define-public rust-1.50
+  (rust-bootstrapped-package
+   rust-1.49 "1.50.0" "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))
+
+(define-public rust-1.51
+  (rust-bootstrapped-package
+   rust-1.50 "1.51.0" "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))
+
+;;; The LLVM requiriment has been bumped to version 10 in Rust 1.52.  Use the
+;;; latest available.
+(define-public rust-1.52
   (let ((base-rust (rust-bootstrapped-package
-                    rust-1.48 "1.49.0"
-                    "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm")))
+                    rust-1.51 "1.52.1"
+                    "165zs3xzp9dravybwslqs1qhn35agp6wacmzpymqg3qfdni26vrs")))
     (package
       (inherit base-rust)
-      (outputs (cons "doc" (package-outputs base-rust)))
+      (inputs (alist-replace "llvm" (list llvm-12)
+                             (package-inputs base-rust))))))
+
+(define-public rust-1.53
+  (rust-bootstrapped-package
+   rust-1.52 "1.53.0" "1f95p259dfp5ca118bg107rj3rqwlswy65dxn3hg8sqgl4wwmxsw"))
+
+(define-public rust-1.54
+  (let ((base-rust
+         (rust-bootstrapped-package
+          rust-1.53 "1.54.0"
+          "0xk9dhfff16caambmwij67zgshd8v9djw6ha0fnnanlv7rii31dc")))
+    (package
+      (inherit base-rust)
+      (source
+       (origin
+         (inherit (package-source base-rust))
+         (snippet '(delete-file-recursively "src/llvm-project"))))
+      (outputs (cons "rustfmt" (package-outputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:tests? _ #f)
@@ -743,35 +726,51 @@ safety and thread safety guarantees.")
                    (substitute* "config.toml"
                      (("^python =.*" all)
                       (string-append all
-                                     "gdb = \"" gdb "/bin/gdb\"\n"))))))))))
+                                     "gdb = \"" gdb "/bin/gdb\"\n"))))))
+             (replace 'build
+               ;; Phase overridden to also build rustfmt.
+               (lambda* (#:key parallel-build? #:allow-other-keys)
+                 (let ((job-spec (string-append
+                                  "-j" (if parallel-build?
+                                           (number->string (parallel-job-count))
+                                           "1"))))
+                   (invoke "./x.py" job-spec "build"
+                           "library/std" ;rustc
+                           "src/tools/cargo"
+                           "src/tools/rustfmt"))))
+             (replace 'check
+               ;; Phase overridden to also test rustfmt.
+               (lambda* (#:key tests? parallel-build? #:allow-other-keys)
+                 (when tests?
+                   (let ((job-spec (string-append
+                                    "-j" (if parallel-build?
+                                             (number->string (parallel-job-count))
+                                             "1"))))
+                     (invoke "./x.py" job-spec "test" "-vv"
+                             "library/std"
+                             "src/tools/cargo"
+                             "src/tools/rustfmt")))))
+             (replace 'install
+               ;; Phase overridden to also install rustfmt.
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (invoke "./x.py" "install")
+                 (substitute* "config.toml"
+                   ;; Adjust the prefix to the 'cargo' output.
+                   (("prefix = \"[^\"]*\"")
+                    (format #f "prefix = ~s" (assoc-ref outputs "cargo"))))
+                 (invoke "./x.py" "install" "cargo")
+                 (substitute* "config.toml"
+                   ;; Adjust the prefix to the 'rustfmt' output.
+                   (("prefix = \"[^\"]*\"")
+                    (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
+                 (invoke "./x.py" "install" "rustfmt")))))))
       ;; Add test inputs.
-      (native-inputs (cons*
-                      ;; The tests fail when using GDB 10 (see:
-                      ;; https://github.com/rust-lang/rust/issues/79009).
-                      `("gdb" ,gdb-9.2)
-                      `("procps" ,procps)
-                      (package-native-inputs base-rust))))))
-
-(define-public rust-1.50
-  (rust-bootstrapped-package rust-1.49 "1.50.0"
-    "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))
-
-(define-public rust-1.51
-  (rust-bootstrapped-package rust-1.50 "1.51.0"
-    "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))
-
-(define-public rust-1.52
-  (let ((base-rust
-         (rust-bootstrapped-package rust-1.51 "1.52.1"
-           "165zs3xzp9dravybwslqs1qhn35agp6wacmzpymqg3qfdni26vrs")))
-    (package
-      (inherit base-rust)
-      (inputs
-        (alist-replace "llvm" (list llvm-12)
-                       (package-inputs base-rust))))))
+      (native-inputs (cons* `("gdb" ,gdb)
+                            `("procps" ,procps)
+                            (package-native-inputs base-rust))))))
 
 ;;; Note: Only the latest versions of Rust are supported and tested.  The
 ;;; intermediate rusts are built for bootstrapping purposes and should not
 ;;; be relied upon.  This is to ease maintenance and reduce the time
 ;;; required to build the full Rust bootstrap chain.
-(define-public rust rust-1.50)
+(define-public rust rust-1.54)
