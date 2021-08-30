@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu image)
+  #:use-module (gnu platform)
   #:use-module (guix records)
   #:export (partition
             partition?
@@ -34,7 +35,7 @@
             image?
             image-name
             image-format
-            image-target
+            image-platform
             image-size
             image-operating-system
             image-partitions
@@ -47,7 +48,8 @@
             image-type-name
             image-type-constructor
 
-            os->image))
+            os->image
+            os+platform->image))
 
 
 ;;;
@@ -78,7 +80,7 @@
   (name               image-name ;symbol
                       (default #f))
   (format             image-format) ;symbol
-  (target             image-target
+  (platform           image-platform ;<platform>
                       (default #f))
   (size               image-size  ;size in bytes as integer
                       (default 'guess))
@@ -112,3 +114,8 @@
 (define* (os->image os #:key type)
   (let ((constructor (image-type-constructor type)))
     (constructor os)))
+
+(define* (os+platform->image os platform #:key type)
+  (image
+   (inherit (os->image os #:type type))
+   (platform platform)))

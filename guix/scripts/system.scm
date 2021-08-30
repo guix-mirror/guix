@@ -64,6 +64,7 @@
                  (device-module-aliases matching-modules)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu image)
+  #:use-module (gnu platform)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -1212,13 +1213,11 @@ resulting from command-line parsing."
                             (base-image (if (operating-system? obj)
                                             (os->image obj
                                                        #:type image-type)
-                                            obj))
-                            (base-target (image-target base-image)))
+                                            obj)))
                         (image
                          (inherit (if label
                                       (image-with-label base-image label)
                                       base-image))
-                         (target (or base-target target))
                          (size image-size)
                          (volatile-root? volatile?))))
          (os          (image-operating-system image))

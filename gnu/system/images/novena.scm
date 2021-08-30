@@ -22,6 +22,7 @@
   #:use-module (gnu bootloader u-boot)
   #:use-module (gnu image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu platforms arm)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu system)
@@ -52,12 +53,13 @@
 (define novena-image-type
   (image-type
    (name 'novena-raw)
-   (constructor (cut image-with-os (arm32-disk-image) <>))))
+   (constructor (cut image-with-os (raw-with-offset-disk-image) <>))))
 
 (define novena-barebones-raw-image
   (image
    (inherit
-    (os->image novena-barebones-os #:type novena-image-type))
+    (os+platform->image novena-barebones-os armv7-linux
+                        #:type novena-image-type))
    (name 'novena-barebones-raw-image)))
 
 ;; Return the default image.

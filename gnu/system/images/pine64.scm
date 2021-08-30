@@ -21,6 +21,7 @@
   #:use-module (gnu bootloader u-boot)
   #:use-module (gnu image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu platforms arm)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu system)
@@ -57,12 +58,13 @@
 (define pine64-image-type
   (image-type
    (name 'pine64-raw)
-   (constructor (cut image-with-os (arm64-disk-image) <>))))
+   (constructor (cut image-with-os (raw-with-offset-disk-image) <>))))
 
 (define pine64-barebones-raw-image
   (image
    (inherit
-    (os->image pine64-barebones-os #:type pine64-image-type))
+    (os+platform->image pine64-barebones-os aarch64-linux
+                        #:type pine64-image-type))
    (name 'pine64-barebones-raw-image)))
 
 ;; Return the default image.

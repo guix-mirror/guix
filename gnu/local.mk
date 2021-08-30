@@ -83,6 +83,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/home/services/utils.scm			\
   %D%/home/services/xdg.scm			\
   %D%/image.scm					\
+  %D%/platform.scm				\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -611,6 +612,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xfce.scm				\
   %D%/packages/zile.scm				\
   %D%/packages/zwave.scm			\
+						\
+  %D%/platforms/arm.scm		                \
+  %D%/platforms/hurd.scm	                \
 						\
   %D%/services.scm				\
   %D%/services/admin.scm			\
