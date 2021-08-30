@@ -5255,7 +5255,7 @@ non-UTF-friendly sources.")
 terminfo capability strings to avoid hard-coding escape strings for
 formatting.  It also favors portability, and includes support for all POSIX
 systems.")
-      (license license:expat))))
+      (license license:asl2.0))))
 
 (define-public go-github-com-mattn-go-shellwords
   (let ((commit "2444a32a19f450fabaa0bb3e96a703f15d9a97d2")
