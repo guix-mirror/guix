@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
@@ -578,24 +578,23 @@ rsnapshot uses hard links to deduplicate identical files.")
                       (substitute* "configure"
                         (("GUILE=(.*)--variable bindir`" _ middle)
                          (string-append "GUILE=" middle
-                                        "--variable bindir`/guile")))
-                      #t))
+                                        "--variable bindir`/guile")))))
                   (add-before 'build 'set-libtirpc-include-path
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; Allow <rpc/rpc.h> & co. to be found.
-                      (let ((libtirpc (assoc-ref inputs "libtirpc")))
-                        (setenv "CPATH"
-                                (string-append (getenv "CPATH")
-                                               ":" libtirpc
-                                               "/include/tirpc"))
-                        #t)))
+                      (let ((tirpc (string-append (assoc-ref inputs "libtirpc")
+                                                  "/include/tirpc")))
+                        (if (getenv "CPATH")
+                          (setenv "CPATH"
+                                  (string-append (getenv "CPATH")
+                                                 ":" tirpc))
+                          (setenv "CPATH" tirpc)))))
                   (add-before 'check 'skip-test
                     (lambda _
                       ;; XXX: This test fails (1) because current GnuTLS no
                       ;; longer supports OpenPGP authentication, and (2) for
                       ;; some obscure reason.  Better skip it.
-                      (setenv "XFAIL_TESTS" "utils/block-server")
-                      #t)))))
+                      (setenv "XFAIL_TESTS" "utils/block-server"))))))
     (native-inputs
      `(("guile" ,guile-2.0)
        ("gperf" ,gperf-3.0)                  ;see <https://bugs.gnu.org/32382>
