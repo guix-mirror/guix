@@ -941,7 +941,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.24.1")
+    (version "0.24.2")
     (source
      (origin
        (method git-fetch)
@@ -951,13 +951,13 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0dd854hi9h81pa3y6gwa6r4qjwrwq5fndi312h6dkqzfh7jbvgvd"))))
+         "0hm92biqwwc87bqnr56lwa5bz77lr7k9q21rdwksnfzq3vsdp2nm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-ext
-           (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace") #t))
+           (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace")))
          (replace 'check
            (lambda _
              ;; Restrict OpenBLAS threads to prevent segfaults while testing!
@@ -973,8 +973,7 @@ computing environments.")
              ;; 'reset-gzip-timestamps' phase can do its work.
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+                         (find-files out "\\.gz$"))))))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
