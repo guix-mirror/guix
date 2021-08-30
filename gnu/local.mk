@@ -73,14 +73,14 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/u-boot.scm                     \
   %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
-  %D%/home.scm                                  \
-  %D%/home-services.scm                         \
-  %D%/home-services/symlink-manager.scm         \
-  %D%/home-services/fontutils.scm               \
-  %D%/home-services/configuration.scm           \
-  %D%/home-services/shells.scm                  \
-  %D%/home-services/utils.scm                   \
-  %D%/home-services/xdg.scm                     \
+  %D%/home.scm					\
+  %D%/home-services.scm			\
+  %D%/home-services/symlink-manager.scm	\
+  %D%/home-services/fontutils.scm		\
+  %D%/home-services/configuration.scm		\
+  %D%/home-services/shells.scm			\
+  %D%/home-services/utils.scm			\
+  %D%/home-services/xdg.scm			\
   %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
