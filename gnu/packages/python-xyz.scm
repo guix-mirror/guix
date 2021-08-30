@@ -22319,14 +22319,13 @@ compatible).")
 (define-public python-bsddb3
   (package
     (name "python-bsddb3")
-    (version "6.2.6")
+    (version "6.2.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bsddb3" version))
        (sha256
-        (base32
-         "019db2y6bfmiqbrgg9x9f6h72qjmqh05czdn2v5sy9bl0gs23mj2"))))
+        (base32 "00bqdsfx8jgmfz5bgkx10nlw5bfsw11a86f91zkl53snvk45xl3h"))))
     (build-system python-build-system)
     (inputs
      `(("bdb" ,bdb)))
