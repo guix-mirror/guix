@@ -493,6 +493,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rednotebook.scm			\
   %D%/packages/regex.scm				\
   %D%/packages/robotics.scm			\
+  %D%/packages/rocm.scm				\
   %D%/packages/rpc.scm				\
   %D%/packages/rpm.scm				\
   %D%/packages/rrdtool.scm			\
