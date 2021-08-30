@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 pineapples <guixuser6392@protonmail.com>
+;;; Copyright © 2021 Robby Zambito <contact@robbyzambito.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2433,4 +2434,39 @@ interfaces.")
 seeks to add support for the screenshot, screencast, and possibly
 remote-desktop @code{xdg-desktop-portal} interfaces for wlroots based
 compositors.")
+    (license license:expat)))
+
+(define-public waypipe
+  (package
+    (name "waypipe")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/mstoeckl/waypipe")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qa47ljfvb1vv3h647xwn1j5j8gfmcmdfaz4j8ygnkvj36y87vnz"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sleep-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref inputs "coreutils")))
+               (substitute* "./test/startup_failure.py"
+                 (("sleep") (string-append coreutils "/bin/sleep")))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ;; For tests
+       ("python" ,python)
+       ("coreutils" ,coreutils)))
+    (home-page "https://gitlab.freedesktop.org/mstoeckl/waypipe")
+    (synopsis "Proxy for Wayland protocol applications")
+    (description
+     "Waypipe is a proxy for Wayland clients, with the aim of
+supporting behavior like @samp{ssh -X}.")
     (license license:expat)))
