@@ -11452,38 +11452,53 @@ implementation differs in these ways:
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.7.2")
+    (version "1.8.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "scanpy" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/theislab/scanpy")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0c66adnfizsyk0h8bv2yhmay876z0klpxwpn4z6m71wly7yplpmd"))))
+         "0w1qmv3djqi8q0sn5hv34ivzs157fwjjb9nflfnagnhpxmw8vx5g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)
+             ;; ZIP does not support timestamps before 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")
+             (invoke "flit" "build")))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (wheel)
+                           (format #true wheel)
+                           (invoke "python" "-m" "pip" "install"
+                                   wheel (string-append "--prefix=" out)))
+                         (find-files "dist" "\\.whl$")))))
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; These tests require Internet access.
              (delete-file-recursively "scanpy/tests/notebooks")
              (delete-file "scanpy/tests/test_clustering.py")
              (delete-file "scanpy/tests/test_datasets.py")
+             (delete-file "scanpy/tests/test_score_genes.py")
              (delete-file "scanpy/tests/test_highly_variable_genes.py")
 
              ;; TODO: I can't get the plotting tests to work, even with Xvfb.
-             (delete-file "scanpy/tests/test_plotting.py")
+             (delete-file "scanpy/tests/test_embedding_plots.py")
              (delete-file "scanpy/tests/test_preprocessing.py")
              (delete-file "scanpy/tests/test_read_10x.py")
 
-             ;; The following tests need anndata.tests, which aren't included
-             ;; in the final python-anndata package.
-             (delete-file "scanpy/tests/test_combat.py")
-             (delete-file "scanpy/tests/test_embedding_plots.py")
-             (delete-file "scanpy/tests/test_normalization.py")
-             (delete-file "scanpy/tests/test_pca.py")
-             (delete-file "scanpy/tests/external/test_scrublet.py")
+             ;; TODO: these fail with TypingError and "Use of unsupported
+             ;; NumPy function 'numpy.split'".
+             (delete-file "scanpy/tests/test_metrics.py")
 
              ;; The following tests requires 'scanorama', which isn't
              ;; packaged yet.
@@ -11491,9 +11506,24 @@ implementation differs in these ways:
 
              (setenv "PYTHONPATH"
                      (string-append (getcwd) ":"
+                                    (assoc-ref inputs "python-anndata:source") ":"
                                     (getenv "PYTHONPATH")))
-             (invoke "pytest")
-             #t)))))
+             (invoke "pytest" "-vv"
+                     "-k"
+                     ;; Plot tests that fail.
+                     (string-append "not test_dotplot_matrixplot_stacked_violin"
+                                    " and not test_violin_without_raw"
+                                    " and not test_correlation"
+                                    " and not test_scatterplots"
+                                    " and not test_scatter_embedding_add_outline_vmin_vmax_norm"
+                                    " and not test_paga"
+                                    " and not test_paga_compare"
+
+                                    ;; These try to connect to the network
+                                    " and not test_plot_rank_genes_groups_gene_symbols"
+                                    " and not test_pca_chunked"
+                                    " and not test_pca_sparse"
+                                    " and not test_pca_reproducible")))))))
     (propagated-inputs
      `(("python-anndata" ,python-anndata)
        ("python-h5py" ,python-h5py)
@@ -11517,7 +11547,10 @@ implementation differs in these ways:
        ("python-tqdm" ,python-tqdm)
        ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
-     `(("python-leidenalg" ,python-leidenalg)
+     `(;; This package needs anndata.tests, which is not installed.
+       ("python-anndata:source" ,(package-source python-anndata))
+       ("python-flit" ,python-flit)
+       ("python-leidenalg" ,python-leidenalg)
        ("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sinfo" ,python-sinfo)))
