@@ -35,7 +35,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.12.0")
+    (version "1.12.2")
     (source
      (origin
        (method git-fetch)
@@ -44,7 +44,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nx0ajbpib0hxpxz33p1kr3rqgvf35vkx91sh427qcjqy7964z16"))
+        (base32 "1rwmwnqxhjcdx9niva9ardx90p1qi4axxh72nw9k15hhlh2jy29x"))
        (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments
