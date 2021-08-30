@@ -981,10 +981,10 @@ specifies modules in scope when evaluating SNIPPET."
                ((file-is-directory? #+source)
                 (copy-recursively directory #$output
                                   #:log (%make-void-port "w")))
-               ((not #+comp)
-                (copy-file file #$output))
-               (else
-                (repack directory #$output)))))))
+               ((or #+comp (tarball? #+source))
+                (repack directory #$output))
+               (else                    ;single uncompressed file
+                (copy-file file #$output)))))))
 
     (let ((name (if (or (checkout? original-file-name)
                         (not (compressor original-file-name)))
