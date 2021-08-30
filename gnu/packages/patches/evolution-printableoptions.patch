@@ -1,0 +1,57 @@
+Patch adapted from evolution-data-server's
+c3915bb99638c1ccf57217097b14b5db69bcac96 upstream patch by Milan Crha:
+
+    PrintableOptions.cmake: Correct variable name comparison
+    
+    CMake 3.20.1 errors out with:
+    
+    CMake Error at cmake/modules/PrintableOptions.cmake:38 (message):
+       variable name cannot be empty
+     Call Stack (most recent call first):
+       CMakeLists.txt:152 (add_printable_variable)
+    
+    Change how the parameter value is compared, to fix it.
+
+--- a/cmake/modules/PrintableOptions.cmake
++++ b/cmake/modules/PrintableOptions.cmake
+@@ -19,32 +19,32 @@
+ #    prints all the build options previously added with the above functions
+ 
+ macro(add_printable_variable_bare _name)
+-	if(_name STREQUAL "")
++	if("${_name}" STREQUAL "")
+ 		message(FATAL_ERROR "variable name cannot be empty")
+-	endif(_name STREQUAL "")
++	endif("${_name}" STREQUAL "")
+ 	list(APPEND _printable_options ${_name})
+ endmacro()
+ 
+ macro(add_printable_option _name _description _default_value)
+-	if(_name STREQUAL "")
++	if("${_name}" STREQUAL "")
+ 		message(FATAL_ERROR "option name cannot be empty")
+-	endif(_name STREQUAL "")
++	endif("${_name}" STREQUAL "")
+ 	option(${_name} ${_description} ${_default_value})
+ 	add_printable_variable_bare(${_name})
+ endmacro()
+ 
+ macro(add_printable_variable _name _description _default_value)
+-	if(_name STREQUAL "")
++	if("${_name}" STREQUAL "")
+ 		message(FATAL_ERROR "variable name cannot be empty")
+-	endif(_name STREQUAL "")
++	endif("${_name}" STREQUAL "")
+ 	set(${_name} ${_default_value} CACHE STRING ${_description})
+ 	add_printable_variable_bare(${_name})
+ endmacro()
+ 
+ macro(add_printable_variable_path _name _description _default_value)
+-	if(_name STREQUAL "")
++	if("${_name}" STREQUAL "")
+ 		message(FATAL_ERROR "path variable name cannot be empty")
+-	endif(_name STREQUAL "")
++	endif("${_name}" STREQUAL "")
+ 	set(${_name} ${_default_value} CACHE PATH ${_description})
+ 	add_printable_variable_bare(${_name})
+ endmacro()

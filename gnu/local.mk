@@ -20,7 +20,7 @@
 # Copyright © 2018, 2019, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-# Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+# Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
@@ -1006,6 +1006,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/evolution-CVE-2020-11879.patch		\
+  %D%/packages/patches/evolution-printableoptions.patch		\
   %D%/packages/patches/evolution-data-server-CVE-2020-14928.patch	\
   %D%/packages/patches/evolution-data-server-CVE-2020-16117.patch	\
   %D%/packages/patches/evolution-data-server-printableoptions.patch	\
