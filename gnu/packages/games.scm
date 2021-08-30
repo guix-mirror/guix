@@ -9432,7 +9432,7 @@ terminal full-window applications.")
 (define-public harmonist
   (package
     (name "harmonist")
-    (version "0.3.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9441,12 +9441,15 @@ terminal full-window applications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "146wiyanag0zqj6fhyll2sw6sydnnll8mgxhhqf9sjqsl2rx4s5r"))))
+                "17ai39pw9xq4asfvhs0whx07hljlivygazbwrxjrnxwrn06483hr"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "git.tuxfamily.org/harmonist/harmonist"))
     (inputs
-     `(("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+     `(("go-github-com-gdamore-tcell-v2" ,go-github-com-gdamore-tcell-v2)
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)
+       ("go-github-com-anaseto-gruid" ,go-github-com-anaseto-gruid)
+       ("go-github-com-anaseto-gruid-tcell" ,go-github-com-anaseto-gruid-tcell)))
     (home-page "https://harmonist.tuxfamily.org/")
     (synopsis "Stealth coffee-break roguelike game")
     (description "Harmonist: Dayoriah Clan Infiltration is a stealth
