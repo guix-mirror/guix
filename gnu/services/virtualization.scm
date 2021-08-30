@@ -894,7 +894,7 @@ that will be listening to receive secret keys on port 1004, TCP."
     (timezone "Europe/Amsterdam")
     (bootloader (bootloader-configuration
                  (bootloader grub-minimal-bootloader)
-                 (target "/dev/vda")
+                 (targets '("/dev/vda"))
                  (timeout 0)))
     (packages (cons* gdb-minimal
                      (operating-system-packages
