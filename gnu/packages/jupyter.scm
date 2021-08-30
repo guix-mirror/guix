@@ -539,3 +539,38 @@ Docker registry.")
 sending queries to an SPARQL endpoint and fetching & presenting the results in
 a notebook.")
     (license license:bsd-3)))
+
+(define-public python-voila
+  (package
+    (name "python-voila")
+    (version "0.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "voila" version))
+       (sha256
+        (base32
+         "0krfc95yjlhjdmrsladhy6lpf4xs1zw49nmkyl4pkykndglvwa1m"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jupyter-client" ,python-jupyter-client)
+       ("python-jupyter-server" ,python-jupyter-server)
+       ("python-nbclient" ,python-nbclient)
+       ("python-nbconvert" ,python-nbconvert)))
+    (native-inputs
+     `(("python-ipywidgets" ,python-ipywidgets)
+       ("python-jupyter-packaging" ,python-jupyter-packaging)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-tornasync" ,python-pytest-tornasync)
+       ("python-setuptools" ,python-setuptools)
+       ("python-tornado" ,python-tornado-6)))
+    (home-page "https://github.com/voila-dashboards/voila")
+    (synopsis "Render live Jupyter notebooks with interactive widgets")
+    (description
+     "Voilà turns Jupyter notebooks into standalone web applications.  Unlike
+the usual HTML-converted notebooks, each user connecting to the Voilà tornado
+application gets a dedicated Jupyter kernel which can execute the callbacks to
+changes in Jupyter interactive widgets.")
+    (license license:bsd-3)))
