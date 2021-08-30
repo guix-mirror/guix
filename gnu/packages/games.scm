@@ -9403,6 +9403,32 @@ creating grid-based games, but it's also well suited for any grid-based
 application.")
     (license license:isc)))
 
+(define-public go-github-com-anaseto-gruid-tcell
+  (package
+    (name "go-github-com-anaseto-gruid-tcell")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/anaseto/gruid-tcell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "09ajr9mbldjfc44qprplbf8dr8yhlbn2nfnas2z62m9wmklc0qiv"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/anaseto/gruid-tcell"))
+    (propagated-inputs
+     `(("go-github-com-gdamore-tcell-v2" ,go-github-com-gdamore-tcell-v2)
+       ("go-github-com-anaseto-gruid" ,go-github-com-anaseto-gruid)))
+    (home-page "https://github.com/anaseto/gruid-tcell")
+    (synopsis "Gruid driver using the tcell library")
+    (description "The gruid-tcell module provides a Gruid driver for building
+terminal full-window applications.")
+    (license license:isc)))
+
 (define-public harmonist
   (package
     (name "harmonist")
