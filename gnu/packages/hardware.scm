@@ -5,6 +5,8 @@
 ;;; Copyright © 2021 Evgeny Pisemsky <evgeny@pisemsky.com>
 ;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Denis Carikli <GNUtoo@cyberdimension.org>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +33,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -49,6 +52,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -65,6 +69,111 @@
 
 ;; This is a module for packages related to physical hardware that don't (yet)
 ;; have a more specific home like gps.scm, security-token.scm, &c.
+
+(define-public hwinfo
+  (package
+    (name "hwinfo")
+    (version "21.76")
+    (home-page "https://github.com/openSUSE/hwinfo")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url home-page)
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1910wzpdyp1ma1z2v0dripaljgrpl7vjq0f6b7qq9y220899hihb"))
+       (modules
+        '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Remove git2log program file.
+           (delete-file "git2log")
+           ;; Remove variables that depends on git2log.
+           (substitute* "Makefile"
+             (("GIT2LOG.*\\:=.*$") "")
+             (("GITDEPS.*\\:=.*$") "")
+             (("BRANCH.*\\:=.*$") ""))
+           ;; Create version file.
+           (call-with-output-file "VERSION"
+             (lambda (port)
+               (format port ,version)))
+           #t))))
+    (build-system gnu-build-system)
+    (outputs '("out" "dev" "doc"))
+    (arguments
+     `(#:tests? #f                      ; no test-suite available
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dev (assoc-ref outputs "dev"))
+                    (doc (assoc-ref outputs "doc"))
+                    (incl-dir (string-append dev "/include"))
+                    (lib-dir (string-append dev "/lib"))
+                    (sbin-dir (string-append out "/sbin"))
+                    (share-dir (string-append out "/share"))
+                    (doc-dir (string-append doc "/share/doc")))
+               ;; Generate HTML documentation in the output "doc".
+               (mkdir-p doc-dir)
+               (substitute* "doc/libhd.doxy"
+                 (("OUTPUT_DIRECTORY.*=.*libhd")
+                  (string-append "OUTPUT_DIRECTORY = " doc-dir "/libhd")))
+               ;; Correct values of the version and install directories.
+               (substitute* "Makefile"
+                 (("VERSION.*\\:=.*$")
+                  (string-append "VERSION := " ,version "\n"))
+                 (("LIBDIR.*\\?=.*$")
+                  (string-append "LIBDIR ?= " lib-dir "\n"))
+                 (("/usr/include") incl-dir)
+                 (("/(usr|var)/(lib|lib64)") lib-dir)
+                 (("/usr/sbin") sbin-dir)
+                 (("/usr/share") share-dir)
+                 (("\\$\\(DESTDIR\\)/sbin ") ""))
+               ;; Add output "dev" to the run-path.
+               (substitute* "Makefile.common"
+                 (("-Lsrc")
+                  (string-append "-Lsrc " "-Wl,-rpath=" lib-dir)))
+               ;; Correct program name of the lexical analyzer.
+               (substitute* "src/isdn/cdb/Makefile"
+                 (("lex isdn_cdb.lex") "flex isdn_cdb.lex"))
+               ;; Patch pkgconfig file to point to output "dev".
+               (substitute* "hwinfo.pc.in"
+                 (("/usr") dev)))))
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (setenv "CC" ,(cc-for-target))
+             (invoke "make" "shared")
+             (invoke "make" "doc")))
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man-dir (string-append out "/share/man"))
+                    (man1-dir (string-append man-dir "/man1"))
+                    (man8-dir (string-append man-dir "/man8")))
+               (for-each
+                (lambda (x) (install-file x man1-dir))
+                (find-files "doc" "\\.1$"))
+               (for-each
+                (lambda (y) (install-file y man8-dir))
+                (find-files "doc" "\\.8$"))))))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("flex" ,flex)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx86emu" ,libx86emu)
+       ("util-linux:lib" ,util-linux "lib")))
+    (synopsis "Hardware information tool")
+    (description "HwInfo is used to probe for the hardware present in the system.
+It can be used to generate a system overview log which can be later used for
+support.")
+    (license license:gpl2+)))
 
 (define-public ddcutil
   (package
