@@ -162,6 +162,7 @@
   xorg-configuration make-xorg-configuration
   xorg-configuration?
   (modules          xorg-configuration-modules    ;list of packages
+                    (thunked)
                     ; filter out modules not supported on current system
                     (default (filter
                               (lambda (p)
