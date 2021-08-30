@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
@@ -30,6 +30,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -105,7 +106,10 @@ POSIX regular expression API.")
                           "--enable-pcre2test-libreadline"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
-                          "--enable-jit"
+                          ;; pcre2_jit_test fails on powerpc32.
+                          ,@(if (target-ppc32?)
+                              '()
+                              `("--enable-jit"))
                           "--disable-static")
       #:phases
       (modify-phases %standard-phases
