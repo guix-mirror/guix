@@ -106,6 +106,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26544,3 +26545,39 @@ a (rather superficial) static analysis, and constructs a directed graph of the
 objects in the combined source, and how they define or use each other.  The
 graph can be output for rendering by GraphViz or yEd.")
     (license license:gpl2)))
+
+(define-public date2name
+  (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
+        (revision "1"))
+    (package
+      (name "date2name")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/novoid/date2name")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1vq96b7n16d932nyfhnzwdwxff0zrqanidmwr4cxj2p67ad9y3w7"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((bindir (string-append (assoc-ref outputs "out") "/bin"))
+                      (binary (string-append bindir "/date2name")))
+                 (mkdir-p bindir)
+                 (copy-file "date2name/__init__.py" binary)
+                 (chmod binary #o555)))))))
+      (synopsis "Handling time-stamps and date-stamps in file names")
+      (description "By default, date2name gets the modification time of matching
+files and directories and adds a datestamp in standard ISO 8601+ format
+YYYY-MM-DD at the beginning of the file or directory name.")
+      (home-page "https://github.com/novoid/date2name")
+      (license license:gpl3+))))
