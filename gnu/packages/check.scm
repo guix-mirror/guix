@@ -1307,33 +1307,6 @@ same arguments.")
        `(("python2-mock" ,python2-mock)
          ,@(package-propagated-inputs base))))))
 
-(define-public python-pytest-mock-3
-  (package
-    (inherit python-pytest-mock)
-    (version "3.6.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pytest-mock" version))
-        (sha256
-         (base32
-          "0qhfmd05z3g88bnwq6644jl6p5wy01i4yy7h8883z9jjih2pl8a0"))))
-    (properties '())
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (when tests?
-               ;; Make the installed plugin discoverable by Pytest.
-               (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv"
-                       ;; TODO: these fail for unclear reasons
-                       "-k"
-                       (string-append
-                        "not test_standalone_mock"
-                        " and not test_detailed_introspection_async"))))))))))
-
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
