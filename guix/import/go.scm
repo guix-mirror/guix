@@ -485,9 +485,12 @@ build a package."
     (match (select (html->sxml meta-data #:strict? #t))
       (() #f)                           ;nothing selected
       ((('content content-text) ..1)
-       (find (lambda (meta)
-               (string-prefix? (module-meta-import-prefix meta) module-path))
-             (map go-import->module-meta content-text))))))
+       (or
+        (find (lambda (meta)
+                (string-prefix? (module-meta-import-prefix meta) module-path))
+              (map go-import->module-meta content-text))
+        ;; Fallback to the first meta if no import prefixes match.
+        (go-import->module-meta (first content-text)))))))
 
 (define (module-meta-data-repo-url meta-data goproxy)
   "Return the URL where the fetcher which will be used can download the
