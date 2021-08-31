@@ -305,7 +305,7 @@ JavaScript build steps.")
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-ipykernel" ,python-ipykernel)
-       ("python-pytest" ,python-pytest-6)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-console-scripts" ,python-pytest-console-scripts)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-mock" ,python-pytest-mock)
