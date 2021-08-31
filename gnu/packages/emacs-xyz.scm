@@ -15979,25 +15979,34 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 (define-public emacs-groovy-modes
   (package
     (name "emacs-groovy-modes")
-    (version "2.0")
+    (version "2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
-                     (commit version)))
+                    (url "https://github.com/Groovy-Emacs-Modes\
+/groovy-emacs-modes")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c1d4cbnlny8gpcd20zr1wxx6ggf28jgh7sgd5r1skpsvjpbfqx2"))))
+                "1jpfyqnqd8nj0g8xbiw4ar2qzxx3pvhwibr6hdzhyy9mmc4yzdgk"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)
+       ("emacs-undercover" ,emacs-undercover)
+       ("emacs-shut-up" ,emacs-shut-up)
+       ("emacs-f" ,emacs-f)))
     (propagated-inputs
-     `(("emacs-s" ,emacs-s)))
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
     (home-page "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
     (synopsis "Groovy related modes for Emacs")
-    (description
-     "This package provides @code{groovy-mode} for syntax highlighting in
-Groovy source files, REPL integration with run-groovy and Grails project
-navigation with the grails mode.")
+    (description "This package provides @code{groovy-mode} for syntax
+highlighting in Groovy source files, REPL integration with run-groovy and
+Grails project navigation with the grails mode.")
     (license license:gpl3+)))
 
 (define-public emacs-jenkinsfile-mode
