@@ -14949,6 +14949,56 @@ line, interactively explore genomic data within Jupyter environment or web
 browser.")
     (license license:gpl3+)))
 
+(define-public scregseg
+  (package
+    (name "scregseg")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/BIMSBbioinfo/scregseg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k8hllr5if6k2mm2zj391fv40sfc008cjm04l9vgfsdppb80i112"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false                  ; tests require network access
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-fail-to-find-sklearn
+           (lambda _
+             ;; XXX: I have no idea why it cannot seem to find sklearn.
+             (substitute* "setup.py"
+               (("'sklearn',") "")))))))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (propagated-inputs
+     `(("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-hmmlearn" ,python-hmmlearn)
+       ("python-pandas" ,python-pandas)
+       ("python-numba" ,python-numba)
+       ("python-anndata" ,python-anndata)
+       ("python-scanpy" ,python-scanpy)
+       ("python-pybedtools" ,python-pybedtools)
+       ("python-pysam" ,python-pysam)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-seaborn" ,python-seaborn)
+       ("python-coolbox" ,python-coolbox)))
+    (home-page "https://github.com/BIMSBbioinfo/scregseg")
+    (synopsis "Single-cell regulatory landscape segmentation")
+    (description "Scregseg (Single-Cell REGulatory landscape SEGmentation) is a
+tool that facilitates the analysis of single cell ATAC-seq data by an
+HMM-based segmentation algorithm.  Scregseg uses an HMM with
+Dirichlet-Multinomial emission probabilities to segment the genome either
+according to distinct relative cross-cell accessibility profiles or (after
+collapsing the single-cell tracks to pseudo-bulk tracks) to capture distinct
+cross-cluster accessibility profiles.")
+    (license license:gpl3+)))
+
 (define-public r-ascat
   (package
    (name "r-ascat")
