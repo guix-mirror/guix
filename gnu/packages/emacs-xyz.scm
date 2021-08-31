@@ -102,6 +102,7 @@
 ;;; Copyright © 2021 Dhruvin Gandhi <contact@dhruvin.dev>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
+;;; Copyright © 2021 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29357,6 +29358,27 @@ shorter than usual, using mostly unprefixed keys.")
     (description "This packages provides a major mode for editing
 @acronym{CWL, Common Workflow Language} files.")
     (license license:gpl3+)))
+
+(define-public emacs-dictionary
+  (package
+    (name "emacs-dictionary")
+    (version "1.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/myrkr/dictionary-el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zsjbpq0s0xdxd9r541f04bj1khhgzhdlzr0m4p17zjh1zardbpi"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.myrkr.in-berlin.de/dictionary/index.html")
+    (synopsis "Emacs client for dictionary servers")
+    (description "This package provides commands for interacting with a
+dictionary server (as defined by RFC 2229; by default, the public server at
+dict.org) from within Emacs.")
+    (license license:gpl2+)))
 
 (define-public emacs-multitran
   (package
