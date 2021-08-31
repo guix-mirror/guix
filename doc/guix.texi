@@ -11606,6 +11606,10 @@ contained in the GnuPG keyring at
 signatures,, emacs, The GNU Emacs Manual}).
 
 @item
+@uref{https://elpa.nongnu.org/nongnu/, NonGNU}, selected by the
+@code{nongnu} identifier.
+
+@item
 @uref{https://stable.melpa.org/packages, MELPA-Stable}, selected by the
 @code{melpa-stable} identifier.
 
