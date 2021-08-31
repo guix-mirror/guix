@@ -36,7 +36,7 @@
   #:use-module (guix scripts build)
   #:use-module (guix scripts system search)
   #:autoload   (guix scripts pull) (channel-commit-hyperlink)
-  ;; #:use-module (guix scripts home import)
+  #:use-module (guix scripts home import)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix gexp)
   #:use-module (guix monads)

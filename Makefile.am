@@ -296,6 +296,7 @@ MODULES =					\
   guix/scripts/system/search.scm		\
   guix/scripts/system/reconfigure.scm		\
   guix/scripts/home.scm			\
+  guix/scripts/home/import.scm			\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/crate.scm			\
