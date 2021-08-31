@@ -23066,7 +23066,9 @@ standard error channel (stderr) in your program.")
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "-k"
+               (invoke "pytest" "-vv" "-p" "no:asyncio"
+                       "-m" "not network"
+                       "-k"
                        (string-append
                         "not test_is_block_device"
 
