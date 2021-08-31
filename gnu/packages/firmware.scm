@@ -256,7 +256,7 @@ broadband modem as found, for example, on PinePhone.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (bin (find-files "." ".*fw_.*.elf$")))
+                   (bin (find-files "." "fw_.*\\.(elf|bin)$")))
                (for-each
                  (lambda (file)
                    (install-file file out))
