@@ -16010,7 +16010,7 @@ Grails project navigation with the grails mode.")
     (license license:gpl3+)))
 
 (define-public emacs-jenkinsfile-mode
-  (let ((commit "00d259ff9b870d234540e00e1d7c83cccdb063b8")
+  (let ((commit "65bf3925852c35c6bd499978f08f83c1193f4347")
         (revision "1"))
     (package
       (name "emacs-jenkinsfile-mode")
@@ -16023,7 +16023,7 @@ Grails project navigation with the grails mode.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0srf6xdjnrd4v4ks9pal7i48wmkcl4q5ry7d0yzfx1c9pz2qg9zx"))))
+                  "0w38g88yykslg71xr99ff4vx1ffgy90b7xqvvdflr189gwk3avx1"))))
       (propagated-inputs
        `(("emacs-groovy-modes" ,emacs-groovy-modes)))
       (build-system emacs-build-system)
