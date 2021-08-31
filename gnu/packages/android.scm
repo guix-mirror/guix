@@ -532,29 +532,23 @@ the core SELinux management utilities.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "CPPFLAGS="
-                            ;"-Wno-error "
-                            "-I "
-                            (assoc-ref %build-inputs "android-libselinux")
-                            "/include "
-                            "-I " (assoc-ref %build-inputs "android-libsparse")
-                            "/include "
-                            "-I " (assoc-ref %build-inputs "android-libcutils")
-                            "/include "
-                            "-I " (assoc-ref %build-inputs "android-liblog") "/include "
-                            "-I ../core/include")
-             "CFLAGS=-Wno-error"
-             "install-libext4_utils_host.a"
-             (string-append "prefix=" (assoc-ref %outputs "out")))
+       ,#~(list (string-append "CPPFLAGS="
+                               ;"-Wno-error "
+                               "-I " #$android-libselinux "/include "
+                               "-I " #$android-libsparse  "/include "
+                               "-I " #$android-libcutils  "/include "
+                               "-I " #$android-liblog "/include "
+                               "-I ../core/include")
+                "CFLAGS=-Wno-error"
+                "install-libext4_utils_host.a"
+                (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-core
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "core")
-             (with-directory-excursion "core"
-               (invoke "tar" "axf" (assoc-ref inputs "android-core")
-                             "--strip-components=1"))
-             #t))
+             (copy-recursively (assoc-ref inputs "android-core")
+                               "core")))
          (add-after 'unpack-core 'enter-source
            (lambda _ (chdir "ext4_utils") #t))
          (replace 'install
