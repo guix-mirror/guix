@@ -924,7 +924,21 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (make-u-boot-package "sifive_unleashed" "riscv64-linux-gnu"))
 
 (define-public u-boot-sifive-unmatched
-  (make-u-boot-package "sifive_unmatched" "riscv64-linux-gnu"))
+  (let ((base (make-u-boot-package "sifive_unmatched" "riscv64-linux-gnu")))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'set-environment
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((opensbi (string-append (assoc-ref inputs "firmware")
+                                               "/fw_dynamic.bin")))
+                   (setenv "OPENSBI" opensbi))))))))
+      (inputs
+       `(("firmware" ,opensbi-generic)
+         ,@(package-inputs base))))))
 
 (define-public u-boot-rock64-rk3328
   (let ((base (make-u-boot-package "rock64-rk3328" "aarch64-linux-gnu")))
