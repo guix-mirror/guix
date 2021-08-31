@@ -11323,7 +11323,7 @@ and generate package expressions for all those packages that are not yet
 in Guix.
 @end table
 
-@item contentdb
+@item minetest
 @cindex minetest
 @cindex ContentDB
 Import metadata from @uref{https://content.minetest.net, ContentDB}.
