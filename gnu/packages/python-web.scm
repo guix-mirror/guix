@@ -4338,7 +4338,15 @@ Google search engine.  Its module is called @code{googlesearch}.")
          "1wpbbbxfpy9mwxdy3kn352cb590ladv574j1aa2l4grjdqw3ln05"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; tests require internet access
+     `(#:tests? #f ; tests require internet access
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-setup-py
+           (lambda _
+             (substitute* "setup.py"
+               (("googleapiclient/discovery_cache")
+                "googleapiclient.discovery_cache"))
+             #t)))))
     (native-inputs
      `(("python-httplib2" ,python-httplib2)
        ("python-six" ,python-six)
