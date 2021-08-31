@@ -11542,6 +11542,7 @@ implementation differs in these ways:
        ("python-scikit-learn" ,python-scikit-learn)
        ("python-scipy" ,python-scipy)
        ("python-seaborn" ,python-seaborn)
+       ("python-sinfo" ,python-sinfo)
        ("python-statsmodels" ,python-statsmodels)
        ("python-tables" ,python-tables)
        ("python-pytoml" ,python-pytoml)
@@ -11553,8 +11554,7 @@ implementation differs in these ways:
        ("python-flit" ,python-flit)
        ("python-leidenalg" ,python-leidenalg)
        ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sinfo" ,python-sinfo)))
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/scanpy")
     (synopsis "Single-Cell Analysis in Python.")
     (description "Scanpy is a scalable toolkit for analyzing single-cell gene
