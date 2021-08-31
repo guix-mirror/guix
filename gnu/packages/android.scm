@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Sergey Trofimov <sarg@sarg.org.ru>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 (define-module (gnu packages android)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system android-ndk)
   #:use-module (guix build-system gnu)
@@ -360,10 +362,10 @@ various Android core host applications.")
     (arguments
      `(#:tests? #f ; Test failure: sysdeps_poll.fd_count
        #:make-flags
-       (list "CFLAGS=-Wno-error"
-             "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
-             (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib "
-                            "-Wl,-rpath=" (assoc-ref %build-inputs "openssl") "/lib -L ."))
+       ,#~(list "CFLAGS=-Wno-error"
+                "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
+                (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib "
+                               "-Wl,-rpath=" #$openssl "/lib -L ."))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
