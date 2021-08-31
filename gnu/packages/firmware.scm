@@ -248,7 +248,7 @@ broadband modem as found, for example, on PinePhone.")
                                                           (%current-system)))
                                      (string-prefix? "riscv64" arch))
                                 `("CROSS_COMPILE=riscv64-linux-gnu-")
-                                '())
+                                `("CC=gcc"))
                           "FW_PAYLOAD=n"
                           "V=1")
        #:phases
