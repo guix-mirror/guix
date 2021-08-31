@@ -581,6 +581,9 @@ Android core.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "f2fs_utils") #t))
+         (add-before 'build 'set-compilation-flags
+           (lambda _
+             (setenv "CFLAGS" "-fcommon")))
          (add-after 'install 'install-headers
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively "." (string-append (assoc-ref outputs "out")
