@@ -14821,8 +14821,9 @@ instruments, or Pacific Biosciences RSII or Sequel sequencers.")
     (build-system python-build-system)
     (inputs
      `(("curl" ,curl)
-       ("pybind11" ,pybind11)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("pybind11" ,pybind11)))
     (home-page "https://github.com/aidenlab/straw")
     (synopsis "Stream data from .hic files")
     (description "Straw is library which allows rapid streaming of contact
