@@ -46234,6 +46234,28 @@ easier in Rust.")
      "This crate provides helpful macros for working with enums and strings.")
     (license license:expat)))
 
+(define-public rust-strum-macros-0.19
+  (package
+    (inherit rust-strum-macros-0.20)
+    (name "rust-strum-macros")
+    (version "0.19.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strum_macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mgqs5x3g0d3bmr8dhalgqrzh29dwc90a06fpy0cnich52zb06z6"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heck" ,rust-heck-0.3)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-strum" ,rust-strum-0.19))))))
+
 (define-public rust-strum-macros-0.18
   (package
     (inherit rust-strum-macros-0.20)
