@@ -26823,6 +26823,38 @@ based on Rustls and Ring.")
        (("rust-sema" ,rust-sema-0.1)
         ("rust-winit" ,rust-winit-0.19)))))) ; 0.17?
 
+(define-public rust-tls-parser-0.10
+  (package
+    (name "rust-tls-parser")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tls-parser" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1spgykvrxlzb059zzz1hzinc4vvkpixw9nd6p94vw3rimar5m68n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; requires assets not included in crates.io tarball
+       #:cargo-inputs
+       (("rust-cookie-factory" ,rust-cookie-factory-0.3)
+        ("rust-enum-primitive" ,rust-enum-primitive-0.1)
+        ("rust-nom" ,rust-nom-6)
+        ("rust-nom-derive" ,rust-nom-derive-0.7)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.8)
+        ("rust-rusticata-macros" ,rust-rusticata-macros-3))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.3)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
+    (home-page "https://github.com/rusticata/tls-parser")
+    (synopsis "Parser for the TLS protocol")
+    (description "This package provides a Rust parser for the TLS protocol.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-twox-hash-1
   (package
     (name "rust-twox-hash")
