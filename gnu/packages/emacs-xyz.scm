@@ -3773,7 +3773,7 @@ a command.")
 (define-public emacs-olivetti
   (package
     (name "emacs-olivetti")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method git-fetch)
