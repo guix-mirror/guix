@@ -5823,6 +5823,57 @@ functions} for a collection of hashable objects.")
     (description "This package provides a safe FnOnce boxing for Rust.")
     (license license:expat)))
 
+(define-public rust-boxxy-0.11
+  (package
+    (name "rust-boxxy")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "boxxy" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10p8i30ri9rhrmlbdxp9s4k4fgsjq6q6b1x2ncchli1ad6psylms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bufstream" ,rust-bufstream-0.1)
+        ("rust-caps" ,rust-caps-0.3)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-errno" ,rust-errno-0.2)
+        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-hyper" ,rust-hyper-0.12)
+        ("rust-hyper-rustls" ,rust-hyper-rustls-0.17)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libflate" ,rust-libflate-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nix" ,rust-nix-0.15)
+        ("rust-pledge" ,rust-pledge-0.3)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustls" ,rust-rustls-0.16)
+        ("rust-rustyline" ,rust-rustyline-5)
+        ("rust-sha2" ,rust-sha2-0.8)
+        ("rust-tar" ,rust-tar-0.4)
+        ("rust-tokio-core" ,rust-tokio-core-0.1)
+        ("rust-url" ,rust-url-2)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-ctrlc" ,rust-ctrlc-3)
+        ("rust-elf" ,rust-elf-0.0.10)
+        ("rust-env-logger" ,rust-env-logger-0.6))))
+    (home-page "https://github.com/kpcyrd/boxxy-rs")
+    (synopsis "Linkable sandbox explorer")
+    (description
+     "This library provides an interactive shell that can be linked into a
+program to verify sandboxing measures are adequate.")
+    (license license:lgpl3)))
+
 (define-public rust-bresenham-0.1
   (package
     (name "rust-bresenham")
