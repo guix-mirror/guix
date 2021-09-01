@@ -18075,31 +18075,28 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (license license:gpl3+)))
 
 (define-public emacs-crdt
-  ;; XXX: Upstream has no tags but the commit below corresponds to the exact
-  ;; version of the package.
-  (let ((commit "8cbd0fd584257b484891a5062b64c63cf049e955"))
-    (package
-      (name "emacs-crdt")
-      (version "0.1.1")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://code.librehq.com/qhong/crdt.el")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0h2lmyxjrzv9253m4068b4np5vkmngmvly10xrc86mi1z9w24xc5"))))
-      (build-system emacs-build-system)
-      (home-page "https://code.librehq.com/qhong/crdt.el")
-      (synopsis "Real-time collaborative editing environment")
-      (description
-       "@code{crdt.el} is a real-time collaborative editing environment for
+  (package
+    (name "emacs-crdt")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://code.librehq.com/qhong/crdt.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18aa2pybgfamll0jb4l18nggr6whzqd8mmd3kh8if4d685pc50p5"))))
+    (build-system emacs-build-system)
+    (home-page "https://code.librehq.com/qhong/crdt.el")
+    (synopsis "Real-time collaborative editing environment")
+    (description
+     "@code{crdt.el} is a real-time collaborative editing environment for
 Emacs using Conflict-free Replicated Data Types.  With it, you can share
 multiple buffer in one session, and see other users’ cursor and region.  It
 also synchronizes Org mode folding status.  It should work with all of Org
 mode.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-crux
   (package
