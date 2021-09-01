@@ -57025,6 +57025,27 @@ formatters with per-field documentation generated for each structure.
      "This crate provides async pipes, channels, mutexes, and more.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pledge-0.3
+  (package
+    (name "rust-pledge")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pledge" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rgbnvl97ks25aanxm680687df6li6y8h3f5mvdw3806rwz8xcg2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/i80and/pledge-rs")
+    (synopsis "Rust binding to OpenBSD's pledge(2) interface")
+    (description
+     "This package provides Rust bindings to OpenBSD's pledge(2) interface.")
+    (license license:expat)))
+
 (define-public rust-ptree-0.3
   (package
     (name "rust-ptree")
