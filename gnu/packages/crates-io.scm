@@ -42,6 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-graphics)
@@ -32135,6 +32136,32 @@ in pure Rust.")
        (("rust-hmac" ,rust-hmac-0.7)
         ("rust-sha-1" ,rust-sha-1-0.8)
         ("rust-sha2" ,rust-sha2-0.8))))))
+
+(define-public rust-pcap-sys-0.1
+  (package
+    (name "rust-pcap-sys")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pcap-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18w9c8i5zjnazay86219w4789482ya617z35cw433h12wbgjaiqi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (inputs `(("libpcap" ,libpcap)))
+    (home-page "https://github.com/jmmk/rustcap")
+    (synopsis "Low-level bindings to libpcap")
+    (description "This package provides low-level Rust bindings to the libpcap
+library.")
+    (license license:expat)))
 
 (define-public rust-pcre2-0.2
   (package
