@@ -14643,6 +14643,28 @@ signing, and verification in pure Rust.")
 @code{Right} is a general purpose sum type with two cases.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-elf-0.0.10
+  (package
+    (name "rust-elf")
+    (version "0.0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "elf" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xcpf7jdmrl7rdmd6009grahvgp3k695h5x4cadrpr70vcaxwha8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-byteorder" ,rust-byteorder-0.5))))
+    (home-page "https://github.com/cole14/rust-elf/")
+    (synopsis "Library for parsing ELF files")
+    (description
+     "This package provides a pure-Rust library for parsing ELF files.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-emacs-0.11
   (package
     (name "rust-emacs")
