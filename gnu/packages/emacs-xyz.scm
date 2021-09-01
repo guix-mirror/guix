@@ -13601,7 +13601,7 @@ configuration of Chinese fonts.")
 (define-public emacs-boon
   (package
     (name "emacs-boon")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -13610,7 +13610,7 @@ configuration of Chinese fonts.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ss9bjs34q41pa0g0nbdzd8fwpjcbd2239rdlx5aykfv9v0b8j77"))))
+        (base32 "18il2licf8pgfcrpx2bk55gpf8f537kb9cxqz83jldkhiyry74il"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
