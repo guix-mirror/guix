@@ -570,14 +570,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.4.4")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "03pvjyp6q9pr8qa22i38az06ddzhvzy5kj192hxa3gbhnchg1nj5"))))
+         "1isazrg2h126xg3vvk4wrhx8k8yfsg5sxybvfa99phj235mzaq90"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -595,7 +595,7 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
                      "test_gnupg.py" "--no-doctests"))))))
     (native-inputs
      `(("gnupg" ,gnupg-1)))
-    (home-page "https://packages.python.org/python-gnupg/index.html")
+    (home-page "https://pythonhosted.org/python-gnupg/index.html")
     (synopsis "Wrapper for the GNU Privacy Guard")
     (description
       "This module allows easy access to GnuPG’s key management, encryption
