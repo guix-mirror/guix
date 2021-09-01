@@ -29115,6 +29115,34 @@ combinators library.")
       ;; This is an ancient version and all inputs are optional.
      `(#:skip-build? #t))))
 
+(define-public rust-nom-derive-0.7
+  (package
+    (name "rust-nom-derive")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nom-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xwbbkfhr8zrlcknlj75l50rp2b267qm9sd8vphx6gwzyg24n2zz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-nom" ,rust-nom-6)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.7)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/rust-bakery/nom-derive")
+    (synopsis "Custom derive nom parsers from struct")
+    (description "This package derives custom nom parsers from structs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-noop-proc-macro-0.3
   (package
     (name "rust-noop-proc-macro")
