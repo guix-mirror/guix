@@ -54,6 +54,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages nettle)
@@ -41534,6 +41535,28 @@ Pwrite traits from the scroll crate.")
      "This package provides a blazingly fast, portable hash function with
 proven statistical guarantees.")
     (license license:expat)))
+
+(define-public rust-seccomp-sys-0.1
+  (package
+    (name "rust-seccomp-sys")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "seccomp-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rkbiq1vd5d3cc4w5ql05pj1vbjqfi7zir02szwfm2khl15zgg75"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (inputs `(("libseccomp" ,libseccomp)))
+    (home-page "https://github.com/polachok/seccomp-sys")
+    (synopsis "Low-level bindings to libseccomp")
+    (description "This package provides low-level bindings to libseccomp.")
+    (license license:lgpl2.1)))
 
 (define-public rust-section-testing-0.0
   (package
