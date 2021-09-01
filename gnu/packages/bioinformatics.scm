@@ -15058,6 +15058,34 @@ copy number estimation, as described by
 @url{doi:10.1016/j.cell.2012.04.023,Nik-Zainal et al.}")
    (license license:gpl3)))
 
+(define-public r-catch
+  (let ((commit "196ddd5a51b1a5f5daa01de53fdaad9b7505e084")
+        (revision "1"))
+    (package
+      (name "r-catch")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/zhanyinx/CaTCH")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "11c7f1fc8f57wnwk1hrgr5y814m80zj8gkz5021vxyxy2v02cqgd"))))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "CaTCH"))))))
+      (home-page "https://github.com/zhanyinx/CaTCH_R")
+      (synopsis "Call a hierarchy of domains based on Hi-C data")
+      (description "This package allows building the hierarchy of domains
+starting from Hi-C data.  Each hierarchical level is identified by a minimum
+value of physical insulation between neighboring domains.")
+      (license license:gpl2+))))
+
 (define-public r-spectre
   (let ((commit "f6648ab3eb9499300d86502b5d60ec370ae9b61a")
         (revision "1"))
