@@ -20617,8 +20617,31 @@ hexadecimal representation.")
        (sha256
         (base32 "1ajkw40qzn2ygnqjj9w584f6l31wi318258n84pn2hax8la2i8nn"))))))
 
+(define-public rust-hex-literal-0.3
+  (package
+    (name "rust-hex-literal")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hex-literal" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nzljsyz9rwhh4vi0xs9ya4l5g0ka754wgpy97r1j3v42c75kr11"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis
+     "Convert hexadecimal string to byte array at compile time")
+    (description
+     "Procedural macro for converting hexadecimal string to byte array at
+compile time.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-hex-literal-0.2
   (package
+    (inherit rust-hex-literal-0.3)
     (name "rust-hex-literal")
     (version "0.2.1")
     (source
@@ -20630,18 +20653,10 @@ hexadecimal representation.")
        (sha256
         (base32
          "1q36f0qq31ggh4ipcwb7a5g6jmci2010vn2v3qpaz4csxhhf47cn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-hex-literal-impl" ,rust-hex-literal-impl-0.2)
-        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis
-     "Convert hexadecimal string to byte array at compile time")
-    (description
-     "Procedural macro for converting hexadecimal string to byte array at
-compile time.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))))
 
 (define-public rust-hex-literal-0.1
   (package
