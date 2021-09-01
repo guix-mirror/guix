@@ -9665,6 +9665,30 @@ It supports signed and private (encrypted + signed) jars.")
         ("rust-sha2" ,rust-sha2-0.8)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-cookie-factory-0.3
+  (package
+    (name "rust-cookie-factory")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cookie-factory" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sqjmw85ckqhppff6gjwmvjpkii35441a51xx7cv0ih3jy2fjv9r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-development-inputs (("rust-maplit" ,rust-maplit-1))))
+    (home-page "https://github.com/rust-bakery/cookie-factory")
+    (synopsis "Combinator-based serialization library")
+    (description
+     "This package provides a serialization library with a combinator design
+similar to the nom parser combinators library.")
+    (license license:expat)))
+
 (define-public rust-cookie-store-0.7
   (package
     (name "rust-cookie-store")
