@@ -6137,6 +6137,31 @@ system calls.  Second, exposing the internal buffer allows the user to work
 with data in place, which avoids another copy.")
     (license license:gpl3)))
 
+(define-public rust-bufstream-0.1
+  (package
+    (name "rust-bufstream")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bufstream" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j7f52rv73hd1crzrrfb9dr50ccmi3hb1ybd6s5dyg6jmllqkqs0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))))
+    (home-page "https://github.com/alexcrichton/bufstream")
+    (synopsis "I/O streams with separate read/write buffers")
+    (description
+     "This package provides buffered I/O for streams where each read/write
+half is separately buffered.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bugreport-0.4
   (package
     (name "rust-bugreport")
