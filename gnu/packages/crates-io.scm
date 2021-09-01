@@ -46193,6 +46193,24 @@ struct.")
 easier in Rust.")
     (license license:expat)))
 
+(define-public rust-strum-0.19
+  (package
+    (inherit rust-strum-0.20)
+    (name "rust-strum")
+    (version "0.19.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strum" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1d8i5xwkc2z7z02ibln80z1bmpjhpi9k5ckpljwj0mrvgrm2i6mq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-strum-macros" ,rust-strum-macros-0.19))))))
+
 (define-public rust-strum-0.18
   (package
     (inherit rust-strum-0.20)
