@@ -15255,6 +15255,32 @@ accessor functions on enums.")
 instances for enum.")
     (license license:expat)))
 
+(define-public rust-enum-primitive-derive-0.2
+  (package
+    (name "rust-enum-primitive-derive")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "enum-primitive-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h1k2izdl5lf2na8xnj7rgwjm8gawxc2p1w8j6ahifvyka7jhljz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://gitlab.com/cardoe/enum-primitive-derive")
+    (synopsis "Reimplementation of enum_primitive using a #[derive] macro")
+    (description
+     "This package provides a custom derive using procedural macros to
+implement enum_primitive.")
+    (license license:expat)))
+
 (define-public rust-enum-to-u8-slice-derive-0.1
   (package
     (name "rust-enum-to-u8-slice-derive")
