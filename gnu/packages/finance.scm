@@ -752,7 +752,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.2.2")
+    (version "0.17.2.3")
     (source
      (origin
        (method git-fetch)
@@ -769,7 +769,7 @@ the Monero command line client and daemon.")
            (delete-file-recursively "monero")
            #t))
        (sha256
-        (base32 "0n7gfhm13y18ffqsqdajl4knd4h8m772fz6lh1lpkh198pwmw8f9"))))
+        (base32 "0qb746z1sxqrja7q9lqhhbm64v83sn67az4k7gs5q90iaw584qfc"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -807,16 +807,11 @@ the Monero command line client and daemon.")
              (substitute* "src/version.js.in"
                (("@VERSION_TAG_GUI@")
                 ,version))
-             (substitute* "src/zxcvbn-c/makefile"
-               (("\\?=") "="))
              (substitute* "external/CMakeLists.txt"
                (("add_library\\(quirc" all)
                 (string-append
                  "set(CMAKE_C_FLAGS \"${CMAKE_C_FLAGS} -fPIC\")\n"
                  all)))))
-         (add-before 'configure 'generate-zxcvbn-c-header
-           (lambda _
-             (invoke "make" "-C" "src/zxcvbn-c" "dict-src.h")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
