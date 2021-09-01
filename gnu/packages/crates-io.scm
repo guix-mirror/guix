@@ -13347,6 +13347,33 @@ procedural macros")
 procedural macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-dhcp4r-0.2
+  (package
+    (name "rust-dhcp4r")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dhcp4r" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0paq13i9iz5545f5aw8ijxflw20fvb3k8s4m3inr5q19q5rirpbc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-enum-primitive-derive" ,rust-enum-primitive-derive-0.2)
+        ("rust-nom" ,rust-nom-6)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-time" ,rust-time-0.2))))
+    (home-page "https://github.com/krolaw/dhcp4r")
+    (synopsis "IPv4 DHCP library with working server example.")
+    (description
+     "This package provides a library for IPv4 DHCP including a working server
+example.")
+    (license license:bsd-3)))
+
 (define-public rust-dialoguer-0.6
   (package
     (name "rust-dialoguer")
