@@ -18075,11 +18075,12 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (license license:gpl3+)))
 
 (define-public emacs-crdt
-  (let ((commit "44068ae505adf2c3a7bdbf6723a25fc45d6d1666")
-        (revision "0"))
+  ;; XXX: Upstream has no tags but the commit below corresponds to the exact
+  ;; version of the package.
+  (let ((commit "8cbd0fd584257b484891a5062b64c63cf049e955"))
     (package
       (name "emacs-crdt")
-      (version (git-version "0.0.0" revision commit))
+      (version "0.1.1")
       (source
        (origin
          (method git-fetch)
@@ -18088,7 +18089,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "130fkhvi757pfnbz70g6nw2n71k89cwwx7yzvsd5v177228c8w7w"))))
+          (base32 "0h2lmyxjrzv9253m4068b4np5vkmngmvly10xrc86mi1z9w24xc5"))))
       (build-system emacs-build-system)
       (home-page "https://code.librehq.com/qhong/crdt.el")
       (synopsis "Real-time collaborative editing environment")
