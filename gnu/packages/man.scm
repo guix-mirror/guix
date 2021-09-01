@@ -254,6 +254,10 @@ the traditional flat-text whatis databases.")
                                         "\n"))))))))
     (native-inputs `(("perl" ,perl)))             ;used to run tests
     (inputs `(("zlib" ,zlib)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "MANPATH")
+            (files '("share/man")))))
     (synopsis "Tools for BSD mdoc and man pages")
     (description
      "mandoc is a suite of tools compiling mdoc, the roff macro language of
