@@ -7497,7 +7497,7 @@ cards created in Org mode.")
 (define-public emacs-org-mime
   (package
     (name "emacs-org-mime")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method git-fetch)
@@ -7506,7 +7506,7 @@ cards created in Org mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gvir8c8b2m5z784ml5h957f7mxgp3vn7v91p6igaq5bjf5xcfpp"))))
+        (base32 "1g32chan6rhlp3kvzd2lvf104i3p37q1sm0d89pq6sya0ia2as1n"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/org-mime/org-mime")
     (synopsis "Send HTML email using Org mode HTML export")
