@@ -33181,6 +33181,30 @@ used in Cargo build scripts.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pktparse-0.5
+  (package
+    (name "rust-pktparse")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pktparse" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17a78c29l070mlwjdr3bdph785c9v5rps0if3v0s21w4nwaybhck"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nom" ,rust-nom-5)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/bestouff/pktparse-rs")
+    (synopsis "Collection of packet parsers")
+    (description "This package provides a collection of parsers for various
+network packet formats.")
+    (license license:lgpl3)))
+
 (define-public rust-plain-0.2
   (package
     (name "rust-plain")
