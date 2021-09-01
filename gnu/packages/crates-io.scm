@@ -47196,6 +47196,33 @@ system or application with the relevant platform APIs.  The library is also
 no_std compatible by default, only relying on alloc.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-syscallz-0.15
+  (package
+    (name "rust-syscallz")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syscallz" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z5yfgb6086gdvbrm8lm0i745j6d8qw653xxy3mlrzdcjk3j1skz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-seccomp-sys" ,rust-seccomp-sys-0.1)
+        ("rust-strum" ,rust-strum-0.19)
+        ("rust-strum-macros" ,rust-strum-macros-0.19))))
+    (inputs `(("libseccomp" ,libseccomp)))
+    (home-page "https://github.com/kpcyrd/syscallz-rs")
+    (synopsis "Simple seccomp library for rust")
+    (description "Simple seccomp library for rust")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sysctl-0.4
   (package
     (name "rust-sysctl")
