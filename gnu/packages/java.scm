@@ -235,8 +235,7 @@ only faster.")
     (arguments
      `(#:configure-flags
        (list (string-append "JAVAC="
-                            (assoc-ref %build-inputs "jikes")
-                            "/bin/jikes")
+                            (search-input-file %build-inputs "/bin/jikes"))
              "--disable-Werror"
              "--disable-gmp"
              "--disable-gtk-peer"
