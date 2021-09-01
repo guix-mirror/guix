@@ -360,16 +360,15 @@ JNI.")
        (modify-phases %standard-phases
          (delete 'bootstrap)
          (delete 'configure)
+         (add-before 'build 'define-java-environment-variables
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; First, set environment variables (eases debugging on -K).
+             (setenv "JAVA_HOME" (assoc-ref inputs "jamvm"))
+             (setenv "JAVACMD" (search-input-file inputs "/bin/jamvm"))
+             (setenv "JAVAC" (search-input-file inputs "/bin/jikes"))
+             (setenv "CLASSPATH" (search-input-file inputs "/lib/rt.jar"))))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "JAVA_HOME" (assoc-ref inputs "jamvm"))
-             (setenv "JAVACMD"
-                     (search-input-file inputs "/bin/jamvm"))
-             (setenv "JAVAC"
-                     (search-input-file inputs "/bin/jikes"))
-             (setenv "CLASSPATH"
-                     (search-input-file inputs "/lib/rt.jar"))
-
              ;; Ant complains if this file doesn't exist.
              (setenv "HOME" "/tmp")
              (with-output-to-file "/tmp/.ant.properties"
