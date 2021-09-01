@@ -1,0 +1,26 @@
+Have 'send-message' look up 'mu-debug' & co. in the right
+module: <https://issues.guix.gnu.org/49968>.
+
+Submitted: https://lists.gnu.org/archive/html/bug-mailutils/2021-09/msg00000.html
+
+---
+ include/mailutils/guile.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/mailutils/guile.h b/include/mailutils/guile.h
+index f05550678..47f89db39 100644
+--- a/include/mailutils/guile.h
++++ b/include/mailutils/guile.h
+@@ -20,7 +20,8 @@
+ 
+ #include <libguile.h>
+ 
+-#define MU_SCM_SYMBOL_VALUE(p) SCM_VARIABLE_REF(scm_c_lookup(p))
++#define MU_SCM_SYMBOL_VALUE(p)			\
++  (scm_c_public_ref ("mailutils mailutils", p))
+ 
+ typedef struct
+ {
+-- 
+2.33.0
+
