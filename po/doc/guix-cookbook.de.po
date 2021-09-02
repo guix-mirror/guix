@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 1.0.1.4876-09145-dirty\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
-"POT-Creation-Date: 2021-07-15 14:49+0200\n"
-"PO-Revision-Date: 2021-04-17 23:47+0000\n"
+"POT-Creation-Date: 2021-08-25 23:26+0200\n"
+"PO-Revision-Date: 2021-08-13 22:04+0000\n"
 "Last-Translator: Florian Pelz <pelzflorian@pelzflorian.de>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.3\n"
+"X-Generator: Weblate 4.7.2\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
@@ -35,9 +35,9 @@ msgstr "GNU-Guix-Kochbuch"
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:21
 #, fuzzy
-#| msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber"
-msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
-msgstr "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber"
+#| msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
+msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christine Lemmer-Webber@* Copyright @copyright{} 2021 Joshua Branson@*"
+msgstr "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
 
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:28
@@ -220,12 +220,12 @@ msgstr "Lasst uns ein Paket zu Guix beitragen!"
 #: guix-git/doc/guix-cookbook.texi:1368 guix-git/doc/guix-cookbook.texi:1369
 #, no-wrap
 msgid "Auto-Login to a Specific TTY"
-msgstr ""
+msgstr "Automatisch an virtueller Konsole anmelden"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:91 guix-git/doc/guix-cookbook.texi:1366
 msgid "Automatically Login a User to a Specific TTY"
-msgstr ""
+msgstr "Benutzer an einem bestimmten TTY automatisch anmelden."
 
 #. type: section
 #: guix-git/doc/guix-cookbook.texi:91 guix-git/doc/guix-cookbook.texi:1366
@@ -273,7 +273,7 @@ msgstr "Alternativ können Sie auch den Befehl @code{guix environment --ad-hoc g
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:128
 msgid "In the following examples, lines show what you would type at the REPL; lines starting with ``@result{}'' show evaluation results, while lines starting with ``@print{}'' show things that get printed.  @xref{Using Guile Interactively,,, guile, GNU Guile Reference Manual}, for more details on the REPL."
-msgstr "In den folgenden Beispielen stehen die Zeilen dafür, was Sie auf der REPL eintippen; wenn eine Zeile mit „@result{}“ beginnt, zeigt sie das Ergebnis einer Auswertung, während Zeilen, die mit „@print{}“ beginnen, für eine angezeigte Ausgabe stehen. Siehe @ref{Using Guile Interactively,,, guile, GNU Guile Reference Manual} für mehr Details zur REPL."
+msgstr "In den folgenden Beispielen stehen die Zeilen dafür, was Sie auf der REPL eintippen; wenn eine Zeile mit „@result{}“ beginnt, zeigt sie das Ergebnis einer Auswertung, während Zeilen, die mit „@print{}“ beginnen, für eine angezeigte Ausgabe stehen. Siehe @ref{Using Guile Interactively,,, guile, das Referenzhandbuch zu GNU Guile} für mehr Details zur REPL."
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:136
@@ -404,7 +404,7 @@ msgstr ""
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:204
 msgid "The @dfn{quote} disables evaluation of a parenthesized expression: the first term is not called over the other terms (@pxref{Expression Syntax, quote,, guile, GNU Guile Reference Manual}).  Thus it effectively returns a list of terms."
-msgstr "Mit dem @dfn{quote}-Zeichen wird das Auswerten eines geklammerten Ausdrucks abgeschaltet: Der erste Term wird @emph{nicht} auf den anderen Termen aufgerufen (siehe @ref{Expression Syntax, quote,, guile, GNU Guile Reference Manual}). Folglich liefert es quasi eine Liste von Termen."
+msgstr "Mit dem @dfn{quote}-Zeichen wird das Auswerten eines geklammerten Ausdrucks abgeschaltet: Der erste Term wird @emph{nicht} auf den anderen Termen aufgerufen (siehe @ref{Expression Syntax, quote,, guile, Referenzhandbuch zu GNU Guile}). Folglich liefert es quasi eine Liste von Termen."
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:208
@@ -451,7 +451,7 @@ msgstr "Beachten Sie, dass obiges Ergenis eine Liste verschiedenartiger Elemente
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:229
 msgid "Multiple variables can be named locally with @code{let} (@pxref{Local Bindings,,, guile, GNU Guile Reference Manual}):"
-msgstr "Mehrere Variable können in einer lokalen Umgebung mit Bezeichnern versehen werden, indem Sie @code{let} benutzen (siehe @ref{Local Bindings,,, guile, GNU Guile Reference Manual}):"
+msgstr "Mehrere Variable können in einer lokalen Umgebung mit Bezeichnern versehen werden, indem Sie @code{let} benutzen (siehe @ref{Local Bindings,,, guile, Referenzhandbuch zu GNU Guile}):"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:236
@@ -525,7 +525,7 @@ msgstr "Das Prozentzeichen @code{%} wird in der Regel für globale Variable auf 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:268
 msgid "Modules are created with @code{define-module} (@pxref{Creating Guile Modules,,, guile, GNU Guile Reference Manual}).  For instance"
-msgstr "Module werden mit Hilfe von @code{define-module} erzeugt (siehe @ref{Creating Guile Modules,,, guile, GNU Guile Reference Manual}). Zum Beispiel definiert man mit"
+msgstr "Module werden mit Hilfe von @code{define-module} erzeugt (siehe @ref{Creating Guile Modules,,, guile, Referenzhandbuch zu GNU Guile}). Zum Beispiel definiert man mit"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:274
@@ -1076,7 +1076,9 @@ msgstr "Guix ermöglicht es, den Prozess zu optimieren, indem man so viele „Pa
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:596
-msgid "Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
+#, fuzzy
+#| msgid "Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
+msgid "Create a directory, say @file{~/guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
 msgstr "Erzeugen Sie ein Verzeichnis, beispielsweise @file{~./guix-packages}, und fügen Sie es zur Umgebungsvariablen @env{GUIX_PACKAGE_PATH} hinzu:"
 
 #. type: example
@@ -2545,12 +2547,12 @@ msgstr "Den NGINX-Web-Server so einrichten, dass Lua-Module geladen werden."
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1378
 msgid "While the Guix manual explains auto-login one user to @emph{all} TTYs ( @pxref{auto-login to TTY,,, guix, GNU Guix Reference Manual}), some might prefer a situation, in which one user is logged into one TTY with the other TTYs either configured to login different users or no one at all.  Note that one can auto-login one user to any TTY, but it is usually advisable to avoid @code{tty1}, which, by default, is used to log warnings and errors."
-msgstr ""
+msgstr "Im Guix-Handbuch wird erklärt, wie man ein Benutzerkonto automatisch auf @emph{allen} TTYs anmelden lassen kann (@pxref{auto-login to TTY,,, guix.de, Referenzhandbuch zu GNU Guix}), aber vielleicht wäre es Ihnen lieber, ein Benutzerkonto an genau einem TTY anzumelden und die anderen TTYs so zu konfigurieren, dass entweder andere Benutzer oder gar niemand angemeldet wird. Beachten Sie, dass man auf jedem TTY automatisch jemanden anmelden kann, aber meistens will man @code{tty1} in Ruhe lassen, weil dorthin nach Voreinstellung Warnungs- und Fehlerprotokolle ausgegeben werden."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1380
 msgid "Here is how one might set up auto login for one user to one tty:"
-msgstr ""
+msgstr "Um eine Benutzerin auf einem einzelnen TTY automatisch anzumelden, schreibt man:"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1388
@@ -2564,6 +2566,13 @@ msgid ""
 "        config))\n"
 "\n"
 msgstr ""
+"(define (auto-login-to-tty config tty user)\n"
+"  (if (string=? tty (mingetty-configuration-tty config))\n"
+"        (mingetty-configuration\n"
+"         (inherit config)\n"
+"         (auto-login user))\n"
+"        config))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1395
@@ -2577,6 +2586,13 @@ msgid ""
 "                            config \"tty3\" \"alice\"))))\n"
 "\n"
 msgstr ""
+"(define %my-services\n"
+"  (modify-services %base-services\n"
+"    ;; …\n"
+"    (mingetty-service-type config =>\n"
+"                           (auto-login-to-tty\n"
+"                            config \"tty3\" \"alice\"))))\n"
+"\n"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1399
@@ -2586,16 +2602,19 @@ msgid ""
 "  ;; @dots{}\n"
 "  (services %my-services))\n"
 msgstr ""
+"(operating-system\n"
+"  ;; …\n"
+"  (services %my-services))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1404
 msgid "One could also @code{compose} (@pxref{Higher-Order Functions,,, guile, The Guile Reference Manual}) @code{auto-login-to-tty} to login multiple users to multiple ttys."
-msgstr ""
+msgstr "Mit Hilfe von @code{compose} (siehe @ref{Higher-Order Functions,,, guile, das Referenzhandbuch zu GNU Guile}) kann man etwas wie @code{auto-login-to-tty} mehrfach angeben, um mehrere Nutzerkonten auf verschiedenen TTYs anzumelden."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1411
 msgid "Finally, here is a note of caution.  Setting up auto login to a TTY, means that anyone can turn on your computer and run commands as your regular user.  However, if you have an encrypted root partition, and thus already need to enter a passphrase when the system boots, auto-login might be a convenient option."
-msgstr ""
+msgstr "Zum Schluss aber noch eine Warnung. Wenn Sie jemanden auf einem TTY automatisch anmelden lassen, kann jeder einfach Ihren Rechner anschalten und dann Befehle in deren Namen ausführen. Haben Sie Ihr Wurzeldateisystem auf einer verschlüsselten Partition, müsste man dafür erst einmal das Passwort eingeben, wenn das System startet. Dann wäre automatisches Anmelden vielleicht bequem."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1423

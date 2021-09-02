@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
 # This file is distributed under the same license as the GNU guix package.
-# Marek Felšöci <marek@felsoci.sk>, 2021.
+# Nicolo Balzarotti <nicolo@nixo.xyz>, 2021.
+# Nathan <nathan95@live.it>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU guix\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-08-28 19:01+0200\n"
-"PO-Revision-Date: 2021-04-27 19:02+0000\n"
-"Last-Translator: Marek Felšöci <marek@felsoci.sk>\n"
-"Language-Team: Slovak <https://translate.fedoraproject.org/projects/guix/packages/sk/>\n"
-"Language: sk\n"
+"PO-Revision-Date: 2021-08-26 14:42+0000\n"
+"Last-Translator: Nathan <nathan95@live.it>\n"
+"Language-Team: Italian <https://translate.fedoraproject.org/projects/guix/packages/it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.6\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8\n"
 
 #. TRANSLATORS: Dear translator, We would like to inform you that package
 #. descriptions may occasionally include Texinfo markup.  Texinfo markup
@@ -27,9 +28,9 @@ msgid ""
 "becoming a state of the art word processor, with lots of features useful for\n"
 "your daily work, personal needs, or for just some good old typing fun."
 msgstr ""
-"AbiWord slúži na úpravu textu.  Rýchlo sa stáva odporúčaným\n"
-"textovým procesorom s množstvom funkcií užitočných pre\n"
-"vašu každodennú prácu, osobné potreby či jednoducho radosť z písania."
+"AbiWord è un programma di elaborazione testi.  È rapidamente\n"
+"diventando un elaboratore di testi all'avanguardia, con tantissime funzionalità utili per\n"
+"il tuo lavoro quotidiano, le tue esigenze personali o solo per un po 'di buon vecchio divertimento di digitazione."
 
 #: gnu/packages/aspell.scm:89
 msgid ""
@@ -38,14 +39,14 @@ msgid ""
 "documents written in the UTF-8 encoding and its ability to use multiple\n"
 "dictionaries, including personal ones."
 msgstr ""
-"Aspell je nástroj na kontrolu pravopisu, ktorý je možno použiť ako knižnicu\n"
-"alebo ako samostatný program. Aspell ponúka predovšetkým plnú podporu dokumentov\n"
-"s kódovaním UTF-8 a možnosť požiť viaceré slovníky\n"
-"vrátane vašich osobných slovníkov."
+"Aspell è un correttore ortografico che può essere utilizzato sia come libreria o  come\n"
+"un programma autonomo.  Le caratteristiche degne di nota di Aspell includono il suo pieno supporto di\n"
+"documenti scritti nella codifica UTF-8 e la sua capacità di utilizzare più\n"
+"dizionari, compresi quelli personali."
 
 #: gnu/packages/aspell.scm:138
 msgid "This package provides a dictionary for the GNU Aspell spell checker."
-msgstr "Tento balík poskytuje slovník pre nástroj na kontrolu pravopisu GNU Aspell."
+msgstr "Questo pacchetto fornisce un dizionario per il correttore ortografico GNU Aspell."
 
 #: gnu/packages/aspell.scm:449 gnu/packages/libreoffice.scm:900
 #: gnu/packages/libreoffice.scm:973
@@ -53,7 +54,7 @@ msgid ""
 "This package provides a dictionary for the Hunspell spell-checking\n"
 "library."
 msgstr ""
-"Tento balík poskytuje slovník pre knižnicu na kontrolu pravopisu\n"
+"Questo pacchetto fornisce un dizionario per il controllo ortografico per la libreria \n"
 "Hunspell."
 
 #: gnu/packages/aspell.scm:530
@@ -61,11 +62,10 @@ msgid ""
 "Ispell is an interactive spell-checking tool supporting many\n"
 "European languages."
 msgstr ""
-"Ispell je interaktívny nástroj na kontrolu pravopisu s podporou\n"
-"pre mnohé európske jazyky."
+"Ispell è uno strumento interattivo di controllo ortografico che supporta molte\n"
+"lingue europee."
 
 #: gnu/packages/audio.scm:191
-#, fuzzy
 msgid ""
 "OpenSLES is a royalty-free, cross-platform,\n"
 "hardware-accelerated audio API tuned for embedded systems.  It provides a\n"
@@ -75,9 +75,6 @@ msgid ""
 "hardware and software audio capabilities, reducing implementation effort, and\n"
 "promoting the market for advanced audio."
 msgstr ""
-"OpenSLES je bezplatné, platformovo nezávislé\n"
-"zvukové API s hardvérovým urýchľovaním pre vstavané systémy.  Poskytuje\n"
-"štandardizovaný, vysokovýkonný spôsob s nízkym oneskorením na prístup"
 
 #: gnu/packages/audio.scm:227
 msgid ""
