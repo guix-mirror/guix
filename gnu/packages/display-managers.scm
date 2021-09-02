@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages fontutils)
@@ -95,23 +97,23 @@
        ("wayland" ,wayland)))
     (arguments
      `(#:configure-flags
-       (list
-        ;; This option currently does nothing, but will presumably be enabled
-        ;; if/when <https://github.com/sddm/sddm/pull/616> is merged.
-        "-DENABLE_WAYLAND=ON"
-        "-DENABLE_PAM=ON"
-        ;; Both flags are required for elogind support.
-        "-DNO_SYSTEMD=ON" "-DUSE_ELOGIND=ON"
-        "-DCONFIG_FILE=/etc/sddm.conf"
-        ;; Set path to /etc/login.defs.
-        ;; An alternative would be to use -DUID_MIN and -DUID_MAX.
-        (string-append "-DLOGIN_DEFS_PATH="
-                       (assoc-ref %build-inputs "shadow")
-                       "/etc/login.defs")
-        (string-append "-DQT_IMPORTS_DIR="
-                       (assoc-ref %outputs "out") "/lib/qt5/qml")
-        (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
-                       (assoc-ref %outputs "out") "/etc"))
+       ,#~(list
+            ;; This option currently does nothing, but will presumably be enabled
+            ;; if/when <https://github.com/sddm/sddm/pull/616> is merged.
+            "-DENABLE_WAYLAND=ON"
+            "-DENABLE_PAM=ON"
+            ;; Both flags are required for elogind support.
+            "-DNO_SYSTEMD=ON" "-DUSE_ELOGIND=ON"
+            "-DCONFIG_FILE=/etc/sddm.conf"
+            ;; Set path to /etc/login.defs.
+            ;; An alternative would be to use -DUID_MIN and -DUID_MAX.
+            (string-append "-DLOGIN_DEFS_PATH="
+                           #$shadow
+                           "/etc/login.defs")
+            (string-append "-DQT_IMPORTS_DIR="
+                           #$output "/lib/qt5/qml")
+            (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
+                           #$output "/etc"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'embed-loginctl-reference
