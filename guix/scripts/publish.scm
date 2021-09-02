@@ -364,18 +364,8 @@ References: ~a~%"
          ;; expensive to compute and is currently unused.
          (info       (if (not deriver)
                          base-info
-                         (catch 'system-error
-                           (lambda ()
-                             (let ((drv (read-derivation-from-file deriver)))
-                               (format #f "~aDeriver: ~a~%"
-                                       base-info (basename deriver))))
-                           (lambda args
-                             ;; DERIVER might be missing, but that's fine:
-                             ;; it's only used for <substitutable> where it's
-                             ;; optional.
-                             (if (= ENOENT (system-error-errno args))
-                                 base-info
-                                 (apply throw args))))))
+                         (format #f "~aDeriver: ~a~%"
+                                 base-info (basename deriver))))
          (signature  (base64-encode-string
                       (canonical-sexp->string (signed-string info)))))
     (format #f "~aSignature: 1;~a;~a~%" info (gethostname) signature)))
