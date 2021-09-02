@@ -3917,20 +3917,19 @@ websites such as Libre.fm.")
 (define-public beets-bandcamp
   (package
     (name "beets-bandcamp")
-    (version "0.1.3")
+    (version "0.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets-bandcamp" version))
               (sha256
                (base32
-                "04awg0zdhhg5h510fc1p3qkvr2l1qm6nf85hlr9z8im8a7xlka0i"))))
+                "0dwbdkrb9c0ppzm5s78h47ndpr88cw1k0z8fgfhkl706wazx2ddg"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; there are no tests
     (propagated-inputs
      `(("beets" ,beets)
-       ("python-isodate" ,python-isodate)))
-    (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-isodate" ,python-isodate)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)))
     (home-page "https://github.com/unrblt/beets-bandcamp")
