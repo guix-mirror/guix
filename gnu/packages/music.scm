@@ -146,6 +146,7 @@
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -3786,34 +3787,27 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.9")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
-              (patches (search-patches "beets-werkzeug-compat.patch"))
               (sha256
                (base32
-                "0m40rjimvfgy1dv04p8f8d5dvi2855v4ix99a9xr900cmcn476yj"))))
+                "0arl4nc3y8iwa331hf6ggai19y8ns9pl03g5d6ac857wq2x7nzw8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Reported upstream: <https://github.com/beetbox/beets/issues/3771>.
-         ;; Disable the faulty test as the fix is unclear.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (substitute* "test/test_mediafile.py"
-               (("def test_read_audio_properties") "def _test_read_audio_properties"))
-             #t))
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
              #t))
          (replace 'check
-           (lambda _
-             (invoke "nosetests" "-v")))
-         ;; Wrap the executable, so it can find python-gi (aka pygobject) and
-         ;; gstreamer plugins.
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-v" "test"))))
+         ;; Wrap the executable, so it can find python-gi (aka
+         ;; pygobject) and gstreamer plugins.
          (add-after 'wrap 'wrap-typelib
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
@@ -3825,94 +3819,51 @@ websites such as Libre.fm.")
                  `("GI_TYPELIB_PATH" ":" prefix (,types)))
                #t))))))
     (native-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+     `(("gobject-introspection" ,gobject-introspection)
        ("python-flask" ,python-flask)
        ("python-mock" ,python-mock)
-       ("python-mpd2" ,python-mpd2)
-       ("python-nose" ,python-nose)
-       ("python-pathlib" ,python-pathlib)
-       ("python-pyxdg" ,python-pyxdg)
-       ("python-pylast" ,python-pylast)
-       ("python-rarfile" ,python-rarfile)
+       ("python-py7zr" ,python-py7zr)
+       ("python-pytest" ,python-pytest-6)
        ("python-responses" ,python-responses)))
-    ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python-discogs-client" ,python-discogs-client)
-       ("python-jellyfish" ,python-jellyfish)
-       ("python-munkres" ,python-munkres)
-       ("python-musicbrainzngs" ,python-musicbrainzngs)
-       ("python-mutagen" ,python-mutagen)
-       ("python-pyacoustid" ,python-pyacoustid)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-unidecode" ,python-unidecode)
-       ;; For plugin replaygain.
-       ("python-pygobject" ,python-pygobject)
-       ("gobject-introspection" ,gobject-introspection)
+     `(("bash-minimal" ,bash-minimal)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gst-plugins-good" ,gst-plugins-good)
-       ("gstreamer" ,gstreamer)))
+       ("gstreamer" ,gstreamer)
+       ("python-confuse" ,python-confuse)
+       ("python-jellyfish" ,python-jellyfish)
+       ("python-mediafile" ,python-mediafile)
+       ("python-munkres" ,python-munkres)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-unidecode" ,python-unidecode)
+       ;; Optional dependencies for plugins. Some of these are also required by tests.
+       ("python-beautifulsoup4" ,python-beautifulsoup4) ; For lyrics.
+       ("python-discogs-client" ,python-discogs-client) ; For discogs.
+       ("python-mpd2" ,python-mpd2) ; For mpdstats.
+       ("python-mutagen" ,python-mutagen) ; For scrub.
+       ("python-langdetect" ,python-langdetect) ; For lyrics.
+       ("python-pillow" ,python-pillow) ; For fetchart, embedart, thumbnails.
+       ("python-pyacoustid" ,python-pyacoustid) ; For chroma.
+       ("python-pygobject" ,python-pygobject) ; For bpd, replaygain.
+       ("python-pylast" ,python-pylast) ; For lastgenre, lastimport.
+       ("python-pyxdg" ,python-pyxdg) ; For thumbnails.
+       ("python-rarfile" ,python-rarfile) ; For import.
+       ("python-reflink" ,python-reflink) ; For reflink.
+       ("python-requests" ,python-requests)
+       ("python-requests-oauthlib" ,python-requests-oauthlib))) ; For beatport.
     (home-page "https://beets.io")
     (synopsis "Music organizer")
-    (description "The purpose of beets is to get your music collection right
-    once and for all.  It catalogs your collection, automatically improving its
-    metadata as it goes using the MusicBrainz database.  Then it provides a variety
-    of tools for manipulating and accessing your music.")
+    (description "The purpose of beets is to get your music collection
+right once and for all.  It catalogs your collection, automatically
+improving its metadata as it goes using the MusicBrainz database.
+Then it provides a variety of tools for manipulating and accessing
+your music.")
     (license license:expat)))
 
 (define-public beets-next
-  (let ((commit "04ea754d00e2873ae9aa2d9e07c5cefd790eaee2")
-        (revision "1"))
-    (package
-      (inherit beets)
-      (name "beets-next")
-      (version (git-version (package-version beets) revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/beetbox/beets")
-                      (commit commit)))
-                (file-name (git-file-name "beets" version))
-                (sha256
-                 (base32
-                  "092a9sss2shhcjmpgbwvscv8brpm5970i5hddkhi81xcff3bg1h4"))))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           ;; XXX: unclear why this fails
-           (add-after 'unpack 'disable-failing-tests
-             (lambda _
-               (substitute* "test/test_zero.py"
-                 (("def test_album_art") "def _test_album_art"))
-               #t))
-           (add-after 'unpack 'set-HOME
-             (lambda _
-               (setenv "HOME" (string-append (getcwd) "/tmp"))
-               #t))
-           (replace 'check
-             (lambda _
-               ;; Resources must be writable.
-               (for-each make-file-writable
-                         (find-files "test/rsrc" "."))
-               (invoke "nosetests" "-v")))
-           ;; Wrap the executable, so it can find python-gi (aka pygobject) and
-           ;; gstreamer plugins.
-           (add-after 'wrap 'wrap-typelib
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((prog (string-append (assoc-ref outputs "out")
-                                          "/bin/beet"))
-                     (plugins (getenv "GST_PLUGIN_SYSTEM_PATH"))
-                     (types (getenv "GI_TYPELIB_PATH")))
-                 (wrap-program prog
-                   `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,plugins))
-                   `("GI_TYPELIB_PATH" ":" prefix (,types)))
-                 #t))))))
-      (inputs
-       `(("python-confuse" ,python-confuse)
-         ("python-mediafile" ,python-mediafile)
-         ("python-reflink" ,python-reflink)
-         ("python-requests-oauthlib" ,python-requests-oauthlib)
-         ("opusfile" ,opusfile)
-         ,@(package-inputs beets))))))
+  (deprecated-package "beets-next" beets))
 
 (define-public beets-bandcamp
   (package
