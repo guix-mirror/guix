@@ -1220,6 +1220,21 @@ connection alive.")
                        ;; build system uses the built 'gen' executable.
                        (setenv "BUILD_CC" "gcc"))))
                  '())
+           (add-before 'build 'update-config-scripts
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (for-each (lambda (file)
+                               (install-file
+                                 (search-input-file
+                                   (or native-inputs inputs)
+                                   (string-append "/bin/" file)) "."))
+                         '("config.guess" "config.sub"))
+               (for-each (lambda (file)
+                               (install-file
+                                 (search-input-file
+                                   (or native-inputs inputs)
+                                   (string-append "/bin/" file))
+                                 (string-append "bind/bind-" ,bind-version)))
+                         '("config.guess" "config.sub"))))
            (add-after 'configure 'post-configure
              (lambda* (#:key outputs #:allow-other-keys)
                ;; Point to the right client script, which will be
@@ -1302,6 +1317,7 @@ connection alive.")
                      (base32
                       "108nh7hha4r0lb5hf1fn7lqaascvhsrghpz6afm5lf9vf2vgqly9"))))
 
+                ("config" ,config)
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
 
