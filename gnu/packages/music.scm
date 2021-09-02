@@ -41,6 +41,7 @@
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3604,20 +3605,18 @@ streams on an individual packet/page level.")
 (define-public python-mediafile
   (package
     (name "python-mediafile")
-    (version "0.6.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mediafile" version))
-       (patches (search-patches "python-mediafile-wavpack.patch"))
        (sha256
         (base32
-         "0jmsp3f57xj35ayp8b6didk85nxgl3viw34s5px3l5dwgc055yx3"))))
+         "0ipb001j19s9wvssmrj8wz0nrkbl0k3zr3dgzyp1bd9cjc6vklnp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mutagen" ,python-mutagen)
-       ("python-six" ,python-six)
-       ("python-tox" ,python-tox)))
+       ("python-six" ,python-six)))
     (home-page "https://github.com/beetbox/mediafile")
     (synopsis "Read and write audio file tags")
     (description
