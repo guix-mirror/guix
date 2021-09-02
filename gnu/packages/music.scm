@@ -3711,36 +3711,28 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "2.0.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "0r9h7g8i8l2mgqjwkda3v6prfbkb2im5kap1az9ppmhjm9i4jkcf"))))
+                "0pzzhr4mlwpvfhy9gzq86ppz29fmf5z0w3xkl5if1fm59r1afms7"))))
     (build-system python-build-system)
     ;; Tests require network access.  See
     ;; https://github.com/pylast/pylast/issues/105
     (arguments '(#:tests? #f))
     (native-inputs
      `(("python-coverage" ,python-coverage)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-mock" ,python-mock)
-       ("python-pep8" ,python-pep8)
        ("python-pytest" ,python-pytest)
        ("python-flaky" ,python-flaky)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-pyyaml" ,python-pyyaml)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/pylast/pylast")
     (synopsis "Python interface to Last.fm and Libre.fm")
     (description "A Python interface to Last.fm and other API-compatible
 websites such as Libre.fm.")
     (license license:asl2.0)))
-
-(define-public python2-pylast
-  (package-with-python2 python-pylast))
 
 (define-public instantmusic
   (let ((commit "300891d09c703525215fa5a116b9294af1c923c8")
