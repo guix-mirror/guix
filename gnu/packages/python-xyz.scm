@@ -107,6 +107,7 @@
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25909,20 +25910,19 @@ Qt applications.")
 (define-public python-confuse
   (package
     (name "python-confuse")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "confuse" version))
        (sha256
         (base32
-         "0r74djc8r6lfx6ldsqnhpvfsn256gsfzbl33qcm77hp2qr8h9z4j"))))
+         "0bh2kyj8wd7h9gg4nsvrbykl5ly0f70f0wi3fbm204b1f0fcmywj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pathlib" ,python-pathlib)
-       ("python-pyyaml" ,python-pyyaml)))
+     `(("python-pyyaml" ,python-pyyaml)))
     (home-page "https://github.com/beetbox/confuse")
-    (synopsis "Painless YAML configuration.")
+    (synopsis "Painless YAML configuration")
     (description "Confuse is a configuration library for Python that uses
 YAML.  It takes care of defaults, overrides, type checking, command-line
 integration, human-readable errors, and standard OS-specific locations.")
