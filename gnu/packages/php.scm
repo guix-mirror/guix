@@ -197,6 +197,20 @@
                                 "Zend/tests/concat_003.phpt")))
                    '())
 
+             ,@(if (target-ppc64le?)
+                   ;; Drop tests known to fail on powerpc64le.
+                   '((for-each delete-file
+                               (list
+                                ;; phpdbg watchpoints don't work.
+                                ;; Bug tracked upstream at:
+                                ;; https://bugs.php.net/bug.php?id=81408
+                                "sapi/phpdbg/tests/watch_001.phpt"
+                                "sapi/phpdbg/tests/watch_003.phpt"
+                                "sapi/phpdbg/tests/watch_004.phpt"
+                                "sapi/phpdbg/tests/watch_005.phpt"
+                                "sapi/phpdbg/tests/watch_006.phpt")))
+                   '())
+
              ;; Drop tests that are known to fail.
              (for-each delete-file
                        '("ext/posix/tests/posix_getgrgid.phpt"    ; Requires /etc/group.
