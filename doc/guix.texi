@@ -35689,7 +35689,37 @@ mcron info here
 
 @node Shepherd Home Service
 @subsection Managing User's Daemons
-shepherd info here
+
+@cindex shepherd services
+
+@defvr {Scheme Variable} home-shepherd-service-type
+The service type for the userland Shepherd, which allows one to manage
+long-running processes or one-shot tasks.  User's Shepherd is not an
+init process (PID 1), but almost all other information described in
+(@pxref{Shepherd Services}) is applicable here too.
+
+This is the service type that extensions target when they want to create
+shepherd services (@pxref{Service Types and Services}, for an example).
+Each extension must pass a list of @code{<shepherd-service>}.  Its
+value must be a @code{shepherd-configuration}, as described below.
+@end defvr
+
+@deftp {Data Type} shepherd-configuration
+This data type represents the Shepherd's configuration.
+
+@table @code
+@item shepherd (default: @code{shepherd})
+The Shepherd package to use.
+
+@item auto-start? (default: @code{#t})
+Whether or not to start Shepherd on first login.
+
+@item services (default: @code{'()})
+A list of @code{<shepherd-service>} to start.
+You should probably use the service extension
+mechanism instead (@pxref{Shepherd Services}).
+@end table
+@end deftp
 
 @node Invoking guix home
 @section Invoking @code{guix home}
