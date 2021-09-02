@@ -572,7 +572,7 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
      `(("util-linux" ,util-linux "lib")
        ("parted" ,parted)
        ("glib" ,glib)
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)

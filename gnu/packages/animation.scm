@@ -225,7 +225,7 @@ for tweening, preventing the need to hand-draw each frame.")
                  `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))
                #t))))))
     (inputs
-     `(("gtkmm" ,gtkmm)
+     `(("gtkmm" ,gtkmm-3)
        ("gtk+" ,gtk+)
        ("libsigc++" ,libsigc++)
        ("synfig" ,synfig)))

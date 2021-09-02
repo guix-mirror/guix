@@ -162,7 +162,7 @@ connect to a server running the old 0.4 protocol.")
     (inputs
      `(("gnutls" ,gnutls)
        ("gsasl" ,gsasl)
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("gtksourceview" ,gtksourceview-3)
        ("libinfinity" ,libinfinity)
        ("libxml++-2" ,libxml++-2)))

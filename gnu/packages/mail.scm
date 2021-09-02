@@ -930,7 +930,7 @@ mailpack.  What can alterMIME do?
      `(("boost" ,boost)
        ("gmime" ,gmime)
        ("gobject-introspection" ,gobject-introspection) ; it is referenced
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("libpeas" ,libpeas)
        ("libsass" ,libsass)
        ("notmuch" ,notmuch)

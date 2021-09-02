@@ -1883,7 +1883,7 @@ complete studio.")
       (build-system gnu-build-system)
       (inputs
        `(("liblo" ,liblo)
-         ("gtkmm" ,gtkmm)
+         ("gtkmm" ,gtkmm-3)
          ("alsa-lib" ,alsa-lib)
          ("libxml++" ,libxml++-2)))
       (native-inputs

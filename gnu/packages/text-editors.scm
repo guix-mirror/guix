@@ -394,7 +394,7 @@ bindings and many of the powerful features of GNU Emacs.")
      `(("aspell" ,aspell)
        ("boost" ,boost)
        ("ctags" ,universal-ctags)
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("gtksourceviewmm" ,gtksourceviewmm)
        ("libclang" ,clang-11)     ;XXX: must be the same version as Mesas LLVM
        ("libgit2" ,libgit2)))

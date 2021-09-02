@@ -265,7 +265,7 @@ endif()~%~%"
      `(("aspell" ,aspell)
        ("autotrace" ,autotrace)
        ("gdl" ,gdl-minimal)
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("gtk" ,gtk+)
        ("gtkspell3" ,gtkspell3)
        ("gsl" ,gsl)

@@ -1814,7 +1814,7 @@ library.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.24.4")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1823,18 +1823,24 @@ library.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "0hv7pviln4cpjvpz7m7ga5krcsbibqzixdcn0dwzpz0cx71p3swv"))))
+        (base32 "12x9j82y37r4v0ngs22rzp4wmw7k2bbb9d3bymcczzz7y8w4q328"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags '("-Dbuild-documentation=true")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'set-cache
+           (lambda _
+             (setenv "XDG_CACHE_HOME" (getcwd))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
              (system "Xvfb :1 +extension GLX &")
              (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
              (setenv "DBUS_FATAL_WARNINGS" "0")
              #t))
@@ -1858,15 +1864,15 @@ library.")
        ("xsltproc" ,libxslt)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("atkmm" ,atkmm-2.28)
-       ("cairomm" ,cairomm-1.14)
+     `(("atkmm" ,atkmm)
+       ("cairomm" ,cairomm)
        ("glibmm" ,glibmm)
-       ("gtk+" ,gtk+)
-       ("pangomm" ,pangomm-2.46)))
+       ("gtk" ,gtk)
+       ("pangomm" ,pangomm)))
     (synopsis "C++ Interfaces for GTK+ and GNOME")
     (description "GTKmm is the official C++ interface for the popular GUI
-library GTK+.  Highlights include typesafe callbacks, and a comprehensive set of
-widgets that are easily extensible via inheritance.  You can create user
+library GTK+.  Highlights include typesafe callbacks, and a comprehensive set
+of widgets that are easily extensible via inheritance.  You can create user
 interfaces either in code or with the Glade User Interface designer, using
 libglademm.  There's extensive documentation, including API reference and a
 tutorial.")
@@ -1877,6 +1883,27 @@ tutorial.")
       license:lgpl2.1+
       ;; Tools
       license:gpl2+))))
+
+(define-public gtkmm-3
+  (package
+    (inherit gtkmm)
+    (name "gtkmm")
+    (version "3.24.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version)  "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0hv7pviln4cpjvpz7m7ga5krcsbibqzixdcn0dwzpz0cx71p3swv"))))
+    (propagated-inputs
+     `(("atkmm-2.28" ,atkmm-2.28)
+       ("cairomm-1.14" ,cairomm-1.14)
+       ("glibmm" ,glibmm)
+       ("gtk+" ,gtk+)
+       ("pangomm-2.42" ,pangomm-2.46)))))
 
 (define-public gtkmm-2
   (package
@@ -1894,23 +1921,8 @@ tutorial.")
         (base32 "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
     (build-system gnu-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments gtkmm)
-       ((#:modules modules %gnu-build-system-modules)
-        `((srfi srfi-1)
-          ,@modules))
-       ((#:configure-flags flags)
-        `(fold delete
-               ,flags
-               '("-Dbuild-documentation=true")))))
-    (native-inputs
-     `(("dot" ,graphviz)
-       ("doxygen" ,doxygen)
-       ("m4" ,m4)
-       ("mm-common" ,mm-common)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("xsltproc" ,libxslt)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (strip-keyword-arguments
+      '(#:configure-flags) (package-arguments gtkmm)))
     (propagated-inputs
      `(("atkmm" ,atkmm-2.28)
        ("cairomm" ,cairomm-1.14)
@@ -1935,7 +1947,7 @@ tutorial.")
     (propagated-inputs
      ;; In 'Requires' of gtksourceviewmm-3.0.pc.
      `(("glibmm" ,glibmm)
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("gtksourceview" ,gtksourceview-3)))
     (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
     (description

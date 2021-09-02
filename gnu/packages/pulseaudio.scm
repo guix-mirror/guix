@@ -296,7 +296,7 @@ sound server.")
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("libcanberra" ,libcanberra)
        ("pulseaudio" ,pulseaudio)))
     (native-inputs
@@ -521,7 +521,7 @@ README.md for a detailed list of features.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtkmm" ,gtkmm)
+     `(("gtkmm" ,gtkmm-3)
        ("pulseaudio" ,pulseaudio)))
     (home-page "https://freedesktop.org/software/pulseaudio/paprefs/")
     (synopsis "Simple GTK based configuration dialog for the PulseAudio sound

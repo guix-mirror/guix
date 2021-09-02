@@ -385,7 +385,7 @@ astronomical fields.  SkyMaker is part of the EFIGI
     (native-inputs
      `(("pkg-config" ,pkg-config)))
      (inputs
-      `(("gtkmm" ,gtkmm)
+      `(("gtkmm" ,gtkmm-3)
         ("libskry" ,libskry)
         ("ffmpeg" ,ffmpeg)))
      (home-page "https://github.com/GreatAttractor/stackistry")
