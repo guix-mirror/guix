@@ -608,6 +608,188 @@ in the style of communicating sequential processes (@dfn{CSP}).")
              (alist-replace "go" (list gccgo-10) (package-native-inputs go-1.14))
              (package-native-inputs go-1.14))))))
 
+(define-public go-1.17
+  (package
+    (inherit go-1.16)
+    (name "go")
+    (version "1.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/golang/go")
+             (commit (string-append "go" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1psra6j95ws38mx3scc1whky8cwk32mazqs0wzzdwbs8ppl8iwl5"))))
+    (outputs '("out" "tests")) ; 'tests' contains distribution tests.
+    (arguments
+     `(#:modules ((ice-9 match)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((output (assoc-ref outputs "out"))
+                   (loader (string-append (assoc-ref inputs "libc")
+                                          ,(glibc-dynamic-linker))))
+               (setenv "GOOS" "linux")
+               (setenv "GO_LDSO" loader)
+               (setenv "GOROOT" (getcwd))
+               (setenv "GOROOT_FINAL" (string-append output "/lib/go"))
+               (setenv "GOGC" "400")
+               (setenv "GOCACHE" "/tmp/go-cache"))))
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((net-base (assoc-ref inputs "net-base"))
+                    (tzdata-path (string-append (assoc-ref inputs "tzdata")
+                                                "/share/zoneinfo")))
+               ;; XXX: Remove when #49729 is merged?
+               (for-each make-file-writable (find-files "src"))
+
+               ;; Having the patch in the 'patches' field of <origin> breaks
+               ;; the 'TestServeContent' test due to the fact that
+               ;; timestamps are reset.  Thus, apply it from here.
+               (invoke "patch" "-p1" "--force" "-i"
+                       (assoc-ref inputs "go-skip-gc-test.patch"))
+               (invoke "patch" "-p1" "--force" "-i"
+                       (assoc-ref inputs "go-fix-script-tests.patch"))
+
+               (substitute* "src/os/os_test.go"
+                 (("/usr/bin") (getcwd))
+                 (("/bin/sh") (which "sh")))
+
+               (substitute* "src/cmd/go/testdata/script/cgo_path_space.txt"
+                 (("/bin/sh") (which "sh")))
+
+               ;; fix shebang for testar script
+               ;; note the target script is generated at build time.
+               (substitute* "misc/cgo/testcarchive/carchive_test.go"
+                 (("/usr/bin/env bash") (which "bash")))
+
+               (substitute* "src/net/lookup_unix.go"
+                 (("/etc/protocols")
+                  (string-append net-base "/etc/protocols")))
+               (substitute* "src/net/port_unix.go"
+                 (("/etc/services")
+                  (string-append net-base "/etc/services")))
+               (substitute* "src/time/zoneinfo_unix.go"
+                 (("/usr/share/zoneinfo/") tzdata-path)))))
+         (add-after 'patch-source 'disable-failing-tests
+           (lambda _
+             ;; Disable failing tests: these tests attempt to access
+             ;; commands or network resources which are neither available
+             ;; nor necessary for the build to succeed.
+             (for-each
+              (match-lambda
+                ((file test)
+                 (let ((regex (string-append "^(func\\s+)(" test "\\()")))
+                   (substitute* file
+                     ((regex all before test_name)
+                      (string-append before "Disabled" test_name))))))
+              '(("src/net/cgo_unix_test.go" "TestCgoLookupPort")
+                ("src/net/cgo_unix_test.go" "TestCgoLookupPortWithCancel")
+                ;; 127.0.0.1 doesn't exist
+                ("src/net/cgo_unix_test.go" "TestCgoLookupPTR")
+                ("src/net/cgo_unix_test.go" "TestCgoLookupPTRWithCancel")
+                ;; /etc/services doesn't exist
+                ("src/net/parse_test.go" "TestReadLine")
+                ;; The user's directory doesn't exist
+                ("src/os/os_test.go" "TestUserHomeDir")))
+
+             ;; These tests fail on aarch64-linux
+             (substitute* "src/cmd/dist/test.go"
+               (("t.registerHostTest\\(\"testsanitizers/msan.*") ""))))
+         (add-after 'patch-source 'enable-external-linking
+           (lambda _
+             ;; Invoke GCC to link any archives created with GCC (that is, any
+             ;; packages built using 'cgo'), because Go doesn't know how to
+             ;; handle the runpaths but GCC does.  Use substitute* rather than
+             ;; a patch since these files are liable to change often.
+             ;;
+             ;; XXX: Replace with GO_EXTLINK_ENABLED=1 or similar when
+             ;; <https://github.com/golang/go/issues/31544> and/or
+             ;; <https://github.com/golang/go/issues/43525> are resolved.
+             (substitute* "src/cmd/link/internal/ld/config.go"
+               (("iscgo && externalobj") "iscgo"))
+             (substitute* '("src/cmd/nm/nm_cgo_test.go"
+                            "src/cmd/dist/test.go")
+               (("^func.*?nternalLink\\(\\).*" all)
+                (string-append all "\n\treturn false\n")))))
+         (replace 'build
+           (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
+             (let* ((njobs (if parallel-build? (parallel-job-count) 1)))
+               (with-directory-excursion "src"
+                 (setenv "GOMAXPROCS" (number->string njobs))
+                 (invoke "sh" "make.bash" "--no-banner")))))
+         (replace 'check
+           (lambda* (#:key target (tests? (not target)) (parallel-tests? #t)
+                     #:allow-other-keys)
+             (let* ((njobs (if parallel-tests? (parallel-job-count) 1)))
+               (when tests?
+                 (with-directory-excursion "src"
+                   (setenv "GOMAXPROCS" (number->string njobs))
+                   (invoke "sh" "run.bash" "--no-rebuild"))))))
+         (add-before 'install 'unpatch-perl-shebangs
+           (lambda _
+             ;; Avoid inclusion of perl in closure by rewriting references
+             ;; to perl input in sourcecode generators and test scripts
+             (substitute* (cons "src/net/http/cgi/testdata/test.cgi"
+                                (find-files "src" "\\.pl$"))
+               (("^#!.*") "#!/usr/bin/env perl\n"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Notably, we do not install archives (180M), which Go will
+             ;; happily recompile quickly (and cache) if needed, almost
+             ;; surely faster than they could be substituted.
+             ;;
+             ;; The main motivation for pre-compiled archives is to use
+             ;; libc-linked `net' or `os' packages without a C compiler,
+             ;; but on Guix a C compiler is necessary to properly link the
+             ;; final binaries anyway.  Many build flags also invalidate
+             ;; these pre-compiled archives, so in practice Go often
+             ;; recompiles them anyway.
+             ;;
+             ;; Upstream is also planning to no longer install these
+             ;; archives: <https://github.com/golang/go/issues/47257>
+             ;;
+             ;; When necessary, a custom pre-compiled library package can
+             ;; be created with `#:import-path "std"' and used with
+             ;; `-pkgdir'.
+             (let* ((out (assoc-ref outputs "out"))
+                    (tests (assoc-ref outputs "tests")))
+               (for-each
+                (lambda (file)
+                  (copy-recursively file (string-append out "/lib/go/" file)))
+                '("lib" "VERSION" "pkg/include" "pkg/tool"))
+
+               (for-each
+                (match-lambda
+                  ((file dest output)
+                   ;; Copy to output/dest and symlink from output/lib/go/file.
+                   (let ((file* (string-append output "/lib/go/" file))
+                         (dest* (string-append output "/" dest)))
+                     (copy-recursively file dest*)
+                     (mkdir-p (dirname file*))
+                     (symlink (string-append "../../" dest) file*))))
+                `(("bin"          "bin"                 ,out)
+                  ("src"          "share/go/src"        ,out)
+                  ("misc"         "share/go/misc"       ,out)
+                  ("doc"          "share/doc/go/doc"    ,out)
+                  ("api"          "share/go/api"        ,tests)
+                  ("test"         "share/go/test"       ,tests))))))
+         (add-after 'install 'install-doc-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (file)
+                  (install-file file (string-append out "/share/doc/go")))
+                '("AUTHORS" "CONTRIBUTORS" "CONTRIBUTING.md" "PATENTS"
+                  "README.md" "SECURITY.md"))))))))
+    (inputs (alist-delete "gcc:lib" (package-inputs go-1.16)))))
+
 (define-public go go-1.14)
 
 (define-public go-0xacab-org-leap-shapeshifter
