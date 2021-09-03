@@ -16172,6 +16172,28 @@ implement features such as look-around and backtracking, which are not
 supported in purely NFA-based implementations.")
     (license license:expat)))
 
+(define-public rust-fast-chemail-0.9
+  (package
+    (name "rust-fast-chemail")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fast_chemail" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r79x2i7bhk8y4nv7q245dlifxryszmby4k3psm2qk321p9kjnj9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ascii-utils" ,rust-ascii-utils-0.9))))
+    (home-page "https://gitlab.com/fast_chemail/fast_chemail-rs")
+    (synopsis "Check email address")
+    (description "Fast Chemail is a library used to validate the email as it
+is defined in the HTML specification.")
+    (license license:mpl2.0)))
+
 (define-public rust-fast-float-0.2
   (package
     (name "rust-fast-float")
