@@ -14910,6 +14910,34 @@ Emacs' support for dynamic modules.")
 Emacs' support for dynamic modules.")
     (license license:bsd-3)))
 
+(define-public rust-email-0.0.20
+  (package
+    (name "rust-email")
+    (version "0.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "email" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r12byj69x6bkq0qn1zvi103n1pg5k3w8zym2dgich82pd8rlm4i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-encoding" ,rust-encoding-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-version-check" ,rust-version-check-0.1))))
+    (home-page "https://github.com/niax/rust-email")
+    (synopsis "Implementation of RFC 5322 email messages")
+    (description
+     "This crate provides an implementation of RFC 5322 email messages.")
+    (license license:expat)))
+
 (define-public rust-embed-resource-1
   (package
     (name "rust-embed-resource")
