@@ -415,8 +415,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "fe1bb39aa52d9140981ba1e96f3c95ddf14006ce")
-        (revision "8"))
+  (let ((commit "6c42566c6204bb5dcd6af3b97257e548b9d2db67")
+        (revision "9"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -428,7 +428,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1ks6w2v76pfpp70cv1d6znxaw1g5alz1v6hf8z9gvj15r94vgpwz"))))
+          (base32 "0xagz0k3li10ydma55mnld0nb2pyfx90vsdvgjflgnx6jw3cq4dq"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -464,7 +464,11 @@ from a mounted file system.")
 
          ;; For tests.
          ("python-pytest" ,python-pytest)
-         ("valgrind" ,valgrind)))
+         ("valgrind" ,valgrind)
+
+         ;; For generating documentation with rst2man.
+         ("python" ,python)
+         ("python-docutils" ,python-docutils)))
       (inputs
        `(("eudev" ,eudev)
          ("keyutils" ,keyutils)
