@@ -1138,7 +1138,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public acpi-call-linux-module
   (package
     (name "acpi-call-linux-module")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -1147,7 +1147,7 @@ It has been modified to remove all non-free binary blobs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mr4rjbv6fj4phf038addrgv32940bphghw2v9n1z4awvw7wzkbg"))))
+        (base32 "1s7h9y3adyfhw7cjldlfmid79lrwz3vqlvziw9nwd6x5qdj4w9vp"))))
     (build-system linux-module-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1159,8 +1159,7 @@ It has been modified to remove all non-free binary blobs.")
            (lambda _
              (substitute* (find-files "examples" ".")
                (("^(#! *)/[^ ]*/" _ shebang)
-                (string-append shebang "/usr/bin/env ")))
-             #t))
+                (string-append shebang "/usr/bin/env ")))))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1169,9 +1168,8 @@ It has been modified to remove all non-free binary blobs.")
                            (let ((target (string-append doc "/" file)))
                              (mkdir-p (dirname target))
                              (copy-recursively file target)))
-                         (list "README.md" "examples"))
-               #t))))))
-    (home-page "https://github.com/teleshoes/acpi_call")
+                         (list "README.md" "examples"))))))))
+    (home-page "https://github.com/nix-community/acpi_call")
     (synopsis "Linux kernel module to perform ACPI method calls")
     (description
      "This simple Linux kernel module allows calls from user space to any
