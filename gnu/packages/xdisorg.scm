@@ -2208,7 +2208,7 @@ to automatically turn it on on login.")
 (define-public xrandr-invert-colors
   (package
     (name "xrandr-invert-colors")
-    (version "0.01")
+    (version "0.02")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2217,7 +2217,7 @@ to automatically turn it on on login.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1br3x9vr6xm4ika06n8cfxx1b3wdchdqvyzjl4y1chmivrml8x9h"))))
+                "0gk1fgxb2kjyr78xn8m0ckjdic99ras7msa67piwnhj3j4scg1ih"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
