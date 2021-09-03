@@ -3592,7 +3592,7 @@ formats, looking up tracks through metadata and audio fingerprints.")
      `(("python-pytest" ,python-pytest)
        ("python-hypothesis" ,python-hypothesis)
        ("python-flake8" ,python-flake8)))
-    (home-page "https://bitbucket.org/lazka/mutagen")
+    (home-page "https://mutagen.readthedocs.io/")
     (synopsis "Read and write audio tags")
     (description "Mutagen is a Python module to handle audio metadata.  It
 supports ASF, FLAC, M4A, Monkey’s Audio, MP3, Musepack, Ogg FLAC, Ogg Speex, Ogg
