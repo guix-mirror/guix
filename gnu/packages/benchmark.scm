@@ -222,7 +222,7 @@ This can give a much better understanding of the command's performance.")
 (define-public benchmark
   (package
     (name "benchmark")
-    (version "1.5.5")
+    (version "1.5.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -231,7 +231,7 @@ This can give a much better understanding of the command's performance.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ijv4idcjsyy61dab59ywbx0xdbws44kxgqjr1ylaxzwknh745qf"))))
+                "030g4d8vpn2442dsap0qw86lsw7xfl36k0x0x9bn0vvm11qvjn8c"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("googletest-source" ,(package-source googletest))
@@ -242,8 +242,7 @@ This can give a much better understanding of the command's performance.")
          (add-after 'unpack 'unpack-googletest
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "googletest-source")
-                               "googletest")
-             #t)))))
+                               "googletest"))))))
     (home-page "https://github.com/google/benchmark")
     (synopsis "Microbenchmark support library")
     (description
