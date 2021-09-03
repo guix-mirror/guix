@@ -99,7 +99,7 @@ programmer devices.")
 (define-public 0xffff
   (package
     (name "0xffff")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method git-fetch)
@@ -108,7 +108,7 @@ programmer devices.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a5b7k96vzirb0m8lqp7ldn77ppz4ngf56wslhsj2c6flcyvns4v"))))
+        (base32 "0rl1xzbxl991pm2is98zbryac1lgjrc3zphmbd8agv07av0r6r6n"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb-0.1)))         ; doesn't work with libusb-compat
