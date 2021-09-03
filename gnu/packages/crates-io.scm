@@ -18742,6 +18742,31 @@ interfaces on the system.")
 @code{_getch} on Windows, and @code{termios} on Unix.")
     (license license:asl2.0)))
 
+(define-public rust-gethostname-0.2
+  (package
+    (name "rust-gethostname")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gethostname" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a609j9dhk816il2f2a01avvi5sqzxh0p38nxwrja7dcpybf54p6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ; test panics
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
+    (home-page "https://github.com/lunaryorn/gethostname.rs")
+    (synopsis "Gethostname for all platforms")
+    (description "This library provides @code{gethostname()} for all
+platforms.")
+    (license license:asl2.0)))
+
 (define-public rust-getopts-0.2
   (package
     (name "rust-getopts")
