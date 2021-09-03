@@ -108,7 +108,7 @@
             ;; Set path to /etc/login.defs.
             ;; An alternative would be to use -DUID_MIN and -DUID_MAX.
             (string-append "-DLOGIN_DEFS_PATH="
-                           #$shadow
+                           #$(this-package-input "shadow")
                            "/etc/login.defs")
             (string-append "-DQT_IMPORTS_DIR="
                            #$output "/lib/qt5/qml")
