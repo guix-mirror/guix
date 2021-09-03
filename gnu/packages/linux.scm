@@ -6858,7 +6858,8 @@ used by nftables.")
         (base32 "1x25zs2czmn14mmq1nqi4zibsvh04vqjbx5lxj42nylnmxym9gsq"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
-                 '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
+                 '("--disable-man-doc"  ; FIXME: needs docbook2x
+                   "--disable-static")))
     (inputs `(("gmp" ,gmp)
               ("libmnl" ,libmnl)
               ("libnftnl" ,libnftnl)
