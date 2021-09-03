@@ -3527,7 +3527,7 @@ buffers.")
 (define-public igt-gpu-tools
   (package
     (name "igt-gpu-tools")
-    (version "1.25")
+    (version "1.26")
     (source
      (origin
        (method git-fetch)
@@ -3536,7 +3536,7 @@ buffers.")
              (commit (string-append "igt-gpu-tools-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lvhkdhilw0fn4nzkpfwvrhiv8d92h811qs2v6ac3p5w7v86a9zm"))))
+        (base32 "0m124pqv7zna25jnvk566c4kk628jr0w8mgnp8mr5xqz9cprgczm"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))            ; many of the tests try to load kernel modules
