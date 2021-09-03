@@ -260,14 +260,14 @@ directory comparison and more.")
 (define-public vsftpd
   (package
     (name "vsftpd")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://security.appspot.com/downloads/"
                            "vsftpd-" version ".tar.gz"))
        (sha256
-        (base32 "09kap2qsd80m0x80jv5224x002x2jkr584dksppcv9p84yyj353b"))))
+        (base32 "1lwipiq8q9qzvwv6f418fbvagpz0p6v0jjplkvcsc2sb8np05di6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
