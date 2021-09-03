@@ -2635,6 +2635,25 @@ standard library.")
        #:cargo-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.4))))))
 
+(define-public rust-ascii-utils-0.9
+  (package
+    (name "rust-ascii-utils")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ascii_utils" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jpp550pwi38msflpy7lnqm2r153kn9k19bss6k9ak9yacq8z4vi"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/tredoe/ascii_utils")
+    (synopsis "Utilities to handle ASCII characters")
+    (description
+     "This library provides utilities to handle ASCII characters.")
+    (license license:mpl2.0)))
+
 (define-public rust-assert-cli-0.6
   (package
     (name "rust-assert-cli")
