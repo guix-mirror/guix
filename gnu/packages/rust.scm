@@ -321,7 +321,7 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-1.40
+(define rust-1.40
   (package
     (name "rust")
     (version "1.40.0")
@@ -512,7 +512,7 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-1.41
+(define rust-1.41
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.40 "1.41.1"
                     "0ws5x0fxv57fyllsa6025h3q6j9v3m8nb3syl4x0hgkddq0kvj9q")))
@@ -532,21 +532,21 @@ safety and thread safety guarantees.")
                     (string-append name "\"" ,%cargo-reference-hash "\"")))
                  (generate-all-checksums "vendor"))))))))))
 
-(define-public rust-1.42
+(define rust-1.42
   (rust-bootstrapped-package
    rust-1.41 "1.42.0" "0x9lxs82may6c0iln0b908cxyn1cv7h03n5cmbx3j1bas4qzks6j"))
 
-(define-public rust-1.43
+(define rust-1.43
   (rust-bootstrapped-package
    rust-1.42 "1.43.0" "18akhk0wz1my6y9vhardriy2ysc482z0fnjdcgs9gy59kmnarxkm"))
 
 ;; This version requires llvm <= 11.
-(define-public rust-1.44
+(define rust-1.44
   (rust-bootstrapped-package
    rust-1.43 "1.44.1"
    "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky"))
 
-(define-public rust-1.45
+(define rust-1.45
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.44 "1.45.2"
                     "0273a1g3f59plyi1n0azf21qjzwml1yqdnj5z472crz37qggr8xp")))
@@ -562,11 +562,11 @@ safety and thread safety guarantees.")
                    (("linker.env\\(\"LC_ALL\", \"C\"\\);")
                     "linker.env(\"LC_ALL\", \"en_US.UTF-8\");")))))))))))
 
-(define-public rust-1.46
+(define rust-1.46
   (rust-bootstrapped-package
    rust-1.45 "1.46.0" "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
 
-(define-public rust-1.47
+(define rust-1.47
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.46 "1.47.0"
                     "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
@@ -586,25 +586,25 @@ safety and thread safety guarantees.")
                            "library/std"
                            "src/tools/cargo")))))))))))
 
-(define-public rust-1.48
+(define rust-1.48
   (rust-bootstrapped-package
    rust-1.47 "1.48.0" "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf"))
 
-(define-public rust-1.49
+(define rust-1.49
   (rust-bootstrapped-package
    rust-1.48 "1.49.0" "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
 
-(define-public rust-1.50
+(define rust-1.50
   (rust-bootstrapped-package
    rust-1.49 "1.50.0" "0pjs7j62maiyvkmhp9zrxl528g2n0fphp4rq6ap7aqdv0a6qz5wm"))
 
-(define-public rust-1.51
+(define rust-1.51
   (rust-bootstrapped-package
    rust-1.50 "1.51.0" "0ixqkqglv3isxbvl4ldr4byrkx692wghsz3fasy1pn5kr2prnsvs"))
 
 ;;; The LLVM requiriment has been bumped to version 10 in Rust 1.52.  Use the
 ;;; latest available.
-(define-public rust-1.52
+(define rust-1.52
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.51 "1.52.1"
                     "165zs3xzp9dravybwslqs1qhn35agp6wacmzpymqg3qfdni26vrs")))
@@ -613,11 +613,11 @@ safety and thread safety guarantees.")
       (inputs (alist-replace "llvm" (list llvm-12)
                              (package-inputs base-rust))))))
 
-(define-public rust-1.53
+(define rust-1.53
   (rust-bootstrapped-package
    rust-1.52 "1.53.0" "1f95p259dfp5ca118bg107rj3rqwlswy65dxn3hg8sqgl4wwmxsw"))
 
-(define-public rust-1.54
+(define rust-1.54
   (let ((base-rust
          (rust-bootstrapped-package
           rust-1.53 "1.54.0"

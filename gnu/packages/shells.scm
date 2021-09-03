@@ -969,8 +969,7 @@ files and text.")
         (base32 "1db521jrs0yxwmvkkl8wssa8qyi0m62n69l7xxl2gpyz1v8nvw76"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52
-       #:tests? #false                  ;missing files
+     `(#:tests? #false                  ;missing files
        #:features '("extra")
        #:cargo-inputs
        (("rust-ctrlc" ,rust-ctrlc-3)

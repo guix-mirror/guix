@@ -790,8 +790,7 @@ of the project is to be runnable on untrusted networks without crashing.")
         (base32 "0hzyqpjxya6g1ifb3hvjvj0zl2aigx898pz7h5pl46z50jp2pdc8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52
-       #:cargo-build-flags '("--release" "--features" "external-harfbuzz")
+     `(#:cargo-build-flags '("--release" "--features" "external-harfbuzz")
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-byte-unit" ,rust-byte-unit-4)
@@ -969,8 +968,7 @@ runs a command whenever it detects modifications.")
          "06bc3s5kjwpyr2cq79p0306a9bqp3xp928d750ybby9npq2dvj3z"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52
-       #:install-source? #f             ; virtual manifest
+     `(#:install-source? #f             ; virtual manifest
        #:cargo-test-flags
        '("--release" "--"
          "--skip=tests::test_version_check"         ;; It need rustc's version
@@ -1097,8 +1095,7 @@ support for Rust.")
           "0fwdxhdj2963xr6xfqr56i7hikhsdv562vgxq2dj3h2mi3dil1k6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52                ;inherited from rust-cargo
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cbindgen" ,rust-cbindgen-0.19)
         ("rust-cargo" ,rust-cargo-0.53) ;
         ("rust-anyhow" ,rust-anyhow-1)
