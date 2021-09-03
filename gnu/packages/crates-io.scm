@@ -6231,6 +6231,29 @@ system calls.  Second, exposing the internal buffer allows the user to work
 with data in place, which avoids another copy.")
     (license license:gpl3)))
 
+(define-public rust-buffering-nocopy-macro-0.1
+  (package
+    (name "rust-buffering-nocopy-macro")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "buffering_nocopy_macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03b6wp4i3273jzw2nbnrnddlxyma3p465y2dszx6vc3ysq0fdlj7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.14))))
+    (home-page "https://github.com/jbaublitz/buffering")
+    (synopsis "Proc-macro crate for buffering")
+    (description "This package provides a proc-macro crate for buffering.")
+    (license license:bsd-3)))
+
 (define-public rust-bufstream-0.1
   (package
     (name "rust-bufstream")
