@@ -2715,8 +2715,35 @@ standard library.")
        #:cargo-development-inputs
        (("rust-docmatic" ,rust-docmatic-0.1))))))
 
+(define-public rust-assert-fs-1
+  (package
+    (name "rust-assert-fs")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert-fs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rcllf1d1l121fnsxy84bbqkg1sym5gs4mp0aw1nyv3f0sinmjmh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-globwalk" ,rust-globwalk-0.8)
+        ("rust-predicates" ,rust-predicates-2)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-predicates-tree" ,rust-predicates-tree-1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/assert-rs/assert_fs")
+    (synopsis "Filesystem fixtures and assertions for testing")
+    (description
+     "This crate provides file system fixtures and assertions for testing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-assert-fs-0.11
   (package
+    (inherit rust-assert-fs-1)
     (name "rust-assert-fs")
     (version "0.11.3")
     (source
@@ -2728,7 +2755,6 @@ standard library.")
         (sha256
          (base32
           "1h1q90qskbylv4g3jyizdanj73835q7vvq7q10y555x4gnavmrjc"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-globwalk" ,rust-globwalk-0.5)
@@ -2737,12 +2763,7 @@ standard library.")
         ("rust-predicates-tree" ,rust-predicates-tree-1)
         ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
-       (("rust-docmatic" ,rust-docmatic-0.1))))
-    (home-page "https://github.com/assert-rs/assert_fs")
-    (synopsis "File system fixtures and assertions for testing")
-    (description
-     "File system fixtures and assertions for testing.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-docmatic" ,rust-docmatic-0.1))))))
 
 (define-public rust-assert-json-diff-1
   (package
