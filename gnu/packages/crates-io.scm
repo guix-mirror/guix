@@ -7913,6 +7913,33 @@ clauses.")
      "This package provides a combines the chalk-engine with chalk-ir.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-charset-0.1
+  (package
+    (name "rust-charset")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "charset" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wzwnck82maqa03hvpprpd1zvnzmzxpkqna4pxnf4g8wvxj6whjg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://docs.rs/charset/")
+    (synopsis "Thunderbird-compatible character encoding decoding for email")
+    (description
+     "charset is a wrapper around @code{encoding_rs} that
+provides (non-streaming) decoding for character encodings that occur in email
+by providing decoding for UTF-7 in addition to the encodings defined by the
+Encoding Standard.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-chrono-0.4
   (package
     (name "rust-chrono")
