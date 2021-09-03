@@ -7398,8 +7398,34 @@ remote procedure call protocol")
      `(#:cargo-inputs
        (("rust-capnp" ,rust-capnp-0.10))))))
 
+(define-public rust-caps-0.5
+  (package
+    (name "rust-caps")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "caps" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0h4m9s09plj85y5lb5j9hck36r8w63ifpc9s09mzi0zjvvfz5260"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-errno" ,rust-errno-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/lucab/caps-rs")
+    (synopsis "Pure-Rust library to work with Linux capabilities")
+    (description
+     "This package provides a pure-Rust library to work with Linux
+capabilities.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-caps-0.3
   (package
+    (inherit rust-caps-0.5)
     (name "rust-caps")
     (version "0.3.3")
     (source
@@ -7411,19 +7437,12 @@ remote procedure call protocol")
        (sha256
         (base32
          "1vplgzx8nifzr3f0l8ca77jqnz3fdymdg0ickacgdvawc44a3n90"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-errno" ,rust-errno-0.2)
         ("rust-error-chain" ,rust-error-chain-0.12)
-        ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/lucab/caps-rs")
-    (synopsis "Pure-Rust library to work with Linux capabilities")
-    (description
-     "This package provides a pure-Rust library to work with Linux
-capabilities")
-    (license (list license:expat license:asl2.0))))
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-cargo-0.53
   (package
