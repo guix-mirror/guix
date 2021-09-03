@@ -13910,32 +13910,38 @@ can also be used to get the exact location, font or color of the text.")
 (define-public python-rarfile
   (package
     (name "python-rarfile")
-    (version "2.8")
+    (version "4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "rarfile" version))
               (sha256
                (base32
-                "0qfad483kcbga0bn4qmcz953xjk16r52fahiy46zzn56v80y89ra"))))
+                "1882wv9szcm29mnyhjmspyflyr2l7z73srn14w4dlnww49lqfm37"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     `(#:tests? #f ;; The bsdtar utility is very limited and most tests fail.
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "rarfile.py"
+               ;; Disable unrar and unar, which are unavailable on Guix.
+               (("(unrar|unar)=True" all tool) (string-append tool "=False"))
+               ;; Hardcode path to bsdtar
+               (("\"bsdtar\"")
+                (string-append "\"" (assoc-ref inputs "libarchive") "/bin/bsdtar\"")))
+             #t))
          (replace 'check
-           ;; Many tests fail, but the installation proceeds.
-           (lambda _ (invoke "make" "-C" "test" "test"))))))
-    (native-inputs
-     `(("which" ,which))) ; required for tests
-    (propagated-inputs
-     `(("libarchive" ,libarchive)))
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (inputs `(("libarchive" ,libarchive)))
     (home-page "https://github.com/markokr/rarfile")
     (synopsis "RAR archive reader for Python")
     (description "This is Python module for RAR archive reading.  The interface
 is made as zipfile like as possible.")
     (license license:isc)))
-
-(define-public python2-rarfile
-  (package-with-python2 python-rarfile))
 
 (define-public python-rich
   (package
