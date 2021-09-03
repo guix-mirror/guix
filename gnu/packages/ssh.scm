@@ -127,16 +127,15 @@ file names.
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://git.libssh.org/projects/libssh.git")
-                     (commit (string-append "libssh-" version))))
+              (method url-fetch)
+              (uri (string-append "https://www.libssh.org/files/"
+                                  (version-major+minor version)
+                                  "/libssh-" version ".tar.xz"))
               (sha256
                (base32
-                "1b2klflmn0mdkcyjl4dqfg116bf9nhmqm4qla5cqa9xis89a5bn6"))
-              (file-name (git-file-name name version))))
+                "16w2mc7pyv9mijjlgacbz8dgczc7ig2m6m70w1pld04vpn2zig46"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
