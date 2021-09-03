@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Milkey Mouse <milkeymouse@meme.institute>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -383,6 +384,30 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
         license:lgpl2.1+
         ;; Others.
         license:gpl2+)))))
+
+(define-public slurm-monitor
+  (package
+    (name "slurm-monitor")
+    (version "0.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/mattthias/slurm")
+         (commit (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n6pgrcs8gwrcq5fch1q3yk3jipjwrf21s9a13fbjrl903g5zzv9"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ;no tests
+    (inputs `(("ncurses" ,ncurses)))
+    (synopsis "Network load monitor")
+    (description
+     "Slurm is a network load monitor.  It shows real-time traffic statistics
+from any network device in any of three ASCII graph formats.")
+    (home-page "https://github.com/mattthias/slurm")
+    (license license:gpl2)))
 
 (define-public srt
   (package
