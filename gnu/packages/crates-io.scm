@@ -47059,6 +47059,32 @@ values without proliferating generics.")
         ("rust-syn" ,rust-syn-1)
         ("rust-quote" ,rust-quote-1))))))
 
+(define-public rust-swayipc-2
+  (package
+    (name "rust-swayipc")
+    (version "2.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "swayipc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03r15c2sijyrxmpsyjgma4gz7zmdl1g8akjnjkw6hrml91d5dilj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ; test sync::tests::connect ... FAILED
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-async-std" ,rust-async-std-1)
+        ("rust-swayipc-command-builder" ,rust-swayipc-command-builder-0.1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/jaycefayne/swayipc-rs")
+    (synopsis "Library for controlling sway through its IPC interface")
+    (description
+     "This package provides a library for controlling sway through its IPC
+interface.")
+    (license license:expat)))
+
 (define-public rust-swayipc-command-builder-0.1
   (package
     (name "rust-swayipc-command-builder")
