@@ -230,7 +230,8 @@ only faster.")
               (sha256
                (base32
                 "0i99wf9xd3hw1sj2sazychb9prx8nadxh2clgvk3zlmb28v0jbfz"))
-              (patches (search-patches "classpath-aarch64-support.patch"))))
+              (patches (search-patches "classpath-aarch64-support.patch"
+                                       "classpath-miscompilation.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -246,17 +247,6 @@ only faster.")
              "--disable-gjdoc")
        #:phases
        (modify-phases %standard-phases
-         ;; XXX: This introduces a memory leak as we remove a call to free up
-         ;; memory for the file name string.  This was necessary because of a
-         ;; runtime error that would have prevented us from building
-         ;; ant-bootstrap later.  See https://issues.guix.gnu.org/issue/36685
-         ;; for the gnarly details.
-         (add-after 'unpack 'remove-call-to-free
-           (lambda _
-             (substitute* "native/jni/java-io/java_io_VMFile.c"
-               (("result = cpio_isFileExists.*" m)
-                (string-append m "\n//")))
-             #t))
          (add-after 'install 'install-data
            (lambda _ (invoke "make" "install-data"))))))
     (native-inputs

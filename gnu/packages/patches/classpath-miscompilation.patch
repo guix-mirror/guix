@@ -1,0 +1,71 @@
+For some reason, the original code gets miscompiled on x86_64, leading
+'Java_java_io_VMFile_isFile' to return true when the return value of
+'cpio_checkType' is ENOENT (= 2).
+
+See <https://issues.guix.gnu.org/issue/36685>
+and <https://issues.guix.gnu.org/49990>.
+
+diff --git a/native/jni/java-io/java_io_VMFile.c b/native/jni/java-io/java_io_VMFile.c
+index de1320b..6695e1f 100644
+--- a/native/jni/java-io/java_io_VMFile.c
++++ b/native/jni/java-io/java_io_VMFile.c
+@@ -240,6 +240,7 @@ Java_java_io_VMFile_exists (JNIEnv * env,
+ #ifndef WITHOUT_FILESYSTEM
+   const char *filename;
+   int result;
++  jboolean exists;
+ 
+   /* Don't use the JCL convert function because it throws an exception
+      on failure */
+@@ -250,9 +251,10 @@ Java_java_io_VMFile_exists (JNIEnv * env,
+     }
+ 
+   result = cpio_isFileExists (filename);
++  exists = (result == CPNATIVE_OK ? 1 : 0);
+   (*env)->ReleaseStringUTFChars (env, name, filename);
+ 
+-  return result == CPNATIVE_OK ? 1 : 0;
++  return exists;
+ #else /* not WITHOUT_FILESYSTEM */
+   return 0;
+ #endif /* not WITHOUT_FILESYSTEM */
+@@ -278,6 +280,7 @@ Java_java_io_VMFile_isFile (JNIEnv * env,
+   const char *filename;
+   int result;
+   jint entryType;
++  jboolean isfile;
+ 
+   /* Don't use the JCL convert function because it throws an exception
+      on failure */
+@@ -288,9 +291,10 @@ Java_java_io_VMFile_isFile (JNIEnv * env,
+     }
+ 
+   result = cpio_checkType (filename, &entryType);
++  isfile = (result == CPNATIVE_OK && entryType == CPFILE_FILE ? 1 : 0);
+   (*env)->ReleaseStringUTFChars (env, name, filename);
+ 
+-  return result == CPNATIVE_OK && entryType == CPFILE_FILE ? 1 : 0;
++  return isfile;
+ #else /* not WITHOUT_FILESYSTEM */
+   return 0;
+ #endif /* not WITHOUT_FILESYSTEM */
+@@ -315,6 +319,7 @@ Java_java_io_VMFile_isDirectory (JNIEnv * env,
+   const char *filename;
+   int result;
+   jint entryType;
++  jboolean isdirectory;
+ 
+   /* Don't use the JCL convert function because it throws an exception
+      on failure */
+@@ -325,9 +330,10 @@ Java_java_io_VMFile_isDirectory (JNIEnv * env,
+     }
+   
+   result = cpio_checkType (filename, &entryType);
++  isdirectory = (result == CPNATIVE_OK && entryType == CPFILE_DIRECTORY ? 1 : 0);
+   (*env)->ReleaseStringUTFChars (env, name, filename);
+ 
+-  return result == CPNATIVE_OK && entryType == CPFILE_DIRECTORY ? 1 : 0;
++  return isdirectory;
+ #else /* not WITHOUT_FILESYSTEM */
+   return 0;
+ #endif /* not WITHOUT_FILESYSTEM */
