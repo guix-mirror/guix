@@ -13670,16 +13670,15 @@ way.")
 (define-public python-munkres
   (package
     (name "python-munkres")
-    (version "1.0.8")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "munkres" version))
               (sha256
                (base32
-                "0mbspx4zv8id4x6pim6ybsa1xh96qwpbqj7skbqz4c9c9nf1lpqq"))))
+                "00yvj8bxmhhhhd74v7j0x673is7vizmxwgb3dd5xmnkr74ybyi7w"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; no test suite
+    (native-inputs `(("python-pytest" ,python-pytest-6)))
     (home-page "https://software.clapper.org/munkres/")
     (synopsis "Implementation of the Munkres algorithm")
     (description "The Munkres module provides an implementation of the Munkres
