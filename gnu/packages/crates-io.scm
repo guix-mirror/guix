@@ -26113,6 +26113,30 @@ Mach 3.0 kernel that underlies OSX.")
 library")
   (license (list license:asl2.0 license:expat))))
 
+(define-public rust-mailparse-0.13
+  (package
+    (name "rust-mailparse")
+    (version "0.13.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mailparse" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qacyzfl3wsl745b92w9gj0mjg43rcwg99l96rmg8l1sq5pm4vy0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-charset" ,rust-charset-0.1)
+        ("rust-quoted-printable" ,rust-quoted-printable-0.4))))
+    (home-page "https://github.com/staktrace/mailparse")
+    (synopsis "Simple parser for MIME e-mail messages")
+    (description
+     "This package provides a simple parser for MIME e-mail messages.")
+    (license license:bsd-0)))
+
 (define-public rust-make-cmd-0.1
   (package
     (name "rust-make-cmd")
