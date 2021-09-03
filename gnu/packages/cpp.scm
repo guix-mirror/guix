@@ -21,6 +21,8 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +45,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix git-download)
+  #:use-module ((guix build utils) #:hide (delete))
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -61,6 +64,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -72,9 +76,11 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1))
 
 (define-public range-v3
   (package
@@ -1356,6 +1362,192 @@ of reading and writing XML.")
     ;; incompatible with the GPL v2.  Refer to the file named FLOSSE for the
     ;; details.
     (license license:gpl2+)))
+
+(define %cling-version "0.9")
+
+(define llvm-cling             ;LLVM 9 with approximately 10 patches for cling
+  (let ((base llvm-9))
+    (package/inherit base
+      (name "llvm-cling")
+      (source
+       (origin
+         (inherit (package-source base))
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://root.cern/git/llvm.git")
+               (commit (string-append "cling-v" %cling-version))))
+         (file-name (git-file-name "llvm-cling" %cling-version))
+         (sha256
+          (base32
+           "0y3iwv3c9152kybmdrwvadggjs163r25h7rmlxzr3hfpr463pnwf"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; The source is missing an include directive (see:
+          ;; https://github.com/vgvassilev/cling/issues/219).
+          '(substitute* "utils/benchmark/src/benchmark_register.h"
+             (("^#include <vector>.*" all)
+              (string-append all "#include <limits>\n"))))))
+      (outputs '("out"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags _ ''())
+          '(list "-DLLVM_PARALLEL_LINK_JOBS=1" ;cater to smaller build machines
+                 ;; Only enable compiler support for the host architecture to
+                 ;; save on build time.
+                 "-DLLVM_TARGETS_TO_BUILD=host;NVPTX"
+                 "-DLLVM_INSTALL_UTILS=ON"
+                 "-DLLVM_ENABLE_RTTI=ON"
+                 "-DLLVM_ENABLE_FFI=ON"
+                 "-DLLVM_BUILD_LLVM_DYLIB=ON"
+                 "-DLLVM_LINK_LLVM_DYLIB=ON"))
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (delete 'shared-lib-workaround)
+             (delete 'install-opt-viewer))))))))
+
+(define clang-cling-runtime
+  (let ((base clang-runtime-9))
+    (package/inherit base
+      (name "clang-cling-runtime")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-after 'install 'delete-static-libraries
+               ;; This reduces the size from 22 MiB to 4 MiB.
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((out (assoc-ref outputs "out")))
+                   (for-each delete-file (find-files out "\\.a$")))))))))
+      (inputs (alist-replace "llvm" `(,llvm-cling)
+                             (package-inputs base))))))
+
+(define clang-cling              ;modified clang 9 with ~ 60 patches for cling
+  (let ((base clang-9))
+    (package/inherit base
+      (name "clang-cling")
+      (source
+       (origin
+         (inherit (package-source base))
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://root.cern/git/clang.git")
+               (commit (string-append "cling-v" %cling-version))))
+         (file-name (git-file-name "clang-cling" %cling-version))
+         (sha256
+          (base32
+           "128mxkwghss6589wvm6amzv183aq88rdrnfxjiyjcji5hx84vpby"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-after 'install 'delete-static-libraries
+               ;; This reduces the size by half, from 220 MiB to 112 MiB.
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((out (assoc-ref outputs "out")))
+                   (for-each delete-file (find-files out "\\.a$")))))))))
+      (propagated-inputs (fold alist-replace
+                               (package-propagated-inputs base)
+                               '("llvm" "clang-runtime")
+                               `((,llvm-cling) (,clang-cling-runtime)))))))
+
+(define-public cling
+  ;; The tagged v0.9 release doesn't build, so use the latest commit.
+  (let ((commit "d78d1a03fedfd2bf6d2b6ff295aca576d98940df")
+        (revision "1")
+        (version* "0.9"))
+    (package
+      (name "cling")
+      (version (git-version version* revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://root.cern/git/cling.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0lsbxv21b4qw11xkw9iipdpca64jjwwqxm0qf5v2cgdlibf8m8n9"))
+                ;; Patch submitted upstream here:
+                ;; https://github.com/root-project/cling/pull/433.
+                (patches (search-patches "cling-use-shared-library.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:build-type "Release"         ;keep the build as lean as possible
+         #:tests? #f                    ;FIXME: 78 tests fail (out of ~200)
+         #:test-target "check-cling"
+         #:configure-flags
+         (list (string-append "-DCLING_CXX_PATH="
+                              (assoc-ref %build-inputs "gcc") "/bin/g++")
+               ;; XXX: The AddLLVM.cmake module expects LLVM_EXTERNAL_LIT to
+               ;; be a Python script, not a shell executable.
+               (string-append "-DLLVM_EXTERNAL_LIT="
+                              (assoc-ref %build-inputs "python-lit")
+                              "/bin/.lit-real"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-version
+             (lambda _
+               (make-file-writable "VERSION")
+               (call-with-output-file "VERSION"
+                 (lambda (port)
+                   (format port "~a~%" ,version)))))
+           (add-after 'unpack 'patch-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "lib/Interpreter/CIFactory.cpp"
+                 (("\bsed\b")
+                  (which "sed"))
+                 ;; This ensures that the default C++ library used by Cling is
+                 ;; that of the compiler that was used to build it, rather
+                 ;; than that of whatever g++ happens to be on PATH.
+                 (("ReadCompilerIncludePaths\\(CLING_CXX_RLTV")
+                  (string-append "ReadCompilerIncludePaths(\""
+                                 (assoc-ref inputs "gcc") "/bin/g++\""))
+                 ;; Cling uses libclang's CompilerInvocation::GetResourcesPath
+                 ;; to resolve Clang's library prefix, but this fails on Guix
+                 ;; because it is relative to the output of cling rather than
+                 ;; clang (see:
+                 ;; https://github.com/root-project/cling/issues/434).  Fully
+                 ;; shortcut the logic in this method to return the correct
+                 ;; static location.
+                 (("static std::string getResourceDir.*" all)
+                  (string-append all
+                                 "    return std::string(\""
+                                 (assoc-ref inputs "clang-cling")
+                                 "/lib/clang/" ,(package-version clang-cling)
+                                 "\");")))
+               ;; Check for the 'lit' command for the tests, not 'lit.py'
+               ;; (see: https://github.com/root-project/cling/issues/432).
+               (substitute* "CMakeLists.txt"
+                 (("lit.py")
+                  "lit"))))
+           (add-after 'unpack 'adjust-lit.cfg
+             ;; See: https://github.com/root-project/cling/issues/435.
+             (lambda _
+               (substitute* "test/lit.cfg"
+                 (("config.llvm_tools_dir \\+ '")
+                  "config.cling_obj_root + '/bin"))))
+           (add-after 'install 'delete-static-libraries
+             ;; This reduces the size from 17 MiB to 5.4 MiB.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (for-each delete-file (find-files out "\\.a$"))))))))
+      (native-inputs
+       `(("python" ,python)
+         ("python-lit" ,python-lit)))
+      (inputs
+       `(("clang-cling" ,clang-cling)
+         ("llvm-cling" ,llvm-cling)))
+      (home-page "https://root.cern/cling/")
+      (synopsis "Interactive C++ interpreter")
+      (description "Cling is an interactive C++17 standard compliant
+interpreter, built on top of LLVM and Clang.  Cling can be used as a
+read-eval-print loop (REPL) to assist with rapid application development.
+Here's how to print @samp{\"Hello World!\"} using @command{cling}:
+
+@example
+cling '#include <stdio.h>' 'printf(\"Hello World!\\n\");'
+@end example")
+      (license license:lgpl2.1+))))     ;for the combined work
 
 (define-public jsonnet
   (package
