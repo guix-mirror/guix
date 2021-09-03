@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12887,6 +12888,31 @@ sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
         ("rust-libdbus-sys" ,rust-libdbus-sys-0.2))
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))))
+
+(define-public rust-dbus-tree-0.9
+  (package
+    (name "rust-dbus-tree")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dbus-tree" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l2gi8073cwvv5vxlg5lafw6sppyhgm88hhpq7hak424x4kifpmi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-dbus" ,rust-dbus-0.9))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)))
+    (home-page "https://github.com/diwic/dbus-rs")
+    (synopsis "Framework for writing D-Bus method handlers (legacy)")
+    (description
+     "This crate is a framework for writing D-Bus method handlers (legacy).")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-deadpool-0.7
   (package
