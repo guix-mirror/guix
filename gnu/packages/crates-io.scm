@@ -24225,6 +24225,38 @@ requires non-const function calls to be computed.")
      "This package provides a library providing a lazily filled Cell struct.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lettre-0.9
+  (package
+    (name "rust-lettre")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lettre" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1pk0jsbjlzijl1m8l2nxxbfll6lk2dbc6ja9mdrvaxc92dvqdvc6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bufstream" ,rust-bufstream-0.1)
+        ("rust-fast-chemail" ,rust-fast-chemail-0.9)
+        ("rust-hostname" ,rust-hostname-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-nom" ,rust-nom-4)
+        ("rust-r2d2" ,rust-r2d2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://lettre.rs")
+    (synopsis "Rust email client")
+    (description "lettre is an email client for Rust programs allowing easily
+sending emails from Rust applications.")
+    (license license:expat)))
+
 (define-public rust-lexical-core-0.7
   (package
     (name "rust-lexical-core")
