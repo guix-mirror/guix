@@ -36290,6 +36290,26 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          "0yhnnix4dzsv8y4wwz4csbnqjfh73al33j35msr10py6cl5r4vks"))))
     (arguments '())))
 
+(define-public rust-quoted-printable-0.4
+  (package
+    (name "rust-quoted-printable")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quoted_printable" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ig9b5nr2i2f72smsjkkx8pwpxp9vz2090dhi7n4jdlj15mjaf0j"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/staktrace/quoted-printable")
+    (synopsis "Simple encoder/decoder for quoted-printable data")
+    (description
+     "This package provides a simple encoder/decoder for quoted-printable
+data.")
+    (license license:bsd-0)))
+
 (define-public rust-r2d2
   (package
     (name "rust-r2d2")
