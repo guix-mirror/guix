@@ -47059,6 +47059,25 @@ values without proliferating generics.")
         ("rust-syn" ,rust-syn-1)
         ("rust-quote" ,rust-quote-1))))))
 
+(define-public rust-swayipc-command-builder-0.1
+  (package
+    (name "rust-swayipc-command-builder")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "swayipc-command-builder" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1w7sjl05c7rpgskk11i5969mv8pdbh0qrkp8djvy46hk9df9qig7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/jaycefayne/swayipc-command-builder")
+    (synopsis "Library for building commands that can be executed by swayipc")
+    (description
+     "This package provides a library for building commands that can be
+executed by swayipc.")
+    (license license:expat)))
+
 (define-public rust-swc-1
   (package
     (name "rust-swc")
