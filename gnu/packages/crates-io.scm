@@ -46583,6 +46583,25 @@ cryptographic implementations.")
 alike.  It's completely modular, and built directly for @code{async/await}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-supercow-0.1
+  (package
+    (name "rust-supercow")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "supercow" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qxxk2z4pa7ni17bdhix9syhax0nnnpbjjpsinkhd8vsnknmh5qp"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/altsysrq/supercow")
+    (synopsis "Generic way to accept general reference-like values")
+    (description
+     "This package provides a generic way to accept general reference-like
+values without proliferating generics.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-surf-1
   (package
     (inherit rust-surf-2)
