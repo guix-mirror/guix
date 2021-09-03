@@ -3241,28 +3241,21 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
            (lambda _
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))))
-         ;; XXX: Remove it once this issue is fixed:
-         ;; https://issues.guix.gnu.org/50105.
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "tests/meson.build"
-               (("\\['modules") "#['modules"))))
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "man/meson.build"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+               (("http://docbook.sourceforge.net/release/xsl/\
+current/manpages/docbook.xsl")
                 (string-append (assoc-ref inputs "docbook-xsl")
                                "/xml/xsl/docbook-xsl-"
                                ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             #t))
+                               "/manpages/docbook.xsl")))))
          (add-before 'check 'pre-check
            (lambda _
              (setenv "HOME" "/tmp")
              ;; Tests require a running X server.
              (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t)))))
+             (setenv "DISPLAY" ":1"))))))
     (inputs
      `(("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
