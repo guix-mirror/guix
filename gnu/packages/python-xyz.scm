@@ -13807,29 +13807,30 @@ ambiguities (forward vs. backward slashes, etc.).
 (define-public python-jellyfish
   (package
     (name "python-jellyfish")
-    (version "0.5.6")
+    (version "0.8.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "jellyfish" version))
               (sha256
                (base32
-                "1j9rplb16ba2prjj6mip46z0w9pnhnqpwgiwi0x93vnas14rlyl8"))))
+                "0p2s6b30sfffx8sya2i8kz0i0riw9fq1fi0k89s8kdgrmjf0h1h5"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; XXX: Tests cannot find C coded version.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "jellyfish/test.py")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/jamesturk/jellyfish")
     (synopsis "Approximate and phonetic matching of strings")
     (description "Jellyfish uses a variety of string comparison and phonetic
 encoding algorithms to do fuzzy string matching.")
-    (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-jellyfish))))))
-
-(define-public python2-jellyfish
-  (let ((jellyfish (package-with-python2
-                     (strip-python2-variant python-jellyfish))))
-    (package/inherit jellyfish
-      (native-inputs `(("python2-unicodecsv" ,python2-unicodecsv)
-                       ,@(package-native-inputs jellyfish))))))
+    (license license:bsd-2)))
 
 (define-public python2-unicodecsv
   (package
