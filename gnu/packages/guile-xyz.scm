@@ -755,6 +755,29 @@ HTML (via SXML) or any other format for rendering.")
     (home-page "https://dthompson.us/projects/guile-syntax-highlight.html")
     (license license:lgpl3+)))
 
+;; gitile requires a more recent version than the latest release.
+(define-public guile-syntax-highlight-for-gitile
+  (let ((commit "897fa5156ff41588e0d281eb00e4e94de63ccd8a")
+        (revision "0"))
+    (package
+      (inherit guile-syntax-highlight)
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://git.dthompson.us/guile-syntax-highlight.git")
+                       (commit commit)))
+                (file-name (git-file-name "guile-syntax-highlight" version))
+                (sha256
+                 (base32
+                  "18zlg4mkgd3swgv2ggfz91ivnnzc0zhvc9ybgrxg1y762va9hyvj"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs guile-syntax-highlight)))
+      (properties '((hidden? . #t))))))
+
 (define-public guile2.2-syntax-highlight
   (package
     (inherit guile-syntax-highlight)
