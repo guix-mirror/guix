@@ -35025,6 +35025,29 @@ macro use case.")
 @code{proc_macro_derive} pretend to be @code{proc_macro}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-progress-0.2
+  (package
+    (name "rust-progress")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "progress" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0i0w5zh2hm4l16ibg5mgr9pf3vpybhhx0zrs0nb8d191awq21f0p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ; 2 tests fail
+       #:cargo-inputs
+       (("rust-terminal-size" ,rust-terminal-size-0.1))))
+    (home-page "https://github.com/TheKK/progress")
+    (synopsis "Library for showing text based progress bar and job status")
+    (description
+     "This library is used for showing text based progress bar and job
+status.")
+    (license license:expat)))
+
 (define-public rust-progressing-3
   (package
     (name "rust-progressing")
