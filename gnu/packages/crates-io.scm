@@ -26113,6 +26113,33 @@ Mach 3.0 kernel that underlies OSX.")
 library")
   (license (list license:asl2.0 license:expat))))
 
+(define-public rust-maildir-0.5
+  (package
+    (name "rust-maildir")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "maildir" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0pivq6njjmfnf0jn6i8sihbfgly6v674zwncd6f5nwiw79lz9p3a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gethostname" ,rust-gethostname-0.2)
+        ("rust-mailparse" ,rust-mailparse-0.13)
+        ("rust-memmap" ,rust-memmap-0.7))
+       #:cargo-development-inputs
+       (("rust-percent-encoding" ,rust-percent-encoding-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/staktrace/maildir")
+    (synopsis "Simple library for maildir manipulation")
+    (description
+     "This package provides a simple library for maildir manipulation.")
+    (license license:bsd-0)))
+
 (define-public rust-mailparse-0.13
   (package
     (name "rust-mailparse")
