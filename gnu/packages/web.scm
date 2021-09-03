@@ -474,9 +474,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.21.0")
-        (revision 2726)
-        (changeset "a7a36efd10af"))
+  (let ((version "1.21.2")
+        (revision 2764)
+        (changeset "bc9c5d11b67c"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -488,7 +488,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "1fl7rkbfdd26c78h85x4w3kas16rpj4pxzjhc071qvx7znwgm2pn"))))
+                 "05n72q9vqxx37dyw3yl7jssmpqkw3rwxa2y3m6s0c0ih0z2bx58n"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
