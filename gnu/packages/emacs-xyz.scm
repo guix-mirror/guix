@@ -12473,14 +12473,14 @@ extensibility.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.sr.ht/~zge/autocrypt")
+                      (url "https://git.sr.ht/~pkal/autocrypt")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0b06xnjkgwjpxl96mdi674pmvdaiwncifi1a30wxhl1dwr7kr084"))))
       (build-system emacs-build-system)
-      (home-page "https://git.sr.ht/~zge/autocrypt")
+      (home-page "https://git.sr.ht/~pkal/autocrypt")
       (synopsis "Autocrypt implementation for Emacs")
       (description "@code{emacs-autocrypt} is an implementation of
 Autocrypt (@url{https://autocrypt.org/}) for various Emacs MUAs.  Autocrypt is
