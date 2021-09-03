@@ -29364,6 +29364,30 @@ while still providing platform specific APIs.")
         (base32
          "1kmxdlmvnmq8cfpmr3g6wk37rwi2ybdvp1z6z3831m1p23p2nwkc"))))))
 
+(define-public rust-nl80211-0.0.2
+  (package
+    (name "rust-nl80211")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nl80211" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jgx12qy0a004sc4qpr3ahgn9gma3rln9gsxiq4cdw6dd8h4dmx0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-buffering" ,rust-buffering-0.3)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-neli" ,rust-neli-0.4))))
+    (home-page "https://github.com/Eonm/nl80211")
+    (synopsis "Send commands to nl80211 and receive messages")
+    (description
+     "This crate provides a low level access to nl80211.  It can send commands
+to nl80211 and receive messages.")
+    (license license:expat)))
+
 (define-public rust-no-panic-0.1
   (package
     (name "rust-no-panic")
