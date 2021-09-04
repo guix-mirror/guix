@@ -35438,8 +35438,36 @@ replacements, adding colorful diffs.")
 formatted tables in terminal.")
     (license license:bsd-3)))
 
+(define-public rust-proc-macro-crate-1
+  (package
+    (name "rust-proc-macro-crate")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-crate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14pzgkpnlzq6y7yc749h2lwd1mv44min4iszjk2znmi1yqfvvza1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-thiserror" ,rust-thiserror-1)
+        ("rust-toml" ,rust-toml-0.5))
+       #:cargo-development-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/bkchr/proc-macro-crate")
+    (synopsis "Support for @code{$crate} in procedural macros")
+    (description
+     "This crate provides a way to get the name of a crate, even if it
+renamed in @file{Cargo.toml}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-proc-macro-crate-0.1
   (package
+    (inherit rust-proc-macro-crate-1)
     (name "rust-proc-macro-crate")
     (version "0.1.5")
     (source
@@ -35449,16 +35477,9 @@ formatted tables in terminal.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "11cpihdk9ba68hzw95aa8zxn0i5g6kdrfd4l2cy3d5jvb72a6vhx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-toml" ,rust-toml-0.5))))
-    (home-page "https://github.com/bkchr/proc-macro-crate")
-    (synopsis "Support for @code{$crate} in procedural macros")
-    (description
-     "This crate provides a way to get the name of a crate, even if it
-renamed in @file{Cargo.toml}.")
-    (license (list license:asl2.0 license:expat))))
+       (("rust-toml" ,rust-toml-0.5))))))
 
 (define-public rust-proc-macro-error-1
   (package
@@ -58450,7 +58471,7 @@ compression library.")
     (home-page "http://www.hashmismatch.net/libraries/packed-struct/")
     (synopsis "Binary-level structure packing and unpacking generator")
     (description "This package provides bit-level packing an unpacking
-of structs.  The library provides a meta-programming approach, using
+of structs.  Tkhe library provides a meta-programming approach, using
 attributes to define fields and how they should be packed.  The resulting
 trait implementations provide safe packing, unpacking and runtime debugging
 formatters with per-field documentation generated for each structure.
