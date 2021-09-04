@@ -31750,6 +31750,30 @@ PartialOrd types, like floats.")
         (base32
          "0625x96987kspdxbikry5mb7hsf5pdc5bbanxd8wjwqlx0ar71hq"))))))
 
+(define-public rust-ordered-multimap-0.3
+  (package
+    (name "rust-ordered-multimap")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ordered-multimap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1194q7sb2d6chbllsn7237dhhvx04iqr3sq0ii16w1pcv5x2qrqw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dlv-list" ,rust-dlv-list-0.2)
+        ("rust-hashbrown" ,rust-hashbrown-0.9)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/sgodwincs/ordered-multimap-rs")
+    (synopsis "Insertion ordered multimap")
+    (description "This crate provides a multimap type object that maintains
+insertion order across all keys and values.")
+    (license license:expat)))
+
 (define-public rust-ordermap-0.3
   (package
     (name "rust-ordermap")
