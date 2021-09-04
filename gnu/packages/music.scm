@@ -6246,7 +6246,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
 (define-public avldrums-lv2
   (package
     (name "avldrums-lv2")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -6258,7 +6258,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
              (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vwdp3d8qzd493qa99ddya7iql67bbfxmbcl8hk96lxif2lhmyws"))))
+        (base32 "14gka5g7va30gm1hn0cas4vvb8s764rfvzcxm67ww86hf54cpnig"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -6266,10 +6266,10 @@ Soul Force), MVerb, Nekobi, and ProM.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
          (add-before 'build 'set-CC-variable
            (lambda _
-             (setenv "CC" "gcc") #t))
-         (delete 'configure))))
+             (setenv "CC" "gcc"))))))
     (inputs
      `(("cairo" ,cairo)
        ("dssi" ,dssi)
