@@ -40267,8 +40267,33 @@ the file-system during development.")
      "This package provides a sys crate for the rust_hawktracer library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rust-ini-0.17
+  (package
+    (name "rust-rust-ini")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-ini" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08hfh6p2svznza3m07vavsc4c8x4g6d715sz58rzh73sm551qiv3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-ordered-multimap" ,rust-ordered-multimap-0.3)
+        ("rust-unicase" ,rust-unicase-2))))
+    (home-page "https://github.com/zonyitoo/rust-ini")
+    (synopsis "INI configuration file parsing library in Rust")
+    (description
+     "This package is an INI configuration file parsing library in Rust.")
+    (license license:expat)))
+
 (define-public rust-rust-ini-0.13
   (package
+    (inherit rust-rust-ini-0.17)
     (name "rust-rust-ini")
     (version "0.13.0")
     (source
@@ -40278,13 +40303,7 @@ the file-system during development.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1hifnbgaz01zja5995chy6vjacbif2m76nlxsisw7y1pxx4c2liy"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/zonyitoo/rust-ini")
-    (synopsis "INI configuration file parsing library in Rust")
-    (description
-     "This package is an INI configuration file parsing library in Rust.")
-    (license license:expat)))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-rustbox-0.11
   (package
