@@ -6390,7 +6390,7 @@ management via the GIMPS project's Primenet server.")
 (define-public nauty
   (package
     (name "nauty")
-    (version "2.7r1")
+    (version "2.7r2")
     (source
      (origin
        (method url-fetch)
@@ -6398,7 +6398,7 @@ management via the GIMPS project's Primenet server.")
              "https://pallini.di.uniroma1.it/"
              "nauty" (string-join (string-split version #\.) "") ".tar.gz"))
        (sha256
-        (base32 "0xsfqfcknbd6g6wzpa5l7crmmk3bf3zjh37rhylq6b20dqcmvjkn"))))
+        (base32 "0s57rq7kk3rrwgrjygpwjvq9bbwq4wjbpcvgbz191jhwv8bnrhb9"))))
     (build-system gnu-build-system)
     (outputs '("out" "lib"))
     (arguments
