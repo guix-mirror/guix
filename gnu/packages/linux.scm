@@ -7275,14 +7275,14 @@ relevant @file{/dev/vcs*} file(s).")
 (define-public fbcat
   (package
     (name "fbcat")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jwilk/fbcat/releases/download/"
                            version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0pj9hxmwhbz6kmd7847yx2jh1scl9l25zgndyi8s9vlzdkq2q8d7"))))
+        (base32 "07q6f0xj7b4gjvn69qfn0g04yd0ch8ndzyigcz8nnrhli0cvsbh6"))))
     (build-system gnu-build-system)
     (inputs
      ;; The ‘fbgrab’ wrapper can use one of several PPM-to-PNG converters.  We
@@ -7306,8 +7306,7 @@ relevant @file{/dev/vcs*} file(s).")
                  (("fbcat" all)
                   (string-append out "/bin/" all))
                  (("pnmtopng" all)
-                  (string-append pnmtopng "/bin/" all)))
-               #t)))
+                  (string-append pnmtopng "/bin/" all))))))
          (add-after 'install 'split-fbgrab-output
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -7318,8 +7317,7 @@ relevant @file{/dev/vcs*} file(s).")
                              (mkdir-p (dirname new))
                              (rename-file old new)))
                          (list "bin/fbgrab"
-                               "share/man/man1/fbgrab.1"))
-               #t))))))
+                               "share/man/man1/fbgrab.1"))))))))
     (home-page "https://jwilk.net/software/fbcat")
     (synopsis "Take a screenshot of the contents of the Linux framebuffer")
     (description
