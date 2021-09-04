@@ -2365,7 +2365,8 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0mmns22bjjvakxj29si0x4dcylcgy26llpcimkb0llcxif439k2s"))))
+               "0mmns22bjjvakxj29si0x4dcylcgy26llpcimkb0llcxif439k2s"))
+             (patches (search-patches "strace-readlink-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2378,10 +2379,6 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              (substitute* "tests/Makefile.in"
-               ;; XXX: This test fails because an extra readlink call is made
-               ;; by the glibc when using the ld.so cache.
-               (("readlink.gen.test[^:]") " ")
-
                ;; XXX: These hang forever even if the test time-out is
                ;; extended.
                (("^\tstrace-DD?D?\\.test \\\\.*") "")
