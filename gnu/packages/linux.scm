@@ -3741,7 +3741,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public interception-tools
   (package
     (name "interception-tools")
-    (version "0.6.6")
+    (version "0.6.7")
     (home-page "https://gitlab.com/interception/linux/tools")
     (source (origin
               (method git-fetch)
@@ -3751,25 +3751,17 @@ devices that can inject events directly into the input subsystem.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k9h14a9d65nwvv7pj0kigjgzfv453mm3r4svnxfg1h5lccmy8jj"))))
+                "0wcmppa7092b33wb8vc782day5phf90pc25cn1x7rk0rlw565z36"))))
     (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)
        ("libevdev" ,libevdev)
        ("libudev" ,eudev)
        ("yaml-cpp" ,yaml-cpp)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-libevdev-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libevdev (assoc-ref inputs "libevdev")))
-               (substitute* "CMakeLists.txt"
-                 (("/usr/include/libevdev-1.0")
-                  (string-append libevdev "/include/libevdev-1.0")))
-               #t))))
-       ;; No tests are included.
-       #:tests? #f))
+     `(#:tests? #f)) ; no test suite
     (synopsis "Utilities for operating on input events of evdev devices")
     (description
      "Interception Tools provides a composable infrastructure on top of
