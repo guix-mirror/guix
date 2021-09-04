@@ -1408,6 +1408,7 @@ invoking @command{notifymuch} from the post-new hook.")
        ("python" ,python)
        ("python-docutils" ,python-docutils)
        ("sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)
 
        ;; The following are required for tests only.
        ("which" ,which)
