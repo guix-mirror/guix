@@ -27926,6 +27926,31 @@ IOCP and Async I/O abstractions.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-mockall-derive-0.10
+  (package
+    (name "rust-mockall-derive")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mockall_derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0cwhcfsc16b8p4yrsrxnhfxfdn0n89cmjja13wb6kxik8hhmpqp7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/asomers/mockall")
+    (synopsis "Procedural macros for Mockall")
+    (description "This crate provides procedural macros for Mockall.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mockito-0.23
   (package
     (name "rust-mockito")
