@@ -42824,8 +42824,31 @@ macOS and iOS.")
     (description "Rust semaphore library.")
     (license license:expat)))
 
+(define-public rust-semver-1
+  (package
+    (name "rust-semver")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "semver" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gna1p10i86sf1pqfqndkwl0wks35x84yvjw77c74ckzxrbsqfjz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://docs.rs/crate/semver")
+    (synopsis "Semantic version parsing and comparison")
+    (description
+     "This package provides semantic version parsing and comparison.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-semver-0.11
   (package
+    (inherit rust-semver-1)
     (name "rust-semver")
     (version "0.11.0")
     (source
@@ -42835,17 +42858,11 @@ macOS and iOS.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1dn6064fipjymnmjccyjhb70miyvqvp08gvw1wbg8vbg4c8ay0gk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-diesel" ,rust-diesel-1)
         ("rust-semver-parser" ,rust-semver-parser-0.10)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://docs.rs/crate/semver/")
-    (synopsis "Semantic version parsing and comparison")
-    (description
-     "This package provides semantic version parsing and comparison.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-semver-0.10
   (package
