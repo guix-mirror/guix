@@ -12342,7 +12342,7 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
 (define-public emacs-dart-mode
   (package
     (name "emacs-dart-mode")
-    (version "1.0.5")
+    (version "1.0.7")
     (source
      (origin
        (method git-fetch)
@@ -12351,7 +12351,7 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qmdlwjmmqyyb65sqvfpygifai5m0llc815vp0jqwp8ldd8ls172"))))
+        (base32 "1vql8m4nj0brmv58b6lkbhykik8n6j4i7d3nylcls78y7ihc2cz8"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
