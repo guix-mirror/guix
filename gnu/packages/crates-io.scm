@@ -31807,6 +31807,33 @@ iteration.  NOTE: This crate was renamed to @code{indexmap}.  Please use it
 under its new name.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-os-info-3
+  (package
+    (name "rust-os-info")
+    (version "3.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "os_info" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1pbcf2in8i9w6zjzk6jmrd89gm5h7qpyqi3hvkl0axpzp1m57lmk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.7))
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/stanislav-tkach/os_info")
+    (synopsis "Detect the operating system type and version")
+    (description
+     "This library detects the operating system type and version.")
+    (license license:expat)))
+
 (define-public rust-os-pipe-0.8
   (package
     (name "rust-os-pipe")
