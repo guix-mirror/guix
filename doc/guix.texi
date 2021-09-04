@@ -10652,7 +10652,8 @@ guix build --with-branch=guile-sqlite3=master cuirass
 @item --with-commit=@var{package}=@var{commit}
 This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
-Git commit SHA1 identifier or a tag.
+Git commit SHA1 identifier, a tag, or a @command{git describe} style
+identifier such as @code{1.0-3-gabc123}.
 
 @item --with-patch=@var{package}=@var{file}
 Add @var{file} to the list of patches applied to @var{package}, where

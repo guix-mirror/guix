@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -270,6 +271,25 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
           (rewrite obj)
           obj))))
 
+(define (commit->version-string commit)
+  "Return a string suitable for use in the 'version' field of a package based
+on the given COMMIT."
+  (cond ((and (> (string-length commit) 1)
+              (string-prefix? "v" commit)
+              (char-set-contains? char-set:digit
+                                  (string-ref commit 1)))
+         ;; Probably a tag like "v1.0" or a 'git describe' identifier.
+         (string-drop commit 1))
+        ((not (string-every char-set:hex-digit commit))
+         ;; Pass through tags and 'git describe' style IDs directly.
+         commit)
+        (else
+         (string-append "git."
+                        (if (< (string-length commit) 7)
+                            commit
+                            (string-take commit 7))))))
+
+
 (define (transform-package-source-commit replacement-specs)
   "Return a procedure that, when passed a package, replaces its direct
 dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
@@ -278,15 +298,7 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
   (define (replace old url commit)
     (package
       (inherit old)
-      (version (if (and (> (string-length commit) 1)
-                        (string-prefix? "v" commit)
-                        (char-set-contains? char-set:digit
-                                            (string-ref commit 1)))
-                   (string-drop commit 1)        ;looks like a tag like "v1.0"
-                   (string-append "git."
-                                  (if (< (string-length commit) 7)
-                                      commit
-                                      (string-take commit 7)))))
+      (version (commit->version-string commit))
       (source (git-checkout (url url) (commit commit)
                             (recursive? #t)))))
 

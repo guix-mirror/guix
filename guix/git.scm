@@ -231,11 +231,11 @@ corresponding Git object."
                                (string-every char-set:digit revision)
                                (string-every char-set:hex-digit
                                              (string-drop g+commit 1)))
+                          ;; Looks like a 'git describe' style ID, like
+                          ;; v1.3.0-7-gaa34d4d28d.
                           (string-drop g+commit 1)
                           #f))
                      (_ #f)))
-              ;; Looks like a 'git describe' style ID, like
-              ;; v1.3.0-7-gaa34d4d28d.
               => (lambda (commit) (resolve `(commit . ,commit))))
              ((or (> (string-length str) 40)
                   (not (string-every char-set:hex-digit str)))

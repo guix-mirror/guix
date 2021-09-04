@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -234,6 +235,26 @@
                              (package-full-name grep))
                    (string=? (package-name dep2) "chbouib")
                    (package-source dep2))))))))
+
+(test-equal "options->transformation, with-commit, version transformation"
+  '("1.0" "1.0-rc1-2-gabc123" "git.abc123")
+  (map (lambda (commit)
+         (let* ((p (dummy-package "guix.scm"
+                     (inputs `(("foo" ,(dummy-package "chbouib"
+                                         (source (origin
+                                                   (method git-fetch)
+                                                   (uri (git-reference
+                                                         (url "https://example.org")
+                                                         (commit "cabba9e")))
+                                                   (sha256 #f)))))))))
+                (t (options->transformation
+                    `((with-commit . ,(string-append "chbouib=" commit))))))
+           (let ((new (t p)))
+             (and (not (eq? new p))
+                  (match (package-inputs new)
+                    ((("foo" dep1))
+                     (package-version dep1)))))))
+       '("v1.0" "1.0-rc1-2-gabc123" "abc123")))
 
 (test-equal "options->transformation, with-git-url"
   (let ((source (git-checkout (url "https://example.org")
