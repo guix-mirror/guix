@@ -1378,7 +1378,7 @@ invoking @command{notifymuch} from the post-new hook.")
                         (("/bin/sh") (which "sh")))))
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
-                      (setenv "CC" "gcc")
+                      (setenv "CC" ,(cc-for-target))
                       (setenv "CONFIG_SHELL" (which "sh"))
 
                       (let* ((out (assoc-ref outputs "out"))
@@ -1395,7 +1395,7 @@ invoking @command{notifymuch} from the post-new hook.")
                         (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
-                      (setenv "TEST_CC" "gcc")
+                      (setenv "TEST_CC" ,(cc-for-target))
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh")))))
