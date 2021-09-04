@@ -719,7 +719,7 @@ OpenGL graphics API.")
 (define-public libglvnd
   (package
     (name "libglvnd")
-    (version "1.3.3")
+    (version "1.3.4")
     (home-page "https://gitlab.freedesktop.org/glvnd/libglvnd")
     (source (origin
               (method git-fetch)
@@ -729,7 +729,7 @@ OpenGL graphics API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gjk6m3gkdm12bmih2jflp0v5s1ibkixk7mrzrk0cj884m3hy1z6"))))
+                "0phvgg2h3pcz3x39gaymwb37bnw1s26clq9wsj0zx398zmp3dwpk"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dx11=enabled")
@@ -741,8 +741,7 @@ OpenGL graphics API.")
                       ;; require a running Xorg server.
                       (substitute* "tests/meson.build"
                         (("if with_glx")
-                         "if false"))
-                      #t)))))
+                         "if false")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
