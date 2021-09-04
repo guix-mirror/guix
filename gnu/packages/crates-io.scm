@@ -28356,7 +28356,9 @@ a default trait implementation you've defined.")
         ("rust-safemem" ,rust-safemem-0.3)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-tiny-http" ,rust-tiny-http-0.6)
-        ("rust-twoway" ,rust-twoway-0.1))))
+        ("rust-twoway" ,rust-twoway-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.5))))
     (home-page "https://github.com/abonander/multipart")
     (synopsis
      "Backend-agnostic extension for file uploads in HTTP libraries for Rust")
