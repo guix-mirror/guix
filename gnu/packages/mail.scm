@@ -167,6 +167,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system guile)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -1362,31 +1363,18 @@ invoking @command{notifymuch} from the post-new hook.")
                 "1myylb19hj5nb1vriqng252vfjwwkgbi3gxj93pi2q1fzyw7w2lf"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  ((guix build emacs-build-system) #:prefix emacs:)
-                  (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-build-system)
-                           (guix build emacs-utils))
-       #:make-flags
+     `(#:make-flags
        (list "V=1"                      ; verbose test output
              "NOTMUCH_TEST_TIMEOUT=1h") ; don't fail on slow machines
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-notmuch-lib.el
-                    (lambda _
-                      (substitute* "emacs/notmuch-lib.el"
-                        (("/bin/sh") (which "sh")))))
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
                       (setenv "CC" ,(cc-for-target))
                       (setenv "CONFIG_SHELL" (which "sh"))
-
-                      (let* ((out (assoc-ref outputs "out"))
-                             (elisp (emacs:elpa-directory out)))
+                      (let* ((out (assoc-ref outputs "out")))
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
-                                (string-append "--emacslispdir=" elisp)
-                                (string-append "--emacsetcdir=" elisp)))))
+                                "--without-emacs"))))
                   (add-before 'check 'disable-failing-tests
                     ;; FIXME: Investigate why these tests are failing,
                     ;; and try removing this for notmuch versions > 0.31.
@@ -1398,12 +1386,9 @@ invoking @command{notifymuch} from the post-new hook.")
                       (setenv "TEST_CC" ,(cc-for-target))
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
-                        (("/bin/sh") (which "sh")))))
-                  (add-after 'install 'make-autoloads
-                    (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+                        (("/bin/sh") (which "sh"))))))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
-       ("emacs" ,emacs-no-x)    ; -minimal lacks libxml, needed for some tests
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python-docutils" ,python-docutils)
@@ -1411,6 +1396,7 @@ invoking @command{notifymuch} from the post-new hook.")
        ("texinfo" ,texinfo)
 
        ;; The following are required for tests only.
+       ("emacs" ,emacs-no-x)    ; -minimal lacks libxml, needed for some tests
        ("which" ,which)
        ("dtach" ,dtach)
        ("gnupg" ,gnupg)
@@ -1428,6 +1414,32 @@ invoking @command{notifymuch} from the post-new hook.")
      "Notmuch is a command-line based program for indexing, searching, read-
 ing, and tagging large collections of email messages.")
     (license license:gpl3+)))
+
+(define-public emacs-notmuch
+  (package
+    (inherit notmuch)
+    (name "emacs-notmuch")
+    (build-system emacs-build-system)
+    (native-inputs '())
+    (inputs
+     `(("notmuch" ,notmuch)))
+    (arguments
+     `(#:exclude (cons* "make-deps.el" "rstdoc.el" %default-exclude)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "emacs")))
+         (add-after 'chdir 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((notmuch (assoc-ref inputs "notmuch")))
+               (substitute* "notmuch-lib.el"
+                 (("\"notmuch\"")
+                  (string-append "\"" notmuch "/bin/notmuch\"")))))))))
+    (synopsis "Run Notmuch within Emacs")
+    (description
+     "This package provides an Emacs-based interface to the Notmuch mail
+system.")))
 
 (define-public notmuch-addrlookup-c
   (package

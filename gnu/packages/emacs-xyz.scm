@@ -8332,7 +8332,7 @@ list of candidates.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-consult" ,emacs-consult)
-       ("notmuch" ,notmuch)))
+       ("emacs-notmuch" ,emacs-notmuch)))
     (home-page "https://codeberg.org/jao/consult-notmuch")
     (synopsis "Search and preview Notmuch emails using Consult")
     (description
@@ -9518,6 +9518,8 @@ queries using counsel.")
        `(("emacs-counsel" ,emacs-counsel)
          ("notmuch" ,notmuch)
          ("emacs-s" ,emacs-s)))
+      (propagated-inputs
+       `(("emacs-notmuch" ,emacs-notmuch)))
       (home-page "https://github.com/fuxialexander/counsel-notmuch")
       (synopsis "Search emails in Notmuch asynchronously with Ivy")
       (description
@@ -24012,7 +24014,7 @@ workspaces with a LSP-compliant server running.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
-       ("notmuch" ,notmuch)))
+       ("emacs-notmuch" ,emacs-notmuch)))
     (synopsis "Search emails with Emacs Notmuch and Helm")
     (description
      "This package can be used to search emails in Emacs, searching result
@@ -24035,7 +24037,7 @@ real search.")
                 "0pmikf1djkr07067nkgmdcxyn7l7ibswx6qlnai8v1v51f9h1g9q"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("notmuch" ,notmuch)))
+     `(("emacs-notmuch" ,emacs-notmuch)))
     (home-page "https://git.sr.ht/~tarsius/notmuch-maildir")
     (synopsis "Visualize maildirs as a tree")
     (description
