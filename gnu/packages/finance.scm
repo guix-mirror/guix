@@ -268,14 +268,14 @@ Accounting.")
 (define-public homebank
   (package
     (name "homebank")
-    (version "5.5.2")
+    (version "5.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://homebank.free.fr/public/homebank-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1lhyql94zx51vcw9hlc9r26wkm2bn6jdd4xvc95j7y69wiwg77lq"))))
+                "14qhv79a2waqzmf6l571wklgwq8j1pkmjvzkj5vhh44nia8hfdh7"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
