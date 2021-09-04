@@ -1045,6 +1045,40 @@ formats.")
     (home-page "https://sra.co.jp/")
     (license license:bsd-3)))
 
+(define-public qolibri
+  (package
+    (name "qolibri")
+    (version "2.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url"https://github.com/ludios/qolibri")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "066y7jcq9vg6hnvn7qxckzhd1qkgfzpzhw69nw5psm43qbaca8lg"))))
+    (build-system qt-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test target
+    (native-inputs
+     `(("qttools", qttools)))
+    (inputs
+     `(("libeb" ,libeb)
+       ("qtbase" ,qtbase-5)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("zlib" ,zlib)))
+    (synopsis "EPWING dictionary reader")
+    (description "qolibri is a dictionary viewer for the EPWING dictionary
+format.  Most monolingual Japanese dictionaries can only be found in the
+EPWING format.")
+    (home-page "https://github.com/ludios/qolibri")
+    (license license:gpl2)))
+
 (define-public mdk
   (package
     (name "mdk")
