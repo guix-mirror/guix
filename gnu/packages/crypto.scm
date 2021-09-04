@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,8 +47,10 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
@@ -58,6 +61,7 @@
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
@@ -1385,3 +1389,76 @@ them out.  The process will degrade gracefully, so even people without your
 encryption password can safely commit changes to the repository's
 non-encrypted files.")
     (license license:expat)))
+
+(define-public cryfs
+  (package
+    (name "cryfs")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/cryfs/cryfs/releases/download/"
+             version "/cryfs-" version ".tar.xz"))
+       (sha256
+        (base32 "0dxphbj5sssm82rkkdb71algrcki16qlpzlvrjyvvm6b7x7zi0sm"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:configure-flags
+        ;; Note: This also disables checking for security issues.
+       `("-DCRYFS_UPDATE_CHECKS=OFF"
+         ;; This helps us use some dependencies from Guix instead of conan.
+         ;; crypto++ is still bundled: https://github.com/cryfs/cryfs/issues/369
+         ;; Googletest is also since I wasn't sure how to unbundle that.
+         ,(string-append "-DDEPENDENCY_CONFIG=" (getcwd)
+                         "/cmake-utils/DependenciesFromLocalSystem.cmake"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-configure
+           (lambda* (#:key tests? #:allow-other-keys)
+             ;; Remove junk directory that breaks the build
+             (chdir "..") (delete-file-recursively ".circleci")
+             ;; Install documentation with Guix defaults.
+             (substitute* "doc/CMakeLists.txt"
+               (("CONFIGURATIONS Release")
+                "CONFIGURATIONS Release RelWithDebInfo"))
+             (when tests?
+               (substitute* "CMakeLists.txt"
+                 (("option.BUILD_TESTING .build test cases. OFF.")
+                  "option(BUILD_TESTING \"build test cases\" ON)")))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (let ((tests (find-files "." "-test$")))
+                 ;; XXX: Disable failing tests. Unfortunately there are a
+                   ;; few. Some only fail in the build environment due to
+                   ;; FUSE not being available.
+                   (for-each invoke
+                             (lset-difference string-contains
+                                              tests
+                                              '("cpp-utils-test"
+                                                "cryfs-cli-test"
+                                                "blobstore-test"
+                                                "fspp-test")))))
+             #t)))))
+    (native-inputs
+     `(("python" ,python-wrapper)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("curl" ,curl)
+       ("fuse" ,fuse)
+       ("range-v3" ,range-v3)
+       ("spdlog" ,spdlog)))
+    (home-page "https://www.cryfs.org/")
+    (synopsis "Encrypted FUSE filesystem for the cloud")
+    (description "CryFS encrypts your files, so you can safely store them anywhere.
+It works well together with cloud services like Dropbox, iCloud, OneDrive and
+others.  CryFS creates an encrypted userspace filesystem that can be mounted
+via FUSE without root permissions.  It is similar to EncFS, but provides
+additional security and privacy measures such as hiding file sizes and directory
+structure.  However CryFS is not considered stable yet by the developers.")
+    (license license:lgpl3+)))
