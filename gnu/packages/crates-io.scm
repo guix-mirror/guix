@@ -45369,6 +45369,27 @@ data type.")
         (base32 "08xw8w61zdfn1094qkq1d554vh5wmm9bqdys8gqqxc4sv2pgrd0p"))))
     (arguments `(#:skip-build? #t))))
 
+(define-public rust-path-slash-0.1
+  (package
+    (name "rust-path-slash")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "path-slash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06dnnmd3fvmr9ngwgj0xrfj9s8h09m9dgf3zlqsbalzk9wybpb1w"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rhysd/path-slash")
+    (synopsis "Conversion to/from a file path from/to slash path")
+    (description
+     "Path-slash is a tiny library to convert a file path (e.g., @samp{foo/bar},
+@samp{foo\bar} or @samp{C:\foo\bar}) from or to slash path (e.g.,
+@samp{foo/bar}, @samp{C:/foo/bar}).")
+    (license license:expat)))
+
 ;; TODO: Unbundle sleef.
 (define-public rust-sleef-sys-0.1
   (package
