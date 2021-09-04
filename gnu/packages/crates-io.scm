@@ -15670,6 +15670,29 @@ implement enum_primitive.")
 convert enum to u8 slice ref.")
     (license license:bsd-3)))
 
+(define-public rust-enumflags2-derive-0.6
+  (package
+    (name "rust-enumflags2-derive")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "enumflags2_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kkcwi4n76bi1c16ms00dyk4d393gdf29kpr4k9zsn5z7m7fjvll"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/NieDzejkob/enumflags2")
+    (synopsis "Rust library for typesystem-assisted bitflags")
+    (description "Enumflags2 implements the classic bitflags datastructure.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-env-logger-0.8
   (package
     (name "rust-env-logger")
