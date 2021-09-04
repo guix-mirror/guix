@@ -46374,6 +46374,31 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (description "New standard library, old compiler.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-starship-module-config-derive-0.2
+  (package
+    (name "rust-starship-module-config-derive")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "starship_module_config_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09327jvaf2b4xwg0s8l3afrrg140illa0ff6wkwfi4i8pl7dpacp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://starship.rs")
+    (synopsis "Minimal, fast and customizable prompt for any shell")
+    (description
+     "This crate provides a minimal, fast, and customizable prompt for any
+shell.")
+    (license license:isc)))
+
 (define-public rust-state-0.4
   (package
     (name "rust-state")
