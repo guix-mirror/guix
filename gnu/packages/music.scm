@@ -42,6 +42,7 @@
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -553,7 +554,7 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
 (define-public cmus
   (package
     (name "cmus")
-    (version "2.8.0")
+    (version "2.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -562,7 +563,7 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ydnvq13ay8b8mfmmgwi5qsgyf220yi1d01acbnxqn775dghmwar"))))
+                "0zjkimni2fhv4yskrjrgj6b74f33rfj58zgd7khwrz4z8nf88j0w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; cmus does not include tests
