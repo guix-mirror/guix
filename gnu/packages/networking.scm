@@ -2195,7 +2195,7 @@ It is intended primarily for use in testing.")
     `(("perl-module-build" ,perl-module-build)
       ("perl-test-pod" ,perl-test-pod)
       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-  (inputs `(("perl-socket6" ,perl-socket6)))
+  (propagated-inputs `(("perl-socket6" ,perl-socket6)))
   (arguments `(;; Need network socket API
                #:tests? #f))
   (home-page
