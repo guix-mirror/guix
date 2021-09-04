@@ -12365,29 +12365,28 @@ basic syntax highlighting and indentation.")
     (license license:gpl3+)))
 
 (define-public emacs-danneskjold-theme
-  (let* ((commit "8733d2fe8743e8a01826ea6d4430ef376c727e57")
-         (revision "1"))
+  (let* ((commit "e4d1f2c76245fe9d0d07133a841e789d139df28d")
+         (revision "2"))
     (package
       (name "emacs-danneskjold-theme")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
-      (home-page "https://github.com/rails-to-cosmos/danneskjold-theme")
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url home-page)
+               (url "https://github.com/rails-to-cosmos/danneskjold-theme")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0s6rbsb0y8i8m5b9xm4gw1p1cxsxdqnqxqqb638pygz9f76mbir1"))))
+          (base32 "0s6rbsb0y8i8m5b9xm4gw1p1cxsxdqnqxqqb638pygz9f76mbir1"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'delete-screenshots
              (lambda _
-               (delete-file-recursively "screenshots") #t)))))
+               (delete-file-recursively "screenshots"))))))
+      (home-page "https://github.com/rails-to-cosmos/danneskjold-theme")
       (synopsis "High-contrast Emacs theme")
       (description
        "@code{danneskjold-theme} is a high-contrast theme for Emacs.")
