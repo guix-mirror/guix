@@ -830,7 +830,7 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.5.0")
+    (version "5.2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
@@ -838,7 +838,7 @@ etc.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06dpkfnac8w3pq36834nn2iij3ajz6prladqd0w92lq39aiqv5jr"))))
+                "034pmbmbq6jagpp4lhnyjqmf8gcz5fx74d9rknrm7d4wv4cv7qy1"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; there are no tests
     (inputs
@@ -846,7 +846,7 @@ etc.")
      `(("flac" ,flac)
        ("freetype" ,freetype)
        ("glu" ,glu)
-       ("gtk" ,gtk+-2)
+       ("gtk" ,gtk+)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
