@@ -1019,6 +1019,32 @@ factoring numbers and simplifying fractions, as well as zapping rocks
 floating through space.")
     (license license:gpl3+)))
 
+(define-public libeb
+  (package
+    (name "libeb")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "ftp://ftp.sra.co.jp/pub/misc/eb/eb-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0psbdzirazfnn02hp3gsx7xxss9f1brv4ywp6a15ihvggjki1rxb"))))
+    (build-system gnu-build-system)
+    (native-inputs ; Required for building docs
+     `(("perl" ,perl)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "C library for accessing Japanese CD-ROM books")
+    (description "The EB library is a library for accessing CD-ROM
+books, which are a common way to distribute electronic dictionaries in
+Japan.  It supports the EB, EBG, EBXA, EBXA-C, S-EBXA and EPWING
+formats.")
+    ;; FIXME: I cannot find a real home page
+    (home-page "https://sra.co.jp/")
+    (license license:bsd-3)))
+
 (define-public mdk
   (package
     (name "mdk")
