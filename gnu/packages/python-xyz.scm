@@ -21843,13 +21843,13 @@ distribution.")
 (define-public python-gast
   (package
     (name "python-gast")
-    (version "0.3.3")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gast" version))
        (sha256
-        (base32 "0mrvvfzqafj1wzd0xxfmjf4vphnlxypbhpic1m283aj9i8lfz0dq"))))
+        (base32 "1xv77kzghiqfm4fnvlv0p878ma152dvcfkly3jij89lqigxcw7zq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-astunparse" ,python-astunparse)))
