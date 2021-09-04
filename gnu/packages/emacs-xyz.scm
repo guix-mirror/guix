@@ -18078,7 +18078,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
 (define-public emacs-crdt
   (package
     (name "emacs-crdt")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method git-fetch)
@@ -18087,7 +18087,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18aa2pybgfamll0jb4l18nggr6whzqd8mmd3kh8if4d685pc50p5"))))
+        (base32 "0455n75nan7abwnp7zfvrdbqmvlvfp0sf1ififr57h3sqsx3llhk"))))
     (build-system emacs-build-system)
     (home-page "https://code.librehq.com/qhong/crdt.el")
     (synopsis "Real-time collaborative editing environment")
