@@ -14299,6 +14299,29 @@ Google's diff-match-patch.")
 system libraries.")
     (license license:expat)))
 
+(define-public rust-dlv-list-0.2
+  (package
+    (name "rust-dlv-list")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dlv-list" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06r1nskj3x56p5wqz2bgl6q3rpyymrb0k0zpbvk8c6qcd4mkzpv8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/sgodwincs/dlv-list-rs")
+    (synopsis "Semi-doubly linked list implemented using a vector")
+    (description
+     "This crate provides semi-doubly linked lists implemented using
+a vector.")
+    (license license:expat)))
+
 (define-public rust-dns-parser-0.8
   (package
     (name "rust-dns-parser")
