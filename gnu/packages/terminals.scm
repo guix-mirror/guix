@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
+;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -387,6 +389,47 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 combining, and so on, with a simple interface.")
     (home-page "http://www.leonerd.org.uk/code/libtermkey")
     (license license:expat)))
+
+(define-public mlterm
+  (package
+    (name "mlterm")
+    (version "3.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/mlterm/01release/mlterm-"
+                           version "/mlterm-" version ".tar.gz"))
+       (sha256
+        (base32 "03fnynwv7d1aicwk2rp31sgncv5m65agvygqvsgn59v9di40gnnb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             "--disable-static"
+             "--enable-optimize-redrawing"
+             "--with-imagelib=gdk-pixbuf")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxft" ,libxft)))
+    (home-page "http://mlterm.sourceforge.net/")
+    (synopsis "Multi-Lingual TERMinal emulator")
+    (description
+     "mlterm is a multi-lingual terminal emulator.  It supports various complex
+character sets and encodings from around the world.  It can display double-width
+(e.g.  East Asian) glyphs, combining characters used for, e.g., Thai and
+Vietnamese, and bi-directional scripts like Arabic and Hebrew.")
+    (license license:bsd-3)))
 
 (define-public picocom
   (package
@@ -1430,8 +1473,8 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/wtarreau/bootterm")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/wtarreau/bootterm")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
