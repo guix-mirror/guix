@@ -1885,7 +1885,8 @@ exchanged form one Spatial DBMS and the other.")
      `(#:configure-flags '("-DENABLE_PORTAUDIO=ON"
                            "-DENABLE_SNDFILE=ON"
                            "-DBUNDLE_TCDATA=ON"
-                           "-DBUNDLE_GSHHS=CRUDE")
+                           "-DBUNDLE_GSHHS=CRUDE"
+                           "-DCMAKE_C_FLAGS=-fcommon")
        #:tests? #f ; No tests defined
        #:phases
        (modify-phases %standard-phases
