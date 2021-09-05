@@ -624,3 +624,43 @@ track of important locations.")
                    license:cc-by4.0 license:cc-by-sa3.0 license:public-domain
                    license:cc0 license:fdl1.2+))
     (properties `((upstream-name . "RealBadAngel/unified_inventory")))))
+
+(define-public minetest-advtrains
+  (package
+    (name "minetest-advtrains")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.bananach.space/advtrains.git")
+             (commit (string-append "release-" version))))
+       (sha256
+        (base32 "1ijqlchh269jpvmgmdmdvy3nsnk0bszkvvcqk6vaysvxam695ggw"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page "http://advtrains.de/")
+    (synopsis "Adds good-looking, realistic trains with realistic rails")
+    (description
+     "This mod features realistic trains and various equipment for railways,
+with a focus on automated train operation.  This package contains no actual
+trains, please use @code{minetest-basic-trains}.
+
+Main features:
+
+@itemize
+@item
+almost-realistic tracks with actual curves and switches;
+@item
+railway signals, controllable by various means;
+@item
+ATC: simple, command-like automatic train control;
+@item
+LuaATC: Powerful Lua-scripted automatic train operation (requires some
+programming knowledge);
+@item
+an interlocking system, featuring track sections, routes and automatic
+stopping before signals.
+@end itemize")
+    (license (list license:cc-by-sa3.0 license:agpl3+))
+    (properties `((upstream-name . "orwell/advtrains")))))
