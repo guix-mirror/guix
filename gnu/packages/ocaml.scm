@@ -23,6 +23,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1089,7 +1090,7 @@ Knuth’s LR(1) parser construction technique.")
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.10")
+    (version "2.18.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1098,7 +1099,7 @@ Knuth’s LR(1) parser construction technique.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w8cdfcv2wc19sd3qzj3qq77qc6rbnbynsz02gzbl15kgrvgrfxi"))))
+                "179ipx0c6bpxm4gz0syxgqy09dp5p4x9qsdil7s9jlx8ffg1mm0w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
