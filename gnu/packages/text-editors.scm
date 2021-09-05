@@ -1083,7 +1083,7 @@ card.  It offers:
 (define-public ne
   (package
     (name "ne")
-    (version "3.3.0")
+    (version "3.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1092,7 +1092,7 @@ card.  It offers:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01aglnsfljlvx0wvyvpjfn4y88jf450a06qnj9a8lgdqv1hdkq1a"))))
+                "0sg2f6lxq6cjkpd3dvlxxns82hvq826rjnams5in97pssmknr77g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1108,11 +1108,14 @@ card.  It offers:
                             "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'patch-early-shebang
+           (lambda _
+             (substitute* "version.pl"
+               (("/usr/bin/env .*perl") (which "perl")))))
          (replace 'configure
            (lambda _
              (substitute* "src/makefile"
-              (("-lcurses") "-lncurses"))
-             #t)))))
+              (("-lcurses") "-lncurses")))))))
     (home-page "https://ne.di.unimi.it/")
     (synopsis "Text editor with menu bar")
     (description "This package provides a modeless text editor with menu bar.
