@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -303,6 +304,7 @@ Android, and ChromeOS.")
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
+       ("graphviz" ,graphviz)
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
