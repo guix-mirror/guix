@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,8 @@ Run IMPORTER with ARGS.\n"))
      (if (member importer importers)
          (let ((print (lambda (expr)
                         (pretty-print expr (newline-rewriting-port
-                                            (current-output-port))))))
+                                            (current-output-port))
+                                      #:max-expr-width 80))))
            (match (apply (resolve-importer importer) args)
              ((and expr (or ('package _ ...)
                             ('let _ ...)
