@@ -150,15 +150,15 @@ Definition Facility.")
          #:configure-flags ,#~(list
                                "--enable-ansi" ; required by the maxima package
                                (string-append "CFLAGS=-I"
-                                              #$libtirpc
+                                              #$(this-package-input "libtirpc")
                                               "/include/tirpc")
                                (string-append "LDFLAGS=-L"
-                                              #$libtirpc
+                                              #$(this-package-input "libtirpc")
                                               "/lib")
                                "LIBS=-ltirpc")
          #:make-flags ,#~(list
                           (string-append "GCL_CC=" #$gcc "/bin/gcc")
-                          (string-append "CC=" #$gcc "/bin/gcc"))
+                          (string-append "CC="#$gcc "/bin/gcc"))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'realpath-workaround

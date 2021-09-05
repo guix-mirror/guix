@@ -362,10 +362,12 @@ various Android core host applications.")
     (arguments
      `(#:tests? #f ; Test failure: sysdeps_poll.fd_count
        #:make-flags
-       ,#~(list "CFLAGS=-Wno-error"
-                "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
-                (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib "
-                               "-Wl,-rpath=" #$openssl "/lib -L ."))
+       ,#~(list
+           "CFLAGS=-Wno-error"
+           "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
+           (string-append
+            "LDFLAGS=-Wl,-rpath=" #$output "/lib "
+            "-Wl,-rpath=" #$(this-package-input "openssl") "/lib -L ."))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
@@ -532,16 +534,18 @@ the core SELinux management utilities.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:make-flags
-       ,#~(list (string-append "CPPFLAGS="
-                               ;"-Wno-error "
-                               "-I " #$android-libselinux "/include "
-                               "-I " #$android-libsparse  "/include "
-                               "-I " #$android-libcutils  "/include "
-                               "-I " #$android-liblog "/include "
-                               "-I ../core/include")
-                "CFLAGS=-Wno-error"
-                "install-libext4_utils_host.a"
-                (string-append "prefix=" #$output))
+       ,#~(list
+           (string-append
+            "CPPFLAGS="
+            ;"-Wno-error "
+            "-I " #$(this-package-input "android-libselinux") "/include "
+            "-I " #$(this-package-input "android-libsparse")  "/include "
+            "-I " #$(this-package-input "android-libcutils")  "/include "
+            "-I " #$(this-package-input "android-liblog") "/include "
+            "-I ../core/include")
+           "CFLAGS=-Wno-error"
+           "install-libext4_utils_host.a"
+           (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-core

@@ -793,7 +793,8 @@ the Monero command line client and daemon.")
        #:configure-flags
        ,#~(list "-DARCH=default"
                 "-DENABLE_PASS_STRENGTH_METER=ON"
-                (string-append "-DReadline_ROOT_DIR=" #$readline))
+                (string-append "-DReadline_ROOT_DIR="
+                               #$(this-package-input "readline")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extract-monero-sources
