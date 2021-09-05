@@ -7559,7 +7559,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.12.0")
+    (version "5.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7567,7 +7567,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0b5vvwq4rqw7kph23ycd518d31dx3wq7w61znixxpdljx0ig71qn"))))
+                "09s3alwrhs1gaaywkpx2knc5bxb44b77009jw8zgsy9c2wxximns"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -7583,8 +7583,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                   (mkdir-p (string-append python (dirname script)))
                   (rename-file (string-append out script)
                                (string-append python script)))
-                (list "/sbin/xfs_scrub_all"))
-               #t)))
+                (list "/sbin/xfs_scrub_all")))))
          (add-after 'install 'install-headers
            (lambda _
              (invoke "make" "install-dev"))))))
