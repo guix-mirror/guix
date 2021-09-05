@@ -2156,6 +2156,37 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
      "Tools for working with USB devices, such as lsusb.")
     (license license:gpl2+)))
 
+(define-public usbip-utils
+  (package
+    (name "usbip-utils")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'enter-subdirectory
+                    (lambda _
+                      (chdir "tools/usb/usbip")
+                      #t)))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (inputs `(("eudev" ,eudev)))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Utilities for sharing USB devices over IP networks")
+    (description
+     "The USB/IP protocol enables to pass USB device from a server to
+a client over the network.  The server is a machine which shares an
+USB device and the client is a machine which uses USB device provided by
+a server over the network.  The USB device may be either physical device
+connected to a server or software entity created on a server using USB
+gadget subsystem.  The usbip-utils are userspace tools to used to handle
+connection and management on both side.  The client needs the @file{vhci-hcd}
+Linux kernel module and the server needs the @file{usbip_host} Linux kernel
+module.")
+    (license license:gpl2)))
+
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
