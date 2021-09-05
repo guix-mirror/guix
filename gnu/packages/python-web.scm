@@ -43,6 +43,7 @@
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6210,3 +6211,25 @@ your code non-blocking and speedy.")
      "This project provides a client library in Python that makes it easy to
 communicate with Microsoft Azure Storage services.")
     (license license:expat)))
+
+(define-public python-w3lib
+  (package
+    (name "python-w3lib")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "w3lib" version))
+       (sha256
+        (base32
+         "1pv02lvvmgz2qb61vz1jkjc04fgm4hpfvaj5zm4i3mjp64hd1mha"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/scrapy/w3lib")
+    (synopsis "Python library of web-related functions")
+    (description
+     "This is a Python library of web-related functions, such as: remove comments,
+or tags from HTML snippets, extract base url from HTML snippets, translate entites
+on HTML strings, among other things.")
+    (license license:bsd-3)))
