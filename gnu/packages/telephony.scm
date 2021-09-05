@@ -20,6 +20,7 @@
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,7 +414,7 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "2.3.0")
+    (version "2.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -422,7 +423,7 @@ internet.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f7i3jdh1wzdv7zjlz7gs3xw5jqig9zw8z9awsqqcp54f94xdpvd"))))
+                "0syl2ywddgqz29h43d6rc7waf3hp2yc14yhnrvdsja2bg8wrv6sb"))))
     (native-inputs
      `(("psmisc" ,psmisc)               ;some tests require 'killall'
        ("procps" ,procps)))
