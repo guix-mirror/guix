@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Milkey Mouse <milkeymouse@meme.institute>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 
 ;;;
 ;;; This file is part of GNU Guix.
@@ -127,7 +128,8 @@ range-v3 ranges are an abstraction layer on top of iterators.")
         (git-file-name name version))
        (patches
         (search-patches
-         "c++-gsl-find-system-gtest.patch"))
+         "c++-gsl-find-system-gtest.patch"
+         "c++-gsl-move-array-bounds-tests.patch"))
        (sha256
         (base32 "0gbvr48f03830g3154bjhw92b8ggmg6wwh5xyb8nppk9v6w752l0"))))
     (build-system cmake-build-system)

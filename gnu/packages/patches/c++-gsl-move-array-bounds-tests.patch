@@ -1,0 +1,126 @@
+Description: Move tests that trigger -Warray-bounds to separate compilation unit
+ GCC 10 is now smart enough to detect violation of array boundaries that tests
+ are actually tested. Along with -Werror this led to tests failure, so I move
+ such tests to another compilation unit to have the warning deactivated for
+ only these tests.
+Bug-Debian: https://bugs.debian.org/966895
+Author: Nicholas Guriev <guriev-ns@ya.ru>
+Last-Modified: Wed, 19 Aug 2020 08:55:52 +0300
+
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -179,6 +179,7 @@ add_gsl_test(owner_tests)
+ add_gsl_test(byte_tests)
+ add_gsl_test(algorithm_tests)
+ add_gsl_test(strict_notnull_tests)
++add_gsl_test(array_bounds)
+ 
+ 
+ # No exception tests
+--- /dev/null
++++ b/tests/array_bounds.cpp
+@@ -0,0 +1,68 @@
++///////////////////////////////////////////////////////////////////////////////
++//
++// Copyright (c) 2015 Microsoft Corporation. All rights reserved.
++//
++// This code is licensed under the MIT License (MIT).
++//
++// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++// THE SOFTWARE.
++//
++///////////////////////////////////////////////////////////////////////////////
++
++#ifdef __GNUC__
++#pragma GCC diagnostic warning "-Warray-bounds"
++#endif // __GNUC__
++
++#include <gtest/gtest.h>
++
++#include <gsl/multi_span> // for gsl::multi_span
++
++namespace gsl
++{
++struct fail_fast;
++} // namespace gsl
++
++namespace
++{
++static constexpr char deathstring[] = "Expected Death";
++} // namespace
++
++TEST(array_bounds, subspan_from_multi_span_test)
++{
++    int arr[5] = {1, 2, 3, 4, 5};
++    gsl::multi_span<int> av = arr;
++
++    std::set_terminate([] {
++        std::cerr << "Expected Death. subspan";
++        std::abort();
++    });
++
++    EXPECT_DEATH(av.subspan(6).length(), deathstring);
++}
++
++TEST(array_bounds, strided_span_bounds_from_strided_span_tests)
++{
++    int arr[] = {0, 1, 2, 3};
++    gsl::multi_span<int> av(arr);
++
++    std::set_terminate([] {
++        std::cerr << "Expected Death. strided_span_bounds";
++        std::abort();
++    });
++
++    // incorrect sections
++    EXPECT_DEATH(av.section(0, 0)[0], deathstring);
++    EXPECT_DEATH(av.section(1, 0)[0], deathstring);
++    EXPECT_DEATH(av.section(1, 1)[1], deathstring);
++
++    EXPECT_DEATH(av.section(2, 5), deathstring);
++    EXPECT_DEATH(av.section(5, 2), deathstring);
++    EXPECT_DEATH(av.section(5, 0), deathstring);
++    EXPECT_DEATH(av.section(0, 5), deathstring);
++    EXPECT_DEATH(av.section(5, 5), deathstring);
++}
+--- a/tests/multi_span_tests.cpp
++++ b/tests/multi_span_tests.cpp
+@@ -1042,10 +1042,6 @@ TEST(multi_span_test, subspan)
+         EXPECT_TRUE(av.subspan(1).length() == 4);
+         EXPECT_TRUE(av.subspan(4).length() == 1);
+         EXPECT_TRUE(av.subspan(5).length() == 0);
+-        // Disabled test instead of fixing since multi_span is deprecated. (PR#835)
+-#if !(defined(__GNUC__) && __GNUC__ == 8)
+-        EXPECT_DEATH(av.subspan(6).length(), deathstring);
+-#endif
+         auto av2 = av.subspan(1);
+         for (int i = 0; i < 4; ++i) EXPECT_TRUE(av2[i] == i + 2);
+     }
+--- a/tests/strided_span_tests.cpp
++++ b/tests/strided_span_tests.cpp
+@@ -403,20 +403,6 @@ TEST(strided_span_tests, strided_span_bo
+     });
+ 
+     {
+-        // incorrect sections
+-
+-        EXPECT_DEATH(av.section(0, 0)[0], deathstring);
+-        EXPECT_DEATH(av.section(1, 0)[0], deathstring);
+-        EXPECT_DEATH(av.section(1, 1)[1], deathstring);
+-
+-        EXPECT_DEATH(av.section(2, 5), deathstring);
+-        EXPECT_DEATH(av.section(5, 2), deathstring);
+-        EXPECT_DEATH(av.section(5, 0), deathstring);
+-        EXPECT_DEATH(av.section(0, 5), deathstring);
+-        EXPECT_DEATH(av.section(5, 5), deathstring);
+-    }
+-
+-    {
+         // zero stride
+         strided_span<int, 1> sav{av, {{4}, {}}};
+         EXPECT_TRUE(sav[0] == 0);
