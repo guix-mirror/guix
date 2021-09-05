@@ -1567,6 +1567,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pinball-system-ltdl.patch		\
   %D%/packages/patches/pingus-boost-headers.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\
+  %D%/packages/patches/pipewire-0.2.7-fno-common.patch		\
   %D%/packages/patches/pixman-CVE-2016-5296.patch		\
   %D%/packages/patches/pjproject-correct-the-cflags-field.patch \
   %D%/packages/patches/pjproject-fix-pkg-config-ldflags.patch	\

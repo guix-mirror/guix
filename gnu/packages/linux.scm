@@ -55,6 +55,7 @@
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7845,7 +7846,8 @@ types and interfaces and translates so that the X server can use them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q5wrqnhhs6r49p8yvkw1pl0cnsd4rndxy4h5lvdydwgf1civcwc"))))
+                "1q5wrqnhhs6r49p8yvkw1pl0cnsd4rndxy4h5lvdydwgf1civcwc"))
+              (patches (search-patches "pipewire-0.2.7-fno-common.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dsystemd=false")))
