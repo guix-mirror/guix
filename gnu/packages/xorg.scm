@@ -4581,17 +4581,14 @@ extension.")
 (define-public xwd
   (package
     (name "xwd")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xwd-"
-               version
-               ".tar.bz2"))
+        (uri (string-append "mirror://xorg/individual/app/xwd-"
+                            version ".tar.bz2"))
         (sha256
-          (base32
-            "1537i8q8pgf0sjklakzfvjwrq5b246qjywrx9ll8xfg0p6w1as6d"))))
+          (base32 "06q36fh55r62ms0igfxsanrn6gv8lh794q1bw9xzw51p2qs2papv"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
