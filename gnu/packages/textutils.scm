@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1210,7 +1211,7 @@ OpenDocument presentations (*.odp).")
                (chdir "python")
                (mkdir-p dist)
                (setenv "PYTHONPATH"
-                       (string-append dist ":" (getenv "PYTHONPATH")))
+                       (string-append dist ":" (getenv "GUIX_PYTHONPATH")))
                (invoke "python" "setup.py" "install"
                        "--root=/" "--single-version-externally-managed"
                        (string-append "--prefix=" out))
