@@ -47,7 +47,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017, 2021 Christine Lemmer-Webber@*
-Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice@*
@@ -7010,9 +7010,10 @@ retrieve.
 The URL of the Git repository to clone.
 
 @item @code{commit}
-This string denotes either the commit to fetch (a hexadecimal string,
-either the full SHA1 commit or a ``short'' commit string; the latter is
-not recommended) or the tag to fetch.
+This string denotes either the commit to fetch (a hexadecimal string),
+or the tag to fetch.  You can also use a ``short'' commit ID or a
+@command{git describe} style identifier such as
+@code{v1.0.1-10-g58d7909c97}.
 
 @item @code{recursive?} (default: @code{#f})
 This Boolean indicates whether to recursively fetch Git sub-modules.

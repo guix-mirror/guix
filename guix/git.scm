@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -223,15 +224,29 @@ corresponding Git object."
              (object-lookup-prefix repository (string->oid commit) len)
              (object-lookup repository (string->oid commit)))))
       (('tag-or-commit . str)
-       (if (or (> (string-length str) 40)
-               (not (string-every char-set:hex-digit str)))
-           (resolve `(tag . ,str))              ;definitely a tag
-           (catch 'git-error
-             (lambda ()
-               (resolve `(tag . ,str)))
-             (lambda _
-               ;; There's no such tag, so it must be a commit ID.
-               (resolve `(commit . ,str))))))
+       (cond ((and (string-contains str "-g")
+                   (match (string-split str #\-)
+                     ((version ... revision g+commit)
+                      (if (and (> (string-length g+commit) 4)
+                               (string-every char-set:digit revision)
+                               (string-every char-set:hex-digit
+                                             (string-drop g+commit 1)))
+                          (string-drop g+commit 1)
+                          #f))
+                     (_ #f)))
+              ;; Looks like a 'git describe' style ID, like
+              ;; v1.3.0-7-gaa34d4d28d.
+              => (lambda (commit) (resolve `(commit . ,commit))))
+             ((or (> (string-length str) 40)
+                  (not (string-every char-set:hex-digit str)))
+              (resolve `(tag . ,str)))      ;definitely a tag
+             (else
+              (catch 'git-error
+                (lambda ()
+                  (resolve `(tag . ,str)))
+                (lambda _
+                  ;; There's no such tag, so it must be a commit ID.
+                  (resolve `(commit . ,str)))))))
       (('tag    . tag)
        (let ((oid (reference-name->oid repository
                                        (string-append "refs/tags/" tag))))
