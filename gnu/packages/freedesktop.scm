@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 pineapples <guixuser6392@protonmail.com>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2210,6 +2211,13 @@ useful with system integration.")
              "https://launchpad.net/libappindicator/"
              (version-major+minor version) "/" version
              "/+download/libappindicator-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fix 'multiple definitions' error from GCC 10
+           (substitute* "bindings/python/appindicatormodule.c"
+             (("^#include <pygobject.h>" all)
+              (string-append "#define NO_IMPORT_PYGOBJECT\n" all)))))
        (sha256
         (base32
          "17xlqd60v0zllrxp8bgq3k5a1jkj0svkqn8rzllcyjh8k0gpr46m"))))
