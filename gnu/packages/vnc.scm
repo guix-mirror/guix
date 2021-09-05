@@ -61,7 +61,7 @@
 (define-public remmina
   (package
     (name "remmina")
-    (version "1.4.19")
+    (version "1.4.20")
     (source
      (origin
        (method git-fetch)
@@ -71,7 +71,7 @@
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1d0yxhrnkmj2wzsj1njw32sqkarmgqkzamwks6dl8pdi20x69br2"))))
+        (base32 "0apm4lqcmqskdp2fjxl8dbg3686cm4w0b5806fqj7w43hdmd8w4v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No target
