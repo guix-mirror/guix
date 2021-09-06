@@ -26718,6 +26718,7 @@ service, and connect it with Emacs via inter-process communication.")
                     emacs-minimal
                     ;; Require wide-int support for 32-bit platform.
                     emacs-wide-int)
+       #:include (cons "^etc\\/" %default-include)
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-sources
@@ -26745,24 +26746,8 @@ service, and connect it with Emacs via inter-process communication.")
                                "/bin/telega-server")))
              (substitute* "telega-util.el"
                (("@TELEGA_SHARE@")
-                (string-append (assoc-ref outputs "out")
-                               "/share/emacs-telega")))))
-         (add-after 'install 'install-share-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (define install-plan
-               '("langs" "sounds" "emojis.alist"
-                 "verified.svg" "telega-logo.svg"))
-
-             (define prefix (string-append (assoc-ref outputs "out")
-                                                "/share/emacs-telega"))
-             (with-directory-excursion "etc"
-               (for-each (lambda (file)
-                           (if (file-is-directory? file)
-                               (let ((dest (string-append prefix "/" file)))
-                                 (copy-recursively file dest))
-                               (install-file file prefix)))
-                         install-plan))
-             #t)))))
+                (string-append (elpa-directory (assoc-ref outputs "out"))
+                               "/etc"))))))))
     (inputs
      `(("emacs-telega-server" ,emacs-telega-server)
        ("ffmpeg" ,ffmpeg)))
