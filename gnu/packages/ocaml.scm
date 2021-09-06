@@ -6503,6 +6503,9 @@ stream, and convert everything to UTF-8.")
        (sha256
         (base32
          "0aif4abvfmi9xc1pvw5n5rbm6rzkkpsxyvdn0lanr33rjpvkwdlm"))))
+    (native-inputs
+     `(("ocaml-ounit" ,ocaml-ounit)
+       ("pkg-config" ,pkg-config)))
     (properties '())))
 
 (define-public ocaml-tyxml
