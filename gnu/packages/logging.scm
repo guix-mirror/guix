@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +77,7 @@ staying as close to their API as is reasonable.")
 (define-public glog
   (package
     (name "glog")
-    (version "0.4.0")
+    (version "0.5.0")
     (home-page "https://github.com/google/glog")
     (source (origin
               (method git-fetch)
@@ -84,19 +85,9 @@ staying as close to their API as is reasonable.")
                                   (commit (string-append "v" version))))
               (sha256
                (base32
-                "1xd3maiipfbxmhc9rrblc5x52nxvkwxp14npg31y5njqvkvzax9b"))
+                "17014q25c99qyis6l3fwxidw6222bb269fdlr74gn7pzmzg4lvg3"))
               (file-name (git-file-name name version))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-signal-tests
-                    (lambda _
-                      ;; XXX: This test fails on non x86_64.  See e.g.
-                      ;; https://github.com/google/glog/issues/219 and
-                      ;; https://github.com/google/glog/issues/256.
-                      (substitute* "Makefile"
-                        (("\tsignalhandler_unittest_sh") "\t$(EMPTY)"))
-                      #t)))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)                             ;for tests
        ("autoconf" ,autoconf)
