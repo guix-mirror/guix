@@ -26,6 +26,7 @@
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1308,7 +1309,7 @@ basic input/output.")
 (define-public alacritty
   (package
     (name "alacritty")
-    (version "0.7.2")
+    (version "0.9.0")
     (source
      (origin
        ;; XXX: The crate at "crates.io" has limited contents.  In particular,
@@ -1319,18 +1320,18 @@ basic input/output.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1isa61rivqchzfms8aakr4nks4kflwnfr9f2pik91157hg1plxam"))))
+        (base32 "068y0b1a0m33r7a3j2xf6k602sc8062gm4d5568ynfx6w5n481lj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f     ; virtual manifest
        #:cargo-test-flags '("--release" "--" "--skip=config_read_eof")
        #:cargo-inputs
        (("rust-alacritty-config-derive" ,rust-alacritty-config-derive-0.1)
-        ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.13)
+        ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.15)
         ("rust-clap" ,rust-clap-2)
         ("rust-cocoa" ,rust-cocoa-0.24)
         ("rust-copypasta" ,rust-copypasta-0.7)
-        ("rust-crossfont" ,rust-crossfont-0.2)
+        ("rust-crossfont" ,rust-crossfont-0.3)
         ("rust-embed-resource" ,rust-embed-resource-1)
         ("rust-fnv" ,rust-fnv-1)
         ("rust-gl-generator" ,rust-gl-generator-0.14)
@@ -1443,7 +1444,7 @@ basic input/output.")
        ("libxxf86vm" ,libxxf86vm)
        ("mesa" ,mesa)
        ("rust-bitflags" ,rust-bitflags-1)
-       ("rust-dirs" ,rust-dirs-2)
+       ("rust-dirs" ,rust-dirs-3)
        ("rust-libc" ,rust-libc-0.2)
        ("rust-unicode-width" ,rust-unicode-width-0.1)
        ("rust-wayland-client" ,rust-wayland-client-0.28)
