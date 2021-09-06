@@ -26675,18 +26675,17 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                         "emacs-telega-test-env.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "INSTALL_PREFIX="
+                            (assoc-ref %outputs "out") "/bin"))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'enter-subdirectory
            (lambda _ (chdir "server") #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("CC=cc") ,(string-append "CC=" (cc-for-target)))
-                 (("^(INSTALL_PREFIX=).*$" _all prefix)
-                  (string-append prefix out "/bin\n")))
-
                (substitute* "run_tests.py"
                  (("^(TELEGA_SERVER = ).*$" _all prefix)
                   (string-append prefix
