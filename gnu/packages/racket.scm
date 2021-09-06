@@ -138,7 +138,9 @@
        (sha256
         "061bhiyjlvazph0dj9i3i3x2q5z53rp8h5cjwg3frjimkr45lncn")
        (file-name (git-file-name name version))
-       (patches (search-patches "racket-minimal-sh-via-rktio.patch"))
+       (patches (search-patches "racket-minimal-sh-via-rktio.patch"
+                                ;; Remove the following in version 8.3:
+                                "racket-minimal-backport-1629887.patch"))
        (modules '((guix build utils)))
        (snippet
         (with-imported-modules '((guix build utils))
