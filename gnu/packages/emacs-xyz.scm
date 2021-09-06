@@ -18768,10 +18768,10 @@ notes.")
     (license license:gpl3+)))
 
 (define-public emacs-org-reveal
-  (let ((commit "84039bb499290926511b04749882ecb5eda45a0c"))
+  (let ((commit "fe9148b670d144124d9697fcf5d0528f19025104"))
     (package
       (name "emacs-org-reveal")
-      (version (git-version "20200607" "1" commit))
+      (version (git-version "20210902" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -18780,7 +18780,7 @@ notes.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1fx3xmnkpfljrdmy0dsyq79k93ky57gcqm1ad9qbzykk7qjvmmi8"))))
+                  "034gkbc03z9jzj7ad34mmqgmvj4f14ap7iixh3zx4wp2ipw5xb7c"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/yjwen/org-reveal")
       (synopsis "Org and Reveal.js powered HTML presentation tool")
