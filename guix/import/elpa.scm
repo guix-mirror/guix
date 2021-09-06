@@ -259,7 +259,7 @@ RECIPE."
      ((assoc-ref recipe #:commit)
       => (lambda (commit) (cons 'commit commit)))
      (else
-      '(branch . "master"))))
+      '())))
 
   (let-values (((directory commit) (download-git-repository url ref)))
     `(origin
