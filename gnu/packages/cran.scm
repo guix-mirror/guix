@@ -11711,6 +11711,40 @@ using @dfn{penalized quasi-likelihood} (PQL) estimation (see Jaeger et
 al. (2016)).")
     (license license:gpl2)))
 
+(define-public r-cmdfun
+  (package
+    (name "r-cmdfun")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cmdfun" version))
+       (sha256
+        (base32
+         "1pbcq7hi2lcmqnghmy3q2fsk0c9fy5m0637acyzmc096fxbx723j"))))
+    (properties `((upstream-name . "cmdfun")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rlang" ,r-rlang)
+       ("r-testthat" ,r-testthat)
+       ("r-usethis" ,r-usethis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://snystrom.github.io/cmdfun/")
+    (synopsis "Framework for building interfaces to shell commands")
+    (description
+     "Writing interfaces to command line software is cumbersome.  The cmdfun
+package provides a framework for building function calls to seamlessly
+interface with shell commands by allowing lazy evaluation of command line
+arguments.  It also provides methods for handling user-specific paths to tool
+installs or secrets like API keys.  Its focus is to equally serve package
+builders who wish to wrap command line software, and to help analysts stay
+inside R when they might usually leave to execute non-R software.")
+    (license license:expat)))
+
 (define-public r-weights
   (package
     (name "r-weights")
