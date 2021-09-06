@@ -55,6 +55,9 @@
             visit-number
             visit-snapshot
 
+            snapshot?
+            snapshot-branches
+
             branch?
             branch-name
             branch-target
