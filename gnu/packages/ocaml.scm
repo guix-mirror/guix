@@ -5786,7 +5786,7 @@ else expression.")
 (define-public ocaml-ppx-optcomp
   (package
     (name "ocaml-ppx-optcomp")
-    (version "0.14.1")
+    (version "0.14.3")
     (home-page "https://github.com/janestreet/ppx_optcomp")
     (source
      (origin
@@ -5797,7 +5797,7 @@ else expression.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0j5smqa0hig1yn8wfrb4mv0y59kkwsalmqkm5asbd7kcc6589ap4"))))
+         "1iflgfzs23asw3k6098v84al5zqx59rx2qjw0mhvk56avlx71pkw"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
