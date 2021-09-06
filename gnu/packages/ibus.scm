@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -367,6 +368,7 @@ Japanese language input in most graphical applications.")
        (sha256
         (base32
          "0pqk0i3zcii3fx5laj9qzbgd58jvq6wn31j76w4zix2i4b1lqcqv"))
+       (patches (search-patches "librime-fix-build-with-gcc10.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
