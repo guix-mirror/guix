@@ -217,6 +217,7 @@
                                                    "/lib"))
                                   '("openssl"
                                     "sqlite"))))
+                    (build-stamp . "")
                     (catalogs
                      . (,(string-append
                           "https://download.racket-lang.org/releases/"
