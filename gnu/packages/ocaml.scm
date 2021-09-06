@@ -5340,6 +5340,10 @@ definitions.")
        (uri (git-reference
              (url "https://github.com/janestreet/ppx_variants_conv")
              (commit (string-append "v" version))))
+       (patches
+        (search-patches
+         ;; Fix build when building with ocaml-ppxlib@0.23.0.
+         "ocaml-ppx-variants-ppxlib-api-change.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
