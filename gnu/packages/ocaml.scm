@@ -7145,7 +7145,7 @@ get an precise reference of when the executable was built.")))
 (define-public ocamlformat
   (package
     (name "ocamlformat")
-    (version "0.18.0")
+    (version "0.19.0")
     (source
       (origin
         (method git-fetch)
@@ -7155,7 +7155,7 @@ get an precise reference of when the executable was built.")))
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0n6363km8xr81pvyk453n6h2mb0256c5yxw3p1li4dn83f3lwxr1"))))
+            "0dp4pkznz9yvqx9gxwbid1z2b8ajkr8i27zay9ghx69624hz3i4z"))))
     (build-system dune-build-system)
     (arguments
      '(#:package "ocamlformat"
@@ -7173,6 +7173,7 @@ get an precise reference of when the executable was built.")))
         ("ocaml-odoc" ,ocaml-odoc)
         ("ocaml-ppxlib" ,ocaml-ppxlib)
         ("ocaml-re" ,ocaml-re)
+        ("ocaml-odoc-parser" ,ocaml-odoc-parser)
         ("ocaml-stdio" ,ocaml-stdio)
         ("ocaml-uuseg" ,ocaml-uuseg)
         ("ocaml-uutf" ,ocaml-uutf)))
