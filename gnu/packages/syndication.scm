@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -605,7 +606,7 @@ that aims to be quite fast and comfortable to its user.")
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-program (string-append
                             (assoc-ref outputs "out") "/bin/gfeeds")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
                `("XDG_DATA_DIRS" ":" prefix (,(getenv "XDG_DATA_DIRS"))))
              #t)))))

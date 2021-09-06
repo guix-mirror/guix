@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7788,7 +7789,7 @@ data.  It also generates basic statistics for your sequences.")
                            ,(version-major+minor
                              (package-version python))
                            "/site-packages"))
-                    (pythonpath (getenv "PYTHONPATH"))
+                    (pythonpath (getenv "GUIX_PYTHONPATH"))
                     (script (string-append out "/bin/shorah")))
                (chmod script #o555)
                (wrap-program script `("PYTHONPATH" ":" prefix (,site ,pythonpath))))))

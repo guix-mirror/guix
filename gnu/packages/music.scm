@@ -6886,7 +6886,7 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
                (substitute* (string-append bin "a2j")
                  (("a2j_control") (string-append bin "a2j_control")))
                (wrap-program (string-append bin "a2j_control")
-                `("PYTHONPATH" prefix (,(getenv "PYTHONPATH"))))
+                `("PYTHONPATH" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (build-system meson-build-system)
     (inputs

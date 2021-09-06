@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,7 +214,7 @@ tools that process C/C++ code.")
          (add-after 'install 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (python-path (getenv "PYTHONPATH")))
+                   (python-path (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/cvise")
                  `("PYTHONPATH" ":" prefix (,python-path)))
                #t))))))

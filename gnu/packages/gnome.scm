@@ -61,6 +61,7 @@
 ;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4205,7 +4206,7 @@ engineering.")
                                            (package-version python))
                                          "/site-packages")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (native-inputs
@@ -11582,7 +11583,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
                                            (package-version python))
                                          "/site-packages")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
                  `("PATH" prefix (,(dirname
                                     (search-input-file inputs
@@ -12218,7 +12219,7 @@ world.")
                                           (package-version python))
                                         "/site-packages")))
               (wrap-program prog
-                `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                `("PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
               #t))))))
     (native-inputs

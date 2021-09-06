@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1557,7 +1558,7 @@ protocol.")
              ;; to Python libraries.
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/bin/gammastep-indicator")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                `("GI_TYPELIB_PATH" ":" prefix
                  (,(getenv "GI_TYPELIB_PATH")))))))))
     (native-inputs
