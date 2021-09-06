@@ -13700,6 +13700,39 @@ visualization of transcript structures, and matching of assembled transcripts
 to annotation.")
     (license license:artistic2.0)))
 
+(define-public r-megadepth
+  (package
+    (name "r-megadepth")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "megadepth" version))
+       (sha256
+        (base32
+         "0grgj7bzyqnxby0sx5ic1h9bzmx19xwl0a5b3v6wbnwqcla2i3kg"))))
+    (properties `((upstream-name . "megadepth")))
+    (build-system r-build-system)
+    (inputs `(("megadepth" ,megadepth)))
+    (propagated-inputs
+     `(("r-cmdfun" ,r-cmdfun)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fs" ,r-fs)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-magrittr" ,r-magrittr)
+       ("r-readr" ,r-readr)
+       ("r-xfun" ,r-xfun)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/LieberInstitute/megadepth")
+    (synopsis "BigWig and BAM related utilities")
+    (description
+     "This package provides an R interface to Megadepth.  It is particularly
+useful for computing the coverage of a set of genomic regions across bigWig or
+BAM files.  With this package, you can build base-pair coverage matrices for
+regions or annotations of your choice from BigWig files.")
+    (license license:artistic2.0)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
