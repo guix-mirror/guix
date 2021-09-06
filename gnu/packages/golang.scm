@@ -2971,6 +2971,41 @@ with the HTTP protocol definition.")
 API service accounts for Go.")
     (license license:asl2.0)))
 
+(define-public go-github-com-google-gmail-oauth2-tools-go-sendgmail
+  (let ((commit "e3229155a4037267ce40f1a3a681f53221aa4d8d")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-gmail-oauth2-tools-go-sendgmail")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/gmail-oauth2-tools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cxpkiaajhq1gjsg47r2b5xgck0r63pvkyrkm7af8c8dw7fyn64f"))))
+      (propagated-inputs
+       `(("go-golang-org-x-oauth2" ,go-golang-org-x-oauth2)
+         ("go-cloud-google-com-go-compute-metadata"
+          ,go-cloud-google-com-go-compute-metadata)))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/google/gmail-oauth2-tools"
+         #:import-path "github.com/google/gmail-oauth2-tools/go/sendgmail"))
+      (home-page
+       "https://github.com/google/gmail-oauth2-tools/tree/master/go/sendgmail")
+      (synopsis
+       "Sendmail-compatible tool for using Gmail with @code{git send-email}")
+      (description
+       "The @command{sendgmail} command provides a minimal sendmail-compatible
+front-end that connects to Gmail using OAuth2.  It is specifically designed
+for use with @code{git send-email}.  The command needs a Gmail API key to
+function.")
+      (license license:asl2.0))))
+
 (define-public go-github-com-google-cadvisor
   (let ((commit "2ed7198f77395ee9a172878a0a7ab92ab59a2cfd")
         (revision "0"))
