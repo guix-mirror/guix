@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -510,14 +511,15 @@ change.  GNU make offers many powerful extensions over the standard utility.")
   (package
    (name "binutils")
    (version "2.37")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/binutils/binutils-"
-                                version ".tar.bz2"))
-            (sha256
-             (base32
-              "1m3b2rdfv1dmdpd0bzg1hy7i8a2qng53szc6livyi3nh6101mz37"))
-            (patches (search-patches "binutils-loongson-workaround.patch"))))
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/binutils/binutils-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32 "1m3b2rdfv1dmdpd0bzg1hy7i8a2qng53szc6livyi3nh6101mz37"))
+      (patches (search-patches "binutils-loongson-workaround.patch"
+                               "binutils-2.37-file-descriptor-leak.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
