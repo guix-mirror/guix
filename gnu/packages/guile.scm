@@ -86,7 +86,12 @@
               "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))
             (patches (search-patches "guile-1.8-cpp-4.5.patch"))))
    (build-system gnu-build-system)
-   (arguments '(#:configure-flags '("--disable-error-on-warning")
+   (arguments '(#:configure-flags '("--disable-error-on-warning"
+
+                                    ;; Build with '-O1' to work around GC
+                                    ;; crash on x86_64:
+                                    ;; <https://issues.guix.gnu.org/50427>.
+                                    "CFLAGS=-O1 -g -Wall")
 
                 ;; Insert a phase before `configure' to patch things up.
                 #:phases
