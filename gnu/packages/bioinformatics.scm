@@ -14999,6 +14999,71 @@ collapsing the single-cell tracks to pseudo-bulk tracks) to capture distinct
 cross-cluster accessibility profiles.")
     (license license:gpl3+)))
 
+(define-public megadepth
+  (package
+    (name "megadepth")
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ChristopherWilks/megadepth")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hj69d2dgmk2zwgazik7xzc04fxxlk93p888kpgc52fmhd95qph7"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #false ; some tests seem to require connection to
+                       ; www.ebi.ac.uk; this may be caused by htslib.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-CMakeLists.txt
+           (lambda _
+             (rename-file "CMakeLists.txt.ci" "CMakeLists.txt")
+             (substitute* "CMakeLists.txt"
+               (("`cat ../VERSION`") ,version)
+               (("target_link_libraries\\(megadepth_static") "#")
+               (("target_link_libraries\\(megadepth_statlib") "#")
+               (("add_executable\\(megadepth_static") "#")
+               (("add_executable\\(megadepth_statlib") "#"))
+
+             (substitute* "tests/test.sh"
+               ;; Disable remote test
+               (("./megadepth http://stingray.cs.jhu.edu/data/temp/test.bam") "#")
+               ;; Prior to installation the binary's name differs from what
+               ;; the test script assumes.
+               (("./megadepth") "../build/megadepth_dynamic"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "../source"
+                 (invoke "bash" "tests/test.sh" "use-local-test-data")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (copy-file "megadepth_dynamic"
+                          (string-append bin "/megadepth"))))))))
+    (native-inputs
+     `(("diffutils" ,diffutils)
+       ("perl" ,perl)
+       ("grep" ,grep)))
+    (inputs
+     `(("curl" ,curl)
+       ("htslib" ,htslib)
+       ("libdeflate" ,libdeflate)
+       ("libbigwig" ,libbigwig)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/ChristopherWilks/megadepth")
+    (synopsis "BigWig and BAM/CRAM related utilities")
+    (description "Megadepth is an efficient tool for extracting coverage
+related information from RNA and DNA-seq BAM and BigWig files.  It supports
+reading whole-genome coverage from BAM files and writing either indexed TSV or
+BigWig files, as well as efficient region coverage summary over intervals from
+both types of files.")
+    (license license:expat)))
+
 (define-public r-ascat
   (package
    (name "r-ascat")
