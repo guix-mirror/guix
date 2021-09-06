@@ -30,7 +30,7 @@
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
-  #:use-module ((gnu packages) #:select (search-patch))
+  #:use-module ((gnu packages) #:select (search-patch search-patches))
   #:use-module (gnu packages base)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages bash)
@@ -73,8 +73,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (package
       (inherit base)
       (source (origin (inherit (package-source base))
-                      (patches (cons (search-patch "glibc-bootstrap-system.patch")
-                                     (origin-patches (package-source base))))))
+                      (patches (append (search-patches
+                                        "glibc-bootstrap-system.patch"
+                                        "glibc-static-nss.patch")
+                                   (origin-patches (package-source base))))))
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:configure-flags flags)
