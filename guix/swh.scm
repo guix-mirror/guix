@@ -56,7 +56,9 @@
             visit-snapshot
 
             snapshot?
+            snapshot-id
             snapshot-branches
+            lookup-snapshot-branch
 
             branch?
             branch-name
@@ -296,6 +298,7 @@ FALSE-IF-404? is true, return #f upon 404 responses."
 ;; <https://archive.softwareheritage.org/api/1/snapshot/4334c3ed4bb208604ed780d8687fe523837f1bd1/>
 (define-json-mapping <snapshot> make-snapshot snapshot?
   json->snapshot
+  (id       snapshot-id)
   (branches snapshot-branches "branches" json->branches))
 
 ;; This is used for the "branches" field of snapshots.
@@ -437,6 +440,32 @@ available."
   (and (visit-snapshot-url visit)
        (call (swh-url (visit-snapshot-url visit))
              json->snapshot)))
+
+(define (snapshot-url snapshot branch-count first-branch)
+  "Return the URL of SNAPSHOT such that it contains information for
+BRANCH-COUNT branches, starting at FIRST-BRANCH."
+  (string-append (swh-url "/api/1/snapshot" (snapshot-id snapshot))
+                 "?branches_count=" (number->string branch-count)
+                 "&branches_from=" (uri-encode first-branch)))
+
+(define (lookup-snapshot-branch snapshot name)
+  "Look up branch NAME on SNAPSHOT.  Return the branch, or return #f if it
+could not be found."
+  (or (find (lambda (branch)
+              (string=? (branch-name branch) name))
+            (snapshot-branches snapshot))
+
+      ;; There's no API entry point to look up a snapshot branch by name.
+      ;; Work around that by using the paginated list of branches provided by
+      ;; the /api/1/snapshot API: ask for one branch, and start pagination at
+      ;; NAME.
+      (let ((snapshot (call (snapshot-url snapshot 1 name)
+                            json->snapshot)))
+        (match (snapshot-branches snapshot)
+          ((branch)
+           (and (string=? (branch-name branch) name)
+                branch))
+          (_ #f)))))
 
 (define (branch-target branch)
   "Return the target of BRANCH, either a <revision> or a <release>."
