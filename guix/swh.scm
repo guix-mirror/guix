@@ -186,6 +186,12 @@ Software Heritage."
                                  (ref 10))))))
       str))                                       ;oops!
 
+(define (maybe-null proc)
+  (match-lambda
+    ((? null?) #f)
+    ('null #f)
+    (obj (proc obj))))
+
 (define string*
   ;; Converts "string or #nil" coming from JSON to "string or #f".
   (match-lambda
@@ -319,10 +325,13 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (target-url  release-target-url "target_url"))
 
 ;; <https://archive.softwareheritage.org/api/1/revision/359fdda40f754bbf1b5dc261e7427b75463b59be/>
+;; Note: Some revisions, such as those for "nixguix" origins (e.g.,
+;; <https://archive.softwareheritage.org/api/1/revision/b8dbc65475bbedde8e015d4730ade8864c38fad3/>),
+;; have their 'date' field set to null.
 (define-json-mapping <revision> make-revision revision?
   json->revision
   (id            revision-id)
-  (date          revision-date "date" string->date*)
+  (date          revision-date "date" (maybe-null string->date*))
   (directory     revision-directory)
   (directory-url revision-directory-url "directory_url"))
 
