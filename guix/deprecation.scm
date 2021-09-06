@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,8 @@
   #:use-module (guix diagnostics)
   #:autoload   (guix utils) (source-properties->location)
   #:export (define-deprecated
+
+            define-deprecated/public
             define-deprecated/alias
             warn-about-deprecation))
 
@@ -39,6 +41,8 @@
         (warning location (G_ "'~a' is deprecated~%")
                  variable))))
 
+(define-syntax public (syntax-rules ()))          ;private syntactic keyword
+
 (define-syntax define-deprecated
   (lambda (s)
     "Define a deprecated variable or procedure, along these lines:
@@ -53,6 +57,8 @@ This will write a deprecation warning to GUIX-WARNING-PORT."
        #'(define-deprecated proc replacement
            (lambda* (formals ...) body ...)))
       ((_ variable replacement exp)
+       #'(define-deprecated private variable replacement exp))
+      ((_ visibility variable replacement exp)
        (identifier? #'variable)
        (with-syntax ((real (datum->syntax
                             #'variable
@@ -74,10 +80,22 @@ This will write a deprecation warning to GUIX-WARNING-PORT."
                     #'(real args (... ...)))
                    (id
                     (identifier? #'id)
-                    #'real)))))))
+                    #'real))))
+
+             ;; When asking for public visibility, export both REAL and
+             ;; VARIABLE.  Exporting REAL is useful when defining deprecated
+             ;; packages: there must be a public variable bound to a package
+             ;; so that the (guix discover) machinery finds it.
+             #,(if (free-identifier=? #'visibility #'public)
+                   #'(export real variable)
+                   #'(begin)))))
       ((_ variable alias)
        (identifier? #'alias)
        #'(define-deprecated variable alias alias)))))
+
+(define-syntax-rule (define-deprecated/public body ...)
+  "Like 'define/deprecated', but export all the newly introduced bindings."
+  (define-deprecated public body ...))
 
 (define-syntax-rule (define-deprecated/alias deprecated replacement)
   "Define as an alias a deprecated variable, procedure, or macro, along
