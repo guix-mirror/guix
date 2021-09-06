@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -781,7 +782,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "4.16.8")
+    (version "4.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -789,7 +790,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "159ircj0mahx54fqsr3l3ynk690zlpc6ar5pnyhhpk90s8la5303"))))
+                "0w957z22asd7dgchib99013csr628pvakagsqg38w6zhsmb9dy9k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -797,6 +798,7 @@ like appearance, display, keyboard and mouse settings.")
     (inputs
      `(("exo" ,exo)
        ("gobject-introspection" ,gobject-introspection)
+       ("gvfs" ,gvfs)
        ("libexif" ,libexif)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
