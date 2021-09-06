@@ -114,8 +114,8 @@
        ;; for docs
        ("stex" ,stex)
        ("xorg-rgb" ,xorg-rgb)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-latex-oberdiek
-                                             texlive-generic-epsf)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-oberdiek
+                                             texlive-epsf)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths
@@ -316,10 +316,10 @@ and 32-bit PowerPC architectures.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("ghostscript" ,ghostscript)
-         ("texlive" ,(texlive-updmap.cfg (list texlive-latex-oberdiek
-                                          texlive-generic-epsf
+         ("texlive" ,(texlive-updmap.cfg (list texlive-oberdiek
+                                          texlive-epsf
                                           texlive-metapost
-                                          texlive-fonts-charter
+                                          texlive-charter
                                           texlive-pdftex
                                           texlive-context
                                           texlive-cm

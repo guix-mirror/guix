@@ -3313,7 +3313,7 @@ API.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-generic-epsf)))))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-epsf)))))
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("guile" ,guile-3.0)

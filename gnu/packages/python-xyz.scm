@@ -5287,16 +5287,16 @@ color scales, and color space conversion easy.  It has support for:
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-fonts-cm-super
+       ("texlive" ,(texlive-updmap.cfg (list texlive-cm-super
                                         texlive-fonts-ec
-                                        texlive-generic-ifxetex
-                                        texlive-generic-pdftex
+                                        texlive-generic-iftex
+                                        texlive-pdftex
                                         texlive-amsfonts
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
                                         texlive-latex-eqparbox
-                                        texlive-latex-etoolbox
+                                        texlive-etoolbox
                                         texlive-latex-expdlist
                                         texlive-latex-fancyhdr
                                         texlive-latex-fancyvrb
@@ -5305,11 +5305,11 @@ color scales, and color space conversion easy.  It has support for:
                                         texlive-latex-framed
                                         texlive-latex-geometry
                                         texlive-latex-graphics
-                                        texlive-latex-hyperref
+                                        texlive-hyperref
                                         texlive-latex-mdwtools
                                         texlive-latex-multirow
                                         texlive-latex-needspace
-                                        texlive-latex-oberdiek
+                                        texlive-oberdiek
                                         texlive-latex-parskip
                                         texlive-latex-preview
                                         texlive-latex-tabulary
@@ -5318,7 +5318,7 @@ color scales, and color space conversion easy.  It has support for:
                                         texlive-latex-trimspaces
                                         texlive-latex-ucs
                                         texlive-latex-upquote
-                                        texlive-latex-url
+                                        texlive-url
                                         texlive-latex-varwidth
                                         texlive-latex-wrapfig)))
        ("texinfo" ,texinfo)
@@ -5842,11 +5842,11 @@ toolkits.")
                                         texlive-latex-type1cm
                                         texlive-latex-ucs
 
-                                        texlive-generic-pdftex
+                                        texlive-pdftex
 
                                         texlive-fonts-ec
-                                        texlive-fonts-adobe-times
-                                        texlive-fonts-txfonts)))
+                                        texlive-times
+                                        texlive-txfonts)))
        ("texinfo" ,texinfo)
        ,@(package-native-inputs python-matplotlib)))
     (arguments
@@ -8134,13 +8134,13 @@ computing.")
        ;; FIXME: It's possible that a smaller union would work just as well.
        ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-fonts-ec
-                                        texlive-generic-ifxetex
+                                        texlive-generic-iftex
                                         texlive-pdftex
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
                                         texlive-latex-eqparbox
-                                        texlive-latex-etoolbox
+                                        texlive-etoolbox
                                         texlive-latex-expdlist
                                         texlive-latex-fancyhdr
                                         texlive-latex-fancyvrb
@@ -8149,11 +8149,11 @@ computing.")
                                         texlive-latex-framed
                                         texlive-latex-geometry
                                         texlive-latex-graphics
-                                        texlive-latex-hyperref
+                                        texlive-hyperref
                                         texlive-latex-mdwtools
                                         texlive-latex-multirow
                                         texlive-latex-needspace
-                                        texlive-latex-oberdiek
+                                        texlive-oberdiek
                                         texlive-latex-parskip
                                         texlive-latex-preview
                                         texlive-latex-tabulary
@@ -8162,7 +8162,7 @@ computing.")
                                         texlive-latex-trimspaces
                                         texlive-latex-ucs
                                         texlive-latex-upquote
-                                        texlive-latex-url
+                                        texlive-url
                                         texlive-latex-varwidth
                                         texlive-latex-wrapfig)))
        ("texinfo" ,texinfo)))))
@@ -11198,18 +11198,18 @@ time.")
                                         texlive-eurosym
                                         texlive-fonts-rsfs
                                         texlive-generic-ulem
-                                        texlive-iftex
+                                        texlive-generic-iftex
                                         texlive-jknappen
                                         texlive-latex-amsmath
                                         texlive-latex-enumitem
                                         texlive-latex-fancyvrb
                                         texlive-latex-float
-                                        texlive-latex-fontspec
+                                        texlive-fontspec
                                         texlive-latex-geometry
-                                        texlive-latex-hyperref
+                                        texlive-hyperref
                                         texlive-latex-jknapltx
                                         texlive-latex-ms
-                                        texlive-latex-oberdiek
+                                        texlive-oberdiek
                                         texlive-latex-parskip
                                         texlive-latex-trimspaces
                                         texlive-latex-upquote
@@ -24948,8 +24948,8 @@ By default it uses the open Python vulnerability database Safety DB.")
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-fonts-ec
-                                        texlive-latex-hyperref
-                                        texlive-latex-oberdiek
+                                        texlive-hyperref
+                                        texlive-oberdiek
                                         texlive-lm
                                         texlive-xcolor)))))
     (arguments

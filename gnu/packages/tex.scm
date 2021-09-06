@@ -4563,7 +4563,7 @@ rotated.")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot) ; for suffix
-       ("texlive-latex-filemod" ,texlive-latex-filemod)
+       ("texlive-filemod" ,texlive-filemod)
        ("texlive-latex-graphics" ,texlive-latex-graphics)
        ("texlive-latex-ifplatform" ,texlive-latex-ifplatform)
        ("texlive-latex-l3kernel" ,texlive-latex-l3kernel) ; for expl3
@@ -7134,10 +7134,10 @@ develop documents with LaTeX, in a single application.")
              #t)))))
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
-                                        texlive-fonts-adobe-palatino
-                                        texlive-fonts-adobe-zapfding
+                                        texlive-palatino
+                                        texlive-zapfding
                                         texlive-knuth-lib
-                                        texlive-fonts-mflogo-font
+                                        texlive-mflogo-font
                                         texlive-pdftex)))
        ("automake" ,automake)))
     (home-page "https://www.gnu.org/software/teximpatient/")
@@ -7487,7 +7487,7 @@ striking out (line through words) and crossing out (/// over words).")
             (base32
              "05zdq7y3am109m5534ahqqp9x5iar3ha68v1r4zkrdly2mijxz2j"))))))
     (propagated-inputs
-     `(("texlive-latex-xcolor" ,texlive-latex-xcolor)))
+     `(("texlive-xcolor" ,texlive-xcolor)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -8119,9 +8119,9 @@ for a wealth of support information.")
                "091n27n4l3iac911bvmpp735ffryyzaq46mkclgn3q9jsvc4ngiv")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-latex-hyperref" ,texlive-latex-hyperref)
+     `(("texlive-hyperref" ,texlive-hyperref)
        ("texlive-oberdiek" ,texlive-oberdiek)
-       ("texlive-latex-etoolbox" ,texlive-latex-etoolbox)
+       ("texlive-etoolbox" ,texlive-etoolbox)
        ("texlive-latex-pgf" ,texlive-latex-pgf)))
     (home-page "https://www.ctan.org/pkg/beamer")
     (synopsis "LaTeX class for producing presentations and slides")

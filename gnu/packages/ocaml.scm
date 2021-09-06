@@ -7380,7 +7380,7 @@ browsers and Node.js.")
      `(("which" ,which)
        ("texlive" ,(texlive-updmap.cfg
                     (list texlive-fonts-ec texlive-preprint
-                          texlive-latex-hyperref texlive-bibtex)))))
+                          texlive-hyperref texlive-bibtex)))))
     (propagated-inputs
      `(("hevea" ,hevea)))
     (home-page "https://www.lri.fr/~filliatr/bibtex2html/")

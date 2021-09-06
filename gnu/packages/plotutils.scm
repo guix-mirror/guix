@@ -230,7 +230,7 @@ colors, styles, options and details.")
                                         texlive-latex-base
                                         texlive-latex-geometry
                                         texlive-latex-graphics
-                                        texlive-latex-oberdiek ; for ifluatex
+                                        texlive-oberdiek ;for ifluatex
                                         texlive-latex-parskip
                                         texlive-tex-texinfo)))))
     (inputs

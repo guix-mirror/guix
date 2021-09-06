@@ -5100,7 +5100,7 @@ set.")
                                              texlive-latex-framed
                                              texlive-latex-geometry
                                              texlive-latex-hanging
-                                             texlive-latex-hyperref
+                                             texlive-hyperref
                                              texlive-latex-multirow
                                              texlive-latex-natbib
                                              texlive-latex-needspace
@@ -5112,7 +5112,7 @@ set.")
                                              texlive-latex-tocloft
                                              texlive-latex-upquote
                                              texlive-latex-varwidth
-                                             texlive-latex-wasysym
+                                             texlive-wasysym
                                              texlive-latex-wrapfig)))))
     (inputs
      `(("blas" ,openblas)

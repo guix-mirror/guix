@@ -524,7 +524,7 @@ featuring various improvements and bug fixes.")))
      ;; FIXME: with texlive-tiny citation references are rendered as question
      ;; marks.  During the build warnings like these are printed:
      ;; LaTeX Warning: Citation `nabors91' on page 2 undefined on input line 3.
-     `(("texlive" ,(texlive-updmap.cfg (list texlive-fonts-amsfonts)))
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts)))
        ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")

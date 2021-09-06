@@ -1535,7 +1535,7 @@ and auto-mapping slices to MIDI note numbers.")
        ("imagemagick" ,imagemagick)
        ("netpbm" ,netpbm)               ;for pngtopnm
        ("texlive" ,(texlive-updmap.cfg (list texlive-metapost
-                                        texlive-generic-epsf
+                                        texlive-epsf
                                         texlive-lh
                                         texlive-latex-cyrillic)))
        ("texinfo" ,texinfo)

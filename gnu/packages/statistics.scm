@@ -349,11 +349,11 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                                         texlive-latex-base
                                         texlive-latex-fancyvrb
                                         texlive-latex-graphics
-                                        texlive-latex-hyperref
-                                        texlive-latex-oberdiek
+                                        texlive-hyperref
+                                        texlive-oberdiek
                                         texlive-latex-tools
                                         texlive-latex-upquote
-                                        texlive-latex-url
+                                        texlive-url
                                         texlive-latex-xkeyval)))
        ("tzdata" ,tzdata-for-tests)
        ("xz" ,xz)))

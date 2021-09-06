@@ -3110,9 +3110,9 @@ data and settings.")
      `(("texlive" ,(texlive-updmap.cfg (list texlive-cm
                                         texlive-amsfonts
 
-                                        texlive-latex-doi
+                                        texlive-doi
                                         texlive-latex-examplep
-                                        texlive-latex-hyperref
+                                        texlive-hyperref
                                         texlive-latex-ms
                                         texlive-latex-natbib
                                         texlive-bibtex         ; style files used by natbib
@@ -12776,7 +12776,7 @@ to an artifact/contaminant file.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg (list texlive-latex-graphics
-                                        texlive-latex-hyperref)))))
+                                        texlive-hyperref)))))
     (home-page "https://www.ebi.ac.uk/~zerbino/velvet/")
     (synopsis "Nucleic acid sequence assembler for very short reads")
     (description
