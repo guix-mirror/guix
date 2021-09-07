@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 # Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -278,7 +278,7 @@ guix build --target=arm-linux-gnueabihf --dry-run \
      -e '(@ (gnu packages base) coreutils)'
 
 # Replacements.
-drv1=`guix build guix --with-input=guile@2.0=guile@2.2 -d`
+drv1=`guix build guix --with-input=guile-zstd=idutils -d`
 drv2=`guix build guix -d`
 test "$drv1" != "$drv2"
 
