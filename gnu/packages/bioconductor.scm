@@ -14014,6 +14014,35 @@ Functions are also provided to enable smooth interoperability of multiple
 Python environments in a single R session.")
     (license license:gpl3)))
 
+(define-public r-biocthis
+  (package
+    (name "r-biocthis")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biocthis" version))
+       (sha256
+        (base32
+         "08awghsg7q22csb0j9dr8dpb1vkn9gcs9qnhhljxifkw2ahbqia4"))))
+    (properties `((upstream-name . "biocthis")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocmanager" ,r-biocmanager)
+       ("r-fs" ,r-fs)
+       ("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)
+       ("r-styler" ,r-styler)
+       ("r-usethis" ,r-usethis)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/lcolladotor/biocthis")
+    (synopsis "Automate package and project setup for Bioconductor packages")
+    (description
+     "This package expands the @code{usethis} package with the goal of helping
+automate the process of creating R packages for Bioconductor or making them
+Bioconductor-friendly.")
+    (license license:artistic2.0)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
