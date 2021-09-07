@@ -14277,6 +14277,62 @@ throughput technology like RNA-seq or tiling array, and copy number analysis
 using aCGH or sequencing.")
     (license license:gpl2+)))
 
+(define-public r-bionero
+  (package
+    (name "r-bionero")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioNERO" version))
+       (sha256
+        (base32
+         "1yj0pavyfrj2gsvaj1dkgmznibm2appxjx9rk5qjslhslmm5b05b"))))
+    (properties `((upstream-name . "BioNERO")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-complexheatmap" ,r-complexheatmap)
+       ("r-deseq2" ,r-deseq2)
+       ("r-dynamictreecut" ,r-dynamictreecut)
+       ("r-genie3" ,r-genie3)
+       ("r-ggnetwork" ,r-ggnetwork)
+       ("r-ggnewscale" ,r-ggnewscale)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
+       ("r-igraph" ,r-igraph)
+       ("r-intergraph" ,r-intergraph)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-minet" ,r-minet)
+       ("r-netrep" ,r-netrep)
+       ("r-networkd3" ,r-networkd3)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-sva" ,r-sva)
+       ("r-wgcna" ,r-wgcna)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/almeidasilvaf/BioNERO")
+    (synopsis "Biological network reconstruction omnibus")
+    (description
+     "BioNERO aims to integrate all aspects of biological network inference in
+a single package, including data preprocessing, exploratory analyses, network
+inference, and analyses for biological interpretations.  BioNERO can be used
+to infer gene coexpression networks (GCNs) and gene regulatory networks (GRNs)
+from gene expression data.  Additionally, it can be used to explore
+topological properties of protein-protein interaction (PPI) networks.  GCN
+inference relies on the popular WGCNA algorithm.  GRN inference is based on
+the \"wisdom of the crowds\" principle, which consists in inferring GRNs with
+multiple algorithms (here, CLR, GENIE3 and ARACNE) and calculating the average
+rank for each interaction pair.  As all steps of network analyses are included
+in this package, BioNERO makes users avoid having to learn the syntaxes of
+several packages and how to communicate between them.  Finally, users can also
+identify consensus modules across independent expression sets and calculate
+intra and interspecies module preservation statistics between different
+networks.")
+    (license license:gpl3)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
