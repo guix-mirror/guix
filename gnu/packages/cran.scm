@@ -9849,6 +9849,39 @@ customizable heatmaps for exploring complex datasets, including big data and
 data with multiple data types.")
     (license license:cc0)))
 
+(define-public r-qualv
+  (package
+    (name "r-qualv")
+    (version "0.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qualV" version))
+       (sha256
+        (base32
+         "1yyqk223ydcc0125gsn33a4mcdp8bd76fpn8kj9bfz9g78b8dqmx"))))
+    (properties `((upstream-name . "qualV")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernsmooth" ,r-kernsmooth)))
+    (home-page "http://qualV.R-Forge.R-Project.org/")
+    (synopsis "Qualitative Validation Methods")
+    (description
+     "This package provides qualitative methods for the validation of dynamic
+models.  It contains
+
+@enumerate
+@item an orthogonal set of deviance measures for absolute, relative and
+  ordinal scale and
+@item approaches accounting for time shifts.
+@end enumerate
+
+The first approach transforms time to take time delays and speed differences
+into account.  The second divides the time series into interval units
+according to their main features and finds the @dfn{longest common
+subsequence} (LCS) using a dynamic programming algorithm.")
+    (license license:gpl2+)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
