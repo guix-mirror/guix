@@ -9735,6 +9735,32 @@ S\" (Chambers and Hastie (eds), 1991), and \"Generalized Additive
 Models\" (Hastie and Tibshirani, 1990).")
     (license license:gpl2)))
 
+(define-public r-superlearner
+  (package
+    (name "r-superlearner")
+    (version "2.0-28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SuperLearner" version))
+       (sha256
+        (base32
+         "00any24msgflyagy87nznpfjz5g9v15frqda6c679wa8plx26hjz"))))
+    (properties `((upstream-name . "SuperLearner")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cvauc" ,r-cvauc)
+       ("r-gam" ,r-gam)
+       ("r-nnls" ,r-nnls)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ecpolley/SuperLearner")
+    (synopsis "Super learner prediction")
+    (description
+     "This package implements the super learner prediction method and contains
+a library of prediction algorithms to be used in the super learner.")
+    (license license:gpl3)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
