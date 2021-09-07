@@ -353,3 +353,7 @@ during a dynamic extent where that package is available on ContentDB."
     (sort-packages (list x y z))))
 
 (test-end "minetest")
+
+;;; Local Variables:
+;;; eval: (put 'test-package* 'scheme-indent-function 1)
+;;; End:
