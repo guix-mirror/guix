@@ -513,6 +513,34 @@ information about the latest version of the Gene Ontologies.")
 several related annotation packages.")
     (license license:artistic2.0)))
 
+(define-public r-mus-musculus
+  (package
+    (name "r-mus-musculus")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Mus.musculus" version 'annotation))
+       (sha256
+        (base32
+         "143zdf83gbfqhy8jm9df7gzhw5q3a64jrjrxrzjf0zd76j8s8j6y"))))
+    (properties `((upstream-name . "Mus.musculus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-go-db" ,r-go-db)
+       ("r-org-mm-eg-db" ,r-org-mm-eg-db)
+       ("r-organismdbi" ,r-organismdbi)
+       ("r-txdb-mmusculus-ucsc-mm10-knowngene"
+        ,r-txdb-mmusculus-ucsc-mm10-knowngene)))
+    (home-page "https://bioconductor.org/packages/Mus.musculus")
+    (synopsis "Annotation package for the Mus.musculus object")
+    (description
+     "This package contains the @code{Mus.musculus} object to access data
+from several related annotation packages.")
+    (license license:artistic2.0)))
+
 (define-public r-org-ce-eg-db
   (package
     (name "r-org-ce-eg-db")
