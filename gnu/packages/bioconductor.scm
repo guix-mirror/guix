@@ -14249,6 +14249,34 @@ design.")
 design.")
     (license license:lgpl2.1+)))
 
+(define-public r-biomvrcns
+  (package
+    (name "r-biomvrcns")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biomvRCNS" version))
+       (sha256
+        (base32
+         "0wyzj422smr4m9mswzn9inc1sn86pnia7jmd6k28nd2a7fjyrm16"))))
+    (properties `((upstream-name . "biomvRCNS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-gviz" ,r-gviz)
+       ("r-iranges" ,r-iranges)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://bioconductor.org/packages/biomvRCNS")
+    (synopsis "Copy number study and segmentation for multivariate biological data")
+    (description
+     "In this package, a @dfn{Hidden Semi Markov Model} (HSMM) and one
+homogeneous segmentation model are designed and implemented for segmentation
+genomic data, with the aim of assisting in transcripts detection using high
+throughput technology like RNA-seq or tiling array, and copy number analysis
+using aCGH or sequencing.")
+    (license license:gpl2+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
