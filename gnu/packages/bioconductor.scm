@@ -13861,6 +13861,33 @@ data download from Bgee database, and TopAnat analysis: GO-like enrichment of
 anatomical terms, mapped to genes by expression patterns.")
     (license license:gpl3)))
 
+(define-public r-biobtreer
+  (package
+    (name "r-biobtreer")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biobtreeR" version))
+       (sha256
+        (base32
+         "0pynx4ps1qxsn13ba6zyg6h5dqlp2y7qish67m7sdjns079zh061"))))
+    (properties `((upstream-name . "biobtreeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httpuv" ,r-httpuv)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-stringi" ,r-stringi)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tamerh/biobtreeR")
+    (synopsis "Use biobtree tool from R")
+    (description
+     "The biobtreeR package provides an interface to biobtree, a tool which
+covers large sets of bioinformatics datasets and allows search and chain
+mappings functionalities.")
+    (license license:expat)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
