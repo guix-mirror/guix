@@ -14436,6 +14436,36 @@ expression data.  The core algorithm is a Wilcoxon-Mann-Whitney test that is
 optimised for high performance.")
     (license license:gpl3+)))
 
+(define-public r-biotip
+  (package
+    (name "r-biotip")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioTIP" version))
+       (sha256
+        (base32
+         "1i6r8px0fmdjx8frpljppwql74mhx08ibvhs9y3qk91ck5h3f0js"))))
+    (properties `((upstream-name . "BioTIP")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-hmisc" ,r-hmisc)
+       ("r-igraph" ,r-igraph)
+       ("r-mass" ,r-mass)
+       ("r-psych" ,r-psych)
+       ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/xyang2uchicago/BioTIP")
+    (synopsis "R package for characterization of biological tipping-point")
+    (description
+     "This package adopts tipping-point theory to transcriptome profiles to
+help unravel disease regulatory trajectory.")
+    (license license:gpl2)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
