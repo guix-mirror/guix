@@ -9417,6 +9417,31 @@ maximal.  Both functions have the same interface as the @code{prcomp} function
 from the @code{stats} package (plus some extra parameters).")
     (license license:gpl2+)))
 
+(define-public r-cmplot
+  (package
+    (name "r-cmplot")
+    (version "3.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CMplot" version))
+       (sha256
+        (base32
+         "13y05j5gsdc712fn7yvcz5nx2pbcdvl201hfb6jzpvl86qx2l0j1"))))
+    (properties `((upstream-name . "CMplot")))
+    (build-system r-build-system)
+    (home-page "https://github.com/YinLiLin/CMplot")
+    (synopsis "Circle Manhattan plot")
+    (description
+     "Circle Manhattan Plot is an R package that can lay out genome-wide
+association study P-value results in both traditional rectangular patterns,
+QQ-plot and novel circular ones.  United in only one bull's eye style plot,
+association results from multiple traits can be compared interactively,
+thereby to reveal both similarities and differences between signals.
+Additional functions include: highlight signals, a group of SNPs, chromosome
+visualization and candidate genes around SNPs.")
+    (license license:gpl2+)))
+
 (define-public r-abcoptim
   (package
     (name "r-abcoptim")
