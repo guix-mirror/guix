@@ -9682,6 +9682,33 @@ and coverage methods to tune the choice of threshold.")
 ggplot2 package.")
     (license license:gpl3)))
 
+(define-public r-cvauc
+  (package
+    (name "r-cvauc")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cvAUC" version))
+       (sha256
+        (base32
+         "13bk97l5nn97h85iz93zxazhr63n21nwyrpnl856as9qp59yvn64"))))
+    (properties `((upstream-name . "cvAUC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-rocr" ,r-rocr)))
+    (home-page "https://github.com/ledell/cvAUC")
+    (synopsis "Cross-validated area under the ROC curve confidence intervals")
+    (description
+     "This package contains various tools for working with and evaluating
+cross-validated area under the ROC curve (AUC) estimators.  The primary
+functions of the package are @code{ci.cvAUC} and @code{ci.pooled.cvAUC}, which
+report cross-validated AUC and compute confidence intervals for
+cross-validated AUC estimates based on influence curves for i.i.d. and pooled
+repeated measures data, respectively.")
+    (license license:asl2.0)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
