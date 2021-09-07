@@ -1114,6 +1114,32 @@ sequencing data.")
 from Illumina 450k methylation arrays.")
     (license license:artistic2.0)))
 
+(define-public r-biscuiteerdata
+  (package
+    (name "r-biscuiteerdata")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biscuiteerData" version 'experiment))
+       (sha256
+        (base32
+         "1d7zibjf0qccmdnzdxh7wy1h943yhnbf8zdix72486pvhzm124zj"))))
+    (properties
+     `((upstream-name . "biscuiteerData")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationhub" ,r-annotationhub)
+       ("r-curl" ,r-curl)
+       ("r-experimenthub" ,r-experimenthub)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/biscuiteerData")
+    (synopsis "Data package for Biscuiteer")
+    (description
+     "This package contains default datasets used by the Bioconductor package
+biscuiteer.")
+    (license license:gpl3)))
+
 (define-public r-chromstardata
   (package
     (name "r-chromstardata")
