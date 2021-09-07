@@ -40,6 +40,7 @@
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docker)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages graphviz)
@@ -14041,6 +14042,36 @@ Python environments in a single R session.")
      "This package expands the @code{usethis} package with the goal of helping
 automate the process of creating R packages for Bioconductor or making them
 Bioconductor-friendly.")
+    (license license:artistic2.0)))
+
+(define-public r-biocdockermanager
+  (package
+    (name "r-biocdockermanager")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocDockerManager" version))
+       (sha256
+        (base32
+         "0dh1flm5chsdcihljrg6znjskqkp0qyjh39hsv4zq0frf1rm97j7"))))
+    (properties
+     `((upstream-name . "BiocDockerManager")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("docker" ,docker)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-memoise" ,r-memoise)
+       ("r-readr" ,r-readr)
+       ("r-whisker" ,r-whisker)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/BiocDockerManager")
+    (synopsis "Access and manage Bioconductor Docker images")
+    (description
+     "This package works analogous to BiocManager but for Docker images.  Use
+the BiocDockerManager package to install and manage Docker images provided by
+the Bioconductor project.")
     (license license:artistic2.0)))
 
 (define-public r-tximeta
