@@ -9501,6 +9501,33 @@ replication/preservation of a network module's topology across datasets
 through permutation testing.")
     (license license:gpl2)))
 
+(define-public r-intergraph
+  (package
+    (name "r-intergraph")
+    (version "2.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "intergraph" version))
+       (sha256
+        (base32
+         "18a7xgb2rp0w9jl2rkh8nzyjprrs5w7h2iidvc8c38bzx3qpggkc"))))
+    (properties `((upstream-name . "intergraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-network" ,r-network)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://mbojan.github.io/intergraph")
+    (synopsis "Coercion routines for network data objects")
+    (description
+     "Functions implemented in this package allow to coerce (i.e. convert)
+network data between classes provided by other R packages.  Currently
+supported classes are those defined in packages @code{network} and
+@code{igraph}.")
+    (license license:gpl3)))
+
 (define-public r-abcoptim
   (package
     (name "r-abcoptim")
