@@ -23610,7 +23610,7 @@ and implementation of treeview controls using treemacs as a tree renderer.")
 (define-public emacs-dap-mode
   (package
     (name "emacs-dap-mode")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method git-fetch)
@@ -23619,7 +23619,7 @@ and implementation of treeview controls using treemacs as a tree renderer.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1d4hdydfk86d4slibigyhwng8wx3vzyap8hp5iv0h7wr6868m4iv"))))
+        (base32 "1zczmcv8562lachkvcwy6njn7zkgny08iznpmrx821wr8mh52wnn"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-bui" ,emacs-bui)
