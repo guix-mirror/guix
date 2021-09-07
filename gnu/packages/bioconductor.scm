@@ -13888,6 +13888,28 @@ covers large sets of bioinformatics datasets and allows search and chain
 mappings functionalities.")
     (license license:expat)))
 
+(define-public r-minet
+  (package
+    (name "r-minet")
+    (version "3.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "minet" version))
+       (sha256
+        (base32
+         "0bir2zr4r2wawkdvdhrk2hcyxmgkrkfvx36jj85fcm24axlqrzzb"))))
+    (properties `((upstream-name . "minet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-infotheo" ,r-infotheo)))
+    (home-page "http://minet.meyerp.com")
+    (synopsis "Mutual information networks")
+    (description
+     "This package implements various algorithms for inferring mutual
+information networks from data.")
+    (license license:artistic2.0)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
