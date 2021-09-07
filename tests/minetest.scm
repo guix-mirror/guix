@@ -331,6 +331,16 @@ during a dynamic extent where that package is available on ContentDB."
                                  "some-modpack/containing-mese")))
               #:inputs '())
 
+;; See e.g. 'orwell/basic_trains'
+(test-package* "minetest->guix-package, multiple dependencies implemented by one mod"
+  (list #:name "frobnicate"
+        #:guix-name "minetest-frobnicate"
+        #:upstream-name "Author/frobnicate"
+        #:requirements '(("frob" #f ("Author/frob"))
+                         ("frob_x" #f ("Author/frob")))
+        #:inputs '("minetest-frob"))
+  (list #:author "Author" #:name "frob"))
+
 
 ;; License
 (test-package "minetest->guix-package, identical licenses"

@@ -371,7 +371,11 @@ official Minetest forum and the Git repository (if any)."
 DEPENDENCIES as a list of AUTHOR/NAME strings."
   (define dependency-list
     (assoc-ref dependencies author/name))
-  (filter-map
+  ;; A mod can have multiple dependencies implemented by the same mod,
+  ;; so remove duplicate mod names.
+  (define (filter-deduplicate-map f list)
+    (delete-duplicates (filter-map f list)))
+  (filter-deduplicate-map
    (lambda (dependency)
      (and (not (dependency-optional? dependency))
           (not (builtin-mod? (dependency-name dependency)))
