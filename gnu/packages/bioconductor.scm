@@ -14408,6 +14408,34 @@ analysis, differential node analysis (differential coexpression analysis),
 network and metabolic pathways view.")
     (license license:gpl3+)))
 
+(define-public r-bioqc
+  (package
+    (name "r-bioqc")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioQC" version))
+       (sha256
+        (base32
+         "04akp94p0d0zid55m1b1k3qlw7iq914pcg57lihgj3pa92n1sc5l"))))
+    (properties `((upstream-name . "BioQC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-edger" ,r-edger)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://accio.github.io/BioQC/")
+    (synopsis "Detect tissue heterogeneity in expression profiles with gene sets")
+    (description
+     "BioQC performs quality control of high-throughput expression data based
+on tissue gene signatures.  It can detect tissue heterogeneity in gene
+expression data.  The core algorithm is a Wilcoxon-Mann-Whitney test that is
+optimised for high performance.")
+    (license license:gpl3+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
