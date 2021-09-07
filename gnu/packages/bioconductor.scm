@@ -14510,6 +14510,52 @@ estimated efficient influence function.  The procedure accommodates the use of
 ensemble machine learning for the estimation of nuisance functions.")
     (license license:expat)))
 
+(define-public r-bsseq
+  (package
+    (name "r-bsseq")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bsseq" version))
+       (sha256
+        (base32
+         "1xpv85hr681kkkilsnasndkszwmzbzq11y0lff4na2ilsm7sqmmi"))))
+    (properties `((upstream-name . "bsseq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-data-table" ,r-data-table)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-permute" ,r-permute)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/hansenlab/bsseq")
+    (synopsis "Analyze, manage and store bisulfite sequencing data")
+    (description
+     "This package provides a collection of tools for analyzing and
+visualizing bisulfite sequencing data.")
+    (license license:artistic2.0)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
