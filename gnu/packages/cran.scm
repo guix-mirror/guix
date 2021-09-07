@@ -11745,6 +11745,29 @@ builders who wish to wrap command line software, and to help analysts stay
 inside R when they might usually leave to execute non-R software.")
     (license license:expat)))
 
+(define-public r-rslurm
+  (package
+    (name "r-rslurm")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rslurm" version))
+       (sha256
+        (base32
+         "0fn2na8prsaxa03x5wi3105gpsxc35qvgmik7wy3nylvx4wdfv9g"))))
+    (properties `((upstream-name . "rslurm")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-whisker" ,r-whisker)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "http://cyberhelp.sesync.org/rslurm/")
+    (synopsis "Submit R calculations to a Slurm cluster")
+    (description
+     "This package provides functions that simplify submitting R scripts to a
+Slurm workload manager, in part by automating the division of embarrassingly
+parallel calculations across cluster nodes.")
+    (license license:gpl3)))
+
 (define-public r-weights
   (package
     (name "r-weights")
