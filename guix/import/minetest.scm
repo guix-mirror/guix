@@ -337,6 +337,14 @@ official Minetest forum and the Git repository (if any)."
       (and=> (package-forums package) topic->url-sexp)
       (package-repository package)))
 
+(define (release-version release)
+  "Guess the version of RELEASE from the release title."
+  (define title (release-title release))
+  (if (string-prefix? "v" title)
+      ;; Remove "v" prefix from release titles like ‘v1.0.1’.
+      (substring title 1)
+      title))
+
 ;; If the default sort key is changed, make sure to modify 'show-help'
 ;; in (guix scripts import minetest) appropriately as well.
 (define %default-sort-key "score")
@@ -436,7 +444,7 @@ list of AUTHOR/NAME strings."
   (define important-upstream-dependencies
     (important-dependencies dependencies author/name #:sort sort))
   (values (make-minetest-sexp author/name
-                              (release-title release) ; version
+                              (release-version release)
                               (package-repository package)
                               (release-commit release)
                               important-upstream-dependencies

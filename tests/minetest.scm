@@ -33,6 +33,10 @@
 
 (define* (make-package-sexp #:key
                             (guix-name "minetest-foo")
+                            ;; This is not a proper version number but
+                            ;; ContentDB often does not include version
+                            ;; numbers.
+                            (version "2021-07-25")
                             (home-page "https://example.org/foo")
                             (repo "https://example.org/foo.git")
                             (synopsis "synopsis")
@@ -44,9 +48,7 @@
                             #:allow-other-keys)
   `(package
      (name ,guix-name)
-     ;; This is not a proper version number but ContentDB does not include
-     ;; version numbers.
-     (version "2021-07-25")
+     (version ,version)
      (source
       (origin
         (method git-fetch)
@@ -106,14 +108,14 @@
                              author "/" name "/download/"))
     ("website" . ,website)))
 
-(define* (make-releases-json #:key (commit #f) (title "") #:allow-other-keys)
+(define* (make-releases-json #:key (commit #f) (title "2021-07-25") #:allow-other-keys)
   `#((("commit" . ,commit)
       ("downloads" . 469)
       ("id" . 8614)
       ("max_minetest_version" . null)
       ("min_minetest_version" . null)
       ("release_date" . "2021-07-25T01:10:23.207584")
-      ("title" . "2021-07-25"))))
+      ("title" . ,title))))
 
 (define* (make-dependencies-json #:key (author "Author")
                                  (name "foo")
@@ -291,6 +293,17 @@ during a dynamic extent where that package is available on ContentDB."
               #:forums 'null
               #:website 'null
               #:repo 'null)
+
+
+;; Determining the version number
+
+(test-package "conventional version number" #:version "1.2.3" #:title "1.2.3")
+;; See e.g. orwell/basic_trains
+(test-package "v-prefixed version number" #:version "1.2.3" #:title "v1.2.3")
+;; Many mods on ContentDB use dates as release titles.  In that case, the date
+;; will have to do.
+(test-package "dates as version number"
+              #:version "2021-01-01" #:title "2021-01-01")
 
 
 
