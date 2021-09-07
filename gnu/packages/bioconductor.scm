@@ -14556,6 +14556,52 @@ ensemble machine learning for the estimation of nuisance functions.")
 visualizing bisulfite sequencing data.")
     (license license:artistic2.0)))
 
+(define-public r-dmrseq
+  (package
+    (name "r-dmrseq")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "dmrseq" version))
+       (sha256
+        (base32
+         "1jbbjifjsnk9261wqmdwkbzj1w52g6vaanpk4w816ri0fap587m4"))))
+    (properties `((upstream-name . "dmrseq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationhub" ,r-annotationhub)
+       ("r-annotatr" ,r-annotatr)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-bsseq" ,r-bsseq)
+       ("r-bumphunter" ,r-bumphunter)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-locfit" ,r-locfit)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-nlme" ,r-nlme)
+       ("r-outliers" ,r-outliers)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/dmrseq")
+    (synopsis "Detection and inference of differentially methylated regions")
+    (description
+     "This package implements an approach for scanning the genome to detect
+and perform accurate inference on differentially methylated regions from Whole
+Genome Bisulfite Sequencing data.  The method is based on comparing detected
+regions to a pooled null distribution, that can be implemented even when as
+few as two samples per population are available.  Region-level statistics are
+obtained by fitting a @dfn{generalized least squares} (GLS) regression model
+with a nested autoregressive correlated error structure for the effect of
+interest on transformed methylation proportions.")
+    (license license:expat)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
