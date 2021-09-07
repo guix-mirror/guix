@@ -14466,6 +14466,50 @@ optimised for high performance.")
 help unravel disease regulatory trajectory.")
     (license license:gpl2)))
 
+(define-public r-biotmle
+  (package
+    (name "r-biotmle")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biotmle" version))
+       (sha256
+        (base32
+         "01smkmbv40yprgrgi2gjnmi8ncqyrlkfdxsh33ki20amcx32nc7f"))))
+    (properties `((upstream-name . "biotmle")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-dofuture" ,r-dofuture)
+       ("r-dplyr" ,r-dplyr)
+       ("r-drtmle" ,r-drtmle)
+       ("r-future" ,r-future)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggsci" ,r-ggsci)
+       ("r-limma" ,r-limma)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-superheat" ,r-superheat)
+       ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://code.nimahejazi.org/biotmle/")
+    (synopsis "Targeted learning with moderated statistics for biomarker discovery")
+    (description
+     "This package provides tools for differential expression biomarker
+discovery based on microarray and next-generation sequencing data that
+leverage efficient semiparametric estimators of the average treatment effect
+for variable importance analysis.  Estimation and inference of the (marginal)
+average treatment effects of potential biomarkers are computed by targeted
+minimum loss-based estimation, with joint, stable inference constructed across
+all biomarkers using a generalization of moderated statistics for use with the
+estimated efficient influence function.  The procedure accommodates the use of
+ensemble machine learning for the estimation of nuisance functions.")
+    (license license:expat)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
