@@ -13910,6 +13910,34 @@ mappings functionalities.")
 information networks from data.")
     (license license:artistic2.0)))
 
+(define-public r-genetclassifier
+  (package
+    (name "r-genetclassifier")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "geNetClassifier" version))
+       (sha256
+        (base32
+         "1i1cavbbvxzqgqxfmikghnls18jrq12hb953mjrwa95lkhzdxm2d"))))
+    (properties
+     `((upstream-name . "geNetClassifier")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-e1071" ,r-e1071)
+       ("r-ebarrays" ,r-ebarrays)
+       ("r-minet" ,r-minet)))
+    (home-page "https://www.cicancer.org")
+    (synopsis "Classify diseases and build gene networks using expression profiles")
+    (description
+     "This is a comprehensive package to automatically train and validate a
+multi-class SVM classifier based on gene expression data.  It provides
+transparent selection of gene markers, their coexpression networks, and an
+interface to query the classifier.")
+    (license license:gpl2+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
