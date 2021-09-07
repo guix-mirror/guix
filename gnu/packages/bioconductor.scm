@@ -14118,6 +14118,38 @@ the development of new database connectors for local projects or inside
 separate published packages.")
     (license license:agpl3+)))
 
+(define-public r-biomformat
+  (package
+    (name "r-biomformat")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biomformat" version))
+       (sha256
+        (base32
+         "1wgshkddxbmpsihpkm0dp7vqp59ns6iqbx574y80n2pxb8dx8sy9"))))
+    (properties `((upstream-name . "biomformat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-matrix" ,r-matrix)
+       ("r-plyr" ,r-plyr)
+       ("r-rhdf5" ,r-rhdf5)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/joey711/biomformat/")
+    (synopsis "Interface package for the BIOM file format")
+    (description
+     "This is an R package for interfacing with the BIOM format.  This package
+includes basic tools for reading biom-format files, accessing and subsetting
+data tables from a biom object (which is more complex than a single table), as
+well as limited support for writing a biom-object back to a biom-format file.
+The design of this API is intended to match the Python API and other tools
+included with the biom-format project, but with a decidedly \"R flavor\" that
+should be familiar to R users.  This includes S4 classes and methods, as well
+as extensions of common core functions/methods.")
+    (license license:gpl2)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
