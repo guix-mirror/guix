@@ -7735,11 +7735,6 @@ is useful when a package contains multiple packages and you want to build
 only one of them.  This is equivalent to passing the @code{-p} argument to
 @code{dune}.
 
-The @code{#:profile} parameter can be passed to specify the
-@uref{https://dune.readthedocs.io/en/stable/dune-files.html#profile,
-dune build profile}. This is equivalent to passing the @code{--profile}
-argument to @code{dune}. Its default value is @code{"release"}.
-
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
