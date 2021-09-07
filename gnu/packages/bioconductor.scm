@@ -14224,6 +14224,31 @@ as extensions of common core functions/methods.")
 design.")
     (license license:lgpl2.1+)))
 
+(define-public r-biomvcclass
+  (package
+    (name "r-biomvcclass")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioMVCClass" version))
+       (sha256
+        (base32
+         "04pld93nffbci47dnf0awmcmhlfzv599ggcd7hvq78w41ac60qv8"))))
+    (properties `((upstream-name . "BioMVCClass")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-graph" ,r-graph)
+       ("r-mvcclass" ,r-mvcclass)
+       ("r-rgraphviz" ,r-rgraphviz)))
+    (home-page "https://bioconductor.org/packages/BioMVCClass")
+    (synopsis "Model-View-Controller (MVC) classes that use Biobase")
+    (description
+     "This package contains classes used in model-view-controller (MVC)
+design.")
+    (license license:lgpl2.1+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
