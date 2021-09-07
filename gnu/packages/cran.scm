@@ -9788,6 +9788,38 @@ counterfactual means and causal effects that are doubly-robust with respect
 both to consistency and asymptotic normality.")
     (license license:expat)))
 
+(define-public r-dofuture
+  (package
+    (name "r-dofuture")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doFuture" version))
+       (sha256
+        (base32
+         "1hqzdlgcrc5l6xjwdylsc9iiysi2wx8k1j1vmw3wryj26057c9y4"))))
+    (properties `((upstream-name . "doFuture")))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)
+       ("r-future" ,r-future)
+       ("r-globals" ,r-globals)
+       ("r-iterators" ,r-iterators)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/doFuture")
+    (synopsis "Foreach parallel adapter using the future API")
+    (description
+     "This package provides a @code{%dopar%} adapter such that any type of
+futures can be used as backends for the @code{foreach} framework.")
+    (license license:lgpl2.1+)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
