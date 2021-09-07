@@ -23837,7 +23837,7 @@ files in Elisp.")
 (define-public emacs-lsp-ui
   (package
     (name "emacs-lsp-ui")
-    (version "7.0.1")
+    (version "8.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -23846,7 +23846,7 @@ files in Elisp.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09dmhhxmfjnzdc5kygwsjf8nwqlnq9rbgrca679s2wy93miqj7vc"))))
+                "00yirx6qzlb8fv8rd53zaw93nw72z3br40rb16scdqj1v20qsp47"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
