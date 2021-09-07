@@ -9470,6 +9470,37 @@ visualization and candidate genes around SNPs.")
 of precision-recall and ROC (Receiver Operator Characteristics) curves.")
     (license license:gpl3)))
 
+(define-public r-netrep
+  (package
+    (name "r-netrep")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NetRep" version))
+       (sha256
+        (base32
+         "1swlb2k9bc7whvslxbklz864j9ynvna73hvq5rhv61cv5vy05ksd"))))
+    (properties `((upstream-name . "NetRep")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-bh" ,r-bh)
+       ("r-foreach" ,r-foreach)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-statmod" ,r-statmod)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/package=NetRep")
+    (synopsis "Permutation testing network module preservation across datasets")
+    (description
+     "This package provides functions for assessing the
+replication/preservation of a network module's topology across datasets
+through permutation testing.")
+    (license license:gpl2)))
+
 (define-public r-abcoptim
   (package
     (name "r-abcoptim")
