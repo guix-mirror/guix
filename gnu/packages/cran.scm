@@ -9709,6 +9709,32 @@ cross-validated AUC estimates based on influence curves for i.i.d. and pooled
 repeated measures data, respectively.")
     (license license:asl2.0)))
 
+(define-public r-gam
+  (package
+    (name "r-gam")
+    (version "1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gam" version))
+       (sha256
+        (base32
+         "1zhy2fp7pxac8xp3z3hndhprj4s5gx3305b627vc78bal1ml3swi"))))
+    (properties `((upstream-name . "gam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/package=gam")
+    (synopsis "Generalized additive models")
+    (description
+     "This package provides functions for fitting and working with generalized
+additive models, as described in chapter 7 of \"Statistical Models in
+S\" (Chambers and Hastie (eds), 1991), and \"Generalized Additive
+Models\" (Hastie and Tibshirani, 1990).")
+    (license license:gpl2)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
