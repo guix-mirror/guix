@@ -11768,6 +11768,31 @@ Slurm workload manager, in part by automating the division of embarrassingly
 parallel calculations across cluster nodes.")
     (license license:gpl3)))
 
+(define-public r-chk
+  (package
+    (name "r-chk")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "chk" version))
+       (sha256
+        (base32
+         "1fxsxgvd08lkb6amjgs4x48dhqr046mmjngjfgy2ya9cl2shd7ls"))))
+    (properties `((upstream-name . "chk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lifecycle" ,r-lifecycle)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/poissonconsulting/chk")
+    (synopsis "Check user-supplied function arguments")
+    (description
+     "This is a package for developers to check user-supplied function
+arguments.  It is designed to be simple, fast and customizable.  Error
+messages follow the tidyverse style guide.")
+    (license license:expat)))
+
 (define-public r-weights
   (package
     (name "r-weights")
