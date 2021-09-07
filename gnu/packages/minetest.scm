@@ -154,8 +154,8 @@ in different ways.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/minetest/minetest_game")
-                     (commit version)))
+                    (url "https://github.com/minetest/minetest_game")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
@@ -172,8 +172,8 @@ in different ways.")
                                        "/share/minetest/games/minetest_game")))
                      (mkdir-p install-dir)
                      (copy-recursively
-                       (assoc-ref %build-inputs "source")
-                       install-dir)
+                      (assoc-ref %build-inputs "source")
+                      install-dir)
                      #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
