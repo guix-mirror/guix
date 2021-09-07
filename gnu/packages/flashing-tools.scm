@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -97,7 +98,7 @@ programmer devices.")
 (define-public 0xffff
   (package
     (name "0xffff")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method git-fetch)
@@ -106,16 +107,19 @@ programmer devices.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a5b7k96vzirb0m8lqp7ldn77ppz4ngf56wslhsj2c6flcyvns4v"))))
+        (base32 "0rl1xzbxl991pm2is98zbryac1lgjrc3zphmbd8agv07av0r6r6n"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb-0.1)))         ; doesn't work with libusb-compat
+     ;; Building with libusb-compat will succeed but the result will be broken.
+     ;; See <https://github.com/pali/0xFFFF/issues/3>.
+     `(("libusb" ,libusb-0.1)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure))           ; no configure
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
+             "HOST_CC=gcc"
              "BUILD_DATE=GNU Guix"
              (string-append "PREFIX=" %output))
        #:tests? #f))                    ; no 'check' target

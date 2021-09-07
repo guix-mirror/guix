@@ -57,6 +57,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system asdf)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages c)
@@ -8135,8 +8136,8 @@ functions for arrays and vectors.  Originally from Plump.")
   (sbcl-package->ecl-package sbcl-array-utils))
 
 (define-public sbcl-plump
-  (let ((commit "34f890fe46efdebe7bb70d218f1937e98f632bf9")
-        (revision "1"))
+  (let ((commit "3584275f0be9d06c0c51b5c08f89005deafc4ada")
+        (revision "2"))
     (package
       (name "sbcl-plump")
       (version (git-version "2.0.0" revision commit))
@@ -8150,7 +8151,7 @@ functions for arrays and vectors.  Originally from Plump.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0a0x8wn6vv1ylxcwck12k18gy0a366kdm6ddxxk7yynl4mwnqgkh"))))
+           "1w4wz7f6dc2ckdq9wq9r5014bg2nxjifj9yz1zzn41r8h1h5xfcd"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("array-utils" ,sbcl-array-utils)
@@ -18228,6 +18229,79 @@ functions allow Lisp programs to explore the web.")
 
 (define-public cl-aserve
   (sbcl-package->cl-source-package sbcl-aserve))
+
+(define-public sbcl-yxorp
+  (let ((commit "d2e8f9304549e47ae5c7fa35a6b114804603eac9")
+        (revision "1"))
+    (package
+      (name "sbcl-yxorp")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charJe/cl-yxorp")
+               (commit commit)))
+         (file-name (git-file-name "cl-yxorp" version))
+         (sha256
+          (base32 "1zz1j678vzwkf817h2z0pf0fcyf4mldv4hiv1wyam58hd4bcrjsw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl+ssl" ,sbcl-cl+ssl)
+         ("cl-binding-arrows" ,sbcl-binding-arrows)
+         ("cl-str" ,sbcl-cl-str)
+         ("cl-usocket" ,sbcl-usocket)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://github.com/charje/cl-yxorp")
+      (synopsis
+       "Reverse proxy server written in and configurable in Common Lisp")
+      (description
+       "This is a reverse proxy server written in and configurable in
+Common Lisp.  It supports WebSocket, HTTP, HTTPS, HTTP to HTTPS
+redirecting, port and host forwarding configuration using a real programming
+language, HTTP header and body manipulation (also using a real programming
+language).")
+      (license license:agpl3))))
+
+(define-public ecl-yxorp
+  ;; Note that due to a bug in ECL this package does not build.
+  ;; The bug has already been fixed on the development branch,
+  ;; so this package will work work in the version after 21.2.1.
+  (sbcl-package->ecl-package sbcl-yxorp))
+
+(define-public cl-yxorp
+  (sbcl-package->cl-source-package sbcl-yxorp))
+
+(define-public cl-yxorp-cli
+  (package
+    (inherit sbcl-yxorp)
+    (name "cl-yxorp-cli")
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:strip-binaries? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (replace 'build
+           (lambda _
+             (invoke
+              "sbcl" "--noinform"
+              "--non-interactive"
+              "--no-userinit"
+              "--eval" "(require :asdf)"
+              "--eval" "(pushnew (uiop:getcwd) asdf:*central-registry*)"
+              "--load" "build.lisp")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "cl-yxorp" bin)))))))
+    (inputs (cons (list "sbcl" sbcl) (package-inputs sbcl-yxorp)))))
 
 (define-public sbcl-rss
   ;; No release.

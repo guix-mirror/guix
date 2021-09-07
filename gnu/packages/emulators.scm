@@ -1770,7 +1770,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.234")
+    (version "0.235")
     (source
      (origin
        (method git-fetch)
@@ -1779,7 +1779,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "010ing14pfwc0j7jnghjdcvq0qr7g4dplnggl545apyy61zigdkn"))
+        (base32 "1iz5p51am7gh19i0zx96vfpfpza8xvrz9f2pd908jsc4xpr36agd"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

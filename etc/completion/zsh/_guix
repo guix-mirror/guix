@@ -2,6 +2,8 @@
 #
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
+# Copyright © 2021 Noah Evans <noah@nevans.me>
+# Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 #
 # This file is part of GNU Guix.
 #
@@ -68,21 +70,24 @@ _guix_list_installed_packages()
 (( $+functions[_guix_build] )) || _guix_build()
 {
     _arguments \
-        '--expression=[build the package matching EXPR]:EXPR' \
-        '--file=[build the package matching code evaluated from FILE]:FILE:_files' \
-        '--source[build the packages source derivations]' \
-        '--sources=[build source derivations]:TYPE:(all package transitive)' \
-        '--system=[attempt to build for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
+        {-e,--expression=}'[build the package or derivation EXPR evaluates to]:EXPR' \
+        {-f,--file=}'[build the package or derivation that the code within FILE evaluates to]:FILE:_files' \
+        {-m,--manifest=}'[build the packages that the manifest given in FILE evaluates to]:FILE:_files' \
+        {-S,--source}'[build the packages source derivations]' \
+        '--sources=[build source derivations]:TYPE:(package all transitive)' \
+        {-s,--system=}'[attempt to build for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
         '--target=[cross-build for TRIPLET (e.g. "armel-linux-gnu")]:TRIPLET' \
-        '--derivations[return the derivation paths of the given packages]' \
+        {-d,--derivations}'[return the derivation paths of the given packages]' \
         '--check[rebuild items to check for non-determinism issues]' \
-        '--root=[symlink result to FILE and register it as GC root]:FILE:_files' \
-        '--quiet[do not show the build log]' \
+        '--repair[repair the specified items]' \
+        {-r,--root=}'[make FILE a symlink to the result, and register it as a GC root]:FILE:_files' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
+        {-q,--quiet}'[do not show the build log]' \
         '--log-file[return the log file names for the given derivations]' \
-        '--load-path=[prepend DIR to the package module search path]:DIR:_dirs' \
-        '--keep-failed[keep build tree of failed builds]' \
-        '--keep-going[keep going when some of the derivations fail]' \
-        '--dry-run[do not build the derivations]' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -\' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
         '--fallback[fall back to building when the substituter fails]' \
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
@@ -90,12 +95,12 @@ _guix_list_installed_packages()
         '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
-        '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
         '--rounds=[build N times in a row to detect non-determinism]:N' \
-        '--cores=[allow the use of up to N CPU cores for the build]:N' \
-        '--max-jobs=[allow at most N build jobs]:N' \
-        '--with-source=[use SOURCE when building the corresponding package]:SOURCE' \
-        '--with-input=[replace dependency PACKAGE by REPLACEMENT]:PACKAGE=REPLACEMENT' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        '--help-transform[list package transformation options not shown here]' \
+        {-V,--version}'[display version information and exit]' \
         '*:package:->packages'
 
     if [[ "$state" = packages ]]; then
@@ -107,7 +112,10 @@ _guix_list_installed_packages()
 (( $+functions[_guix_challenge] )) || _guix_challenge()
 {
     _arguments \
-        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URL:_urls' \
+        '--substitute-urls=[compare build results with those at URLS]:URLS:_urls' \
+        '--diff=[show differences according to MODE]:MODE' \
+        {-v,--verbose}'[show details about successful comparisons]' \
+        {-V,--version}'[display version information and exit]' \
         '*:package:->packages'
 
     if [[ "$state" = packages ]]; then
@@ -126,7 +134,11 @@ _guix_list_installed_packages()
 (( $+functions[_guix_download] )) || _guix_download()
 {
     _arguments \
-        '--format=[write the hash in the given format]:FMT:(nix-base32 base16 base32 hex)' \
+        {-f,--format=}'[write the hash in the given format]:FMT:(nix-base32 base16 base32 hex)' \
+        {-H,--hash=}'[use the given hash ALGORITHM]:ALGORITHM' \
+        '--no-check-certificate[do not validate the certificate of HTTPS servers ]' \
+        {-o,--output=}'[download to FILE]:FILE:_files' \
+        {-V,--version}'[display version information and exit]' \
         '1:URL:_urls'
 }
 
@@ -139,21 +151,29 @@ _guix_list_installed_packages()
 (( $+functions[_guix_environment] )) || _guix_environment()
 {
     _arguments \
-        '--expression=[create environment for the package evaluated from EXPR]:EXPR' \
-        '--load=[create environment for the package evaluated from FILE]:FILE:_files' \
-        '--ad-hoc[include all specified packages, not only their inputs]' \
+        {-e,--expression=}'[create environment for the package that EXPR evaluates to]:EXPR' \
+        {-l,--load=}'[create environment for the package that the code within FILE evaluates to]:FILE:_files' \
+        {-m,--manifest=}'[create environment with the manifest from FILE]:FILE:_files' \
+        {-p,--profile=}'[create environment from profile at PATH]:PATH:_files -/' \
+        '--ad-hoc[include all specified packages in the environment instead of only their inputs]' \
         '--pure[unset existing environment variables]' \
+        {-E,--preserve=}'[preserve environment variables that match REGEXP]:REGEXP' \
         '--search-paths[display needed environment variable definitions]' \
-        '--system=[attempt to build for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
-        '--container[run command within an isolated container]' \
-        '--network[allow containers to access the network]' \
-        '--share=[share writable host file system according to SPEC]:SPEC' \
-        '--expose=[expose read-only host file system according to SPEC]:SPEC' \
+        {-s,--system=}'[attempt to build for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
+        {-r,--root=}'[make FILE a symlink to the result, and register it as a GC root]:FILE:_files' \
+        {-C,--container}'[run command within an isolated container]' \
+        {-N,--network}'[allow containers to access the network]' \
+        {-P,--link-profile}'[link environment profile to ~/.guix-profile within an isolated container]' \
+        {-u,--user=}'[instead of copying the name and home of the current user into an isolated container, use the name USER with home directory /home/USER]:USER:_users' \
+        '--no-cwd[do not share current working directory with an isolated container]' \
+        '--share=[for containers, share writable host file system according to SPEC]:SPEC' \
+        '--expose=[for containers, expose read-only host file system according to SPEC]:SPEC' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
         '--bootstrap[use bootstrap binaries to build the environment]' \
-        '--load-path=[prepend DIR to the package module search path]:DIR:_dirs' \
-        '--keep-failed[keep build tree of failed builds]' \
-        '--keep-going[keep going when some of the derivations fail]' \
-        '--dry-run[do not build the derivations]' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
         '--fallback[fall back to building when the substituter fails]' \
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
@@ -161,10 +181,12 @@ _guix_list_installed_packages()
         '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
-        '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
         '--rounds=[build N times in a row to detect non-determinism]:N' \
-        '--cores=[allow the use of up to N CPU cores for the build]:N' \
-        '--max-jobs=[allow at most N build jobs]:N' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        '--help-transform[list package transformation options not shown here]' \
+        {-V,--version}'[display version information and exit]' \
         '*:package:->packages'
 
     if [[ "$state" = packages ]]; then
@@ -177,27 +199,39 @@ _guix_list_installed_packages()
 (( $+functions[_guix_gc] )) || _guix_gc()
 {
     _arguments \
-        '--collect-garbage=[collect at least MIN bytes of garbage]:MIN' \
-        '--free-space=[attempt to reach FREE available space in the store]:FREE' \
-        '--delete[attempt to delete PATHS]' \
+        {-C,--collect-garbage=}'[collect at least MIN bytes of garbage]:MIN' \
+        {-F,--free-space=}'[attempt to reach FREE available space in the store]:FREE' \
+        {-d,--delete-generations=}'[delete profile generations matching PATTERN]:PATTERN' \
+        {-D,--delete}'[attempt to delete PATHS]' \
+        '--list-roots[list the users GC roots]' \
+        '--list-busy[list store items used by running processes]' \
         '--optimize[optimize the store by deduplicating identical files]' \
         '--list-dead[list dead paths]' \
         '--list-live[list live paths]' \
         '--references[list the references of PATHS]' \
-        '--requisites[list the requisites of PATHS]' \
+        {-R,--requisites}'[list the requisites of PATHS]' \
         '--referrers[list the referrers of PATHS]' \
+        '--derivers[list the derivers of PATHS]' \
         '--verify=[verify the integrity of the store]:OPTS:(contents repair)' \
         '--list-failures[list cached build failures]' \
         '--clear-failures[remove PATHS from the set of cached failures]' \
-        '1:PATH:_dirs'
+        {-V,--version}'[display version information and exit]:V' \
+        '1:PATH:_files -/'
 }
 
 (( $+functions[_guix_graph] )) || _guix_graph()
 {
     _arguments \
-        '--type=[represent nodes of the given TYPE]:TYPE:->types' \
+        {-b,--backend=}'[produce a graph with the given backend TYPE]:TYPE:->types' \
+        '--list-backends[list the available graph backends]' \
+        {-t,--type=}'[represent nodes of the given TYPE]:TYPE:->types' \
         '--list-types[list the available graph types]' \
-        '--expression=[consider the package EXPR evaluates to]:EXPR' \
+        '--path[display the shortest path between the given nodes]' \
+        {-e,--expression=}'[consider the package EXPR evaluates to]:EXPR' \
+        {-s,--system=}'[consider the graph for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        '--help-transform[list package transformation options not shown here]' \
+        {-V,--version}'[display version information and exit]' \
         '1:PACKAGE:->packages'
 
     case "$state" in
@@ -216,14 +250,18 @@ _guix_list_installed_packages()
 (( $+functions[_guix_hash] )) || _guix_hash()
 {
     _arguments \
-        '--format=[write the hash in the given format]:FMT:(nix-base32 base16 base32 hex)' \
-        '--recursive[compute the hash on FILE recursively]'\
+        {-x,--exclude-vcs}'[exclude version control directories]' \
+        {-H,--hash=}'[use the given hash ALGORITHM]:ALGORITHM' \
+        {-f,--format=}'[write the hash in the given format]:FMT:(nix-base32 base16 base32 hex)' \
+        {-r,--recursive}'[compute the hash on FILE recursively]' \
+        {-V,--version}'[display version information and exit]' \
         '1:FILE:_files'
 }
 
 (( $+functions[_guix_import] )) || _guix_import()
 {
     _arguments \
+        {-V,--version}'[display version information and exit]' \
         '1:IMPORTER:->importer' \
         '*:args:'
 
@@ -236,8 +274,12 @@ _guix_list_installed_packages()
 (( $+functions[_guix_lint] )) || _guix_lint()
 {
     _arguments \
-        '--checkers=[only run the specified checkers]:CHECKERS:->checkers' \
-        '--list-checkers[display the list of available lint checkers]' \
+        {-c,--checkers=}'[only run the specified checkers]:CHECKERS:->checkers' \
+        {-x,--exclude=}'[exclude the specified checkers]:CHECKERSS:->checkers' \
+        {-n,--no-network}'[only run checkers that do not access the network]' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-l,--list-checkers}'[display the list of available lint checkers]' \
+        {-V,--version}'[display version information and exit]' \
         '1:PACKAGE:->packages'
 
     case "$state" in
@@ -255,29 +297,32 @@ _guix_list_installed_packages()
 (( $+functions[_guix_package] )) || _guix_package()
 {
     _arguments \
-        '--install[install one or more packages]: :->install' \
-        '--install-from-expression=[install the package EXP evaluates to]:EXP' \
-        '--install-from-file=[install the package evaluated from FILE]:FILE:_files' \
-        '--remove[remove one or more packages]: :->remove' \
-        '--upgrade=[upgrade all the installed packages matching REGEXP]:REGEXP' \
-        '--manifest=[create a new profile generation from FILE]:FILE:_files' \
+        {-i,--install}'[install one or more packages]: :->install' \
+        {-e,--install-from-expression=}'[install the package EXP evaluates to]:EXP' \
+        {-f,--install-from-file=}'[install the package evaluated from FILE]:FILE:_files' \
+        {-r,--remove}'[remove one or more packages]: :->remove' \
+        {-u,--upgrade=}'[upgrade all the installed packages matching REGEXP]:REGEXP' \
+        {-m,--manifest=}'[create a new profile generation from FILE]:FILE:_files' \
         '--do-not-upgrade=[do not upgrade any packages matching REGEXP]:REGEXP' \
         '--roll-back[roll back to the previous generation]' \
         '--search-paths=[display needed environment variable definitions]:KINDS' \
-        '--list-generations=[list generations matching PATTERN]:PATTERN' \
-        '--delete-generations=[delete generations matching PATTERN]:PATTERN' \
-        '--switch-generation=[switch to a generation matching PATTERN]:PATTERN' \
-        '--profile=[use PROFILE instead of the default profile]:PROFILE' \
+        {-l,--list-generations=}'[list generations matching PATTERN]:PATTERN' \
+        {-d,--delete-generations=}'[delete generations matching PATTERN]:PATTERN' \
+        {-S,--switch-generation=}'[switch to a generation matching PATTERN]:PATTERN' \
+        '--export-manifest[print a manifest for the chosen profile]' \
+        '--export-channels[print channels for the chosen profile]' \
+        {-p,--profile}'[use PROFILE instead of the default profile]:PROFILE:_files -/' \
+        '--list-profiles[list the profiles]' \
+        '--allow-collisions[do not treat collisions in the profile as an error]' \
         '--bootstrap[use the bootstrap Guile to build the profile]' \
-        '--verbose[produce verbose output]' \
-        '--search=[search in synopsis and description using REGEXP]:REGEXP' \
-        '--list-installed=[list installed packages matching REGEXP]:REGEXP' \
-        '--list-available=[list available packages matching REGEXP]:REGEXP' \
+        {-s,--search=}'[search in synopsis and description using REGEXP]:REGEXP' \
+        {-I,--list-installed=}'[list installed packages matching REGEXP]:REGEXP' \
+        {-A,--list-available=}'[list available packages matching REGEXP]:REGEXP' \
         '--show=[show details about a package]: :->show' \
-        '--load-path=[prepend DIR to the package module search path]:DIR:_dirs' \
-        '--keep-failed[keep build tree of failed builds]' \
-        '--keep-going[keep going when some of the derivations fail]' \
-        '--dry-run[do not build the derivations]' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
         '--fallback[fall back to building when the substituter fails]' \
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
@@ -285,12 +330,13 @@ _guix_list_installed_packages()
         '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
-        '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
         '--rounds=[build N times in a row to detect non-determinism]:N' \
-        '--cores=[allow the use of up to N CPU cores for the build]:N' \
-        '--max-jobs=[allow at most N build jobs]:N' \
-        '--with-source=[use SOURCE when building the corresponding package]:SOURCE' \
-        '--with-input=[replace dependency PACKAGE by REPLACEMENT]:PACKAGE=REPLACEMENT'
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]' \
+        '--help-transform[list package transformation options not shown here]' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]' \
+        {-V,--version}'[display version information and exit]'
 
     case "$state" in
         install|show)
@@ -304,37 +350,165 @@ _guix_list_installed_packages()
         esac
 }
 
+(( $+functions[_guix_install] )) || _guix_install()
+{
+    _arguments \
+        {-p,--profile=}'[use PROFILE instead of the users default profile]:PROFILE:_files -/' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
+        '--fallback[fall back to building when the substituter fails]' \
+        '--no-substitutes[build instead of resorting to pre-built substitutes]' \
+        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
+        '--no-grafts[do not graft packages]' \
+        '--no-offload[do not attempt to offload builds]' \
+        '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
+        '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
+        '--rounds=[build N times in a row to detect non-determinism]:N' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        '--help-transform[list package transformation options not shown here]' \
+        {-V,--version}'[display version information and exit]' \
+        '*:package:->packages'
+
+    if [[ "$state" = packages ]]; then
+        _guix_list_available_packages
+        compadd -a -- _guix_available_packages
+    fi
+}
+
+(( $+functions[_guix_remove] )) || _guix_remove()
+{
+    _arguments \
+        {-p,--profile=}'[use PROFILE instead of the users default profile]:PROFILE:_files -/' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
+        '--fallback[fall back to building when the substituter fails]' \
+        '--no-substitutes[build instead of resorting to pre-built substitutes]' \
+        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
+        '--no-grafts[do not graft packages]' \
+        '--no-offload[do not attempt to offload builds]' \
+        '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
+        '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
+        '--rounds=[build N times in a row to detect non-determinism]:N' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        {-V,--version}'[display version information and exit]' \
+        '*:package:->packages'
+
+    if [[ "$state" = packages ]]; then
+        _guix_list_installed_packages
+        compadd -a -- _guix_installed_packages
+    fi
+}
+
+(( $+functions[_guix_upgrade] )) || _guix_upgrade()
+{
+    _arguments \
+        {-p,--profile=}'[use PROFILE instead of the users default profile]:PROFILE:_files -/' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
+        '--do-not-upgrade=[do not upgrade any packages matching REGEXP]:REGEXP' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
+        '--fallback[fall back to building when the substituter fails]' \
+        '--no-substitutes[build instead of resorting to pre-built substitutes]' \
+        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
+        '--no-grafts[do not graft packages]' \
+        '--no-offload[do not attempt to offload builds]' \
+        '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
+        '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
+        '--rounds=[build N times in a row to detect non-determinism]:N' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        '--help-transform[list package transformation options not shown here]' \
+        {-V,--version}'[display version information and exit]' \
+        '*:regexp'
+}
+
 (( $+functions[_guix_publish] )) || _guix_publish()
 {
     _arguments \
-        '--port=[listen on PORT]:PORT:' \
-        '--listen=[listen on the network interface for HOST]:HOST:_hosts' \
-        '--user=[change privileges to USER as soon as possible]:USER:_users' \
-        '--compression=[compress archives at LEVEL]:LEVEL' \
+        {-p,--port=}'[listen on PORT]:PORT' \
+        '--listen=[listen on the network interface for HOST]:HOST_hosts' \
+        {-u,--user=}'[change privileges to USER as soon as possible]:USER_users' \
+        {-a,--advertise}'[advertise on the local network]' \
+        {-C,--compression=}'[compress archives with METHOD at LEVEL]:METHOD' \
+        {-c,--cache=}'[cache published items to DIRECTORY]:DIRECTORY:_files -/' \
+        '--cache-bypass-threshold=[serve store items below SIZE even when not cached]:SIZE' \
+        '--workers=[use N workers to bake items]:N' \
         '--ttl=[announce narinfos can be cached for TTL seconds]:TTL' \
-        '--repl=[spawn REPL server on PORT]:PORT'
+        '--negative-ttl=[announce missing narinfos can be cached for TTL seconds]:TTL' \
+        '--nar-path=[use PATH as the prefix for nar URLs]:PATH' \
+        '--public-key=[use FILE as the public key for signatures]:FILE:_files' \
+        '--private-key=[use FILE as the private key for signatures]:FILE:_files' \
+        {-r,--repl=}'[spawn REPL server on PORT]:PORT' \
+        {-V,--version}'[display version information and exit]' \
 }
 
 (( $+functions[_guix_pull] )) || _guix_pull()
 {
     _arguments \
-        '--verbose[produce verbose output]' \
-        '--url=[download the Guix tarball from URL]:URL:_urls' \
-        '--bootstrap[use the bootstrap Guile to build the new Guix]'
+        {-C,--channels=}'[deploy the channels defined in FILE]:FILE:_files' \
+        '--url=[download from the Git repository at URL]:URL:_urls' \
+        '--commit=[download the specified COMMIT]:COMMIT' \
+        '--branch=[download the tip of the specified BRANCH]:BRANCH' \
+        '--allow-downgrades[allow downgrades to earlier channel revisions]' \
+        '--disable-authentication[disable channel authentication]' \
+        {-N,--news}'[display news compared to the previous generation]' \
+        {-l,--list-generations=}'[list generations matching PATTERN]:PATTERN' \
+        '--roll-back[roll back to the previous generation]' \
+        {-d,--delete-generations=}'[delete generations matching PATTERN]:PATTERN' \
+        {-S,--switch-generation=}'[switch to a generation matching PATTERN]:PATTERN' \
+        {-p,--profile=}'[use PROFILE instead of ~/.config/guix/current]:PROFILE:_files -/' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
+        {-s,--system=}'[attempt to build for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
+        '--bootstrap[use the bootstrap Guile to build the new Guix]' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
+        '--fallback[fall back to building when the substituter fails]' \
+        '--no-substitutes[build instead of resorting to pre-built substitutes]' \
+        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
+        '--no-grafts[do not graft packages]' \
+        '--no-offload[do not attempt to offload builds]' \
+        '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
+        '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
+        '--rounds=[build N times in a row to detect non-determinism]:N' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        {-V,--version}'[display version information and exit]'
 }
 
 (( $+functions[_guix_refresh] )) || _guix_refresh()
 {
     _arguments \
-        '--expression=[consider the package EXPR evaluates to]:EXPR' \
-        '--update[update source files in place]' \
-        '--select=[select all the packages in SUBSET]:SUBSET:(core non-core)' \
-        '--type=[restrict to updates from the specified updaters]:UPDATER:->updaters' \
-        '--list-updaters[list available updaters and exit]' \
-        '--list-dependent[list top-level dependent packages]' \
-        '--key-server=[use HOST as the OpenPGP key server]:HOST:_hosts' \
+        {-e,--expression=}'[consider the package EXPR evaluates to]:EXPR' \
+        {-u,--update}'[update source files in place]' \
+        {-s,--select=}'[select all the packages in SUBSET, one of]:SUBSET:(core non-core)' \
+        {-m,--manifest=}'[select all the packages from the manifest in FILE]:FILE:_files' \
+        {-t,--type=}'[restrict to updates from the specified updaters]:UPDATER:-.updaters' \
+        {-L,--list-updaters}'[list available updaters and exit]' \
+        {-l,--list-dependent}'[list top-level dependent packages that would need to be rebuilt as a result of upgrading PACKAGE...]' \
+        {-r,--recursive}'[check the PACKAGE and its inputs for upgrades]' \
+        '--list-transitive[list all the packages that PACKAGE depends on]' \
+        '--keyring=[use FILE as the keyring of upstream OpenPGP keys]:FILE:_files' \
+        '--key-server=[use HOST as the OpenPGP key server]:HOST_hosts' \
         '--gpg=[use COMMAND as the GnuPG 2.x command]:COMMAND' \
-        '--key-download=[policy to handle missing OpenPGP keys]:POLICY:(always interactive never)' \
+        '--key-download=[handle missing OpenPGP keys according to POLICY:]:POLICY:(always interactive never)' \
+        '--load-path=[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-V,--version}'[display version information and exit]' \
         '*:package:->packages'
 
     case "$state" in
@@ -352,9 +526,12 @@ _guix_list_installed_packages()
 (( $+functions[_guix_size] )) || _guix_size()
 {
     _arguments \
-        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URL:_urls' \
-        '-system=[consider packages for SYSTEM--e.g., "i686-linux"]:SYSTEM' \
-        '--map-file=[write to FILE a graphical map of disk usage]:FILE:_files' \
+        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
+        {-s,--system=}'[consider packages for SYSTEM (e.g. "i686-linux")]:SYSTEM' \
+        '--sort=[sort according to KEY]:KEY:(closure self)' \
+        {-m,--map-file=}'[write to FILE a graphical map of disk usage]:FILE:_files' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-V,--version}'[display version information and exit]' \
         '*:package:->packages'
 
         if [[ "$state" = packages ]]; then
@@ -366,28 +543,42 @@ _guix_list_installed_packages()
 (( $+functions[_guix_system] )) || _guix_system()
 {
     _arguments \
-        '--load-path=[prepend DIR to the package module search path]:DIR:_dirs' \
-        '--keep-failed[keep build tree of failed builds]' \
-        '--keep-going[keep going when some of the derivations fail]' \
-        '--dry-run[do not build the derivations]' \
+        {-L,--load-path=}'[prepend DIR to the package module search path]:DIR:_files -/' \
+        {-K,--keep-failed}'[keep build tree of failed builds]' \
+        {-k,--keep-going}'[keep going when some of the derivations fail]' \
+        {-n,--dry-run}'[do not build the derivations]' \
         '--fallback[fall back to building when the substituter fails]' \
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
-        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URL:_urls' \
+        '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
         '--no-grafts[do not graft packages]' \
         '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
-        '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
         '--rounds=[build N times in a row to detect non-determinism]:N' \
-        '--cores=[allow the use of up to N CPU cores for the build]:N' \
-        '--max-jobs=[allow at most N build jobs]:N' \
-        '--derivation[return the derivation of the given system]' \
-        '--on-error=[apply STRATEGY when an error occurs while reading FILE]:STRATEGY' \
-        '--image-size=[for "image", produce an image of SIZE]:SIZE' \
-        '--no-grub[for "init", do not install GRUB]' \
-        '--share=[for "vm", share host file system according to SPEC]:SPEC' \
-        '--expose=[for "vm", expose host file system according to SPEC]:SPEC' \
-        '--full-boot[for "vm", make a full boot sequence]' \
+        {-c,--cores=}'[allow the use of up to N CPU cores for the build]:N' \
+        {-M,--max-jobs=}'[allow at most N build jobs]:N' \
+        '--debug=[produce debugging output at LEVEL]:LEVEL' \
+        {-d,--derivation}'[return the derivation of the given system]' \
+        {-e,--expression=}'[consider the operating-system EXPR evaluates to instead of reading FILE, when applicable]:EXPR' \
+        '--allow-downgrades[for reconfigure, allow downgrades to earlier channel revisions]' \
+        '--on-error=[apply STRATEGY  when an error occurs while reading FILE]:STRATEGY:(nothing-special backtrace debug)' \
+        '--list-image-types[list available image types]' \
+        {-t,--image-type=}'[for image, produce an image of TYPE]:TYPE' \
+        '--image-size=[for image, produce an image of SIZE]:SIZE' \
+        '--no-bootloader[for init, do not install a bootloader]' \
+        '--volatile[for image, make the root file system volatile]' \
+        '--label=[for image, label disk image with LABEL]:LABEL' \
+        '--save-provenance[save provenance information]' \
+        '--share=[for vm and container, share host file system with read/write access according to SPEC]:SPEC' \
+        '--expose=[for vm and container, expose host file system directory as read-only according to SPEC]:SPEC' \
+        {-N,--network}'[for container, allow containers to access the network]' \
+        {-r,--root=}'[for vm, image, container and build, make FILE a symlink to the result, and register it as a GC root]:FILE:_files' \
+        '--full-boot[for vm, make a full boot sequence]' \
+        '--skip-checks[skip file system and initrd module safety checks]' \
+        '--target=[cross-build for TRIPLET (e.g. "armel-linux-gnu")]:TRIPLET' \
+        {-v,--verbosity=}'[use the given verbosity LEVEL]:LEVEL' \
+        '--graph-backend=[use BACKEND for extension-graphs and shepherd-graph]:BACKEND' \
+        {-V,--version}'[display version information and exit]' \
         '1:action:->actions' \
         '*:file:_files'
 
@@ -405,20 +596,35 @@ _guix_list_installed_packages()
         "build:Build a given package"
         "challenge:Challenge the substitutes for a package"
         "container:Build and manipulate Linux containers"
+        "copy:Copy store items remotely over SSH"
+        "deploy:Deploy operating systems on a set of machines"
+        "describe:Describe the channel revisions currently used"
         "download:Download the file at given URL and add it to the store"
         "edit:Edit the definitions of a package"
         "environment:Build an environment with a package and its dependencies"
         "gc:Invoke the garbage collector"
+        "git:Operate on Git repositories"
         "graph:Emit a DOT representation of the dependencies of a package"
         "hash:Return the cryptographic hash of a file"
         "import:Run an importer"
+        "install:Install packages"
         "lint:Run a set of checkers on a package"
+        "offload:Set up and operate build offloading"
+        "pack:Create application bundles"
         "package:Install, remove, or upgrade packages"
+        "processes:List currently running sessions"
         "publish:Publish /gnu/store over HTTP."
         "pull:Download and deploy the latest version of Guix"
         "refresh:Update package definitions to match the latest version"
+        "remove:Remove packages"
+        "repl:Read-eval-print loop (REPL) for interactive programming"
+        "search:Search for packages"
+        "show:Show information about packages"
         "size:Report the size of a package and its dependencies"
         "system:Build the operating system"
+        "time-machine:Run commands from a different revision"
+        "upgrade:Upgrade packages"
+        "weather:Report on the availability of pre-built package binaries"
     )
 
     if (( CURRENT == 1 )); then

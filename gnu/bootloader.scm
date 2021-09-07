@@ -2,7 +2,7 @@
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,7 +25,10 @@
   #:use-module (guix gexp)
   #:use-module (guix profiles)
   #:use-module (guix records)
-  #:use-module (guix ui)
+  #:use-module (guix deprecation)
+  #:use-module ((guix ui) #:select (warn-about-load-error))
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (menu-entry
@@ -55,7 +58,8 @@
             bootloader-configuration
             bootloader-configuration?
             bootloader-configuration-bootloader
-            bootloader-configuration-target
+            bootloader-configuration-target ;deprecated
+            bootloader-configuration-targets
             bootloader-configuration-menu-entries
             bootloader-configuration-default-entry
             bootloader-configuration-timeout
@@ -179,12 +183,17 @@ record."
 ;; The <bootloader-configuration> record contains bootloader independant
 ;; configuration used to fill bootloader configuration file.
 
+(define-syntax-rule (warn-target-field-deprecation value)
+  (%warn-target-field-deprecation value (current-source-location)))
+
 (define-record-type* <bootloader-configuration>
   bootloader-configuration make-bootloader-configuration
   bootloader-configuration?
   (bootloader         bootloader-configuration-bootloader) ;<bootloader>
-  (target             bootloader-configuration-target      ;string
+  (targets            %bootloader-configuration-targets    ;list of strings
                       (default #f))
+  (target             %bootloader-configuration-target ;deprecated
+                      (default #f) (sanitize warn-target-field-deprecation))
   (menu-entries       bootloader-configuration-menu-entries ;list of <menu-entry>
                       (default '()))
   (default-entry      bootloader-configuration-default-entry ;integer
@@ -203,6 +212,26 @@ record."
                       (default #f))
   (serial-speed       bootloader-configuration-serial-speed ;integer | #f
                       (default #f)))
+
+(define (%warn-target-field-deprecation value location)
+  (when value
+    (warning (source-properties->location location)
+             (G_ "the 'target' field is deprecated, please use 'targets' \
+instead~%")))
+  value)
+
+(define-deprecated (bootloader-configuration-target config)
+  bootloader-configuration-targets
+  (%bootloader-configuration-target config))
+
+(define (bootloader-configuration-targets config)
+  (or (%bootloader-configuration-targets config)
+      ;; TODO: Remove after the deprecated 'target' field is removed.
+      (list (%bootloader-configuration-target config))
+      ;; XXX: At least the GRUB installer (see (gnu bootloader grub)) has this
+      ;; peculiar behavior of installing fonts and GRUB modules when DEVICE is #f,
+      ;; hence the default value of '(#f) rather than '().
+      (list #f)))
 
 
 ;;;

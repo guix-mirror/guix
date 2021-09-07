@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -630,7 +630,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
     (bootloader (bootloader-configuration
                   (inherit (operating-system-bootloader os))
                   (bootloader grub-bootloader)
-                  (target "/dev/vda")))
+                  (targets '("/dev/vda"))))
 
     (initrd (lambda (file-systems . rest)
               (apply (operating-system-initrd os)

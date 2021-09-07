@@ -38,14 +38,14 @@
 (define-public mc
   (package
     (name "mc")
-    (version "4.8.26")
+    (version "4.8.27")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://ftp.midnight-commander.org/mc-"
+      (uri (string-append "https://ftp.osuosl.org/pub/midnightcommander/mc-"
                           version ".tar.xz"))
       (sha256
-       (base32 "09vc2vf6k12a8k5gdss6hcskwfcbyalrkhn65nidkwlm0p2svpn6"))))
+       (base32 "1x2g5ahgzg951y4ldbsgkv8icni2mgh3p2wsds0j16gsbwi5kgii"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("pkg-config" ,pkg-config)))
@@ -97,6 +97,8 @@
                (("usr/bin") "/"))
              #t)))))
     (home-page "https://www.midnight-commander.org")
+    (properties
+      `((release-monitoring-url . "https://ftp.osuosl.org/pub/midnightcommander/")))
     (synopsis "Graphical file manager")
     (description
      "GNU Midnight Commander is a command-line file manager laid out in a

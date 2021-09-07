@@ -29,6 +29,7 @@
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5259,7 +5260,38 @@ non-UTF-friendly sources.")
 terminfo capability strings to avoid hard-coding escape strings for
 formatting.  It also favors portability, and includes support for all POSIX
 systems.")
-      (license license:expat))))
+      (license license:asl2.0))))
+
+(define-public go-github-com-gdamore-tcell-v2
+    (package
+      (inherit go-github-com-gdamore-tcell)
+      (name "go-github-com-gdamore-tcell")
+      (version "2.3.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gdamore/tcell")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ypbl5080q9sd3irad8mv7zlg4242i8pmg5xyhbyq95kymwibaid"))))
+      (arguments
+       `(#:import-path "github.com/gdamore/tcell/v2"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-files-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Make sure .gz files are writable so that the
+               ;; 'reset-gzip-timestamps' phase can do its work.
+               (let ((out (assoc-ref outputs "out")))
+                 (for-each make-file-writable
+                           (find-files out "\\.gz$"))))))))
+      (propagated-inputs
+       `(("go-golang-org-x-term" ,go-golang-org-x-term)
+         ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+         ,@(package-inputs go-github-com-gdamore-tcell)))))
 
 (define-public go-github-com-mattn-go-shellwords
   (let ((commit "2444a32a19f450fabaa0bb3e96a703f15d9a97d2")
@@ -8401,3 +8433,71 @@ zero round-trip encryption, and other advanced features.")
     (synopsis "Go compression library")
     (description "@code{compress} provides various compression algorithms.")
     (license license:bsd-3)))
+
+(define-public go-github-com-oneofone-xxhash
+  (package
+    (name "go-github-com-oneofone-xxhash")
+    (version "1.2.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OneOfOne/xxhash")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0f98qk83l2fhpclvrgyxsa9b8m4pipf11fah85bnjl01wy4lvybw"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/OneOfOne/xxhash"))
+    (home-page "https://github.com/OneOfOne/xxhash")
+    (synopsis "Go implementation of xxHash")
+    (description "This is a native Go implementation of the
+@url{https://github.com/Cyan4973/xxHash, xxHash} algorithm, an extremely fast
+non-cryptographic hash algorithm, working at speeds close to RAM limits.")
+    (license license:asl2.0)))
+
+(define-public go-github-com-aswinkarthik-csvdiff
+  (package
+    (name "go-github-com-aswinkarthik-csvdiff")
+    (version "1.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/aswinkarthik/csvdiff")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0cd1ikxsypjqisfnmr7zix3g7x8p892w77086465chyd39gpk97b"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/aswinkarthik/csvdiff"))
+    (propagated-inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-github-com-spf13-cobra" ,go-github-com-spf13-cobra)
+       ("go-github-com-spf13-afero" ,go-github-com-spf13-afero)
+       ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+       ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
+       ("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-cespare-xxhash" ,go-github-com-cespare-xxhash)
+       ("go-github-com-oneofone-xxhash" ,go-github-com-oneofone-xxhash)))
+    (home-page "https://github.com/aswinkarthik/csvdiff")
+    (synopsis "Fast diff tool for comparing CSV files")
+    (description "@code{csvdiff} is a diff tool to compute changes between two
+CSV files.  It can compare CSV files with a million records in under 2
+seconds.  It is specifically suited for comparing CSV files dumped from
+database tables.  GNU Diff is orders of magnitude faster for comparing line by
+line.  @code{csvdiff} supports
+
+@itemize
+@item Selective comparison of fields in a row
+@item Specifying group of columns as primary-key to uniquely identify a row
+@item Ignoring columns
+@item Several output formats including colored git style output or
+JSON for post-processing
+@end itemize")
+    (license license:expat)))

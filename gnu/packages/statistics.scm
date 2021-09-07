@@ -188,7 +188,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "4.1.0")
+    (version "4.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -196,7 +196,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "109732arm6dq6d6v3fl1nyx63lcvv9569j8g6r3s2b18sxcqkrp8"))))
+                "0r6kpnxjbvb7gdfg4m1z8zc6xd225vw81wrnf05ps9ajawk06pji"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -716,14 +716,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "3.2-11")
+    (version "3.2-12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "0w0gkni1w8rbmfw7yl08bl1s9lij1yhbkj4dvmxcarkkw26sjjzs"))))
+         "1152zpd961bzwnabkhf6q9jgb72bj68023dsn2dcdmxqdi72mps5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -1640,13 +1640,13 @@ flexible and easy to set up.")
 (define-public r-r6
   (package
     (name "r-r6")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R6" version))
               (sha256
                (base32
-                "00ifi2kwa7kn67xf0z1w6jfdicjczygbyi5mhfw2qlzc4sbazhdf"))))
+                "0j5z0b0myzjyyykk310xsa9n2mcm9bz8yqbq4xgz2yzdq8lvv4ld"))))
     (build-system r-build-system)
     (home-page "https://github.com/wch/R6/")
     (synopsis "Classes with reference semantics in R")
@@ -2555,13 +2555,13 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "1738nccg0msrhmzsasp19i0dpqi3m1nqbbg3nf1iiyp0mqc1dl8r"))))
+                "0cj5k3ykkhixgdsqm1gnmpc0d8z04l3fhvm2dr5xp7cpmhgsrpfr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2740,13 +2740,13 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "2.9")
+    (version "2.10")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32 "0s46x819zhf45k8qzpiwz79i5pn4gv99jfadywcjca3wka5szrbc"))))
+          (base32 "1p2cc9ysj906gkl4c6ac7s8njh32p2kcx1ib4gjj3jmfz915k9jk"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2855,13 +2855,13 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "2.2.7")
+    (version "2.2.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "1j89n4ydv42y5hqqv8nz72sa5wncws074kg527s902k1a67s69ii"))))
+                "1hscgi11px9hq0sx78c2lkfzq121rlvmhxmqf305xg6lgqdxr2hv"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2928,13 +2928,13 @@ ldap, and also supports cookies, redirects, authentication, etc.")
 (define-public r-xml
   (package
     (name "r-xml")
-    (version "3.99-0.6")
+    (version "3.99-0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "XML" version))
               (sha256
                (base32
-                "0qibvacbfm7gl41ylway3vdyi1qbpa211d48rg3k5i30d48rbf58"))))
+                "024038g1mrzkv7b7fyrzpzpxlch3sifsnaa584g98y3c3g6jbrz0"))))
     (properties
      `((upstream-name . "XML")))
     (build-system r-build-system)

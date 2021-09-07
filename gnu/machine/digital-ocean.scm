@@ -235,7 +235,7 @@ cat > /etc/bootstrap-config.scm << EOF
   (timezone \"Etc/UTC\")
   (bootloader (bootloader-configuration
                (bootloader grub-bootloader)
-               (target \"/dev/vda\")
+               (targets '(\"/dev/vda\"))
                (terminal-outputs '(console))))
   (file-systems (cons (file-system
                         (mount-point \"/\")

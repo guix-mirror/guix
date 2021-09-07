@@ -88,14 +88,14 @@ low-end hardware and serving many concurrent requests.")
 (define-public bat
   (package
     (name "bat")
-    (version "0.18.2")
+    (version "0.18.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bat" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "01zdamn1rd6d4xwwba1a8nfh06nmg7a0lakzgq8yfj5hsdgj9rdm"))))
+        (base32 "0qlk032dd6zxda1v7clah33nafxygaw3x7f73ajwlvk956nrn1js"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -103,7 +103,6 @@ low-end hardware and serving many concurrent requests.")
         ("rust-ansi-term" ,rust-ansi-term-0.12)
         ("rust-atty" ,rust-atty-0.2)
         ("rust-bugreport" ,rust-bugreport-0.4)
-        ("rust-clap" ,rust-clap-2)
         ("rust-clap" ,rust-clap-2)
         ("rust-clircle" ,rust-clircle-0.3)
         ("rust-console" ,rust-console-0.14)

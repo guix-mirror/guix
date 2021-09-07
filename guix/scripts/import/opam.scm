@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Alice Brenon <alice.brenon@ens-lyon.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +47,8 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
   (display (G_ "
   -r, --recursive        import packages recursively"))
   (display (G_ "
-      --repo             import packages from this opam repository"))
+      --repo             import packages from this opam repository (name, URL or local path)
+                         can be used more than once"))
   (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
@@ -81,7 +83,9 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
                         #:build-options? #f))
 
   (let* ((opts (parse-options))
-         (repo (and=> (assoc-ref opts 'repo) string->symbol))
+         (repo (filter-map (match-lambda
+                             (('repo . name) name)
+                             (_ #f)) opts))
          (args (filter-map (match-lambda
                             (('argument . value)
                              value)

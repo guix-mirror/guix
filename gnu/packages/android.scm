@@ -150,6 +150,7 @@ use their packages mostly unmodified in our Android NDK build system.")
                      "libutils-remove-damaging-includes.patch"
                      "libutils-add-includes.patch"
                      "adb-add-libraries.patch"
+                     "adb-libssl_11-compatibility.patch"
                      "libziparchive-add-includes.patch"))))
 
 (define (android-platform-system-extras version)
@@ -392,7 +393,7 @@ various Android core host applications.")
      `(("android-libbase" ,android-libbase)
        ("android-libcutils" ,android-libcutils)
        ("android-liblog" ,android-liblog)
-       ("openssl" ,openssl-1.0)))
+       ("openssl" ,openssl)))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Android Debug Bridge")
     (description

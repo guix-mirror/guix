@@ -253,7 +253,7 @@ the ownership of '~a' may be incorrect!~%")
                               #:target target)
           (return
            (info (G_ "bootloader successfully installed on '~a'~%")
-                 (bootloader-configuration-target bootloader))))))))
+                 (bootloader-configuration-targets bootloader))))))))
 
 
 ;;;
@@ -768,14 +768,13 @@ and TARGET arguments."
                          skip-safety-checks?
                          install-bootloader?
                          dry-run? derivations-only?
-                         use-substitutes? bootloader-target target
+                         use-substitutes? target
                          full-boot?
                          container-shared-network?
                          (mappings '())
                          (gc-root #f))
   "Perform ACTION for IMAGE.  INSTALL-BOOTLOADER? specifies whether to install
-bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
-target root directory.
+bootloader; TARGET is the target root directory.
 
 FULL-BOOT? is used for the 'vm' action; it determines whether to
 boot directly to the kernel or to the bootloader.  CONTAINER-SHARED-NETWORK?
@@ -856,13 +855,13 @@ static checks."
                                      #:target (or target "/"))
                  (return
                   (info (G_ "bootloader successfully installed on '~a'~%")
-                        (bootloader-configuration-target bootloader))))
+                        (bootloader-configuration-targets bootloader))))
                (with-shepherd-error-handling
-                 (upgrade-shepherd-services local-eval os)
-                 (return (format #t (G_ "\
+                (upgrade-shepherd-services local-eval os)
+                (return (format #t (G_ "\
 To complete the upgrade, run 'herd restart SERVICE' to stop,
 upgrade, and restart each service that was not automatically restarted.\n")))
-                 (return (format #t (G_ "\
+                (return (format #t (G_ "\
 Run 'herd status' to view the list of services on your system.\n"))))))
             ((init)
              (newline)
@@ -1218,9 +1217,9 @@ resulting from command-line parsing."
          (target-file (match args
                         ((first second) second)
                         (_ #f)))
-         (bootloader-target
+         (bootloader-targets
                       (and bootloader?
-                           (bootloader-configuration-target
+                           (bootloader-configuration-targets
                             (operating-system-bootloader os)))))
 
     (define (graph-backend)
@@ -1269,7 +1268,6 @@ resulting from command-line parsing."
                                                       opts)
                                #:install-bootloader? bootloader?
                                #:target target-file
-                               #:bootloader-target bootloader-target
                                #:gc-root (assoc-ref opts 'gc-root)))))
           #:target target
           #:system system)))

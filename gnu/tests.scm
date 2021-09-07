@@ -222,7 +222,7 @@ the system under test."
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sdX")))
+                 (targets '("/dev/sdX"))))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
                           (mount-point "/")

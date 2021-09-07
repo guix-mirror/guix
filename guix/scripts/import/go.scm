@@ -112,10 +112,10 @@ that are not yet in Guix"))
                (map package->definition*
                     (apply go-module-recursive-import arguments))
                ;; Single import.
-               (let ((sexp (apply go-module->guix-package arguments)))
+               (let ((sexp (apply go-module->guix-package* arguments)))
                  (unless sexp
-                   (leave (G_ "failed to download meta-data for module '~a'~%")
-                          module-name))
+                   (leave (G_ "failed to download meta-data for module '~a'.~%")
+                          name))
                  (package->definition* sexp))))))
       (()
        (leave (G_ "too few arguments~%")))

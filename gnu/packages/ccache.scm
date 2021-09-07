@@ -31,21 +31,26 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/ccache/ccache/releases/download/v"
                            version "/ccache-" version ".tar.xz"))
        (sha256
-        (base32 "1d4995lkmqshzfxlmbyn101m1rxs02yb8dgh4rl30p26hhhhyjjh"))))
+        (base32 "0qbmcs6c3m071vsd1ppa31r8s0dzpaw5y38z8ga1bz48rwpfl2xl"))))
     (build-system cmake-build-system)
     (native-inputs `(("perl" ,perl)     ; for test/run
                      ("which" ,(@ (gnu packages base) which))))
     (inputs `(("zlib" ,zlib)
               ("zstd" ,zstd "lib")))
     (arguments
-     '(#:phases
+     '(;; Disable redis backend explicitly. Build system insists on present dependency
+       ;; or on explicit flag.
+       #:configure-flags
+       '("-DREDIS_STORAGE_BACKEND=OFF")
+
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setup-tests
            (lambda _
@@ -56,7 +61,7 @@
            ;; Tests require a writable HOME.
            (lambda _
              (setenv "HOME" (getenv "TMPDIR"))
-	     #t)))))
+             #t)))))
     (home-page "https://ccache.dev/")
     (synopsis "Compiler cache")
     (description

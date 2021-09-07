@@ -1769,14 +1769,14 @@ by default and can be made read-only.")
 (define-public bochs
   (package
     (name "bochs")
-    (version "2.6.11")
+    (version "2.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://sourceforge.net/projects/bochs/files/bochs/"
                            version "/bochs-" version ".tar.gz"))
        (sha256
-        (base32 "0ql8q6y1k356li1g9gbvl21448mlxphxxi6kjb2b3pxvzd0pp2b3"))))
+        (base32 "0ymiwnfqg5npq2dk9ngidbbfn3qw8z6i491finhcaan7zldsn450"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests exist
@@ -2032,14 +2032,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20201218")
+    (version "20210809")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ydbindwgw7kg861rqii5036gq0dbbbmv35dzrmmv937ddfsxwh0"))))
+                "16gas6ahxwim1vdjlc4p1gm6q5gfy25h82ngykcm94x69sl6qsan"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

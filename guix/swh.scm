@@ -55,6 +55,11 @@
             visit-number
             visit-snapshot
 
+            snapshot?
+            snapshot-id
+            snapshot-branches
+            lookup-snapshot-branch
+
             branch?
             branch-name
             branch-target
@@ -183,6 +188,12 @@ Software Heritage."
                                  (ref 10))))))
       str))                                       ;oops!
 
+(define (maybe-null proc)
+  (match-lambda
+    ((? null?) #f)
+    ('null #f)
+    (obj (proc obj))))
+
 (define string*
   ;; Converts "string or #nil" coming from JSON to "string or #f".
   (match-lambda
@@ -287,6 +298,7 @@ FALSE-IF-404? is true, return #f upon 404 responses."
 ;; <https://archive.softwareheritage.org/api/1/snapshot/4334c3ed4bb208604ed780d8687fe523837f1bd1/>
 (define-json-mapping <snapshot> make-snapshot snapshot?
   json->snapshot
+  (id       snapshot-id)
   (branches snapshot-branches "branches" json->branches))
 
 ;; This is used for the "branches" field of snapshots.
@@ -316,10 +328,13 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (target-url  release-target-url "target_url"))
 
 ;; <https://archive.softwareheritage.org/api/1/revision/359fdda40f754bbf1b5dc261e7427b75463b59be/>
+;; Note: Some revisions, such as those for "nixguix" origins (e.g.,
+;; <https://archive.softwareheritage.org/api/1/revision/b8dbc65475bbedde8e015d4730ade8864c38fad3/>),
+;; have their 'date' field set to null.
 (define-json-mapping <revision> make-revision revision?
   json->revision
   (id            revision-id)
-  (date          revision-date "date" string->date*)
+  (date          revision-date "date" (maybe-null string->date*))
   (directory     revision-directory)
   (directory-url revision-directory-url "directory_url"))
 
@@ -425,6 +440,32 @@ available."
   (and (visit-snapshot-url visit)
        (call (swh-url (visit-snapshot-url visit))
              json->snapshot)))
+
+(define (snapshot-url snapshot branch-count first-branch)
+  "Return the URL of SNAPSHOT such that it contains information for
+BRANCH-COUNT branches, starting at FIRST-BRANCH."
+  (string-append (swh-url "/api/1/snapshot" (snapshot-id snapshot))
+                 "?branches_count=" (number->string branch-count)
+                 "&branches_from=" (uri-encode first-branch)))
+
+(define (lookup-snapshot-branch snapshot name)
+  "Look up branch NAME on SNAPSHOT.  Return the branch, or return #f if it
+could not be found."
+  (or (find (lambda (branch)
+              (string=? (branch-name branch) name))
+            (snapshot-branches snapshot))
+
+      ;; There's no API entry point to look up a snapshot branch by name.
+      ;; Work around that by using the paginated list of branches provided by
+      ;; the /api/1/snapshot API: ask for one branch, and start pagination at
+      ;; NAME.
+      (let ((snapshot (call (snapshot-url snapshot 1 name)
+                            json->snapshot)))
+        (match (snapshot-branches snapshot)
+          ((branch)
+           (and (string=? (branch-name branch) name)
+                branch))
+          (_ #f)))))
 
 (define (branch-target branch)
   "Return the target of BRANCH, either a <revision> or a <release>."

@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -649,4 +650,36 @@ disks, and user process summary information.  All metrics are multicast on the
 LAN, if wanted, and clients can switch between multiple hosts on the network.
 Hostscope features a bridge to Influx DB.  So Grafana can be used to visualize
 the recorded data over time.")
+    (license license:gpl3+)))
+
+(define-public fatrace
+  (package
+    (name "fatrace")
+    (version "0.16.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/martinpitt/fatrace")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bxz6v1z0icp716jnv3knjyqp8bv6xnkz8gqd8z3g2b6yxj5xff3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; tests need root to run as root,
+         ;; and there is no make target for them:
+         (delete 'check))
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))))
+    (synopsis "File access events monitor")
+    (description "This package provides a utility to report system wide file
+access events from all running processes.  Its main purpose is to find
+processes which keep waking up the disk unnecessarily and thus prevent some
+power saving.")
+    (home-page "https://github.com/martinpitt/fatrace")
     (license license:gpl3+)))

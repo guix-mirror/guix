@@ -16,7 +16,7 @@
 ;;; Copyright © 2016, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>

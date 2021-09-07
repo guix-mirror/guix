@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016, 2021 Amirouche <amirouche@hypermove.net>
-;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -128,14 +128,14 @@
 (define-public artanis
   (package
     (name "artanis")
-    (version "0.4.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/artanis/artanis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nnmdfx5xwcc3kck64var7msz7g3qk817d7bv9l159nkmic0v9w4"))
+                "1vk1kp2xhz35xa5n27cxlq9c88wk6qm7fqaac8rb0pb6k9pvsv7v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -167,26 +167,36 @@
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
+       ("nspr" ,nspr)
        ("nss" ,nss)))
     ;; FIXME the bundled csv contains one more exported procedure
     ;; (sxml->csv-string) than guile-csv. The author is maintainer of both
     ;; projects.
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (propagated-inputs
-     `(("guile-json" ,guile-json-1) ; This is already using guile-2.2.
-       ("guile-readline" ,guile2.2-readline)
-       ("guile-redis" ,guile2.2-redis)))
+     `(("guile-json" ,guile-json-3)
+       ("guile-readline" ,guile-readline)
+       ("guile-redis" ,guile-redis)))
     (native-inputs
      `(("bash"       ,bash)         ;for the `source' builtin
        ("pkgconfig"  ,pkg-config)
        ("util-linux" ,util-linux))) ;for the `script' command
     (arguments
-     '(#:make-flags
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:make-flags
        ;; TODO: The documentation must be built with the `docs' target.
        (let* ((out (assoc-ref %outputs "out"))
-              (scm (string-append out "/share/guile/site/2.2"))
-              (go  (string-append out "/lib/guile/2.2/site-ccache")))
+              ;; We pass guile explicitly here since this executes before the
+              ;; set-paths phase and therefore guile is not yet in PATH.
+              (effective-version (target-guile-effective-version
+                                  (assoc-ref %build-inputs "guile")))
+              (scm (string-append out "/share/guile/site/" effective-version))
+              (go (string-append out "/lib/guile/" effective-version "/site-ccache")))
          ;; Don't use (%site-dir) for site paths.
          (list (string-append "MOD_PATH=" scm)
                (string-append "MOD_COMPILED_PATH=" go)))
@@ -199,7 +209,9 @@
                (("\\(%site-dir\\)")
                 (string-append "\""
                                (assoc-ref outputs "out")
-                               "/share/guile/site/2.2\"")))))
+                               "/share/guile/site/"
+                               (target-guile-effective-version)
+                               "\"")))))
          (add-after 'unpack 'patch-reference-to-libnss
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "artanis/security/nss.scm"
@@ -207,8 +219,10 @@
                 (string-append
                  "ffi-binding \""
                  (assoc-ref inputs "nss") "/lib/nss/libnss3.so"
-                 "\"")))
-             #t))
+                 "\""))
+               (("ffi-binding \"libssl3\"")
+                (string-append
+                 "ffi-binding \"" (assoc-ref inputs "nss") "/lib/nss/libssl3.so\"")))))
          (add-before 'install 'substitute-root-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out  (assoc-ref outputs "out")))
@@ -216,20 +230,20 @@
                  ((" /etc/bash.bashrc") " /dev/null"))
                (substitute* "Makefile"   ;set the root of config files to OUT
                  ((" /etc") (string-append " " out "/etc")))
-               (mkdir-p (string-append out "/bin")) ;for the `art' executable
-               #t)))
+               (mkdir-p (string-append out "/bin")) )))
          (add-after 'install 'wrap-art
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (effective-version (target-guile-effective-version))
                     (bin (string-append out "/bin"))
-                    (scm (string-append out "/share/guile/site/2.2"))
-                    (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                    (scm (string-append out "/share/guile/site/" effective-version))
+                    (go (string-append out "/lib/guile/" effective-version
+                                       "/site-ccache")))
                (wrap-program (string-append bin "/art")
                  `("GUILE_LOAD_PATH" ":" prefix
                    (,scm ,(getenv "GUILE_LOAD_PATH")))
                  `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                   (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
-               #t))))))
+                   (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))))))))
     (synopsis "Web application framework written in Guile")
     (description "GNU Artanis is a web application framework written in Guile
 Scheme.  A web application framework (WAF) is a software framework that is
@@ -740,6 +754,29 @@ programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
     (home-page "https://dthompson.us/projects/guile-syntax-highlight.html")
     (license license:lgpl3+)))
+
+;; gitile requires a more recent version than the latest release.
+(define-public guile-syntax-highlight-for-gitile
+  (let ((commit "897fa5156ff41588e0d281eb00e4e94de63ccd8a")
+        (revision "0"))
+    (package
+      (inherit guile-syntax-highlight)
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://git.dthompson.us/guile-syntax-highlight.git")
+                       (commit commit)))
+                (file-name (git-file-name "guile-syntax-highlight" version))
+                (sha256
+                 (base32
+                  "18zlg4mkgd3swgv2ggfz91ivnnzc0zhvc9ybgrxg1y762va9hyvj"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs guile-syntax-highlight)))
+      (properties '((hidden? . #t))))))
 
 (define-public guile2.2-syntax-highlight
   (package
@@ -4088,42 +4125,29 @@ Relay Chat} (IRC).")
       (license license:lgpl2.1+))))
 
 (define-public guile-websocket
-  (let ((commit "c854e0f84a40d972cbd532bbb89c97ca0126a7cf"))
+  (let ((commit "d17878f6c12c10a49196bb08f737f36b11e61c31")
+        (revision "1"))
     (package
       (name "guile-websocket")
-      (version "0.1")
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "git://dthompson.us/guile-websocket.git")
+               (url "https://git.dthompson.us/guile-websocket.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1hymvsfrmq9qxr5cxnsgdz7y757yp1cpsgxmdp3f5wxxxpqgsmzx"))))
+           "0kcmhjyb6amm4b9k4ng0r5s38m041mvh5jgmjbz6ichz39k255v7"))))
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0")
-         #:phases
-         (modify-phases %standard-phases
-           ;; The package was developed for Guile 2.0 and has this version
-           ;; hardcoded in the configure.ac and Makefile.am files. Substitute
-           ;; 3.0 instead so it can support Guile 3.0.
-           (add-after 'unpack 'update-guile-version
-             (lambda _
-               (substitute* "configure.ac"
-                 (("2.0.9") "3.0.0"))
-               (substitute* "Makefile.am"
-                 (("2.0") "3.0")
-
-                 ;; Install .go files where they belong.
-                 (("/ccache") "/site-ccache"))
-               #t)))))
+         '("GUILE_AUTO_COMPILE=0")))
       (native-inputs
        `(("autoconf" ,autoconf)
-         ("automake" ,automake)))
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
       (inputs
        `(("guile" ,guile-3.0)))
       (synopsis "Websocket server/client for Guile")

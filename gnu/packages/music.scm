@@ -41,6 +41,8 @@
 ;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +147,7 @@
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -551,7 +554,7 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
 (define-public cmus
   (package
     (name "cmus")
-    (version "2.8.0")
+    (version "2.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -560,7 +563,7 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ydnvq13ay8b8mfmmgwi5qsgyf220yi1d01acbnxqn775dghmwar"))))
+                "0zjkimni2fhv4yskrjrgj6b74f33rfj58zgd7khwrz4z8nf88j0w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; cmus does not include tests
@@ -2209,7 +2212,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.22")
+    (version "0.9.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -2217,7 +2220,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0cmxbsfhkkyqn97rc47cb7d3bv6bd9r71xp4z85mi2kl3q4k569i"))))
+                "03lvq84pg0agdn16i7ng6j7lp1ii3inf4pzjypnkywb2km7zcpni"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2241,7 +2244,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.22")
+    (version "0.9.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -2249,7 +2252,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0c13l814f5rhbmpmd4w0a07j1ki5wc092xcgy6p6zj5s03zvcrzy"))))
+                "1jgsml9wxzwnqyb6wjn9zk94qvxs6c898hyj10sza4d9l6r1rnw0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2274,7 +2277,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.22")
+    (version "0.9.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -2282,7 +2285,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "19ajnwzd5w2jlazflh5r9qm4sflkn2s2zc5zh0vlqywxzvb9dp9g"))))
+                "1bgyz530mpmlabvy592zickrzk4x4rm2i0ixf3z6plgn265km43q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2307,7 +2310,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.22")
+    (version "0.9.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -2315,7 +2318,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1wky9v91qc3j866di8mcjz0pf3n8ah888lxg8dpvp6ryh1cm6i6x"))))
+                "0222n74kykirkhq4va09hr37rybxs0nxjbmamp38jf94bfz5y8gp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2883,14 +2886,14 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "12haksnf91ra5w5dwnlc3rcw4js8wj4hsl6kzyqrx4q4fnpvjahk"))))
+                "1rs248pkgn6d29nkvw9ab6dvi1vsz220jdmz1ddzr29cpyc0adfh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no test target
@@ -3280,14 +3283,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.22")
+    (version "0.9.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0n73xn3205afi9vsy6ianixq36ddp8qv6iaq03ldc6mkkfvn0nc5"))))
+                "1d2d884x5kfa41skwyh0ihyx5jgc9467617gmfjm379qcgnxq00s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -3577,7 +3580,7 @@ formats, looking up tracks through metadata and audio fingerprints.")
      `(("python-pytest" ,python-pytest)
        ("python-hypothesis" ,python-hypothesis)
        ("python-flake8" ,python-flake8)))
-    (home-page "https://bitbucket.org/lazka/mutagen")
+    (home-page "https://mutagen.readthedocs.io/")
     (synopsis "Read and write audio tags")
     (description "Mutagen is a Python module to handle audio metadata.  It
 supports ASF, FLAC, M4A, Monkey’s Audio, MP3, Musepack, Ogg FLAC, Ogg Speex, Ogg
@@ -3591,20 +3594,18 @@ streams on an individual packet/page level.")
 (define-public python-mediafile
   (package
     (name "python-mediafile")
-    (version "0.6.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mediafile" version))
-       (patches (search-patches "python-mediafile-wavpack.patch"))
        (sha256
         (base32
-         "0jmsp3f57xj35ayp8b6didk85nxgl3viw34s5px3l5dwgc055yx3"))))
+         "0ipb001j19s9wvssmrj8wz0nrkbl0k3zr3dgzyp1bd9cjc6vklnp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mutagen" ,python-mutagen)
-       ("python-six" ,python-six)
-       ("python-tox" ,python-tox)))
+       ("python-six" ,python-six)))
     (home-page "https://github.com/beetbox/mediafile")
     (synopsis "Read and write audio file tags")
     (description
@@ -3617,18 +3618,14 @@ of tags.")
 (define-public python-musicbrainzngs
   (package
     (name "python-musicbrainzngs")
-    (version "0.6")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "musicbrainzngs" version))
               (sha256
                (base32
-                "1dddarpjawryll2wss65xq3v9q8ln8dan7984l5dxzqx88d2dvr8"))))
+                "09z6k07pxncfgfc8clfmmxl2xqbd7h8x8bjzwr95hc0bzl00275b"))))
     (build-system python-build-system)
-    (arguments
-     '(;; The tests fail suffer from race conditions:
-       ;; https://github.com/alastair/python-musicbrainzngs/issues/211
-       #:tests? #f))
     (home-page "https://python-musicbrainzngs.readthedocs.org/")
     (synopsis "Python bindings for MusicBrainz NGS webservice")
     (description "Musicbrainzngs implements Python bindings of the MusicBrainz
@@ -3698,36 +3695,28 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "2.0.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "0r9h7g8i8l2mgqjwkda3v6prfbkb2im5kap1az9ppmhjm9i4jkcf"))))
+                "0pzzhr4mlwpvfhy9gzq86ppz29fmf5z0w3xkl5if1fm59r1afms7"))))
     (build-system python-build-system)
     ;; Tests require network access.  See
     ;; https://github.com/pylast/pylast/issues/105
     (arguments '(#:tests? #f))
     (native-inputs
      `(("python-coverage" ,python-coverage)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-mock" ,python-mock)
-       ("python-pep8" ,python-pep8)
        ("python-pytest" ,python-pytest)
        ("python-flaky" ,python-flaky)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-pyyaml" ,python-pyyaml)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/pylast/pylast")
     (synopsis "Python interface to Last.fm and Libre.fm")
     (description "A Python interface to Last.fm and other API-compatible
 websites such as Libre.fm.")
     (license license:asl2.0)))
-
-(define-public python2-pylast
-  (package-with-python2 python-pylast))
 
 (define-public instantmusic
   (let ((commit "300891d09c703525215fa5a116b9294af1c923c8")
@@ -3774,34 +3763,27 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.9")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
-              (patches (search-patches "beets-werkzeug-compat.patch"))
               (sha256
                (base32
-                "0m40rjimvfgy1dv04p8f8d5dvi2855v4ix99a9xr900cmcn476yj"))))
+                "0arl4nc3y8iwa331hf6ggai19y8ns9pl03g5d6ac857wq2x7nzw8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Reported upstream: <https://github.com/beetbox/beets/issues/3771>.
-         ;; Disable the faulty test as the fix is unclear.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (substitute* "test/test_mediafile.py"
-               (("def test_read_audio_properties") "def _test_read_audio_properties"))
-             #t))
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
              #t))
          (replace 'check
-           (lambda _
-             (invoke "nosetests" "-v")))
-         ;; Wrap the executable, so it can find python-gi (aka pygobject) and
-         ;; gstreamer plugins.
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-v" "test"))))
+         ;; Wrap the executable, so it can find python-gi (aka
+         ;; pygobject) and gstreamer plugins.
          (add-after 'wrap 'wrap-typelib
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
@@ -3813,112 +3795,68 @@ websites such as Libre.fm.")
                  `("GI_TYPELIB_PATH" ":" prefix (,types)))
                #t))))))
     (native-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+     `(("gobject-introspection" ,gobject-introspection)
        ("python-flask" ,python-flask)
        ("python-mock" ,python-mock)
-       ("python-mpd2" ,python-mpd2)
-       ("python-nose" ,python-nose)
-       ("python-pathlib" ,python-pathlib)
-       ("python-pyxdg" ,python-pyxdg)
-       ("python-pylast" ,python-pylast)
-       ("python-rarfile" ,python-rarfile)
+       ("python-py7zr" ,python-py7zr)
+       ("python-pytest" ,python-pytest-6)
        ("python-responses" ,python-responses)))
-    ;; TODO: Install optional plugins and dependencies.
     (inputs
-     `(("python-discogs-client" ,python-discogs-client)
-       ("python-jellyfish" ,python-jellyfish)
-       ("python-munkres" ,python-munkres)
-       ("python-musicbrainzngs" ,python-musicbrainzngs)
-       ("python-mutagen" ,python-mutagen)
-       ("python-pyacoustid" ,python-pyacoustid)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-unidecode" ,python-unidecode)
-       ;; For plugin replaygain.
-       ("python-pygobject" ,python-pygobject)
-       ("gobject-introspection" ,gobject-introspection)
+     `(("bash-minimal" ,bash-minimal)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gst-plugins-good" ,gst-plugins-good)
-       ("gstreamer" ,gstreamer)))
+       ("gstreamer" ,gstreamer)
+       ("python-confuse" ,python-confuse)
+       ("python-jellyfish" ,python-jellyfish)
+       ("python-mediafile" ,python-mediafile)
+       ("python-munkres" ,python-munkres)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-unidecode" ,python-unidecode)
+       ;; Optional dependencies for plugins. Some of these are also required by tests.
+       ("python-beautifulsoup4" ,python-beautifulsoup4) ; For lyrics.
+       ("python-discogs-client" ,python-discogs-client) ; For discogs.
+       ("python-mpd2" ,python-mpd2) ; For mpdstats.
+       ("python-mutagen" ,python-mutagen) ; For scrub.
+       ("python-langdetect" ,python-langdetect) ; For lyrics.
+       ("python-pillow" ,python-pillow) ; For fetchart, embedart, thumbnails.
+       ("python-pyacoustid" ,python-pyacoustid) ; For chroma.
+       ("python-pygobject" ,python-pygobject) ; For bpd, replaygain.
+       ("python-pylast" ,python-pylast) ; For lastgenre, lastimport.
+       ("python-pyxdg" ,python-pyxdg) ; For thumbnails.
+       ("python-rarfile" ,python-rarfile) ; For import.
+       ("python-reflink" ,python-reflink) ; For reflink.
+       ("python-requests" ,python-requests)
+       ("python-requests-oauthlib" ,python-requests-oauthlib))) ; For beatport.
     (home-page "https://beets.io")
     (synopsis "Music organizer")
-    (description "The purpose of beets is to get your music collection right
-    once and for all.  It catalogs your collection, automatically improving its
-    metadata as it goes using the MusicBrainz database.  Then it provides a variety
-    of tools for manipulating and accessing your music.")
+    (description "The purpose of beets is to get your music collection
+right once and for all.  It catalogs your collection, automatically
+improving its metadata as it goes using the MusicBrainz database.
+Then it provides a variety of tools for manipulating and accessing
+your music.")
     (license license:expat)))
 
 (define-public beets-next
-  (let ((commit "04ea754d00e2873ae9aa2d9e07c5cefd790eaee2")
-        (revision "1"))
-    (package
-      (inherit beets)
-      (name "beets-next")
-      (version (git-version (package-version beets) revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/beetbox/beets")
-                      (commit commit)))
-                (file-name (git-file-name "beets" version))
-                (sha256
-                 (base32
-                  "092a9sss2shhcjmpgbwvscv8brpm5970i5hddkhi81xcff3bg1h4"))))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           ;; XXX: unclear why this fails
-           (add-after 'unpack 'disable-failing-tests
-             (lambda _
-               (substitute* "test/test_zero.py"
-                 (("def test_album_art") "def _test_album_art"))
-               #t))
-           (add-after 'unpack 'set-HOME
-             (lambda _
-               (setenv "HOME" (string-append (getcwd) "/tmp"))
-               #t))
-           (replace 'check
-             (lambda _
-               ;; Resources must be writable.
-               (for-each make-file-writable
-                         (find-files "test/rsrc" "."))
-               (invoke "nosetests" "-v")))
-           ;; Wrap the executable, so it can find python-gi (aka pygobject) and
-           ;; gstreamer plugins.
-           (add-after 'wrap 'wrap-typelib
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((prog (string-append (assoc-ref outputs "out")
-                                          "/bin/beet"))
-                     (plugins (getenv "GST_PLUGIN_SYSTEM_PATH"))
-                     (types (getenv "GI_TYPELIB_PATH")))
-                 (wrap-program prog
-                   `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,plugins))
-                   `("GI_TYPELIB_PATH" ":" prefix (,types)))
-                 #t))))))
-      (inputs
-       `(("python-confuse" ,python-confuse)
-         ("python-mediafile" ,python-mediafile)
-         ("python-reflink" ,python-reflink)
-         ("python-requests-oauthlib" ,python-requests-oauthlib)
-         ("opusfile" ,opusfile)
-         ,@(package-inputs beets))))))
+  (deprecated-package "beets-next" beets))
 
 (define-public beets-bandcamp
   (package
     (name "beets-bandcamp")
-    (version "0.1.3")
+    (version "0.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets-bandcamp" version))
               (sha256
                (base32
-                "04awg0zdhhg5h510fc1p3qkvr2l1qm6nf85hlr9z8im8a7xlka0i"))))
+                "0dwbdkrb9c0ppzm5s78h47ndpr88cw1k0z8fgfhkl706wazx2ddg"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; there are no tests
     (propagated-inputs
      `(("beets" ,beets)
-       ("python-isodate" ,python-isodate)))
-    (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-isodate" ,python-isodate)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)))
     (home-page "https://github.com/unrblt/beets-bandcamp")
@@ -4683,26 +4621,26 @@ provide a very simple interface for editing and playing MIDI loops.")
 (define-public python-discogs-client
   (package
     (name "python-discogs-client")
-    (version "2.2.1")
+    (version "2.3.12")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "discogs-client" version))
+              (uri (pypi-uri "python3-discogs-client" version))
               (sha256
                (base32
-                "053ld2psh0yj3z0kg6z5bn4y3cr562m727494n0ayhgzbkjbacly"))))
+                "1zmib0i9jicv9fyphgkcrk418qmpv3l4p38ibl31sh237ki5xqw9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-oauthlib" ,python-oauthlib)
+     `(("python-dateutil" ,python-dateutil)
+       ("python-oauthlib" ,python-oauthlib)
        ("python-requests" ,python-requests)))
-    (native-inputs
-     `(("python-six" ,python-six)))
-    (home-page "https://github.com/discogs/discogs_client")
-    (synopsis "Official Python client for the Discogs API")
-    (description "This is the official Discogs API client for Python. It enables
-you to query the Discogs database for information on artists, releases, labels,
-users, Marketplace listings, and more.  It also supports OAuth 1.0a
-authorization, which allows you to change user data such as profile information,
-collections and wantlists, inventory, and orders.")
+    (home-page "https://github.com/joalla/discogs_client")
+    (synopsis "Python client for the Discogs API")
+    (description "This is the continuation of the official Discogs API
+client for Python. It enables you to query the Discogs database for
+information on artists, releases, labels, users, Marketplace listings,
+and more.  It also supports OAuth 1.0a authorization, which allows you to
+change user data such as profile information, collections and wantlists,
+inventory, and orders.")
     (license license:bsd-2)))
 
 (define-public python2-discogs-client
@@ -6295,7 +6233,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
 (define-public avldrums-lv2
   (package
     (name "avldrums-lv2")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -6307,7 +6245,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
              (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vwdp3d8qzd493qa99ddya7iql67bbfxmbcl8hk96lxif2lhmyws"))))
+        (base32 "14gka5g7va30gm1hn0cas4vvb8s764rfvzcxm67ww86hf54cpnig"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -6315,10 +6253,10 @@ Soul Force), MVerb, Nekobi, and ProM.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
          (add-before 'build 'set-CC-variable
            (lambda _
-             (setenv "CC" "gcc") #t))
-         (delete 'configure))))
+             (setenv "CC" "gcc"))))))
     (inputs
      `(("cairo" ,cairo)
        ("dssi" ,dssi)

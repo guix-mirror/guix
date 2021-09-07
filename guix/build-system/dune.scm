@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
                      (out-of-source? #t)
                      (jbuild? #f)
                      (package #f)
+                     (profile "release")
                      (tests? #t)
                      (test-flags ''())
                      (test-target "test")
@@ -129,6 +131,7 @@ provides a 'setup.ml' file as its build system."
                       #:out-of-source? #$out-of-source?
                       #:jbuild? #$jbuild?
                       #:package #$package
+                      #:profile #$profile
                       #:tests? #$tests?
                       #:test-target #$test-target
                       #:install-target #$install-target

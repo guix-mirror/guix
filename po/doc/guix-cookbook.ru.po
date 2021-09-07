@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
-"POT-Creation-Date: 2021-07-15 14:49+0200\n"
+"POT-Creation-Date: 2021-08-25 23:26+0200\n"
 "PO-Revision-Date: 2021-07-14 13:12+0000\n"
 "Last-Translator: Anton Ryzhkin <torm84@gmail.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/ru/>\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:21
-msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
+msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christine Lemmer-Webber@* Copyright @copyright{} 2021 Joshua Branson@*"
 msgstr ""
 
 #. type: copying
@@ -954,7 +954,7 @@ msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:596
-msgid "Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
+msgid "Create a directory, say @file{~/guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
 msgstr ""
 
 #. type: example

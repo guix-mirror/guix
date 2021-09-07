@@ -1445,14 +1445,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.7")
+    (version "3.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "17d00kl0s010wg2dfhy7sdbr2qm54lsi317fmbcvjz4rxx8ywk3c"))))
+        (base32 "09fpvfj4m7glisj6p4zb8wylkrjkqqw69xnwnz4ah410zs6zm9sq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -2193,7 +2193,7 @@ It is intended primarily for use in testing.")
     `(("perl-module-build" ,perl-module-build)
       ("perl-test-pod" ,perl-test-pod)
       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-  (inputs `(("perl-socket6" ,perl-socket6)))
+  (propagated-inputs `(("perl-socket6" ,perl-socket6)))
   (arguments `(;; Need network socket API
                #:tests? #f))
   (home-page
@@ -2592,33 +2592,6 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     ;; others under a 4-clause BSD license. Refer to the files in the source
     ;; distribution for clarification.
     (license (list license:bsd-3 license:bsd-4))))
-
-(define-public pidentd
-  (package
-    (name "pidentd")
-    (version "3.0.19")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/ptrrkssn/pidentd")
-              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1k4rr0b4ygxssbnsykzjvz4hjhazzz4j5arlilyc1iq7b1wzsk7i"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f)) ; No tests are included
-    (inputs
-     `(("openssl" ,openssl-1.0)))       ;for the DES library
-    (home-page "https://www.lysator.liu.se/~pen/pidentd/")
-    (synopsis "Small Ident Daemon")
-    (description
-     "@dfn{Pidentd} (Peter's Ident Daemon) is an identd, which implements a
-identification server.  Pidentd looks up specific TCP/IP connections and
-returns the user name and other information about the connection.")
-    (license license:public-domain)))
 
 (define-public spiped
   (package
@@ -3399,12 +3372,11 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (license license:bsd-3)))
 
 (define-public opendht
-  ;; Jami requires unreleased features of OpenDHT.
-  (let ((commit "c8a0b443f3117e2fa1343d2cb3c091f502b1a24e")
+  (let ((commit "6c58d4f2e9b7f1de15db8d3a736c8cf1ea5f2886")
         (revision "1"))
     (package
       (name "opendht")
-      (version (git-version "2.2.0rc7" revision commit))
+      (version (git-version "2.3.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3413,7 +3385,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "062irb9yii66n2fzbpsjf7v2v53zzvakr1wjmi4l1jaz33fwx5by"))))
+                  "06l0z1dmxyjh8gdrmxyq4vnfnv3x400bhx0lxm7l90f8zc5r2bim"))))
       ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
       (outputs '("out" "tools" "debug"))
       (build-system cmake-build-system)
@@ -3912,14 +3884,14 @@ thousands of connections is clearly realistic with today's hardware.")
 (define-public lldpd
   (package
     (name "lldpd")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1r265ns6fh04xwrzj06p2l7kl5rkkns0cdawp1zwpvxs1xq1a7dm"))
+        (base32 "1wfs50b0694dm60ryjfmxgkxxsqpp9sxqbc4laad364wbddwd56i"))
        (modules '((guix build utils)))
        (snippet
         '(begin

@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
@@ -1358,19 +1360,24 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.27.3")
+    (version "0.27.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
                            "-Source.tar.gz"))
        (sha256
-        (base32 "0y77wfadjsrcxijdqgkr3q88b6mm9y3rg8kqsmaig8iah49md7x7"))))
+        (base32 "0klhxkxvkzzzcqpzv8jb56pykq0gyhb6rk9vc2kzjahngjx6sdl4"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))          ; no test suite
+    (arguments
+     '(#:test-target "tests"
+       #:configure-flags (list "-DEXIV2_BUILD_UNIT_TESTS=ON")))
     (propagated-inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("python" ,python)))
     (home-page "https://www.exiv2.org/")
     (synopsis "Library and command-line utility to manage image metadata")
     (description
@@ -2050,6 +2057,30 @@ using only text tools.
 SNG is implemented by a compiler/decompiler called sng that
 losslessly translates between SNG and PNG.")
     (license license:zlib)))
+
+(define-public blurhash
+  (package
+    (name "blurhash")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Nheko-Reborn/blurhash")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jy2iigarskwfhskyladbb6l92x1fb3i3vz4bvcks0za4w5hfxk5"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("doctest" ,doctest)
+       ("gcc" ,gcc-8)))
+    (home-page "https://github.com/Nheko-Reborn/blurhash")
+    (synopsis "C++ blurhash encoder/decoder")
+    (description "Simple encoder and decoder for blurhashes.  Contains a
+command line program as well as a shared library.")
+    (license license:boost1.0)))
 
 (define-public lodepng
   ;; There are no tags in the repository, so we take the version as defined in

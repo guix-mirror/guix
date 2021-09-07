@@ -147,37 +147,6 @@ management, extensions such as advertisement blocker and colorful tabs.")
     (home-page "https://www.midori-browser.org")
     (license license:lgpl2.1+)))
 
-(define-public dillo
-  (package
-    (name "dillo")
-    (version "3.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.dillo.org/download/"
-                                  "dillo-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "12ql8n1lypv3k5zqgwjxlw1md90ixz3ag6j1gghfnhjq3inf26yv"))))
-    (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--enable-ssl" "--enable-ipv6")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("fltk" ,fltk)
-              ("fontconfig" ,fontconfig)
-              ("libjpeg" ,libjpeg-turbo)
-              ("libpng" ,libpng)
-              ("libxcursor" ,libxcursor)
-              ("libxft" ,libxft)
-              ("libxi" ,libxi)
-              ("libxinerama" ,libxinerama)
-              ("openssl" ,openssl-1.0) ;XXX try latest openssl for dillo > 3.0.5
-              ("perl" ,perl)
-              ("zlib" ,zlib)))
-    (synopsis "Very small and fast graphical web browser")
-    (description "Dillo is a minimalistic web browser particularly intended for
-older or slower computers and embedded systems.")
-    (home-page "https://www.dillo.org")
-    (license license:gpl3+)))
-
 (define-public links
   (package
     (name "links")
@@ -912,19 +881,20 @@ interface.")
 (define-public telescope
   (package
     (name "telescope")
-    (version "0.4.1")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/omar-polo/telescope/releases/download/"
                            version "/telescope-" version ".tar.gz"))
        (sha256
-        (base32 "086zps4nslv5isfw1b5gvms7vp3fglm7x1a6ks0h0wxarzj350bl"))))
+        (base32 "1fgv7gg2lwrjcihq6mkraqm10a6a7h430ikrjpcwfcpv1gvj8ckz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libevent"  ,libevent)
        ("libressl"  ,libressl)

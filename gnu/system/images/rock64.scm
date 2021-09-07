@@ -39,7 +39,7 @@
     (locale "en_US.utf8")
     (bootloader (bootloader-configuration
                  (bootloader u-boot-rock64-rk3328-bootloader)
-                 (target "/dev/sda")))
+                 (targets '("/dev/sda"))))
     (initrd-modules '())
     (kernel linux-libre-arm64-generic)
     (file-systems (cons (file-system

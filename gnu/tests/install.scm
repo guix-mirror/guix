@@ -4,7 +4,7 @@
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +97,7 @@
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
@@ -135,7 +135,7 @@
 
     (bootloader (bootloader-configuration
                  (bootloader extlinux-bootloader-gpt)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
@@ -418,7 +418,7 @@ per %test-installed-os, this test is expensive in terms of CPU and storage.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vda")))
+                 (targets (list "/dev/vda"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
@@ -494,7 +494,7 @@ reboot\n")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets '("/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons* (file-system
                            (device (file-system-label "my-root"))
@@ -549,7 +549,7 @@ partition.  In particular, home directories must be correctly created (see
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons* (file-system
                            (device (file-system-label "root-fs"))
@@ -626,7 +626,7 @@ where /gnu lives on a separate partition.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
 
     ;; Add a kernel module for RAID-1 (aka. "mirror").
@@ -709,7 +709,7 @@ by 'mdadm'.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets '("/dev/vdb"))))
 
     ;; Note: Do not pass "console=ttyS0" so we can use our passphrase prompt
     ;; detection logic in 'enter-luks-passphrase'.
@@ -842,7 +842,7 @@ build (current-guix) and then store a couple of full system images.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
 
     (mapped-devices (list (mapped-device
@@ -929,7 +929,7 @@ reboot\n")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
 
     (mapped-devices (list (mapped-device
                            (source
@@ -1029,7 +1029,7 @@ store a couple of full system images.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
@@ -1103,7 +1103,7 @@ build (current-guix) and then store a couple of full system images.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
 
     (file-systems (cons (file-system
@@ -1171,7 +1171,7 @@ RAID-0 (stripe) root partition.")
     (locale "en_US.UTF-8")
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons* (file-system
                            (device (file-system-label "btrfs-pool"))
@@ -1264,7 +1264,7 @@ build (current-guix) and then store a couple of full system images.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
@@ -1337,7 +1337,7 @@ build (current-guix) and then store a couple of full system images.")
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/vdb")))
+                 (targets (list "/dev/vdb"))))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))

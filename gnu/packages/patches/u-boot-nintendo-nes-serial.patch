@@ -1,0 +1,14 @@
+Date: Sun, 5 Sep 2021 23:24:00 +0200
+Author: Danny Milosavljevic <dannym@scratchpost.org>
+Description: Set console UART to use pins PB0 and PB1.
+--- u-boot-2018.11/configs/Nintendo_NES_Classic_Edition_defconfig.orig	2021-09-05 23:09:15.905846467 +0200
++++ u-boot-2018.11/configs/Nintendo_NES_Classic_Edition_defconfig	2021-09-05 23:12:21.562774694 +0200
+@@ -21,7 +21,7 @@
+ CONFIG_SYS_NAND_OOBSIZE=0x40
+ CONFIG_AXP_DLDO1_VOLT=3300
+ CONFIG_AXP_ELDO2_VOLT=1800
+-CONFIG_CONS_INDEX=5
++CONFIG_CONS_INDEX=1
+ CONFIG_USB_MUSB_GADGET=y
+ CONFIG_SYS_USB_EVENT_POLL_VIA_INT_QUEUE=y
+ CONFIG_USB_FUNCTION_MASS_STORAGE=y

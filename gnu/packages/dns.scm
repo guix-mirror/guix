@@ -539,14 +539,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.3.6")
+    (version "4.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "062zwx4k5rgpg2c0b4721ldj36aj8clrxv79mlfw9b15ap7w1rmy"))))
+        (base32 "1bg87g0i66hw16fm7gbqmzyi2rcn1hadzz0bg9b8s5mx7g2rwfzx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -609,14 +609,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.13.1")
+    (version "1.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1f2hky62f4xxnjr0lncrzz4gipg01rp12pf98mrqkgf5ixxxj145"))))
+        (base32 "10qs1q26lzw18ljggnbz0cc5f7lr9ksj615xbrmh4amryd3va4qa"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -947,14 +947,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "5.4.0")
+    (version "5.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "0pl1l167fqb1lgmrmkx8i140l41wgnfwr6h3awxv4cw4p5qzcjjk"))))
+                "0rixiqfj53rfabrz8qpnq4whx8y29d2m5w64a4jlwx7gv4nrd2zv"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments

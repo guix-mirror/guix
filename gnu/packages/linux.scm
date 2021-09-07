@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
@@ -38,7 +38,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -102,6 +102,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gstreamer)
@@ -359,15 +360,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.13-version "5.13.9")
+(define-public linux-libre-5.13-version "5.13.13")
 (define deblob-scripts-5.13
   (linux-libre-deblob-scripts
    linux-libre-5.13-version
-   (base32 "08xai5zqgk0y0rwhssf81lf8vivjg12wjkv7855l3ljkivgjclbf")
+   (base32 "0bdqgxpc2vnj6m1nnrw8l5jpdglm0nlvjl6g44xryhy230ds0p9l")
    (base32 "153jf5l5x4438zgxwggaky2ahjlfl48j438vhpzks6h77lzc51a5")))
 (define-public linux-libre-5.13-pristine-source
   (let ((version linux-libre-5.13-version)
-        (hash (base32 "16hm6sb64f1hlr0qmf2w81zv55s6flj1x8jr2q326d9ny30przkj")))
+        (hash (base32 "0d1lr3rivgf9j3bn2a9hpzdf74nq8kybf3rfxxvw68vr1hhd4cam")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.13)))
@@ -375,7 +376,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.57")
+(define-public linux-libre-5.10-version "5.10.61")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -383,12 +384,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0c9x07gplzajm0h5if3fpw2rvfb7psw3yp7i2n6ws7ggq1dvmki2")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0b8lwfjlyd6j0csk71v07bxb5lrrzp545g1wv6kdk0kzq6maxfq0")))
+        (hash (base32 "1lci78584c0rg5m5rkylssppnv001pzh4769m9mds4fdqn6f7sl2")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.139")
+(define-public linux-libre-5.4-version "5.4.143")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -396,12 +397,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0zx3hj8fc0qpdmkn56cna5438wjxmj42a69msbkxlg4mnz6d0w84")))
+        (hash (base32 "090x087p8hxnc1daf2xwj7vg8hg1jhz5i4andkbhdy550l5nalq9")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.202")
+(define-public linux-libre-4.19-version "4.19.205")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -409,12 +410,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "09ya7n0il8fipp8ksb8cyl894ihny2r75g70vbhclbv20q2pv0pj")))
+        (hash (base32 "1ii9l44d6jxhyd5qkc5h83ixailma9v7hyl60wi3rskkafqnwv2m")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.243")
+(define-public linux-libre-4.14-version "4.14.245")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -422,12 +423,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0wdk93qv91pa6bd3ff1gv7manhkzh190c5blcpl14cbh9m2ms8vz")))
+        (hash (base32 "085jls7b2rzxlmvp0zsp4l3wi5xdrqlv2qczzwvbhzna1f4n2x0d")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.279")
+(define-public linux-libre-4.9-version "4.9.281")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -435,12 +436,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "01rf3xh2jcz6l2h79g0m02i8f9q51j64wvgvzi8lmq0gx9yvbv91")))
+        (hash (base32 "1dg70jv3bqanmjs31s0x2p7nd5g37bqzjn9rc1y6wvkgm4pwahi6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.280")
+(define-public linux-libre-4.4-version "4.4.282")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -448,7 +449,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1b9jx9zkycj0xjmy35890q5phiznayaz730dmsv3mdjg4qgfn18y")))
+        (hash (base32 "1rgxznjb6gsi64wk7x2rylyi64y2nx5yiah5gfm40c6l2f7lb9cc")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1143,7 +1144,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public acpi-call-linux-module
   (package
     (name "acpi-call-linux-module")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -1152,7 +1153,7 @@ It has been modified to remove all non-free binary blobs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mr4rjbv6fj4phf038addrgv32940bphghw2v9n1z4awvw7wzkbg"))))
+        (base32 "1s7h9y3adyfhw7cjldlfmid79lrwz3vqlvziw9nwd6x5qdj4w9vp"))))
     (build-system linux-module-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1164,8 +1165,7 @@ It has been modified to remove all non-free binary blobs.")
            (lambda _
              (substitute* (find-files "examples" ".")
                (("^(#! *)/[^ ]*/" _ shebang)
-                (string-append shebang "/usr/bin/env ")))
-             #t))
+                (string-append shebang "/usr/bin/env ")))))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1174,9 +1174,8 @@ It has been modified to remove all non-free binary blobs.")
                            (let ((target (string-append doc "/" file)))
                              (mkdir-p (dirname target))
                              (copy-recursively file target)))
-                         (list "README.md" "examples"))
-               #t))))))
-    (home-page "https://github.com/teleshoes/acpi_call")
+                         (list "README.md" "examples"))))))))
+    (home-page "https://github.com/nix-community/acpi_call")
     (synopsis "Linux kernel module to perform ACPI method calls")
     (description
      "This simple Linux kernel module allows calls from user space to any
@@ -1304,8 +1303,8 @@ and the notification, WiFi, and Bluetooth LED.")
     (license license:gpl2)))
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "059e06a51be025fde5b2bec6565540b3d9981b0b")
-        (revision "4"))
+  (let ((commit "b8167e66b4ac046b3b76c2c40008d84528e91594")
+        (revision "5"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1317,7 +1316,7 @@ and the notification, WiFi, and Bluetooth LED.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0h6l2r3yj7j9zf11dw0zcdyn50ajnjw8yvv86dzlfj80dn75n98f"))
+          (base32 "1940f2yz5c4q2fhcd91zfzl32fhdsgr297vzamm7nd8kdk0gymi2"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1438,7 +1437,7 @@ graphics card on Optimus laptops.")
 (define-public ddcci-driver-linux
   (package
     (name "ddcci-driver-linux")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method git-fetch)
@@ -1449,7 +1448,7 @@ graphics card on Optimus laptops.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vkkja3ykjil783zjpwp0vz7jy2fp9ccazzi3afd4fjk8gldin7f"))))
+         "0b50hhkna6ika2vwahzb9za9b41g39ialgv5y1y0kakqi50qi0ld"))))
     (build-system linux-module-build-system)
     (arguments
      `(#:tests? #f                               ; no tests
@@ -1621,6 +1620,40 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (synopsis "PAM interface using ctypes")
     (description "This package provides a PAM interface using @code{ctypes}.")
     (license license:expat)))
+
+(define-public pam-gnupg
+  (package
+    (name "pam-gnupg")
+    (version "0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cruegge/pam-gnupg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bf91gi6zmfzzmczxm7pajxdlgnikasvg5xsd3j0a368rcr7lf9l"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnupg" ,gnupg)
+       ("linux-pam" ,linux-pam)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:tests? #f ;no tests suite
+       #:configure-flags
+       (list (string-append "--with-moduledir="
+                            (assoc-ref %outputs "out") "/lib/security"))))
+
+    (home-page "https://github.com/cruegge/pam-gnupg")
+    (synopsis "Unlock GnuPG keys on login")
+    (description "This package provides a PAM module that hands over your
+login password to @code{gpg-agent}.  This can be useful if you are using a
+GnuPG-based password manager like @code{pass}.")
+    (license license:gpl3+)))
 
 
 ;;;
@@ -3766,7 +3799,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public interception-tools
   (package
     (name "interception-tools")
-    (version "0.6.6")
+    (version "0.6.7")
     (home-page "https://gitlab.com/interception/linux/tools")
     (source (origin
               (method git-fetch)
@@ -3776,25 +3809,17 @@ devices that can inject events directly into the input subsystem.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k9h14a9d65nwvv7pj0kigjgzfv453mm3r4svnxfg1h5lccmy8jj"))))
+                "0wcmppa7092b33wb8vc782day5phf90pc25cn1x7rk0rlw565z36"))))
     (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)
        ("libevdev" ,libevdev)
        ("libudev" ,eudev)
        ("yaml-cpp" ,yaml-cpp)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-libevdev-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libevdev (assoc-ref inputs "libevdev")))
-               (substitute* "CMakeLists.txt"
-                 (("/usr/include/libevdev-1.0")
-                  (string-append libevdev "/include/libevdev-1.0")))
-               #t))))
-       ;; No tests are included.
-       #:tests? #f))
+     `(#:tests? #f)) ; no test suite
     (synopsis "Utilities for operating on input events of evdev devices")
     (description
      "Interception Tools provides a composable infrastructure on top of
@@ -5300,7 +5325,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.13")
+    (version "5.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5308,7 +5333,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0hsqbv7kvw5j2669xmp226cf7mgdfyq6xg8vjhm5w9ix43922aaf"))))
+                "16gkyhvvpqpq0skpavkvnmglbld7p331bnpiqn2z9flgwq0mlzix"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -6874,7 +6899,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.9")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
@@ -6883,10 +6908,11 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "1d7iwc8xlyfsbgn6qx1sdfcq7jhpl8wpfj39hcd06y8dzp3jvvvn"))))
+        (base32 "1x25zs2czmn14mmq1nqi4zibsvh04vqjbx5lxj42nylnmxym9gsq"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
-                 '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
+                 '("--disable-man-doc"  ; FIXME: needs docbook2x
+                   "--disable-static")))
     (inputs `(("gmp" ,gmp)
               ("libmnl" ,libmnl)
               ("libnftnl" ,libnftnl)
@@ -7302,14 +7328,14 @@ relevant @file{/dev/vcs*} file(s).")
 (define-public fbcat
   (package
     (name "fbcat")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jwilk/fbcat/releases/download/"
                            version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0pj9hxmwhbz6kmd7847yx2jh1scl9l25zgndyi8s9vlzdkq2q8d7"))))
+        (base32 "07q6f0xj7b4gjvn69qfn0g04yd0ch8ndzyigcz8nnrhli0cvsbh6"))))
     (build-system gnu-build-system)
     (inputs
      ;; The ‘fbgrab’ wrapper can use one of several PPM-to-PNG converters.  We
@@ -7333,8 +7359,7 @@ relevant @file{/dev/vcs*} file(s).")
                  (("fbcat" all)
                   (string-append out "/bin/" all))
                  (("pnmtopng" all)
-                  (string-append pnmtopng "/bin/" all)))
-               #t)))
+                  (string-append pnmtopng "/bin/" all))))))
          (add-after 'install 'split-fbgrab-output
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -7345,8 +7370,7 @@ relevant @file{/dev/vcs*} file(s).")
                              (mkdir-p (dirname new))
                              (rename-file old new)))
                          (list "bin/fbgrab"
-                               "share/man/man1/fbgrab.1"))
-               #t))))))
+                               "share/man/man1/fbgrab.1"))))))))
     (home-page "https://jwilk.net/software/fbcat")
     (synopsis "Take a screenshot of the contents of the Linux framebuffer")
     (description
@@ -7596,7 +7620,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.12.0")
+    (version "5.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7604,7 +7628,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0b5vvwq4rqw7kph23ycd518d31dx3wq7w61znixxpdljx0ig71qn"))))
+                "09s3alwrhs1gaaywkpx2knc5bxb44b77009jw8zgsy9c2wxximns"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -7620,8 +7644,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                   (mkdir-p (string-append python (dirname script)))
                   (rename-file (string-append out script)
                                (string-append python script)))
-                (list "/sbin/xfs_scrub_all"))
-               #t)))
+                (list "/sbin/xfs_scrub_all")))))
          (add-after 'install 'install-headers
            (lambda _
              (invoke "make" "install-dev"))))))

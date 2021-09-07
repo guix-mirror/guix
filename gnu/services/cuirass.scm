@@ -25,6 +25,7 @@
   #:use-module (guix channels)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages ci)
@@ -72,6 +73,8 @@
                     (default "/var/log/cuirass-remote-server.log"))
   (cache            cuirass-remote-server-configuration-cache ;string
                     (default "/var/cache/cuirass/remote/"))
+  (publish?         cuirass-remote-server-configuration-publish? ;boolean
+                    (default #t))
   (trigger-url      cuirass-remote-server-trigger-url ;string
                     (default #f))
   (public-key       cuirass-remote-server-configuration-public-key ;string
@@ -191,8 +194,8 @@
         (stop #~(make-kill-destructor)))
       ,@(if remote-server
             (match-record remote-server <cuirass-remote-server-configuration>
-              (backend-port publish-port log-file cache trigger-url
-                            public-key private-key)
+              (backend-port publish-port log-file cache publish?
+                            trigger-url public-key private-key)
               (list
                (shepherd-service
                 (documentation "Run Cuirass remote build server.")
@@ -225,6 +228,9 @@
                                          "--trigger-substitute-url="
                                          trigger-url))
                                        '())
+                                #$@(if publish?
+                                       '()
+                                       (list "--no-publish"))
                                 #$@(if public-key
                                        (list
                                         (string-append "--public-key="
@@ -333,6 +339,8 @@
                     (default "/var/log/cuirass-remote-worker.log"))
   (publish-port     cuirass-remote-worker-configuration-publish-port ;int
                     (default 5558))
+  (substitute-urls  cuirass-remote-worker-configuration-substitute-urls
+                    (default %default-substitute-urls)) ;list of strings
   (public-key       cuirass-remote-worker-configuration-public-key ;string
                     (default #f))
   (private-key      cuirass-remote-worker-configuration-private-key ;string
@@ -343,7 +351,7 @@
 CONFIG."
   (match-record config <cuirass-remote-worker-configuration>
     (cuirass workers server systems log-file publish-port
-             public-key private-key)
+             substitute-urls public-key private-key)
     (list (shepherd-service
            (documentation "Run Cuirass remote build worker.")
            (provision '(cuirass-remote-worker))
@@ -365,6 +373,11 @@ CONFIG."
                                   (list (string-append
                                          "--publish-port="
                                          (number->string publish-port)))
+                                  '())
+                           #$@(if substitute-urls
+                                  (list (string-append
+                                         "--substitute-urls="
+                                         (string-join substitute-urls)))
                                   '())
                            #$@(if public-key
                                   (list

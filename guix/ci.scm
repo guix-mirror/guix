@@ -59,6 +59,11 @@
             job-status
             job-name
 
+            history?
+            history-evaluation
+            history-checkouts
+            history-jobs
+
             %query-limit
             queued-builds
             latest-builds
@@ -66,6 +71,7 @@
             evaluation-jobs
             build
             job-build
+            jobs-history
             latest-evaluations
             evaluations-for-commit
 
@@ -126,6 +132,18 @@
   (status      job-status "status"                ;symbol
                integer->build-status)
   (name        job-name))                         ;string
+
+(define-json-mapping <history> make-history history?
+  json->history
+  (evaluation  history-evaluation)                ;integer
+  (checkouts   history-checkouts "checkouts"      ;<checkout>*
+               (lambda (checkouts)
+                 (map json->checkout
+                      (vector->list checkouts))))
+  (jobs        history-jobs "jobs"
+               (lambda (jobs)
+                 (map json->job
+                      (vector->list jobs)))))
 
 (define-json-mapping <checkout> make-checkout checkout?
   json->checkout
@@ -247,8 +265,20 @@ found (404)."
   "Return the build associated with JOB."
   (build url (job-build-id job)))
 
-;; TODO: job history:
-;; https://ci.guix.gnu.org/api/jobs/history?spec=master&names=coreutils.x86_64-linux&nr=10
+(define* (jobs-history url jobs
+                       #:key
+                       (specification "master")
+                       (limit 20))
+  "Return the job history for the SPECIFICATION jobs which names are part of
+the JOBS list, from the CI server at URL.  Limit the history to the latest
+LIMIT evaluations. "
+  (let ((names (string-join jobs ",")))
+    (map json->history
+         (vector->list
+          (json->scm
+           (http-fetch
+            (format #f "~a/api/jobs/history?spec=~a&names=~a&nr=~a"
+                    url specification names (number->string limit))))))))
 
 (define (find-latest-commit-with-substitutes url)
   "Return the latest commit with available substitutes for the Guix package

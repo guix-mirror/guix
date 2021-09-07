@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Ellis Kenyo <me@elken.dev>
 ;;; Copyright © 2020 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -848,7 +849,7 @@ variants.")
 (define-public markets
   (package
     (name "markets")
-    (version "0.4.0")
+    (version "0.5.2")
     (source
       (origin
         (method git-fetch)
@@ -858,7 +859,7 @@ variants.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1jzv74l2jkdiqy1hp0ww5yla50dmrvjw7fgkmb26ynblr1nb3rrb"))))
+          "0nk1bs7i6b7r90g5qwd3s2m462vk3kvza0drq7rzb5sdaiz9ccnz"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -868,19 +869,18 @@ variants.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/meson/postinstall.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'unpack 'skip-update-desktop-database
            ;; Don't update desktop file database.
            (lambda _
              (substitute* "build-aux/meson/postinstall.py"
-               (("update-desktop-database") "true"))
-             #t)))))
+               (("update-desktop-database") "true")))))))
     (inputs
      `(("gtk3" ,gtk+)
        ("gettext" ,gettext-minimal)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libgee" ,libgee)
-       ("libhandy0" ,libhandy-0.0)
+       ("libhandy" ,libhandy)
        ("libsoup" ,libsoup)
        ("json-glib" ,json-glib)
        ("vala" ,vala)))
@@ -892,7 +892,7 @@ variants.")
     (description
      "Markets is a GTK application that displays financial data, helping users
 track stocks, currencies and cryptocurrencies.")
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public vala-language-server
   (package

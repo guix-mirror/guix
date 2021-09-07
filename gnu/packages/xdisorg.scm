@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
-;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -772,7 +772,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method git-fetch)
@@ -782,14 +782,16 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x64b7xqi5cbq29pb8s8r2kzbxaday1f5k0j70n3s2p7sahjxy72"))))
+        (base32 "1qanx2xx9m5l995csqzfcm1ks2nhk90zga1wzbkjjl75ga4iik2h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
-       ("automake" ,automake)))
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("giblib" ,giblib)
+       ("imlib2" ,imlib2)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxext" ,libxext)
@@ -1031,7 +1033,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.66")
+    (version "5.67")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
@@ -1042,7 +1044,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
                                        "xlockmore-" version ".tar.xz")))
              (sha256
               (base32
-               "0wdb7gpyjw3sigmhiplgg1bqxz6wipr0c3n9492x2a18cv1saxjr"))))
+               "0k13gxgnk4i041g1fzixfwlf3l5hrvvkhfvxf27szx0d1qbpwq58"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -1093,14 +1095,14 @@ transparent text on your screen.")
 (define-public wob
   (package
     (name "wob")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/francma/wob/releases/download/"
                            version "/wob-" version ".tar.gz"))
        (sha256
-        (base32 "1vgngcg8wxn6zfg34czn9w55ia0zmhlgnpzf0gh31dc72li9353k"))))
+        (base32 "080pwz8pvqqq068lavzz48dl350iszpdswjd86bjk6zra5h5d10q"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1758,15 +1760,15 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/DaveDavenport/rofi/"
+              (uri (string-append "https://github.com/davatorium/rofi/"
                                   "releases/download/"
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "12p9z8bl1gg8k024m4a6zfz7gf1zbyffardh98raqgabn6knwk22"))))
+                "1929q3dks8fqd3pfkzs0ba06gwzhlgcrfar9fpga43f3byrrbfxa"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1778,6 +1780,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
        ("libxkbcommon" ,libxkbcommon)
        ("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
+       ("xcb-util-cursor" ,xcb-util-cursor)
        ("xcb-util-xrm" ,xcb-util-xrm)
        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
@@ -1797,7 +1800,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                (("~") "")
                (("g_get_home_dir \\(\\)") "\"/\""))
              #t)))))
-    (home-page "https://github.com/DaveDavenport/rofi")
+    (home-page "https://github.com/davatorium/rofi")
     (synopsis "Application launcher")
     (description "Rofi is a minimalist application launcher.  It memorizes which
 applications you regularly use and also allows you to search for an application
@@ -2223,7 +2226,7 @@ to automatically turn it on on login.")
 (define-public xrandr-invert-colors
   (package
     (name "xrandr-invert-colors")
-    (version "0.01")
+    (version "0.02")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2232,7 +2235,7 @@ to automatically turn it on on login.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1br3x9vr6xm4ika06n8cfxx1b3wdchdqvyzjl4y1chmivrml8x9h"))))
+                "0gk1fgxb2kjyr78xn8m0ckjdic99ras7msa67piwnhj3j4scg1ih"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
@@ -2241,11 +2244,14 @@ to automatically turn it on on login.")
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'install
+           ;; It's simpler to install the single binary ourselves than to patch
+           ;; the Makefile's install target into working.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (bin  (string-append out "/bin")))
-               (install-file "xrandr-invert-colors.bin" bin)
-               #t))))))
+               (mkdir-p bin)
+               (copy-file "xrandr-invert-colors.bin"
+                          (string-append bin "/xrandr-invert-colors"))))))))
     (inputs
      `(("libxrandr" ,libxrandr)))
     (home-page "https://github.com/zoltanp/xrandr-invert-colors")
@@ -2464,7 +2470,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
 (define-public xwallpaper
   (package
     (name "xwallpaper")
-    (version "0.6.6")
+    (version "0.7.3")
     (source
      (origin
        (method git-fetch)
@@ -2473,7 +2479,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10klm81rs3k3l2i7whpvcsg95x51ja11l86fmwbrvg3kq705p2sr"))))
+        (base32 "1rsv42cl0s149sbpdxz9yqqjip3si95jv3dglwzrcm7pjfg7519v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

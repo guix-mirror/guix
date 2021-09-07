@@ -647,11 +647,12 @@ below the directory TARGET for the system whose root is mounted at MOUNT-POINT.
 MOUNT-POINT is the last argument in 'guix system init /etc/config.scm mnt/point'
 or '/' for other 'guix system' commands.
 
-TARGET is the target argument given to the bootloader-configuration in
+Where TARGET comes from the targets argument given to the
+bootloader-configuration in:
 
 (operating-system
  (bootloader (bootloader-configuration
-              (target \"/boot\")
+              (targets '(\"/boot\"))
               …))
  …)
 

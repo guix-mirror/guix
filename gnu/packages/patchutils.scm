@@ -246,7 +246,7 @@ GiB).")
 (define-public meld
   (package
     (name "meld")
-    (version "3.20.3")
+    (version "3.20.4")
     (source
      (origin
        (method url-fetch)
@@ -254,7 +254,7 @@ GiB).")
                            (version-major+minor version)
                            "/meld-" version ".tar.xz"))
        (sha256
-        (base32 "06h52vaghvj5n507mj0hhk9yrca16pyl4l16c00b3bmkplljpqzh"))))
+        (base32 "04vx2mdbcdin0g3w8x910czfch5vyrl8drv1f2l8gxh6qvp113pl"))))
     (build-system python-build-system)
     (native-inputs
      `(("intltool" ,intltool)

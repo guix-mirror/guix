@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>

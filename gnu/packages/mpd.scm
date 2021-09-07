@@ -285,13 +285,13 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
 (define-public python-mpd2
   (package
     (name "python-mpd2")
-    (version "3.0.1")
+    (version "3.0.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "python-mpd2" version))
               (sha256
                (base32
-                "0fxssbmnv44m03shjyvbqslc69b0160702j2s0flgvdxjggrnbjj"))))
+                "1r8saq1460yfa0sxfrvxqs2r453wz2xchlc9gzbpqznr49786rvs"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

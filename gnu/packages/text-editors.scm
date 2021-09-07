@@ -16,6 +16,7 @@
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Calum Irwin <calumirwin1@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -164,7 +165,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2020.09.01")
+    (version "2021.08.28")
     (source
      (origin
        (method url-fetch)
@@ -172,7 +173,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "0x81rxy7bqnhd9374g5ypy4w4nxmm0vnqw6b52bf62jxdg2qj6l6"))))
+        (base32 "1jvn4b9rma5jjvg3xz8nf224pbq3ry570j6qvc834wn5v3gxfvkg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -195,11 +196,10 @@ based command language.")
          (add-before 'build 'chdir
            (lambda _ (chdir "src") #t)))))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
+     `(("gcc", gcc-10) ; See https://github.com/mawww/kakoune/issues/4318
+       ("asciidoc" ,asciidoc)
        ("pkg-config" ,pkg-config)
        ("ruby" ,ruby)))
-    (inputs
-     `(("ncurses" ,ncurses)))
     (synopsis "Vim-inspired code editor")
     (description
      "Kakoune is a code editor heavily inspired by Vim, as such most of its
@@ -1081,7 +1081,7 @@ card.  It offers:
 (define-public ne
   (package
     (name "ne")
-    (version "3.3.0")
+    (version "3.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1090,7 +1090,7 @@ card.  It offers:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01aglnsfljlvx0wvyvpjfn4y88jf450a06qnj9a8lgdqv1hdkq1a"))))
+                "0sg2f6lxq6cjkpd3dvlxxns82hvq826rjnams5in97pssmknr77g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1106,11 +1106,14 @@ card.  It offers:
                             "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'patch-early-shebang
+           (lambda _
+             (substitute* "version.pl"
+               (("/usr/bin/env .*perl") (which "perl")))))
          (replace 'configure
            (lambda _
              (substitute* "src/makefile"
-              (("-lcurses") "-lncurses"))
-             #t)))))
+              (("-lcurses") "-lncurses")))))))
     (home-page "https://ne.di.unimi.it/")
     (synopsis "Text editor with menu bar")
     (description "This package provides a modeless text editor with menu bar.

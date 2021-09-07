@@ -16,6 +16,7 @@
 ;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1359,7 +1360,7 @@ an independent project by the JOSM team.")
 (define-public java-opening-hours-parser
   (package
     (name "java-opening-hours-parser")
-    (version "0.21.4")
+    (version "0.23.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1368,7 +1369,7 @@ an independent project by the JOSM team.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m8sp0jbjyv1nq3ddj8rk6rf3sva3mkacc6vw7rsj0c2n57k3i50"))))
+                "0yhbd2ix6h506aljh0jkrnp28m4xcqdcdpnqm30fn08kawdgxgsh"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-opening-hours-parser.jar"
@@ -1404,7 +1405,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "17329")
+    (version "18118")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1413,7 +1414,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "0bq6mirdsi0kmhjfzfp3innxi5a4395d7mas7ikxaz0cziljrz1i"))
+                "0109ddpxilm7f57n1kl4nf4lw0lh7jfmhfwf724nzlcz4k23mrs0"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1429,6 +1430,7 @@ to the OSM opening hours specification.")
        ("java-jmapviewer" ,java-jmapviewer)
        ("java-jsonp-api" ,java-jsonp-api)
        ("java-jsonp-impl" ,java-jsonp-impl); runtime dependency
+       ("java-jsr305" ,java-jsr305)
        ("java-metadata-extractor" ,java-metadata-extractor)
        ("java-opening-hours-parser" ,java-opening-hours-parser)
        ("java-openjfx-media" ,java-openjfx-media)
@@ -1458,7 +1460,8 @@ to the OSM opening hours specification.")
              ;; which has renamed its classes to another namespace.  Rename them
              ;; back so they can be used with our version of jcs.
              (substitute* (find-files "." ".*.java$")
-               (("jcs3") "jcs"))
+               (("jcs3") "jcs")
+               (("ICache.NAME_COMPONENT_DELIMITER") "\":\""))
              #t))
          (add-before 'build 'fix-classpath
            (lambda* (#:key inputs #:allow-other-keys)

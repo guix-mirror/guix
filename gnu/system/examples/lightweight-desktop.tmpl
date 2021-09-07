@@ -16,7 +16,7 @@
   ;; Partition mounted on /boot/efi.
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
-                (target "/boot/efi")))
+                (targets '("/boot/efi"))))
 
   ;; Assume the target root file system is labelled "my-root",
   ;; and the EFI System Partition has UUID 1234-ABCD.

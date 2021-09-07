@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>

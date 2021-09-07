@@ -926,7 +926,7 @@ the HTML documentation of TXR.")
 (define-public txr
   (package
     (name "txr")
-    (version "268")
+    (version "270")
     (source
      (origin
        (method git-fetch)
@@ -935,7 +935,7 @@ the HTML documentation of TXR.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0q97qddbgk9356gx4xp8iip4pwj3ln03dvjfgrny76f3wmmiwsw6"))))
+        (base32 "1kp64h3ls8mddvrlaqqylrb3brckfrqvkk8049xn15mimfggg0xv"))))
     (build-system gnu-build-system)
     (native-inputs
      ;; Required to build the documentation.

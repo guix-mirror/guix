@@ -51,7 +51,7 @@ accounts.\x1b[0m
   ;; Adjust as needed.
   (bootloader (bootloader-configuration
                (bootloader grub-bootloader)
-               (target "/dev/vda")
+               (targets '("/dev/vda"))
                (terminal-outputs '(console))))
   (file-systems (cons (file-system
                         (mount-point "/")

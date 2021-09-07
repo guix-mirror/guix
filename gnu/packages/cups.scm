@@ -502,14 +502,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.21.4")
+    (version "3.21.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "1lsa0g8lafnmfyia0vy9x1j9q2l80xjjm7clkrawrbg53y3x7ixx"))
+                "1jkvbq64pxn5rg25pk13xwn5xr2bn0sa95yvh2q4ys0kv79n0cyc"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -871,7 +871,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 (define-public epson-inkjet-printer-escpr
   (package
     (name "epson-inkjet-printer-escpr")
-    (version "1.7.12")
+    (version "1.7.17")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -879,11 +879,11 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/12/87/"
-                           "86/a97f36f9db998e7d0d25fc963568f207073b85ad/"
-                           "epson-inkjet-printer-escpr-1.7.12-1lsb3.2.tar.gz"))
+       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/12/99/"
+                           "78/73605b3f8aac63694fdabee6bd43389731696cd9/"
+                           "epson-inkjet-printer-escpr-1.7.17-1lsb3.2.tar.gz"))
        (sha256
-        (base32 "11di33dhi8s0qf8dc3gai478ji4jszy4jmi5z5gfdkxmpljdlrq2"))))
+        (base32 "1d7ckrl5kya98h27mx4pgnaz5sbrsd5vhwc8kva9nfah9wsga4wg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules

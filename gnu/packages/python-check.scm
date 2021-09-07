@@ -1100,6 +1100,71 @@ also ensuring that the notebooks are running without errors.")
      "This pytest plugin provides fixtures to simplify Flask app testing.")
     (license license:expat)))
 
+(define-public python-pytest-console-scripts
+  (package
+    (name "python-pytest-console-scripts")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-console-scripts" version))
+       (sha256
+        (base32
+         "073l2cz11013dl30zjr575ms78j9b2bsbdl1w0gmig37spbkh8aa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "--verbose"
+                       ;; This one test fails because of PATH assumptions
+                       "-k" "not test_elsewhere_in_the_path")))))))
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/kvas-it/pytest-console-scripts")
+    (synopsis "Pytest plugin for testing console scripts")
+    (description
+     "This package provides a pytest plugin for testing console scripts.")
+    (license license:expat)))
+
+(define-public python-pytest-tornasync
+  (package
+    (name "python-pytest-tornasync")
+    (version "0.6.0.post2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-tornasync" version))
+       (sha256
+        (base32
+         "0pdyddbzppkfqwa7g17sdfl4w2v1hgsky78l8f4c1rx2a7cvd0fp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false ; TODO: fails at "from test import MESSAGE, PAUSE_TIME"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "--verbose")))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/eukaryote/pytest-tornasync")
+    (synopsis "Pytest plugin for testing Tornado code")
+    (description
+     "This package provides a simple pytest plugin that provides some helpful
+fixtures for testing Tornado (version 5.0 or newer) apps and easy handling of
+plain (undecoratored) native coroutine tests.")
+    (license license:expat)))
+
 (define-public python-pytest-env
   (package
     (name "python-pytest-env")

@@ -1356,9 +1356,9 @@ from (gnu system mapped-devices) and return it."
     `((bootloader-configuration
        ,@(if (efi-installation?)
              `((bootloader grub-efi-bootloader)
-               (target ,(default-esp-mount-point)))
+               (targets (list ,(default-esp-mount-point))))
              `((bootloader grub-bootloader)
-               (target ,root-partition-disk)))
+               (targets (list ,root-partition-disk))))
 
        ;; XXX: Assume we defined the 'keyboard-layout' field of
        ;; <operating-system> right above.

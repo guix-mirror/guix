@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
@@ -39,7 +39,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
@@ -1097,38 +1097,38 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql-13)
     (name "postgresql")
-    (version "11.12")
+    (version "11.13")
     (source (origin
               (inherit (package-source postgresql-13))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "016bacpmqxc676ipzc1l8zv1jj44mjz7dv7jhqazg3ibdfqxiyc7"))))))
+                "0j5wnscnxa3sx8d39s55654df8aikmvkihfb0a02hrgmyygnihx0"))))))
 
 (define-public postgresql-10
   (package
     (inherit postgresql-11)
-    (version "10.17")
+    (version "10.18")
     (source (origin
               (inherit (package-source postgresql-11))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v5jahkqm6gkq67s4bac3h7297bscn2ab6y128idi73cc1qq1wjs"))))))
+                "009qpb02bq0rx0aaw5ck70gk07xwparhfxvlfimgihw2vhp7qisp"))))))
 
 (define-public postgresql-9.6
   (package
     (inherit postgresql-10)
-    (version "9.6.22")
+    (version "9.6.23")
     (source (origin
               (inherit (package-source postgresql-10))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0c19kzrj5ib5ygmavf5d6qvxdwrxzzz6jz1r2dl5b815208cscix"))))))
+                "1fa735lrmv2vrfiixg73nh024gxlagcbrssklvgwdf0s82cgfjd8"))))))
 
 (define-public postgresql postgresql-13)
 
@@ -2482,16 +2482,16 @@ virtual address space — not physical RAM.")
 (define-public lmdbxx
   (package
     (name "lmdbxx")
-    (version "0.9.14.0")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/drycpp/lmdbxx")
+             (url "https://github.com/hoytech/lmdbxx")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jmb9wg2iqag6ps3z71bh72ymbcjrb6clwlkgrqf1sy80qwvlsn6"))))
+        (base32 "12k5rz74d1l0skcks9apry1svkl96g9lf5dcgylgjmh7v1jm0b7c"))))
     (arguments
      `(#:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -2500,7 +2500,7 @@ virtual address space — not physical RAM.")
          (delete 'configure))))
     (build-system gnu-build-system)
     (inputs `(("lmdb" ,lmdb)))
-    (home-page "http://lmdbxx.sourceforge.net")
+    (home-page "https://github.com/hoytech/lmdbxx")
     (synopsis "C++11 wrapper for the LMDB embedded B+ tree database library")
     (description "@code{lmdbxx} is a comprehensive @code{C++} wrapper for the
 @code{LMDB} embedded database library, offering both an error-checked

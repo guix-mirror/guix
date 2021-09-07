@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
@@ -25,6 +25,8 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
+;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +68,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -387,6 +390,47 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 combining, and so on, with a simple interface.")
     (home-page "http://www.leonerd.org.uk/code/libtermkey")
     (license license:expat)))
+
+(define-public mlterm
+  (package
+    (name "mlterm")
+    (version "3.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/mlterm/01release/mlterm-"
+                           version "/mlterm-" version ".tar.gz"))
+       (sha256
+        (base32 "03fnynwv7d1aicwk2rp31sgncv5m65agvygqvsgn59v9di40gnnb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             "--disable-static"
+             "--enable-optimize-redrawing"
+             "--with-imagelib=gdk-pixbuf")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxft" ,libxft)))
+    (home-page "http://mlterm.sourceforge.net/")
+    (synopsis "Multi-Lingual TERMinal emulator")
+    (description
+     "mlterm is a multi-lingual terminal emulator.  It supports various complex
+character sets and encodings from around the world.  It can display double-width
+(e.g.  East Asian) glyphs, combining characters used for, e.g., Thai and
+Vietnamese, and bi-directional scripts like Arabic and Hebrew.")
+    (license license:bsd-3)))
 
 (define-public picocom
   (package
@@ -739,7 +783,7 @@ a server/client mode.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.7.1")
+    (version "3.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/sakura/trunk/"
@@ -747,7 +791,7 @@ a server/client mode.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "12wjmckf03qbnm8cb7qma0980anzajn3l92rj2yr8hhafl74x6kj"))))
+                "1r2kpvxx21r407s07m5p5x0dam6x863991nmcv6k5ap873fxqh2h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check phase
@@ -1264,7 +1308,7 @@ basic input/output.")
 (define-public alacritty
   (package
     (name "alacritty")
-    (version "0.7.2")
+    (version "0.9.0")
     (source
      (origin
        ;; XXX: The crate at "crates.io" has limited contents.  In particular,
@@ -1275,18 +1319,18 @@ basic input/output.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1isa61rivqchzfms8aakr4nks4kflwnfr9f2pik91157hg1plxam"))))
+        (base32 "068y0b1a0m33r7a3j2xf6k602sc8062gm4d5568ynfx6w5n481lj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f     ; virtual manifest
        #:cargo-test-flags '("--release" "--" "--skip=config_read_eof")
        #:cargo-inputs
        (("rust-alacritty-config-derive" ,rust-alacritty-config-derive-0.1)
-        ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.13)
+        ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.15)
         ("rust-clap" ,rust-clap-2)
         ("rust-cocoa" ,rust-cocoa-0.24)
         ("rust-copypasta" ,rust-copypasta-0.7)
-        ("rust-crossfont" ,rust-crossfont-0.2)
+        ("rust-crossfont" ,rust-crossfont-0.3)
         ("rust-embed-resource" ,rust-embed-resource-1)
         ("rust-fnv" ,rust-fnv-1)
         ("rust-gl-generator" ,rust-gl-generator-0.14)
@@ -1399,7 +1443,7 @@ basic input/output.")
        ("libxxf86vm" ,libxxf86vm)
        ("mesa" ,mesa)
        ("rust-bitflags" ,rust-bitflags-1)
-       ("rust-dirs" ,rust-dirs-2)
+       ("rust-dirs" ,rust-dirs-3)
        ("rust-libc" ,rust-libc-0.2)
        ("rust-unicode-width" ,rust-unicode-width-0.1)
        ("rust-wayland-client" ,rust-wayland-client-0.28)
@@ -1429,8 +1473,8 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/wtarreau/bootterm")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/wtarreau/bootterm")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32

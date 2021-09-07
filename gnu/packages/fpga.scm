@@ -432,7 +432,7 @@ a hardware description and verification language. ")
 (define-public nvc
   (package
     (name "nvc")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -441,7 +441,7 @@ a hardware description and verification language. ")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0m1zhcqhgz5fajz98ky5zdv8g8gvk9caghqfpbv8q3mzdzahcsx5"))))
+                "1hjshyliaqi4vrw4q760rwmq6hvbpsvr2h4zl34k5j457004dy9l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -450,8 +450,7 @@ a hardware description and verification language. ")
        (modify-phases %standard-phases
          (add-after 'unpack 'clean-up
            (lambda _
-             (delete-file "autogen.sh")
-             #t)))))
+             (delete-file "autogen.sh"))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)

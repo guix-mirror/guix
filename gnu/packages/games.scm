@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
@@ -52,7 +52,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020, 2021 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
@@ -131,6 +131,7 @@
   #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gsasl)
@@ -878,7 +879,7 @@ high a score as possible.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.F")
+    (version "0.F-2")
     (source
      (origin
        (method git-fetch)
@@ -886,7 +887,7 @@ high a score as possible.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA")
              (commit version)))
        (sha256
-        (base32 "1jid8lcl04y768b3psj1ifhx96lmd6fn1j2wzxhl4ic7ra66p2z3"))
+        (base32 "1wzsri6rh2fm7078hw0y4x7lqjs6ak4a66d05szfiinnxyn4w1ph"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -3577,158 +3578,6 @@ attractive physics.  Players can battle each other or computer controlled
 enemies in different game modes such as space ball, death match, team death
 match, cannon keep, and grave-itation pit.")
       (license license:gpl3+))))
-
-(define-public minetest
-  (package
-    (name "minetest")
-    (version "5.4.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/minetest/minetest")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "062ilb7s377q3hwfhl8q06vvcw2raydz5ljzlzwy2dmyzmdcndb8"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete bundled libraries.
-                  (delete-file-recursively "lib")
-                  #t))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "-DRUN_IN_PLACE=0"
-             "-DENABLE_FREETYPE=1"
-             "-DENABLE_GETTEXT=1"
-             "-DENABLE_SYSTEM_JSONCPP=TRUE"
-             (string-append "-DIRRLICHT_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "irrlicht")
-                            "/include/irrlicht")
-             (string-append "-DCURL_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "curl")
-                            "/include/curl"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/filesys.cpp"
-               ;; Use store-path for "rm" instead of non-existing FHS path.
-               (("\"/bin/rm\"")
-                (string-append "\"" (assoc-ref inputs "coreutils") "/bin/rm\"")))
-             (substitute* "src/CMakeLists.txt"
-               ;; Let minetest binary remain in build directory.
-               (("set\\(EXECUTABLE_OUTPUT_PATH .*\\)") ""))
-             (substitute* "src/unittest/test_servermodmanager.cpp"
-               ;; do no override MINETEST_SUBGAME_PATH
-               (("(un)?setenv\\(\"MINETEST_SUBGAME_PATH\".*\\);")
-                "(void)0;"))
-             (setenv "MINETEST_SUBGAME_PATH"
-                     (string-append (getcwd) "/games")) ; for check
-             #t))
-         (replace 'check
-           (lambda _
-             ;; Thanks to our substitutions, the tests should also run
-             ;; when invoked on the target outside of `guix build'.
-             (unless ,(%current-target-system)
-               (setenv "HOME" "/tmp")
-               (invoke "src/minetest" "--run-unittests"))
-             #t)))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "MINETEST_SUBGAME_PATH")
-            (files '("share/minetest/games")))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("coreutils" ,coreutils)
-       ("curl" ,curl)
-       ("freetype" ,freetype)
-       ("gettext" ,gettext-minimal)
-       ("gmp" ,gmp)
-       ("irrlicht" ,irrlicht)
-       ("jsoncpp" ,jsoncpp)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("libxxf86vm" ,libxxf86vm)
-       ("luajit" ,luajit)
-       ("mesa" ,mesa)
-       ("ncurses" ,ncurses)
-       ("openal" ,openal)
-       ("sqlite" ,sqlite)))
-    (propagated-inputs
-     `(("minetest-data" ,minetest-data)))
-    (synopsis "Infinite-world block sandbox game")
-    (description
-     "Minetest is a sandbox construction game.  Players can create and destroy
-various types of blocks in a three-dimensional open world.  This allows
-forming structures in every possible creation, on multiplayer servers or as a
-single player.  Mods and texture packs allow players to personalize the game
-in different ways.")
-    (home-page "https://www.minetest.net/")
-    (license license:lgpl2.1+)))
-
-(define minetest-data
-  (package
-    (name "minetest-data")
-    (version (package-version minetest))
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/minetest/minetest_game")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0i45lbnikvgj9kxdp0yphpjjwjcgp4ibn49xkj78j5ic1s9n8jd4"))))
-    (build-system trivial-build-system)
-    (native-inputs
-     `(("source" ,source)))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((install-dir (string-append
-                                       %output
-                                       "/share/minetest/games/minetest_game")))
-                     (mkdir-p install-dir)
-                     (copy-recursively
-                       (assoc-ref %build-inputs "source")
-                       install-dir)
-                     #t))))
-    (synopsis "Main game data for the Minetest game engine")
-    (description
-     "Game data for the Minetest infinite-world block sandbox game.")
-    (home-page "https://www.minetest.net/")
-    (license license:lgpl2.1+)))
-
-(define-public minetest-mineclone
-  (package
-    (name "minetest-mineclone")
-    (version "0.71.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.minetest.land/Wuzzy/MineClone2")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0qm809dqvxc7pa1cr9skmglq9vrbq5hhm4c4m5yi46ldh1v96dgf"))))
-    (build-system copy-build-system)
-    (arguments
-     `(#:install-plan
-       '(("." "share/minetest/games/mineclone"))))
-    (synopsis "Minecraft clone based on Minetest engine")
-    (description
-     "MineClone is a Minetest subgame, that aims to recreate Minecraft as
-closely as the engine allows.")
-    (home-page "https://content.minetest.net/packages/Wuzzy/mineclone2/")
-    (license license:gpl3+)))
 
 (define glkterm
   (package
@@ -7402,7 +7251,7 @@ Github or Gitlab.")
 (define-public colobot
   (package
     (name "colobot")
-    (version "0.1.12-alpha")
+    (version "0.2.0-alpha")
     (source
      (origin
        (method git-fetch)
@@ -7412,8 +7261,7 @@ Github or Gitlab.")
              (recursive? #t)))          ;for "data/" subdir
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1c181cclkrnspgs07lvndg2c81cjq3smkv7qim8c470cj88rcrp2"))))
+        (base32 "02z21pw47j2afjsikn5b162gacwgiahdrlhmfxhq4xqlzsvz58z6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -9503,10 +9351,65 @@ and bring the war to your enemy.")
                    license:expat license:fdl1.3+ license:public-domain
                    license:zlib))))
 
+(define-public go-github-com-anaseto-gruid
+  (package
+    (name "go-github-com-anaseto-gruid")
+    (version "0.21.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/anaseto/gruid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0rvsavkvg2hziwdh8sjk3n5v92m5mfjb8v9m7ch22maxfwq5kv6y"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/anaseto/gruid"))
+    (propagated-inputs
+     `(("go-golang-org-x-image" ,go-golang-org-x-image)))
+    (home-page "https://github.com/anaseto/gruid")
+    (synopsis "Cross-platform grid-based UI and game framework")
+    (description "The gruid module provides packages for easily building
+grid-based applications in Go.  The library abstracts rendering and input for
+different platforms.  There are drivers available for terminal apps, native
+graphical apps and browser apps.  The original application for the library was
+creating grid-based games, but it's also well suited for any grid-based
+application.")
+    (license license:isc)))
+
+(define-public go-github-com-anaseto-gruid-tcell
+  (package
+    (name "go-github-com-anaseto-gruid-tcell")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/anaseto/gruid-tcell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "09ajr9mbldjfc44qprplbf8dr8yhlbn2nfnas2z62m9wmklc0qiv"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/anaseto/gruid-tcell"))
+    (propagated-inputs
+     `(("go-github-com-gdamore-tcell-v2" ,go-github-com-gdamore-tcell-v2)
+       ("go-github-com-anaseto-gruid" ,go-github-com-anaseto-gruid)))
+    (home-page "https://github.com/anaseto/gruid-tcell")
+    (synopsis "Gruid driver using the tcell library")
+    (description "The gruid-tcell module provides a Gruid driver for building
+terminal full-window applications.")
+    (license license:isc)))
+
 (define-public harmonist
   (package
     (name "harmonist")
-    (version "0.3.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9515,12 +9418,15 @@ and bring the war to your enemy.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "146wiyanag0zqj6fhyll2sw6sydnnll8mgxhhqf9sjqsl2rx4s5r"))))
+                "17ai39pw9xq4asfvhs0whx07hljlivygazbwrxjrnxwrn06483hr"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "git.tuxfamily.org/harmonist/harmonist"))
     (inputs
-     `(("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+     `(("go-github-com-gdamore-tcell-v2" ,go-github-com-gdamore-tcell-v2)
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)
+       ("go-github-com-anaseto-gruid" ,go-github-com-anaseto-gruid)
+       ("go-github-com-anaseto-gruid-tcell" ,go-github-com-anaseto-gruid-tcell)))
     (home-page "https://harmonist.tuxfamily.org/")
     (synopsis "Stealth coffee-break roguelike game")
     (description "Harmonist: Dayoriah Clan Infiltration is a stealth
@@ -9530,26 +9436,6 @@ and cones of view for monsters.  Aiming for a replayable streamlined experience,
 the game avoids complex inventory management and character building, relying
 on items and player adaptability for character progression.")
     (license license:isc)))
-
-(define-public harmonist-tk
-  (package
-    (inherit harmonist)
-    (name "harmonist-tk")
-    (arguments
-      (append
-        (package-arguments harmonist)
-        `(#:phases
-          (modify-phases %standard-phases
-            (replace 'build
-              (lambda _
-                (invoke "go" "install" "-v" "-x" "--tags" "tk"
-                        "git.tuxfamily.org/harmonist/harmonist")))
-            (replace 'check
-              (lambda _
-                (invoke "go" "test" "--tags" "tk"
-                        "git.tuxfamily.org/harmonist/harmonist")))))))
-    (inputs
-     `(("go-github.com-nsf-gothic" ,go-github.com-nsf-gothic)))))
 
 (define-public drascula
   (package
@@ -10161,7 +10047,7 @@ remake of that series or any other game.")
     `(("googletest" ,googletest)))
    (inputs
     `(("boost" ,boost)
-      ("ocl-icd" ,ocl-icd)
+      ("opencl-icd-loader" ,opencl-icd-loader)
       ("openblas" ,openblas)
       ("opencl-headers" ,opencl-headers)
       ("qtbase" ,qtbase-5)

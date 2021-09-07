@@ -81,7 +81,7 @@
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sda")))
+                 (targets '("/dev/sda"))))
     (file-systems (cons* (file-system
                            (device %default-root-device)
                            (mount-point %root-path)

@@ -9,7 +9,7 @@
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -157,6 +157,7 @@
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix deprecation)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
@@ -270,7 +271,8 @@ example, modify the message headers or body, or encrypt or sign the message.")
                "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))
              (patches
               ;; Fixes https://issues.guix.gnu.org/43088.
-              (search-patches "mailutils-fix-uninitialized-variable.patch"))))
+              (search-patches "mailutils-fix-uninitialized-variable.patch"
+                              "mailutils-variable-lookup.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1045,53 +1047,58 @@ content (body).  The program is able to learn from the user's classifications
 and corrections.  It is based on a Bayesian filter.")
     (license license:gpl3+)))
 
-(define-public offlineimap
-  (package
-    (name "offlineimap")
-    (version "7.3.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OfflineIMAP/offlineimap")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1gg8ry67i20qapj4z20am9bm67m2q28kixcj7ja75m897vhzarnq"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("asciidoc" ,asciidoc)))
-    (inputs
-     `(("python2-pysqlite" ,python2-pysqlite)
-       ("python2-rfc6555" ,python2-rfc6555)
-       ("python2-six" ,python2-six)))
-    (arguments
-     ;; The setup.py script expects python-2.
-     `(#:python ,python-2
-      ;; Tests require a modifiable IMAP account.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'build-documentation
-           (lambda _
-             (substitute* "docs/Makefile"
-               ;; Prevent xmllint and xsltproc from downloading a DTD file.
-               (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
-             (invoke "make" "-C" "docs" "man")))
-         (add-after 'install 'install-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man (string-append out "/share/man")))
-               (install-file "docs/offlineimap.1" (string-append man "/man1"))
-               (install-file "docs/offlineimapui.7" (string-append man "/man7"))
-               #t))))))
-    (home-page "https://www.offlineimap.org")
-    (synopsis "Sync emails between two repositories")
-    (description
-     "OfflineImap synchronizes emails between two repositories, so that you
+(define-public offlineimap3
+  ;; The OfflineIMAP3 fork does not yet have a release, but it's likely to be
+  ;; 8.0.0 but the source still reports 7.3.0, see
+  ;; https://github.com/OfflineIMAP/offlineimap3/issues/10.
+  (let ((commit "4ca9c75c6f9a0cc8dc7b69dd6abf073e494cc0e5")
+        (revision "0"))
+    (package
+      (name "offlineimap3")
+      (version (git-version "7.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/OfflineIMAP/offlineimap3")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0nzh5dcc559jfw4yy12gc98s17w82b15zxikspc6apd8filmk9xg"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("asciidoc" ,asciidoc)))
+      (inputs
+       `(("python-distro" ,python-distro)
+         ("python-imaplib2" ,python-imaplib2)
+         ("python-rfc6555" ,python-rfc6555)))
+      (arguments
+       `(;; Tests require a modifiable IMAP account.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'build-documentation
+             (lambda _
+               (substitute* "docs/Makefile"
+                 ;; Prevent xmllint and xsltproc from downloading a DTD file.
+                 (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
+               (invoke "make" "-C" "docs" "man")))
+           (add-after 'install 'install-documentation
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (man (string-append out "/share/man")))
+                 (install-file "docs/offlineimap.1" (string-append man "/man1"))
+                 (install-file "docs/offlineimapui.7" (string-append man "/man7"))))))))
+      (home-page "https://www.offlineimap.org")
+      (synopsis "Sync emails between two repositories")
+      (description
+       "OfflineImap synchronizes emails between two repositories, so that you
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
+
+(define-public offlineimap
+  (deprecated-package "offlineimap" offlineimap3))
 
 (define-public emacs-mew
   (package
@@ -1147,7 +1154,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.6.2")
+    (version "1.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -1155,7 +1162,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0jlpkx1486ac8649jc2kxjklzsfaxj9qf2kji4kszy4axd0iwi1p"))))
+                "0irqr1z1ljmij2vbj8dr8w9mbfalzikxr4s6340jjwmkmhaslh2h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3753,14 +3760,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.6.2")
+    (version "2.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
-                           "balsa-" version ".tar.bz2"))
+                           "balsa-" version ".tar.xz"))
        (sha256
-        (base32 "1w0239i01mw4wwwy7xh8gz7zgl5khwvfm5wy35x0swvvax021mai"))))
+        (base32 "1m0x3rk7cp7slr47rmg4y91rbxgs652v706lyxj600m5r5v4bl6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4358,6 +4365,24 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 based on asyncio.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
+
+(define-public python-imaplib2
+  (package
+    (name "python-imaplib2")
+    (version "3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "imaplib2" version))
+       (sha256
+        (base32
+         "0nqyb274hq30agg1c0zkb5ijmcirgg35sp4dp4n292l665dlijwn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jazzband/imaplib2/")
+    (synopsis "Threaded Python IMAP4 client")
+    (description "This package provides a threaded Python IMAP4 client, based
+on RFC 3501 and original @code{imaplib} module.")
+    (license license:expat)))
 
 (define-public rspamd
   (package

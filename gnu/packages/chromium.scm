@@ -324,11 +324,11 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "92.0.4515.131")
+(define %chromium-version "92.0.4515.159")
 (define %debian-revision "debian/90.0.4430.85-1")
 ;; Note: use 'git describe --long' even for exact tags to placate the
 ;; custom version format for ungoogled-chromium.
-(define %ungoogled-revision "92.0.4515.131-1-0-g4a9534c")
+(define %ungoogled-revision "92.0.4515.159-1-8-g8164c91")
 
 (define %debian-patches
   (list (debian-patch "fixes/nomerge.patch"
@@ -348,7 +348,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "1nbgknj5ba116y47sxbp7pbma1bp0lmkyi3vk915x837ysaf6mrd"))))
+      "0wbcbjzh5ak4nciahqw4yvxc4x8ik4x0iz9h4kfy0m011sxzy174"))))
 
 (define %guix-patches
   (list (local-file
@@ -484,7 +484,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "0fnfyh61w6dmavvfbf2x1zzrby0xpx4jd4ifjsgyc39rsl789b5n"))
+                "04gxgimg5ygzx6nvfws5y9dppdfjg1fhyl8zbykmksbh1myk6zfr"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)

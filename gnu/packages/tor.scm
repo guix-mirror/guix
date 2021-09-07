@@ -57,14 +57,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.6.6")
+    (version "0.4.6.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04ifi18cj4cw5lhfzgfrrc42j7qqdmbvxq24xlhj0dsmljdih8rl"))))
+               "16hga7195va8v0x062dc05nbz4sm3dscifcqpl8235dj47hmqrpz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -435,14 +435,14 @@ Potential client and exit connections are scrubbed of sensitive information.")
 (define-public tractor
   (package
     (name "tractor")
-    (version "3.10")
+    (version "3.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "traxtor" version))
        (sha256
         (base32
-         "0cysxfynsnf5p61m7n6kb58bn1cf81n68clxh5irp44kjshi0q6l"))))
+         "0bwj4l6szvx7hpjr8va3hlv0g79sxz02hsb60l61hb314c6d4r3q"))))
     (build-system python-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")))       ; for glib-compile-schemas.

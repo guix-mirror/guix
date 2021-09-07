@@ -38,7 +38,7 @@
     (locale "en_US.utf8")
     (bootloader (bootloader-configuration
                  (bootloader u-boot-pine64-lts-bootloader)
-                 (target "/dev/vda")))
+                 (targets '("/dev/vda"))))
     (initrd-modules '())
     (kernel linux-libre-arm64-generic)
     (file-systems (cons (file-system

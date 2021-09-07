@@ -26,7 +26,7 @@
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
@@ -39,6 +39,7 @@
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 François J. <francois-oss@avalenn.eu>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail)
@@ -114,6 +116,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
@@ -175,14 +178,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.32.0")
+   (version "2.33.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "08rnm3ipjqdd2n31dw7mxl3iv9g4nxgc409krmz892a37kd43a38"))))
+              "0kqcs8nj5h7rh3q86pw5777awq7gn77lgxk88ynjl1rfz2snlg5z"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -202,7 +205,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1hba3wh1fmhrwzw93a0m7q4kb3kwwwi1bx4457c4lkf94l2cpqqr"))))
+            "0cdwqhj6yx3rlzvvfh0jamzjva9svd8kxmb5kqsp8nz47yz8mlyn"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -538,6 +541,13 @@ as well as the classic centralized workflow.")
    (description
     "Git is a free distributed version control system designed to handle
 everything from small to very large projects with speed and efficiency.")
+   ;; XXX: Ignore this CVE to work around a name clash with the unrelated
+   ;; "cpe:2.3:a:jenkins:git" package.  The proper fix is for (guix cve) to
+   ;; account for "vendor names".
+   (properties '((lint-hidden-cve . ("CVE-2018-1000182"
+                                     "CVE-2018-1000110"
+                                     "CVE-2019-1003010"
+                                     "CVE-2020-2136"))))
    (license license:gpl2)
    (home-page "https://git-scm.com/")))
 
@@ -1513,6 +1523,75 @@ also walk each side of a merge and test those changes individually.")
      "Gitolite is an access control layer on top of Git, providing fine access
 control to Git repositories.")
     (license license:gpl2)))
+
+(define-public gitile
+  (package
+    (name "gitile")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.lepiller.eu/git/gitile")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fnmgrrsdc24mvicj2gkv3vasag7h5x27xc12w55i0id9vw7k9sw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:make-flags (list "GUILE_AUTO_COMPILE=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install-bin 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (use-modules (guix build guile-build-system))
+             ;; Wrap the 'gitile' command to refer to the right modules.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (commonmark (assoc-ref inputs "guile-commonmark"))
+                    (git    (assoc-ref inputs "guile-git"))
+                    (bytes  (assoc-ref inputs "guile-bytestructures"))
+                    (fibers (assoc-ref inputs "guile-fibers"))
+                    (gcrypt (assoc-ref inputs "guile-gcrypt"))
+                    (syntax-highlight (assoc-ref inputs "guile-syntax-highlight"))
+                    (deps   (list out commonmark git bytes fibers gcrypt
+                                  syntax-highlight))
+                    (guile  (assoc-ref inputs "guile"))
+                    (effective (target-guile-effective-version))
+                    (mods   (string-drop-right  ;drop trailing colon
+                             (string-join deps
+                                          (string-append "/share/guile/site/"
+                                                         effective ":")
+                                          'suffix)
+                             1))
+                    (objs   (string-drop-right
+                             (string-join deps
+                                          (string-append "/lib/guile/" effective
+                                                         "/site-ccache:")
+                                          'suffix)
+                             1)))
+               (wrap-program (string-append out "/bin/gitile")
+                 `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("guile" ,guile-3.0)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-commonmark" ,guile-commonmark)
+       ("guile-fibers" ,guile-fibers)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-git" ,guile-git)
+       ("guile-syntax-highlight" ,guile-syntax-highlight-for-gitile)
+       ("gnutls" ,gnutls)))
+    (home-page "https://git.lepiller.eu/gitile")
+    (synopsis "Simple Git forge written in Guile")
+    (description "Gitile is a Git forge written in Guile that lets you
+visualize your public Git repositories on a web interface.")
+    (license license:agpl3+)))
 
 (define-public pre-commit
   (package

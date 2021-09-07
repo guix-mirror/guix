@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2020 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2020 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
@@ -62,7 +62,7 @@
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -106,6 +106,8 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1403,6 +1405,39 @@ to users of that module.")
     ;; The software is mainly ISC, but includes some files covered
     ;; by the Expat license.
     (license (list license:isc license:expat))))
+
+(define-public python-ncclient
+  (package
+    (name "python-ncclient")
+    (version "0.6.12")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/ncclient/ncclient")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cb568z5syg6hh0dv813bw7s1mjy7ga5xzxbm9naf4zz2qfdg4js"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-paramiko" ,python-paramiko)))
+    (home-page "https://github.com/ncclient/ncclient")
+    (synopsis "Python library for NETCONF clients")
+    (description "@code{ncclient} is a Python library that facilitates
+client-side scripting and application development around the NETCONF
+protocol.")
+    (license license:asl2.0)))
 
 (define-public python-license-expression
   (package
@@ -5274,6 +5309,42 @@ color scales, and color space conversion easy.  It has support for:
 
 (define-public python2-spectra
   (package-with-python2 python-spectra))
+
+(define-public python-pyspnego
+  (package
+    (name "python-pyspnego")
+    (version "0.1.6")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/jborean93/pyspnego")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pfh2x0539f0k2qi2pbjm64b2fqp64c63xxpinvg1yfaw915kgpb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-gssapi" ,python-gssapi)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+    (home-page "https://github.com/jborean93/pyspnego")
+    (synopsis "Python SPNEGO library")
+    (description "The @code{pyspnego} Python library handles Negotiate, NTLM,
+Kerberos (SPNEGO) and CredSSP authentication.  It also includes a packet
+parser that can be used to decode raw NTLM/SPNEGO/Kerberos tokens into a human
+readable format.")
+    (license license:expat)))
 
 (define-public python-numpy-documentation
   (package
@@ -10069,6 +10140,110 @@ Supported netlink families and protocols include:
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
 
+(define-public python-commentjson
+  (package
+    (name "python-commentjson")
+    (version "0.9.0")
+    (source (origin
+              ;; The PyPI release is missing some test files.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vaidik/commentjson")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01iscgrc6bkyrxbzmf46csbf9c0n7g6dygdmxs3fq8fkzrrciybl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build python-build-system)
+                  (guix build utils)
+                  (ice-9 ftw)
+                  (ice-9 textual-ports))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("lark-parser>=0.7.1,<0.8.0")
+                "lark-parser>=0.7.1"))))
+         (add-after 'unpack 'delete-unspported-tests
+           ;; Some tests rely on the 'test' module of Python itself,
+           ;; which is not available with the Python package in Guix;
+           ;; remove them.
+           (lambda _
+             ;; XXX: Copied from (guix build dub-build-system).
+             (define (grep string file-name)
+               (string-contains (call-with-input-file file-name get-string-all)
+                                string))
+
+             (with-directory-excursion "commentjson/tests/test_json"
+               (let* ((dot? (lambda (x) (member x '("." ".."))))
+                      (test-files (scandir "." (negate dot?))))
+                 (for-each delete-file
+                           (filter (lambda (f) (grep "from test." f))
+                                   test-files)))))))))
+    (propagated-inputs
+     `(("python-lark-parser" ,python-lark-parser)))
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/vaidik/commentjson")
+    (synopsis "Python library for adding comments to JSON files")
+    (description "Comment JSON is a Python package that helps you create JSON
+files with Python and JavaScript style inline comments.  Its API is very
+similar to the Python standard library's @code{json} module.")
+    (license license:expat)))
+
+(define-public python-resolvelib
+  (package
+    (name "python-resolvelib")
+    (version "0.7.1")
+    (source
+     (origin
+       ;; Tests are missing from the PyPI release.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sarugaku/resolvelib")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fqz75riagizihvf4j7wc3zjw6kmg1dd8sf49aszyml105kb33n8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-commentjson" ,python-commentjson)
+       ("python-packaging" ,python-packaging)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sarugaku/resolvelib")
+    (synopsis "Abstract dependencies resolver")
+    (description "The ResolveLib library provides a @code{Resolver} class that
+includes dependency resolution logic.")
+    (license license:isc)))
+
+;;; This older version is required by ansible-core.
+(define-public python-resolvelib-0.5
+  (package/inherit python-resolvelib
+    (name "python-resolvelib")
+    (version "0.5.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sarugaku/resolvelib")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0697y330sqhiclk25v151qxg7aixzpj434lbg5qib0qlna5zg9la"))))))
+
 (define-public python-commonmark
   (package
     (name "python-commonmark")
@@ -11960,24 +12135,31 @@ pure Python module that works on virtually all Python versions.")
 (define-public python-execnet
   (package
     (name "python-execnet")
-    (version "1.4.1")
+    (version "1.9.0")
     (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "execnet" version))
-             (sha256
-              (base32
-               "1rpk1vyclhg911p3hql0m0nrpq7q7mysxnaaw6vs29cpa6kx8vgn"))))
+              (method url-fetch)
+              (uri (pypi-uri "execnet" version))
+              (sha256
+               (base32
+                "1ia7dvrh0gvzzpi758mx55f9flr16bzdqlmi12swm4ncm4xlyscg"))
+              (patches (search-patches "python-execnet-read-only-fix.patch"))))
     (build-system python-build-system)
     (arguments
-     `(;; 2 failed, 275 passed, 670 skipped, 4 xfailed
-       ;; The two test failures are caused by the lack of an `ssh` executable.
-       ;; The test suite can be run with pytest after the 'install' phase.
-       #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+                      (when tests?
+                        ;; Unset PYTHONDONTWRITEBYTECODE to match the
+                        ;; expectations of a test in
+                        ;; 'testing/test_gateway.py'.
+                        (unsetenv "PYTHONDONTWRITEBYTECODE")
+
+                        (add-installed-pythonpath inputs outputs)
+                        (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (propagated-inputs
-     `(("python-apipkg" ,python-apipkg)))
     (synopsis "Rapid multi-Python deployment")
     (description "Execnet provides a share-nothing model with
 channel-send/receive communication for distributing execution across many
@@ -13431,16 +13613,15 @@ way.")
 (define-public python-munkres
   (package
     (name "python-munkres")
-    (version "1.0.8")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "munkres" version))
               (sha256
                (base32
-                "0mbspx4zv8id4x6pim6ybsa1xh96qwpbqj7skbqz4c9c9nf1lpqq"))))
+                "00yvj8bxmhhhhd74v7j0x673is7vizmxwgb3dd5xmnkr74ybyi7w"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; no test suite
+    (native-inputs `(("python-pytest" ,python-pytest-6)))
     (home-page "https://software.clapper.org/munkres/")
     (synopsis "Implementation of the Munkres algorithm")
     (description "The Munkres module provides an implementation of the Munkres
@@ -13569,29 +13750,30 @@ ambiguities (forward vs. backward slashes, etc.).
 (define-public python-jellyfish
   (package
     (name "python-jellyfish")
-    (version "0.5.6")
+    (version "0.8.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "jellyfish" version))
               (sha256
                (base32
-                "1j9rplb16ba2prjj6mip46z0w9pnhnqpwgiwi0x93vnas14rlyl8"))))
+                "0p2s6b30sfffx8sya2i8kz0i0riw9fq1fi0k89s8kdgrmjf0h1h5"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; XXX: Tests cannot find C coded version.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "jellyfish/test.py")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/jamesturk/jellyfish")
     (synopsis "Approximate and phonetic matching of strings")
     (description "Jellyfish uses a variety of string comparison and phonetic
 encoding algorithms to do fuzzy string matching.")
-    (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-jellyfish))))))
-
-(define-public python2-jellyfish
-  (let ((jellyfish (package-with-python2
-                     (strip-python2-variant python-jellyfish))))
-    (package/inherit jellyfish
-      (native-inputs `(("python2-unicodecsv" ,python2-unicodecsv)
-                       ,@(package-native-inputs jellyfish))))))
+    (license license:bsd-2)))
 
 (define-public python2-unicodecsv
   (package
@@ -13671,32 +13853,38 @@ can also be used to get the exact location, font or color of the text.")
 (define-public python-rarfile
   (package
     (name "python-rarfile")
-    (version "2.8")
+    (version "4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "rarfile" version))
               (sha256
                (base32
-                "0qfad483kcbga0bn4qmcz953xjk16r52fahiy46zzn56v80y89ra"))))
+                "1882wv9szcm29mnyhjmspyflyr2l7z73srn14w4dlnww49lqfm37"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     `(#:tests? #f ;; The bsdtar utility is very limited and most tests fail.
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "rarfile.py"
+               ;; Disable unrar and unar, which are unavailable on Guix.
+               (("(unrar|unar)=True" all tool) (string-append tool "=False"))
+               ;; Hardcode path to bsdtar
+               (("\"bsdtar\"")
+                (string-append "\"" (assoc-ref inputs "libarchive") "/bin/bsdtar\"")))
+             #t))
          (replace 'check
-           ;; Many tests fail, but the installation proceeds.
-           (lambda _ (invoke "make" "-C" "test" "test"))))))
-    (native-inputs
-     `(("which" ,which))) ; required for tests
-    (propagated-inputs
-     `(("libarchive" ,libarchive)))
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (inputs `(("libarchive" ,libarchive)))
     (home-page "https://github.com/markokr/rarfile")
     (synopsis "RAR archive reader for Python")
     (description "This is Python module for RAR archive reading.  The interface
 is made as zipfile like as possible.")
     (license license:isc)))
-
-(define-public python2-rarfile
-  (package-with-python2 python-rarfile))
 
 (define-public python-rich
   (package
@@ -14014,39 +14202,25 @@ respectively.")
 Python.  It generates C++ code and a Makefile."))
   (license (list license:gpl3 license:bsd-3 license:expat))))
 
-(define-public python2-rope
+(define-public python-rope
   (package
-    (name "python2-rope")
-    (version "0.11.0")
+    (name "python-rope")
+    (version "0.19.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (pypi-uri "rope" version))
-      (sha256
+       (method url-fetch)
+       (uri (pypi-uri "rope" version))
+       (sha256
         (base32
-         "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
-    (arguments
-     ;; Rope has only partial python3 support, see `python-rope'
-     `(#:python ,python-2))
+         "1nlhkmsfvn2p1msrmwqnypnvr993alzawnpc1605q7rfad3xgrk4"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python2-unittest2" ,python2-unittest2)))
     (home-page "https://github.com/python-rope/rope")
     (synopsis "Refactoring library for Python")
     (description "Rope is a refactoring library for Python.  It facilitates
 the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurrences in strings and comments.")
-    (license license:gpl2)))
-
-(define-public python-rope
-  (package/inherit python2-rope
-    (name "python-rope")
-    (arguments `(#:python ,python-wrapper
-                 ;; XXX: Only partial python3 support, results in some failing
-                 ;; tests: <https://github.com/python-rope/rope/issues/247>.
-                 #:tests? #f))
-    (properties `((python2-variant . ,(delay python2-rope))))))
+    (license license:lgpl3+)))
 
 (define-public python-py3status
   (package
@@ -14080,29 +14254,6 @@ to occurrences in strings and comments.")
 functionality in a modular way, allowing you to extend your panel with your
 own code, responding to click events and updating clock every second.")
     (license license:bsd-3)))
-
-(define-public python2-selectors2
-  (package
-    (name "python2-selectors2")
-    (version "2.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "selectors2" version))
-              (sha256
-               (base32
-                "110qr00b9axz1f1jm12b495jkvrz80smknxvssqlhwk0dx67rdw1"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2))
-    (native-inputs
-     `(("python2-mock" ,python2-mock)
-       ("python2-psutil" ,python2-psutil)))
-    (home-page "https://www.github.com/SethMichaelLarson/selectors2")
-    (synopsis "Backport of the selectors module from Python 3.5+")
-    (description
-     "This package provides a drop-in replacement for the @code{selectors}
-module in Python 3.5 and later.")
-    (license license:expat)))
 
 (define-public python-tblib
   (package
@@ -14144,13 +14295,13 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
 (define-public python-greenlet
   (package
     (name "python-greenlet")
-    (version "1.0.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "greenlet" version))
               (sha256
                (base32
-                "1y6wbg9yhm9dw6m768n4yslp56h85pnxkk3drz6icn15g6f1d7ki"))))
+                "10gllbrcbazxck84nr7dw3js3gq0rxrsr4kkvy5hg542rms2gwn0"))))
     (build-system python-build-system)
     (home-page "https://greenlet.readthedocs.io/")
     (synopsis "Lightweight in-process concurrent programming")
@@ -18109,15 +18260,7 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
        "Python implementation of the Happy Eyeballs Algorithm described in RFC
 6555.  Provided with a single file and dead-simple API to allow easy vendoring
 and integration into other projects.")
-      (properties `((python2-variant . ,(delay python2-rfc6555))))
       (license license:asl2.0))))
-
-(define-public python2-rfc6555
-  (let ((base (package-with-python2
-               (strip-python2-variant python-rfc6555))))
-    (package/inherit base
-      (propagated-inputs
-       `(("python2-selectors2" ,python2-selectors2))))))
 
 (define-public python-bagit
   (package
@@ -21142,15 +21285,18 @@ N-dimensional arrays for Python.")
     (version "0.7.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "anndata" version))
+       ;; The tarball from PyPi doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/theislab/anndata")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ch8yp0xmag6z0kl01pljm35lbbwax7lrimfhiclpkd4m6xngk53"))))
+         "1q30bsfsq9xfqm8nmabg3bjh9gix3yng0170xiiyw1lin4xncf0q"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; The tarball from PyPi doesn't include tests.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'check)
          (add-before 'build 'relax-dependency-requirements
@@ -21161,6 +21307,7 @@ N-dimensional arrays for Python.")
                (("pandas>=1.1.1") "pandas>=1.0.5"))))
          (replace 'build
            (lambda _
+             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)
              ;; ZIP does not support timestamps before 1980.
              (setenv "SOURCE_DATE_EPOCH" "315532800")
              (invoke "flit" "build")))
@@ -22783,6 +22930,89 @@ bindings for Python 3.")
        "This package helps you to capture the standard out (stdout) and the
 standard error channel (stderr) in your program.")
       (license license:expat))))
+
+(define-public python-anyio
+  (package
+    (name "python-anyio")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "anyio" version))
+       (sha256
+        (base32
+         "0x03hsprdrs86wjjkj96zm2jswy3a5bgyrknyi58pzz5hdsscmxf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-compatibility
+           (lambda _
+             (substitute* "tests/test_taskgroups.py"
+               (("import pytest")
+                "import pytest\nimport _pytest\nfrom _pytest import logging")
+               (("pytest.LogCaptureFixture")
+                "_pytest.logging.LogCaptureFixture"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "-p" "no:asyncio"
+                       "-m" "not network"
+                       "-k"
+                       (string-append
+                        "not test_is_block_device"
+
+                        ;; These fail because of network (or specifically
+                        ;; IPv6 network) access.
+                        " and not test_accept"
+                        " and not test_accept_after_close"
+                        " and not test_close_during_receive"
+                        " and not test_close_from_other_task"
+                        " and not test_concurrent_receive"
+                        " and not test_concurrent_send"
+                        " and not test_connect_tcp_with_tls"
+                        " and not test_connect_tcp_with_tls_cert_check_fail"
+                        " and not test_connection_refused"
+                        " and not test_extra_attributes"
+                        " and not test_getaddrinfo"
+                        " and not test_getnameinfo"
+                        " and not test_happy_eyeballs"
+                        " and not test_iterate"
+                        " and not test_receive_after_close"
+                        " and not test_receive_timeout"
+                        " and not test_reuse_port"
+                        " and not test_run_process"
+                        " and not test_send_after_close"
+                        " and not test_send_after_eof"
+                        " and not test_send_after_peer_closed"
+                        " and not test_send_eof"
+                        " and not test_send_large_buffer"
+                        " and not test_send_receive"
+                        " and not test_socket_options"))))))))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-sniffio" ,python-sniffio)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-trustme" ,python-trustme)
+       ("python-uvloop" ,python-uvloop)))
+    (home-page "https://github.com/agronholm/anyio")
+    (synopsis "Compatibility layer for multiple asynchronous event loops")
+    (description
+     "AnyIO is an asynchronous networking and concurrency library that works
+on top of either asyncio or trio.  It implements trio-like structured
+concurrency on top of asyncio, and works in harmony with the native SC of trio
+itself.")
+    (license license:expat)))
 
 (define-public python-argh
   ;; There are 21 commits since the latest release containing important
@@ -24541,6 +24771,28 @@ For the most part it's transliterated from C, the major differences are:
      "Jinxed is an implementation of a subset of the Python curses library.")
     (license license:mpl2.0)))
 
+(define-public python-svgutils
+  (package
+    (name "python-svgutils")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "svgutils" version))
+       (sha256
+        (base32
+         "0lz0w2ajdvwd269a7ppnzawmx8px0116j0nx8xvhlihxrd28zx4y"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)))
+    (home-page "https://svgutils.readthedocs.io")
+    (synopsis "Python SVG editor")
+    (description "This is an utility package that helps with editing and
+concatenating SVG files.  It is especially directed at scientists preparing
+final figures for submission to journals.  So far it supports arbitrary
+placement and scaling of SVG figures and adding markers, such as labels.")
+    (license license:expat)))
+
 (define-public python-blessed
   (package
     (name "python-blessed")
@@ -25581,20 +25833,19 @@ Qt applications.")
 (define-public python-confuse
   (package
     (name "python-confuse")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "confuse" version))
        (sha256
         (base32
-         "0r74djc8r6lfx6ldsqnhpvfsn256gsfzbl33qcm77hp2qr8h9z4j"))))
+         "0bh2kyj8wd7h9gg4nsvrbykl5ly0f70f0wi3fbm204b1f0fcmywj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pathlib" ,python-pathlib)
-       ("python-pyyaml" ,python-pyyaml)))
+     `(("python-pyyaml" ,python-pyyaml)))
     (home-page "https://github.com/beetbox/confuse")
-    (synopsis "Painless YAML configuration.")
+    (synopsis "Painless YAML configuration")
     (description "Confuse is a configuration library for Python that uses
 YAML.  It takes care of defaults, overrides, type checking, command-line
 integration, human-readable errors, and standard OS-specific locations.")
@@ -26193,3 +26444,81 @@ of Python 3.")
     (description "This package provides bindings for wcwidth and wcswidth
 functions defined in POSIX.1-2001 and POSIX.1-2008.")
     (license license:expat)))
+
+(define-public python-pyan3
+  (package
+    (name "python-pyan3")
+    (version "1.2.0")
+    (source
+     (origin
+       ;; Source tarball on PyPI lacks tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Technologicat/pyan")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1367x25rcy2y8f0x9c2dbxl2qgdln3arr7ddyzybz2c28g6jrv5z"))
+       (patches (search-patches "python-pyan3-fix-positional-arguments.patch"
+                                "python-pyan3-fix-absolute-path-bug.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Extend PYTHONPATH so the built package will be found.
+               (setenv "GUIX_PYTHONPATH"
+                       (string-append (getcwd) ":" (getenv "GUIX_PYTHONPATH")))
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-wheel" ,python-wheel)))
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)))
+    (home-page "https://github.com/Technologicat/pyan")
+    (synopsis "Offline call graph generator for Python 3")
+    (description "Pyan takes one or more Python source files, performs
+a (rather superficial) static analysis, and constructs a directed graph of the
+objects in the combined source, and how they define or use each other.  The
+graph can be output for rendering by GraphViz or yEd.")
+    (license license:gpl2)))
+
+(define-public date2name
+  (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
+        (revision "1"))
+    (package
+      (name "date2name")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/novoid/date2name")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1vq96b7n16d932nyfhnzwdwxff0zrqanidmwr4cxj2p67ad9y3w7"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((bindir (string-append (assoc-ref outputs "out") "/bin"))
+                      (binary (string-append bindir "/date2name")))
+                 (mkdir-p bindir)
+                 (copy-file "date2name/__init__.py" binary)
+                 (chmod binary #o555)))))))
+      (synopsis "Handling time-stamps and date-stamps in file names")
+      (description "By default, date2name gets the modification time of matching
+files and directories and adds a datestamp in standard ISO 8601+ format
+YYYY-MM-DD at the beginning of the file or directory name.")
+      (home-page "https://github.com/novoid/date2name")
+      (license license:gpl3+))))

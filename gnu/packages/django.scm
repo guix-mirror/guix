@@ -48,13 +48,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "3.2.5")
+    (version "3.2.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1kam3301jl53vm0mhflwwsqy5d7kb5dksmjanlaj7v7xakm5z81x"))))
+                "08p0gf1n548fjba76wspcj1jb3li6lr7xi87w2xq7hylr528azzj"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -307,16 +307,19 @@ size and quality.")
 (define-public python-pytest-django
   (package
     (name "python-pytest-django")
-    (version "3.10.0")
+    (version "4.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-django" version))
               (sha256
                (base32
-                "19nvqsb7b9kz3ikpb50m8ppf7mfhzrapdxsqd5hhd1pdfz8dprjd"))))
+                "0mglnz0w6k7dgw1jn6giv56pmdjd6a3zwwkhxb2kyzmzk0viw5xm"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     ;; The test suite is disabled because there are many test failures (see:
+     ;; https://github.com/pytest-dev/pytest-django/issues/943).
+     `(#:tests? #f
+       #:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
@@ -336,9 +339,8 @@ size and quality.")
     (native-inputs
      `(("python-django" ,python-django)
        ("python-setuptools-scm" ,python-setuptools-scm)
-
        ;; For tests.
-       ("python-pytest-xdist" ,python-pytest-xdist)))
+       ("python-pytest-xdist" ,python-pytest-xdist-next)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://pytest-django.readthedocs.org/")

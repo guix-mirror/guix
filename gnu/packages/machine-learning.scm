@@ -926,7 +926,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.24.1")
+    (version "0.24.2")
     (source
      (origin
        (method git-fetch)
@@ -936,13 +936,13 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0dd854hi9h81pa3y6gwa6r4qjwrwq5fndi312h6dkqzfh7jbvgvd"))))
+         "0hm92biqwwc87bqnr56lwa5bz77lr7k9q21rdwksnfzq3vsdp2nm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-ext
-           (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace") #t))
+           (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace")))
          (replace 'check
            (lambda _
              ;; Restrict OpenBLAS threads to prevent segfaults while testing!
@@ -958,8 +958,7 @@ computing environments.")
              ;; 'reset-gzip-timestamps' phase can do its work.
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+                         (find-files out "\\.gz$"))))))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
@@ -2690,4 +2689,40 @@ You can reuse Python packages such as NumPy, SciPy, and Cython to extend
 PyTorch when needed.
 
 Note: currently this package does not provide GPU support.")
+    (license license:bsd-3)))
+
+(define-public python-hmmlearn
+  (package
+    (name "python-hmmlearn")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hmmlearn" version))
+       (sha256
+        (base32
+         "1my0j3rzp17438idr32ssh0j969a98yjblx5igx5kgiiigr9qa1a"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion (string-append (assoc-ref outputs "out") "/lib")
+                 (invoke "python" "-m" "pytest"))))))))
+    (propagated-inputs
+     `(("python-cython" ,python-cython)
+       ("python-numpy" ,python-numpy)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/hmmlearn/hmmlearn")
+    (synopsis "Hidden Markov Models with scikit-learn like API")
+    (description
+     "Hmmlearn is a set of algorithms for unsupervised learning and inference
+of Hidden Markov Models.")
     (license license:bsd-3)))

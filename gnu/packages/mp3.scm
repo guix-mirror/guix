@@ -8,6 +8,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -645,19 +646,34 @@ FFmpeg, etc.")
 (define-public python-pyacoustid
   (package
     (name "python-pyacoustid")
-    (version "1.1.7")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyacoustid" version))
        (sha256
         (base32
-         "1zan6c22ca6sjy0g9ajwjp6mkzw7jv8r3n7jzska09a6x254lf87"))))
+         "0ha15m41r8ckmanc4k9nrlb9hprvhdjxndzw40a1yj3z1b1xjyf2"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chromaprint-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "chromaprint.py"
+               (("libchromaprint.so.1")
+                (string-append (assoc-ref inputs "chromaprint")
+                               "/lib/libchromaprint.so.1")))
+             (substitute* "acoustid.py"
+               (("'fpcalc'")
+                (string-append "'" (assoc-ref inputs "chromaprint")
+                               "/bin/fpcalc'")))
+             #t)))))
+    (inputs `(("chromaprint" ,chromaprint)))
     (propagated-inputs
      `(("python-audioread" ,python-audioread)
        ("python-requests" ,python-requests)))
-    (home-page "https://github.com/sampsyo/pyacoustid")
+    (home-page "https://github.com/beetbox/pyacoustid")
     (synopsis "Bindings for Chromaprint acoustic fingerprinting")
     (description
      "This package provides bindings for the Chromaprint acoustic

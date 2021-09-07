@@ -88,7 +88,7 @@
 (define (egg-source-url name version)
   "Return the URL to the source tarball for version VERSION of the CHICKEN egg
 NAME."
-  (string-append (%eggs-url) "/" name "/" name "-" version ".tar.gz"))
+  `(egg-uri ,name version))
 
 (define (egg-name->guix-name name)
   "Return the package name for CHICKEN egg NAME."
@@ -198,7 +198,8 @@ not work."
              (tarball (if source
                           #f
                           (with-store store
-                            (download-to-store store source-url)))))
+                            (download-to-store
+                             store (egg-uri name version))))))
 
         (define egg-home-page
           (string-append (%eggs-home-page) "/" name))

@@ -42,7 +42,7 @@
     (inherit %hurd-default-operating-system)
     (bootloader (bootloader-configuration
                  (bootloader grub-minimal-bootloader)
-                 (target "/dev/sdX")))
+                 (targets '("/dev/sdX"))))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
                           (mount-point "/")

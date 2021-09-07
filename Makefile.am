@@ -141,6 +141,7 @@ MODULES =					\
   guix/build-system/go.scm			\
   guix/build-system/meson.scm			\
   guix/build-system/minify.scm			\
+  guix/build-system/minetest.scm		\
   guix/build-system/asdf.scm			\
   guix/build-system/copy.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -203,6 +204,7 @@ MODULES =					\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
   guix/build/maven-build-system.scm		\
+  guix/build/minetest-build-system.scm		\
   guix/build/node-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
@@ -260,6 +262,7 @@ MODULES =					\
   guix/import/json.scm				\
   guix/import/kde.scm				\
   guix/import/launchpad.scm   			\
+  guix/import/minetest.scm   			\
   guix/import/opam.scm				\
   guix/import/print.scm				\
   guix/import/pypi.scm				\
@@ -303,6 +306,7 @@ MODULES =					\
   guix/scripts/import/go.scm			\
   guix/scripts/import/hackage.scm		\
   guix/scripts/import/json.scm  		\
+  guix/scripts/import/minetest.scm  		\
   guix/scripts/import/opam.scm			\
   guix/scripts/import/pypi.scm			\
   guix/scripts/import/stackage.scm		\
@@ -471,6 +475,7 @@ SCM_TESTS =					\
   tests/import-utils.scm			\
   tests/inferior.scm				\
   tests/lint.scm				\
+  tests/minetest.scm				\
   tests/modules.scm				\
   tests/monads.scm				\
   tests/nar.scm				\
@@ -516,6 +521,8 @@ SCM_TESTS =					\
 
 if HAVE_GUILE_LIB
 SCM_TESTS += tests/go.scm
+else
+EXTRA_DIST += tests/go.scm
 endif
 
 if BUILD_DAEMON_OFFLOAD

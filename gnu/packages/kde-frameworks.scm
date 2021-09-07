@@ -98,9 +98,15 @@
                 "10c5xs5shk0dcshpdxg564ay5y8hgmvfvmlhmhjf0dy79kcah3c3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("qtbase" ,qtbase-5))) ; For tests (needs qmake)
+     ;; Add test dependency, except on armhf where building it is too
+     ;; expensive.
+     (if (and (not (%current-target-system))
+              (string=? (%current-system) "armhf-linux"))
+         '()
+         `(("qtbase" ,qtbase-5))))                ;for tests (needs qmake)
     (arguments
-     `(#:phases
+     `(#:tests? ,(not (null? (package-native-inputs this-package)))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-lib-path
            (lambda _

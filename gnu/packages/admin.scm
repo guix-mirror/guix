@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
-;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2021 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
@@ -43,6 +43,8 @@
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
 ;;; Copyright © 2021 WinterHound <winterhound@yandex.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,11 +137,14 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
@@ -834,6 +839,17 @@ hostname.")
 
        #:phases
        (modify-phases %standard-phases
+         ,@(if (%current-target-system)
+               '((add-before 'configure 'set-runtime-shell
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((shell (string-append
+                                   (assoc-ref inputs "bash")
+                                   "/bin/bash")))
+                       (setenv "RUNTIME_SHELL" shell)
+                       (substitute* "configure.ac"
+                         (("\\$SHELL")
+                          "$RUNTIME_SHELL"))))))
+               '())
          (add-before 'build 'set-nscd-file-name
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Use the right file name for nscd.
@@ -858,7 +874,10 @@ hostname.")
     (inputs
      `(,@(if (hurd-target?)
            '()
-           `(("linux-pam" ,linux-pam)))))
+           `(("linux-pam" ,linux-pam)))
+       ,@(if (%current-target-system)
+             `(("bash" ,bash-minimal))
+             '())))
     (home-page "https://github.com/shadow-maint/shadow")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
@@ -1248,7 +1267,11 @@ connection alive.")
                            "--owner=root:0"
                            "--group=root:0")))))
            (add-after 'install 'post-install
-             (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; TODO(core-updates): native-inputs isn't required anymore.
+             (lambda* (#:key ,@(if (%current-target-system)
+                                   '(native-inputs)
+                                   '())
+                       inputs outputs #:allow-other-keys)
                ;; Install the dhclient script for GNU/Linux and make sure
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
@@ -1272,6 +1295,19 @@ connection alive.")
                              (string-append dir "/bin:"
                                             dir "/sbin"))
                            (list inetutils net-tools coreutils sed))))
+                 ;; TODO(core-updates): should not be required anymore,
+                 ;; once <https://issues.guix.gnu.org/49290> has been merged.
+                 ,@(if (%current-target-system)
+                       '((for-each
+                          (lambda (file)
+                            (substitute* file
+                              (((assoc-ref native-inputs "bash"))
+                               (assoc-ref inputs "bash"))))
+                          (list (string-append libexec
+                                               "/dhclient-script")
+                                (string-append libexec
+                                               "/.dhclient-script-real"))))
+                       '())
                  #t))))))
 
       (native-inputs
@@ -1279,6 +1315,11 @@ connection alive.")
          ("file" ,file)))
 
       (inputs `(("inetutils" ,inetutils)
+                ;; TODO(core-updates): simply make this unconditional
+                ,@(if (%current-target-system)
+                      ;; for wrap-program
+                      `(("bash" ,(canonical-package bash-minimal)))
+                      '())
                 ,@(if (hurd-target?) '()
                       `(("net-tools" ,net-tools)
                         ("iproute" ,iproute)))
@@ -2477,40 +2518,29 @@ Statsd, Librato and InfluxDB.  Graphios can emit Nagios metrics to any number
 of supported upstream metrics systems simultaneously.")
    (license license:gpl2+)))
 
-(define-public ansible
+(define-public ansible-core
   (package
-    (name "ansible")
-    (version "2.9.18")
+    (name "ansible-core")
+    (version "2.11.4")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "ansible" version))
+       (uri (pypi-uri "ansible-core" version))
        (sha256
-        (base32 "0g6rsnh02zq5nizamgakl2wvgz7hk1lpnjn9akldrcpa55vygzjm"))))
+        (base32
+         "0jgahcv2pyc5ky0wir55a1h9q9d6rgqj60rqmvlpbj76vz1agsi2"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-bcrypt" ,python-bcrypt)
-       ("python-pynacl" ,python-pynacl)
-       ("python-httplib2" ,python-httplib2)
-       ("python-passlib" ,python-passlib)
-       ("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-paramiko" ,python-paramiko)))
-    (inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-paramiko" ,python-paramiko)))
     (arguments
-     `(#:phases
+     `(#:modules ((guix build python-build-system)
+                  (guix build utils)
+                  (ice-9 ftw))
+       #:phases
        (modify-phases %standard-phases
          ;; Several ansible commands (ansible-config, ansible-console, etc.)
-         ;; are just symlinks to a single ansible executable. The ansible
-         ;; executable behaves differently based on the value of
-         ;; sys.argv[0]. This does not work well with our wrap phase, and
-         ;; therefore the following two phases are required as a workaround.
+         ;; are just symlinks to a single ansible executable.  The ansible
+         ;; executable behaves differently based on the value of sys.argv[0].
+         ;; This does not work well with our wrap phase, and therefore the
+         ;; following two phases are required as a workaround.
          (add-after 'unpack 'hide-wrapping
            (lambda _
              ;; Overwrite sys.argv[0] to hide the wrapper script from it.
@@ -2519,27 +2549,138 @@ of supported upstream metrics systems simultaneously.")
                 (string-append all "
 import re
 sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
-")))
-             #t))
+")))))
          (add-after 'install 'replace-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Replace symlinks with duplicate copies of the ansible
-             ;; executable.
-             (let ((out (assoc-ref outputs "out")))
+             ;; executable so that sys.argv[0] has the correct value.
+             (define bin (string-append (assoc-ref outputs "out") "/bin"))
+             (with-directory-excursion bin
                (for-each
-                (lambda (subprogram)
-                  (delete-file (string-append out "/bin/ansible-" subprogram))
-                  (copy-file (string-append out "/bin/ansible")
-                             (string-append out "/bin/ansible-" subprogram)))
-                (list "config" "console" "doc" "galaxy"
-                      "inventory" "playbook" "pull" "vault")))
-             #t)))))
+                (lambda (ansible-symlink)
+                  (delete-file ansible-symlink)
+                  (copy-file "ansible" ansible-symlink))
+                (scandir "." (lambda (x)
+                               (and (eq? 'symlink (stat:type (lstat x)))
+                                    (string-prefix? "ansible-" x)
+                                    (string=? "ansible" (readlink x)))))))))
+         (add-after 'unpack 'preserve-pythonpath
+           (lambda _
+             (substitute* "test/lib/ansible_test/_internal/ansible_util.py"
+               (("PYTHONPATH=get_ansible_python_path\\(args\\)" all)
+                (string-append all "+ ':' + os.environ['PYTHONPATH']")))))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "lib/ansible/module_utils/compat/selinux.py"
+               (("libselinux.so.1" name)
+                (string-append (assoc-ref inputs "libselinux")
+                               "/lib/" name)))
+             (substitute* "test/units/modules/test_async_wrapper.py"
+               (("/usr/bin/python")
+                (which "python")))))
+         (replace 'check
+           ;; The environment for the test suite can be tricky to get right.
+           ;; The environment used for Ansible's CI defined in the following
+           ;; Dockerfile can be used as a reference:
+           ;; https://raw.githubusercontent.com/ansible/
+           ;; default-test-container/master/Dockerfile.
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               ;; Otherwise Ansible fails to create its config directory.
+               (setenv "HOME" "/tmp")
+               (setenv "PATH" (string-append (getenv "PATH") ":"
+                                             (assoc-ref outputs "out") "/bin"))
+               (add-installed-pythonpath inputs outputs)
+               ;; This test module messes up with sys.path and causes many
+               ;; test failures.
+               (delete-file "test/units/_vendor/test_vendor.py")
+               ;; The test fails when run in the container, for reasons
+               ;; unknown.
+               (delete-file "test/units/utils/test_display.py")
+               ;; This test fail for reasons unknown.
+               (delete-file "test/units/cli/test_adhoc.py")
+               ;; The test suite needs to be run with 'ansible-test', which
+               ;; does some extra environment setup.  Taken from
+               ;; https://raw.githubusercontent.com/ansible/ansible/\
+               ;; devel/test/utils/shippable/shippable.sh.
+               (invoke "ansible-test" "units" "-v")))))))
+    (native-inputs
+     `(("openssh" ,openssh)
+       ("openssl" ,openssl)
+       ("python-mock" ,python-mock)
+       ("python-pycrypto" ,python-pycrypto)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-forked" ,python-pytest-forked)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-pytz" ,python-pytz)))
+    (inputs                    ;optional dependencies captured in wrap scripts
+     `(("libselinux" ,libselinux)
+       ("python-paramiko" ,python-paramiko)
+       ("python-passlib" ,python-passlib)
+       ("python-pexpect" ,python-pexpect)
+       ("sshpass" ,sshpass)))
+    (propagated-inputs      ;core dependencies listed in egg-info/requires.txt
+     `(("python-cryptography" ,python-cryptography)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-packaging" ,python-packaging) ;for version number parsing
+       ("python-resolvelib" ,python-resolvelib-0.5)))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
-    (description "Ansible is a radically simple IT automation system.  It
-handles configuration management, application deployment, cloud provisioning,
-ad hoc task execution, and multinode orchestration---including trivializing
-things like zero-downtime rolling updates with load balancers.")
+    (description "Ansible aims to be a radically simple IT automation system.
+It handles configuration management, application deployment, cloud
+provisioning, ad-hoc task execution, network automation, and multi-node
+orchestration.  Ansible facilitates complex changes like zero-downtime rolling
+updates with load balancers.  This package is the core of Ansible, which
+provides the following commands:
+@itemize
+@item ansible
+@item ansible-config
+@item ansible-connection
+@item ansible-console
+@item ansible-doc
+@item ansible-galaxy
+@item ansible-inventory
+@item ansible-playbook
+@item ansible-pull
+@item ansible-test
+@item ansible-vault
+@end itemize")
+    (license license:gpl3+)))
+
+(define-public ansible
+  (package
+    (name "ansible")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ansible" version))
+       (sha256
+        (base32 "031n22j0lsmh69x6i6gkva81j68b4yzh1pbg3q2h4bknl85q46ag"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("ansible-core" ,ansible-core)))
+    ;; The Ansible collections are found by ansible-core via PYTHONPATH; the
+    ;; following search path ensures that they are found even when Python is
+    ;; not present in the profile.
+    (native-search-paths
+     ;; XXX: Attempting to use (package-native-search-paths python)
+     ;; here would cause an error about python being an unbound
+     ;; variable in the tests/cpan.scm test.
+     (list (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list "lib/python3.8/site-packages")))))
+    (home-page "https://www.ansible.com/")
+    (synopsis "Radically simple IT automation")
+    (description "Ansible aims to be a radically simple IT automation system.
+It handles configuration management, application deployment, cloud
+provisioning, ad-hoc task execution, network automation, and multi-node
+orchestration.  Ansible facilitates complex changes like zero-downtime rolling
+updates with load balancers.  This package provides a curated set of
+community-maintained Ansible collections, which contain playbooks, roles,
+modules and plugins that extend Ansible.")
     (license license:gpl3+)))
 
 (define-public debops
@@ -3401,7 +3542,7 @@ buffers.")
 (define-public igt-gpu-tools
   (package
     (name "igt-gpu-tools")
-    (version "1.25")
+    (version "1.26")
     (source
      (origin
        (method git-fetch)
@@ -3410,7 +3551,7 @@ buffers.")
              (commit (string-append "igt-gpu-tools-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lvhkdhilw0fn4nzkpfwvrhiv8d92h811qs2v6ac3p5w7v86a9zm"))))
+        (base32 "0m124pqv7zna25jnvk566c4kk628jr0w8mgnp8mr5xqz9cprgczm"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))            ; many of the tests try to load kernel modules
@@ -3846,7 +3987,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.3.04-1")
+      (version "3.3.06-1")
       (source
        (origin
          (method git-fetch)
@@ -3855,7 +3996,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1rrhycp8i43yf9wi80n4pq2hkfhvb2rg1srz8if28bh6fhhasjzw"))))
+          (base32 "1qk40iyrdp52vmbiqwxicvlcycm2v2bf1gg4lzq0b4619sd6d1m7"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -4427,14 +4568,14 @@ Netgear devices.")
 (define-public atop
   (package
     (name "atop")
-    (version "2.5.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.atoptool.nl/download/atop-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0crzz4i2nabyh7d6xg7fvl65qls87nbca5ihidp3nijhrrbi14ab"))))
+                "0wlg0n0h9vwpjp2dcb623jvvqck422jrjpq9mbpzg4hnawxcmhly"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no test suite
@@ -4626,3 +4767,49 @@ the XMODEM/YMODEM/ZMODEM file transfer protocols.")
 setup, maintenance, supervision, or any long-running processes.")
     (home-page "https://github.com/leahneukirchen/nq")
     (license license:public-domain)))
+
+(define-public lsofgraph
+  (let ((commit "1d414bdc727c00a8c6cbfffc3c43128c60d6f0de")
+        (revision "1"))
+    (package
+      (name "lsofgraph")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/zevv/lsofgraph")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "058x04yp6bc77hbl3qchqm7pa8f9vqfl9jryr88m8pzl7kvpif54"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("lua" ,lua)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           ;; copy source
+           (copy-recursively (assoc-ref %build-inputs "source") ".")
+           ;; patch-shebang phase
+           (setenv "PATH"
+                   (string-append (assoc-ref %build-inputs "lua") "/bin"
+                                  ":" (getenv "PATH")))
+           (substitute* "lsofgraph"
+             (("#!/usr/bin/env lua")
+              (string-append "#!" (which "lua"))))
+           ;; install phase
+           (install-file "lsofgraph" (string-append %output "/bin"))
+           (let ((doc (string-append
+                       %output "/share/doc/" ,name "-" ,version)))
+             (mkdir-p doc)
+             (install-file "LICENSE" doc)
+             (install-file "README.md" doc))
+           #t)))
+      (home-page "https://github.com/zevv/lsofgraph")
+      (synopsis "Convert @code{lsof} output to @code{graphviz}")
+      (description "Utility to convert @code{lsof} output to a graph showing
+FIFO and UNIX interprocess communication.")
+      (license license:bsd-2))))

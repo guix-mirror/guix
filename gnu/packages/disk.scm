@@ -555,14 +555,14 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "0amx3hb4rc504nl9i73rgyz0hzhq5x8nkg7lwbk4bsnrblj81hcd"))))
+        (base32 "02g1s6hrhnias7kj241l0f72kllfhq6338mk2dmzjpmifinjxvjy"))))
     (build-system glib-or-gtk-build-system)
     (arguments
       ;; Tests require access to paths outside the build container, such
@@ -688,7 +688,7 @@ a card with a smaller capacity than stated.")
 (define-public duperemove
   (package
     (name "duperemove")
-    (version "0.11.2")
+    (version "0.11.3")
     (source
      (origin
        (method git-fetch)
@@ -696,7 +696,7 @@ a card with a smaller capacity than stated.")
              (url "https://github.com/markfasheh/duperemove")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1a87mka2sfzhbch2jip6wlvvs0glxq9lqwmyrp359d1rmwwmqiw9"))
+        (base32 "0jwxmhadv2f1mx7gan4gk0xwrjr5g2xa71z1rp0knc1acbkhqdas"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs

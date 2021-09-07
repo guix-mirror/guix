@@ -25,6 +25,7 @@
 (define-module (gnu system install)
   #:use-module (gnu)
   #:use-module (gnu system)
+  #:use-module (gnu system setuid)
   #:use-module (gnu bootloader u-boot)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -453,7 +454,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     (name-service-switch %mdns-host-lookup-nss)
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sda")))
+                 (targets '("/dev/sda"))))
     (label (string-append "GNU Guix installation "
                           (package-version guix)))
 
@@ -502,7 +503,8 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
 
     ;; We don't need setuid programs, except for 'passwd', which can be handy
     ;; if one is to allow remote SSH login to the machine being installed.
-    (setuid-programs (list (file-append shadow "/bin/passwd")))
+    (setuid-programs (list (setuid-program
+                            (program (file-append shadow "/bin/passwd")))))
 
     (pam-services
      ;; Explicitly allow for empty passwords.
@@ -528,7 +530,7 @@ operating-system's kernel-arguments (\"console=ttyS0\" or similar)."
     (bootloader (bootloader-configuration
                  (bootloader (bootloader (inherit u-boot-bootloader)
                               (package (make-u-boot-package board triplet))))
-                 (target bootloader-target)))))
+                 (targets (list bootloader-target))))))
 
 (define* (embedded-installation-os bootloader bootloader-target tty
                                    #:key (extra-modules '()))
@@ -540,7 +542,7 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
     (inherit installation-os)
     (bootloader (bootloader-configuration
                  (bootloader bootloader)
-                 (target bootloader-target)))
+                 (targets (list bootloader-target))))
     (kernel linux-libre)
     (kernel-arguments
      (cons (string-append "console=" tty)

@@ -50,7 +50,7 @@
 
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
-                 (target "/dev/sdX")))
+                 (targets '("/dev/sdX"))))
     (file-systems %base-file-systems)
     (users %base-user-accounts)
     (packages (cons*

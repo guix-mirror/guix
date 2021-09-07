@@ -14,7 +14,7 @@
   ;; "my-root" is the label of the target root file system.
   (bootloader (bootloader-configuration
                 (bootloader depthcharge-bootloader)
-                (target "/dev/mmcblk0p1")))
+                (targets '("/dev/mmcblk0p1"))))
 
   ;; The ASUS C201PA requires a very particular kernel to boot,
   ;; as well as the following arguments.

@@ -94,6 +94,8 @@ Copyright @copyright{} 2021 Xinglu Chen@*
 Copyright @copyright{} 2021 Raghav Gururajan@*
 Copyright @copyright{} 2021 Domagoj Stolfa@*
 Copyright @copyright{} 2021 Hui Lu@*
+Copyright @copyright{} 2021 pukkamustard@*
+Copyright @copyright{} 2021 Alice Brenon@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2568,14 +2570,15 @@ in particular:
 
 @itemize
 @item
-Make sure the @code{bootloader-configuration} form refers to the target
-you want to install GRUB on.  It should mention @code{grub-bootloader} if
-you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
-for newer UEFI systems.  For legacy systems, the @code{target} field
-names a device, like @code{/dev/sda}; for UEFI systems it names a path
-to a mounted EFI partition, like @code{/boot/efi}; do make sure the path is
-currently mounted and a @code{file-system} entry is specified in your
-configuration.
+Make sure the @code{bootloader-configuration} form refers to the targets
+you want to install GRUB on.  It should mention @code{grub-bootloader}
+if you are installing GRUB in the legacy way, or
+@code{grub-efi-bootloader} for newer UEFI systems.  For legacy systems,
+the @code{targets} field contain the names of the devices, like
+@code{(list "/dev/sda")}; for UEFI systems it names the paths to mounted
+EFI partitions, like @code{(list "/boot/efi")}; do make sure the paths
+are currently mounted and a @code{file-system} entry is specified in
+your configuration.
 
 @item
 Be sure that your file system labels match the value of their respective
@@ -7801,6 +7804,12 @@ The @code{#:package} parameter can be passed to specify a package name, which
 is useful when a package contains multiple packages and you want to build
 only one of them.  This is equivalent to passing the @code{-p} argument to
 @code{dune}.
+
+The @code{#:profile} parameter can be passed to specify the
+@uref{https://dune.readthedocs.io/en/stable/dune-files.html#profile,
+dune build profile}. This is equivalent to passing the @code{--profile}
+argument to @code{dune}. Its default value is @code{"release"}.
+
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
@@ -7963,6 +7972,14 @@ The @code{#:maven-plugins} argument is a list of maven plugins used during
 the build, with the same format as the @code{inputs} fields of the package
 declaration.  Its default value is @code{(default-maven-plugins)} which is
 also exported.
+@end defvr
+
+@defvr {Scheme Variable} minetest-mod-build-system
+This variable is exported by @code{(guix build-system minetest)}.  It
+implements a build procedure for @uref{https://www.minetest.net, Minetest}
+mods, which consists of copying Lua code, images and other resources to
+the location Minetest searches for mods.  The build system also minimises
+PNG images and verifies that Minetest can load the mod without errors.
 @end defvr
 
 @defvr {Scheme Variable} minify-build-system
@@ -11410,6 +11427,38 @@ and generate package expressions for all those packages that are not yet
 in Guix.
 @end table
 
+@item minetest
+@cindex minetest
+@cindex ContentDB
+Import metadata from @uref{https://content.minetest.net, ContentDB}.
+Information is taken from the JSON-formatted metadata provided through
+@uref{https://content.minetest.net/help/api/, ContentDB's API} and
+includes most relevant information, including dependencies.  There are
+some caveats, however.  The license information is often incomplete.
+The commit hash is sometimes missing.  The descriptions are in the
+Markdown format, but Guix uses Texinfo instead.  Texture packs and
+subgames are unsupported.
+
+The command below imports metadata for the Mesecons mod by Jeija:
+
+@example
+guix import minetest Jeija/mesecons
+@end example
+
+The author name can also be left out:
+
+@example
+guix import minetest mesecons
+@end example
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item cpan
 @cindex CPAN
 Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}.
@@ -11716,14 +11765,31 @@ Traverse the dependency graph of the given upstream package recursively
 and generate package expressions for all those packages that are not yet
 in Guix.
 @item --repo
-Select the given repository (a repository name).  Possible values include:
+By default, packages are searched in the official OPAM repository.  This
+option, which can be used more than once, lets you add other repositories
+which will be searched for packages.  It accepts as valid arguments:
+
 @itemize
-@item @code{opam}, the default opam repository,
-@item @code{coq} or @code{coq-released}, the stable repository for coq packages,
-@item @code{coq-core-dev}, the repository that contains development versions of coq,
-@item @code{coq-extra-dev}, the repository that contains development versions
-      of coq packages.
+@item the name of a known repository - can be one of @code{opam},
+      @code{coq} (equivalent to @code{coq-released}),
+	  @code{coq-core-dev}, @code{coq-extra-dev} or @code{grew}.
+@item the URL of a repository as expected by the
+      @code{opam repository add} command (for instance, the URL equivalent
+	  of the above @code{opam} name would be
+	  @uref{https://opam.ocaml.org}).
+@item the path to a local copy of a repository (a directory containing a
+      @file{packages/} sub-directory).
 @end itemize
+
+Repositories are assumed to be passed to this option by order of
+preference.  The additional repositories will not replace the default
+@code{opam} repository, which is always kept as a fallback.
+
+Also, please note that versions are not compared accross repositories.
+The first repository (from left to right) that has at least one version
+of a given package will prevail over any others, and the version
+imported will be the latest one found @emph{in this repository only}.
+
 @end table
 
 @item go
@@ -13681,7 +13747,7 @@ the @code{bootloader} field should contain something along these lines:
 @lisp
 (bootloader-configuration
   (bootloader grub-efi-bootloader)
-  (target "/boot/efi"))
+  (targets '("/boot/efi")))
 @end lisp
 
 @xref{Bootloader Configuration}, for more information on the available
@@ -14896,7 +14962,7 @@ configuration would look like:
   (keyboard-layout (keyboard-layout "tr"))  ;for the console
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
-                (target "/boot/efi")
+                (targets '("/boot/efi"))
                 (keyboard-layout keyboard-layout))) ;for GRUB
   (services (cons (set-xorg-configuration
                     (xorg-configuration             ;for Xorg
@@ -18267,6 +18333,14 @@ Data type representing the configuration of @code{slim-service-type}.
 @table @asis
 @item @code{allow-empty-passwords?} (default: @code{#t})
 Whether to allow logins with empty passwords.
+
+@item @code{gnupg?} (default: @code{#f})
+If enabled, @code{pam-gnupg} will attempt to automatically unlock the
+user's GPG keys with the login password via @code{gpg-agent}.  The
+keygrips of all keys to be unlocked should be written to
+@file{~/.pam-gnupg}, and can be queried with @code{gpg -K
+--with-keygrip}.  Presetting passphrases must be enabled by adding
+@code{allow-preset-passphrase} in @file{~/.gnupg/gpg-agent.conf}.
 
 @item @code{auto-login?} (default: @code{#f})
 @itemx @code{default-user} (default: @code{""})
@@ -25279,6 +25353,7 @@ of strings and G-expressions.
 @end table
 @end deffn
 
+@anchor{NGINX}
 @subsubheading NGINX
 
 @deffn {Scheme Variable} nginx-service-type
@@ -28098,6 +28173,11 @@ Use @var{cache} directory to cache build log files.
 Once a substitute is successfully fetched, trigger substitute baking at
 @var{trigger-url}.
 
+@item @code{publish?} (default: @code{#t})
+If set to false, do not start a publish server and ignore the
+@code{publish-port} argument.  This can be useful if there is already a
+standalone publish server standing next to the remote server.
+
 @item @code{public-key}
 @item @code{private-key}
 Use the specific @var{file}s as the public/private key pair used to sign
@@ -28131,6 +28211,9 @@ Location of the log file.
 
 @item @code{publish-port} (default: @code{5558})
 The TCP port of the publish server.  It defaults to @code{5558}.
+
+@item @code{substitute-urls} (default: @code{%default-substitute-urls})
+The list of URLs where to look for substitutes by default.
 
 @item @code{public-key}
 @item @code{private-key}
@@ -31644,6 +31727,19 @@ A value like @code{#o0027} will give read access to the group used by Gitolite
 (by default: @code{git}).  This is necessary when using Gitolite with software
 like cgit or gitweb.
 
+@item @code{unsafe-pattern} (default: @code{#f})
+An optional Perl regular expression for catching unsafe configurations in
+the configuration file.  See
+@uref{https://gitolite.com/gitolite/git-config.html#compensating-for-unsafe_patt,
+Gitolite's documentation} for more information.
+
+When the value is not @code{#f}, it should be a string containing a Perl
+regular expression, such as @samp{"[`~#\$\&()|;<>]"}, which is the default
+value used by gitolite.  It rejects any special character in configuration
+that might be interpreted by a shell, which is useful when sharing the
+administration burden with other people that do not otherwise have shell
+access on the server.
+
 @item @code{git-config-keys} (default: @code{""})
 Gitolite allows you to set git config values using the @samp{config}
 keyword.  This setting allows control over the config keys to accept.
@@ -31654,6 +31750,137 @@ Set the role names allowed to be used by users running the perms command.
 @item @code{enable} (default: @code{'("help" "desc" "info" "perms" "writable" "ssh-authkeys" "git-config" "daemon" "gitweb")})
 This setting controls the commands and features to enable within Gitolite.
 
+@end table
+@end deftp
+
+
+@subsubheading Gitile Service
+
+@cindex Gitile service
+@cindex Git, forge
+@uref{https://git.lepiller.eu/gitile, Gitile} is a Git forge for viewing
+public git repository contents from a web browser.
+
+Gitile works best in collaboration with Gitolite, and will serve the public
+repositories from Gitolite by default.  The service should listen only on
+a local port, and a webserver should be configured to serve static resources.
+The gitile service provides an easy way to extend the Nginx service for
+that purpose (@pxref{NGINX}).
+
+The following example will configure Gitile to serve repositories from a
+custom location, with some default messages for the home page and the
+footers.
+
+@lisp
+(service gitile-service-type
+         (gitile-configuration
+           (repositories "/srv/git")
+           (base-git-url "https://myweb.site/git")
+           (index-title "My git repositories")
+           (intro '((p "This is all my public work!")))
+           (footer '((p "This is the end")))
+           (nginx-server-block
+             (nginx-server-configuration
+               (ssl-certificate
+                 "/etc/letsencrypt/live/myweb.site/fullchain.pem")
+               (ssl-certificate-key
+                 "/etc/letsencrypt/live/myweb.site/privkey.pem")
+               (listen '("443 ssl http2" "[::]:443 ssl http2"))
+               (locations
+                 (list
+                   ;; Allow for https anonymous fetch on /git/ urls.
+                   (git-http-nginx-location-configuration
+                     (git-http-configuration
+                       (uri-path "/git/")
+                       (git-root "/var/lib/gitolite/repositories")))))))))
+@end lisp
+
+In addition to the configuration record, you should configure your git
+repositories to contain some optional information.  First, your public
+repositories need to contain the @file{git-daemon-export-ok} magic file
+that allows Git to export the repository.  Gitile uses the presence of this
+file to detect public repositories it should make accessible.  To do so with
+Gitolite for instance, modify your @file{conf/gitolite.conf} to include
+this in the repositories you want to make public:
+
+@example
+repo foo
+    R = daemon
+@end example
+
+In addition, Gitile can read the repository configuration to display more
+infomation on the repository.  Gitile uses the gitweb namespace for its
+configuration.  As an example, you can use the following in your
+@file{conf/gitolite.conf}:
+
+@example
+repo foo
+    R = daemon
+    desc = A long description, optionally with <i>HTML</i>, shown on the index page
+    config gitweb.name = The Foo Project
+    config gitweb.synopsis = A short description, shown on the main page of the project
+@end example
+
+Do not forget to commit and push these changes once you are satisfied.  You
+may need to change your gitolite configuration to allow the previous
+configuration options to be set.  One way to do that is to add the
+following service definition:
+
+@lisp
+(service gitolite-service-type
+          (gitolite-configuration
+            (admin-pubkey (local-file "key.pub"))
+            (rc-file
+              (gitolite-rc-file
+                (umask #o0027)
+                ;; Allow to set any configuration key
+                (git-config-keys ".*")
+                ;; Allow any text as a valid configuration value
+                (unsafe-patt "^$")))))
+@end lisp
+
+@deftp {Data Type} gitile-configuration
+Data type representing the configuration for @code{gitile-service-type}.
+
+@table @asis
+@item @code{package} (default: @var{gitile})
+Gitile package to use.
+
+@item @code{host} (default: @code{"localhost"})
+The host on which gitile is listening.
+
+@item @code{port} (default: @code{8080})
+The port on which gitile is listening.
+
+@item @code{database} (default: @code{"/var/lib/gitile/gitile-db.sql"})
+The location of the database.
+
+@item @code{repositories} (default: @code{"/var/lib/gitolite/repositories"})
+The location of the repositories.  Note that only public repositories will
+be shown by Gitile.  To make a repository public, add an empty
+@file{git-daemon-export-ok} file at the root of that repository.
+
+@item @code{base-git-url}
+The base git url that will be used to show clone commands.
+
+@item @code{index-title} (default: @code{"Index"})
+The page title for the index page that lists all the available repositories.
+
+@item @code{intro} (default: @code{'()})
+The intro content, as a list of sxml expressions.  This is shown above the list
+of repositories, on the index page.
+
+@item @code{footer} (default: @code{'()})
+The footer content, as a list of sxml expressions.  This is shown on every
+page served by Gitile.
+
+@item @code{nginx-server-block}
+An nginx server block that will be extended and used as a reverse proxy by
+Gitile to serve its pages, and as a normal web server to serve its assets.
+
+You can use this block to add more custom URLs to your domain, such as a
+@code{/git/} URL for anonymous clones, or serving any other files you would
+like to serve.
 @end table
 @end deftp
 
@@ -33316,11 +33543,11 @@ in ``legacy'' BIOS mode.
 through TFTP@.  In combination with an NFS root file system this allows you to
 build a diskless Guix system.
 
-The installation of the @code{grub-efi-netboot-bootloader} generates the content
-of the TFTP root directory at @code{target}
-(@pxref{Bootloader Configuration, @code{target}}), to be served by a TFTP server.
- You may want to mount your TFTP server directory onto @code{target} to move the
-required files to the TFTP server automatically.
+The installation of the @code{grub-efi-netboot-bootloader} generates the
+content of the TFTP root directory at @code{targets} (@pxref{Bootloader
+Configuration, @code{targets}}), to be served by a TFTP server.  You may
+want to mount your TFTP server directories onto the @code{targets} to
+move the required files to the TFTP server automatically.
 
 If you plan to use an NFS root file system as well (actually if you mount the
 store from an NFS share), then the TFTP server needs to serve the file
@@ -33331,22 +33558,25 @@ files from the store will be accessed by GRUB through TFTP with their normal
 store path, for example as
 @file{tftp://tftp-server/gnu/store/…-initrd/initrd.cpio.gz}.
 
-Two symlinks are created to make this possible.  The first symlink is
-@code{target}@file{/efi/Guix/boot/grub/grub.cfg} pointing to
-@file{../../../boot/grub/grub.cfg},
-where @code{target} may be @file{/boot}.  In this case the link is not leaving
-the served TFTP root directory, but otherwise it does.  The second link is
-@code{target}@file{/gnu/store} and points to @file{../gnu/store}.  This link
-is leaving the served TFTP root directory.
+Two symlinks are created to make this possible.  For each target in the
+@code{targets} field, the first symlink is
+@samp{target}@file{/efi/Guix/boot/grub/grub.cfg} pointing to
+@file{../../../boot/grub/grub.cfg}, where @samp{target} may be
+@file{/boot}.  In this case the link is not leaving the served TFTP root
+directory, but otherwise it does.  The second link is
+@samp{target}@file{/gnu/store} and points to @file{../gnu/store}.  This
+link is leaving the served TFTP root directory.
 
-The assumption behind all this is that you have an NFS server exporting the root
-file system for your Guix system, and additionally a TFTP server exporting your
-@code{target} directory—usually @file{/boot}—from that same root file system for
-your Guix system.  In this constellation the symlinks will work.
+The assumption behind all this is that you have an NFS server exporting
+the root file system for your Guix system, and additionally a TFTP
+server exporting your @code{targets} directories—usually a single
+@file{/boot}—from that same root file system for your Guix system.  In
+this constellation the symlinks will work.
 
-For other constellations you will have to program your own bootloader installer,
-which then takes care to make necessary files from the store accessible through
-TFTP, for example by copying them into the TFTP root directory at @code{target}.
+For other constellations you will have to program your own bootloader
+installer, which then takes care to make necessary files from the store
+accessible through TFTP, for example by copying them into the TFTP root
+directory to your @code{targets}.
 
 It is important to note that symlinks pointing outside the TFTP root directory
 may need to be allowed in the configuration of your TFTP server.  Further the
@@ -33358,18 +33588,19 @@ NFS servers, you also need a properly configured DHCP server to make the booting
 over netboot possible.  For all this we can currently only recommend you to look
 for instructions about @acronym{PXE, Preboot eXecution Environment}.
 
-@item @code{target}
-This is a string denoting the target onto which to install the
+@item @code{targets}
+This is a list of strings denoting the targets onto which to install the
 bootloader.
 
-The interpretation depends on the bootloader in question.  For
-@code{grub-bootloader}, for example, it should be a device name understood by
-the bootloader @command{installer} command, such as @code{/dev/sda} or
-@code{(hd0)} (@pxref{Invoking grub-install,,, grub, GNU GRUB Manual}).  For
-@code{grub-efi-bootloader}, it should be the mount point of the EFI file
-system, usually @file{/boot/efi}.  For @code{grub-efi-netboot-bootloader},
-@code{target} should be the mount point corresponding to the TFTP root
-directory of your TFTP server.
+The interpretation of targets depends on the bootloader in question.
+For @code{grub-bootloader}, for example, they should be device names
+understood by the bootloader @command{installer} command, such as
+@code{/dev/sda} or @code{(hd0)} (@pxref{Invoking grub-install,,, grub,
+GNU GRUB Manual}).  For @code{grub-efi-bootloader}, they should be mount
+points of the EFI file system, usually @file{/boot/efi}.  For
+@code{grub-efi-netboot-bootloader}, @code{targets} should be the mount
+points corresponding to TFTP root directories served by your TFTP
+server.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
@@ -33785,7 +34016,7 @@ files, packages, and so on.  It also creates other essential files
 needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
-This command also installs bootloader on the target specified in
+This command also installs bootloader on the targets specified in
 @file{my-os-config}, unless the @option{--no-bootloader} option was
 passed.
 
@@ -34181,7 +34412,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
    (timezone "Etc/UTC")
    (bootloader (bootloader-configuration
                 (bootloader grub-bootloader)
-                (target "/dev/vda")
+                (targets '("/dev/vda"))
                 (terminal-outputs '(console))))
    (file-systems (cons (file-system
                         (mount-point "/")

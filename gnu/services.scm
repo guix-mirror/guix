@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
@@ -828,16 +828,6 @@ FILES must be a list of name/file-like object pairs."
 
           (activate-setuid-programs (list #$@programs))))))
 
-(define (setuid-program-file-like-deprecated file-like)
-  (match file-like
-    ((? file-like? program)
-     (warning
-      (G_ "representing setuid programs with '~a' is \
-deprecated; use 'setuid-program' instead~%") program)
-     (setuid-program (program program)))
-    ((? setuid-program? program)
-     program)))
-
 (define setuid-program-service-type
   (service-type (name 'setuid-program)
                 (extensions
@@ -845,8 +835,7 @@ deprecated; use 'setuid-program' instead~%") program)
                                           setuid-program->activation-gexp)))
                 (compose concatenate)
                 (extend (lambda (config extensions)
-                          (map setuid-program-file-like-deprecated
-                               (append config extensions))))
+                          (append config extensions)))
                 (description
                  "Populate @file{/run/setuid-programs} with the specified
 executables, making them setuid-root.")))

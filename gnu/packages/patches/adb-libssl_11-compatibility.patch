@@ -1,0 +1,35 @@
+This patch is taken from Debian
+URL: https://sources.debian.org/data/main/a/android-platform-system-core/1%3A7.0.0%2Br33-1/debian/patches/adb_libssl_11.diff
+Description: adb: Make compatible with openssl 1.1
+ OpenSSL version 1.1 brought some API changes which broke the build here,
+ fix that by accessing rsa->n (and e) directly, using RSA_get0_key instead.
+Author: Chirayu Desai <chirayudesai1@gmail.com
+Last-Update: 2016-11-10
+--- a/adb/adb_auth_host.cpp
++++ b/adb/adb_auth_host.cpp
+@@ -71,6 +71,7 @@
+     BIGNUM* rem = BN_new();
+     BIGNUM* n = BN_new();
+     BIGNUM* n0inv = BN_new();
++    BIGNUM* e = BN_new();
+ 
+     if (RSA_size(rsa) != RSANUMBYTES) {
+         ret = 0;
+@@ -78,7 +79,7 @@
+     }
+ 
+     BN_set_bit(r32, 32);
+-    BN_copy(n, rsa->n);
++    RSA_get0_key(rsa, &n, &e, NULL);
+     BN_set_bit(r, RSANUMWORDS * 32);
+     BN_mod_sqr(rr, r, n, ctx);
+     BN_div(NULL, rem, n, r32, ctx);
+@@ -92,7 +93,7 @@
+         BN_div(n, rem, n, r32, ctx);
+         pkey->n[i] = BN_get_word(rem);
+     }
+-    pkey->exponent = BN_get_word(rsa->e);
++    pkey->exponent = BN_get_word(e);
+ 
+ out:
+     BN_free(n0inv);

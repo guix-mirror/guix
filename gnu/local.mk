@@ -188,7 +188,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/docbook.scm			\
   %D%/packages/docker.scm			\
   %D%/packages/documentation.scm		\
-  %D%/packages/drones.scm			\
   %D%/packages/dunst.scm			\
   %D%/packages/dvtm.scm				\
   %D%/packages/easyrpg.scm			\
@@ -385,6 +384,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mercury.scm			\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
+  %D%/packages/minetest.scm			\
   %D%/packages/mingw.scm			\
   %D%/packages/microcom.scm			\
   %D%/packages/moe.scm				\
@@ -494,6 +494,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rednotebook.scm			\
   %D%/packages/regex.scm				\
   %D%/packages/robotics.scm			\
+  %D%/packages/rocm.scm				\
   %D%/packages/rpc.scm				\
   %D%/packages/rpm.scm				\
   %D%/packages/rrdtool.scm			\
@@ -670,6 +671,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/mapped-devices.scm			\
   %D%/system/nss.scm				\
   %D%/system/pam.scm				\
+  %D%/system/setuid.scm				\
   %D%/system/shadow.scm				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
@@ -808,6 +810,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/abseil-cpp-fix-gtest.patch		\
   %D%/packages/patches/abseil-cpp-fix-strerror_test.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
+  %D%/packages/patches/adb-libssl_11-compatibility.patch	\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\
   %D%/packages/patches/aegis-perl-tempdir2.patch           	\
@@ -880,7 +883,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/bsd-games-prevent-name-collisions.patch	\
   %D%/packages/patches/bsd-games-stdio.h.patch			\
   %D%/packages/patches/beancount-disable-googleapis-fonts.patch	\
-  %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/behave-skip-a-couple-of-tests.patch	\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/bidiv-update-fribidi.patch		\
@@ -1415,6 +1417,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/mailutils-fix-uninitialized-variable.patch	\
+  %D%/packages/patches/mailutils-variable-lookup.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/marble-qt-add-qt-headers.patch		\
   %D%/packages/patches/mariadb-CVE-2021-27928.patch		\
@@ -1436,6 +1439,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mescc-tools-boot.patch			\
   %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
+  %D%/packages/patches/minetest-add-MINETEST_MOD_PATH.patch	\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
   %D%/packages/patches/mingw-w64-dlltool-temp-prefix.patch	\
   %D%/packages/patches/mingw-w64-reproducible-gendef.patch	\
@@ -1504,6 +1508,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
   %D%/packages/patches/ocaml-multiple-definitions.patch		\
   %D%/packages/patches/ocaml-4.09-multiple-definitions.patch	\
+  %D%/packages/patches/ocaml-ppx-variants-ppxlib-api-change.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/oneko-remove-nonfree-characters.patch	\
   %D%/packages/patches/onnx-optimizer-system-library.patch	\
@@ -1619,6 +1624,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-docopt-pytest6-compat.patch	\
+  %D%/packages/patches/python-execnet-read-only-fix.patch	\
   %D%/packages/patches/python-fixtures-remove-monkeypatch-test.patch	\
   %D%/packages/patches/python-flask-restful-werkzeug-compat.patch	\
   %D%/packages/patches/python-keras-integration-test.patch	\
@@ -1627,7 +1633,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-libxml2-utf8.patch		\
   %D%/packages/patches/python-matplotlib-run-under-wayland-gtk3.patch	\
-  %D%/packages/patches/python-mediafile-wavpack.patch		\
   %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-typing-inspect-fix.patch		\
@@ -1636,9 +1641,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python-pycrypto-time-clock.patch		\
+  %D%/packages/patches/python-pyan3-fix-absolute-path-bug.patch \
+  %D%/packages/patches/python-pyan3-fix-positional-arguments.patch \
   %D%/packages/patches/python-pydot-regression-test.patch	\
   %D%/packages/patches/python2-pygobject-2-deprecation.patch	\
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/python-pytest-asyncio-python-3.8.patch	\
   %D%/packages/patches/python-pytorch-runpath.patch		\
   %D%/packages/patches/python-pytorch-system-libraries.patch	\
   %D%/packages/patches/python-robotframework-source-date-epoch.patch \
@@ -1777,6 +1785,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tup-unbundle-dependencies.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-bcg729.patch			\
+  %D%/packages/patches/u-boot-nintendo-nes-serial.patch		\
   %D%/packages/patches/u-boot-rockchip-inno-usb.patch		\
   %D%/packages/patches/u-boot-sifive-prevent-reloc-initrd-fdt.patch	\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\

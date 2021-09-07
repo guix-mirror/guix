@@ -16,7 +16,7 @@ Copyright @copyright{} 2020 Matthew Brooks@*
 Copyright @copyright{} 2020 Marcin Karpezo@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
 Copyright @copyright{} 2020 André Batista@*
-Copyright @copyright{} 2020 Christopher Lemmer Webber
+Copyright @copyright{} 2020 Christine Lemmer-Webber@*
 Copyright @copyright{} 2021 Joshua Branson@*
 
 Permission is granted to copy, distribute and/or modify this document
@@ -591,7 +591,7 @@ packages.
 Guix makes it possible to streamline the process by adding as many ``package
 declaration directories'' as you want.
 
-Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
+Create a directory, say @file{~/guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
 environment variable:
 
 @example
@@ -1714,7 +1714,7 @@ operating-system dedicated to the @b{Pine A64 LTS} board.
    (locale "en_US.utf8")
    (bootloader (bootloader-configuration
                 (bootloader u-boot-pine64-lts-bootloader)
-                (target "/dev/vda")))
+                (targets '("/dev/vda"))))
    (initrd-modules '())
    (kernel linux-libre-arm64-generic)
    (file-systems (cons (file-system

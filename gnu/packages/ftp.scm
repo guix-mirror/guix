@@ -176,14 +176,14 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.30.0")
+    (version "0.31.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/"
                            "libfilezilla/libfilezilla-" version ".tar.bz2"))
        (sha256
-        (base32 "0h6wa1dfd14z9ai00a85pahsb4fs3rlb8haiw3vd9pmjrpdgcvf1"))))
+        (base32 "0vqn6gkwyin9hml39d74vcjcnbwlnk2cpc3msdlkhpq1ns3mhzcr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -220,14 +220,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.55.0")
+    (version "3.55.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "10lwmf6cvryw2gja6vj1zh2y55z4i38wsvxdpclvwdnih10ynw5f"))))
+        (base32 "19bnyx89jg0ll8a8mr4y8gp26gizs11ckgrwglh27zak3zhx1y37"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.
@@ -260,14 +260,14 @@ directory comparison and more.")
 (define-public vsftpd
   (package
     (name "vsftpd")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://security.appspot.com/downloads/"
                            "vsftpd-" version ".tar.gz"))
        (sha256
-        (base32 "09kap2qsd80m0x80jv5224x002x2jkr584dksppcv9p84yyj353b"))))
+        (base32 "1lwipiq8q9qzvwv6f418fbvagpz0p6v0jjplkvcsc2sb8np05di6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

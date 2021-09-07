@@ -38,7 +38,7 @@
     (locale "en_US.utf8")
     (bootloader (bootloader-configuration
                  (bootloader u-boot-pinebook-pro-rk3399-bootloader)
-                 (target "/dev/vda")))
+                 (targets '("/dev/vda"))))
     (initrd-modules '())
     (kernel linux-libre-arm64-generic)
     (file-systems (cons (file-system
@@ -49,7 +49,7 @@
     (services (cons (service agetty-service-type
                              (agetty-configuration
                               (extra-options '("-L")) ; no carrier detect
-                              (baud-rate "115200")
+                              (baud-rate "1500000")
                               (term "vt100")
                               (tty "ttyS2")))
                     %base-services))))
