@@ -14074,6 +14074,50 @@ the BiocDockerManager package to install and manage Docker images provided by
 the Bioconductor project.")
     (license license:artistic2.0)))
 
+(define-public r-biodb
+  (package
+    (name "r-biodb")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biodb" version))
+       (sha256
+        (base32
+         "1apnbr5p619nsrhd2drm6arj69sw0wijv8ap7dfrndqkffrpbfmx"))))
+    (properties `((upstream-name . "biodb")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-chk" ,r-chk)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lgr" ,r-lgr)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-openssl" ,r-openssl)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-r6" ,r-r6)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-stringr" ,r-stringr)
+       ("r-testthat" ,r-testthat)
+       ("r-withr" ,r-withr)
+       ("r-xml" ,r-xml)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/biodb")
+    (synopsis "Library for connecting to chemical and biological databases")
+    (description
+     "The biodb package provides access to standard remote chemical and
+biological databases (ChEBI, KEGG, HMDB, ...), as well as to in-house local
+database files (CSV, SQLite), with easy retrieval of entries, access to web
+services, search of compounds by mass and/or name, and mass spectra matching
+for LCMS and MSMS.  Its architecture as a development framework facilitates
+the development of new database connectors for local projects or inside
+separate published packages.")
+    (license license:agpl3+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
