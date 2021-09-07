@@ -14333,6 +14333,39 @@ intra and interspecies module preservation statistics between different
 networks.")
     (license license:gpl3)))
 
+(define-public r-bionet
+  (package
+    (name "r-bionet")
+    (version "1.52.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioNet" version))
+       (sha256
+        (base32
+         "15rk1jfv4h1mxvr5bs0qmq6fdnza7zcmksigqxb46fs7f6znr3yi"))))
+    (properties `((upstream-name . "BioNet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-graph" ,r-graph)
+       ("r-igraph" ,r-igraph)
+       ("r-rbgl" ,r-rbgl)))
+    (home-page "http://bioconductor.org/packages/release/bioc/html/BioNet.html")
+    (synopsis "Functional analysis of biological networks")
+    (description
+     "This package provides functions for the integrated analysis of
+protein-protein interaction networks and the detection of functional modules.
+Different datasets can be integrated into the network by assigning p-values of
+statistical tests to the nodes of the network.  E.g. p-values obtained from
+the differential expression of the genes from an Affymetrix array are assigned
+to the nodes of the network.  By fitting a beta-uniform mixture model and
+calculating scores from the p-values, overall scores of network regions can be
+calculated and an integer linear programming algorithm identifies the maximum
+scoring subnetwork.")
+    (license license:gpl2+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
