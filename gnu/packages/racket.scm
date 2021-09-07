@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
@@ -139,17 +139,20 @@
         "061bhiyjlvazph0dj9i3i3x2q5z53rp8h5cjwg3frjimkr45lncn")
        (file-name (git-file-name name version))
        (patches (search-patches "racket-minimal-sh-via-rktio.patch"))
+       (modules '((guix build utils)))
        (snippet
         (with-imported-modules '((guix build utils))
           #~(begin
-              (use-modules (guix build utils))
-              ;; unbundle Chez submodules
+              ;; Unbundle Chez submodules.
               (with-directory-excursion "racket/src/ChezScheme"
-                #$(origin-snippet (package-source chez-scheme)))
-              ;; unbundle libffi
-              (for-each
-               delete-file-recursively
-               '("racket/src/bc/foreign/libffi")))))))
+                ;; Remove bundled libraries (copied from 'chez-scheme').
+                (for-each delete-file-recursively
+                          '("stex"
+                            "nanopass"
+                            "lz4"
+                            "zlib")))
+              ;; Unbundle libffi.
+              (delete-file-recursively "racket/src/bc/foreign/libffi"))))))
     (inputs
      `(;; common to all racket-minimal variants:
        ("openssl" ,openssl)
