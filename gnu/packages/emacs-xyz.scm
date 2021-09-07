@@ -23887,7 +23887,7 @@ and code peeking.")
 (define-public emacs-lsp-ivy
   (package
     (name "emacs-lsp-ivy")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -23896,7 +23896,7 @@ and code peeking.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08dpn0vcfdwwysijwdpnnj91m69yw0q464i0wmp51zpj3dyd4kb1"))))
+        (base32 "0nb9ypa8hyx7i38rbywh8hn2i5f9l2l567hvdr9767fk279yr97n"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
