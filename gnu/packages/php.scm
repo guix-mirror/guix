@@ -340,7 +340,9 @@
                          ;; Expects an empty Array; gets one with " " in it.
                          "ext/pcre/tests/bug80118.phpt"
                          ;; Renicing a process fails in the build environment.
-                         "ext/standard/tests/general_functions/proc_nice_basic.phpt"))
+                         "ext/standard/tests/general_functions/proc_nice_basic.phpt"
+                         ;; Can fail on fast machines?
+                         "Zend/tests/bug74093.phpt"))
 
              ;; Accomodate two extra openssl errors flanking the expected one:
              ;; random number generator:RAND_{load,write}_file:Cannot open file
