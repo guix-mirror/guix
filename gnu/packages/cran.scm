@@ -9390,6 +9390,33 @@ and make comparisons between different methodologies straightforward.")
 several entropy estimators.")
     (license license:gpl3+)))
 
+(define-public r-nsprcomp
+  (package
+    (name "r-nsprcomp")
+    (version "0.5.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nsprcomp" version))
+       (sha256
+        (base32
+         "1zlc1ximx96f235c0l8qfs6vbp1kpnbf943wxsfahnnlnxvwi59f"))))
+    (properties `((upstream-name . "nsprcomp")))
+    (build-system r-build-system)
+    (home-page "https://sigg-iten.ch/research/")
+    (synopsis "Non-negative and sparse PCA")
+    (description
+     "This package implements two methods for performing a constrained
+principal component analysis (PCA), where non-negativity and/or sparsity
+constraints are enforced on the principal axes (PAs).  The function
+@code{nsprcomp} computes one principal component (PC) after the other.  Each
+PA is optimized such that the corresponding PC has maximum additional variance
+not explained by the previous components.  In contrast, the function
+@code{nscumcomp} jointly computes all PCs such that the cumulative variance is
+maximal.  Both functions have the same interface as the @code{prcomp} function
+from the @code{stats} package (plus some extra parameters).")
+    (license license:gpl2+)))
+
 (define-public r-abcoptim
   (package
     (name "r-abcoptim")
