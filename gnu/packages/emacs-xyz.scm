@@ -23557,10 +23557,16 @@ the standard @code{Dockerfile} file format.")
         (base32 "1a6jc9sxf9b8fj9h8xlv5k546bkzsy8j5nj19cfama389z0bzcsl"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:include (cons "^clients/" %default-include)
-       ;; FIXME: Ignore the following file, which cannot be compiled properly,
-       ;; because it tries to load another client from the same directory.
-       #:exclude (list "clients/lsp-vetur\\.el")))
+     `(#:emacs ,emacs  ;need libxml support
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-clients-libraries
+           ;; Move all clients libraries at top-level, as is done, e.g., in
+           ;; MELPA.
+           (lambda _
+             (for-each (lambda (f)
+                         (install-file f "."))
+                       (find-files "clients/" "\\.el$")))))))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
