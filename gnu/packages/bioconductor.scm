@@ -13766,6 +13766,42 @@ and can also be used to predict missing values in any other matrix containing
 real numbers.")
     (license license:gpl3)))
 
+(define-public r-bgeecall
+  (package
+    (name "r-bgeecall")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BgeeCall" version))
+       (sha256
+        (base32
+         "1byciy7vzbdkdgaim10s9qb7zlxsywbhcsrka31gm0rm9ljqc665"))))
+    (properties `((upstream-name . "BgeeCall")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("kallisto" ,kallisto)
+       ("r-biomart" ,r-biomart)
+       ("r-biostrings" ,r-biostrings)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-rslurm" ,r-rslurm)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-tximport" ,r-tximport)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/BgeeDB/BgeeCall")
+    (synopsis "RNA-Seq present/absent gene expression calls generation")
+    (description
+     "BgeeCall allows to generate present/absent gene expression calls without
+using an arbitrary cutoff like TPM<1.  Calls are generated based on reference
+intergenic sequences.  These sequences are generated based on expression of
+all RNA-Seq libraries of each species integrated in Bgee.")
+    (license license:gpl3)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
