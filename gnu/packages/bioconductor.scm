@@ -14602,6 +14602,57 @@ with a nested autoregressive correlated error structure for the effect of
 interest on transformed methylation proportions.")
     (license license:expat)))
 
+(define-public r-biscuiteer
+  (package
+    (name "r-biscuiteer")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biscuiteer" version))
+       (sha256
+        (base32
+         "0f4kk4v2c5diq0fbvyvgwjd1kjk9izr6n9wfrlrr7wbx4pz3c3h6"))))
+    (properties `((upstream-name . "biscuiteer")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biscuiteerdata" ,r-biscuiteerdata)
+       ("r-bsseq" ,r-bsseq)
+       ("r-data-table" ,r-data-table)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dmrseq" ,r-dmrseq)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-impute" ,r-impute)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mus-musculus" ,r-mus-musculus)
+       ("r-qdnaseq" ,r-qdnaseq)
+       ("r-qualv" ,r-qualv)
+       ("r-r-utils" ,r-r-utils)
+       ("r-readr" ,r-readr)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/trichelab/biscuiteer")
+    (synopsis "Convenience functions for the Biscuit package")
+    (description
+     "This package provides a test harness for bsseq loading of Biscuit
+output, summarization of WGBS data over defined regions and in mappable
+samples, with or without imputation, dropping of mostly-NA rows, age
+estimates, etc.")
+    (license license:gpl3)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
