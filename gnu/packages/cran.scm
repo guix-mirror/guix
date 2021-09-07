@@ -9820,6 +9820,35 @@ both to consistency and asymptotic normality.")
 futures can be used as backends for the @code{foreach} framework.")
     (license license:lgpl2.1+)))
 
+(define-public r-superheat
+  (package
+    (name "r-superheat")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "superheat" version))
+       (sha256
+        (base32
+         "01v8s6px1k5fajlm6py3ksr1i853kwwlky1yryzhy3p1cxhwgg83"))))
+    (properties `((upstream-name . "superheat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gtable" ,r-gtable)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)))
+    (home-page "https://cran.r-project.org/package=superheat")
+    (synopsis "Graphical tool for exploring complex datasets using heatmaps")
+    (description
+     "This package provides a system for generating extendable and
+customizable heatmaps for exploring complex datasets, including big data and
+data with multiple data types.")
+    (license license:cc0)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
