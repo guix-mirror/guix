@@ -49,6 +49,9 @@
 (define url-fetch*
   (store-lower url-fetch))
 
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
+
 
 (test-begin "builders")
 
