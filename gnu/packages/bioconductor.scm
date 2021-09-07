@@ -13827,6 +13827,40 @@ intergenic sequences.  These sequences are generated based on expression of
 all RNA-Seq libraries of each species integrated in Bgee.")
     (license license:gpl3)))
 
+(define-public r-bgeedb
+  (package
+    (name "r-bgeedb")
+    (version "2.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BgeeDB" version))
+       (sha256
+        (base32
+         "1ziq180yfpdqwhjdzkwjjhwzn3kb0gkj6q0a26c7a30mcfb50w11"))))
+    (properties `((upstream-name . "BgeeDB")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-curl" ,r-curl)
+       ("r-data-table" ,r-data-table)
+       ("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
+       ("r-graph" ,r-graph)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-tidyr" ,r-tidyr)
+       ("r-topgo" ,r-topgo)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/BgeeDB/BgeeDB_R")
+    (synopsis "Annotation and gene expression data retrieval from Bgee database")
+    (description
+     "This package provides a package for the annotation and gene expression
+data download from Bgee database, and TopAnat analysis: GO-like enrichment of
+anatomical terms, mapped to genes by expression patterns.")
+    (license license:gpl3)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
