@@ -14366,6 +14366,48 @@ calculated and an integer linear programming algorithm identifies the maximum
 scoring subnetwork.")
     (license license:gpl2+)))
 
+(define-public r-bionetstat
+  (package
+    (name "r-bionetstat")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioNetStat" version))
+       (sha256
+        (base32
+         "16xlfng9m8xvm831c2x6zmjc0gavlfiy9pnza55hdv86888fcnbg"))))
+    (properties `((upstream-name . "BioNetStat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-igraph" ,r-igraph)
+       ("r-knitr" ,r-knitr)
+       ("r-markdown" ,r-markdown)
+       ("r-pathview" ,r-pathview)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plyr" ,r-plyr)
+       ("r-psych" ,r-psych)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rjsonio" ,r-rjsonio)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-shiny" ,r-shiny)
+       ("r-shinybs" ,r-shinybs)
+       ("r-whisker" ,r-whisker)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/jardimViniciusC/BioNetStat")
+    (synopsis "Biological network analysis")
+    (description
+     "This package provides a package to perform differential network
+analysis, differential node analysis (differential coexpression analysis),
+network and metabolic pathways view.")
+    (license license:gpl3+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
