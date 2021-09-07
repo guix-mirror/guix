@@ -9761,6 +9761,33 @@ Models\" (Hastie and Tibshirani, 1990).")
 a library of prediction algorithms to be used in the super learner.")
     (license license:gpl3)))
 
+(define-public r-drtmle
+  (package
+    (name "r-drtmle")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "drtmle" version))
+       (sha256
+        (base32
+         "08a6k0nrg6mqdslwjc71583x52vnax87nbfalk98zczwvrrdwvxa"))))
+    (properties `((upstream-name . "drtmle")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future-apply" ,r-future-apply)
+       ("r-np" ,r-np)
+       ("r-superlearner" ,r-superlearner)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/benkeser/drtmle")
+    (synopsis "Doubly-robust nonparametric estimation and inference")
+    (description
+     "This package implements targeted minimum loss-based estimators of
+counterfactual means and causal effects that are doubly-robust with respect
+both to consistency and asymptotic normality.")
+    (license license:expat)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
