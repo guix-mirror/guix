@@ -23575,7 +23575,7 @@ Projectile.")
 (define-public emacs-lsp-treemacs
   (package
     (name "emacs-lsp-treemacs")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method git-fetch)
@@ -23584,7 +23584,7 @@ Projectile.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1z9cb7i546pbzvxii6lsj31jq8m70xrzscphl5z71vh93sydyhkb"))))
+        (base32 "05ivqa5900139jzjhwc3nggwznhm8564dz4ydcxym2ddd63571k0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-lsp-mode" ,emacs-lsp-mode)
