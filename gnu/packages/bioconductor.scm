@@ -13733,6 +13733,39 @@ BAM files.  With this package, you can build base-pair coverage matrices for
 regions or annotations of your choice from BigWig files.")
     (license license:artistic2.0)))
 
+(define-public r-beclear
+  (package
+    (name "r-beclear")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BEclear" version))
+       (sha256
+        (base32
+         "0w18livng2gcmjgvws7pix3gsnj237rs34sgwxsfmn8p5vfx8b30"))))
+    (properties `((upstream-name . "BEclear")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-data-table" ,r-data-table)
+       ("r-futile-logger" ,r-futile-logger)
+       ("r-matrix" ,r-matrix)
+       ("r-outliers" ,r-outliers)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rdpack" ,r-rdpack)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/uds-helms/BEclear")
+    (synopsis "Correction of batch effects in DNA methylation data")
+    (description
+     "This package provides functions to detect and correct for batch effects
+in DNA methylation data.  The core function is based on latent factor models
+and can also be used to predict missing values in any other matrix containing
+real numbers.")
+    (license license:gpl3)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
