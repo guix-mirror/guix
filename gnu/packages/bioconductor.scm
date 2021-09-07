@@ -84,6 +84,31 @@ submit gene-specific information, or which are scheduled for intense sequence
 analysis.")
     (license license:artistic2.0)))
 
+(define-public r-org-bt-eg-db
+  (package
+    (name "r-org-bt-eg-db")
+    (version "3.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri
+             "org.Bt.eg.db"
+             version
+             'annotation))
+       (sha256
+        (base32
+         "0pwvwyfah8fhvaxdc8zkp3lp1v4mchhzr84r3hb0jx97icdvhafi"))))
+    (properties `((upstream-name . "org.Bt.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/org.Bt.eg.db")
+    (synopsis "Genome wide annotation for Bovine")
+    (description
+     "This package provides genome wide annotations for Bovine, primarily
+based on mapping using Entrez Gene identifiers.")
+    (license license:artistic2.0)))
+
 (define-public r-reactome-db
   (package
     (name "r-reactome-db")
