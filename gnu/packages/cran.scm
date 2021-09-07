@@ -9655,6 +9655,33 @@ and coverage methods to tune the choice of threshold.")
 @end enumerate")
     (license license:gpl3)))
 
+(define-public r-ggnetwork
+  (package
+    (name "r-ggnetwork")
+    (version "0.5.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggnetwork" version))
+       (sha256
+        (base32
+         "0gqdgy5yh700dg0f7xb80hczlnqfisn8l55j7amd1n7fp2x5sr8v"))))
+    (properties `((upstream-name . "ggnetwork")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-igraph" ,r-igraph)
+       ("r-network" ,r-network)
+       ("r-sna" ,r-sna)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/briatte/ggnetwork")
+    (synopsis "Geometries to plot networks with ggplot2")
+    (description
+     "This package provides geometries to plot network objects with the
+ggplot2 package.")
+    (license license:gpl3)))
+
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
