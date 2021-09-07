@@ -9442,6 +9442,34 @@ Additional functions include: highlight signals, a group of SNPs, chromosome
 visualization and candidate genes around SNPs.")
     (license license:gpl2+)))
 
+(define-public r-precrec
+  (package
+    (name "r-precrec")
+    (version "0.12.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "precrec" version))
+       (sha256
+        (base32
+         "0vwzaqnh9ymrm52dd79bihwqprnygz0d71ay8fv51hdw0zg6saya"))))
+    (properties `((upstream-name . "precrec")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-data-table" ,r-data-table)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rcpp" ,r-rcpp)
+       ("r-withr" ,r-withr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://evalclass.github.io/precrec/")
+    (synopsis "Calculate accurate precision-recall and ROC curves")
+    (description
+     "This package provides tools for accurate calculations and visualization
+of precision-recall and ROC (Receiver Operator Characteristics) curves.")
+    (license license:gpl3)))
+
 (define-public r-abcoptim
   (package
     (name "r-abcoptim")
