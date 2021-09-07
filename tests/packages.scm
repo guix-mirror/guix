@@ -236,6 +236,17 @@
                 (eq? item new)))
              (null? (manifest-transaction-remove tx)))))))
 
+(test-assert "package-definition-location"
+  (let ((location   (package-location hello))
+        (definition (package-definition-location hello)))
+    ;; Check for the usual layout of (define-public hello (package ...)).
+    (and (string=? (location-file location)
+                   (location-file definition))
+         (= 0 (location-column definition))
+         (= 2 (location-column location))
+         (= (location-line definition)
+            (- (location-line location) 1)))))
+
 (test-assert "package-field-location"
   (let ()
     (define (goto port line column)

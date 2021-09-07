@@ -52,6 +52,7 @@
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
+  #:replace ((define-public* . define-public))
   #:export (content-hash
             content-hash?
             content-hash-algorithm
@@ -99,6 +100,7 @@
             package-supported-systems
             package-properties
             package-location
+            package-definition-location
             hidden-package
             hidden-package?
             package-superseded
@@ -385,6 +387,35 @@ one-indexed line numbers."
                       (location-line loc)
                       (location-column loc)))))
 
+(define-syntax-parameter current-definition-location
+  ;; Location of the encompassing 'define-public'.
+  (const #f))
+
+(define-syntax define-public*
+  (lambda (s)
+    "Like 'define-public' but set 'current-definition-location' for the
+lexical scope of its body."
+    (define location
+      (match (syntax-source s)
+        (#f #f)
+        (properties
+         (let ((line   (assq-ref properties 'line))
+               (column (assq-ref properties 'column)))
+           ;; Don't repeat the file name since it's redundant with 'location'.
+           ;; Encode the whole thing so that it fits in a fixnum on 32-bit
+           ;; platforms, which leaves us 29 bits: 7 bits for COLUMN (which is
+           ;; almost always zero), and 22 bits for LINE.
+           (and line column
+                (logior (ash (logand #x7f column) 22)
+                        (logand (- (expt 2 22) 1) (+ 1 line))))))))
+
+    (syntax-case s ()
+      ((_ prototype body ...)
+       #`(define-public prototype
+           (syntax-parameterize ((current-definition-location
+                                  (lambda (s) #,location)))
+             body ...))))))
+
 ;; A package.
 (define-record-type* <package>
   package make-package
@@ -430,7 +461,10 @@ one-indexed line numbers."
 
   (location package-location-vector
             (default (current-location-vector))
-            (innate) (sanitize sanitize-location)))
+            (innate) (sanitize sanitize-location))
+  (definition-location package-definition-location-code
+                       (default (current-definition-location))
+                       (innate)))
 
 (set-record-type-printer! <package>
                           (lambda (package port)
@@ -454,6 +488,18 @@ it is not known."
   (match (package-location-vector package)
     (#f #f)
     (#(file line column) (location file line column))))
+
+(define (package-definition-location package)
+  "Like 'package-location', but return the location of the definition
+itself--i.e., that of the enclosing 'define-public' form, if any, or #f."
+  (match (package-definition-location-code package)
+    (#f #f)
+    (code
+     (let ((column (bit-extract code 22 29))
+           (line   (bit-extract code 0 21)))
+      (match (package-location-vector package)
+        (#f #f)
+        (#(file _ _) (location file line column)))))))
 
 (define-syntax-rule (package/inherit p overrides ...)
   "Like (package (inherit P) OVERRIDES ...), except that the same
