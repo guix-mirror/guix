@@ -14204,6 +14204,26 @@ should be familiar to R users.  This includes S4 classes and methods, as well
 as extensions of common core functions/methods.")
     (license license:gpl2)))
 
+(define-public r-mvcclass
+  (package
+    (name "r-mvcclass")
+    (version "1.66.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MVCClass" version))
+       (sha256
+        (base32
+         "1di7y10mr7caacd6igwxnr62cm4v1x877yi4a2i5jqz1058jqni7"))))
+    (properties `((upstream-name . "MVCClass")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/MVCClass")
+    (synopsis "Model-View-Controller (MVC) classes")
+    (description
+     "This package contains classes used in model-view-controller (MVC)
+design.")
+    (license license:lgpl2.1+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
