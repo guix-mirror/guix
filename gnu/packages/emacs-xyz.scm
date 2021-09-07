@@ -28526,7 +28526,7 @@ rather excellent completion provided by both Bash and Zsh.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.sr.ht/~zge/bang")
+                    (url "https://git.sr.ht/~pkal/shell-command-plus")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
