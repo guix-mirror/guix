@@ -1612,60 +1612,34 @@ It currently supports MySQL, Postgres and SQLite3.")
 SQL databases.  This package implements the interface for SQLite.")))
 
 (define-public guile-dbd-postgresql
-  (let ((commit "e97589b6b018b206c901e4cc24db463407a4036b")
-        (revision 0))
-    (package
-      (name "guile-dbd-postgresql")
-      (version (string-append
-                "2.1.6-" (number->string revision) "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/opencog/guile-dbi")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0n1gv9a0kdys10a4qmnrwvg5sydwb03880asri4gqdchcj3fimni"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbd-postgresql")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'chdir
              (lambda _
                ;; The upstream Git repository contains all the code, so change
-               ;; to the relevant directory.
-               (chdir "guile-dbd-postgresql")
-               #t))
-           (add-after 'chdir 'patch-src/Makefile.am
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/Makefile.am"
-                 (("/usr/include")
-                  (string-append (assoc-ref inputs "postgresql") "/include")))
-               #t))
-           (add-after 'patch-src/Makefile.am 'patch-src
+               ;; to the directory specific to guile-dbd-mysql.
+               (chdir "guile-dbd-postgresql")))
+           (add-after 'chdir 'patch-src
              (lambda _
                (substitute* "src/guile-dbd-postgresql.c"
-                 (("postgresql/libpq-fe\\.h") "libpq-fe.h"))
-               #t)))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("automake" ,automake)
-         ("autoconf" ,autoconf)
-         ("perl" ,perl)
-         ("libtool" ,libtool)
-         ("guile-dbi-bootstrap" ,guile-dbi-bootstrap)))
-      (inputs
-       `(("postgresql" ,postgresql)
-         ("zlib" ,zlib)))
-      (synopsis "Guile DBI driver for PostgreSQL")
-      (home-page
-       "https://github.com/opencog/guile-dbi/tree/master/guile-dbd-postgresql")
-      (description
-       "@code{guile-dbi} is a library for Guile that provides a convenient
+                 (("postgresql/libpq-fe\\.h") "libpq-fe.h"))))
+           (delete 'patch-extension-path)))))
+    (inputs
+     `(("postgresql" ,postgresql)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("guile-dbi" ,guile-dbi)         ; only required for headers
+       ,@(package-native-inputs guile-dbi)))
+    (synopsis "Guile DBI driver for PostgreSQL")
+    (description
+     "@code{guile-dbi} is a library for Guile that provides a convenient
 interface to SQL databases.  This package implements the interface for
-PostgreSQL.")
-      (license license:gpl2+))))
+PostgreSQL.")))
 
 (define-public guile-config
   (package
