@@ -1587,32 +1587,29 @@ It currently supports MySQL, Postgres and SQLite3.")
 
 (define-public guile-dbd-sqlite3
   (package
+    (inherit guile-dbi)
     (name "guile-dbd-sqlite3")
-    (version "2.1.6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://example.org") ;only hosted on Software Heritage
-                    (commit "0758c615e9e85ad76d153d5dc6179881f1f50089")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1rwf3z6ib6nkhfnk2nw8p6fqirdx2pparcrlmsm0i2ii62plpqhb"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("guile-dbi-bootstrap" ,guile-dbi-bootstrap))) ; only required for headers
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'chdir
+             (lambda _
+               ;; The upstream Git repository contains all the code, so change
+               ;; to the directory specific to guile-dbd-sqlite3.
+               (chdir "guile-dbd-sqlite3")))
+           (delete 'patch-extension-path)))))
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,(@ (gnu packages compression) zlib))))
+    (native-inputs
+     `(("guile-dbi" ,guile-dbi)         ; only required for headers
+       ("pkg-config" ,pkg-config)
+       ,@(package-native-inputs guile-dbi)))
     (synopsis "Guile DBI driver for SQLite")
-    ;; Unofficial home-page.
-    ;; Added by b9cbfa52f71505de8447fefabd97f16d0a9cbde6 (2016-06)
-    (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to
-SQL databases.  This package implements the interface for SQLite.")
-    (license license:gpl2+)))
+SQL databases.  This package implements the interface for SQLite.")))
 
 (define-public guile-dbd-postgresql
   (let ((commit "e97589b6b018b206c901e4cc24db463407a4036b")
