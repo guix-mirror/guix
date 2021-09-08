@@ -1576,15 +1576,6 @@ It currently supports MySQL, Postgres and SQLite3.")
             (variable "GUILE_DBD_PATH")
             (files '("lib")))))))
 
-(define guile-dbi-bootstrap
-  (package
-    (inherit guile-dbi)
-    (name "guile-dbi-bootstrap")
-    (inputs '())
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-dbi)
-       ((#:make-flags _) '(list))))))
-
 (define-public guile-dbd-sqlite3
   (package
     (inherit guile-dbi)
