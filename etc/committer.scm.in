@@ -5,6 +5,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -288,6 +289,15 @@ ChangeLog entry."
             (break-string-with-newlines message/f 72)
             (break-string-with-newlines changelog/f 72))))
 
+(define (add-copyright-line line)
+  "Add the copyright line on LINE to the previous commit."
+  (let ((author (match:substring
+                 (string-match "^\\+;;; Copyright ©[^[:alpha:]]+(.*)$" line)
+                 1)))
+    (format
+     (current-output-port) "Amend and add copyright line for ~a~%" author)
+    (system* "git" "commit" "--amend" "--no-edit")))
+
 (define (group-hunks-by-sexp hunks)
   "Return a list of pairs associating all hunks with the S-expression they are
 modifying."
@@ -370,15 +380,23 @@ modifying."
                                     (error "Cannot apply")))
                                 (usleep %delay))
                               hunks)
-                    (change-commit-message* (hunk-file-name (first hunks))
-                                            old new)
-                    (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
+                    (define copyright-line
+                      (any (lambda (line) (and=> (string-prefix? "+;;; Copyright ©" line)
+                                              (const line)))
+                                (hunk-diff-lines (first hunks))))
+                    (cond
+                     (copyright-line
+                      (add-copyright-line copyright-line))
+                     (else
+                      (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
+                        (change-commit-message* (hunk-file-name (first hunks))
+                                                old new)
                       (change-commit-message* (hunk-file-name (first hunks))
                                               old new
                                               port)
                       (usleep %delay)
                       (unless (eqv? 0 (status:exit-val (close-pipe port)))
-                        (error "Cannot commit")))))
+                        (error "Cannot commit")))))))
                  ;; XXX: we recompute the hunks here because previous
                  ;; insertions lead to offsets.
                  (new+old+hunks (diff-info)))))))
