@@ -1632,6 +1632,39 @@ SQL databases.  This package implements the interface for SQLite.")))
 interface to SQL databases.  This package implements the interface for
 PostgreSQL.")))
 
+(define-public guile-dbd-mysql
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbd-mysql")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'chdir
+             (lambda _
+               ;; The upstream Git repository contains all the code, so change
+               ;; to the directory specific to guile-dbd-mysql.
+               (chdir "guile-dbd-mysql")))
+           (add-after 'chdir 'patch-src
+             (lambda _
+               (substitute* "configure.ac"
+                 (("mariadbclient") "mariadb"))
+               (substitute* "src/guile-dbd-mysql.c"
+                 (("<mariadb/") "<mysql/"))))
+           (delete 'patch-extension-path)))))
+    (inputs
+     `(("mariadb" ,mariadb "dev")
+       ("mariadb" ,mariadb "lib")
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("guile-dbi" ,guile-dbi)         ; only required for headers
+       ,@(package-native-inputs guile-dbi)))
+    (synopsis "Guile DBI driver for MySQL")
+    (description "@code{guile-dbi} is a library for Guile that provides a
+convenient interface to SQL databases.  This package implements the interface
+for MySQL.")
+    (license license:gpl2+)))
+
 (define-public guile-config
   (package
     (name "guile-config")
