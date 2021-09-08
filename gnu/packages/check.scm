@@ -2210,9 +2210,6 @@ style test suites, summarizing their results, and providing indication of
 failures.")
     (license license:ncsa)))
 
-(define-public python2-lit
-  (package-with-python2 python-lit))
-
 (define-public python-pytest-pep8
   (package
     (name "python-pytest-pep8")
