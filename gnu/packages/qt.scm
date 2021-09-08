@@ -1939,7 +1939,9 @@ using the Enchant spell-checking library.")
                (invoke "qmake" "QT_BUILD_PARTS = libs tools" "--"
                        "--webengine-printing-and-pdf=no"
                        "--webengine-ffmpeg=system"
-                       "--webengine-icu=system"
+                       ;; FIXME: Building qtwebengine 5.12.2 with
+                       ;; icu4c >= 68 fails.
+                       ;;"--webengine-icu=system"
                        "--webengine-pepper-plugins=no"
                        "-webengine-proprietary-codecs")))))
        ;; Tests are disabled due to "Could not find QtWebEngineProcess error"
