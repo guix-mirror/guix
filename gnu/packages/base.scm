@@ -946,6 +946,7 @@ with the Linux kernel.")
                (base32
                 "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))
               (patches (search-patches
+                        "glibc-skip-c++.patch"
                         "glibc-ldd-powerpc.patch"
                         "glibc-ldd-x86_64.patch"
                         "glibc-dl-cache.patch"
