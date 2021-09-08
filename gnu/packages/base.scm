@@ -987,7 +987,7 @@ with the Linux kernel.")
 
 (define-public glibc-2.29
   (package
-    (inherit glibc)
+    (inherit glibc-2.30)
     (version "2.29")
     (source (origin
               (inherit (package-source glibc))
@@ -995,7 +995,8 @@ with the Linux kernel.")
               (sha256
                (base32
                 "0jzh58728flfh939a8k9pi1zdyalfzlxmwra7k0rzji5gvavivpk"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"
+              (patches (search-patches "glibc-skip-c++.patch"
+                                       "glibc-ldd-x86_64.patch"
                                        "glibc-CVE-2019-7309.patch"
                                        "glibc-CVE-2019-9169.patch"
                                        "glibc-2.29-git-updates.patch"
