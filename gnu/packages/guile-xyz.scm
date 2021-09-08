@@ -1539,11 +1539,6 @@ library}.")
        (list (string-append
               "--with-guile-site-dir=" %output "/share/guile/site/"
               (target-guile-effective-version (assoc-ref %build-inputs "guile"))))
-       #:make-flags
-       (list (string-append
-              "LDFLAGS=-Wl,-rpath=" %output "/lib:"
-              (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib" ":"
-              (assoc-ref %build-inputs "guile-dbd-postgresql") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
@@ -1556,9 +1551,6 @@ library}.")
                     (ext (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
-    (inputs
-     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3)
-       ("guile-dbd-postgresql" ,guile-dbd-postgresql))) ; only shared library, no scheme files
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1574,7 +1566,11 @@ library}.")
 SQL databases.  Database programming with guile-dbi is generic in that the same
 programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_DBD_PATH")
+            (files '("lib")))))))
 
 (define guile-dbi-bootstrap
   (package
