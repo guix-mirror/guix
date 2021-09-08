@@ -1522,12 +1522,12 @@ library}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://example.org") ;only hosted on Software Heritage
-                    (commit "e19b019e9683faf66c3f385b20fcc112e65f8c6e")))
+                    (url "https://github.com/opencog/guile-dbi")
+                    (commit (string-append "guile-dbi-" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09ys5hj7gnj5w1iv1m194j06jk6b8sdhc8j6hcv3bprq1428kyxw"))))
+                "0nswd067gvpy9pnig409ympkw29akh9lb2i6g3w7r18g1s0ivah2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1551,10 +1551,16 @@ library}.")
     (inputs
      `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3)
        ("guile-dbd-postgresql" ,guile-dbd-postgresql))) ; only shared library, no scheme files
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
-    (home-page "https://web.archive.org/web/20160328232717/http://home.gna.org/guile-dbi/guile-dbi.html")
+    (home-page "https://github.com/opencog/guile-dbi")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  Database programming with guile-dbi is generic in that the same
