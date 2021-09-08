@@ -1518,7 +1518,7 @@ library}.")
 (define-public guile-dbi
   (package
     (name "guile-dbi")
-    (version "2.1.6")
+    (version "2.1.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1527,7 +1527,7 @@ library}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nswd067gvpy9pnig409ympkw29akh9lb2i6g3w7r18g1s0ivah2"))))
+                "123m4j82bi60s1v95pjh4djb7bh6zdwmljbpyg7zq8ni2gyal7lw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules (((guix build guile-build-system)
@@ -1541,6 +1541,11 @@ library}.")
               (target-guile-effective-version (assoc-ref %build-inputs "guile"))))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             ;; The upstream Git repository contains all the code, so change
+             ;; to the directory specific to guile-dbi.
+             (chdir "guile-dbi")))
          (add-after 'install 'patch-extension-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
