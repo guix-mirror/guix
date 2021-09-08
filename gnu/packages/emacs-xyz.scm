@@ -2773,6 +2773,34 @@ the ability to jump forward and backward to the next bookmark.")
 Emacs buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-caml
+  (package
+    (name "emacs-caml")
+    (version "4.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://elpa.nongnu.org/nongnu/caml-"
+                            version ".tar"))
+        (sha256
+          (base32
+            "00ldvz6r10vwwmk6f3az534p0340ywn7knsg2bmvbvh3q51vyl9i"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ocaml/caml-mode")
+    (synopsis "Caml mode for GNU Emacs")
+    (description
+      "This package provides a major mode for editing OCaml code in Emacs.
+Some of its major features include:
+
+@itemize
+@item syntax highlighting (font lock);
+@item automatic indentation;
+@item querying the type of expressions (using compiler generated annot files);
+@item running an OCaml REPL within Emacs;
+@item scanning of declarations and placing them in a menu.
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public emacs-caps-lock
   (package
     (name "emacs-caps-lock")
