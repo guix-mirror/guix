@@ -2186,14 +2186,14 @@ programs, something like CSmith, a random generator of C programs.")
 (define-public python-lit
   (package
     (name "python-lit")
-    (version "0.5.1")
+    (version "12.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lit" version))
         (sha256
          (base32
-          "0z651m3vkbk85y41larnsjxrszkbi58x9gzml3lb6ga7qwcrsg97"))))
+          "01yggsb73s2gbq36xwifxl6k5ll5lkss5rwz59k9h3jnbnn7m5fj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
