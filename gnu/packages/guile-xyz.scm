@@ -1592,7 +1592,7 @@ It currently supports MySQL, Postgres and SQLite3.")
            (delete 'patch-extension-path)))))
     (inputs
      `(("sqlite" ,sqlite)
-       ("zlib" ,(@ (gnu packages compression) zlib))))
+       ("zlib" ,zlib)))
     (native-inputs
      `(("guile-dbi" ,guile-dbi)         ; only required for headers
        ("pkg-config" ,pkg-config)
