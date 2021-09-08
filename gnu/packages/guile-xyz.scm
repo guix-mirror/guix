@@ -1530,9 +1530,15 @@ library}.")
                 "0nswd067gvpy9pnig409ympkw29akh9lb2i6g3w7r18g1s0ivah2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:configure-flags
        (list (string-append
-              "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
+              "--with-guile-site-dir=" %output "/share/guile/site/"
+              (target-guile-effective-version (assoc-ref %build-inputs "guile"))))
        #:make-flags
        (list (string-append
               "LDFLAGS=-Wl,-rpath=" %output "/lib:"
@@ -1541,11 +1547,13 @@ library}.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (dbi.scm (string-append
-                              out "/share/guile/site/2.2/dbi/dbi.scm"))
-                    (ext     (string-append out "/lib/libguile-dbi")))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dbi.scm (string-append out "/share/guile/site/"
+                                            (target-guile-effective-version
+                                             (assoc-ref inputs "guile"))
+                                            "/dbi/dbi.scm"))
+                    (ext (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
     (inputs
