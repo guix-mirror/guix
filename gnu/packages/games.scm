@@ -12470,3 +12470,35 @@ wreckage.  You're stranded on a desert island and have to survive.  In order to
 do so you need to explore the island, find food, build a shelter and try to
 get attention, so you get found.")
       (license license:cc-by4.0))))
+
+(define-public fheroes2
+  (package
+    (name "fheroes2")
+    (version "0.9.7")
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags '("FHEROES2_STRICT_COMPILATION=1"
+                      "RELEASE=1")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("zlib" ,zlib)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ihhub/fheroes2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0v3zh8a8yxfikcr5vkmy36c57l4nmwisz13mjavn5f7yrirf86fn"))))
+    (home-page "https://ihhub.github.io/fheroes2/")
+    (synopsis "Turn-based strategy game engine")
+    (description "@code{fheroes2} is an implementation of Heroes of Might and
+Magic II (aka HOMM2) game engine.  It requires assets and game resources to
+play; it will look for them at @file{~/.local/share/fheroes2} folder.")
+    (license license:gpl2)))
