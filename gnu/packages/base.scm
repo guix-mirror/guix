@@ -965,13 +965,19 @@ with the Linux kernel.")
   (package
     (inherit glibc)
     (version "2.30")
+    (native-inputs
+     ;; This fails with a build error in libc-tls.c when using GCC 10.  Use an
+     ;; older compiler.
+     (modify-inputs (package-native-inputs glibc)
+       (prepend gcc-8)))
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
               (sha256
                (base32
                 "1bxqpg91d02qnaz837a5kamm0f43pr1il4r9pknygywsar713i72"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"
+              (patches (search-patches "glibc-skip-c++.patch"
+                                       "glibc-ldd-x86_64.patch"
                                        "glibc-CVE-2019-19126.patch"
                                        "glibc-hidden-visibility-ldconfig.patch"
                                        "glibc-versioned-locpath.patch"
