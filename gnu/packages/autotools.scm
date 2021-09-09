@@ -135,7 +135,18 @@ know anything about Autoconf or M4.")
                                  (find-files "bin"
                                              (lambda (file stat)
                                                (executable-file? file)))))
-               #t))))))))
+               #t))
+           (add-after 'install 'unpatch-shebangs
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Scripts that "autoconf -i" installs (config.guess,
+               ;; config.sub, and install-sh) must use a regular shebang
+               ;; rather than a reference to the store.  Restore it.
+               ;; TODO: Move this phase to 'autoconf-2.69'.
+               (let* ((out (assoc-ref outputs "out"))
+                      (build-aux (string-append
+                                  out "/share/autoconf/build-aux")))
+                 (substitute* (find-files build-aux)
+                   (("^#!.*/bin/sh") "#!/bin/sh")))))))))))
 
 (define-public autoconf autoconf-2.69)
 
