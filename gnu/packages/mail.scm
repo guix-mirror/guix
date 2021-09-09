@@ -32,7 +32,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020, 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -369,7 +369,24 @@ example, modify the message headers or body, or encrypt or sign the message.")
 processing electronic mail.  It contains both utilities and server daemons
 and all operate in a protocol-agnostic way.  The underlying libraries are
 also available, simplifying the addition of mail capabilities to new
-software.")
+software.  GNU Mailutils provides the following commands:
+@itemize @command
+@item dotlock
+@item decodemail
+@item frm
+@item from
+@item guimb
+@item mail
+@item mailutils
+@item mailutils-config
+@item messages
+@item mimeview
+@item movemail
+@item popauth
+@item putmail
+@item readmsg
+@item sieve
+@end itemize")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list license:gpl3+ license:lgpl3+))))
