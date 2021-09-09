@@ -2985,6 +2985,31 @@ everything from run time algorithm choice to code generation at compile time.")
 human-readable format.")
     (license license:expat)))
 
+(define-public julia-quadgk
+  (package
+    (name "julia-quadgk")
+    (version "2.4.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaMath/QuadGK.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1hy0629yai6xflgxaflk9764lzr1lzhlghimxk1aqi212q9c6n33"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-datastructures" ,julia-datastructures)))
+    (home-page "https://github.com/JuliaMath/QuadGK.jl")
+    (synopsis "Adaptive 1d numerical Gauss–Kronrod integration")
+    (description "This package provides support for one-dimensional numerical
+integration in Julia using adaptive Gauss-Kronrod quadrature.  The code was
+originally part of Base Julia.  It supports integration of arbitrary numeric
+types, including arbitrary precision (@code{BigFloat}), and even integration of
+arbitrary normed vector spaces (e.g. matrix-valued integrands).")
+    (license license:expat)))
+
 (define-public julia-quadmath
   (package
     (name "julia-quadmath")
