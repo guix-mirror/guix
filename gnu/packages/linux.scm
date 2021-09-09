@@ -5971,15 +5971,14 @@ invocations of itself.")
 (define-public ntfs-3g
   (package
     (name "ntfs-3g")
-    (version "2017.3.23")
+    (version "2021.8.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://tuxera.com/opensource/"
                                   "ntfs-3g_ntfsprogs-" version ".tgz"))
-              (patches (search-patches "ntfs-3g-CVE-2019-9755.patch"))
               (sha256
                (base32
-                "1mb228p80hv97pgk3myyvgp975r9mxq56c6bdn1n24kngcfh4niy"))
+                "1yrf42xr92qv3pads8lzp5nyssz6875ncfgg8v3jwjyr0nm87f2m"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Install under $prefix.
@@ -5988,8 +5987,8 @@ invocations of itself.")
                              "@sbindir@"))
                           #t))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux)
-              ("fuse" ,fuse)))                    ;libuuid
+    (inputs `(("util-linux" ,util-linux) ; libuuid
+              ("fuse" ,fuse)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags (list "--disable-static"
