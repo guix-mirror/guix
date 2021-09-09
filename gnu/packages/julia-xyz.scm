@@ -2508,6 +2508,28 @@ resolving them into absolute units.")
 with @code{missing} values in Julia.")
     (license license:expat)))
 
+(define-public julia-mlstyle
+  (package
+    (name "julia-mlstyle")
+    (version "0.4.10")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/thautwarm/MLStyle.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0h1cd7cr4c4cnpqyj3180113gdbvcc047lqphp8a8gq5smp3c059"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-datastructures" ,julia-datastructures)))
+    (home-page "https://thautwarm.github.io/MLStyle.jl/latest/")
+    (synopsis "Julia functional programming infrastructures")
+    (description "This package provides consistent and extensible functional
+programming infrastructures, and metaprogramming facilities.")
+    (license license:expat)))
+
 (define-public julia-mocking
   (package
     (name "julia-mocking")
