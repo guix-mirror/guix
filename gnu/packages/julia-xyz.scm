@@ -26,7 +26,9 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages julia-jll))
+  #:use-module (gnu packages julia-jll)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public julia-abstractffts
   (package
@@ -3036,6 +3038,81 @@ everything from run time algorithm choice to code generation at compile time.")
     (synopsis "Print data in formatted tables")
     (description "This package has the purpose to print data in matrices in a
 human-readable format.")
+    (license license:expat)))
+
+(define-public julia-pycall
+  (package
+    (name "julia-pycall")
+    (version "1.92.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPy/PyCall.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "07r99ni6nkxpyrp3wsb5qg4jxz7i2r08dyqbiffy2zm3g0bn88jq"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%julia-build-system-modules)
+       #:modules ((guix build julia-build-system)
+                  (guix build utils)
+                  ((guix build python-build-system) #:prefix python:))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-conda
+           (lambda _
+             (substitute* "Project.toml"
+               ((".*Conda.*") ""))
+             (substitute* (list "src/PyCall.jl"
+                                "test/runtests.jl")
+               (("import Conda") ""))
+             (substitute* "deps/depsutils.jl"
+               (("Conda.PYTHONDIR") "\"/\""))
+             #t))
+         (add-after 'unpack 'set-python
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (setenv "PYCALL_JL_RUNTIME_PYTHON"
+                       (string-append python "/bin/python3"))
+               (with-output-to-file "deps/deps.jl"
+                 (lambda _
+                   (format #t
+                           "const python = \"~a/bin/python3\"~@
+                           const pyprogramname = \"~a/bin/python3\"~@
+                           const libpython = \"~a/lib/libpython~a.so.1.0\"~@
+                           const PYTHONHOME = \"~a\"~@
+                           const pyversion_build = v\"~a\"~@
+                           const conda = false~%"
+                           python
+                           python
+                           python
+                           (python:python-version python)
+                           python
+                           ,(package-version python))))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "CI" "true")
+             (setenv "JULIA_PKGEVAL" "true")
+             #t)))))
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)
+       ("julia-versionparsing" ,julia-versionparsing)))
+    (inputs
+     `(("python" ,python)))
+    (native-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/JuliaPy/PyCall.jl")
+    (synopsis "Call Python functions from the Julia language")
+    (description "This package provides the ability to directly call and fully
+interoperate with Python from the Julia language.  You can import arbitrary
+Python modules from Julia, call Python functions (with automatic conversion of
+types between Julia and Python), define Python classes from Julia methods, and
+share large data structures between Julia and Python without copying them.")
     (license license:expat)))
 
 (define-public julia-quadgk
