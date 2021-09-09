@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +81,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages terminals)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -739,7 +741,7 @@ displayed in a terminal.")
 (define-public imv
   (package
     (name "imv")
-    (version "4.1.0")
+    (version "4.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -747,13 +749,12 @@ displayed in a terminal.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0gk8g178i961nn3bls75a8qpv6wvfvav6hd9lxca1skaikd33zdx"))
+                "12xcayyzmfknbff04z8jdlxsnnimgisqiah0bw07cyxx8ksmdzqw"))
               (file-name (git-file-name name version))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
          (add-after 'install 'record-absolute-file-names
            (lambda* (#:key outputs #:allow-other-keys)
              ;; 'imv' is a script that execs 'imv-x11' or 'imv-wayland'.
@@ -763,22 +764,24 @@ displayed in a terminal.")
                (substitute* (string-append bin "/imv")
                  (("imv-")
                   (string-append bin "/imv-")))
-               #t))))
-       #:make-flags
-       (list ,(string-append "CC=" (cc-for-target))
-             (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "CONFIGPREFIX="
-                            (assoc-ref %outputs "out") "/etc"))))
+               #t))))))
     (inputs
-     `(("asciidoc" ,asciidoc)
-       ("freeimage" ,freeimage)
+     `(("freeimage" ,freeimage)
        ("glu" ,glu)
-       ("librsvg" ,librsvg)
+       ("libheif" ,libheif)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libinih" ,libinih)
+       ("libnsgif" ,libnsgif)
+       ("librsvg" ,librsvg-next)
+       ("libtiff" ,libtiff)
        ("libxkbcommon" ,libxkbcommon)
        ("pango" ,pango)
        ("wayland" ,wayland)))
     (native-inputs
-     `(("cmocka" ,cmocka)
+     `(("asciidoc" ,asciidoc)
+       ("cmocka" ,cmocka)
+       ;; why build need it?
+       ("git" ,git-minimal)
        ("pkg-config" ,pkg-config)))
     (synopsis "Image viewer for tiling window managers")
     (description "@code{imv} is a command line image viewer intended for use
