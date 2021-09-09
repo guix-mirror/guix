@@ -260,18 +260,16 @@ example, modify the message headers or body, or encrypt or sign the message.")
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.10")
+    (version "3.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))
+               "1iwl82d6aa2acsdxbqh1s5xx44sg83b4yxqik408m1s9rcfrf86r"))
              (patches
-              ;; Fixes https://issues.guix.gnu.org/43088.
-              (search-patches "mailutils-fix-uninitialized-variable.patch"
-                              "mailutils-variable-lookup.patch"))))
+              (search-patches "mailutils-variable-lookup.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -295,8 +293,9 @@ example, modify the message headers or body, or encrypt or sign the message.")
              ;; The 'pipeact.at' tests generate a shell script; make
              ;; sure it uses the right shell.
              (substitute* '("sieve/tests/testsuite"
-                            "mh/tests/testsuite")
-               (("#! /bin/sh")
+                            "mh/tests/testsuite"
+                            "libmailutils/tests/lock.at")
+               (("#! ?/bin/sh")
                 (string-append "#!" (which "sh"))))
 
              (substitute* "mh/tests/testsuite"
@@ -328,8 +327,9 @@ example, modify the message headers or body, or encrypt or sign the message.")
                  (format port "Path: ~a/Mail-for-tests~%"
                          (getcwd))))
 
-             #t)))
-       ;; TODO: Add `--with-sql'.
+             (substitute* "imap4d/tests/testclient.c"
+               (("\"/bin/sh\"")
+                (string-append "\"" (which "sh") "\""))))))
        #:configure-flags
        (list "--sysconfdir=/etc"
 
@@ -341,16 +341,20 @@ example, modify the message headers or body, or encrypt or sign the message.")
                                            (package-inputs this-package))
                                (("guile" guile)
                                 (version-major+minor
-                                 (package-version guile))))))
-
-       #:parallel-tests? #f))
+                                 (package-version guile))))))))
     (native-inputs
-     `(("perl" ,perl)                           ;for 'gylwrap'
+     ;; Regeneration of the build system is triggered by touching the
+     ;; 'libmailutils/tests/lock.at' file.
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("m4" ,m4)
+       ("perl" ,perl)                           ;for 'gylwrap'
        ("texinfo" ,texinfo)
        ("dejagnu" ,dejagnu)))
     (inputs
-     `(("m4" ,m4)
-       ("guile" ,guile-3.0)
+     `(("guile" ,guile-3.0)
        ("gsasl" ,gsasl)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
@@ -358,7 +362,6 @@ example, modify the message headers or body, or encrypt or sign the message.")
        ("linux-pam" ,linux-pam)
        ("libltdl" ,libltdl)
        ("gdbm" ,gdbm)
-
        ;; Required for SEARCH CHARSET.
        ("libiconv" ,libiconv)
        ("libunistring" ,libunistring)))
