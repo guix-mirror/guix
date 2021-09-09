@@ -274,7 +274,8 @@ differences.")
             (sha256
              (base32
               "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))
-            (patches (search-patches "coreutils-gnulib-tests.patch"))))
+            (patches (search-patches "coreutils-gnulib-tests.patch"
+                                     "diffutils-fix-signal-processing.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list perl))
    (synopsis "Comparing and merging files")
