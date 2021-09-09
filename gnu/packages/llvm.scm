@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -882,6 +883,43 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public clang clang-9)
 (define-public clang-toolchain clang-toolchain-9)
 
+(define-public llvm-for-rocm
+  (package
+    ;; Actually based on LLVM 13 as of v4.3, but llvm-12 works just fine.
+    (inherit llvm-12)
+    (name "llvm-for-rocm")
+    (version "4.3.0")                         ;this must match '%rocm-version'
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/RadeonOpenCompute/llvm-project.git")
+                    (commit (string-append "rocm-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0p75nr1qpmy6crymdax5hm40wkimman4lnglz4x5cnbiqindya7s"))
+              (patches
+               (search-patches "llvm-roc-4.2.0-add_Object.patch"
+                               "llvm-roc-3.0.0-add_libraries.patch"
+                               "llvm-roc-4.0.0-remove-isystem-usr-include.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm-12)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "llvm")))))
+       ((#:configure-flags flags)
+        ''("-DLLVM_ENABLE_PROJECTS=llvm;clang;lld"
+           "-DLLVM_TARGETS_TO_BUILD=AMDGPU;X86"
+           "-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
+           "-DLLVM_VERSION_SUFFIX="))))
+    (properties `((hidden? . #t)
+                  ,@(package-properties llvm-12)))))
+
+
 (define-public lld
   (package
     (name "lld")
