@@ -610,6 +610,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xdisorg.scm			\
   %D%/packages/xorg.scm				\
   %D%/packages/xfce.scm				\
+  %D%/packages/zig.scm				\
   %D%/packages/zile.scm				\
   %D%/packages/zwave.scm			\
 						\
@@ -1943,6 +1944,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ytfzf-updates.patch        \
   %D%/packages/patches/ytnef-CVE-2021-3403.patch	\
   %D%/packages/patches/ytnef-CVE-2021-3404.patch	\
+  %D%/packages/patches/zig-disable-libc-note-test.patch         \
+  %D%/packages/patches/zig-use-system-paths.patch	        \
   %D%/packages/patches/zstd-CVE-2021-24031_CVE-2021-24032.patch	\
   %D%/packages/patches/zziplib-CVE-2018-16548.patch
 
