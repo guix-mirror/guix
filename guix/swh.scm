@@ -104,10 +104,9 @@
             vault-reply?
             vault-reply-id
             vault-reply-fetch-url
-            vault-reply-object-id
-            vault-reply-object-type
             vault-reply-progress-message
             vault-reply-status
+            vault-reply-swhid
             query-vault
             request-cooking
             vault-fetch
@@ -391,10 +390,9 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   json->vault-reply
   (id             vault-reply-id)
   (fetch-url      vault-reply-fetch-url "fetch_url")
-  (object-id      vault-reply-object-id "obj_id")
-  (object-type    vault-reply-object-type "obj_type" string->symbol)
   (progress-message vault-reply-progress-message "progress_message")
-  (status         vault-reply-status "status" string->symbol))
+  (status         vault-reply-status "status" string->symbol)
+  (swhid          vault-reply-swhid))
 
 
 ;;;
