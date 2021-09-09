@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015, 2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +41,19 @@
 ;;; representation.
 ;;;
 ;;; Code:
+
+(define-syntax bit-field
+  (lambda (s)
+    ;; This inline version of 'bit-field' assumes that START and END are
+    ;; literals and pre-computes the mask.  In an ideal world, using 'define'
+    ;; or 'define-inlinable' would be enough, but as of 3.0.7, peval doesn't
+    ;; expand calls to 'expt' (and 'bit-field' is a subr.)
+    (syntax-case s ()
+      ((_ n start end)
+       (let* ((s    (syntax->datum #'start))
+              (e    (syntax->datum #'end))
+              (mask (- (expt 2 (- e s)) 1)))
+         #`(logand (ash n (- start)) #,mask))))))
 
 (define bytevector-quintet-ref
   (let* ((ref  bytevector-u8-ref)
