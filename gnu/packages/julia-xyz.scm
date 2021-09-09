@@ -100,6 +100,26 @@ acts like @code{convert(T, x)}, but without the restriction of returning a
 be GPU compatible without throwing away the wrapper.")
     (license license:expat)))
 
+(define-public julia-ansicoloredprinters
+  (package
+    (name "julia-ansicoloredprinters")
+    (version "0.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/ANSIColoredPrinters.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0dp5agljr0g50s5gn0pr70wrz01ggck6pb40ay3l4szhswq7mqzf"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaDocs/ANSIColoredPrinters.jl")
+    (synopsis "ANSI escape code translator")
+    (description "@code{ANSIColoredPrinters.jl} converts a text qualified by
+ANSI escape codes to another format.")
+    (license license:expat)))
+
 (define-public julia-aqua
   (package
     (name "julia-aqua")
