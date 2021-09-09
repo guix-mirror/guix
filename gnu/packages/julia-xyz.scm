@@ -2433,6 +2433,37 @@ may include other factorizations such as the LQ factorization.")
 TLS} and cryptography C library for Julia.")
     (license license:expat)))
 
+(define-public julia-measurements
+  (package
+    (name "julia-measurements")
+    (version "2.6.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPhysics/Measurements.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "05p3f0gr4sv4maq8cix5fi8ldq0zagswqsd43xn6fhy046f936mz"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-calculus" ,julia-calculus)
+       ("julia-recipesbase" ,julia-recipesbase)
+       ("julia-requires" ,julia-requires)))
+    (native-inputs
+     `(("julia-quadgk" ,julia-quadgk)
+       ("julia-specialfunctions" ,julia-specialfunctions)
+       ("julia-unitful" ,julia-unitful)))
+    (home-page "https://juliaphysics.github.io/Measurements.jl/stable/")
+    (synopsis "Error propagation calculator and library")
+    (description "@code{Measurements.jl} is an error propagation calculator and
+library for physical measurements.  It supports real and complex numbers with
+uncertainty, arbitrary precision calculations, operations with arrays, and
+numerical integration.  The linear error propagation theory is employed to
+propagate the errors.")
+    (license license:expat)))
+
 (define-public julia-measures
   (package
     (name "julia-measures")
