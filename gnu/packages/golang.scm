@@ -1597,7 +1597,9 @@ Go.")
                  (("/bin/sleep" command)
                   (string-append
                    (assoc-ref (or native-inputs inputs) "coreutils")
-                   command))))))))
+                   command)))
+               (substitute* "src/github.com/keybase/go-ps/process_openbsd.go"
+                 (("^// \\+build ignore") "")))))))
       (native-inputs
        `(("coreutils" ,coreutils)
          ("go-github-com-stretchr-testify"
