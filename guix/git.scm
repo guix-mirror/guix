@@ -36,7 +36,7 @@
   #:use-module (guix sets)
   #:use-module ((guix diagnostics) #:select (leave warning))
   #:use-module (guix progress)
-  #:autoload   (guix swh) (swh-download)
+  #:autoload   (guix swh) (swh-download commit-id?)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -342,7 +342,8 @@ dynamic extent of EXP."
   "Return true if REF, a reference such as '(commit . \"cabba9e\"), is
 definitely available in REPOSITORY, false otherwise."
   (match ref
-    (('commit . commit)
+    ((or ('commit . commit)
+         ('tag-or-commit . (? commit-id? commit)))
      (let ((len (string-length commit))
            (oid (string->oid commit)))
        (false-if-git-not-found
