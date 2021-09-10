@@ -773,7 +773,8 @@ Mercator, Mollweide, Peters, polyconic, orthographic and rectangular.")
        ("goocanvas" ,goocanvas)
        ("gtk+" ,gtk+)))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
            (lambda _
