@@ -4976,7 +4976,8 @@ as conversion to and from @command{net.Addr}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10mcnvi5qmn00vpyk6si8gjka7p654wr9hac4zc9w5h3ickhvbdc"))))
+         "10mcnvi5qmn00vpyk6si8gjka7p654wr9hac4zc9w5h3ickhvbdc"))
+       (patches (search-patches "go-github-com-urfave-cli-fix-tests.patch"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/urfave/cli"))

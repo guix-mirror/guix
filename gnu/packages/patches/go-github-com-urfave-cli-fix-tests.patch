@@ -1,0 +1,28 @@
+Backported from upstream PR: https://github.com/urfave/cli/pull/1299
+---
+diff --git a/app_test.go b/app_test.go
+index 33024ff..6b3aaa3 100644
+--- a/app_test.go
++++ b/app_test.go
+@@ -513,18 +513,18 @@ func TestApp_RunAsSubcommandParseFlags(t *testing.T) {
+ func TestApp_RunAsSubCommandIncorrectUsage(t *testing.T) {
+ 	a := App{
+ 		Flags: []Flag{
+-			StringFlag{Name: "--foo"},
++			StringFlag{Name: "foo"},
+ 		},
+ 		Writer: bytes.NewBufferString(""),
+ 	}
+ 
+ 	set := flag.NewFlagSet("", flag.ContinueOnError)
+-	_ = set.Parse([]string{"", "---foo"})
++	_ = set.Parse([]string{"", "-bar"})
+ 	c := &Context{flagSet: set}
+ 
+ 	err := a.RunAsSubcommand(c)
+ 
+-	expect(t, err, errors.New("bad flag syntax: ---foo"))
++	expect(t, err.Error(), "flag provided but not defined: -bar")
+ }
+ 
+ func TestApp_CommandWithFlagBeforeTerminator(t *testing.T) {
