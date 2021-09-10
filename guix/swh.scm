@@ -697,4 +697,7 @@ wait until it becomes available, which could take several minutes."
      (swh-download-directory (revision-directory revision) output
                              #:log-port log-port))
     (#f
+     (format log-port
+             "SWH: revision ~s originating from ~a could not be found~%"
+             reference url)
      #f)))
