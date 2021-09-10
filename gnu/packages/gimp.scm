@@ -186,7 +186,8 @@ of a larger interface.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Denable-gir=false")))
+       (list "-Denable-gir=false"
+             "-Dwith-docs=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
