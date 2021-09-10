@@ -19,6 +19,7 @@
 ;;; Copyright © 2021 Benoit Joly <benoit@benoitj.ca>
 ;;; Copyright © 2021 Alexander Krotov <krotov@iitp.ru>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Christopher Howard <christopher@librehacker.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -903,3 +904,31 @@ interface.")
     (synopsis "Gemini client with a terminal interface")
     (description "Telescope is a w3m-like browser for Gemini.")
     (license license:x11)))
+
+(define-public av-98
+  (package
+    (name "av-98")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "AV-98" version))
+       (sha256
+        (base32
+         "02fjnc2rvm010gb3i07p8r4xlhrmnv1wca1qymfjcymr7vm68h0i"))))
+    (build-system python-build-system)
+    (home-page "https://tildegit.org/solderpunk/AV-98/")
+    (synopsis "Command line Gemini client")
+    (description "AV-98 is an experimental client for the Gemini protocol.
+Features include
+@itemize
+@item TOFU or CA server certificate validation;
+@item Extensive client certificate support if an openssl binary is available;
+@item Ability to specify external handler programs for different MIME types;
+@item Gopher proxy support;
+@item Advanced navigation tools like tour and mark (as per VF-1);
+@item Bookmarks;
+@item IPv6 support;
+@item Support for any character encoding recognised by Python.
+@end itemize")
+    (license license:bsd-2)))
