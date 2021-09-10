@@ -34,8 +34,9 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix sets)
-  #:use-module ((guix diagnostics) #:select (leave))
+  #:use-module ((guix diagnostics) #:select (leave warning))
   #:use-module (guix progress)
+  #:autoload   (guix swh) (swh-download)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -181,6 +182,13 @@ the 'SSL_CERT_FILE' and 'SSL_CERT_DIR' environment variables."
                                  show-progress)))
       (lambda args
         (make-fetch-options auth-method)))))
+
+(define GITERR_HTTP
+  ;; Guile-Git <= 0.5.2 lacks this constant.
+  (let ((errors (resolve-interface '(git errors))))
+    (if (module-defined? errors 'GITERR_HTTP)
+        (module-ref errors 'GITERR_HTTP)
+        34)))
 
 (define (clone* url directory)
   "Clone git repository at URL into DIRECTORY.  Upon failure,
@@ -344,6 +352,42 @@ definitely available in REPOSITORY, false otherwise."
     (_
      #f)))
 
+(define (clone-from-swh url tag-or-commit output)
+  "Attempt to clone TAG-OR-COMMIT (a string), which originates from URL, using
+a copy archived at Software Heritage."
+  (call-with-temporary-directory
+   (lambda (bare)
+     (and (swh-download url tag-or-commit bare
+                        #:archive-type 'git-bare)
+          (let ((repository (clone* bare output)))
+            (remote-set-url! repository "origin" url)
+            repository)))))
+
+(define (clone/swh-fallback url ref cache-directory)
+  "Like 'clone', but fallback to Software Heritage if the repository cannot be
+found at URL."
+  (define (inaccessible-url-error? err)
+    (let ((class (git-error-class err))
+          (code  (git-error-code err)))
+      (or (= class GITERR_HTTP)                   ;404 or similar
+          (= class GITERR_NET))))                 ;unknown host, etc.
+
+  (catch 'git-error
+    (lambda ()
+      (clone* url cache-directory))
+    (lambda (key err)
+      (match ref
+        (((or 'commit 'tag-or-commit) . commit)
+         (if (inaccessible-url-error? err)
+             (or (clone-from-swh url commit cache-directory)
+                 (begin
+                   (warning (G_ "revision ~a of ~a \
+could not be fetched from Software Heritage~%")
+                            commit url)
+                   (throw key err)))
+             (throw key err)))
+        (_ (throw key err))))))
+
 (define cached-checkout-expiration
   ;; Return the expiration time procedure for a cached checkout.
   ;; TODO: Honor $GUIX_GIT_CACHE_EXPIRATION.
@@ -410,7 +454,7 @@ it unchanged."
    (let* ((cache-exists? (openable-repository? cache-directory))
           (repository    (if cache-exists?
                              (repository-open cache-directory)
-                             (clone* url cache-directory))))
+                             (clone/swh-fallback url ref cache-directory))))
      ;; Only fetch remote if it has not been cloned just before.
      (when (and cache-exists?
                 (not (reference-available? repository ref)))
