@@ -39,7 +39,7 @@
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
@@ -206,6 +206,7 @@
     (arguments
      `(#:configure-flags
        (list
+        "CFLAGS=-fcommon"
         ;; XXX: Broken API.
         ;; Undeclared variables 'sys_nerr' and 'sys_errlist'.
         ;; "--enable-libv4l2"
