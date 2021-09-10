@@ -59,6 +59,7 @@
   #:use-module (gnu packages digest)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -1369,7 +1370,7 @@ towards a working Mupen64Plus for casual users.")
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
-    (version "1.48")
+    (version "1.51.1")
     (source
      (origin
        (method git-fetch)
@@ -1378,36 +1379,24 @@ towards a working Mupen64Plus for casual users.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19c8vx5yxbysl0sszk5blfngwacshdgwbf44g1qaxvq8ywiyxmb4"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; We don't need libretro for the GNU/Linux build.
-           (delete-file-recursively "libretro")
-           #t))))
-    (build-system cmake-build-system)
+        (base32 "1g19gz33jav00rwzkpcnynf5ps41vl64a9qx0xjd6lva4bgn8s57"))))
+    (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("ao" ,ao)
-       ("gtk+" ,gtk+)
+     `(("fltk" ,fltk)
+       ("fontconfig", fontconfig)
        ("libarchive" ,libarchive)
        ("libepoxy" ,libepoxy)
+       ("libxft" ,libxft)
+       ("libxrender" ,libxrender)
        ("sdl2" ,sdl2)
        ("zlib" ,zlib)))
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; This fixes the file chooser crash that happens with GTK 3.
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (nestopia (string-append out "/bin/nestopia"))
-                    (gtk (assoc-ref inputs "gtk+"))
-                    (gtk-share (string-append gtk "/share")))
-               (wrap-program nestopia
-                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))
-       ;; There are no tests.
+     '(;; There are no tests.
        #:tests? #f))
     (home-page "http://0ldsk00l.ca/nestopia/")
     (synopsis "Nintendo Entertainment System (NES/Famicom) emulator")
