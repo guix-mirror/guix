@@ -664,3 +664,30 @@ stopping before signals.
 @end itemize")
     (license (list license:cc-by-sa3.0 license:agpl3+))
     (properties `((upstream-name . "orwell/advtrains")))))
+
+(define-public minetest-basic-trains
+  (package
+    (name "minetest-basic-trains")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.bananach.space/basic_trains.git/")
+             (commit
+              "d44c410f7c2a7202ee68b66fc50febae89e0c5dc")))
+       (sha256
+        (base32
+         "0vvzndj48kgdz2bfgivfm217sbmc2lmxpp2mispcy7byn4i26prx"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-advtrains" ,minetest-advtrains)))
+    (home-page
+     "http://advtrains.de/wiki/doku.php?id=usage:trains:basic_trains")
+    (synopsis "Collection of basic trains for the Advanced Trains mod")
+    (description
+     "This modpack contains the trains which were the ``default'' trains in
+advtrains up to version 2.2.1.")
+    (license (list license:cc-by-sa3.0 license:agpl3+))
+    (properties `((upstream-name . "orwell/basic_trains")))))
