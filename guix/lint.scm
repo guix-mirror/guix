@@ -1562,7 +1562,11 @@ Disarchive entry refers to non-existent SWH directory '~a'")
                                               #:field 'source)))))))
                    ((? content?)
                     '())))
-               '()))))
+               '()))
+          (_
+           (list (make-warning package
+                               (G_ "unsupported source type")
+                               #:field 'source)))))
       (match-lambda*
         (('swh-error url method response)
          (response->warning url method response))
