@@ -1715,22 +1715,7 @@ using the dataset of topographical information collected by
              ;; of QMapShack, but they are not applied by default, for
              ;; some reason...
              (invoke "patch" "-p1" "-i" "FindPROJ4.patch")
-             (invoke "patch" "-p1" "-i" "FindQuaZip5.patch")
-             #t))
-         (add-after 'install 'wrap
-           ;; The program fails to find the QtWebEngineProcess program,
-           ;; so we set QTWEBENGINEPROCESS_PATH to help it.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                   (qtwebengineprocess (string-append
-                                        (assoc-ref inputs "qtwebengine")
-                                        "/lib/qt5/libexec/QtWebEngineProcess")))
-               (for-each (lambda (program)
-                           (wrap-program program
-                             `("QTWEBENGINEPROCESS_PATH" =
-                               (,qtwebengineprocess))))
-                         (find-files bin ".*")))
-             #t)))))
+             (invoke "patch" "-p1" "-i" "FindQuaZip5.patch"))))))
     (synopsis "GPS mapping application")
     (description
      "QMapShack can be used to plan your next outdoor trip or to visualize and
