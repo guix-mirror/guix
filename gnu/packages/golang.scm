@@ -1558,6 +1558,12 @@ Go.")
          (url "https://github.com/sevlyar/go-daemon")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        ;; XXX: Remove when updating
+        '(begin
+           (substitute* "compilation_test.go"
+             ((".*\"darwin/386\".*") ""))))
        (sha256
         (base32 "1y3gnxaifykcjcbzx91lz9bc93b95w3xj4rjxjbii26pm3j7gqyk"))))
     (build-system go-build-system)
