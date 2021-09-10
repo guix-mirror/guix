@@ -16090,9 +16090,9 @@ This is the type of the @code{mcron} service, whose value is an
 @code{mcron-configuration} object.
 
 This service type can be the target of a service extension that provides
-it additional job specifications (@pxref{Service Composition}).  In
-other words, it is possible to define services that provide additional
-mcron jobs to run.
+additional job specifications (@pxref{Service Composition}).  In other
+words, it is possible to define services that provide additional mcron
+jobs to run.
 @end defvr
 
 @deftp {Data Type} mcron-configuration
@@ -35685,7 +35685,38 @@ for example).
 @cindex mcron
 @cindex scheduling jobs
 
-mcron info here
+The @code{(gnu home-services mcron)} module provides an interface to
+GNU@tie{}mcron, a daemon to run jobs at scheduled times (@pxref{Top,,,
+mcron, GNU@tie{}mcron}).  The information about system's mcron is
+applicable here (@pxref{Scheduled Job Execution}), the only difference
+for home services is that they have to be declared in a
+@code{home-envirnoment} record instead of an @code{operating-system}
+record.
+
+@defvr {Scheme Variable} home-mcron-service-type
+This is the type of the @code{mcron} home service, whose value is an
+@code{home-mcron-configuration} object.  It allows to manage scheduled
+tasks.
+
+This service type can be the target of a service extension that provides
+additional job specifications (@pxref{Service Composition}).  In other
+words, it is possible to define services that provide additional mcron
+jobs to run.
+@end defvr
+
+@deftp {Data Type} home-mcron-configuration
+Data type representing the configuration of mcron.
+
+@table @asis
+@item @code{mcron} (default: @var{mcron})
+The mcron package to use.
+
+@item @code{jobs}
+This is a list of gexps (@pxref{G-Expressions}), where each gexp
+corresponds to an mcron job specification (@pxref{Syntax, mcron job
+specifications,, mcron, GNU@tie{}mcron}).
+@end table
+@end deftp
 
 @node Shepherd Home Service
 @subsection Managing User's Daemons
