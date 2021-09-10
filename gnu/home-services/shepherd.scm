@@ -27,6 +27,8 @@
 
   #:use-module (srfi srfi-1)
 
+  #:export (home-shepherd-service-type
+            home-shepherd-configuration)
   #:re-export (shepherd-service
                shepherd-action))
 
