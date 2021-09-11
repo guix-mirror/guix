@@ -15880,7 +15880,7 @@ Features:
 (define-public emacs-evil-matchit
   (package
     (name "emacs-evil-matchit")
-    (version "2.3.13")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
@@ -15889,7 +15889,7 @@ Features:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j1p4z6ps58nbsh55l9h30gxbkrzwzkjpq7zl50q6yfc84z7byzk"))))
+        (base32 "1ls58wdjhs4q18bj3izflj0bb5fwafyr520y1j9kj29clqn73kxh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
