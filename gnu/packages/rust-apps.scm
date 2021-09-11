@@ -392,8 +392,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
           "0m5lrvx6wwkxqdc5digm1k4diiaqcg5j4pia77s5nw1aam7k51hy"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.46
-       #:modules ((guix build cargo-build-system)
+     `(#:modules ((guix build cargo-build-system)
                   (guix build utils)
                   (srfi srfi-26))
        #:cargo-inputs

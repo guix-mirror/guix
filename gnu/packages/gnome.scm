@@ -3373,8 +3373,6 @@ for dealing with different structured file formats.")
     (outputs '("out" "doc"))
     (arguments
      `(#:install-source? #f
-       ;; XXX: compiling librsvg_c_api hangs forever with 1.49.
-       #:rust ,rust-1.48
        #:modules
        ((guix build cargo-build-system)
         (guix build utils)

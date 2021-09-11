@@ -11854,7 +11854,6 @@ attributes.")
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Cannot compile cxx-test-suite.
-       #:rust ,rust-1.48    ; or newer
        #:cargo-inputs
        (("rust-cc" ,rust-cc-1)
         ("rust-cxxbridge-flags" ,rust-cxxbridge-flags-1)
@@ -11914,8 +11913,7 @@ attributes.")
           "0shmkgv3cnh06ws1p555znj1hh23phynaz73rgnz95gradsdwnwg"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.48    ; or newer
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1)
         ("rust-codespan-reporting" ,rust-codespan-reporting-0.11)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -11975,8 +11973,7 @@ crate into a Cargo build.")
           "08v366jxd2vc8jc2cbvrga0866pwfcaq6hl8yylfx0vhs2n53j53"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.48    ; or newer
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1)
         ("rust-codespan-reporting" ,rust-codespan-reporting-0.11)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
@@ -12081,8 +12078,7 @@ crate (implementation detail).")
           "0gkwvihw74dh8p3fz3552wnxanrpwmwfy38ylz2z8knjq0y8y4v3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.48    ; or newer
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-clang-ast" ,rust-clang-ast-0.1)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-memmap" ,rust-memmap-0.7)
@@ -33736,8 +33732,7 @@ UDP.")
           "1hnid1d78zrr8ph12lpvp5b2cpx2fsqqgqs2yn1q23c6g7jix1y7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.46    ; or later
-       #:tests? #f          ; tests require postgres server.
+     `(#:tests? #f          ; tests require postgres server.
        #:cargo-inputs
        (("rust-bytes" ,rust-bytes-1)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
@@ -38833,8 +38828,7 @@ password hashing function.")
           "10k58hf367626d4akl7ifyk5qwqphfs5x6z1yay22pkyc6w7q4h1"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.46    ; or later
-       #:tests? #f          ; not all test files included.
+     `(#:tests? #f          ; not all test files included.
        #:cargo-inputs
        (("rust-arbitrary" ,rust-arbitrary-1)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
@@ -44648,8 +44642,7 @@ algorithm.  Includes streaming compression and decompression.")
           "18ny6m1gnf6cwp5ax0b5hr36w6yg16z7faj76b31aq2jghhgqgcy"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.46    ; or later
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/rust-lang/socket2")
@@ -50023,8 +50016,7 @@ OpenSSL.")
           "12rb390i3af7zb0z2idhaf6l2m6snypwdiwjw84rmyz4qy1i6ard"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.46
-       #:tests? #f                      ;require postgresql
+     `(#:tests? #f                      ;require postgresql
        #:cargo-inputs
        (("rust-async-trait" ,rust-async-trait-0.1)
         ("rust-byteorder" ,rust-byteorder-1)

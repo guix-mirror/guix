@@ -247,7 +247,6 @@ cards.")
                   (guix build utils)
                   ((guix build gnu-build-system) #:prefix gnu:))
        #:vendor-dir "vendor"
-       #:rust ,rust-1.48    ; or newer
        #:install-source? #f
        #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
