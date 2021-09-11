@@ -49,6 +49,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix deprecation)
   #:use-module (guix utils)
@@ -221,11 +222,11 @@ window managers, that don't provide Qt integration by themselves.")
       (arguments
        `(#:tests? #f                    ; No target
          #:configure-flags
-         (list
-          (string-append "-DCMAKE_CXX_FLAGS=-I"
-                         (assoc-ref %build-inputs "qtbase")
-                         "/include/qt5/QtXkbCommonSupport/"
-                         ,(package-version qtbase-5)))))
+         ,#~(list
+             (string-append "-DCMAKE_CXX_FLAGS=-I"
+                            #$(this-package-input "qtbase")
+                            "/include/qt5/QtXkbCommonSupport/"
+                            #$(package-version qtbase-5)))))
       (native-inputs
        `(("cmake-shared" ,cmake-shared)
          ("extra-cmake-modules" ,extra-cmake-modules)
