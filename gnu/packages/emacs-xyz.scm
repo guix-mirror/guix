@@ -9909,7 +9909,7 @@ features:
 (define-public emacs-typescript-mode
   (package
     (name "emacs-typescript-mode")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9918,7 +9918,7 @@ features:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "002f1xfhq43fjaqliwrgxspryfahpa82va5dw3p8kwil2xwvc6mh"))))
+                "186bpvqxx87kp3857mq0mzn1ddsvzmpijix810k6bdz8522x7zdw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ananthakumaran/typescript.el")
     (synopsis "Emacs major mode for editing Typescript code")
