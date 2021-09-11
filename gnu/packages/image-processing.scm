@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -578,10 +579,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              (mkdir "../opencv-contrib")
              (copy-recursively (assoc-ref inputs "opencv-extra")
                                "../opencv-extra")
-             (invoke "tar" "xvf"
-                     (assoc-ref inputs "opencv-contrib")
-                     "--strip-components=1"
-                     "-C" "../opencv-contrib")))
+             (copy-recursively (assoc-ref inputs "opencv-contrib")
+                               "../opencv-contrib")))
 
          (add-after 'set-paths 'add-ilmbase-include-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -590,7 +589,9 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
            ;; the CPATH to satisfy the dependency on "ImathVec.h".
            (setenv "CPATH"
                    (string-append
-                    (search-input-directory inputs "include/OpenEXR")
+                    (string-drop-right
+                     (search-input-file inputs "include/OpenEXR/ImathVec.h")
+                     11)
                     ":" (or (getenv "CPATH") "")))))
        (add-before 'check 'start-xserver
          (lambda* (#:key inputs #:allow-other-keys)
