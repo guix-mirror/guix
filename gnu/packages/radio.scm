@@ -26,6 +26,7 @@
 
 (define-module (gnu packages radio)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2083,20 +2084,20 @@ voice formats.")
     (arguments
      `(#:tests? #f  ; No test suite.
        #:configure-flags
-       (list (string-append "-DAPT_DIR="
-                            (assoc-ref %build-inputs "aptdec"))
-             (string-append "-DDAB_DIR="
-                            (assoc-ref %build-inputs "libdab"))
-             (string-append "-DDSDCC_DIR="
-                            (assoc-ref %build-inputs "dsdcc"))
-             (string-append "-DMBE_DIR="
-                            (assoc-ref %build-inputs "mbelib"))
-             (string-append "-DSERIALDV_DIR="
-                            (assoc-ref %build-inputs "serialdv"))
-             (string-append "-DSGP4_DIR="
-                            (assoc-ref %build-inputs "sgp4"))
-             (string-append "-DSOAPYSDR_DIR="
-                            (assoc-ref %build-inputs "soapysdr")))))
+       ,#~(list (string-append "-DAPT_DIR="
+                               #$(this-package-input "aptdec"))
+                (string-append "-DDAB_DIR="
+                               #$(this-package-input "libdab"))
+                (string-append "-DDSDCC_DIR="
+                               #$(this-package-input "dsdcc"))
+                (string-append "-DMBE_DIR="
+                               #$(this-package-input "mbelib"))
+                (string-append "-DSERIALDV_DIR="
+                               #$(this-package-input "serialdv"))
+                (string-append "-DSGP4_DIR="
+                               #$(this-package-input "sgp4"))
+                (string-append "-DSOAPYSDR_DIR="
+                               #$(this-package-input "soapysdr")))))
     (home-page "https://github.com/f4exb/sdrangel/wiki")
     (synopsis "Software defined radio")
     (description
