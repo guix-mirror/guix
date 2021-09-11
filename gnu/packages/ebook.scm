@@ -477,7 +477,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "1.0.3")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -486,7 +486,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m0xiqpb87pwr3fhy0a4qxg67yjhwchcxj3x2anyy0li4inryxag"))))
+        (base32 "0hifzzhhf0ww6iar9gswjfndy3i54s6jc41zaazlx4scc7r6fhs0"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -495,14 +495,12 @@ following formats:
          (add-after 'unpack 'patch-desktop-file
            (lambda _
              (substitute* "data/com.github.geigi.cozy.desktop"
-               (("Exec=com.github.geigi.cozy") "Exec=cozy"))
-             #t))
+               (("Exec=com.github.geigi.cozy") "Exec=cozy"))))
          (add-after 'install 'patch-executable-name
            (lambda* (#:key outputs #:allow-other-keys)
              (with-directory-excursion
                  (string-append (assoc-ref outputs "out") "/bin")
-               (rename-file "com.github.geigi.cozy" "cozy"))
-             #t))
+               (rename-file "com.github.geigi.cozy" "cozy"))))
          (add-after 'wrap 'wrap-libs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out               (assoc-ref outputs "out"))
@@ -521,8 +519,7 @@ following formats:
                  `("LD_LIBRARY_PATH" ":" prefix (,libmagic-path))
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("PYTHONPATH" ":" prefix (,python-path ,pylib))))
-             #t)))))
+                 `("PYTHONPATH" ":" prefix (,python-path ,pylib)))))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
@@ -540,6 +537,7 @@ following formats:
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("gtk+" ,gtk+)
+       ("libdazzle" ,libdazzle)
        ("libgee" ,libgee)
        ("libhandy" ,libhandy)
        ("python-distro" ,python-distro)
