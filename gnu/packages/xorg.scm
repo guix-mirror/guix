@@ -3931,7 +3931,7 @@ alternative implementations like XRandR or TwinView.")
     (license license:x11)))
 
 
-(define xkbcomp-intermediate            ;used as input for xkeyboard-config
+(define-public xkbcomp-intermediate        ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
     (version "1.4.5")
@@ -3964,11 +3964,16 @@ explicitly specify most aspects of keyboard behaviour on per-key basis
 and to more closely track the logical and physical state of the
 keyboard.  It also includes a number of keyboard controls designed to
 make keyboards more accessible to people with physical impairments.")
-    (license license:x11)))
+    (license license:x11)
+
+    ;; The only reason this package is public is to make sure it's built and
+    ;; published by the continuous integration tool.
+    (properties '((hidden? . #t)))))
 
 (define-public xkbcomp ; using xkeyboard-config as input
   (package (inherit xkbcomp-intermediate)
     (name "xkbcomp")
+    (properties '())
     (inputs
       `(,@(package-inputs xkbcomp-intermediate)
         ("xkeyboard-config" ,xkeyboard-config)))
