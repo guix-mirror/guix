@@ -15641,6 +15641,12 @@ documentation to argparse configuration.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           ;; See https://github.com/torproject/stem/issues/56
+           (lambda _
+             (substitute* "run_tests.py"
+               (("test\\.task\\.MOCK_VERSION,")
+                ""))))
          (replace 'check
            (lambda _
              (invoke "./run_tests.py" "--unit")
