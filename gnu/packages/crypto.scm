@@ -1008,8 +1008,8 @@ security.")
     (license license:gpl2)))
 
 (define-public asignify
-  (let ((commit "f58e7977a599f040797975d649ed318e25cbd2d5")
-        (revision "0"))
+  (let ((commit "08af003e1f4833713db28b871759d94f9b2b1469")
+        (revision "1"))
     (package
       (name "asignify")
       (version (git-version "1.1" revision commit))
@@ -1021,7 +1021,7 @@ security.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1zl68qq6js6fdahxzyhvhrpyrwlv8c2zhdplycnfxyr1ckkhq8dw"))))
+                  "1zacpqa8b5lg270z1g06r5ik9vnb91crb4ivyy20381dny82xvr1"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags
