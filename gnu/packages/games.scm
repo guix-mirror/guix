@@ -7467,6 +7467,8 @@ online.")
                (base32
                 "1iy8rx7kjvi1zjiw4zh77szzmd1sgpqajvbhprh1sj93fhbxcdfl"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "CFLAGS=-fcommon")))
     (inputs `(("sdl2-net" ,sdl2-net)
               ("sdl2-mixer" , sdl2-mixer)
               ("sdl2" ,sdl2)))
