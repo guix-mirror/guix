@@ -6253,7 +6253,7 @@ languages.")
 (define-public emacs-irony-mode
   (package
     (name "emacs-irony-mode")
-    (version "1.4.0")
+    (version "1.5.0")
     (home-page "https://github.com/Sarcasm/irony-mode")
     (source (origin
               (method git-fetch)
@@ -6263,7 +6263,7 @@ languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n2nfcq58md1p2xdhq1smh8v7lsyj0ci7ma5xyd6bkg5rvhsh10i"))))
+                "1ilvfqn7hzrjjy2zrv08dbdnmgksdgsmrdcvx05s8704430ag0pb"))))
     (build-system emacs-build-system)
     (inputs `(("server" ,emacs-irony-mode-server)))
     (arguments `(#:phases
