@@ -8291,7 +8291,7 @@ list of candidates.")
 (define-public emacs-consult-notmuch
   (package
     (name "emacs-consult-notmuch")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -8300,7 +8300,7 @@ list of candidates.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x2lz2df1rjq3vdxvqqnxqxh257hq5iyx1w3yc85w7lmnb59gbvy"))))
+        (base32 "04ha4mysxvfz6yzbkgrl1mcwic1lwr1xx6gdy5rl6hn1wwnwam4p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-consult" ,emacs-consult)
