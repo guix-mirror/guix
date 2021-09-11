@@ -595,6 +595,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
        ("python-pyaes" ,python-pyaes)
        ("python-pyqt" ,python-pyqt)
        ("python-pysocks" ,python-pysocks)
+       ("python-qdarkstyle" ,python-qdarkstyle)
        ("python-qrcode" ,python-qrcode)
        ("python-requests" ,python-requests)
        ("python-stem" ,python-stem)
@@ -621,6 +622,11 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                 (string-append "library_paths = ('"
                                (assoc-ref inputs "libsecp256k1")
                                "/lib/libsecp256k1.so.0'")))))
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "contrib/requirements/requirements.txt"
+               (("qdarkstyle==2\\.6\\.8")
+                "qdarkstyle"))))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
