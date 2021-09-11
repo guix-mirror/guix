@@ -544,7 +544,9 @@ format.")
            (lambda _
              (substitute* "Makefile"
                (("CC[[:blank:]]*:=.*")
-                "CC := gcc\n"))))
+                "CC := gcc\n"))
+
+             (setenv "CFLAGS" "-fcommon -g")))  ;allow compilation with GCC 10
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
