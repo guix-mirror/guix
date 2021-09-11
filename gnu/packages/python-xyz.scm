@@ -16179,7 +16179,9 @@ focus on building massively scalable web applications.")
               (uri (pypi-uri "random2" version ".zip"))
               (sha256
                (base32
-                "01y0s4747plsx8fdnxy0nz83dp69naddz58m81r9h0s1qfm31b9l"))))
+                "01y0s4747plsx8fdnxy0nz83dp69naddz58m81r9h0s1qfm31b9l"))
+              (patches
+               (search-patches "python-random2-getrandbits-test.patch"))))
     (build-system python-build-system)
     (native-inputs `(("unzip" ,unzip)))
     (home-page "http://pypi.python.org/pypi/random2")

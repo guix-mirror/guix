@@ -1,0 +1,23 @@
+From 1bac6355d9c65de847cc445d782c466778b94fbd Mon Sep 17 00:00:00 2001
+From: "Robert T. McGibbon" <rmcgibbo@gmail.com>
+Date: Sun, 9 May 2021 11:18:23 -0400
+Subject: [PATCH] Update tests for python3.9
+
+---
+ src/tests.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/tests.py b/src/tests.py
+index d918891..4f2c3de 100644
+--- a/src/tests.py
++++ b/src/tests.py
+@@ -448,7 +448,8 @@ def test_genrandbits(self):
+         self.assertRaises(TypeError, self.gen.getrandbits)
+         self.assertRaises(TypeError, self.gen.getrandbits, 'a')
+         self.assertRaises(TypeError, self.gen.getrandbits, 1, 2)
+-        self.assertRaises(ValueError, self.gen.getrandbits, 0)
++        if sys.version_info < (3, 9):
++            self.assertRaises(ValueError, self.gen.getrandbits, 0)
+         self.assertRaises(ValueError, self.gen.getrandbits, -1)
+ 
+     def test_randbelow_logic(self, _log=log, int=int):
