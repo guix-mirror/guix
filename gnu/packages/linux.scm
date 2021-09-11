@@ -56,6 +56,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7256,6 +7257,11 @@ libraries, which are often integrated directly into libfabric.")
     (arguments
      '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
                       ,(string-append "INSTALL_PREFIX=" %output)
+                      ,(string-append "CFLAGS=-Wall -fpic -fPIC -D_GNU_SOURCE"
+                                      " -funwind-tables -O3 -g3"
+                                      " -DPSM_USE_SYS_UUID"
+                                      " -Wno-strict-aliasing -DNVALGRIND"
+                                      " -fcommon")
                       ,(string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:tests? #f
        #:phases (modify-phases %standard-phases
