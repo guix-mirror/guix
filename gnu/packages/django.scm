@@ -33,6 +33,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages finance)
   #:use-module (gnu packages geo)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages python)
@@ -193,6 +194,42 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
      "Django-extensions extends Django providing, for example, management
 commands, additional database fields and admin extensions.")
     (license license:expat)))
+
+(define-public python-django-localflavor
+  (package
+    (name "python-django-localflavor")
+    (version "3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-localflavor" version))
+       (sha256
+        (base32 "0i1s0ijfd9rv2cp5x174jcyjpwn7fyg7s1wpbvlwm96bpdvs6bxc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (setenv "PYTHONPATH"
+                       (string-append ".:"
+                                      (getenv "PYTHONPATH")))
+               (invoke "invoke" "test")))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-invoke" ,python-invoke)
+       ("python-pytest-django" ,python-pytest-django)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-stdnum" ,python-stdnum)))
+    (home-page "https://django-localflavor.readthedocs.io/en/latest/")
+    (synopsis "Country-specific Django helpers")
+    (description "Django-LocalFlavor is a collection of assorted pieces of code
+that are useful for particular countries or cultures.")
+    (license license:bsd-3)))
 
 (define-public python-django-simple-math-captcha
   (package
