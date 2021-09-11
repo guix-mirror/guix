@@ -929,6 +929,16 @@ Emacs).")
                 (string-append "NGSPICE_DLL_FILE=\""
                                (assoc-ref inputs "libngspice")
                                "/lib/libngspice.so\"")))))
+         (add-after 'unpack 'fix-python-detection
+           (lambda _
+             (substitute* "CMakeModules/FindPythonLibs.cmake"
+               (("_PYTHON3_VERSIONS 3\\.8 3\\.7")
+                "_PYTHON3_VERSIONS 3.9 3.8 3.7"))))
+         (add-after 'unpack 'add-missing-include
+           (lambda _
+             (substitute* "common/lib_tree_model.cpp"
+               (("#include <eda_pattern_match.h>" all)
+                (string-append "#include <algorithm>\n" all)))))
          (add-after 'install 'install-translations
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "kicad-i18n")
