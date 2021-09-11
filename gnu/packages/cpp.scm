@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -368,10 +369,8 @@ functions, class methods, and stl containers.
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (inc (string-append out "/include/fifo_map")))
-                 (with-directory-excursion
-                     (string-append "../" ,name "-" ,version "-checkout")
-                   (install-file "src/fifo_map.hpp" inc)
-                   #t)))))))
+                 (with-directory-excursion "../source"
+                   (install-file "src/fifo_map.hpp" inc))))))))
       (synopsis "FIFO-ordered associative container for C++")
       (description "Fifo_map is a C++ header only library for associative
 container which uses the order in which keys were inserted to the container
