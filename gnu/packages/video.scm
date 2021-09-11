@@ -978,7 +978,7 @@ H.264 (MPEG-4 AVC) video streams.")
              #t)))
          (add-before 'configure 'add-googletest
            (lambda* (#:key inputs #:allow-other-keys)
-             (symlink (search-input-file inputs "/include/gtest")
+             (symlink (search-input-directory inputs "/include/gtest")
                       "lib/gtest")))
          (replace 'build
            (lambda _
