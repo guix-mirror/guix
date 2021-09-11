@@ -1667,6 +1667,13 @@ similar to MATLAB, GNU Octave or SciPy.")
        (sha256
         (base32
          "1a2fpp15a2rl1m50gcvvzd9y6bavl6vjf9zzf63sz5gdmq06yiqf"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Make sure this variable is defined only once.  Failing to do so
+        ;; would break builds of 'netcdf-parallel-openmpi' with a
+        ;; multiple-definition link error with GCC 10.
+        '(substitute* "ncdump/ocprint.c"
+           (("^int ocdebug") "static int ocdebug")))
        (patches (search-patches "netcdf-date-time.patch"))))
     (build-system gnu-build-system)
     (native-inputs
