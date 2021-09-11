@@ -6618,7 +6618,7 @@ file links.")
 (define-public castor
   (package
     (name "castor")
-    (version "0.8.16")
+    (version "0.8.18")
     (source
      (origin
        (method git-fetch)
@@ -6627,7 +6627,7 @@ file links.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rwg1w7srjwa23mkypl8zk6674nhph4xsc6nc01f6g5k959szylr"))))
+        (base32 "1l72r6a917ymc9pn8dllbal1xdczfai376nvqkiys5fm4j4s3zmj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
