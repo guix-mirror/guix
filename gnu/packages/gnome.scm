@@ -3454,17 +3454,15 @@ for dealing with different structured file formats.")
                (("gdk_pixbuf_cache_file = .*$")
                 "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))))
          (add-after 'configure 'gnu-configure
-           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
-             ((assoc-ref gnu:%standard-phases 'configure)
-              #:native-inputs native-inputs
-              #:inputs inputs
-              #:outputs outputs
-              #:configure-flags
-              (list "--disable-static"
-                    "--enable-vala"
-               (string-append "--with-html-dir="
-                              (assoc-ref outputs "doc")
-                              "/share/gtk-doc/html")))))
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (apply (assoc-ref gnu:%standard-phases 'configure)
+                    #:configure-flags
+                    (list "--disable-static"
+                          "--enable-vala"
+                          (string-append "--with-html-dir="
+                                         (assoc-ref outputs "doc")
+                                         "/share/gtk-doc/html"))
+                    args)))
          (add-after 'configure 'dont-vendor-self
            (lambda* (#:key vendor-dir #:allow-other-keys)
              ;; Don't keep the whole tarball in the vendor directory
