@@ -4199,7 +4199,7 @@ engineering.")
 (define-public drawing
   (package
     (name "drawing")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -4208,7 +4208,7 @@ engineering.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lpszd8276rp5chn84rkvwmnflxc3pqlg4cz53gfxkqdb3gn02zz"))))
+        (base32 "0wz9p47riyy3h8b0sqsb6bx416hc6d1a1wyzlfmsxkrqrkwcjcm8"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4225,8 +4225,7 @@ engineering.")
                                          "/site-packages")))
                (wrap-program prog
                  `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
