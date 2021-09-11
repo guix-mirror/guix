@@ -12865,7 +12865,7 @@ type an abbreviation and automatically expand it into function templates.")
 (define-public emacs-yasnippet-snippets
   (package
     (name "emacs-yasnippet-snippets")
-    (version "0.24")
+    (version "1.0")
     (source
      (origin
        (method git-fetch)
@@ -12874,7 +12874,7 @@ type an abbreviation and automatically expand it into function templates.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ak0drxlg3m2v4ya5chpgl82rcl7ic2nmnybhpw1qk51mcmv643y"))))
+        (base32 "0m78jxhjyf4212ig2ncxr6bhhd6yx4c3nc8x4ylamzq21x4fl21r"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^snippets\\/" %default-include)))
