@@ -4150,28 +4150,33 @@ addon modules.")
 (define-public python-wtforms
   (package
     (name "python-wtforms")
-    (version "2.1")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "WTForms" version ".zip"))
+       (uri (pypi-uri "WTForms" version ".tar.gz"))
        (sha256
         (base32
-         "0vyl26y9cg409cfyj8rhqxazsdnd0jipgjw06civhrd53yyi1pzz"))))
+         "17427m7p9nn9byzva697dkykykwcp2br3bxvi8vciywlmkh5s6c1"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-django-test
-           ;; Don't fail the tests when the inputs for the optional tests cannot be found.
-           (lambda _
-             (substitute*
-               "tests/runtests.py"
-               (("'ext_django.tests', 'ext_sqlalchemy', 'ext_dateutil', 'locale_babel'") "")
-               (("sys.stderr.write(\"### Disabled test '%s', dependency not found\n\" % name)") ""))
-             #t)))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "setup.py" "compile_catalog")
+               (invoke "coverage" "run" "tests/runtests.py" "--with-pep8")))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("python-coverage" ,python-coverage)
+       ("python-dateutil" ,python-dateutil)
+       ("python-pep8" ,python-pep8)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-email-validator" ,python-email-validator)
+       ("python-markupsafe" ,python-markupsafe)))
     (home-page "http://wtforms.simplecodes.com/")
     (synopsis
      "Form validation and rendering library for Python web development")
