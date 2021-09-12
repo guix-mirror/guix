@@ -2099,8 +2099,6 @@ value is found.")
                            (invoke "ruby" "-Ilib" "-Itest" "-rrubygems" file))
                          (find-files "test" ".*rb$")))
              #t)))))
-    (propagated-inputs
-     `(("ruby-rexml" ,ruby-rexml)))
     (synopsis "Simple JSON and XML parsing for Ruby")
     (description
      "@code{crack} provides really simple JSON and XML parsing, extracted from
@@ -7376,7 +7374,6 @@ run.")
        ("ruby-parser" ,ruby-parser)
        ("ruby-rainbow" ,ruby-rainbow)
        ("ruby-regexp-parser" ,ruby-regexp-parser)
-       ("ruby-rexml" ,ruby-rexml)
        ("ruby-rubocop-ast" ,ruby-rubocop-ast)
        ("ruby-progressbar" ,ruby-progressbar)
        ("ruby-unicode-display-width" ,ruby-unicode-display-width)))
