@@ -63,7 +63,7 @@
                 (string-append "gnutls_priority_set_direct"
                                "(session, \"NORMAL:+ANON-DH\", NULL)"))))))))
     (inputs
-     `(("libsigc++" ,libsigc++)
+     `(("libsigc++" ,libsigc++-2)
        ("gnutls" ,gnutls)))
     (home-page "https://gobby.github.io/")
     (synopsis "Network access framework for IPv4/IPv6")
