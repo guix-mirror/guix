@@ -47,7 +47,7 @@
              (chdir "acorn"))))))
     (home-page "https://github.com/acornjs/acorn/tree/master/acorn")
     (synopsis "Javascript-based Javascript parser")
-    (description "Acornjs is a Javascrip parser with many options and an
+    (description "Acornjs is a Javascript parser with many options and an
 architecture supporting plugins.")
     (license license:expat)))
 
