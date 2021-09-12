@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;; Copyright © 2020 Christopher Lam <christopher.lck@gmail.com>
 ;;;
@@ -63,15 +63,14 @@
   ;; directory.
   (package
     (name "gnucash")
-    (version "4.2")
+    (version "4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
                            version "/gnucash-" version ".tar.bz2"))
        (sha256
-        (base32
-         "020k1mm909dcgs52ls4v7xx3yn8gqazi9awyr81l6y7pkq1spn2n"))))
+        (base32 "0csp8iddhc901vv09gl5lj970g6ili696vwj4vdpkiprp7gh26r5"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-3.0)
@@ -93,6 +92,7 @@
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-compile-schemas, etc.
        ("intltool" ,intltool)
+       ("gmp" ,gmp)
        ("googlemock" ,(package-source googletest))
        ("googletest" ,googletest)
        ("gnucash-docs" ,gnucash-docs)
@@ -231,8 +231,7 @@ installed as well as Yelp, the Gnome help browser.")
          (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
                              version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
-          (base32
-           "1p1rbv0gyi07nh5pzhk3xm46w66kjyaipb6rpaq9yb9gil1nl7q5"))))
+          (base32 "1365k4wb8zfm2zyg7zqyvajbzh9311m2zi1vpvbpp8p4sibqjksw"))))
       (build-system gnu-build-system)
       ;; These are native-inputs because they are only required for building the
       ;; documentation.
