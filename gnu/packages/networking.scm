@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
@@ -3534,6 +3534,39 @@ A very simple IM client working over the DHT.
     (synopsis "IP routing protocol suite")
     (description "FRRouting (FRR) is an IP routing protocol suite which includes
 protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
+    (license license:gpl2+)))
+
+(define-public bird
+  (package
+    (name "bird")
+    (version "2.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://bird.network.cz/pub/bird/bird-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1xp7f0im1v8pqqx3xqyfkd1nsxk8vnbqgrdrwnwhg8r5xs1xxlhr"))))
+    (inputs
+     `(("libssh" ,libssh)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments
+     `(#:configure-flags '("--localstatedir=/var" "--enable-ipv6")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'dont-create-sysconfdir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               ((" \\$\\(DESTDIR)/\\$\\(runstatedir)") "")))))))
+    (build-system gnu-build-system)
+    (home-page "http://bird.network.cz")
+    (synopsis "Internet Routing Daemon")
+    (description "BIRD is an Internet routing daemon with full support for all
+the major routing protocols.  It allows redistribution between protocols with a
+powerful route filtering syntax and an easy-to-use configuration interface.")
     (license license:gpl2+)))
 
 (define-public iwd
