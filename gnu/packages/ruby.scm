@@ -1173,14 +1173,18 @@ structure.  Supports custom object formatting via plugins.")
                  (("('|\")pandoc" _ quote)
                   (string-append quote pandoc))
                  (("\\^pandoc")
-                  ".*pandoc"))
-               #t)))
+                  ".*pandoc")))))
+         (add-after 'unpack 'adjust-tests
+           ;; The tests expect filenames with spaces.  Because they don't have
+           ;; spaces the quotes around the output are dropped automatically.
+           (lambda _
+             (substitute* "test/test_pandoc_ruby.rb"
+               (("\\\\\"#\\{file\\.path\\}\\\\\"") "#{file.path}"))))
          (add-after 'extract-gemspec 'remove-Gemfile.lock
            (lambda _
              (delete-file "Gemfile.lock")
              (substitute* "pandoc-ruby.gemspec"
-               (("Gemfile\\.lock") ""))
-             #t)))))
+               (("Gemfile\\.lock") "")))))))
     (native-inputs
      `(("ruby-mocha" ,ruby-mocha)))
     (inputs
