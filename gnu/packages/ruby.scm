@@ -1958,12 +1958,13 @@ PDF library.  It has features such as:
                (("Coveralls::SimpleCov::Formatter") ""))
              #t))
          (add-after 'extract-gemspec 'remove-unnecessary-requirements
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "ast.gemspec"
                ((".*coveralls.*") "\n")
                (("%q<rest-client>.*") "%q<rest-client>.freeze, [\">= 0\"])\n")
                (("%q<mime-types>.*") "%q<mime-types>.freeze, [\">= 0\"])\n")
-               (("%q<rake>.*") "%q<rake>.freeze, [\">= 0\"])\n"))
+               (("%q<rake>.*") "%q<rake>.freeze, [\">= 0\"])\n")
+               (("12\\.3") "13.0"))
              #t)))))
     (native-inputs
      `(("bundler" ,bundler)
