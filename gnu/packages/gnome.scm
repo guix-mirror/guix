@@ -8012,7 +8012,7 @@ the available networks and allows users to easily switch between them.")
     ;; libxml++-3.0.pc refers to all these.
     (propagated-inputs
      `(("libxml2" ,libxml2)
-       ("glibmm" ,glibmm)))
+       ("glibmm" ,glibmm-2.64)))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
