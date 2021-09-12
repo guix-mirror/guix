@@ -56339,10 +56339,14 @@ winapi.")
       (origin
         (method url-fetch)
         (uri (crate-uri "winapi-x86_64-pc-windows-gnu" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0gqq64czqb64kskjryj8isp62m2sgvx25yyj3kpc2myh85w24bki"))))
+          "0gqq64czqb64kskjryj8isp62m2sgvx25yyj3kpc2myh85w24bki"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (for-each delete-file (find-files "." "\\.a$"))))))
     (build-system cargo-build-system)
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Import libraries for the x86_64-pc-windows-gnu target")
