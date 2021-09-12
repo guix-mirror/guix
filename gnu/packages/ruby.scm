@@ -7229,35 +7229,38 @@ following: @code{[1, 2, 3, 4, 6, 8, 9, 10]} into @code{[1..4, 6..6, 8..10]}.")
     (license license:expat)))
 
 (define-public ruby-regexp-property-values
-  (package
-    (name "ruby-regexp-property-values")
-    (version "1.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference              ;no test suite in distributed gem
-             (url "https://github.com/jaynetics/regexp_property_values")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0l3fjmscg1wxn7kc6bl022cc6k5d91pwb7daq1b5w36kvsx52w1j"))))
-    (build-system ruby-build-system)
-    (arguments
-     '(#:test-target "default"))
-    (native-inputs
-     `(("ruby-character-set" ,ruby-character-set)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-range-compressor" ,ruby-range-compressor)
-       ("ruby-rspec" ,ruby-rspec)))
-    (synopsis "Inspect Ruby's regex engine property values")
-    (description "This small library lets you see which property values are
+  (let ((commit "03007a66c912949a7130b973cc0eca109c20811f")
+        (revision "1"))
+    (package
+      (name "ruby-regexp-property-values")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference              ;no test suite in distributed gem
+               (url "https://github.com/jaynetics/regexp_property_values")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zsax784p16zdkf60lyq9z924zvsafhx9ckxx9srsgkyiqrifi1s"))))
+      (build-system ruby-build-system)
+      (arguments
+       '(#:test-target "default"))
+      (native-inputs
+       `(("ruby-character-set" ,ruby-character-set)
+         ("ruby-rake" ,ruby-rake)
+         ("ruby-rake-compiler" ,ruby-rake-compiler)
+         ("ruby-range-compressor" ,ruby-range-compressor)
+         ("ruby-rspec" ,ruby-rspec)))
+      (synopsis "Inspect Ruby's regex engine property values")
+      (description "This small library lets you see which property values are
 supported by the regular expression engine of the Ruby version you are running
 and can directly read out their code point ranges.  In other words, it
 determines all supported values for @code{\\p{value}} expressions and what
 they match.")
-    (home-page "https://github.com/jaynetics/regexp_property_values")
-    (license license:expat)))
+      (home-page "https://github.com/jaynetics/regexp_property_values")
+      (license license:expat))))
 
 (define-public ruby-regexp-parser
   (package
