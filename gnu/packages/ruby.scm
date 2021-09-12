@@ -4622,7 +4622,8 @@ MiniTest @code{Object#stub} with a global @code{stub} method.")
          "1hbq9jk904xkz868yha1bqcm6azm7kmjsll2k4pn2nrcib508h2a"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f          ; Test suite has bitrotted.
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'clean-dependencies
            (lambda _
