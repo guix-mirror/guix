@@ -4967,7 +4967,7 @@ net/http library.")
 (define-public ruby-multi-json
   (package
     (name "ruby-multi-json")
-    (version "1.13.1")
+    (version "1.15.0")
     (source
      (origin
        (method git-fetch)
@@ -4979,20 +4979,17 @@ net/http library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "18wpb6p01rrkl4v33byh70vxj2a5jxkfxzv3pz8z6pssy4ymwkm4"))))
+         "0mkdvy6i00yyksjvnv6znh7wf89j9506qzzjq6bsbmbkyqrszp4d"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-signing-key-reference
+         (add-before 'check 'pre-check
            (lambda _
-             (substitute* "multi_json.gemspec"
-               ((".*spec.signing_key.*") ""))
-             #t)))))
+             ;; As seen in the .travis.yml file.
+             (setenv "SKIP_ADAPTERS" "gson,jr_jackson,nsjsonserialization"))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-yard" ,ruby-yard)
+     `(("ruby-rspec" ,ruby-rspec)
        ("ruby-json-pure" ,ruby-json-pure)
        ("ruby-oj" ,ruby-oj)
        ("ruby-yajl-ruby" ,ruby-yajl-ruby)))
