@@ -1936,7 +1936,7 @@ PDF library.  It has features such as:
 (define-public ruby-ast
   (package
     (name "ruby-ast")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method git-fetch)               ;no test included in gem from v2.4.1
@@ -1946,7 +1946,7 @@ PDF library.  It has features such as:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0k8vya256chimy473g818gim06m5rjgh6mz5sc5g8xz3csh3rysi"))))
+         "0vm94yml8rknr7z034vg6s3fpx6lml2prz9fn3hr67cx0143bb4h"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
