@@ -1968,15 +1968,15 @@ PDF library.  It has features such as:
              #t)))))
     (native-inputs
      `(("bundler" ,bundler)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-json-pure" ,ruby-json-pure)
-       ("ruby-mime-times" ,ruby-mime-types)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-kramdown" ,ruby-kramdown)
-       ("ruby-rest-client" ,ruby-rest-client)
        ("ruby-bacon" ,ruby-bacon)
        ("ruby-bacon-colored-output" ,ruby-bacon-colored-output)
-       ("ruby-racc" ,ruby-racc)))
+       ("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-mime-types" ,ruby-mime-types)
+       ("ruby-racc" ,ruby-racc)
+       ("ruby-rest-client" ,ruby-rest-client)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-yard" ,ruby-yard)))
     (synopsis "Library for working with Abstract Syntax Trees")
     (description
      "@code{ast} is a Ruby library for working with Abstract Syntax Trees.
