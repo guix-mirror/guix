@@ -42,7 +42,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -3388,7 +3388,8 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
          "1mkh36xnnacnz9r00b5f9ld9309k32jv6mcavklbdnca8bl56bib"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          ;; Fixes https://issues.guix.gnu.org/47195.
          (add-after 'unpack 'patch-aplay-path
