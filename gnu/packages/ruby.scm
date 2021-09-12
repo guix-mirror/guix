@@ -4293,13 +4293,13 @@ number, support for interrupted tests, better backtraces, and more.")
 (define-public ruby-mocha
   (package
     (name "ruby-mocha")
-    (version "1.11.2")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mocha" version))
               (sha256
                (base32
-                "0hxmkm8qxd04vwj8mqnpyrf2dwy7g1k9zipdfhl4y71cw7ijm9n4"))))
+                "15s53ggsykk69kxqvs4416s8yxdhz6caggva55n8sjgy4ixzwp10"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4318,7 +4318,7 @@ number, support for interrupted tests, better backtraces, and more.")
     (description
      "Mocha is a mocking and stubbing library with JMock/SchMock syntax, which
 allows mocking and stubbing of methods on real (non-mock) classes.")
-    (home-page "http://gofreerange.com/mocha/docs")
+    (home-page "https://mocha.jamesmead.org/")
     ;; Mocha can be used with either license at the users choice.
     (license (list license:expat license:ruby))))
 
