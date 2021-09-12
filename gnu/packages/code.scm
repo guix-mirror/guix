@@ -181,7 +181,7 @@ highlighting your own code that seemed comprehensible when you wrote it.")
              (wrap-program
                (string-append (assoc-ref outputs "out")
                               "/share/gtags/script/pygments_parser.py")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))))
+               `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))))
         (add-after 'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Install the plugin files in the right place.
