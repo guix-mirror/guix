@@ -8029,43 +8029,75 @@ the available networks and allows users to easily switch between them.")
 (define-public libxml++
   (package
     (name "libxml++")
-    (version "3.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "19kik79fmg61nv0by0a5f9wchrcfjwzvih4v2waw01hqflhqvp0r"))))
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libxmlplusplus/libxmlplusplus")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wjz591rjlgbah7dcq8i0yn0zw9d62b7g6r0pppx81ic0cx8n8ga"))))
     (build-system gnu-build-system)
-    ;; libxml++-3.0.pc refers to all these.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-documentation
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* '("examples/dom_xpath/example.xml"
+                              "docs/manual/libxml++_without_code.xml")
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               (setenv "SGML_CATALOG_FILES"
+                       (string-append xmldoc "/catalog.xml"))
+               (substitute* "docs/manual/docbook-customisation.xsl"
+                 (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
+                  (string-append xsldoc "/html/chunk.xsl")))))))))
     (propagated-inputs
-     `(("libxml2" ,libxml2)
-       ("glibmm" ,glibmm)))
+     ;; libxml++-3.0.pc refers to all these.
+     `(("glibmm" ,glibmm)
+       ("libxml2" ,libxml2)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("graphviz" ,graphviz) ; for dot
+       ("libtool" ,libtool)
+       ("libxslt" ,libxslt)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://libxmlplusplus.sourceforge.net/")
-    (synopsis "C++ wrapper for XML parser library libxml2")
+    (home-page "https://github.com/libxmlplusplus/libxmlplusplus/")
+    (synopsis "C++ bindings to the libxml2 XML parser library")
     (description
-     "This package provides a C++ wrapper for the XML parser library
-libxml2.")
+     "This package provides a C++ interface to the libxml2 XML parser
+library.")
     (license license:lgpl2.1+)))
 
+;; This is the last release providing the 2.6 API, hence the name.
+;; This is needed by tascam-gtk
 (define-public libxml++-2
   (package
     (inherit libxml++)
     (name "libxml++")
     (version "2.40.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1sb3akryklvh2v6m6dihdnbpf1lkx441v972q9hlz1sq6bfspm2a"))))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libxmlplusplus/libxmlplusplus")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gbfi4l88w828gmyc9br11l003ylyi4vigp5d1kfgsn0k4cig3y9"))))))
 
 (define-public gdm
   (package
