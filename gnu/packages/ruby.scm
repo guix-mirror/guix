@@ -1275,7 +1275,7 @@ syntax to the minimum while remaining clear.")
 (define-public ruby-asciidoctor
   (package
     (name "ruby-asciidoctor")
-    (version "2.0.10")
+    (version "2.0.16")
     (source
      (origin
        (method git-fetch)               ;the gem release lacks a Rakefile
@@ -1285,7 +1285,7 @@ syntax to the minimum while remaining clear.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0jaxpnsdnx3qyjw5p2lsx1swny12q1i2vxw2kgdp4vlsyjv95z95"))))
+         "086i17v9rxx0sxac26xp8c5v75jqba6rqjlk57x94qjvrh8vzyw2"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "test:all"
@@ -1299,7 +1299,8 @@ syntax to the minimum while remaining clear.")
                 (string-append stripped "\n")))
              #t)))))
     (native-inputs
-     `(("ruby-erubis" ,ruby-erubis)
+     `(("ruby-erubi" ,ruby-erubi)
+       ("ruby-erubis" ,ruby-erubis)
        ("ruby-minitest" ,ruby-minitest)
        ("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-asciimath" ,ruby-asciimath)
