@@ -6653,31 +6653,6 @@ with PostgreSQL 9.0 and later.")
 (define-public ruby-byebug
   (package
     (name "ruby-byebug")
-    (version "9.0.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (rubygems-uri "byebug" version))
-       (sha256
-        (base32
-         "1kbfcn65rgdhi72n8x9l393b89rvi5z542459k7d1ggchpb0idb0"))))
-    (build-system ruby-build-system)
-    (arguments
-     '(#:tests? #f)) ; no tests
-    (synopsis "Debugger for Ruby 2")
-    (description "Byebug is a Ruby 2 debugger implemented using the Ruby 2
-TracePoint C API for execution control and the Debug Inspector C API for call
-stack navigation.  The core component provides support that front-ends can
-build on.  It provides breakpoint handling and bindings for stack frames among
-other things and it comes with a command line interface.")
-    (home-page "https://github.com/deivid-rodriguez/byebug")
-    (license license:bsd-2)))
-
-;;; TODO: Make it the default byebug in core-updates.
-(define-public ruby-byebug-11
-  (package
-    (inherit ruby-byebug)
-    (name "ruby-byebug")
     (version "11.1.3")
     (source
      (origin
@@ -6701,9 +6676,9 @@ other things and it comes with a command line interface.")
                (("load File\\.expand_path\\(\"bundle\".*") "")
                (("require \"bundler/setup\".*") "")))
            #t))))
+    (build-system ruby-build-system)
     (arguments
-     `(#:tests? #t
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-tmp-path-sensitive-test
            (lambda _
@@ -6725,7 +6700,15 @@ other things and it comes with a command line interface.")
        ("ruby-pry" ,ruby-pry)
        ("ruby-rake-compiler" ,ruby-rake-compiler)
        ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-yard" ,ruby-yard)))))
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Debugger for Ruby 2")
+    (description "Byebug is a Ruby 2 debugger implemented using the Ruby 2
+TracePoint C API for execution control and the Debug Inspector C API for call
+stack navigation.  The core component provides support that front-ends can
+build on.  It provides breakpoint handling and bindings for stack frames among
+other things and it comes with a command line interface.")
+    (home-page "https://github.com/deivid-rodriguez/byebug")
+    (license license:bsd-2)))
 
 (define-public ruby-netrc
   (package
@@ -7674,7 +7657,7 @@ notes.")
        ("ruby-rubocop" ,ruby-rubocop)
        ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs
-     `(("ruby-byebug" ,ruby-byebug-11)
+     `(("ruby-byebug" ,ruby-byebug)
        ("ruby-pry" ,ruby-pry)))
     (synopsis "Step-by-step debugging and stack navigation in Pry")
     (description "This package adds step-by-step debugging and stack
