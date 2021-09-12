@@ -7769,14 +7769,14 @@ variable length integers (varint) in Ruby Protocol Buffers.")
 (define-public ruby-ruby-prof
   (package
     (name "ruby-ruby-prof")
-    (version "1.4.1")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ruby-prof" version))
        (sha256
         (base32
-         "12cd91m08ih0imfpy4k87618hd4mhyz291a6bx2hcskza4nf6d27"))))
+         "1r3xalp91l07m0cwllcxjzg6nkviiqnxkcbgg5qnzsdji6rgy65m"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
