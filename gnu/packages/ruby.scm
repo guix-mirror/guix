@@ -6510,6 +6510,24 @@ acceptable elements, attributes, and CSS properties, Sanitize will remove all
 unacceptable HTML and/or CSS from a string.")
     (license license:expat)))
 
+(define-public ruby-sync
+  (package
+    (name "ruby-sync")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "sync" version))
+        (sha256
+         (base32
+          "1z9qlq4icyiv3hz1znvsq1wz2ccqjb1zwd6gkvnwg6n50z65d0v6"))))
+    (build-system ruby-build-system)
+    (synopsis "Ruby module with a two-phase lock and counter")
+    (description "This package provides a Ruby module that provides a two-phase
+lock with a counter.")
+    (home-page "https://github.com/ruby/sync")
+    (license license:bsd-2)))
+
 (define-public ruby-oj
   (package
     (name "ruby-oj")
