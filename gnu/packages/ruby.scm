@@ -5965,13 +5965,13 @@ documentation for Ruby code.")
 (define-public ruby-tins
   (package
     (name "ruby-tins")
-    (version "1.15.0")
+    (version "1.29.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "tins" version))
               (sha256
                (base32
-                "09whix5a7ics6787zrkwjmp16kqyh6560p9f317syks785805f7s"))))
+                "0nzp88y19rqlcizp1nw8m44fvfxs9g3bhjpscz44dwfawfrmr0cb"))))
     (build-system ruby-build-system)
     ;; This gem needs gem-hadar at development time, but gem-hadar needs tins
     ;; at runtime.  To avoid the dependency on gem-hadar we disable rebuilding
@@ -5987,6 +5987,8 @@ documentation for Ruby code.")
             (substitute* "tins.gemspec"
               (("\"lib/spruz\", ") ""))
             (invoke "gem" "build" "tins.gemspec"))))))
+    (propagated-inputs
+     `(("ruby-sync" ,ruby-sync)))
     (synopsis "Assorted tools for Ruby")
     (description "Tins is a Ruby library providing assorted tools.")
     (home-page "https://github.com/flori/tins")
