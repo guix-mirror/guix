@@ -1895,7 +1895,7 @@ complete studio.")
        `(("liblo" ,liblo)
          ("gtkmm" ,gtkmm)
          ("alsa-lib" ,alsa-lib)
-         ("libxmlplusplus" ,libxmlplusplus-2.6)))
+         ("libxml++" ,libxml++-2)))
       (native-inputs
        `(("glib:bin" ,glib "bin")
          ("pkg-config" ,pkg-config)))
