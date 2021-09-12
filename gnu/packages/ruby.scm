@@ -6852,15 +6852,17 @@ differences (added or removed nodes) between two XML/HTML documents.")
 (define-public ruby-racc
   (package
     (name "ruby-racc")
-    (version "1.4.14")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "racc" version))
        (sha256
         (base32
-         "00yhs2ag7yy5v83mqvkbnhk9bvsh6mx3808k53n61ddzx446v1zl"))))
+         "178k7r0xn689spviqzhvazzvxfq6fyjldxb3ywjbgipbfi4s8j1g"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))            ; Fails while parsing test instructions.
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
        ("ruby-rake-compiler" ,ruby-rake-compiler)))
