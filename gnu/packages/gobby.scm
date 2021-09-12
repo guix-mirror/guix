@@ -92,7 +92,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libsigc++" ,libsigc++)
+     `(("libsigc++" ,libsigc++-2)
        ("gnutls" ,gnutls)
        ("libnet6" ,libnet6)))
     (home-page "https://gobby.github.io/")
