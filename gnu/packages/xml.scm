@@ -333,7 +333,7 @@ formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
     (propagated-inputs
      `(("libxml2" ,libxml2)))
     (inputs
-     `(("glibmm" ,glibmm)))
+     `(("glibmm" ,glibmm-2.64)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
