@@ -13754,6 +13754,28 @@ containing words from the Rime project.")
 shuangpin, wubi and cangjie.")
     (license license:gpl2+)))
 
+(define-public emacs-pinyinlib
+  (package
+    (name "emacs-pinyinlib")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cute-jumper/pinyinlib.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nwj4c3y0kdlkf3jqd2dnibaiazrq6qcj533xk2qw4wmx072yij0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cute-jumper/pinyinlib.el")
+    (synopsis "Convert first letter of Pinyin to Chinese characters")
+    (description
+     "This Emacs library provides functionality for converting the first
+letter of Pinyin to Simplified/Traditional Chinese characters.")
+    (license license:gpl3+)))
+
 (define-public emacs-reverse-im
   (package
     (name "emacs-reverse-im")
