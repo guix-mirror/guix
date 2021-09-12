@@ -25,6 +25,7 @@
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -44,7 +45,6 @@
             make-static-device-nodes
             configure-qemu-networking
 
-            device-number
             boot-system))
 
 ;;; Commentary:
@@ -134,14 +134,9 @@ succeeds.  Return nothing otherwise.  The kernel logs any details to dmesg."
            ;; is found on the command line; our canonicalize-device-spec gives
            ;; up after 20 seconds.  We could emulate the former by looping…
            (device (canonicalize-device-spec spec))
-           (rdev (stat:rdev (stat device)))
-           ;; For backwards compatibility, device numbering is a baroque affair.
-           ;; This is the full 64-bit scheme used by glibc's <sys/sysmacros.h>.
-           (major (logior (ash (logand #x00000000000fff00 rdev) -8)
-                          (ash (logand #xfffff00000000000 rdev) -32)))
-           (minor (logior      (logand #x00000000000000ff rdev)
-                          (ash (logand #x00000ffffff00000 rdev) -12))))
-      (format #f "~a:~a" major minor)))
+           (rdev (stat:rdev (stat device))))
+      (let-values (((major minor) (device-number->major+minor rdev)))
+        (format #f "~a:~a" major minor))))
 
   ;; Write the resume DEVICE to this magic file, using the MAJOR:MINOR device
   ;; numbers if possible.  The kernel will immediately try to resume from it.
@@ -391,11 +386,6 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
     (set-network-interface-flags sock interface (logior flags IFF_UP))
 
     (logand (network-interface-flags sock interface) IFF_UP)))
-
-(define (device-number major minor)
-  "Return the device number for the device with MAJOR and MINOR, for use as
-the last argument of `mknod'."
-  (+ (* major 256) minor))
 
 (define (pidof program)
   "Return the PID of the first presumed instance of PROGRAM."
