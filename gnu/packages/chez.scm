@@ -316,7 +316,8 @@ and 32-bit PowerPC architectures.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("ghostscript" ,ghostscript)
-         ("texlive" ,(texlive-union (list texlive-latex-oberdiek
+         ("texlive" ,(texlive-union (list texlive-charter
+                                          texlive-latex-oberdiek
                                           texlive-generic-epsf
                                           texlive-metapost
                                           texlive-fonts-charter
