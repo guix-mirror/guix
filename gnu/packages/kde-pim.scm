@@ -1017,8 +1017,9 @@ protocol for querying and modifying directory services running over TCP/IP. ")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "dbus-launch" "ctest" ".")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dbus-launch" "ctest" "."))
              #t)))))
     (home-page "https://kde.org/applications/utilities/org.kde.kleopatra")
     (synopsis "Certificate Manager and Unified Crypto GUI")
