@@ -5386,7 +5386,7 @@ readable format.")
        ("texlive" ,(texlive-union (list texlive-fonts-cm-super
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
-                                        texlive-generic-pdftex
+                                        texlive-pdftex
                                         texlive-amsfonts/patched
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
@@ -5929,7 +5929,7 @@ toolkits.")
                                         texlive-latex-type1cm
                                         texlive-latex-ucs
 
-                                        texlive-generic-pdftex
+                                        texlive-pdftex
 
                                         texlive-fonts-ec
                                         texlive-fonts-adobe-times
@@ -8264,7 +8264,7 @@ computing.")
        ("texlive" ,(texlive-union (list texlive-amsfonts/patched
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
-                                        texlive-generic-pdftex
+                                        texlive-pdftex
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ

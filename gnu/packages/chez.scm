@@ -320,9 +320,9 @@ and 32-bit PowerPC architectures.")
                                           texlive-generic-epsf
                                           texlive-metapost
                                           texlive-fonts-charter
-                                          texlive-generic-pdftex
                                           texlive-context-base
                                           texlive-fonts-cm
+                                          texlive-pdftex
                                           texlive-tex-plain)))))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" %output)
@@ -381,7 +381,7 @@ programming in Scheme.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("chez-web" ,chez-web)
-         ("texlive" ,(texlive-union (list texlive-generic-pdftex)))))
+         ("texlive" ,(texlive-union (list texlive-pdftex)))))
       (arguments
        `(#:tests? #f              ; no tests
          #:phases

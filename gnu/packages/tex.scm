@@ -6187,55 +6187,42 @@ requires the suffix package, which in turn requires that it runs under
 e-TeX.")
     (license license:lppl1.3+)))
 
-(define-public texlive-generic-pdftex
+(define-public texlive-pdftex
   (package
-    (name "texlive-generic-pdftex")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/generic/pdftex"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0k68zmqzs4qvrqxdwsrawbjb14hxqjfamq649azvai0jjxdpkljd"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/pdftex"))
-               (target-map (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/fonts/map/pdftex")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           (mkdir-p target-map)
-           (copy-recursively (assoc-ref %build-inputs "pdftex-map") target-map)
-           #t))))
-    (native-inputs
-     `(("pdftex-map"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/pdftex"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-map-" version "-checkout"))
-           (sha256
-            (base32
-             "03rfif2631pgd8g1ar4xblcdh078kky7fvw3kfsj5a47rxxgicp2"))))))
+    (inherit (simple-texlive-package
+              "texlive-pdftex"
+              (list "/doc/pdftex/"
+                    "/doc/man/man1/pdftex.1"
+                    "/doc/man/man1/pdfetex.1"
+                    "/fonts/map/dvips/dummy-space/dummy-space.map"
+                    "/fonts/tfm/public/pdftex/dummy-space.tfm"
+                    "/fonts/type1/public/pdftex/dummy-space.pfb"
+                    "/scripts/simpdftex/simpdftex"
+                    "/tex/generic/config/pdftex-dvi.tex"
+                    "/tex/generic/pdftex/glyphtounicode.tex"
+                    "/tex/generic/pdftex/pdfcolor.tex")
+              (base32
+               "0wsgbl0jrqc1qzgf23dla6b95lv2h8x6xvs5466d8jdrih6pwriq")
+              #:trivial? #t))
+    ;; TODO: add this missing package:
+    ;; dehyph
+    (propagated-inputs
+     `(("texlive-cm" ,texlive-cm)
+       ("texlive-etex" ,texlive-etex)
+       ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+       ("texlive-hyphen-base" ,texlive-hyphen-base)
+       ("texlive-kpathsea" ,texlive-kpathsea)
+       ("texlive-tex-ini-files" ,texlive-tex-ini-files)
+       ("texlive-tex-plain" ,texlive-tex-plain)))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
      "This package provides an extension of TeX which can be configured to
 directly generate PDF documents instead of DVI.")
     (license license:gpl2+)))
+
+(define-public texlive-generic-pdftex
+  (deprecated-package "texlive-generic-pdftex" texlive-pdftex))
 
 (define texlive-texmf
   (package
@@ -6617,7 +6604,7 @@ develop documents with LaTeX, in a single application.")
                                         texlive-fonts-adobe-zapfding
                                         texlive-fonts-knuth-lib
                                         texlive-fonts-mflogo-font
-                                        texlive-generic-pdftex)))
+                                        texlive-pdftex)))
        ("automake" ,automake)))
     (home-page "https://www.gnu.org/software/teximpatient/")
     (synopsis "Book on TeX, plain TeX and Eplain")
@@ -7421,7 +7408,7 @@ the file to which it applies.")
                (delete-file (string-append target "/pdfx.sty"))
                #t))))))
     (propagated-inputs
-     `(("texlive-generic-pdftex" ,texlive-generic-pdftex)))
+     `(("texlive-pdftex" ,texlive-pdftex)))
     (native-inputs
      `(("texlive-tex-pdfx"
         ,(origin
