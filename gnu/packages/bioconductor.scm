@@ -4236,6 +4236,45 @@ purposes.  The package also contains legacy support for early single-end,
 ungapped alignment formats.")
     (license license:artistic2.0)))
 
+(define-public r-simplifyenrichment
+  (package
+    (name "r-simplifyenrichment")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "simplifyEnrichment" version))
+       (sha256
+        (base32
+         "0rqa414kvyjjmj4932zk39rqa14z13b57rkrxdrf16jmq2r437vh"))))
+    (properties
+     `((upstream-name . "simplifyEnrichment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-circlize" ,r-circlize)
+       ("r-clue" ,r-clue)
+       ("r-cluster" ,r-cluster)
+       ("r-complexheatmap" ,r-complexheatmap)
+       ("r-digest" ,r-digest)
+       ("r-getoptlong" ,r-getoptlong)
+       ("r-go-db" ,r-go-db)
+       ("r-gosemsim" ,r-gosemsim)
+       ("r-matrix" ,r-matrix)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-proxyc" ,r-proxyc)
+       ("r-slam" ,r-slam)
+       ("r-tm" ,r-tm)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/jokergoo/simplifyEnrichment")
+    (synopsis "Simplify functional enrichment results")
+    (description "This package provides a new clustering algorithm, binary
+cut, for clustering similarity matrices of functional terms is implemeted in
+this package.  It also provides functionalities for visualizing, summarizing
+and comparing the clusterings.")
+    (license license:expat)))
+
 (define-public r-trajectoryutils
   (package
     (name "r-trajectoryutils")
