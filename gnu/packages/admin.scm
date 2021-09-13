@@ -4414,7 +4414,7 @@ file-types for easier parsing in scripts.")
 (define-public jtbl
   (package
     (name "jtbl")
-    (version "1.1.6")
+    (version "1.1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4423,7 +4423,7 @@ file-types for easier parsing in scripts.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zzd7rd63xva50f22d1rfja4r302aizrafarhwm67vv181swvdya"))))
+                "19i21fqz2m40cds9pb17brjxkczqagmx2f7mfb0xdvbygaply5wz"))))
     (build-system python-build-system)
     (inputs
      `(("python-tabulate" ,python-tabulate)))
