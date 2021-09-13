@@ -1602,8 +1602,9 @@ application \"Parts\" to be embedded as a Kontact component (or plugin).")
                 ""))
              #t))
          (replace 'check
-           (lambda _
-             (invoke "dbus-launch" "ctest" ".")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dbus-launch" "ctest" "."))
              #t)))))
     (home-page "https://kontact.kde.org/components/korganizer.html")
     (synopsis "Organizational assistant, providing calendars and other similar
