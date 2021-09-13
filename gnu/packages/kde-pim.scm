@@ -1107,8 +1107,9 @@ and retrieving certificates from LDAP servers.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "dbus-launch" "ctest" ".")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dbus-launch" "ctest" "."))
              #t)))))
     (home-page "https://kontact.kde.org/components/kmail.html")
     (synopsis "Full featured graphical email client")
