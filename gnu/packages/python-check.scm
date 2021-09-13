@@ -537,6 +537,7 @@ internet.")
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-matplotlib" ,python-matplotlib)
+       ("python-nose" ,python-nose)
        ("python-pillow" ,python-pillow)))
     (home-page "https://github.com/matplotlib/pytest-mpl")
     (synopsis "Pytest plugin to help with testing figures output from Matplotlib")
