@@ -1,0 +1,22 @@
+Remove check for hardcoded Xwayland path in gdm.
+
+---
+ daemon/gdm-local-display-factory.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/daemon/gdm-local-display-factory.c b/daemon/gdm-local-display-factory.c
+index da1093bb..37355c06 100644
+--- a/daemon/gdm-local-display-factory.c
++++ b/daemon/gdm-local-display-factory.c
+@@ -203,7 +203,7 @@ gdm_local_display_factory_use_wayland (void)
+ #ifdef ENABLE_WAYLAND_SUPPORT
+         gboolean wayland_enabled = FALSE;
+         if (gdm_settings_direct_get_boolean (GDM_KEY_WAYLAND_ENABLE, &wayland_enabled)) {
+-                if (wayland_enabled && g_file_test ("/usr/bin/Xwayland", G_FILE_TEST_IS_EXECUTABLE) )
++                if (wayland_enabled)
+                         return TRUE;
+         }
+ #endif
+--
+2.33.0
+

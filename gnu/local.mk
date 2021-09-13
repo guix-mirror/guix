@@ -1101,6 +1101,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-Revert-fix-303-gdlib.pc-use-Requires-instead-of-Libs.patch	\
   %D%/packages/patches/gdm-default-session.patch		\
   %D%/packages/patches/gdm-elogind-support.patch		\
+  %D%/packages/patches/gdm-remove-hardcoded-xwayland-path.patch	\
   %D%/packages/patches/geary-CVE-2020-24661.patch		\
   %D%/packages/patches/genimage-signedness.patch		\
   %D%/packages/patches/geoclue-config.patch			\

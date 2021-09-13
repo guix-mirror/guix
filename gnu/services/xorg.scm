@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -883,7 +884,8 @@ the GNOME desktop environment.")
   (xorg-configuration gdm-configuration-xorg
                       (default (xorg-configuration)))
   (x-session gdm-configuration-x-session
-             (default (xinitrc))))
+             (default (xinitrc)))
+  (wayland? gdm-configuration-wayland? (default #f)))
 
 (define (gdm-configuration-file config)
   (mixed-text-file "gdm-custom.conf"
@@ -909,8 +911,9 @@ the GNOME desktop environment.")
                    ;; See also
                    ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39281>.
                    "InitialSetupEnable=false\n"
-                   ;; Enable me once X is working.
-                   "WaylandEnable=false\n"
+                   "WaylandEnable=" (if (gdm-configuration-wayland? config)
+                                        "true"
+                                        "false") "\n"
                    "\n"
                    "[debug]\n"
                    "Enable=" (if (gdm-configuration-debug? config)
@@ -976,7 +979,11 @@ the GNOME desktop environment.")
                                   ;; can depend on GNOME Shell directly.
                                   (cons #$gnome-shell
                                         '#$(gdm-configuration-gnome-shell-assets
-                                            config)))))))))
+                                            config)))))
+                           ;; Add XCURSOR_PATH so that mutter can find its
+                           ;; cursors.  gdm doesn't login so doesn't source
+                           ;; the corresponding line in /etc/profile.
+                           "XCURSOR_PATH=/run/current-system/profile/share/icons"))))
          (stop #~(make-kill-destructor))
          (respawn? #t))))
 

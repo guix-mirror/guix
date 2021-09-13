@@ -96,6 +96,7 @@ Copyright @copyright{} 2021 Domagoj Stolfa@*
 Copyright @copyright{} 2021 Hui Lu@*
 Copyright @copyright{} 2021 pukkamustard@*
 Copyright @copyright{} 2021 Alice Brenon@*
+Copyright @copyright{} 2021 Josselin Poiret@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -18253,19 +18254,26 @@ example the @code{windowmaker} or @code{openbox} packages---preferably
 by adding it to the @code{packages} field of your operating system
 definition (@pxref{operating-system Reference, system-wide packages}).
 
+@anchor{wayland-gdm}
+GDM also supports Wayland: it can itself use Wayland instead of X11 for
+its user interface, and it can also start Wayland sessions.  The former is
+required for the latter, to enable, set @code{wayland?} to @code{#t} in
+@code{gdm-configuration}.
+
 @defvr {Scheme Variable} gdm-service-type
 This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
 Desktop Manager} (GDM), a program that manages graphical display servers and
 handles graphical user logins.  Its value must be a @code{gdm-configuration}
 (see below).
 
-@cindex session types (X11)
-@cindex X11 session types
+@cindex session types
 GDM looks for @dfn{session types} described by the @file{.desktop} files in
-@file{/run/current-system/profile/share/xsessions} and allows users to choose
-a session from the log-in screen.  Packages such as @code{gnome}, @code{xfce},
-and @code{i3} provide @file{.desktop} files; adding them to the system-wide
-set of packages automatically makes them available at the log-in screen.
+@file{/run/current-system/profile/share/xsessions} (for X11 sessions) and
+@file{/run/current-system/profile/share/wayland-sessions} (for Wayland
+sessions) and allows users to choose a session from the log-in screen.
+Packages such as @code{gnome}, @code{xfce}, @code{i3} and @code{sway} provide
+@file{.desktop} files; adding them to the system-wide set of packages
+automatically makes them available at the log-in screen.
 
 In addition, @file{~/.xsession} files are honored.  When available,
 @file{~/.xsession} must be an executable that starts a window manager
@@ -18298,6 +18306,9 @@ File name of the @code{dbus-daemon} executable.
 
 @item @code{gdm} (default: @code{gdm})
 The GDM package to use.
+
+@item @code{wayland?} (default: @code{#f})
+When true, enables Wayland in GDM, necessary to use Wayland sessions.
 @end table
 @end deftp
 
@@ -19526,11 +19537,12 @@ expected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
-called Wayland, you need to use the @code{sddm-service} instead of
-GDM as the graphical login manager.  You should then
-select the ``GNOME (Wayland)'' session in SDDM@.  Alternatively you can
-also try starting GNOME on Wayland manually from a TTY with the
-command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
+called Wayland, you need to enable Wayland support in GDM
+(@pxref{wayland-gdm}).  Another solution is to use the
+@code{sddm-service} instead of GDM as the graphical login manager.
+You should then select the ``GNOME (Wayland)'' session in SDDM@.
+Alternatively you can also try starting GNOME on Wayland manually from a
+TTY with the command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
 gnome-session``.  Currently only GNOME has support for Wayland.
 
 @defvr {Scheme Variable} gnome-desktop-service-type

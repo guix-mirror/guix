@@ -63,6 +63,7 @@
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8148,7 +8149,8 @@ library.")
               (patches
                (search-patches
                 "gdm-default-session.patch"
-                "gdm-elogind-support.patch"))))
+                "gdm-elogind-support.patch"
+                "gdm-remove-hardcoded-xwayland-path.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
