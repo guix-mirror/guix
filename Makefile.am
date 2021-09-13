@@ -627,6 +627,7 @@ EXTRA_DIST +=						\
   etc/guix-install.sh					\
   etc/news.scm						\
   etc/release-manifest.scm				\
+  etc/source-manifest.scm				\
   etc/system-tests.scm					\
   etc/historical-authorizations				\
   build-aux/build-self.scm				\
