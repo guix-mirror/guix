@@ -3639,6 +3639,42 @@ font metrics.  The bundle as a whole is part of the LaTeX required set of
 packages.")
     (license license:lppl1.2+)))
 
+;; TODO: this should supersede texlive-latex-psnfss, but we can't do this
+;; before the next rebuild cycle.
+(define-public texlive-psnfss
+  (let ((template (simple-texlive-package
+                   "texlive-psnfss"
+                   (list "/doc/latex/psnfss/"
+                         "/source/latex/psnfss/"
+                         "/fonts/map/dvips/psnfss/"
+                         ;; Only the sty files are generated.  We need all the .fd
+                         ;; files.
+                         "/tex/latex/psnfss/")
+                   (base32
+                    "04y7v4bghpzky6c3l6qadx7s47m69jh1y615g91rxcn8z3r190di")
+                   #:trivial? #false)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/psnfss")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/psnfss")))))))
+      (home-page "https://www.ctan.org/pkg/psnfss")
+      (synopsis "Font support for common PostScript fonts")
+      (description
+       "The PSNFSS collection includes a set of files that provide a complete
+working setup of the LaTeX font selection scheme (NFSS2) for use with common
+PostScript fonts.  It covers the so-called \"Base\" fonts (which are built
+into any Level 2 PostScript printing device and the Ghostscript interpreter)
+and a number of free fonts.  It provides font definition files, macros and
+font metrics.  The bundle as a whole is part of the LaTeX required set of
+packages.")
+      (license license:lppl1.2+))))
+
 ;; For user profiles
 (define-public texlive-base
   (let ((default-packages
