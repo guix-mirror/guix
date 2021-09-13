@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7416,6 +7417,39 @@ sequence.")
     ;; Infernal 1.1.3 requires VMX or SSE capability for parallel instructions.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
+
+(define-public r-presto
+  (let ((commit "052085db9c88aa70a28d11cc58ebc807999bf0ad")
+        (revision "0"))
+    (package
+      (name "r-presto")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/immunogenomics/presto")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1c3fmag4r4p2lvbvxlxyck9dvfw1prbwcl9665mmlx4a35750hk8"))))
+      (properties `((upstream . "presto")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-data-table" ,r-data-table)
+         ("r-deseq2" ,r-deseq2)
+         ("r-dplyr" ,r-dplyr)
+         ("r-matrix" ,r-matrix)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpparmadillo" ,r-rcpparmadillo)
+         ("r-reshape2" ,r-reshape2)
+         ("r-rlang" ,r-rlang)
+         ("r-tidyr" ,r-tidyr)))
+      (home-page "https://github.com/immunogenomics/presto")
+      (synopsis "Fast Functions for Differential Expression using Wilcox and AUC")
+      (description "This package performs a fast Wilcoxon rank sum test and
+auROC analysis.")
+      (license license:gpl3))))
 
 (define-public r-snapatac
   (package
