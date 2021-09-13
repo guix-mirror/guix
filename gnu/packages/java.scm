@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -907,6 +908,33 @@ machine.")))
                             "patches/hotspot/hs23/drop_unlicensed_test.patch")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              #t))
+         (add-after 'unpack 'fix-openjdk
+           (lambda _
+             (substitute* "openjdk/jdk/make/common/Defs-linux.gmk"
+               (("CFLAGS_COMMON  = -fno-strict-aliasing" all)
+                (string-append all " -fcommon")))
+             (substitute* "openjdk/hotspot/src/share/vm/code/relocInfo.hpp"
+               (("inline friend relocInfo prefix_relocInfo\\(int datalen = 0\\);")
+                "inline friend relocInfo prefix_relocInfo(int datalen);"))
+             (substitute*
+                 '("openjdk/jdk/src/solaris/native/java/net/PlainSocketImpl.c"
+                   "openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
+               (("#include <sys/sysctl.h>")
+                "#include <linux/sysctl.h>"))
+             ;; It looks like the "h = 31 * h + c" line of the jsum()
+             ;; function gets miscompiled. After a few iterations of the loop
+             ;; the result of "31 * h" is always 0x8000000000000000.
+             ;; Bad optimization maybe...
+             ;; Transform "31 * h + c" into a convoluted "32 * h + c - h"
+             ;; as a workaround.
+             (substitute* "openjdk/hotspot/src/share/vm/memory/dump.cpp"
+               (("h = 31 \\* h \\+ c;")
+                "jlong h0 = h;\nfor(int i = 0; i < 5; i++) h += h;\nh += c - h0;"))
+             ;; Our gcc version is higher than 4.3; replace the failing
+             ;; expression to test this by its result.
+             (substitute* "openjdk/jdk/make/sun/font/Makefile"
+               (("\"\\$\\(shell expr.*0\"")
+                "\"1\" \"0\""))))
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              ;; buildtree.make generates shell scripts, so we need to replace
