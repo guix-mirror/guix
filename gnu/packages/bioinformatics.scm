@@ -3152,7 +3152,7 @@ data and settings.")
        ("cairo" ,cairo)
        ("rmath-standalone" ,rmath-standalone)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-fonts-cm
+     `(("texlive" ,(texlive-union (list texlive-cm
                                         texlive-fonts-amsfonts
 
                                         texlive-latex-doi
