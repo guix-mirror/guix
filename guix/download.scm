@@ -400,6 +400,8 @@
               (object->string %content-addressed-mirrors)))
 
 (define %disarchive-mirrors
+  ;; TODO: Eventually turn into a procedure that takes a hash algorithm
+  ;; (symbol) and hash (bytevector).
   '("https://disarchive.ngyro.com/"))
 
 (define %disarchive-mirror-file
