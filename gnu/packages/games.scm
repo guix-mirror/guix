@@ -6232,7 +6232,7 @@ small robot living in the nano world, repair its maker.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests included
+     `(#:test-target "run_tests"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
@@ -6266,7 +6266,8 @@ small robot living in the nano world, repair its maker.")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python" ,python-wrapper)
+     `(("googletest" ,googletest)
+       ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
