@@ -16000,13 +16000,13 @@ Python to manipulate OpenDocument 1.2 files.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "7.0.1")
+    (version "7.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "1ksqfai72dbcfbwx43pxl658j59mx2rvqypjy1fk0ax2qd6lccx6"))))
+                "00y49bfsi7rrsd1s42gc2w95a6arl9ipdsx2493hr0v54fj07ih0"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -16016,9 +16016,6 @@ Python to manipulate OpenDocument 1.2 files.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-cachedir
-           ;; Tests require write access to $HOME by default
-           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t))
          (replace 'check
            (lambda _
              (let ((cwd (getcwd)))
