@@ -158,6 +158,7 @@
                              (outputs '("out"))
                              (make-flags ''())
                              (system (%current-system))
+                             (source-directory ".")
                              (guile #f)
                              (substitutable? #t)
                              (imported-modules
@@ -175,7 +176,8 @@
                                       ((source)
                                        source)
                                       (source
-                                        source))
+                                       source))
+                     #:source-directory ,source-directory
                      #:search-paths ',(map search-path-specification->sexp
                                            search-paths)
                      #:phases ,phases

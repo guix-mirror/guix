@@ -49,16 +49,17 @@
   ; TODO: kernel ".config".
   #t)
 
-(define* (build #:key inputs make-flags #:allow-other-keys)
+(define* (build #:key inputs make-flags (source-directory ".") #:allow-other-keys)
   (apply invoke "make" "-C"
          (string-append (assoc-ref inputs "linux-module-builder")
                         "/lib/modules/build")
-         (string-append "M=" (getcwd))
+         (string-append "M=" (getcwd) "/" source-directory)
          (or make-flags '())))
 
 ;; This block was copied from make-linux-libre--only took the "modules_install"
 ;; part.
-(define* (install #:key make-flags inputs native-inputs outputs
+(define* (install #:key make-flags (source-directory ".")
+                  inputs native-inputs outputs
                   #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (moddir (string-append out "/lib/modules")))
@@ -67,7 +68,7 @@
     (apply invoke "make" "-C"
             (string-append (assoc-ref inputs "linux-module-builder")
                            "/lib/modules/build")
-            (string-append "M=" (getcwd))
+            (string-append "M=" (getcwd) "/" source-directory)
             ;; Disable depmod because the Guix system's module directory
             ;; is an union of potentially multiple packages.  It is not
             ;; possible to use depmod to usefully calculate a dependency
