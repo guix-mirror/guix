@@ -1286,6 +1286,25 @@ bootstrapping purposes.")
                               "openjdk.src/jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c")
                  (("attr/xattr.h") "sys/xattr.h"))
                #t))
+           (add-after 'unpack 'fix-openjdk
+             (lambda _
+               (substitute* "openjdk.src/jdk/make/common/Defs-linux.gmk"
+                 (("CFLAGS_COMMON   = -fno-strict-aliasing" all)
+                  (string-append all " -fcommon")))
+               (substitute*
+                   '("openjdk.src/jdk/src/solaris/native/java/net/PlainSocketImpl.c"
+                     "openjdk.src/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
+                 (("#include <sys/sysctl.h>")
+                  "#include <linux/sysctl.h>"))
+               ;; It looks like the "h = 31 * h + c" line of the jsum()
+               ;; function gets miscompiled. After a few iterations of the loop
+               ;; the result of "31 * h" is always 0x8000000000000000.
+               ;; Bad optimization maybe...
+               ;; Transform "31 * h + c" into a convoluted "32 * h + c - h"
+               ;; as a workaround.
+               (substitute* "openjdk.src/hotspot/src/share/vm/memory/dump.cpp"
+                 (("h = 31 \\* h \\+ c;")
+                  "jlong h0 = h;\nfor(int i = 0; i < 5; i++) h += h;\nh += c - h0;"))))
            (add-after 'unpack 'fix-x11-extension-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
@@ -1621,7 +1640,7 @@ bootstrapping purposes.")
                  (setlocale LC_ALL "en_US.utf8")
                  (setenv "LC_ALL" "en_US.utf8")
 
-                 (for-each import-cert (find-files certs-dir "\\.pem$"))
+                 (for-each import-cert (find-files certs-dir "\\.crt$"))
                  (mkdir-p (string-append (assoc-ref outputs "out")
                                          "/lib/security"))
                  (mkdir-p (string-append (assoc-ref outputs "jdk")
