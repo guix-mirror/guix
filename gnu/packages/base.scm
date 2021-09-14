@@ -19,6 +19,7 @@
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (glibc
+            make-ld-wrapper
             libiconv-if-needed))
 
 ;;; Commentary:
@@ -603,6 +605,7 @@ included.")
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
                           binutils
+                          (linker "ld")
                           (guile (canonical-package guile-3.0))
                           (bash (canonical-package bash))
                           (guile-for-build guile))
@@ -612,7 +615,9 @@ wrapper uses GUILE and BASH.
 
 TARGET must be a one-argument procedure that, given a system type, returns a
 cross-compilation target triplet or #f.  When the result is not #f, make a
-wrapper for the cross-linker for that target, called 'TARGET-ld'."
+wrapper for the cross-linker for that target, called 'TARGET-ld'.  To use a
+different linker than the default \"ld\", such as \"ld.gold\" the linker name
+can be provided via the LINKER argument."
   ;; Note: #:system->target-triplet is a procedure so that the evaluation of
   ;; its result can be delayed until the 'arguments' field is evaluated, thus
   ;; in a context where '%current-system' is accurate.
@@ -637,8 +642,9 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
                      (let* ((out (assoc-ref %outputs "out"))
                             (bin (string-append out "/bin"))
                             (ld  ,(if target
-                                      `(string-append bin "/" ,target "-ld")
-                                      '(string-append bin "/ld")))
+                                      `(string-append bin "/" ,target "-"
+                                                      ,linker)
+                                      `(string-append bin "/" ,linker)))
                             (go  (string-append ld ".go")))
 
                        (setvbuf (current-output-port)
@@ -663,11 +669,10 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
                           (string-append (assoc-ref %build-inputs "binutils")
                                          ,(if target
                                               (string-append "/bin/"
-                                                             target "-ld")
-                                              "/bin/ld"))))
+                                                             target "-" linker)
+                                              (string-append "/bin/" linker)))))
                        (chmod ld #o555)
-                       (compile-file ld #:output-file go)
-                       #t)))))
+                       (compile-file ld #:output-file go))))))
     (synopsis "The linker wrapper")
     (description
      "The linker wrapper (or @code{ld-wrapper}) wraps the linker to add any
@@ -675,8 +680,6 @@ missing @code{-rpath} flags, and to detect any misuse of libraries outside of
 the store.")
     (home-page "https://www.gnu.org/software/guix//")
     (license gpl3+)))
-
-(export make-ld-wrapper)
 
 (define-public glibc
   ;; This is the GNU C Library, used on GNU/Linux and GNU/Hurd.  Prior to
