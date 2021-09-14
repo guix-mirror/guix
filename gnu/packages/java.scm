@@ -3680,8 +3680,8 @@ HDF5 files, building on the libraries provided by the HDF Group.")
      `(#:tests? #f ; there is no test target
        #:build-target "compile"
        #:make-flags
-       (list "-Dbuild.compiler=javac1.8"
-             (string-append "-Ddist=" (assoc-ref %outputs "out")))
+       ,#~(list "-Dbuild.compiler=javac1.8"
+                (string-append "-Ddist=" #$output))
        #:phases
        (modify-phases %standard-phases
          (replace 'install
