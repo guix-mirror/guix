@@ -24,6 +24,7 @@
 
 (define-module (gnu packages gdb)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
@@ -35,9 +36,10 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
+  #:use-module (guix download)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (srfi srfi-1))
@@ -57,6 +59,7 @@
               (search-patches "gdb-hurd.patch"))))
 
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
 
@@ -66,6 +69,14 @@
                   ,@%gnu-build-system-modules)
 
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((sh (string-append (assoc-ref inputs "bash")
+                                               "/bin/sh")))
+                        (substitute* '("gdb/ser-pipe.c"
+                                       "gdbsupport/pathstuff.cc")
+                          (("\"/bin/sh\"")
+                           (format #f "~s" sh))))))
                   (add-after
                    'configure 'post-configure
                    (lambda _
@@ -95,7 +106,8 @@
                          (for-each delete-file common)
                          #t)))))))
     (inputs
-     `(("expat" ,expat)
+     `(("bash" ,bash)
+       ("expat" ,expat)
        ("mpfr" ,mpfr)
        ("gmp" ,gmp)
        ("readline" ,readline)
@@ -151,6 +163,20 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (sha256
                (base32
                 "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments gdb-11)
+       ((#:phases phases)
+        ;; Override the patch-paths phase as the pathstuff.c file was later
+        ;; renamed.
+        `(modify-phases ,phases
+           (replace 'patch-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((sh (string-append (assoc-ref inputs "bash")
+                                        "/bin/sh")))
+                 (substitute* '("gdb/gdbsupport/pathstuff.c"
+                                "gdb/ser-pipe.c")
+                   (("\"/bin/sh\"")
+                    (format #f "~s" sh))))))))))
     (inputs
      (alist-replace "guile" (list guile-2.0)
                     (package-inputs gdb-10)))))
