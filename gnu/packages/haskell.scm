@@ -612,9 +612,14 @@ interactive environment for the functional language Haskell.")
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
 
+;; Versions newer than ghc defined below (i.e. the compiler
+;; haskell-build-system uses) should use ghc-next as their name to
+;; ensure ghc (without version specification) and ghc-* packages are
+;; always compatible. See https://issues.guix.gnu.org/issue/47335.
+
 (define-public ghc-8.8
   (package (inherit ghc-8.6)
-    (name "ghc")
+    (name "ghc-next")
     (version "8.8.4")
     (source
      (origin
