@@ -1793,7 +1793,9 @@ IcedTea build harness.")
                 (srfi srfi-26)))
              ((#:configure-flags flags)
               `(let ((jdk (assoc-ref %build-inputs "jdk")))
-                 `( ;;"--disable-bootstrap"
+                 `("CFLAGS=-fcommon"
+                   "CXXFLAGS=-fcommon"
+                   ;;"--disable-bootstrap"
                    "--enable-bootstrap"
                    "--enable-nss"
                    ,(string-append "--with-parallel-jobs="
@@ -1858,6 +1860,13 @@ new Date();"))
                         (find-files "openjdk.src/jdk/src/solaris/native"
                                     "\\.c|\\.h"))
                        #t)))
+                 (replace 'fix-openjdk
+                   (lambda _
+                     (substitute*
+                         '("openjdk.src/jdk/src/solaris/native/java/net/PlainSocketImpl.c"
+                           "openjdk.src/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
+                       (("#include <sys/sysctl.h>")
+                        "#include <linux/sysctl.h>"))))
                  (replace 'install
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let ((doc (string-append (assoc-ref outputs "doc")
