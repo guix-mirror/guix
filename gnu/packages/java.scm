@@ -5433,7 +5433,7 @@ complex transformations and code analysis tools.")
          (delete 'build)
          (delete 'configure)
          (replace 'install
-           (install-pom-file (assoc-ref %build-inputs "source"))))))
+           ,#~(install-pom-file #$source)))))
     (home-page "https://ow2.org")
     (synopsis "Ow2.org parent pom")
     (description "This package contains the parent pom for projects from ow2.org,
