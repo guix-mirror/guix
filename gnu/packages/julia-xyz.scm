@@ -3578,6 +3578,28 @@ through matrix-vector multiplication.")
 a loadable module.")
       (license license:expat))))
 
+(define-public julia-sass
+  (package
+    (name "julia-sass")
+    (version "0.2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/piever/Sass.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0y7kkkj717h5cj659ssry89i5r64symr6pvhr6vv4qmaxrnjxj92"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-libsass-jll" ,julia-libsass-jll)))
+    (home-page "https://github.com/piever/Sass.jl")
+    (synopsis "Compile scss and sass file to css")
+    (description "This package provides a simple Julian API to use the
+@code{libsass} library to compile scss and sass files to css.")
+    (license license:expat)))
+
 (define-public julia-scratch
   (package
     (name "julia-scratch")
