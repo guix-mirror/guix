@@ -3584,6 +3584,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    #:guile guile-final
                    #:bash bash-final))
 
+(define-public ld-gold-wrapper
+  (make-ld-wrapper "ld-gold-wrapper"
+                   #:binutils binutils-gold
+                   #:linker "ld.gold"
+                   #:guile guile-final
+                   #:bash bash-final))
+
 (define (%boot5-inputs)
   ;; Now with UTF-8 locales.  Remember that the bootstrap binaries were built
   ;; with an older libc, which cannot load the new locale format.  See
