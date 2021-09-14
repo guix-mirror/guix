@@ -54,8 +54,8 @@
             hackage-package?))
 
 (define ghc-standard-libraries
-  ;; List of libraries distributed with ghc (8.6.5).
-  ;; Contents of ...-ghc-8.6.5/lib/ghc-8.6.5.
+  ;; List of libraries distributed with ghc (as of 8.10.7).
+  ;; Contents of …-ghc-8.10.7/lib/ghc-8.10.7
   '("ghc"
     "cabal" ;; in the output of `ghc-pkg list` Cabal is uppercased, but
             ;; hackage-name->package-name takes this into account.
@@ -67,6 +67,7 @@
     "containers"
     "deepseq"
     "directory"
+    "exceptions"
     "filepath"
     "ghc"
     "ghc-boot"
