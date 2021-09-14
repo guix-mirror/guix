@@ -6244,9 +6244,17 @@ small robot living in the nano world, repair its maker.")
                                (assoc-ref outputs "out")
                                "/share/teeworlds/data"
                                "\"")))
+             #t))
+         (add-after 'unpack 'replace-font
+           (lambda* (#:key inputs #:allow-other-keys)
+             (delete-file "datasrc/fonts/DejaVuSans.ttf")
+             (symlink (string-append (assoc-ref inputs "font-dejavu")
+                                     "/share/fonts/truetype/DejaVuSans.ttf")
+                      "datasrc/fonts/DejaVuSans.ttf")
              #t)))))
     (inputs
      `(("freetype" ,freetype)
+       ("font-dejavu" ,font-dejavu)
        ("glu" ,glu)
        ("json-parser" ,json-parser)
        ("mesa" ,mesa)
