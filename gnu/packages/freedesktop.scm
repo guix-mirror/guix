@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -2060,7 +2060,7 @@ Its features include:
 (define-public plymouth
   (package
     (name "plymouth")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
@@ -2068,7 +2068,7 @@ Its features include:
                            "plymouth/releases/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0l8kg7b2vfxgz9gnrn0v2w4jvysj2cirp0nxads5sy05397pl6aa"))))
+         "11nfgw8yzmdbnbmyd1zfvhj4qh19w1nw0nraai08628x6mzjbbpc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2094,8 +2094,7 @@ Its features include:
          (add-after 'unpack 'make-reproducible
            (lambda _
              (substitute* "src/main.c"
-               (("__DATE__") "\"guix\""))
-             #t))
+               (("__DATE__") "\"guix\""))))
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "docs/Makefile.in"
@@ -2106,8 +2105,7 @@ Its features include:
                                "/manpages/docbook.xsl")))
              (setenv "XML_CATALOG_FILES"
                      (string-append (assoc-ref inputs "docbook-xml")
-                                    "/xml/dtd/docbook/catalog.xml"))
-             #t)))))
+                                    "/xml/dtd/docbook/catalog.xml")))))))
     (inputs
      `(("glib" ,glib)
        ("pango" ,pango)
@@ -2115,7 +2113,8 @@ Its features include:
        ("libpng" ,libpng)
        ("eudev" ,eudev)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
        ("libxslt" ,libxslt)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml)))
