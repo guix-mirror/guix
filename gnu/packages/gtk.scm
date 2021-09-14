@@ -958,8 +958,7 @@ application suites.")
        ("freetype" ,freetype)
        ;; SVG support is optional and requires librsvg, which pulls in rust.
        ;; Rust is not supported well on every architecture yet.
-       ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
-                                                       (%current-system)))
+       ("gdk-pixbuf" ,(if (target-x86-64?)
                           gdk-pixbuf+svg
                           gdk-pixbuf))
        ("glib" ,glib)
@@ -1028,7 +1027,12 @@ application suites.")
                (("notify no-gtk-init object objects-finalize papersize rbtree")
                 "no-gtk-init papersize rbtree")
                (("stylecontext templates textbuffer textiter treemodel treepath")
-                "stylecontext textbuffer textiter treemodel treepath"))
+                "stylecontext textbuffer textiter treemodel treepath")
+               ;; The ‘icontheme’ test needs SVG support.
+               ,@(if (not (target-x86-64?))
+                     '((("floating focus gestures grid gtkmenu icontheme keyhash listbox")
+                        "floating focus gestures grid gtkmenu keyhash listbox"))
+                     '()))
              (substitute* "testsuite/a11y/Makefile.in"
                (("accessibility-dump tree-performance text children derive")
                 "tree-performance text children derive"))
