@@ -2641,6 +2641,7 @@ new Date();"))
      (substitute-keyword-arguments (package-arguments ant-bootstrap)
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'define-java-environment-variables)
            (add-after 'unpack 'remove-scripts
              ;; Remove bat / cmd scripts for DOS as well as the antRun and runant
              ;; wrappers.
