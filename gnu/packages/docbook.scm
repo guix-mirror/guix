@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,7 +414,7 @@ the in DocBook SGML DTDs.")
                                         texlive-latex-fancyvrb
                                         texlive-latex-float
                                         texlive-latex-footmisc
-                                        texlive-latex-hyperref
+                                        texlive-hyperref
                                         texlive-latex-jknapltx
                                         texlive-latex-listings
                                         texlive-latex-multirow
@@ -422,10 +423,10 @@ the in DocBook SGML DTDs.")
                                         texlive-latex-refcount
                                         texlive-latex-subfigure
                                         texlive-latex-titlesec
-                                        texlive-latex-wasysym
+                                        texlive-wasysym
 
                                         texlive-fonts-rsfs
-                                        texlive-fonts-stmaryrd
+                                        texlive-stmaryrd
 
                                         texlive-generic-iftex)))
        ("imagemagick" ,imagemagick)     ;for convert
