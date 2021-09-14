@@ -318,8 +318,6 @@ executable cabal
     mtl        >= 2.0      && < 3
 ")
 
-;; Fails: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25138
-(test-expect-fail 1)
 (test-assert "hackage->guix-package test flag executable"
   (eval-test-with-cabal test-cabal-flag-executable match-ghc-foo))
 
