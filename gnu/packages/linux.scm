@@ -1582,6 +1582,41 @@ allows some more serious things like adding streaming capabilities to an
 application by hooking GStreamer into the loopback device.")
     (license license:gpl2+)))
 
+(define-public xpadneo
+  (package
+    (name "xpadneo")
+    (version "0.9.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/atar-axis/xpadneo")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xr0zx134s56h4ij6c3fh8ki0h58h61minbfxcl3sgpgxkh14ism"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f ; no `check' target
+       #:source-directory "hid-xpadneo/src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "hid-xpadneo/etc-modprobe.d"
+                                 (string-append out "/etc/modprobe.d"))
+               (copy-recursively "hid-xpadneo/etc-udev-rules.d"
+                                 (string-append out "/etc/udev/rules.d"))))))))
+    (home-page "https://atar-axis.github.io/xpadneo/")
+    (synopsis "Xbox One Wireless Controller driver")
+    (description
+     "This package provides a driver for the XBox One S Wireless controller
+and some newer models when connected via bluetooth.  In addition to the kernel
+module provided itself, it also contains a modprobe configuration and udev
+rules, which need to be installed separately.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
