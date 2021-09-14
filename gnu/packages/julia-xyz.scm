@@ -22,13 +22,15 @@
 (define-module (gnu packages julia-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system julia)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages julia-jll)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages version-control))
 
 (define-public julia-abstractffts
   (package
@@ -990,6 +992,127 @@ Julia's built-in docsystem.  These are features that are not yet mature enough
 to be considered for inclusion in Base, or that have sufficiently niche use
 cases that including them with the default Julia installation is not seen as
 valuable enough at this time.")
+    (license license:expat)))
+
+;; By removing all the javascript and css downloads any HTML documentation
+;; produced by this package will not be very useful.
+(define-public julia-documenter
+  (package
+    (name "julia-documenter")
+    (version "0.27.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/Documenter.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "00ai3c24i3fkn5plmavampcxm0ijhwk0v5cn9xwm7rvbjnnvaaam"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/Deps.jl"
+               (("pip install")
+                (string-append (assoc-ref inputs "python")
+                               "/bin/pip install")))
+             #t))
+         (add-after 'unpack 'remove-javascript-downloads
+           (lambda _
+             (substitute* "src/Writers/HTMLWriter.jl"
+               (("cdnjs.cloudflare.com") "example.com"))
+             ;; Removing the javascript downloads causes these tests fail.
+             (substitute* "test/examples/tests.jl"
+               ((".*Main\\.examples_html_doc.*") "")
+               ((".*Main\\.examples_html_mathjax3_doc.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("julia-ansicoloredprinters" ,julia-ansicoloredprinters)
+       ("julia-docstringextensions" ,julia-docstringextensions)
+       ("julia-iocapture" ,julia-iocapture)
+       ("julia-json" ,julia-json)))
+    (inputs
+     `(("python" ,python-wrapper)))
+    (native-inputs
+     `(("git" ,git-minimal)
+       ("julia-documentermarkdown" ,julia-documentermarkdown)
+       ("julia-documentertools" ,julia-documentertools)))
+    (home-page "https://juliadocs.github.io/Documenter.jl")
+    (synopsis "Documentation generator for Julia")
+    (description "This package provides a documentation generator for Julia.")
+    (license license:expat)))
+
+(define julia-documenter-bootstrap
+  (package
+    (inherit julia-documenter)
+    (name "julia-documenter-bootstrap")
+    (arguments
+     (substitute-keyword-arguments (package-arguments julia-documenter)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'patch-source)))
+       ;; Not all dependencies available in bootstrap version.
+       ((#:tests? _ #f) #f)))
+    (inputs `())
+    (native-inputs `())))
+
+(define-public julia-documentermarkdown
+  (package
+    (name "julia-documentermarkdown")
+    (version "0.2.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/DocumenterMarkdown.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0sx89hi5p2f8zi2rp5qrv06m270d90pxj5d2y5cxls1spax7wqx8"))))
+    (build-system julia-build-system)
+    (inputs
+     ;; We don't want to propagate the bootstrap version.
+     ;; Cycle with Documenter.jl in later versions.
+     `(("julia-documenter" ,julia-documenter-bootstrap)))
+    (home-page "https://github.com/JuliaDocs/DocumenterMarkdown.jl")
+    (synopsis "Documenter's Markdown")
+    (description "This package enables the Markdown / MkDocs backend of
+@code{Documenter.jl}.")
+    (license license:expat)))
+
+(define-public julia-documentertools
+  (package
+    (name "julia-documentertools")
+    (version "0.1.13")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaDocs/DocumenterTools.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "05p57p8xlkn42m1lv9gq4hl96vp7hpj19d51p828ai1rbpcpi3a6"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))    ; Tests require network.
+    (inputs
+     ;; We don't want to propagate the bootstrap version.
+     ;; Cycle with Documenter.jl in later versions.
+     `(("julia-documenter" ,julia-documenter-bootstrap)))
+    (propagated-inputs
+     `(("julia-docstringextensions" ,julia-docstringextensions)
+       ("julia-gumbo" ,julia-gumbo)
+       ("julia-sass" ,julia-sass)))
+    (native-inputs
+     `(("julia-example" ,julia-example)))
+    (home-page "https://github.com/JuliaDocs/DocumenterTools.jl")
+    (synopsis "Extra tools for setting up Documenter.jl")
+    (description "This package contains utilities for setting up documentation
+generation with @code{Documenter.jl}.")
     (license license:expat)))
 
 (define-public julia-diffresults
