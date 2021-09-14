@@ -47,8 +47,8 @@
 (define %stackage-url
   (make-parameter "https://www.stackage.org"))
 
-;; Latest LTS version compatible with GHC 8.6.5.
-(define %default-lts-version "14.27")
+;; Latest LTS version compatible with current GHC.
+(define %default-lts-version "18.10")
 
 (define-json-mapping <stackage-lts> make-stackage-lts
   stackage-lts?
