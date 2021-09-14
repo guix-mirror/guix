@@ -624,6 +624,7 @@ EXTRA_DIST +=						\
   .guix-authorizations					\
   .guix-channel						\
   scripts/guix.in					\
+  etc/disarchive-manifest.scm				\
   etc/guix-install.sh					\
   etc/news.scm						\
   etc/release-manifest.scm				\
