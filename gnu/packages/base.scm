@@ -495,7 +495,7 @@ change.  GNU make offers many powerful extensions over the standard utility.")
                (base32
                 "12f5zzyq2w56g95nni65hc0g5p7154033y2f3qmjvd016szn5qnn"))))
     (arguments
-     `(#:configure-flags '("CFLAGS=-D__alloca=alloca")
+     `(#:configure-flags '("CFLAGS=-D__alloca=alloca -D__stat=stat")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-default-shell
