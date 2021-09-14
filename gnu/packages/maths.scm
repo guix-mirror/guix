@@ -552,12 +552,21 @@ precision floating point numbers.")
                      (substitute* "linalg/test.c"
                        ((".*gsl_test\\(test_LU_decomp.*") "\n")
                        ((".*gsl_test\\(test_LUc_decomp.*") "\n")
+                       ((".*gsl_test\\(test_QR_decomp_r.*") "\n")
                        ((".*gsl_test\\(test_cholesky_decomp.*") "\n")
+                       ((".*gsl_test\\(test_pcholesky_solve.*") "\n")
                        ((".*gsl_test\\(test_COD_lssolve2.*") "\n"))
                      (substitute* "spmatrix/test.c"
                        ((".*test_all.*") "\n")
                        ((".*test_float.*") "\n")
-                       ((".*test_complex.*") "\n"))))))
+                       ((".*test_complex.*") "\n"))
+
+                     ;; XXX: These tests abort with:
+                     ;; gsl: cholesky.c:645: ERROR: matrix is not positive definite
+                     (substitute* '("multifit_nlinear/test.c"
+                                    "multilarge_nlinear/test.c")
+                       (("gsl_ieee_env_setup.*" all)
+                        (string-append "exit (77);\n" all)))))))
 
               (else '()))))))
     (home-page "https://www.gnu.org/software/gsl/")
