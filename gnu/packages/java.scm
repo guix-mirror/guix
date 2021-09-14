@@ -3079,9 +3079,9 @@ debugging, etc.")
                         #t))))
     (arguments
      `(#:make-flags                     ; bootstrap from javacc-4
-       (list (string-append "-Dbootstrap-jar="
-                            (assoc-ref %build-inputs "javacc")
-                            "/share/java/javacc.jar"))
+       ,#~(list (string-append "-Dbootstrap-jar="
+                               #$(this-package-native-input "javacc")
+                               "/share/java/javacc.jar"))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
