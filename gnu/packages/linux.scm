@@ -2163,7 +2163,8 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
     (source (package-source linux-libre))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'enter-subdirectory
                     (lambda _
                       (chdir "tools/usb/usbip")
