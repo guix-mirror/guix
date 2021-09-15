@@ -1606,8 +1606,10 @@ application by hooking GStreamer into the loopback device.")
              (let ((out (assoc-ref outputs "out")))
                (copy-recursively "hid-xpadneo/etc-modprobe.d"
                                  (string-append out "/etc/modprobe.d"))
+               ;; udev-service-type takes its rules from /lib rather than
+               ;; /etc, so copy it there instead
                (copy-recursively "hid-xpadneo/etc-udev-rules.d"
-                                 (string-append out "/etc/udev/rules.d"))))))))
+                                 (string-append out "/lib/udev/rules.d"))))))))
     (home-page "https://atar-axis.github.io/xpadneo/")
     (synopsis "Xbox One Wireless Controller driver")
     (description
