@@ -4163,6 +4163,12 @@ addon modules.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundled-test
+           (lambda _
+             ;; Delete test copied from a third party package that fails
+             ;; with newer SQLAlchemy.  This can be removed for 3.0.
+             ;; See <https://github.com/wtforms/wtforms/issues/696>.
+             (delete-file "tests/ext_sqlalchemy.py")))
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
