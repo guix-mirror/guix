@@ -1960,7 +1960,7 @@ and writing of @code{.ini}-style configuration files.")
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Const-Fast")
     (synopsis "Facility for creating read-only scalars, arrays, and hashes")
-    (description "This package provides prodecures to create read-only
+    (description "This package provides procedures to create read-only
 scalars, arrays, and hashes.")
     (license (package-license perl))))
 
