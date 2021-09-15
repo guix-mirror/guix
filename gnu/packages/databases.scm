@@ -3097,13 +3097,13 @@ this library provides functions to facilitate such comparisons.")
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.4.3")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
-        (base32 "0if2dgb088clk738p26bwk50735h6jpd2kacdgc5capv2hiz6d2k"))))
+        (base32 "1ys0a44gh544xpbzz6r5xvz3msim74f9qklyfnw0bhn9vk9n9adf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -3115,6 +3115,7 @@ this library provides functions to facilitate such comparisons.")
        ("python-pytest-cov" ,python-pytest-cov)))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
+       ("python-importlib-resources" ,python-importlib-resources) ;Python < 3.9
        ("python-sqlalchemy" ,python-sqlalchemy)
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
