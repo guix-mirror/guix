@@ -612,14 +612,9 @@ interactive environment for the functional language Haskell.")
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
 
-;; Versions newer than ghc defined below (i.e. the compiler
-;; haskell-build-system uses) should use ghc-next as their name to
-;; ensure ghc (without version specification) and ghc-* packages are
-;; always compatible. See https://issues.guix.gnu.org/issue/47335.
-
 (define-public ghc-8.8
   (package (inherit ghc-8.6)
-    (name "ghc-next")
+    (name "ghc")
     (version "8.8.4")
     (source
      (origin
@@ -672,7 +667,7 @@ interactive environment for the functional language Haskell.")
 (define-public ghc-8.10
   (package
     (inherit ghc-8.8)
-    (name "ghc-next")
+    (name "ghc")
     (version "8.10.7")
     (source
      (origin
@@ -723,7 +718,12 @@ interactive environment for the functional language Haskell.")
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
 
-(define-public ghc-8 ghc-8.6)
+;; Versions newer than ghc defined below (i.e. the compiler
+;; haskell-build-system uses) should use ghc-next as their name to
+;; ensure ghc (without version specification) and ghc-* packages are
+;; always compatible. See https://issues.guix.gnu.org/issue/47335.
+
+(define-public ghc-8 ghc-8.10)
 
 (define-public ghc ghc-8)
 
