@@ -60,6 +60,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages ghostscript) ;lcms
@@ -1961,6 +1962,7 @@ new Date();"))
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; TODO: unbundle libpng and lcms
              (invoke "bash" "./configure"
+                     "--with-extra-cflags=-fcommon"
                      (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
                      "--disable-freetype-bundling"
                      "--disable-warnings-as-errors"
@@ -2089,7 +2091,8 @@ new Date();"))
        ("libxt" ,libxt)
        ("libxtst" ,libxtst)))
     (native-inputs
-     `(("icedtea-8" ,icedtea-8)
+     `(("gcc" ,gcc-9) ; FIXME: segmentation faults when using gcc-10.
+       ("icedtea-8" ,icedtea-8)
        ("icedtea-8:jdk" ,icedtea-8 "jdk")
        ;; XXX: The build system fails with newer versions of GNU Make.
        ("make@4.2" ,gnu-make-4.2)
