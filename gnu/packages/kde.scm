@@ -232,7 +232,7 @@ browser for easy news reading.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32 "1fvy2aa86pn4crk8lgxjh1kdn2lxzi66krnrr9m91mp89mmc760k"))))
-      (build-system cmake-build-system)
+      (build-system qt-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
          ("pkg-config" ,pkg-config)
@@ -277,23 +277,14 @@ browser for easy news reading.")
                (let* ((out (assoc-ref outputs "out"))
                       (qtbase (assoc-ref inputs "qtbase"))
                       (frei0r (assoc-ref inputs "frei0r-plugins"))
-                      (ffmpeg (assoc-ref inputs "ffmpeg"))
-                      (breeze (assoc-ref inputs "breeze"))
-                      (breeze-icons (assoc-ref inputs "breeze-icons")))
+                      (ffmpeg (assoc-ref inputs "ffmpeg")))
                  (wrap-program (string-append out "/bin/kdenlive")
                    `("PATH" ":" prefix
                      ,(list (string-append ffmpeg "/bin")))
-                   `("XDG_DATA_DIRS" ":" prefix
-                     ,(list (string-append breeze "/share")
-                            (string-append breeze-icons "/share")))
-                   `("QT_PLUGIN_PATH" ":" prefix
-                     ,(list (getenv "QT_PLUGIN_PATH")))
                    `("FREI0R_PATH" ":" =
                      (,(string-append frei0r "/lib/frei0r-1/")))
                    `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
                      (,(string-append qtbase "/lib/qt5/plugins/platforms")))
-                   `("QML2_IMPORT_PATH" ":" prefix
-                     ,(list (getenv "QML2_IMPORT_PATH")))
                    `("MLT_PREFIX" ":" =
                      (,(assoc-ref inputs "mlt"))))))))))
       (home-page "https://kdenlive.org")
