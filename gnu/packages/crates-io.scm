@@ -8187,8 +8187,29 @@ Python arrow.humanize.")
 TimeZone trait for @code{rust-chrono}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-chunked-transfer-1
+  (package
+    (name "rust-chunked-transfer")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chunked_transfer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bkdlsrszfcscw3j6yhs7kj6jbp8id47jjk6h9k58px47na5gy7z"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/frewsxcv/rust-chunked-transfer")
+    (synopsis "Encoder and decoder for HTTP chunked transfer coding")
+    (description "This package provides an encoder and decoder for HTTP chunked
+transfer coding.")
+    (license license:asl2.0)))
+
 (define-public rust-chunked-transfer-0.3
   (package
+    (inherit rust-chunked-transfer-1)
     (name "rust-chunked-transfer")
     (version "0.3.1")
     (source
@@ -8197,15 +8218,7 @@ TimeZone trait for @code{rust-chrono}.")
        (uri (crate-uri "chunked_transfer" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "11yghnd24w0i9p8g368c3pg7qh9nfz7kgri6pywja9pnmakj13a9"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/frewsxcv/rust-chunked-transfer")
-    (synopsis "Encoder and decoder for HTTP chunked transfer coding")
-    (description
-     "This package provides an encoder and decoder for HTTP chunked transfer
-coding.")
-    (license license:asl2.0)))
+        (base32 "11yghnd24w0i9p8g368c3pg7qh9nfz7kgri6pywja9pnmakj13a9"))))))
 
 (define-public rust-ci-info-0.3
   (package
