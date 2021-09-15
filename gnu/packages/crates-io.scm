@@ -30174,6 +30174,32 @@ with all line endings.")
       "Cross-platform filesystem notification library")
     (license (list license:cc0 license:artistic2.0))))
 
+(define-public rust-noise-0.7
+  (package
+    (name "rust-noise")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "noise" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hsbw9gpsz8w9msvyvddygagd9wj93hqpg5pxz388laxfkb1s1c2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-image" ,rust-image-0.23)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/razaekel/noise-rs")
+    (synopsis "Procedural noise generation library")
+    (description "This package provides a Rust library to generate smoothly
+varying noise for textural use and graphical display.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-notify-4
   (package
     (inherit rust-notify-5)
