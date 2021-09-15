@@ -231,6 +231,18 @@ shared NFS home directories.")
                (substitute* '("contenttype.c" "gdbus-address-get-session.c"
                               "gdbus-peer.c" "appinfo.c" "desktop-app-info.c")
                  (("[ \t]*g_test_add_func.*;") "")))
+
+             ,@(if (let ((system (or (%current-target-system)
+                                     (%current-system))))
+                     (or (string-prefix? "i686-" system)
+                         (string-prefix? "i586-" system)))
+                   ;; Add the 'volatile' qualifier for doubles to avoid excess
+                   ;; precision, which leads to test failures:
+                   ;; <https://gitlab.gnome.org/GNOME/glib/-/issues/820>.
+                   '((substitute* "glib/tests/timer.c"
+                       (("gdouble elapsed")
+                        "volatile gdouble elapsed")))
+                   '())
              #t))
          ;; Python references are not being patched in patch-phase of build,
          ;; despite using python-wrapper as input. So we patch them manually.
