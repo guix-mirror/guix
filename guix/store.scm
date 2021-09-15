@@ -1355,14 +1355,16 @@ on the build output of a previous derivation."
       (unresolved things continue)
       (continue #t)))
 
-(define (map/accumulate-builds store proc lst)
+(define* (map/accumulate-builds store proc lst
+                                #:key (cutoff 30))
   "Apply PROC over each element of LST, accumulating 'build-things' calls and
-coalescing them into a single call."
-  (define accumulation-cutoff
-    ;; Threshold above which we stop accumulating unresolved nodes to avoid
-    ;; pessimal behavior where we keep stumbling upon the same .drv build
-    ;; requests with many incoming edges.  See <https://bugs.gnu.org/49439>.
-    30)
+coalescing them into a single call.
+
+CUTOFF is the threshold above which we stop accumulating unresolved nodes."
+
+  ;; The CUTOFF parameter helps avoid pessimal behavior where we keep
+  ;; stumbling upon the same .drv build requests with many incoming edges.
+  ;; See <https://bugs.gnu.org/49439>.
 
   (define-values (result rest)
     (let loop ((lst lst)
@@ -1373,7 +1375,7 @@ coalescing them into a single call."
          (match (with-build-handler build-accumulator
                   (proc head))
            ((? unresolved? obj)
-            (if (> unresolved accumulation-cutoff)
+            (if (>= unresolved cutoff)
                 (values (reverse (cons obj result)) tail)
                 (loop tail (cons obj result) (+ 1 unresolved))))
            (obj
@@ -1390,17 +1392,20 @@ coalescing them into a single call."
      ;; REST is necessarily empty.
      result)
     (to-build
-     ;; We've accumulated things TO-BUILD.  Actually build them and resume the
-     ;; corresponding continuations.
+     ;; We've accumulated things TO-BUILD; build them.
      (build-things store (delete-duplicates to-build))
-     (map/accumulate-builds store
-                            (lambda (obj)
-                              (if (unresolved? obj)
-                                  ;; Pass #f because 'build-things' is now
-                                  ;; unnecessary.
-                                  ((unresolved-continuation obj) #f)
-                                  obj))
-                            (append result rest)))))
+
+     ;; Resume the continuations corresponding to TO-BUILD, and then process
+     ;; REST.
+     (append (map/accumulate-builds store
+                                    (lambda (obj)
+                                      (if (unresolved? obj)
+                                          ;; Pass #f because 'build-things' is now
+                                          ;; unnecessary.
+                                          ((unresolved-continuation obj) #f)
+                                          obj))
+                                    result #:cutoff cutoff)
+         (map/accumulate-builds store proc rest #:cutoff cutoff)))))
 
 (define build-things
   (let ((build (operation (build-things (string-list things)

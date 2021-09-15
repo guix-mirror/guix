@@ -454,6 +454,42 @@
                                              (derivation->output-path drv)))
                              (list d1 d2)))))
 
+(test-equal "map/accumulate-builds cutoff" ;https://issues.guix.gnu.org/50264
+  (iota 20)
+
+  ;; Make sure that, when the cutoff is reached, 'map/accumulate-builds' still
+  ;; returns the right result and calls the build handler by batches.
+  (let* ((b  (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s  (add-to-store %store "bash" #t "sha256"
+                           (search-bootstrap-binary "bash"
+                                                    (%current-system))))
+         (d  (map (lambda (i)
+                    (derivation %store (string-append "the-thing-"
+                                                      (number->string i))
+                                s `("-e" ,b)
+                                #:env-vars `(("foo" . ,(random-text)))
+                                #:sources (list b s)
+                                #:properties `((n . ,i))))
+                  (iota 20)))
+         (calls '()))
+    (define lst
+      (with-build-handler (lambda (continue store things mode)
+                            (set! calls (cons things calls))
+                            (continue #f))
+        (map/accumulate-builds %store
+                               (lambda (d)
+                                 (build-derivations %store (list d))
+                                 (assq-ref (derivation-properties d) 'n))
+                               d
+                               #:cutoff 7)))
+
+    (match (reverse calls)
+      (((batch1 ...) (batch2 ...) (batch3 ...))
+       (and (equal? (map derivation-file-name (take d 8)) batch1)
+            (equal? (map derivation-file-name (take (drop d 8) 8)) batch2)
+            (equal? (map derivation-file-name (drop d 16)) batch3)
+            lst)))))
+
 (test-assert "mapm/accumulate-builds"
   (let* ((d1 (run-with-store %store
                (gexp->derivation "foo" #~(mkdir #$output))))
