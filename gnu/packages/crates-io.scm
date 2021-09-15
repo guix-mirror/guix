@@ -13030,8 +13030,35 @@ type.")
 thread.")
     (license license:mpl2.0)))
 
+(define-public rust-deflate-0.9
+  (package
+    (name "rust-deflate")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "deflate" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0w0ww0hrq4bjnihxgbnrri4lj5c8yzg31fyzx36fd9pvvw2vz5az"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-adler32" ,rust-adler32-1)
+        ("rust-gzip-header" ,rust-gzip-header-0.3))
+       #:cargo-development-inputs
+       (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
+    (home-page "https://github.com/image-rs/deflate-rs")
+    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
+    (description "This package provides a DEFLATE, zlib and gzip encoder
+written in rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-deflate-0.8
   (package
+    (inherit rust-deflate-0.9)
     (name "rust-deflate")
     (version "0.8.6")
     (source
@@ -13043,20 +13070,14 @@ thread.")
         (sha256
          (base32
           "0x6iqlayg129w63999kz97m279m0jj4x4sm6gkqlvmp73y70yxvk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; not all test files included
        #:cargo-inputs
-       (("rust-adler32" ,rust-adler32-1)
-        ("rust-byteorder" ,rust-byteorder-1)
-        ("rust-gzip-header" ,rust-gzip-header-0.3))
+         (("rust-adler32" ,rust-adler32-1)
+          ("rust-byteorder" ,rust-byteorder-1)
+          ("rust-gzip-header" ,rust-gzip-header-0.3))
        #:cargo-development-inputs
-       (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
-    (home-page "https://github.com/image-rs/deflate-rs")
-    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
-    (description
-     "This package provides a DEFLATE, zlib and gzip encoder written in rust.")
-    (license (list license:expat license:asl2.0))))
+         (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))))
 
 (define-public rust-deflate-0.7
   (package
