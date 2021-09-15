@@ -4174,7 +4174,13 @@ c6e7d37.  However, this package works only up to 128 bytes.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-rand" ,rust-rand-0.6)
-        ("rust-structopt" ,rust-structopt-0.3))))
+        ("rust-structopt" ,rust-structopt-0.3))
+       #:phases
+        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-criterion-minor-version
+          (lambda* _
+           (substitute* "Cargo.toml"
+            (("0.3.2") "0.3.3")))))))
     (home-page "https://github.com/marshallpierce/rust-base64")
     (synopsis "Encodes and decodes base64 as bytes or utf8")
     (description
