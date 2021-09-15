@@ -4155,7 +4155,7 @@ addon modules.")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "WTForms" version ".tar.gz"))
+       (uri (pypi-uri "WTForms" version))
        (sha256
         (base32
          "17427m7p9nn9byzva697dkykykwcp2br3bxvi8vciywlmkh5s6c1"))))
@@ -4174,11 +4174,9 @@ addon modules.")
              (when tests?
                (add-installed-pythonpath inputs outputs)
                (invoke "python" "setup.py" "compile_catalog")
-               (invoke "coverage" "run" "tests/runtests.py" "--with-pep8")))))))
+               (invoke "python" "tests/runtests.py")))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-dateutil" ,python-dateutil)
-       ("python-pep8" ,python-pep8)
+     `(("python-dateutil" ,python-dateutil)
        ("python-sqlalchemy" ,python-sqlalchemy)))
     (propagated-inputs
      `(("python-babel" ,python-babel)
