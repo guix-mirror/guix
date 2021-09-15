@@ -16684,6 +16684,28 @@ it.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-fdlimit-0.1
+  (package
+    (name "rust-fdlimit")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fdlimit" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0g30d6gqkrwy8ylwdy7pqm443iq0p5dmnpz4ks41pirl7dclm98d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/paritytech/fdlimit")
+    (synopsis "Utility crate for raising file descriptors limit")
+    (description "This package provides a Rust library to raise file
+descriptors limit.")
+    (license license:asl2.0)))
+
 (define-public rust-femme-2
   (package
     (name "rust-femme")
