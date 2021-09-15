@@ -153,7 +153,9 @@ systemdservicedir = $(libdir)/systemd/system
 nodist_systemdservice_DATA =			\
   etc/gnu-store.mount				\
   etc/guix-daemon.service			\
-  etc/guix-publish.service
+  etc/guix-publish.service			\
+  etc/guix-gc.service				\
+  etc/guix-gc.timer
 
 etc/%.mount: etc/%.mount.in	\
 			 $(top_builddir)/config.status
@@ -216,6 +218,8 @@ EXTRA_DIST +=					\
   etc/guix-daemon.conf.in			\
   etc/guix-publish.service.in			\
   etc/guix-publish.conf.in			\
+  etc/guix-gc.service.in			\
+  etc/guix-gc.timer				\
   etc/init.d/guix-daemon.in			\
   etc/openrc/guix-daemon.in
 

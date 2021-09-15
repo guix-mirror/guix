@@ -1,0 +1,20 @@
+# This is a "service unit file" for the systemd init system to perform a
+# one-shot 'guix gc' operation.  It is meant to be triggered by a timer.
+# Drop it in /etc/systemd/system or similar together with 'guix-gc.timer'
+# to set it up.
+
+[Unit]
+Description=Discard unused Guix store items
+
+[Service]
+Type=oneshot
+# Customize the 'guix gc' arguments to fit your needs.
+ExecStart=@localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix gc -d 1m -F 10G
+PrivateDevices=yes
+PrivateNetwork=yes
+PrivateUsers=no
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+MemoryDenyWriteExecute=yes
+SystemCallFilter=@default @file-system @basic-io @system-service

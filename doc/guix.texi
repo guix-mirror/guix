@@ -743,6 +743,18 @@ with these commands:
 # systemctl enable --now gnu-store.mount guix-daemon
 @end example
 
+You may also want to arrange for @command{guix gc} to run periodically:
+
+@example
+# cp ~root/.config/guix/current/lib/systemd/system/guix-gc.service \
+     ~root/.config/guix/current/lib/systemd/system/guix-gc.timer \
+     /etc/systemd/system/
+# systemctl enable --now guix-gc.timer
+@end example
+
+You may want to edit @file{guix-gc.service} to adjust the command line
+options to fit your needs (@pxref{Invoking guix gc}).
+
 If your host distro uses the Upstart init system:
 
 @example
