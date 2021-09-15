@@ -2138,6 +2138,7 @@ new Date();"))
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (invoke "bash" "./configure"
+                       "--with-extra-cflags=-fcommon"
                        (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
                        "--disable-freetype-bundling"
                        "--disable-warnings-as-errors"
@@ -2145,13 +2146,19 @@ new Date();"))
                        "--with-giflib=system"
                        "--with-libjpeg=system"
                        "--with-native-debug-symbols=zipped"
-                       (string-append "--prefix=" (assoc-ref outputs "out")))
-               #t))))
+                       (string-append "--prefix=" (assoc-ref outputs "out")))))
+           (add-after 'unpack 'disable-warnings-as-errors
+             (lambda _
+               ;; It looks like the "--disable-warnings-as-errors" option of
+               ;; the 'configure' phase is not working.
+               (substitute* "make/autoconf/generated-configure.sh"
+                 (("-Werror") ""))))))
        ((#:disallowed-references _ '())
         `(,(gexp-input openjdk9)
           ,(gexp-input openjdk9 "jdk")))))
     (native-inputs
-     `(("openjdk9" ,openjdk9)
+     `(("gcc" ,gcc-9) ; FIXME: segmentation faults when using gcc-10.
+       ("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
        ("make@4.2" ,gnu-make-4.2)
        ("unzip" ,unzip)
