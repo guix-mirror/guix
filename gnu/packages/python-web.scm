@@ -376,13 +376,13 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
 (define-public python-aws-sam-translator
   (package
     (name "python-aws-sam-translator")
-    (version "1.36.0")
+    (version "1.38.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "aws-sam-translator" version))
               (sha256
                (base32
-                "115mcbb4r205c1hln199llqrvvbijfqz075rwx991l99jc6rj6zs"))))
+                "1djwlsjpbh13m4biglimrm9lq7hmla0k29giay7k3cjsrylxvjhf"))))
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are not distributed with the PyPI archive, and would
