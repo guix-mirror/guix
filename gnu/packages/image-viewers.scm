@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -312,7 +313,8 @@ actions.")
     (build-system gnu-build-system)
     (arguments
      `( ;; Enable support for a "map" pane using GPS data.
-       #:configure-flags '("--enable-map"
+       #:configure-flags '("CFLAGS=-fcommon"
+                           "--enable-map"
                            "--enable-gtk3")))
     (inputs
      `(("clutter" ,clutter)
