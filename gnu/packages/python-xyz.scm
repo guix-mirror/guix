@@ -17962,14 +17962,14 @@ information.")
 (define-public python-relatorio
   (package
     (name "python-relatorio")
-    (version "0.8.0")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "relatorio" version))
        (sha256
         (base32
-         "1na6hlhz1awi1hbjg1gyclq0khz42iz90wvdjw7mmj655788bpxx"))))
+         "09nhrz80dfm60nssbvjgz4czzy4yzfa8gxczcdlzbgcnnvm914vb"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
