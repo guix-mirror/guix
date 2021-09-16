@@ -11470,6 +11470,8 @@ to.")
      `(("gtk+" ,gtk+)
        ("librsvg" ,librsvg)
        ("libxml2" ,libxml2)))
+    (arguments
+     `(#:configure-flags '("CFLAGS=-fcommon")))
     (home-page "https://glabels.org/")
     (synopsis "Program for creating labels and business cards")
     (description
