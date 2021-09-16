@@ -8028,6 +8028,9 @@ package, such as @command{natbib} as well).")
               (base32
                "09l5ymgz48s3hyn776l01g3isk3dnhrj1vdavdw4qq4kfxxpqdn9")
               #:trivial? #t))
+    ;; This provides charter.map.
+    (propagated-inputs
+     `(("texlive-psnfss" ,texlive-psnfss)))
     (home-page "https://www.ctan.org/pkg/charter")
     (synopsis "Charter fonts for TeX")
     (description "This package provides a copy of the Charter Type-1 fonts
@@ -8079,7 +8082,6 @@ Support for use with LaTeX is available in @code{freenfss}, part of
                     "/doc/man/man1/mtx-update.1"
                     "/doc/man/man1/mtx-watch.1"
                     "/doc/man/man1/mtx-youless.1"
-
 
                     "/bibtex/bst/context/"
                     "/context/"

@@ -78,7 +78,7 @@
 (define-public mpfrcx
   (package
    (name "mpfrcx")
-   (version "0.6.2")
+   (version "0.6.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -86,7 +86,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "165syd6kihwp6bry9hvr3v0908cgadsz5w5h5ry4mjnchrklnb7w"))))
+              "1545vgizpypqi2rrriad0ybqv0qwbn9zr0ibxpk00gha9ihv7acx"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("gmp" ,gmp)
@@ -343,7 +343,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.7.0-29")
+    (version "1.7.0-31")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1dw0mh212ri9viks15cn75m38m4q4nj3hlv2bbrpdz8sgnnssz0a"))))
+        (base32 "19vjyijlm3hb758h6nk70k41zw9wrbg6vwfx4r4rgvrb1myy5kpl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)

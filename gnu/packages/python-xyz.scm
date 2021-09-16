@@ -108,6 +108,8 @@
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
+;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7052,13 +7054,13 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "4.4.2")
+    (version "5.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "1rxzhk5zwiggk45hl53zydvy70lk654kg0nc1p54090p402jz9p3"))))
+        (base32 "1mcy64hllgm938v8k1x2a4g0q9swsnrfnsvhz59kr28a6ajgpv3j"))))
     (build-system python-build-system)
     (home-page "https://pypi.org/project/decorator/")
     (synopsis "Python module to simplify usage of decorators")
@@ -15961,20 +15963,17 @@ Python to manipulate OpenDocument 1.2 files.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "7.0.1")
+    (version "7.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "1ksqfai72dbcfbwx43pxl658j59mx2rvqypjy1fk0ax2qd6lccx6"))))
+                "00y49bfsi7rrsd1s42gc2w95a6arl9ipdsx2493hr0v54fj07ih0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-cachedir
-           ;; Tests require write access to $HOME by default
-           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t))
          (replace 'check
            (lambda _
              (invoke "pytest" "-v"))))))
@@ -15996,23 +15995,7 @@ on a list such as @code{[@code{a20}, @code{a9}, @code{a1}, @code{a4},
 identifies numbers and sorts them separately from strings.  It can also sort
 version numbers, real numbers, mixed types and more, and comes with a shell
 command @command{natsort} that exposes this functionality in the command line.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-natsort))))))
-
-;; Natsort 6.x are the last versions with support for Python 2.
-(define-public python2-natsort
-  (let ((base (package-with-python2 (strip-python2-variant python-natsort))))
-    (package (inherit base)
-             (version "6.2.1")
-             (source (origin
-                       (method url-fetch)
-                       (uri (pypi-uri "natsort" version))
-                       (sha256
-                        (base32
-                         "1mc9hbh6fv76xyz13frm7dgi05cf74f9j5wvcyjiy5234gylz565"))))
-             (native-inputs
-              `(("python2-pathlib" ,python2-pathlib)
-                ,@(package-native-inputs base))))))
+    (license license:expat)))
 
 (define-public glances
   (package
@@ -17917,14 +17900,14 @@ information.")
 (define-public python-relatorio
   (package
     (name "python-relatorio")
-    (version "0.8.0")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "relatorio" version))
        (sha256
         (base32
-         "1na6hlhz1awi1hbjg1gyclq0khz42iz90wvdjw7mmj655788bpxx"))))
+         "09nhrz80dfm60nssbvjgz4czzy4yzfa8gxczcdlzbgcnnvm914vb"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
@@ -22355,6 +22338,28 @@ processes may share the same data.")
      "@code{croniter} provides iteration for datetime object with cron-like
 format.")
     (license license:expat)))
+
+(define-public python-crontab
+  (package
+    (name "python-crontab")
+    (version "2.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32 "0cccrqc10r8781ba81x8r2frs3pl2m4hkm599k5358ak0xr7xgjb"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Comptability tests fail so they are disabled.
+     `(#:tests? #f))
+    (inputs
+     `(("python-dateutil" ,python-dateutil)))
+    (home-page "https://gitlab.com/doctormo/python-crontab/")
+    (synopsis "Module for reading and writing crontab files")
+    (description "This Python module can read, write crontab files, and
+access the system cron automatically and simply using a direct API.")
+    (license license:lgpl3+)))
 
 (define-public python-pylzma
   (package

@@ -7,6 +7,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Andrew Whatson <whatson@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,16 +26,18 @@
 
 (define-module (gnu packages docbook)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages inkscape)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages base)
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix build utils) #:select (alist-replace))
@@ -81,7 +84,7 @@
      "DocBook is general purpose XML and SGML document type particularly well
 suited to books and papers about computer hardware and software (though it is
 by no means limited to these applications.)  This package provides XML DTDs.")
-    (license (x11-style "" "See file headers."))))
+    (license (license:x11-style "" "See file headers."))))
 
 (define-public docbook-xml
   (package
@@ -224,7 +227,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (synopsis "DocBook XSL style sheets for document authoring")
     (description
      "This package provides XSL style sheets for DocBook.")
-    (license (x11-style "" "See 'COPYING' file."))))
+    (license (license:x11-style "" "See 'COPYING' file."))))
 
 (define-public docbook-dsssl
   (package
@@ -265,7 +268,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (home-page "https://docbook.org/")
     (synopsis "DSSSL style sheets for DocBook")
     (description "This package provides DSSSL style sheets for DocBook.")
-    (license (non-copyleft "file://README"))))
+    (license (license:non-copyleft "file://README"))))
 
 ;;; Private variable, used as the 'doc' output of the docbook-dsssl package.
 (define docbook-dsssl-doc
@@ -303,7 +306,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (home-page "https://docbook.org/")
     (synopsis "DocBook DSSSL style sheets documentation")
     (description "Documentation for the DocBook DSSSL style sheets.")
-    (license (non-copyleft "file://doc/LEGALNOTICE.htm"))))
+    (license (license:non-copyleft "file://doc/LEGALNOTICE.htm"))))
 
 (define-public docbook-sgml
   (package
@@ -345,7 +348,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (home-page "https://docbook.org")
     (synopsis "DocBook SGML style sheets for document authoring")
     (description "This package provides SGML style sheets for DocBook.")
-    (license (x11-style "" "See file headers."))))
+    (license (license:x11-style "" "See file headers."))))
 
 (define-public docbook-sgml-3.1
   (package
@@ -386,7 +389,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (synopsis "ISO 8879 character entities")
     (description "ISO 8879 character entities that are typically used in
 the in DocBook SGML DTDs.")
-    (license (x11-style "" "See file headers."))))
+    (license (license:x11-style "" "See file headers."))))
 
 (define-public dblatex
   (package
@@ -466,7 +469,7 @@ to DVI, PostScript or PDF by translating them in pure LaTeX as a first
 process.  MathML 2.0 markups are supported too.  It started as a clone of
 DB2LaTeX.")
     ;; lib/contrib/which is under an X11 license
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 ;; This is a variant of the 'dblatex' package that is not updated often.  It
 ;; is intended to be used as a native-input at build-time only, e.g. by
@@ -562,4 +565,93 @@ more conveniently via the following wrappers:
 @item sgmldiff
 Detect the differences in markup between two SGML files.
 @end table")
-    (license gpl2+)))
+    (license license:gpl2+)))
+
+(define-public docbook2x
+  (package
+    (name "docbook2x")
+    (version "0.8.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/docbook2x/docbook2x/"
+                                  version "/docbook2X-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ifwzk99rzjws0ixzimbvs83x6cxqk1xzmg84wa1p7bs6rypaxs0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("docbook-xml" ,docbook-xml)
+       ("perl" ,perl)
+       ("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-sax" ,perl-xml-sax)
+       ("perl-xml-sax-base" ,perl-xml-sax-base)
+       ("texinfo" ,texinfo)
+       ("xsltproc" ,libxslt)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-sources
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Fix failed substitution in config.pl
+             (substitute* "perl/config.pl"
+               (("\\$\\{prefix\\}")
+                (assoc-ref outputs "out")))
+             ;; Fix a failing test (maybe it worked with old texinfo?)
+             (substitute* "test/complete-manuals/at1.xml"
+               (("<bridgehead>")
+                "<bridgehead renderas=\"sect2\">"))
+             ;; Patch all the tests use DocBook 4.5
+             (substitute* (find-files "test" "\\.xml$")
+               (("\"-//OASIS//DTD DocBook XML V4\\..+//EN\"")
+                "\"-//OASIS//DTD DocBook XML V4.5//EN\"")
+               (("\"http://www\\.oasis-open\\.org/docbook/xml/4\\..+/docbookx.dtd\"")
+                "\"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\""))
+             ;; Set XML catalogs for tests to pass
+             (setenv "XML_CATALOG_FILES"
+                     (string-append (assoc-ref inputs "docbook-xml")
+                                    "/xml/dtd/docbook/catalog.xml"))))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (programs
+                     (map (lambda (p)
+                            (string-append out "/bin/" p))
+                          '("db2x_manxml" "db2x_texixml" "db2x_xsltproc"
+                            "docbook2man" "docbook2texi")))
+                    (perl5lib
+                     (map (lambda (i)
+                            (string-append (assoc-ref inputs i)
+                                           "/lib/perl5/site_perl"))
+                          '("perl-xml-namespacesupport"
+                            "perl-xml-parser"
+                            "perl-xml-sax"
+                            "perl-xml-sax-base")))
+                    (xml-catalog-files
+                     (list (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook/catalog.xml"))))
+               (map (lambda (program)
+                      (wrap-program program
+                        `("PERL5LIB" ":" prefix
+                          ,perl5lib)
+                        `("XML_CATALOG_FILES" " " prefix
+                          ,xml-catalog-files)))
+                    programs))))
+         (add-after 'install 'create-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Create db2x_* symlinks to satisfy some configure scripts
+               ;; which use these names to differentiate from an older
+               ;; docbook2man script provided by docbook-utils.
+               (map (lambda (prog)
+                      (symlink prog (string-append out "/bin/db2x_" prog)))
+                    '("docbook2man" "docbook2texi"))))))))
+    (home-page "http://docbook2x.sourceforge.net")
+    (synopsis "Convert DocBook to man page and Texinfo format")
+    (description
+     "docbook2X is a software package that converts DocBook documents into the
+traditional Unix man page format and the GNU Texinfo format.  Notable features
+include table support for man pages, internationalization support, and easy
+customization of the output using XSLT.")
+    (license license:expat)))

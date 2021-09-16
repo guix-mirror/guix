@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,8 +340,9 @@ wrapping notes into KMime::Message objects.")
                          ""))
                       #t))
                   (replace 'check
-                    (lambda _
-                      (invoke "dbus-launch" "ctest"))))))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "dbus-launch" "ctest")))))))
     (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (synopsis "Akonadi search library")
     (description "This package provides a library used to search in the
@@ -1014,8 +1016,9 @@ protocol for querying and modifying directory services running over TCP/IP. ")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "dbus-launch" "ctest" ".")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dbus-launch" "ctest" "."))
              #t)))))
     (home-page "https://kde.org/applications/utilities/org.kde.kleopatra")
     (synopsis "Certificate Manager and Unified Crypto GUI")
@@ -1104,8 +1107,9 @@ and retrieving certificates from LDAP servers.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "dbus-launch" "ctest" ".")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dbus-launch" "ctest" "."))
              #t)))))
     (home-page "https://kontact.kde.org/components/kmail.html")
     (synopsis "Full featured graphical email client")
@@ -1596,8 +1600,9 @@ application \"Parts\" to be embedded as a Kontact component (or plugin).")
                 ""))
              #t))
          (replace 'check
-           (lambda _
-             (invoke "dbus-launch" "ctest" ".")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "dbus-launch" "ctest" "."))
              #t)))))
     (home-page "https://kontact.kde.org/components/korganizer.html")
     (synopsis "Organizational assistant, providing calendars and other similar

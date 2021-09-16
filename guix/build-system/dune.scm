@@ -61,6 +61,17 @@
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
+
+  ;; Flags that put dune into reproducible build mode.
+  (define dune-release-flags
+    (if (version>=? (package-version dune) "2.5.0")
+        ;; For dune >= 2.5.0 this is just --release.
+        ''("--release")
+        ;; --release does not exist before 2.5.0.  Replace with flags compatible
+        ;; with our old ocaml4.07-dune (1.11.3)
+        ''("--root" "." "--ignore-promoted-rules" "--no-config"
+           "--profile" "release")))
+
   (define private-keywords
     '(#:target #:dune #:findlib #:ocaml #:inputs #:native-inputs))
 
@@ -80,7 +91,9 @@
            (build-inputs `(("dune" ,dune)
                            ,@(bag-build-inputs base)))
            (build dune-build)
-           (arguments (strip-keyword-arguments private-keywords arguments))))))
+           (arguments (append
+                       `(#:dune-release-flags ,dune-release-flags)
+                       (strip-keyword-arguments private-keywords arguments)))))))
 
 (define* (dune-build name inputs
                      #:key
@@ -91,7 +104,7 @@
                      (out-of-source? #t)
                      (jbuild? #f)
                      (package #f)
-                     (profile "release")
+                     (dune-release-flags ''())
                      (tests? #t)
                      (test-flags ''())
                      (test-target "test")
@@ -131,7 +144,7 @@ provides a 'setup.ml' file as its build system."
                       #:out-of-source? #$out-of-source?
                       #:jbuild? #$jbuild?
                       #:package #$package
-                      #:profile #$profile
+                      #:dune-release-flags #$dune-release-flags
                       #:tests? #$tests?
                       #:test-target #$test-target
                       #:install-target #$install-target

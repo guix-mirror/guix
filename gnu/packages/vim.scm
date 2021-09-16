@@ -978,6 +978,34 @@ asynchronous adapters (including tmux, screen, and a headless mode), and when
 the job completes, errors will be loaded and parsed automatically.")
     (license license:vim)))
 
+(define-public vim-gemini-vim
+  ;; No releases have been tagged.
+  (let ((commit "f300c54174fc0db8fb68f1bc04307b58612e9630")
+        (revision "1"))
+    (package
+      (name "vim-gemini-vim")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://git.sr.ht/~torresjrjr/gemini.vim")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "05ffhhfahjqwxyrqmsinsahrs15wknzl2qbj8mznyv319mn2civ2"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("ftdetect" "share/vim/vimfiles/")
+           ("syntax" "share/vim/vimfiles/"))))
+      (home-page "https://git.sr.ht/~torresjrjr/gemini.vim")
+      (synopsis "Vim syntax highlighting plugin for Gemini")
+      (description "This Vim plugin provides a Vim syntax highlighting plugin
+for Gemini Text, the text/gemini media type, as defined in the Gemini protocol
+specification.")
+      (license license:gpl3))))
+
 (define-public vim-eunuch
   (let ((commit "33e875b31c8b811a0a47908884a5e2339106bbe8")
         (revision "1"))
@@ -1005,3 +1033,35 @@ the job completes, errors will be loaded and parsed automatically.")
 This package includes commands such as @code{SudoWrite} and @code{SudoEdit} and
 help working on Vim buffers and the files they reference with one command.")
       (license license:vim))))
+
+(define-public vim-slime
+  ;; No tagged releases.
+  (let ((commit "a522fed677e50175f52efc5848cc35209af33216")
+        (revision "1"))
+    (package
+      (name "vim-slime")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/jpalardy/vim-slime")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0k4b629jn6xlxyjxdl3cgm06v9dmx967rqnslv5m82c9kscwpyh4"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("autoload" "share/vim/vimfiles/")
+           ("doc" "share/vim/vimfiles/")
+           ("ftplugin" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (home-page "https://technotales.wordpress.com/2007/10/03/like-slime-for-vim/")
+      (synopsis "Vim plugin to give you some slime")
+      (description "SLIME is an Emacs plugin to turn Emacs into a Lisp IDE.  You
+can type text in a file, send it to a live REPL, and avoid having to reload all
+your code every time you make a change.  @code{Vim-slime} is an attempt at
+getting some of these features into Vim.  It works with any REPL and isn't tied
+to Lisp.")
+      (license license:expat))))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -399,14 +400,20 @@ matching a string against the created regexp."
 
 (define (is-or s) (string=? s "||"))
 
-(define (is-id s port)
+(define (is-id s port loc)
   (let ((cabal-reserved-words
          '("if" "else" "library" "flag" "executable" "test-suite" "custom-setup"
            "source-repository" "benchmark" "common"))
         (spaces (read-while (cut char-set-contains? char-set:blank <>) port))
         (c (peek-char port)))
     (unread-string spaces port)
-    (and (every (cut string-ci<> s <>) cabal-reserved-words)
+    ;; Sometimes the name of an identifier is the same as one of the reserved
+    ;; words, which would normally lead to an error, see
+    ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25138>.  Unless the word
+    ;; is at the beginning of a line (excluding whitespace), treat is as just
+    ;; another identifier instead of a reserved word.
+    (and (or (not (= (source-location-column loc) (current-indentation)))
+             (every (cut string-ci<> s <>) cabal-reserved-words))
          (and (not (char=? (last (string->list s)) #\:))
               (not (char=? #\: c))))))
 
@@ -568,7 +575,7 @@ LOC is the current port location."
           ((is-none w) (lex-none loc))
           ((is-and w) (lex-and loc))
           ((is-or w) (lex-or loc))
-          ((is-id w port) (lex-id w loc))
+          ((is-id w port loc) (lex-id w loc))
           (else (unread-string w port) #f))))
 
 (define (lex-line port loc)

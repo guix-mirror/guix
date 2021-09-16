@@ -104,10 +104,9 @@
             vault-reply?
             vault-reply-id
             vault-reply-fetch-url
-            vault-reply-object-id
-            vault-reply-object-type
             vault-reply-progress-message
             vault-reply-status
+            vault-reply-swhid
             query-vault
             request-cooking
             vault-fetch
@@ -391,10 +390,9 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   json->vault-reply
   (id             vault-reply-id)
   (fetch-url      vault-reply-fetch-url "fetch_url")
-  (object-id      vault-reply-object-id "obj_id")
-  (object-type    vault-reply-object-type "obj_type" string->symbol)
   (progress-message vault-reply-progress-message "progress_message")
-  (status         vault-reply-status "status" string->symbol))
+  (status         vault-reply-status "status" string->symbol)
+  (swhid          vault-reply-swhid))
 
 
 ;;;
@@ -540,35 +538,57 @@ directory entries; if it has type 'file, return its <content> object."
   (path "/api/1/origin/save" type "url" url)
   json->save-reply)
 
-(define-query (query-vault id kind)
-  "Ask the availability of object ID and KIND to the vault, where KIND is
-'directory or 'revision.  Return #f if it could not be found, or a
-<vault-reply> on success."
-  ;; <https://docs.softwareheritage.org/devel/swh-vault/api.html#vault-api-ref>
-  ;; There's a single format supported for directories and revisions and for
-  ;; now, the "/format" bit of the URL *must* be omitted.
-  (path "/api/1/vault" (symbol->string kind) id)
-  json->vault-reply)
+(define* (vault-url id kind #:optional (archive-type 'flat))
+  "Return the vault query/cooking URL for ID and KIND.  Normally, ID is an
+SWHID and KIND is #f; the deprecated convention is to set ID to a raw
+directory or revision ID and KIND to 'revision or 'directory."
+  ;; Note: /api/1/vault/directory/ID was deprecated in favor of
+  ;; /api/1/vault/flat/SWHID; this procedure "converts" automatically.
+  (let ((id (match kind
+              ('directory (string-append "swh:1:dir:" id))
+              ('revision  (string-append "swh:1:rev:" id))
+              (#f         id))))
+    (swh-url "/api/1/vault" (symbol->string archive-type) id)))
 
-(define (request-cooking id kind)
-  "Request the cooking of object ID and KIND (one of 'directory or 'revision)
-to the vault.  Return a <vault-reply>."
-  (call (swh-url "/api/1/vault" (symbol->string kind) id)
+(define* (query-vault id #:optional kind #:key (archive-type 'flat))
+  "Ask the availability of object ID (an SWHID) to the vault.  Return #f if it
+could not be found, or a <vault-reply> on success.  ARCHIVE-TYPE can be 'flat
+for a tarball containing a directory, or 'git-bare for a tarball containing a
+bare Git repository corresponding to a revision.
+
+Passing KIND (one of 'directory or 'revision) together with a raw revision or
+directory identifier is deprecated."
+  (call (vault-url id kind archive-type)
+        json->vault-reply))
+
+(define* (request-cooking id #:optional kind #:key (archive-type 'flat))
+  "Request the cooking of object ID, an SWHID.  Return a <vault-reply>.
+ARCHIVE-TYPE can be 'flat for a tarball containing a directory, or 'git-bare
+for a tarball containing a bare Git repository corresponding to a revision.
+
+Passing KIND (one of 'directory or 'revision) together with a raw revision or
+directory identifier is deprecated."
+  (call (vault-url id kind archive-type)
         json->vault-reply
         http-post*))
 
-(define* (vault-fetch id kind
-                      #:key (log-port (current-error-port)))
-  "Return an input port from which a bundle of the object with the given ID
-and KIND (one of 'directory or 'revision) can be retrieved, or #f if the
-object could not be found.
+(define* (vault-fetch id
+                      #:optional kind
+                      #:key
+                      (archive-type 'flat)
+                      (log-port (current-error-port)))
+  "Return an input port from which a bundle of the object with the given ID,
+an SWHID, or #f if the object could not be found.
 
-For a directory, the returned stream is a gzip-compressed tarball.  For a
-revision, it is a gzip-compressed stream for 'git fast-import'."
-  (let loop ((reply (query-vault id kind)))
+ARCHIVE-TYPE can be 'flat for a tarball containing a directory, or 'git-bare
+for a tarball containing a bare Git repository corresponding to a revision."
+  (let loop ((reply (query-vault id kind
+                                 #:archive-type archive-type)))
     (match reply
       (#f
-       (and=> (request-cooking id kind) loop))
+       (and=> (request-cooking id kind
+                               #:archive-type archive-type)
+              loop))
       (_
        (match (vault-reply-status reply)
          ('done
@@ -588,7 +608,8 @@ revision, it is a gzip-compressed stream for 'git fast-import'."
           (format log-port "SWH vault: failure: ~a~%"
                   (vault-reply-progress-message reply))
           (format log-port "SWH vault: retrying...~%")
-          (loop (request-cooking id kind)))
+          (loop (request-cooking id kind
+                                 #:archive-type archive-type)))
          ((and (or 'new 'pending) status)
           ;; Wait until the bundle shows up.
           (let ((message (vault-reply-progress-message reply)))
@@ -603,7 +624,8 @@ requested bundle cooking, waiting for completion...~%"))
             ;; requests per hour per IP address.)
             (sleep (if (eq? status 'new) 60 30))
 
-            (loop (query-vault id kind)))))))))
+            (loop (query-vault id kind
+                               #:archive-type archive-type)))))))))
 
 
 ;;;
@@ -675,4 +697,7 @@ wait until it becomes available, which could take several minutes."
      (swh-download-directory (revision-directory revision) output
                              #:log-port log-port))
     (#f
+     (format log-port
+             "SWH: revision ~s originating from ~a could not be found~%"
+             reference url)
      #f)))

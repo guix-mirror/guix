@@ -1017,6 +1017,66 @@ factoring numbers and simplifying fractions, as well as zapping rocks
 floating through space.")
     (license license:gpl3+)))
 
+(define-public libeb
+  (package
+    (name "libeb")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "ftp://ftp.sra.co.jp/pub/misc/eb/eb-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0psbdzirazfnn02hp3gsx7xxss9f1brv4ywp6a15ihvggjki1rxb"))))
+    (build-system gnu-build-system)
+    (native-inputs ; Required for building docs
+     `(("perl" ,perl)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "C library for accessing Japanese CD-ROM books")
+    (description "The EB library is a library for accessing CD-ROM
+books, which are a common way to distribute electronic dictionaries in
+Japan.  It supports the EB, EBG, EBXA, EBXA-C, S-EBXA and EPWING
+formats.")
+    ;; FIXME: I cannot find a real home page
+    (home-page "https://sra.co.jp/")
+    (license license:bsd-3)))
+
+(define-public qolibri
+  (package
+    (name "qolibri")
+    (version "2.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url"https://github.com/ludios/qolibri")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "066y7jcq9vg6hnvn7qxckzhd1qkgfzpzhw69nw5psm43qbaca8lg"))))
+    (build-system qt-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test target
+    (native-inputs
+     `(("qttools", qttools)))
+    (inputs
+     `(("libeb" ,libeb)
+       ("qtbase" ,qtbase-5)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("zlib" ,zlib)))
+    (synopsis "EPWING dictionary reader")
+    (description "qolibri is a dictionary viewer for the EPWING dictionary
+format.  Most monolingual Japanese dictionaries can only be found in the
+EPWING format.")
+    (home-page "https://github.com/ludios/qolibri")
+    (license license:gpl2)))
+
 (define-public mdk
   (package
     (name "mdk")

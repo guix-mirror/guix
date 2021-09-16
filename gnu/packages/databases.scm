@@ -2936,18 +2936,20 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.20")
+    (version "1.4.23")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "18b9am7bsqc4nj3d2h5r93i002apczxfvpfpcqbd6f0385zmrwnj"))))
+       (base32 "10vm8hm8w4yfsab076ak8r4vp5v1jqdi71cky6dhha7mh5l29zvn"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
        ("python-pytest" ,python-pytest)
        ("python-mock"   ,python-mock))) ; for tests
+    (propagated-inputs
+     `(("python-greenlet" ,python-greenlet)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3082,13 +3084,13 @@ this library provides functions to facilitate such comparisons.")
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.4.3")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
-        (base32 "0if2dgb088clk738p26bwk50735h6jpd2kacdgc5capv2hiz6d2k"))))
+        (base32 "1ys0a44gh544xpbzz6r5xvz3msim74f9qklyfnw0bhn9vk9n9adf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -3100,6 +3102,7 @@ this library provides functions to facilitate such comparisons.")
        ("python-pytest-cov" ,python-pytest-cov)))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
+       ("python-importlib-resources" ,python-importlib-resources) ;Python < 3.9
        ("python-sqlalchemy" ,python-sqlalchemy)
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
@@ -3109,9 +3112,6 @@ this library provides functions to facilitate such comparisons.")
      "Alembic is a lightweight database migration tool for usage with the
 SQLAlchemy Database Toolkit for Python.")
     (license license:expat)))
-
-(define-public python2-alembic
-  (package-with-python2 python-alembic))
 
 (define-public python-pickleshare
   (package
@@ -3301,20 +3301,31 @@ designed to be easy and intuitive to use.")
 (define-public python-sadisplay
   (package
     (name "python-sadisplay")
-    (version "0.4.8")
+    (version "0.4.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "sadisplay" version))
       (sha256
         (base32
-          "01d9lxhmgpb68gy8rd6zj6fcwp84n2qq210n1qsk3qbsir79bzh4"))))
+          "15jxwgla3q4xsp6rw8inqaiy1kdzc8l2cixj8amqcf0ji47icrxg"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (setenv "PYTHONPATH"
+                                    (string-append ".:" (or (getenv "PYTHONPATH")
+                                                           "")))
+                            (invoke "pytest" "-vv"))
+                          (format #t "test suite not run~%")))))))
     (propagated-inputs
       `(("python-sqlalchemy" ,python-sqlalchemy)))
     (native-inputs
      ;; For tests.
-      `(("python-nose" ,python-nose)))
+      `(("python-pytest" ,python-pytest)))
     (home-page "https://bitbucket.org/estin/sadisplay")
     (synopsis "SQLAlchemy schema displayer")
     (description "This package provides a program to build Entity
@@ -3609,13 +3620,13 @@ provides support for parsing, splitting and formatting SQL statements.")
 (define-public python-sql
   (package
     (name "python-sql")
-    (version "1.0.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-sql" version))
        (sha256
-        (base32 "05ni936y0ia9xmryl7mlhbj9i80nnvq1bi4zxhb96rv7yvpb3fqb"))))
+        (base32 "0xnimfzlxj1ddrb5xj3s4gaii278a0gpxrvwmdmrdxgjfdi3lq4x"))))
     (build-system python-build-system)
     (home-page "https://python-sql.tryton.org/")
     (synopsis "Library to write SQL queries in a pythonic way")

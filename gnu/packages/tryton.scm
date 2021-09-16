@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,15 +42,15 @@
 (define-public trytond
   (package
     (name "trytond")
-    (version "5.8.2")
+    (version "6.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond" version))
        (sha256
-        (base32 "1h1x0cmmmxvjclbglvvxkv634jw6av5ilymbix1lln5lq0gd39yy"))))
+        (base32 "1jp5cadqpwkcnml8r1hj6aak5kc8an2d5ai62p96x77nn0dp3ny4"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
        ("python-lxml" ,python-lxml)
@@ -62,7 +63,8 @@
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     `(("python-mock" ,python-mock)
+       ("python-pillow" ,python-pillow)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -85,13 +87,13 @@ and security.")
 (define-public tryton
   (package
     (name "tryton")
-    (version "5.8.2")
+    (version "6.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tryton" version))
        (sha256
-        (base32 "0kr5ngmmldgb9a9d5ylkmppy5p8vlf9d8iwv9lnci2fyxg2705wh"))))
+        (base32 "15cbp2r25pkr7lp4yliqgb6d0n779z70d4gckv56bx5aw4z27f66"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -110,7 +112,7 @@ and security.")
     (native-inputs
      `(("glib-compile-schemas" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)))
-    (inputs
+    (propagated-inputs
      `(("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
@@ -126,13 +128,13 @@ and security.")
 (define-public python-proteus
   (package
     (name "python-proteus")
-    (version "5.8.1")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "proteus" version))
        (sha256
-        (base32 "03z5ssvjcvxv1p10y7c1y0jah0k3yyc9hlyi7xax98sfqyk13bnw"))))
+        (base32 "0qr7rir7ysxvy2kyfzp2d2kcw9qzq4vdkddbwswzgddxjpycksdh"))))
     (build-system python-build-system)
     ;; Tests require python-trytond-party which requires python-proteus.
     (arguments
@@ -170,38 +172,39 @@ the build system."
 ;;;  Tryton modules - please sort alphabetically
 ;;;
 
-(define-public python-trytond-account
+(define %standard-trytond-native-inputs
+  ;; native-inputs required by most of the tryton module for running the test
+  `(("python-dateutil" ,python-dateutil)
+    ("python-genshi" ,python-genshi)
+    ("python-lxml" ,python-lxml)
+    ("python-magic" ,python-magic)
+    ("python-passlib" ,python-passlib)
+    ("python-polib" ,python-polib)
+    ("python-proteus" ,python-proteus)
+    ("python-relatorio" ,python-relatorio)
+    ("python-sql" ,python-sql)
+    ("python-werkzeug" ,python-werkzeug)
+    ("python-wrapt" ,python-wrapt)))
+
+(define-public trytond-account
   (package
-    (name "python-trytond-account")
-    (version "5.8.1")
+    (name "trytond-account")
+    (version "6.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_account" version))
        (sha256
-        (base32 "16ny67vcnxk9ngcxd56cfixm441vs9jxv3apmb16xsi47yk2xd7w"))))
+        (base32 "0j1mn8sd5n8rkwgfvcy9kf8s7s3qxvnilnc72i83ac573zj922xc"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account"))
-    (native-inputs
-     `(("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-simpleeval" ,python-simpleeval)
-       ("python-sql" ,python-sql)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("trytond" ,trytond)))
+     `(("python-simpleeval" ,python-simpleeval)
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for accounting")
     (description
@@ -209,43 +212,30 @@ the build system."
 most of accounting needs.")
     (license license:gpl3+)))
 
-(define-public python-trytond-account-invoice
+(define-public python-trytond-account
+  (deprecated-package "python-trytond-account" trytond-account))
+
+(define-public trytond-account-invoice
   (package
-    (name "python-trytond-account-invoice")
-    (version "5.8.1")
+    (name "trytond-account-invoice")
+    (version "6.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_account_invoice" version))
        (sha256
-        (base32 "0drccambg6855p7ai8654c7f9v85jzwicwpxmagyrr09qz6qzgcz"))))
+        (base32 "0r8zigb4qmv40kf835x8jd7049nnhk5g7g0aibvfd0y9p28lspnz"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account_invoice"))
-    (native-inputs
-     `(("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-account-product"
-        ,python-trytond-account-product)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for invoicing")
     (description
@@ -253,39 +243,27 @@ most of accounting needs.")
 term.")
     (license license:gpl3+)))
 
-(define-public python-trytond-account-invoice-stock
+(define-public python-trytond-account-invoice
+  (deprecated-package "python-trytond-account-invoice" trytond-account-invoice))
+
+(define-public trytond-account-invoice-stock
   (package
-    (name "python-trytond-account-invoice-stock")
-    (version "5.8.1")
+    (name "trytond-account-invoice-stock")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri
-             "trytond_account_invoice_stock"
-             version))
+       (uri (pypi-uri "trytond_account_invoice_stock" version))
        (sha256
-        (base32 "02m6ikcc38ac41ddzg5xp5l9jz0k6j7j1g2xa62ki4v093yn4z5v"))))
+        (base32 "1228n6vsx0rdjsy3idvpyssa3n21nhvz9gqaacwa46c0hp2251bp"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account_invoice_stock"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-trytond-account-invoice"
-        ,python-trytond-account-invoice)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to link stock and invoice")
     (description
@@ -294,40 +272,29 @@ lines and stock moves.  The unit price of the stock move is updated with the
 average price of the posted invoice lines that are linked to it.")
     (license license:gpl3+)))
 
-(define-public python-trytond-account-product
+(define-public python-trytond-account-invoice-stock
+  (deprecated-package
+   "python-trytond-account-invoice-stock" trytond-account-invoice-stock))
+
+(define-public trytond-account-product
   (package
-    (name "python-trytond-account-product")
-    (version "5.8.1")
+    (name "trytond-account-product")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_account_product" version))
        (sha256
-        (base32 "10bpbkkmllbh9lm5ajydmc5nvqm9bbdn9rmm03jqgik23s5kyx2z"))))
+        (base32 "1z0dn1p22smzb4a9v451224wrpxcw94inl7jxkarc0q088gasn7d"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "account_product"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-analytic-account"
-        ,python-trytond-analytic-account)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-analytic-account" ,trytond-analytic-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-product" ,trytond-product)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to add accounting on product")
     (description
@@ -335,39 +302,28 @@ average price of the posted invoice lines that are linked to it.")
 and category.")
     (license license:gpl3+)))
 
-(define-public python-trytond-analytic-account
+(define-public python-trytond-account-product
+  (deprecated-package "python-trytond-account-product" trytond-account-product))
+
+(define-public trytond-analytic-account
   (package
-    (name "python-trytond-analytic-account")
-    (version "5.8.1")
+    (name "trytond-analytic-account")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_analytic_account" version))
        (sha256
-        (base32 "10rn2rf1ji7d1gxmgca368yvabql1ahklqg7p8sh5bl79vn5qx5x"))))
+        (base32 "09j9xz41n5hk3j7w63xbw1asd3p00prqvl652qcm9x1nrlmqiw3r"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "analytic_account"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for analytic accounting")
     (description
@@ -375,35 +331,27 @@ and category.")
 required to analyse accounting using multiple different axes.")
     (license license:gpl3+)))
 
-(define-public python-trytond-company
+(define-public python-trytond-analytic-account
+  (deprecated-package
+   "python-trytond-analytic-account" trytond-analytic-account))
+
+(define-public trytond-company
   (package
-    (name "python-trytond-company")
-    (version "5.8.1")
+    (name "trytond-company")
+    (version "6.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_company" version))
        (sha256
-        (base32 "1bwy2rkgfw32cwhq5fh3rpy7bx425h44ap10i9kjx5ak86bfnpz9"))))
+        (base32 "1q4qdyg32dn00pn3pj2yjl3jhxaqpv7a1cv5s5c95cpy5p46p02n"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "company"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with companies and employees")
     (description
@@ -411,31 +359,23 @@ required to analyse accounting using multiple different axes.")
 company and employee and extend the user model.")
     (license license:gpl3+)))
 
-(define-public python-trytond-country
+(define-public python-trytond-company
+  (deprecated-package "python-trytond-company" trytond-company))
+
+(define-public trytond-country
   (package
-    (name "python-trytond-country")
-    (version "5.8.1")
+    (name "trytond-country")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_country" version))
        (sha256
-        (base32 "1lkspk5w5pb0gg2h27zb7vwcj993gkm1f84qdxmqlpkc8raqvicj"))))
+        (base32 "1ksinysac7p0k8avsz8xqzfkmm21s6i93qyrsma5h4y5477cwmw7"))))
     (build-system python-build-system)
     ;; Doctest contains one test that requires internet access.
     (arguments (tryton-arguments "country" "--no-doctest"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
      `(("python-pycountry" ,python-pycountry)
        ("trytond" ,trytond)))
@@ -445,31 +385,26 @@ company and employee and extend the user model.")
      "This package provides a Tryton module with countries.")
     (license license:gpl3+)))
 
-(define-public python-trytond-currency
+(define-public python-trytond-country
+  (deprecated-package "python-trytond-country" trytond-country))
+
+(define-public trytond-currency
   (package
-    (name "python-trytond-currency")
-    (version "5.8.1")
+    (name "trytond-currency")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_currency" version))
        (sha256
-        (base32 "0b5p7ibil7nlsv7f31j69rka4xj5za798262algx7xa88a6h7mmx"))))
+        (base32 "0fs2wvhgvc0l4yzs5m9l8z4lbzazr42hgz0859malhnlp1sya2kq"))))
     (build-system python-build-system)
-    (arguments (tryton-arguments "currency"))
+    ;; Doctest 'scenario_currency_rate_update.rst' fails.
+    (arguments (tryton-arguments "currency" "--no-doctest"))
     (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
+     `(,@%standard-trytond-native-inputs
        ("python-forex-python" ,python-forex-python)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-pycountry" ,python-pycountry)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+       ("python-pycountry" ,python-pycountry)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
        ("trytond" ,trytond)))
@@ -480,35 +415,27 @@ company and employee and extend the user model.")
 currency and rate.")
     (license license:gpl3+)))
 
-(define-public python-trytond-party
+(define-public python-trytond-currency
+  (deprecated-package "python-trytond-currency" trytond-currency))
+
+(define-public trytond-party
   (package
-    (name "python-trytond-party")
-    (version "5.8.1")
+    (name "trytond-party")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_party" version))
        (sha256
-        (base32 "1hapfq7ip99s4qp9xra1m40q4n379p9pmfnz2x4ggd79ss76bghc"))))
+        (base32 "0aikzpr0ambc98v76dl6xqa42b08dy3b011y33lvxjp5mcha3f7y"))))
     (build-system python-build-system)
     ;; Doctest 'scenario_party_phone_number.rst' fails.
     (arguments (tryton-arguments "party" "--no-doctest"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-sql" ,python-sql)
-       ("python-stnum" ,python-stdnum)
-       ("python-trytond-country" ,python-trytond-country)
-       ("trytond" ,trytond)))
+     `(("python-stdnum" ,python-stdnum)
+       ("trytond" ,trytond)
+       ("trytond-country" ,trytond-country)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for parties and addresses")
     (description
@@ -516,35 +443,26 @@ currency and rate.")
 addresses.")
     (license license:gpl3+)))
 
-(define-public python-trytond-product
+(define-public python-trytond-party
+  (deprecated-package "python-trytond-party" trytond-party))
+
+(define-public trytond-product
   (package
-    (name "python-trytond-product")
-    (version "5.8.1")
+    (name "trytond-product")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_product" version))
        (sha256
-        (base32 "0x18ngpjyrdwjwg17bz98jph4jv5gcv0qc0p2kxpam4lqsy34ic2"))))
+        (base32 "1xvvqxkvzyqy6fn2sj5h3zj0g17igzwx6s18sxkdz72vqz6kpv0l"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "product"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-sql" ,python-sql)
-       ("python-stdnum" ,python-stdnum)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("trytond" ,trytond)))
+     `(("python-stdnum" ,python-stdnum)
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with products")
     (description
@@ -552,85 +470,60 @@ addresses.")
 Template and Product.")
     (license license:gpl3+)))
 
-(define-public python-trytond-purchase
+(define-public python-trytond-product
+  (deprecated-package "python-trytond-product" trytond-product))
+
+(define-public trytond-purchase
   (package
-    (name "python-trytond-purchase")
-    (version "5.8.1")
+    (name "trytond-purchase")
+    (version "6.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_purchase" version))
        (sha256
-        (base32 "0na74zijj46b12gypy9si3las02a96rh5ygl503c7razha61g1b0"))))
+        (base32 "12drjw30ik3alckn6xrny4814vzi3ysh17wgiawiy9319yahsvay"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "purchase"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-account-invoice"
-        ,python-trytond-account-invoice)
-       ("python-trytond-account-invoice-stock"
-        ,python-trytond-account-invoice-stock)
-       ("python-trytond-account-product"
-        ,python-trytond-account-product)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-account-invoice" ,trytond-account-invoice)
+       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
+       ("trytond-account-product" ,trytond-account-product)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase")
     (description
      "This package provides a Tryton module that defines the Purchase model.")
     (license license:gpl3+)))
 
-(define-public python-trytond-purchase-request
+(define-public python-trytond-purchase
+  (deprecated-package "python-trytond-purchase" trytond-purchase))
+
+(define-public trytond-purchase-request
   (package
-    (name "python-trytond-purchase-request")
-    (version "5.8.1")
+    (name "trytond-purchase-request")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_purchase_request" version))
        (sha256
-        (base32 "1m92snnvgisnv083nml6cz5qgnfdg539rd5bwg3lqrknm7343w16"))))
+        (base32 "0yhf3lh5b24qpk80r5pbmmswf5757bxa0s7ckl40vf6lkjkccv5i"))))
     (build-system python-build-system)
     ;; Doctest 'scenario_purchase_request.rst' fails.
     (arguments (tryton-arguments "purchase_request" "--no-doctest"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-purchase"
-        ,python-trytond-purchase)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase requests")
     (description
@@ -639,39 +532,30 @@ Purchase Requests which are central points to collect purchase requests
 generated by other process from Tryton.")
     (license license:gpl3+)))
 
-(define-public python-trytond-stock
+(define-public python-trytond-purchase-request
+  (deprecated-package
+   "python-trytond-purchase-request" trytond-purchase-request))
+
+(define-public trytond-stock
   (package
-    (name "python-trytond-stock")
-    (version "5.8.2")
+    (name "trytond-stock")
+    (version "6.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_stock" version))
        (sha256
-        (base32 "0yb8kd3alwqkivrlpx0ni4jxv3x14i37lmwism9yi81xwchyrcjk"))))
+        (base32 "1v6pvkwj6vhjqbz2zn0609kb7kx4g0dsn1xhvax4z2dqigh7ywpx"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "stock"))
-    (native-inputs
-     `(("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
      `(("python-simpleeval" ,python-simpleeval)
-       ("python-sql" ,python-sql)
-       ("python-trytond-company"
-        ,python-trytond-company)
-       ("python-trytond-currency"
-        ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("trytond" ,trytond)))
+       ("trytond" ,trytond)
+       ("trytond-company" ,trytond-company)
+       ("trytond-currency" ,trytond-currency)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock and inventory")
     (description
@@ -681,80 +565,62 @@ between these locations, shipments for product arrivals and departures and
 inventory to control and update stock levels.")
     (license license:gpl3+)))
 
-(define-public python-trytond-stock-lot
+(define-public python-trytond-stock
+  (deprecated-package "python-trytond-stock" trytond-stock))
+
+(define-public trytond-stock-lot
   (package
-    (name "python-trytond-stock-lot")
-    (version "5.8.2")
+    (name "trytond-stock-lot")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_stock_lot" version))
        (sha256
-        (base32 "0w2f62cfzm7j8wnw8igmjslpxc1a8s82dkdizyvim5qhjg6mrsym"))))
+        (base32 "18cwrvnrzjk1wb765gr6hp3plpdpwz1a7cwimjhxi47iw7w5c84g"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "stock_lot"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-product" ,trytond-product)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for lot of products")
     (description
      "This package provides a Tryton module that defines lot of products.")
     (license license:gpl3+)))
 
-(define-public python-trytond-stock-supply
+(define-public python-trytond-stock-lot
+  (deprecated-package "python-trytond-stock-lot" trytond-stock-lot))
+
+(define-public trytond-stock-supply
   (package
-    (name "python-trytond-stock-supply")
-    (version "5.8.1")
+    (name "trytond-stock-supply")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_stock_supply" version))
        (sha256
-        (base32 "01cgpxlznldrba79a3xmj4d0csyfc3ccgs66c490j8v8rdnqpbww"))))
+        (base32 "1p5l3yjjy6l25kk9xnhbl691l3v8gfg9fhc87jc6qszhxlqxk730"))))
     (build-system python-build-system)
     (arguments (tryton-arguments "stock_supply"))
-    (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-proteus" ,python-proteus)
-       ("python-relatorio" ,python-relatorio)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-wrapt" ,python-wrapt)))
+    (native-inputs `(,@%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-sql" ,python-sql)
-       ("python-trytond-account"
-        ,python-trytond-account)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-product"
-        ,python-trytond-product)
-       ("python-trytond-purchase"
-        ,python-trytond-purchase)
-       ("python-trytond-purchase-request"
-        ,python-trytond-purchase-request)
-       ("python-trytond-stock" ,python-trytond-stock)
-       ("trytond" ,trytond)))
+     `(("trytond" ,trytond)
+       ("trytond-account" ,trytond-account)
+       ("trytond-party" ,trytond-party)
+       ("trytond-product" ,trytond-product)
+       ("trytond-purchase" ,trytond-purchase)
+       ("trytond-purchase-request" ,trytond-purchase-request)
+       ("trytond-stock" ,trytond-stock)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock supply")
     (description
      "This package provides a Tryton module that adds automatic supply
 mechanisms and introduces the concepts of order point.")
     (license license:gpl3+)))
+
+(define-public python-trytond-stock-supply
+  (deprecated-package "python-trytond-stock-supply" trytond-stock-supply))

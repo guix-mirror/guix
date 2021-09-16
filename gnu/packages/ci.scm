@@ -73,8 +73,8 @@
                 (file-name (string-append name "-" version "-checkout")))))))
 
 (define-public cuirass
-  (let ((commit "91e8b2ec2c2dbb87089b0c98a29bba427ba7b7bb")
-        (revision "3"))
+  (let ((commit "60190401ce4ccc890629ec3cb22a84a8ab8c2645")
+        (revision "4"))
     (package
       (name "cuirass")
       (version (git-version "1.1.0" revision commit))
@@ -87,7 +87,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "00xkxvghfgnmbs182s0q67habxjkv9sh7q8acsiy66m0z4f57y39"))))
+           "0b0bs32lzk5ck7lw8ac9dj2h70sqc5y430vhi7rcnwj48mdrchma"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build utils)

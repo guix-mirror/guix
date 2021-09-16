@@ -298,6 +298,13 @@ GiB).")
              (invoke "py.test" "-v" "-k"
                      ;; TODO: Those tests fail, why?
                      "not test_classify_change_actions")))
+         (add-after 'install 'copy-styles
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((styles "/share/gtksourceview-3.0/styles"))
+               (copy-recursively
+                (string-append (assoc-ref inputs "gtksourceview") styles)
+                (string-append (assoc-ref outputs "out") styles))
+               #t)))
          (add-after 'wrap 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
          (add-after 'wrap 'wrap-typelib

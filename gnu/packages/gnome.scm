@@ -1800,7 +1800,7 @@ either on a local, or remote machine via a number of methods.")
 (define-public gnome-commander
   (package
     (name "gnome-commander")
-    (version "1.10.3")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
@@ -1808,7 +1808,7 @@ either on a local, or remote machine via a number of methods.")
                            (version-major+minor version)  "/"
                            "gnome-commander-" version ".tar.xz"))
        (sha256
-        (base32 "0bis36awb73vhkncq8yr0qlnyaxynqkvmyqbg57ijqwd0m8hh4zg"))))
+        (base32 "0f7l2pkyh3r1qk4hhavl7387l3bq5my3snpdppiavcpnji28dpa5"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -4177,7 +4177,7 @@ engineering.")
 (define-public drawing
   (package
     (name "drawing")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -4186,7 +4186,7 @@ engineering.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lpszd8276rp5chn84rkvwmnflxc3pqlg4cz53gfxkqdb3gn02zz"))))
+        (base32 "0wz9p47riyy3h8b0sqsb6bx416hc6d1a1wyzlfmsxkrqrkwcjcm8"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4203,8 +4203,7 @@ engineering.")
                                          "/site-packages")))
                (wrap-program prog
                  `("PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
@@ -7999,43 +7998,75 @@ the available networks and allows users to easily switch between them.")
 (define-public libxml++
   (package
     (name "libxml++")
-    (version "3.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "19kik79fmg61nv0by0a5f9wchrcfjwzvih4v2waw01hqflhqvp0r"))))
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libxmlplusplus/libxmlplusplus")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wjz591rjlgbah7dcq8i0yn0zw9d62b7g6r0pppx81ic0cx8n8ga"))))
     (build-system gnu-build-system)
-    ;; libxml++-3.0.pc refers to all these.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-documentation
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* '("examples/dom_xpath/example.xml"
+                              "docs/manual/libxml++_without_code.xml")
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               (setenv "SGML_CATALOG_FILES"
+                       (string-append xmldoc "/catalog.xml"))
+               (substitute* "docs/manual/docbook-customisation.xsl"
+                 (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
+                  (string-append xsldoc "/html/chunk.xsl")))))))))
     (propagated-inputs
-     `(("libxml2" ,libxml2)
-       ("glibmm" ,glibmm-2.64)))
+     ;; libxml++-3.0.pc refers to all these.
+     `(("glibmm" ,glibmm)
+       ("libxml2" ,libxml2)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("graphviz" ,graphviz) ; for dot
+       ("libtool" ,libtool)
+       ("libxslt" ,libxslt)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://libxmlplusplus.sourceforge.net/")
-    (synopsis "C++ wrapper for XML parser library libxml2")
+    (home-page "https://github.com/libxmlplusplus/libxmlplusplus/")
+    (synopsis "C++ bindings to the libxml2 XML parser library")
     (description
-     "This package provides a C++ wrapper for the XML parser library
-libxml2.")
+     "This package provides a C++ interface to the libxml2 XML parser
+library.")
     (license license:lgpl2.1+)))
 
+;; This is the last release providing the 2.6 API, hence the name.
+;; This is needed by tascam-gtk
 (define-public libxml++-2
   (package
     (inherit libxml++)
     (name "libxml++")
     (version "2.40.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1sb3akryklvh2v6m6dihdnbpf1lkx441v972q9hlz1sq6bfspm2a"))))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libxmlplusplus/libxmlplusplus")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gbfi4l88w828gmyc9br11l003ylyi4vigp5d1kfgsn0k4cig3y9"))))))
 
 (define-public gdm
   (package
@@ -12024,7 +12055,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.30.0")
+    (version "0.31.0")
     (source
      (origin
        (method git-fetch)
@@ -12034,7 +12065,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l6iqxa497fisn64mn2qgia4y6zryfa5pbnd8609flfi9qmgrzn7"))))
+         "0vldcjq24y4xxg8dzlyhfpqxbqn5g160lz1lmmkp7g9im2zrxh52"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

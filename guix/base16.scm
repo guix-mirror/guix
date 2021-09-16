@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,27 +33,28 @@
 
 (define (bytevector->base16-string bv)
   "Return the hexadecimal representation of BV's contents."
-  (define len
-    (bytevector-length bv))
-
-  (let-syntax ((base16-chars (lambda (s)
-                               (syntax-case s ()
-                                 (_
-                                  (let ((v (list->vector
-                                            (unfold (cut > <> 255)
-                                                    (lambda (n)
-                                                      (format #f "~2,'0x" n))
-                                                    1+
-                                                    0))))
-                                    v))))))
-    (define chars base16-chars)
-    (let loop ((i len)
-               (r '()))
-      (if (zero? i)
-          (string-concatenate r)
-          (let ((i (- i 1)))
-            (loop i
-                  (cons (vector-ref chars (bytevector-u8-ref bv i)) r)))))))
+  (define len (bytevector-length bv))
+  (define utf8 (make-bytevector (* len 2)))
+  (let-syntax ((base16-octet-pairs
+                (lambda (s)
+                  (syntax-case s ()
+                    (_
+                     (string->utf8
+                      (string-concatenate
+                       (unfold (cut > <> 255)
+                               (lambda (n)
+                                 (format #f "~2,'0x" n))
+                               1+
+                               0))))))))
+    (define octet-pairs base16-octet-pairs)
+    (let loop ((i 0))
+      (when (< i len)
+        (bytevector-u16-native-set!
+         utf8 (* 2 i)
+         (bytevector-u16-native-ref octet-pairs
+                                    (* 2 (bytevector-u8-ref bv i))))
+        (loop (+ i 1))))
+    (utf8->string utf8)))
 
 (define base16-string->bytevector
   (let ((chars->value (fold (lambda (i r)

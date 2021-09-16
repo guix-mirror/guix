@@ -369,7 +369,7 @@
   ;; procedure that takes a file name, an algorithm (symbol) and a hash
   ;; (bytevector), and returns a URL or #f.
   '(begin
-     (use-modules (guix base32))
+     (use-modules (guix base16) (guix base32))
 
      (define (guix-publish host)
        (lambda (file algo hash)
@@ -378,12 +378,6 @@
          (string-append "https://" host "/file/"
                         file "/" (symbol->string algo) "/"
                         (bytevector->nix-base32-string hash))))
-
-     ;; XXX: (guix base16) appeared in March 2017 (and thus 0.13.0) so old
-     ;; installations of the daemon might lack it.  Thus, load it lazily to
-     ;; avoid gratuitous errors.  See <https://bugs.gnu.org/33542>.
-     (module-autoload! (current-module)
-                       '(guix base16) '(bytevector->base16-string))
 
      (list (guix-publish "ci.guix.gnu.org")
            (lambda (file algo hash)
@@ -406,6 +400,8 @@
               (object->string %content-addressed-mirrors)))
 
 (define %disarchive-mirrors
+  ;; TODO: Eventually turn into a procedure that takes a hash algorithm
+  ;; (symbol) and hash (bytevector).
   '("https://disarchive.ngyro.com/"))
 
 (define %disarchive-mirror-file

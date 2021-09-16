@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1152,6 +1153,13 @@ Some ACTIONS support additional ARGS.\n"))
 ;;; Entry point.
 ;;;
 
+(define actions '("build" "container" "vm" "vm-image" "image" "disk-image"
+                  "reconfigure" "init"
+                  "extension-graph" "shepherd-graph"
+                  "list-generations" "describe"
+                  "delete-generations" "roll-back"
+                  "switch-generation" "search" "docker-image"))
+
 (define (process-action action args opts)
   "Process ACTION, a sub-command, with the arguments are listed in ARGS.
 ACTION must be one of the sub-commands that takes an operating system
@@ -1335,17 +1343,18 @@ argument list and OPTS is the option alist."
 
   (define (parse-sub-command arg result)
     ;; Parse sub-command ARG and augment RESULT accordingly.
-    (if (assoc-ref result 'action)
-        (alist-cons 'argument arg result)
-        (let ((action (string->symbol arg)))
-          (case action
-            ((build container vm vm-image image disk-image reconfigure init
-              extension-graph shepherd-graph
-              list-generations describe
-              delete-generations roll-back
-              switch-generation search docker-image)
-             (alist-cons 'action action result))
-            (else (leave (G_ "~a: unknown action~%") action))))))
+    (cond ((assoc-ref result 'action)
+           (alist-cons 'argument arg result))
+          ((member arg actions)
+           (let ((action (string->symbol arg)))
+             (alist-cons 'action action result)))
+          (else
+           (let ((hint (string-closest arg actions #:threshold 3)))
+             (report-error (G_ "~a: unknown action~%") arg)
+             (when hint
+               (display-hint
+                (format #f (G_ "Did you mean @code{~a}?~%") hint)))
+             (exit 1)))))
 
   (define (match-pair car)
     ;; Return a procedure that matches a pair with CAR.

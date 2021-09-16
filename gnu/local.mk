@@ -1170,6 +1170,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
   %D%/packages/patches/go-fix-script-tests.patch			\
+  %D%/packages/patches/go-github-com-urfave-cli-fix-tests.patch \
+  %D%/packages/patches/go-github-com-urfave-cli-v2-fix-tests.patch \
   %D%/packages/patches/go-skip-gc-test.patch			\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
   %D%/packages/patches/gpodder-disable-updater.patch		\
@@ -1419,7 +1421,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
-  %D%/packages/patches/mailutils-fix-uninitialized-variable.patch	\
   %D%/packages/patches/mailutils-variable-lookup.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/marble-qt-add-qt-headers.patch		\
@@ -1697,6 +1698,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rtags-separate-rct.patch			\
+  %D%/packages/patches/racket-minimal-backport-1629887.patch    \
   %D%/packages/patches/racket-minimal-sh-via-rktio.patch	\
   %D%/packages/patches/remake-impure-dirs.patch			\
   %D%/packages/patches/restic-0.9.6-fix-tests-for-go1.15.patch	\

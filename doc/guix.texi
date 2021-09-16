@@ -47,7 +47,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017, 2021 Christine Lemmer-Webber@*
-Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice@*
@@ -7059,9 +7059,10 @@ retrieve.
 The URL of the Git repository to clone.
 
 @item @code{commit}
-This string denotes either the commit to fetch (a hexadecimal string,
-either the full SHA1 commit or a ``short'' commit string; the latter is
-not recommended) or the tag to fetch.
+This string denotes either the commit to fetch (a hexadecimal string),
+or the tag to fetch.  You can also use a ``short'' commit ID or a
+@command{git describe} style identifier such as
+@code{v1.0.1-10-g58d7909c97}.
 
 @item @code{recursive?} (default: @code{#f})
 This Boolean indicates whether to recursively fetch Git sub-modules.
@@ -7805,11 +7806,6 @@ is useful when a package contains multiple packages and you want to build
 only one of them.  This is equivalent to passing the @code{-p} argument to
 @code{dune}.
 
-The @code{#:profile} parameter can be passed to specify the
-@uref{https://dune.readthedocs.io/en/stable/dune-files.html#profile,
-dune build profile}. This is equivalent to passing the @code{--profile}
-argument to @code{dune}. Its default value is @code{"release"}.
-
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
@@ -7833,6 +7829,13 @@ Packages that provide Go libraries should install their source code into
 the built output.  The key @code{#:install-source?}, which defaults to
 @code{#t}, controls whether or not the source code is installed.  It can
 be set to @code{#f} for packages that only provide executable files.
+
+Packages can be cross-built, and if a specific architecture or operating
+system is desired then the keywords @code{#:goarch} and @code{#:goos}
+can be used to force the package to be built for that architecture and
+operating system.  The combinations known to Go can be found
+@url{"https://golang.org/doc/install/source#environment", in their
+documentation}.
 @end defvr
 
 @defvr {Scheme Variable} glib-or-gtk-build-system
@@ -10760,7 +10763,8 @@ guix build --with-branch=guile-sqlite3=master cuirass
 @item --with-commit=@var{package}=@var{commit}
 This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
-Git commit SHA1 identifier or a tag.
+Git commit SHA1 identifier, a tag, or a @command{git describe} style
+identifier such as @code{1.0-3-gabc123}.
 
 @item --with-patch=@var{package}=@var{file}
 Add @var{file} to the list of patches applied to @var{package}, where
@@ -11708,6 +11712,10 @@ contained in the GnuPG keyring at
 @file{share/emacs/25.1/etc/package-keyring.gpg} (or similar) in the
 @code{emacs} package (@pxref{Package Installation, ELPA package
 signatures,, emacs, The GNU Emacs Manual}).
+
+@item
+@uref{https://elpa.nongnu.org/nongnu/, NonGNU}, selected by the
+@code{nongnu} identifier.
 
 @item
 @uref{https://stable.melpa.org/packages, MELPA-Stable}, selected by the

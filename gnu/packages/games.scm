@@ -6215,7 +6215,7 @@ small robot living in the nano world, repair its maker.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests included
+     `(#:test-target "run_tests"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
@@ -6227,9 +6227,17 @@ small robot living in the nano world, repair its maker.")
                                (assoc-ref outputs "out")
                                "/share/teeworlds/data"
                                "\"")))
+             #t))
+         (add-after 'unpack 'replace-font
+           (lambda* (#:key inputs #:allow-other-keys)
+             (delete-file "datasrc/fonts/DejaVuSans.ttf")
+             (symlink (string-append (assoc-ref inputs "font-dejavu")
+                                     "/share/fonts/truetype/DejaVuSans.ttf")
+                      "datasrc/fonts/DejaVuSans.ttf")
              #t)))))
     (inputs
      `(("freetype" ,freetype)
+       ("font-dejavu" ,font-dejavu)
        ("glu" ,glu)
        ("json-parser" ,json-parser)
        ("mesa" ,mesa)
@@ -6241,7 +6249,8 @@ small robot living in the nano world, repair its maker.")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python" ,python-wrapper)
+     `(("googletest" ,googletest)
+       ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
@@ -7180,7 +7189,7 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20210203")
+    (version "20210723")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7189,7 +7198,7 @@ elements to achieve a simple goal in the most complex way possible.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zyi1xyghj99hz8fa6dywpscj6flp04fspnlgxbivf3rgmnxflg7"))))
+                "1hj99jxb9n3r0bkq87p1c24862xa1xyzjyfdyyx88ckszxb05qf3"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -12449,3 +12458,35 @@ wreckage.  You're stranded on a desert island and have to survive.  In order to
 do so you need to explore the island, find food, build a shelter and try to
 get attention, so you get found.")
       (license license:cc-by4.0))))
+
+(define-public fheroes2
+  (package
+    (name "fheroes2")
+    (version "0.9.7")
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags '("FHEROES2_STRICT_COMPILATION=1"
+                      "RELEASE=1")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("zlib" ,zlib)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ihhub/fheroes2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0v3zh8a8yxfikcr5vkmy36c57l4nmwisz13mjavn5f7yrirf86fn"))))
+    (home-page "https://ihhub.github.io/fheroes2/")
+    (synopsis "Turn-based strategy game engine")
+    (description "@code{fheroes2} is an implementation of Heroes of Might and
+Magic II (aka HOMM2) game engine.  It requires assets and game resources to
+play; it will look for them at @file{~/.local/share/fheroes2} folder.")
+    (license license:gpl2)))

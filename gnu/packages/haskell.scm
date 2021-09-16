@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -610,9 +611,14 @@ interactive environment for the functional language Haskell.")
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
 
+;; Versions newer than ghc defined below (i.e. the compiler
+;; haskell-build-system uses) should use ghc-next as their name to
+;; ensure ghc (without version specification) and ghc-* packages are
+;; always compatible. See https://issues.guix.gnu.org/issue/47335.
+
 (define-public ghc-8.8
   (package (inherit ghc-8.6)
-    (name "ghc")
+    (name "ghc-next")
     (version "8.8.4")
     (source
      (origin
@@ -655,6 +661,60 @@ interactive environment for the functional language Haskell.")
                (substitute* "testsuite/tests/hp2ps/all.T"
                  (("^test\\('T15904'") "# guix skipped: test('T15904'"))
                #t))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "GHC_PACKAGE_PATH")
+                                (files (list
+                                        (string-append "lib/ghc-" version)))
+                                (file-pattern ".*\\.conf\\.d$")
+                                (file-type 'directory))))))
+
+(define-public ghc-8.10
+  (package
+    (inherit ghc-8.8)
+    (name "ghc-next")
+    (version "8.10.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.haskell.org/ghc/dist/"
+                           version "/ghc-" version "-src.tar.xz"))
+       (sha256
+        (base32 "179ws2q0dinl1a39wm9j37xzwm84zfz3c5543vz8v479khigdvp3"))))
+    (native-inputs
+     `(("ghc-bootstrap" ,ghc-8.8)
+       ("ghc-testsuite"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.haskell.org/ghc/dist/"
+                 version "/ghc-" version "-testsuite.tar.xz"))
+           (patches (search-patches "ghc-testsuite-dlopen-pie.patch"))
+           (sha256
+            (base32
+             "1zl25gg6bpx5601k8h3cqnns1xfc0nqgwnh8jvn2s65ra3f2g1nz"))))
+       ("git" ,git-minimal)                     ; invoked during tests
+       ,@(filter (match-lambda
+                   (("ghc-bootstrap" . _) #f)
+                   (("ghc-testsuite" . _) #f)
+                   (_ #t))
+                 (package-native-inputs ghc-8.8))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ghc-8.8)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack-testsuite 'patch-more-shebangs
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((bash (assoc-ref inputs "bash")))
+                 (substitute* '("testsuite/tests/driver/T8602/T8602.script")
+                   (("/bin/sh")
+                    (string-append bash "/bin/sh"))))))
+           ;; Mark failing tests as broken. Reason for failure is unknown.
+           (add-after 'skip-more-tests 'skip-even-more-tests
+             (lambda _
+               (substitute* '("testsuite/tests/driver/T16521/all.T")
+                 (("extra_files" all) (string-append "[" all))
+                 (("\\]\\), " all)
+                  (string-append all "expect_broken(0)], ")))))))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
                                 (files (list

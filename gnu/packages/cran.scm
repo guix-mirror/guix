@@ -9390,6 +9390,144 @@ and make comparisons between different methodologies straightforward.")
 several entropy estimators.")
     (license license:gpl3+)))
 
+(define-public r-nsprcomp
+  (package
+    (name "r-nsprcomp")
+    (version "0.5.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nsprcomp" version))
+       (sha256
+        (base32
+         "1zlc1ximx96f235c0l8qfs6vbp1kpnbf943wxsfahnnlnxvwi59f"))))
+    (properties `((upstream-name . "nsprcomp")))
+    (build-system r-build-system)
+    (home-page "https://sigg-iten.ch/research/")
+    (synopsis "Non-negative and sparse PCA")
+    (description
+     "This package implements two methods for performing a constrained
+principal component analysis (PCA), where non-negativity and/or sparsity
+constraints are enforced on the principal axes (PAs).  The function
+@code{nsprcomp} computes one principal component (PC) after the other.  Each
+PA is optimized such that the corresponding PC has maximum additional variance
+not explained by the previous components.  In contrast, the function
+@code{nscumcomp} jointly computes all PCs such that the cumulative variance is
+maximal.  Both functions have the same interface as the @code{prcomp} function
+from the @code{stats} package (plus some extra parameters).")
+    (license license:gpl2+)))
+
+(define-public r-cmplot
+  (package
+    (name "r-cmplot")
+    (version "3.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CMplot" version))
+       (sha256
+        (base32
+         "13y05j5gsdc712fn7yvcz5nx2pbcdvl201hfb6jzpvl86qx2l0j1"))))
+    (properties `((upstream-name . "CMplot")))
+    (build-system r-build-system)
+    (home-page "https://github.com/YinLiLin/CMplot")
+    (synopsis "Circle Manhattan plot")
+    (description
+     "Circle Manhattan Plot is an R package that can lay out genome-wide
+association study P-value results in both traditional rectangular patterns,
+QQ-plot and novel circular ones.  United in only one bull's eye style plot,
+association results from multiple traits can be compared interactively,
+thereby to reveal both similarities and differences between signals.
+Additional functions include: highlight signals, a group of SNPs, chromosome
+visualization and candidate genes around SNPs.")
+    (license license:gpl2+)))
+
+(define-public r-precrec
+  (package
+    (name "r-precrec")
+    (version "0.12.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "precrec" version))
+       (sha256
+        (base32
+         "0vwzaqnh9ymrm52dd79bihwqprnygz0d71ay8fv51hdw0zg6saya"))))
+    (properties `((upstream-name . "precrec")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-data-table" ,r-data-table)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rcpp" ,r-rcpp)
+       ("r-withr" ,r-withr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://evalclass.github.io/precrec/")
+    (synopsis "Calculate accurate precision-recall and ROC curves")
+    (description
+     "This package provides tools for accurate calculations and visualization
+of precision-recall and ROC (Receiver Operator Characteristics) curves.")
+    (license license:gpl3)))
+
+(define-public r-netrep
+  (package
+    (name "r-netrep")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NetRep" version))
+       (sha256
+        (base32
+         "1swlb2k9bc7whvslxbklz864j9ynvna73hvq5rhv61cv5vy05ksd"))))
+    (properties `((upstream-name . "NetRep")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-bh" ,r-bh)
+       ("r-foreach" ,r-foreach)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-statmod" ,r-statmod)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/package=NetRep")
+    (synopsis "Permutation testing network module preservation across datasets")
+    (description
+     "This package provides functions for assessing the
+replication/preservation of a network module's topology across datasets
+through permutation testing.")
+    (license license:gpl2)))
+
+(define-public r-intergraph
+  (package
+    (name "r-intergraph")
+    (version "2.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "intergraph" version))
+       (sha256
+        (base32
+         "18a7xgb2rp0w9jl2rkh8nzyjprrs5w7h2iidvc8c38bzx3qpggkc"))))
+    (properties `((upstream-name . "intergraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-network" ,r-network)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://mbojan.github.io/intergraph")
+    (synopsis "Coercion routines for network data objects")
+    (description
+     "Functions implemented in this package allow to coerce (i.e. convert)
+network data between classes provided by other R packages.  Currently
+supported classes are those defined in packages @code{network} and
+@code{igraph}.")
+    (license license:gpl3)))
+
 (define-public r-abcoptim
   (package
     (name "r-abcoptim")
@@ -9516,6 +9654,233 @@ and coverage methods to tune the choice of threshold.")
 @item vertical versions of @code{r-ggplot2} positions.
 @end enumerate")
     (license license:gpl3)))
+
+(define-public r-ggnetwork
+  (package
+    (name "r-ggnetwork")
+    (version "0.5.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggnetwork" version))
+       (sha256
+        (base32
+         "0gqdgy5yh700dg0f7xb80hczlnqfisn8l55j7amd1n7fp2x5sr8v"))))
+    (properties `((upstream-name . "ggnetwork")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-igraph" ,r-igraph)
+       ("r-network" ,r-network)
+       ("r-sna" ,r-sna)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/briatte/ggnetwork")
+    (synopsis "Geometries to plot networks with ggplot2")
+    (description
+     "This package provides geometries to plot network objects with the
+ggplot2 package.")
+    (license license:gpl3)))
+
+(define-public r-cvauc
+  (package
+    (name "r-cvauc")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cvAUC" version))
+       (sha256
+        (base32
+         "13bk97l5nn97h85iz93zxazhr63n21nwyrpnl856as9qp59yvn64"))))
+    (properties `((upstream-name . "cvAUC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-rocr" ,r-rocr)))
+    (home-page "https://github.com/ledell/cvAUC")
+    (synopsis "Cross-validated area under the ROC curve confidence intervals")
+    (description
+     "This package contains various tools for working with and evaluating
+cross-validated area under the ROC curve (AUC) estimators.  The primary
+functions of the package are @code{ci.cvAUC} and @code{ci.pooled.cvAUC}, which
+report cross-validated AUC and compute confidence intervals for
+cross-validated AUC estimates based on influence curves for i.i.d. and pooled
+repeated measures data, respectively.")
+    (license license:asl2.0)))
+
+(define-public r-gam
+  (package
+    (name "r-gam")
+    (version "1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gam" version))
+       (sha256
+        (base32
+         "1zhy2fp7pxac8xp3z3hndhprj4s5gx3305b627vc78bal1ml3swi"))))
+    (properties `((upstream-name . "gam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/package=gam")
+    (synopsis "Generalized additive models")
+    (description
+     "This package provides functions for fitting and working with generalized
+additive models, as described in chapter 7 of \"Statistical Models in
+S\" (Chambers and Hastie (eds), 1991), and \"Generalized Additive
+Models\" (Hastie and Tibshirani, 1990).")
+    (license license:gpl2)))
+
+(define-public r-superlearner
+  (package
+    (name "r-superlearner")
+    (version "2.0-28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SuperLearner" version))
+       (sha256
+        (base32
+         "00any24msgflyagy87nznpfjz5g9v15frqda6c679wa8plx26hjz"))))
+    (properties `((upstream-name . "SuperLearner")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cvauc" ,r-cvauc)
+       ("r-gam" ,r-gam)
+       ("r-nnls" ,r-nnls)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ecpolley/SuperLearner")
+    (synopsis "Super learner prediction")
+    (description
+     "This package implements the super learner prediction method and contains
+a library of prediction algorithms to be used in the super learner.")
+    (license license:gpl3)))
+
+(define-public r-drtmle
+  (package
+    (name "r-drtmle")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "drtmle" version))
+       (sha256
+        (base32
+         "08a6k0nrg6mqdslwjc71583x52vnax87nbfalk98zczwvrrdwvxa"))))
+    (properties `((upstream-name . "drtmle")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future-apply" ,r-future-apply)
+       ("r-np" ,r-np)
+       ("r-superlearner" ,r-superlearner)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/benkeser/drtmle")
+    (synopsis "Doubly-robust nonparametric estimation and inference")
+    (description
+     "This package implements targeted minimum loss-based estimators of
+counterfactual means and causal effects that are doubly-robust with respect
+both to consistency and asymptotic normality.")
+    (license license:expat)))
+
+(define-public r-dofuture
+  (package
+    (name "r-dofuture")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doFuture" version))
+       (sha256
+        (base32
+         "1hqzdlgcrc5l6xjwdylsc9iiysi2wx8k1j1vmw3wryj26057c9y4"))))
+    (properties `((upstream-name . "doFuture")))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)
+       ("r-future" ,r-future)
+       ("r-globals" ,r-globals)
+       ("r-iterators" ,r-iterators)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/doFuture")
+    (synopsis "Foreach parallel adapter using the future API")
+    (description
+     "This package provides a @code{%dopar%} adapter such that any type of
+futures can be used as backends for the @code{foreach} framework.")
+    (license license:lgpl2.1+)))
+
+(define-public r-superheat
+  (package
+    (name "r-superheat")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "superheat" version))
+       (sha256
+        (base32
+         "01v8s6px1k5fajlm6py3ksr1i853kwwlky1yryzhy3p1cxhwgg83"))))
+    (properties `((upstream-name . "superheat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gtable" ,r-gtable)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)))
+    (home-page "https://cran.r-project.org/package=superheat")
+    (synopsis "Graphical tool for exploring complex datasets using heatmaps")
+    (description
+     "This package provides a system for generating extendable and
+customizable heatmaps for exploring complex datasets, including big data and
+data with multiple data types.")
+    (license license:cc0)))
+
+(define-public r-qualv
+  (package
+    (name "r-qualv")
+    (version "0.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qualV" version))
+       (sha256
+        (base32
+         "1yyqk223ydcc0125gsn33a4mcdp8bd76fpn8kj9bfz9g78b8dqmx"))))
+    (properties `((upstream-name . "qualV")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernsmooth" ,r-kernsmooth)))
+    (home-page "http://qualV.R-Forge.R-Project.org/")
+    (synopsis "Qualitative Validation Methods")
+    (description
+     "This package provides qualitative methods for the validation of dynamic
+models.  It contains
+
+@enumerate
+@item an orthogonal set of deviance measures for absolute, relative and
+  ordinal scale and
+@item approaches accounting for time shifts.
+@end enumerate
+
+The first approach transforms time to take time delays and speed differences
+into account.  The second divides the time series into interval units
+according to their main features and finds the @dfn{longest common
+subsequence} (LCS) using a dynamic programming algorithm.")
+    (license license:gpl2+)))
 
 (define-public r-mosaiccore
   (package
@@ -11743,6 +12108,54 @@ arguments.  It also provides methods for handling user-specific paths to tool
 installs or secrets like API keys.  Its focus is to equally serve package
 builders who wish to wrap command line software, and to help analysts stay
 inside R when they might usually leave to execute non-R software.")
+    (license license:expat)))
+
+(define-public r-rslurm
+  (package
+    (name "r-rslurm")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rslurm" version))
+       (sha256
+        (base32
+         "0fn2na8prsaxa03x5wi3105gpsxc35qvgmik7wy3nylvx4wdfv9g"))))
+    (properties `((upstream-name . "rslurm")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-whisker" ,r-whisker)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "http://cyberhelp.sesync.org/rslurm/")
+    (synopsis "Submit R calculations to a Slurm cluster")
+    (description
+     "This package provides functions that simplify submitting R scripts to a
+Slurm workload manager, in part by automating the division of embarrassingly
+parallel calculations across cluster nodes.")
+    (license license:gpl3)))
+
+(define-public r-chk
+  (package
+    (name "r-chk")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "chk" version))
+       (sha256
+        (base32
+         "1fxsxgvd08lkb6amjgs4x48dhqr046mmjngjfgy2ya9cl2shd7ls"))))
+    (properties `((upstream-name . "chk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lifecycle" ,r-lifecycle)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/poissonconsulting/chk")
+    (synopsis "Check user-supplied function arguments")
+    (description
+     "This is a package for developers to check user-supplied function
+arguments.  It is designed to be simple, fast and customizable.  Error
+messages follow the tidyverse style guide.")
     (license license:expat)))
 
 (define-public r-weights

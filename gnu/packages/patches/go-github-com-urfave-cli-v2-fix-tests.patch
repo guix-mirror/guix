@@ -1,0 +1,37 @@
+From upstream PR: https://github.com/urfave/cli/pull/1299
+
+From: William Wilson <william.wilson@canonical.com>
+Date: Tue, 31 Aug 2021 14:19:17 -0500
+Subject: Make test case compatible with Go 1.17
+
+As of Go 1.17, the go flag package will panic if given a syntactically invalid
+flag. This causes TestApp_RunAsSubCommandIncorrectUsage to panic and therefore
+fail. See https://golang.org/doc/go1.17#flag for more information.
+
+---
+diff --git a/app_test.go b/app_test.go
+index 7c38f6048..76e211d68 100644
+--- a/app_test.go
++++ b/app_test.go
+@@ -476,18 +476,18 @@ func TestApp_RunAsSubCommandIncorrectUsage(t *testing.T) {
+ 	a := App{
+ 		Name: "cmd",
+ 		Flags: []Flag{
+-			&StringFlag{Name: "--foo"},
++			&StringFlag{Name: "foo"},
+ 		},
+ 		Writer: bytes.NewBufferString(""),
+ 	}
+ 
+ 	set := flag.NewFlagSet("", flag.ContinueOnError)
+-	_ = set.Parse([]string{"", "---foo"})
++	_ = set.Parse([]string{"", "-bar"})
+ 	c := &Context{flagSet: set}
+ 
+ 	err := a.RunAsSubcommand(c)
+ 
+-	expect(t, err, errors.New("bad flag syntax: ---foo"))
++	expect(t, err.Error(), "flag provided but not defined: -bar")
+ }
+ 
+ func TestApp_CommandWithFlagBeforeTerminator(t *testing.T) {

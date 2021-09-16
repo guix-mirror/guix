@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2019, 2021 Mathieu Othacehe <othacehe@gnu.org>
@@ -200,24 +200,24 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 ;;; Kernel source code deblobbing.
 ;;;
 
-(define (linux-libre-deblob-scripts version
+(define (linux-libre-deblob-scripts version gnu-revision
                                     deblob-hash
                                     deblob-check-hash)
   (list (version-major+minor version)
         (origin
           (method url-fetch)
           (uri (string-append "https://linux-libre.fsfla.org"
-                              "/pub/linux-libre/releases/" version "-gnu/"
+                              "/pub/linux-libre/releases/" version "-" gnu-revision "/"
                               "deblob-" (version-major+minor version)))
           (file-name (string-append "linux-libre-deblob-"
-                                    version))
+                                    version "-" gnu-revision))
           (sha256 deblob-hash))
         (origin
           (method url-fetch)
           (uri (string-append "https://linux-libre.fsfla.org"
-                              "/pub/linux-libre/releases/" version "-gnu/"
+                              "/pub/linux-libre/releases/" version "-" gnu-revision "/"
                               "deblob-check"))
-          (file-name (string-append "linux-libre-deblob-check-" version))
+          (file-name (string-append "linux-libre-deblob-check-" version "-" gnu-revision))
           (sha256 deblob-check-hash))))
 
 (define* (computed-origin-method gexp-promise hash-algo hash
@@ -335,21 +335,21 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;;; Kernel sources.
 ;;;
 
-(define (linux-libre-urls version)
+(define (linux-libre-urls version gnu-revision)
   "Return a list of URLs for Linux-Libre VERSION."
   (list (string-append
          "https://linux-libre.fsfla.org/pub/linux-libre/releases/"
-         version "-gnu/linux-libre-" version "-gnu.tar.xz")
+         version "-" gnu-revision "/linux-libre-" version "-" gnu-revision ".tar.xz")
 
         ;; XXX: Work around <http://bugs.gnu.org/14851>.
         (string-append
          "ftp://alpha.gnu.org/gnu/guix/mirror/linux-libre-"
-         version "-gnu.tar.xz")
+         version "-" gnu-revision ".tar.xz")
 
         ;; Maybe this URL will become valid eventually.
         (string-append
-         "mirror://gnu/linux-libre/" version "-gnu/linux-libre-"
-         version "-gnu.tar.xz")))
+         "mirror://gnu/linux-libre/" version "-" gnu-revision "/linux-libre-"
+         version "-" gnu-revision ".tar.xz")))
 
 (define (%upstream-linux-source version hash)
   (origin
@@ -361,15 +361,32 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.13-version "5.13.13")
+(define-public linux-libre-5.14-version "5.14.4")
+(define-public linux-libre-5.14-gnu-revision "gnu")
+(define deblob-scripts-5.14
+  (linux-libre-deblob-scripts
+   linux-libre-5.14-version
+   linux-libre-5.14-gnu-revision
+   (base32 "00vv2a51cvw2nx8iazmiy9i4h3jj9gvvpwz9gxp2v1hcmrsxq935")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
+(define-public linux-libre-5.14-pristine-source
+  (let ((version linux-libre-5.14-version)
+        (hash (base32 "1dijf7qsjlqx893c2sxg5jrjdm8v1nv4hicvqlmp1v92s3h7kqj2")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.14)))
+
+(define-public linux-libre-5.13-version "5.13.17")
+(define-public linux-libre-5.13-gnu-revision "gnu1")
 (define deblob-scripts-5.13
   (linux-libre-deblob-scripts
    linux-libre-5.13-version
-   (base32 "0bdqgxpc2vnj6m1nnrw8l5jpdglm0nlvjl6g44xryhy230ds0p9l")
-   (base32 "153jf5l5x4438zgxwggaky2ahjlfl48j438vhpzks6h77lzc51a5")))
+   linux-libre-5.13-gnu-revision
+   (base32 "0hj3w3vh1rj24xgl4v72mr6vaz1qzsnc5xzdfjga1zy84bw8lhkp")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-5.13-pristine-source
   (let ((version linux-libre-5.13-version)
-        (hash (base32 "0d1lr3rivgf9j3bn2a9hpzdf74nq8kybf3rfxxvw68vr1hhd4cam")))
+        (hash (base32 "06qa3c8wx87l4mh9h8gjcra5k5l6bcirs59s7baxdfjkxlihvrsa")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.13)))
@@ -377,80 +394,92 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.61")
+(define-public linux-libre-5.10-version "5.10.65")
+(define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
-   (base32 "16w9r5h8r8j5ckq2brr15xgdq3ksr2pgwcmjx5a7bqry8a60i3m4")
-   (base32 "0c9x07gplzajm0h5if3fpw2rvfb7psw3yp7i2n6ws7ggq1dvmki2")))
+   linux-libre-5.10-gnu-revision
+   (base32 "19d1pdsilq1ycnx1zw3vhf9mwdxbi5nmgzm0g1kj1lkkf1y4i1mv")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "1lci78584c0rg5m5rkylssppnv001pzh4769m9mds4fdqn6f7sl2")))
+        (hash (base32 "0riyq1gdm18642fpnhpcw8hspcjqzprzhqnygjxabjjvrvdxxlzd")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.143")
+(define-public linux-libre-5.4-version "5.4.146")
+(define-public linux-libre-5.4-gnu-revision "gnu1")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
-   (base32 "12g1wm7xvjvmjanbgg0ahxm4vs2n5bvicfnnnag4h35vl4q3lggg")
-   (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
+   linux-libre-5.4-gnu-revision
+   (base32 "1cdxljvmivdwcy9v9fr5iv0x0d1884pf3876p9nzrly599lz2wnl")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "090x087p8hxnc1daf2xwj7vg8hg1jhz5i4andkbhdy550l5nalq9")))
+        (hash (base32 "1bjkfk24j86akm6df3c5b28viyq363drhssml7rcrl69286f92dk")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.205")
+(define-public linux-libre-4.19-version "4.19.206")
+(define-public linux-libre-4.19-gnu-revision "gnu1")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
-   (base32 "1jfcz4lnm44b3xzrkiipvw35kl0vvdvhr2pg7jfwf02f6qbvay18")
-   (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
+   linux-libre-4.19-gnu-revision
+   (base32 "1hiaagdyfy6b0f9ivdy7zq0cd6akaj6v3c4nzikrgsk12vgc1a1q")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1ii9l44d6jxhyd5qkc5h83ixailma9v7hyl60wi3rskkafqnwv2m")))
+        (hash (base32 "1h44lvzxd0cngj71bk8qba9dz7jlqj68ir6xjwfafglb81ppgsxp")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.245")
+(define-public linux-libre-4.14-version "4.14.246")
+(define-public linux-libre-4.14-gnu-revision "gnu1")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
-   (base32 "07afckszdm4pq008i6ij0pxpw2rpgi5q931nxh6dxcczpicvwbc9")
-   (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
+   linux-libre-4.14-gnu-revision
+   (base32 "0cnax38650m9sxiwvc1xm5saymlsmx427j3jqpx34df2ah2rnrwf")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "085jls7b2rzxlmvp0zsp4l3wi5xdrqlv2qczzwvbhzna1f4n2x0d")))
+        (hash (base32 "0fpgig84shpas1jc0h4s3aw9brkcq1as84gjbk4bfhc48bpi4mlw")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.281")
+(define-public linux-libre-4.9-version "4.9.282")
+(define-public linux-libre-4.9-gnu-revision "gnu1")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
-   (base32 "1w8cb8w1cpcwswc3rxq6vwjafw6yy0igib34rrm93ag5h6inncfv")
-   (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
+   linux-libre-4.9-gnu-revision
+   (base32 "1n74ddrifnw06hx7ih2sk8jaiqlm1jyyhswyjpxiyhrrcvjcilch")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1dg70jv3bqanmjs31s0x2p7nd5g37bqzjn9rc1y6wvkgm4pwahi6")))
+        (hash (base32 "059fin4si93ya13xy831w84q496ksxidpd3kyw38918sfy4p6wk7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.282")
+(define-public linux-libre-4.4-version "4.4.283")
+(define-public linux-libre-4.4-gnu-revision "gnu1")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
-   (base32 "1lid4k7g947yi3hcjj0lz0fnssawbph3jsy67vrv57l5imrhv3zs")
-   (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
+   linux-libre-4.4-gnu-revision
+   (base32 "11397dgj6cdfv6anxrj7jwgvnqvwh5i0ci6c8mb85ry6h4fnfmq4")
+   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1rgxznjb6gsi64wk7x2rylyi64y2nx5yiah5gfm40c6l2f7lb9cc")))
+        (hash (base32 "1d9v4h4cbc4i371lhhwpxbmg88gna6xyi2ahfvv0clz60802y982")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -482,6 +511,14 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.14-source
+  (source-with-patches linux-libre-5.14-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch to fix LCD display
+                             (search-patch
+                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
 (define-public linux-libre-5.13-source
   (source-with-patches linux-libre-5.13-pristine-source
@@ -530,14 +567,14 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;;; Kernel headers.
 ;;;
 
-(define (make-linux-libre-headers version hash-string)
-  (make-linux-libre-headers* version
+(define (make-linux-libre-headers version gnu-revision hash-string)
+  (make-linux-libre-headers* version gnu-revision
                              (origin
                                (method url-fetch)
-                               (uri (linux-libre-urls version))
+                               (uri (linux-libre-urls version gnu-revision))
                                (sha256 (base32 hash-string)))))
 
-(define (make-linux-libre-headers* version source)
+(define (make-linux-libre-headers* version gnu-revision source)
   (package
     (name "linux-libre-headers")
     (version version)
@@ -601,38 +638,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
+(define-public linux-libre-headers-5.14
+  (make-linux-libre-headers* linux-libre-5.14-version
+                             linux-libre-5.14-gnu-revision
+                             linux-libre-5.14-source))
+
 (define-public linux-libre-headers-5.13
   (make-linux-libre-headers* linux-libre-5.13-version
+                             linux-libre-5.13-gnu-revision
                              linux-libre-5.13-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
+                             linux-libre-5.10-gnu-revision
                              linux-libre-5.10-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
+                             linux-libre-5.4-gnu-revision
                              linux-libre-5.4-source))
 
 (define-public linux-libre-headers-4.19
   (make-linux-libre-headers* linux-libre-4.19-version
+                             linux-libre-4.19-gnu-revision
                              linux-libre-4.19-source))
 
 (define-public linux-libre-headers-4.14
   (make-linux-libre-headers* linux-libre-4.14-version
+                             linux-libre-4.14-gnu-revision
                              linux-libre-4.14-source))
 
 (define-public linux-libre-headers-4.9
   (make-linux-libre-headers* linux-libre-4.9-version
+                             linux-libre-4.9-gnu-revision
                              linux-libre-4.9-source))
 
 (define-public linux-libre-headers-4.4
   (make-linux-libre-headers* linux-libre-4.4-version
+                             linux-libre-4.4-gnu-revision
                              linux-libre-4.4-source))
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
 (define-public linux-libre-headers-5.10.35
-  (make-linux-libre-headers "5.10.35"
+  (make-linux-libre-headers "5.10.35" "gnu"
                             "0q2rnchad55d49f3rajrkazz0fcjv1irwrdb1hwjnl01fzm2gjk3"))
 
 (define-public linux-libre-headers linux-libre-headers-5.10.35)
@@ -734,7 +783,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 ;;; Kernel package utilities.
 ;;;
 
-(define* (make-linux-libre version hash-string supported-systems
+(define* (make-linux-libre version gnu-revision hash-string supported-systems
                            #:key
                            (extra-version #f)
                            ;; A function that takes an arch and a variant.
@@ -743,10 +792,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                            (defconfig "defconfig")
                            (extra-options %default-extra-linux-options)
                            (patches (list %boot-logo-patch)))
-  (make-linux-libre* version
+  (make-linux-libre* version gnu-revision
                      (origin
                        (method url-fetch)
-                       (uri (linux-libre-urls version))
+                       (uri (linux-libre-urls version gnu-revision))
                        (sha256 (base32 hash-string))
                        (patches patches))
                      supported-systems
@@ -755,7 +804,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                      #:defconfig defconfig
                      #:extra-options extra-options))
 
-(define* (make-linux-libre* version source supported-systems
+(define* (make-linux-libre* version gnu-revision source supported-systems
                             #:key
                             (extra-version #f)
                             ;; A function that takes an arch and a variant.
@@ -900,49 +949,64 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.14
+  (make-linux-libre* linux-libre-5.14-version
+                     linux-libre-5.14-gnu-revision
+                     linux-libre-5.14-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
 (define-public linux-libre-5.13
   (make-linux-libre* linux-libre-5.13-version
+                     linux-libre-5.13-gnu-revision
                      linux-libre-5.13-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-version         linux-libre-5.13-version)
+(define-public linux-libre-gnu-revision    linux-libre-5.13-gnu-revision)
 (define-public linux-libre-pristine-source linux-libre-5.13-pristine-source)
 (define-public linux-libre-source          linux-libre-5.13-source)
 (define-public linux-libre                 linux-libre-5.13)
 
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-gnu-revision
                      linux-libre-5.10-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
+                     linux-libre-5.4-gnu-revision
                      linux-libre-5.4-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
+                     linux-libre-4.19-gnu-revision
                      linux-libre-4.19-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-4.14
   (make-linux-libre* linux-libre-4.14-version
+                     linux-libre-4.14-gnu-revision
                      linux-libre-4.14-source
                      '("x86_64-linux" "i686-linux" "armhf-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
   (make-linux-libre* linux-libre-4.9-version
+                     linux-libre-4.9-gnu-revision
                      linux-libre-4.9-source
                      '("x86_64-linux" "i686-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre* linux-libre-4.4-version
+                     linux-libre-4.4-gnu-revision
                      linux-libre-4.4-source
                      '("x86_64-linux" "i686-linux")
                      #:configuration-file kernel-config
@@ -958,6 +1022,7 @@ It has been modified to remove all non-free binary blobs.")
 ;; Reference: https://jxself.org/linux-libre/
 
 (define-public linux-libre-lts-version         linux-libre-5.10-version)
+(define-public linux-libre-lts-gnu-revision    linux-libre-5.10-gnu-revision)
 (define-public linux-libre-lts-pristine-source linux-libre-5.10-pristine-source)
 (define-public linux-libre-lts-source          linux-libre-5.10-source)
 (define-public linux-libre-lts                 linux-libre-5.10)
@@ -969,6 +1034,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-generic
   (make-linux-libre* linux-libre-version
+                     linux-libre-gnu-revision
                      linux-libre-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
@@ -984,6 +1050,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-generic-5.10
   (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-gnu-revision
                      linux-libre-5.10-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
@@ -996,6 +1063,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-generic-5.4
   (make-linux-libre* linux-libre-5.4-version
+                     linux-libre-5.4-gnu-revision
                      linux-libre-5.4-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
@@ -1008,6 +1076,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre* linux-libre-4.19-version
+                     linux-libre-4.19-gnu-revision
                      linux-libre-4.19-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
@@ -1015,6 +1084,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-generic-4.14
   (make-linux-libre* linux-libre-4.14-version
+                     linux-libre-4.14-gnu-revision
                      linux-libre-4.14-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
@@ -1022,6 +1092,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-omap2plus
   (make-linux-libre* linux-libre-version
+                     linux-libre-gnu-revision
                      linux-libre-source
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
@@ -1029,6 +1100,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-omap2plus-4.19
   (make-linux-libre* linux-libre-4.19-version
+                     linux-libre-4.19-gnu-revision
                      linux-libre-4.19-source
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
@@ -1036,6 +1108,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm-omap2plus-4.14
   (make-linux-libre* linux-libre-4.14-version
+                     linux-libre-4.14-gnu-revision
                      linux-libre-4.14-source
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
@@ -1043,6 +1116,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm64-generic
   (make-linux-libre* linux-libre-version
+                     linux-libre-gnu-revision
                      linux-libre-source
                      '("aarch64-linux")
                      #:defconfig "defconfig"
@@ -1068,6 +1142,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm64-generic-5.10
   (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-gnu-revision
                      linux-libre-5.10-source
                      '("aarch64-linux")
                      #:defconfig "defconfig"
@@ -1093,6 +1168,7 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-arm64-generic-5.4
   (make-linux-libre* linux-libre-5.4-version
+                     linux-libre-5.4-gnu-revision
                      linux-libre-5.4-source
                      '("aarch64-linux")
                      #:defconfig "defconfig"
@@ -1105,12 +1181,14 @@ It has been modified to remove all non-free binary blobs.")
 
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
+                     linux-libre-gnu-revision
                      linux-libre-source
                      '("riscv64-linux")
                      #:extra-version "riscv64-generic"))
 
 (define-public linux-libre-mips64el-fuloong2e
   (make-linux-libre* linux-libre-version
+                     linux-libre-gnu-revision
                      linux-libre-source
                      '("mips64el-linux")
                      #:defconfig "fuloong2e_defconfig"
@@ -1124,6 +1202,7 @@ It has been modified to remove all non-free binary blobs.")
   (let ((base-linux-libre
          (make-linux-libre*
           linux-libre-5.13-version
+          linux-libre-5.13-gnu-revision
           linux-libre-5.13-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
@@ -1509,6 +1588,43 @@ This lets you apply nifty effects to your Jitsi video, for example, but also
 allows some more serious things like adding streaming capabilities to an
 application by hooking GStreamer into the loopback device.")
     (license license:gpl2+)))
+
+(define-public xpadneo
+  (package
+    (name "xpadneo")
+    (version "0.9.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/atar-axis/xpadneo")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xr0zx134s56h4ij6c3fh8ki0h58h61minbfxcl3sgpgxkh14ism"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f ; no `check' target
+       #:source-directory "hid-xpadneo/src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "hid-xpadneo/etc-modprobe.d"
+                                 (string-append out "/etc/modprobe.d"))
+               ;; udev-service-type takes its rules from /lib rather than
+               ;; /etc, so copy it there instead
+               (copy-recursively "hid-xpadneo/etc-udev-rules.d"
+                                 (string-append out "/lib/udev/rules.d"))))))))
+    (home-page "https://atar-axis.github.io/xpadneo/")
+    (synopsis "Xbox One Wireless Controller driver")
+    (description
+     "This package provides a driver for the XBox One S Wireless controller
+and some newer models when connected via bluetooth.  In addition to the kernel
+module provided itself, it also contains a modprobe configuration and udev
+rules, which need to be installed separately.")
+    (license license:gpl3+)))
 
 
 ;;;
@@ -2083,6 +2199,38 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
     (description
      "Tools for working with USB devices, such as lsusb.")
     (license license:gpl2+)))
+
+(define-public usbip-utils
+  (package
+    (name "usbip-utils")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'enter-subdirectory
+                    (lambda _
+                      (chdir "tools/usb/usbip")
+                      #t)))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (inputs `(("eudev" ,eudev)))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Utilities for sharing USB devices over IP networks")
+    (description
+     "The USB/IP protocol enables to pass USB device from a server to
+a client over the network.  The server is a machine which shares an
+USB device and the client is a machine which uses USB device provided by
+a server over the network.  The USB device may be either physical device
+connected to a server or software entity created on a server using USB
+gadget subsystem.  The usbip-utils are userspace tools to used to handle
+connection and management on both side.  The client needs the @file{vhci-hcd}
+Linux kernel module and the server needs the @file{usbip_host} Linux kernel
+module.")
+    (license license:gpl2)))
 
 (define-public e2fsprogs
   (package
@@ -5326,7 +5474,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.13.1")
+    (version "5.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5334,7 +5482,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "16gkyhvvpqpq0skpavkvnmglbld7p331bnpiqn2z9flgwq0mlzix"))))
+                "0mwxhwws6scjjpfws5xp7988wwwfa46jp5y3kn6jjmjpxiqm85da"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"

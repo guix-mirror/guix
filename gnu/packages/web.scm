@@ -19,7 +19,7 @@
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -6012,16 +6012,17 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.5.1")
+    (version "7.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "1dfdswri6lkfk6kml3szvffm91y49pajgqy1k5y26llqixl4r5hi"))))
+                "11z0pa618lh925ih67wmp1gqk7i46l486j4spjy71g1n3w5mqylc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
+                               (string-append "CC=" ,(cc-for-target))
                                ;; Use absolute path of GCC so it's found at runtime.
                                (string-append "PTHREAD_CC="
                                               (assoc-ref %build-inputs "gcc")
@@ -6030,23 +6031,26 @@ deployments.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-absolute-file-names
-           (lambda _
-             (substitute* '("bin/varnishtest/vtc_varnish.c"
-                            "bin/varnishtest/vtc_process.c"
-                            "bin/varnishd/mgt/mgt_vcc.c"
-                            "bin/varnishtest/tests/u00014.vtc")
-               (("/bin/sh") (which "sh")))
-             (substitute* "bin/varnishd/mgt/mgt_shmem.c"
-               (("rm -rf") (string-append (which "rm") " -rf")))
-             (substitute* "bin/varnishtest/vtc_main.c"
-               (("/bin/rm") (which "rm")))
-             #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash-minimal"))
+                    (sh (string-append bash "/bin/sh"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (rm (string-append coreutils "/bin/rm")))
+               (substitute* '("bin/varnishtest/vtc_varnish.c"
+                              "bin/varnishtest/vtc_process.c"
+                              "bin/varnishtest/vtc_haproxy.c"
+                              "bin/varnishtest/tests/u00014.vtc"
+                              "bin/varnishd/mgt/mgt_vcc.c")
+                 (("/bin/sh") sh))
+               (substitute* "bin/varnishd/mgt/mgt_shmem.c"
+                 (("rm -rf") (string-append rm " -rf")))
+               (substitute* "bin/varnishtest/vtc_main.c"
+                 (("/bin/rm") rm)))))
          (add-before 'install 'patch-Makefile
            (lambda _
              (substitute* "Makefile"
                ;; Do not create /var/varnish during install.
-               (("^install-data-am: install-data-local") "install-data-am: "))
-             #t))
+               (("^install-data-am: install-data-local") "install-data-am: "))))
          (add-after 'install 'wrap-varnishd
            ;; Varnish uses GCC to compile VCL, so wrap it with required GCC
            ;; environment variables to avoid propagating them to profiles.
@@ -6059,17 +6063,18 @@ deployments.")
                  ;; Add binutils to PATH so gcc finds the 'as' executable.
                  `("PATH" ":" prefix (,PATH))
                  ;; Make sure 'crti.o' et.al is found.
-                 `("LIBRARY_PATH" ":" prefix (,LIBRARY_PATH)))
-               #t))))))
+                 `("LIBRARY_PATH" ":" prefix (,LIBRARY_PATH)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("rst2man" ,python-docutils)))
     (inputs
-     `(("jemalloc" ,jemalloc)
+     `(("bash-minimal" ,bash-minimal)
+       ("coreutils" ,coreutils)
+       ("jemalloc" ,jemalloc)
        ("ncurses" ,ncurses)
-       ("pcre" ,pcre)
-       ("python" ,python-wrapper)
+       ("pcre2" ,pcre2)
+       ("python" ,python)
        ("readline" ,readline)))
     (synopsis "Web application accelerator")
     (description
@@ -6086,14 +6091,14 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.17.1")
+    (version "0.19.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mzkad9r4rpm1fi7j7skwrsyzzbwcapfnlvvl1ls3rng2djcqb5j"))))
+                "0qq5g6bbd1a1ml1wk8jj9z39a899jzqbf7aizr3pvyz0f4kz8mis"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -6631,7 +6636,7 @@ file links.")
 (define-public castor
   (package
     (name "castor")
-    (version "0.8.16")
+    (version "0.8.18")
     (source
      (origin
        (method git-fetch)
@@ -6640,7 +6645,7 @@ file links.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rwg1w7srjwa23mkypl8zk6674nhph4xsc6nc01f6g5k959szylr"))))
+        (base32 "1l72r6a917ymc9pn8dllbal1xdczfai376nvqkiys5fm4j4s3zmj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs

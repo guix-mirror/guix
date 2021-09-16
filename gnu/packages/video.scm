@@ -4222,7 +4222,7 @@ tools for styling them, including a built-in real-time video preview.")
 (define-public pitivi
   ;; Pitivi switched to a non-semantic versioning scheme close before 1.0
   (let ((latest-semver "0.999.0")
-        (%version "2021.01.0"))
+        (%version "2021.05.0"))
    (package
      (name "pitivi")
      (version (string-append latest-semver "-" %version))
@@ -4234,7 +4234,7 @@ tools for styling them, including a built-in real-time video preview.")
               (commit %version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1jics10l16ismi5br6wxi4jxz3dd4p0c0xv8l0l3nvksvda4aafi"))))
+         (base32 "08x2fs2bak1fbmkvjijgx1dsawispv91bpv5j5gkqbv5dfgf7wah"))))
      (build-system meson-build-system)
      (inputs
       `(("glib" ,glib)
@@ -4278,8 +4278,7 @@ tools for styling them, including a built-in real-time video preview.")
                   ;; necessary or optional.  Let the user's packages take
                   ;; precedence in case they have e.g. the full gst-plugins-bad.
                   `("GST_PLUGIN_SYSTEM_PATH" suffix
-                    (,(getenv "GST_PLUGIN_SYSTEM_PATH")))))
-                #t)))))
+                    (,(getenv "GST_PLUGIN_SYSTEM_PATH"))))))))))
      (home-page "http://www.pitivi.org")
      (synopsis "Video editor based on GStreamer Editing Services")
      (description "Pitivi is a video editor built upon the GStreamer Editing
@@ -4678,7 +4677,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public shotcut
   (package
     (name "shotcut")
-    (version "21.06.29")
+    (version "21.08.29")
     (source
      (origin
        (method git-fetch)
@@ -4687,7 +4686,7 @@ transitions, and effects and then export your film to many common formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0384iv2129mpalia39x8mn5xlbgx9ip994700jzjjxdqfq23a9qm"))))
+        (base32 "0lj3ini0fymvcwxk8l1l8ms5519n5n87gdvh0yfhilwp0zqyqkc6"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f ;there are no tests
@@ -4753,7 +4752,7 @@ and audio capture, network stream playback, and many more.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
       (origin
         (method git-fetch)
@@ -4762,7 +4761,7 @@ and audio capture, network stream playback, and many more.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "15ngaqyjbwkj0rd9mvxaqf3i9vzsnlrqgr50cnxxjqnpf7xdmslj"))))
+         (base32 "0bkps488h9s15ylvkm4fmfywgrpbw570glawpnv6khpq9n223dzl"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

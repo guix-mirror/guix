@@ -1,4 +1,4 @@
-;;;
+;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This program is free software; you can redistribute it and/or modify it
@@ -55,41 +55,6 @@
     (description "ROCm cmake modules provides cmake modules for common build
 tasks needed for the ROCM software stack.")
     (license license:ncsa)))
-
-(define-public llvm-for-rocm
-  (hidden-package
-   (package
-     ;; Actually based on LLVM 13 as of v4.3, but llvm-12 works just fine.
-     (inherit llvm-12)
-     (name "llvm-for-rocm")
-     (version %rocm-version)
-     (source (origin
-               (method git-fetch)
-               (uri (git-reference
-                     (url "https://github.com/RadeonOpenCompute/llvm-project.git")
-                     (commit (string-append "rocm-" version))))
-               (file-name (git-file-name name version))
-               (sha256
-                (base32
-                 "0p75nr1qpmy6crymdax5hm40wkimman4lnglz4x5cnbiqindya7s"))
-               (patches
-                (search-patches "llvm-roc-4.2.0-add_Object.patch"
-                                "llvm-roc-3.0.0-add_libraries.patch"
-                                "llvm-roc-4.0.0-remove-isystem-usr-include.patch"))))
-     (arguments
-      (substitute-keyword-arguments (package-arguments llvm-12)
-        ((#:phases phases '%standard-phases)
-         `(modify-phases ,phases
-            (add-after 'unpack 'chdir
-              (lambda _
-                (chdir "llvm")))))
-        ((#:configure-flags flags)
-         ''("-DLLVM_ENABLE_PROJECTS=llvm;clang;lld"
-            "-DLLVM_TARGETS_TO_BUILD=AMDGPU;X86"
-            "-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-            "-DBUILD_SHARED_LIBS:BOOL=TRUE"
-            "-DLLVM_VERSION_SUFFIX=")))))))
 
 (define-public rocm-device-libs
   (package

@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +81,7 @@ NAMES (strings)."
   (let ((elpa-archives
          '((gnu . "https://elpa.gnu.org/packages")
            (gnu/http . "http://elpa.gnu.org/packages") ;for testing
+           (nongnu . "https://elpa.nongnu.org/nongnu")
            (melpa-stable . "https://stable.melpa.org/packages")
            (melpa . "https://melpa.org/packages"))))
     (assq-ref elpa-archives repo)))
@@ -257,7 +259,7 @@ RECIPE."
      ((assoc-ref recipe #:commit)
       => (lambda (commit) (cons 'commit commit)))
      (else
-      '(branch . "master"))))
+      '())))
 
   (let-values (((directory commit) (download-git-repository url ref)))
     `(origin

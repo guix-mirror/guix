@@ -969,7 +969,12 @@ fi\n")))
        ;; Some programs (e.g., GLib) look at /etc/timezone to find the
        ;; name of the current timezone.  For details, see
        ;; https://lists.gnu.org/archive/html/guix-devel/2019-07/msg00166.html
-       ("timezone" ,(plain-file "timezone" (operating-system-timezone os)))
+       ;; Some programs expect a terminating newline.
+       ("timezone" ,(plain-file "timezone"
+                                (string-append
+                                 (string-trim-both
+                                  (operating-system-timezone os))
+                                 "\n")))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
        ,@(if sudoers

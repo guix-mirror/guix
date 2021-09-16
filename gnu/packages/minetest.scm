@@ -154,8 +154,8 @@ in different ways.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/minetest/minetest_game")
-                     (commit version)))
+                    (url "https://github.com/minetest/minetest_game")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
@@ -172,8 +172,8 @@ in different ways.")
                                        "/share/minetest/games/minetest_game")))
                      (mkdir-p install-dir)
                      (copy-recursively
-                       (assoc-ref %build-inputs "source")
-                       install-dir)
+                      (assoc-ref %build-inputs "source")
+                      install-dir)
                      #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
@@ -304,37 +304,37 @@ and a variety of other stuff.")
   ;; The release on ContentDB does not have its own version number.
   (let ((commit "db5879706d04d3480bc4863ce0c03fa73e5f10c7")
         (revision "0"))
-  (package
-    (name "minetest-mesecons")
-    (version (git-version "1.2.1" revision commit))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/minetest-mods/mesecons")
-             (commit commit)))
-       (sha256
-        (base32 "04m9s9l3frw1lgki41hgvjsw2zkrvfv0sy750b6j12arzb3lv645"))
-       (file-name (git-file-name name version))))
-    (build-system minetest-mod-build-system)
-    (home-page "https://mesecons.net")
-    (synopsis
-     "Digital circuitry for Minetest, including wires, buttons and lights")
-    (description
-     "Mesecons is a mod for Minetest implementing various items related
+    (package
+      (name "minetest-mesecons")
+      (version (git-version "1.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minetest-mods/mesecons")
+               (commit commit)))
+         (sha256
+          (base32 "04m9s9l3frw1lgki41hgvjsw2zkrvfv0sy750b6j12arzb3lv645"))
+         (file-name (git-file-name name version))))
+      (build-system minetest-mod-build-system)
+      (home-page "https://mesecons.net")
+      (synopsis
+       "Digital circuitry for Minetest, including wires, buttons and lights")
+      (description
+       "Mesecons is a mod for Minetest implementing various items related
 to digital circuitry, such as wires, buttons, lights and programmable
 controllers.  Among other things, there are also pistons, solar panels,
 pressure plates and note blocks.
 
 Mesecons has a similar goal to Redstone in Minecraft, but works in its own way,
 with different rules and mechanics.")
-    ;; LGPL for code, CC-BY-SA for textures.
-    ;; The README.md and COPYING.txt disagree about the "+" in license:lgpl3+.
-    ;; For now, assume README.md is correct.  Upstream has been asked to
-    ;; correct the inconsistency:
-    ;; <https://github.com/minetest-mods/mesecons/issues/575>.
-    (license (list license:lgpl3+ license:cc-by-sa3.0))
-    (properties `((upstream-name . "Jeija/mesecons"))))))
+      ;; LGPL for code, CC-BY-SA for textures.
+      ;; The README.md and COPYING.txt disagree about the "+" in license:lgpl3+.
+      ;; For now, assume README.md is correct.  Upstream has been asked to
+      ;; correct the inconsistency:
+      ;; <https://github.com/minetest-mods/mesecons/issues/575>.
+      (license (list license:lgpl3+ license:cc-by-sa3.0))
+      (properties `((upstream-name . "Jeija/mesecons"))))))
 
 (define-public minetest-mineclone
   (package
@@ -624,3 +624,70 @@ track of important locations.")
                    license:cc-by4.0 license:cc-by-sa3.0 license:public-domain
                    license:cc0 license:fdl1.2+))
     (properties `((upstream-name . "RealBadAngel/unified_inventory")))))
+
+(define-public minetest-advtrains
+  (package
+    (name "minetest-advtrains")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.bananach.space/advtrains.git")
+             (commit (string-append "release-" version))))
+       (sha256
+        (base32 "1ijqlchh269jpvmgmdmdvy3nsnk0bszkvvcqk6vaysvxam695ggw"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page "http://advtrains.de/")
+    (synopsis "Adds good-looking, realistic trains with realistic rails")
+    (description
+     "This mod features realistic trains and various equipment for railways,
+with a focus on automated train operation.  This package contains no actual
+trains, please use @code{minetest-basic-trains}.
+
+Main features:
+
+@itemize
+@item
+almost-realistic tracks with actual curves and switches;
+@item
+railway signals, controllable by various means;
+@item
+ATC: simple, command-like automatic train control;
+@item
+LuaATC: Powerful Lua-scripted automatic train operation (requires some
+programming knowledge);
+@item
+an interlocking system, featuring track sections, routes and automatic
+stopping before signals.
+@end itemize")
+    (license (list license:cc-by-sa3.0 license:agpl3+))
+    (properties `((upstream-name . "orwell/advtrains")))))
+
+(define-public minetest-basic-trains
+  (package
+    (name "minetest-basic-trains")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.bananach.space/basic_trains.git/")
+             (commit
+              "d44c410f7c2a7202ee68b66fc50febae89e0c5dc")))
+       (sha256
+        (base32
+         "0vvzndj48kgdz2bfgivfm217sbmc2lmxpp2mispcy7byn4i26prx"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (propagated-inputs
+     `(("minetest-advtrains" ,minetest-advtrains)))
+    (home-page
+     "http://advtrains.de/wiki/doku.php?id=usage:trains:basic_trains")
+    (synopsis "Collection of basic trains for the Advanced Trains mod")
+    (description
+     "This modpack contains the trains which were the ``default'' trains in
+advtrains up to version 2.2.1.")
+    (license (list license:cc-by-sa3.0 license:agpl3+))
+    (properties `((upstream-name . "orwell/basic_trains")))))

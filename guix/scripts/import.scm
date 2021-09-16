@@ -3,6 +3,8 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,7 +119,8 @@ Run IMPORTER with ARGS.\n"))
      (if (member importer importers)
          (let ((print (lambda (expr)
                         (pretty-print expr (newline-rewriting-port
-                                            (current-output-port))))))
+                                            (current-output-port))
+                                      #:max-expr-width 80))))
            (match (apply (resolve-importer importer) args)
              ((and expr (or ('package _ ...)
                             ('let _ ...)
@@ -130,4 +133,9 @@ Run IMPORTER with ARGS.\n"))
                         expressions))
              (x
               (leave (G_ "'~a' import failed~%") importer))))
-         (leave (G_ "~a: invalid importer~%") importer)))))
+         (let ((hint (string-closest importer importers #:threshold 3)))
+           (report-error (G_ "~a: invalid importer~%") importer)
+           (when hint
+             (display-hint
+              (format #f (G_ "Did you mean @code{~a}?~%") hint)))
+           (exit 1))))))

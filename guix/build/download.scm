@@ -747,15 +747,20 @@ otherwise simply ignore them."
                 content-addressed-mirrors))
 
   (define disarchive-uris
-    (append-map (match-lambda
-                  ((? string? mirror)
-                   (map (match-lambda
-                          ((hash-algo . hash)
-                           (string->uri
-                            (string-append mirror
-                                           (symbol->string hash-algo) "/"
-                                           (bytevector->base16-string hash)))))
-                        hashes)))
+    (append-map (lambda (mirror)
+                  (let ((make-url (match mirror
+                                    ((? string?)
+                                     (lambda (hash-algo hash)
+                                       (string-append
+                                        mirror
+                                        (symbol->string hash-algo) "/"
+                                        (bytevector->base16-string hash))))
+                                    ((? procedure?)
+                                     mirror))))
+                    (map (match-lambda
+                           ((hash-algo . hash)
+                            (string->uri (make-url hash-algo hash))))
+                         hashes)))
                 disarchive-mirrors))
 
   ;; Make this unbuffered so 'progress-report/file' works as expected.  'line

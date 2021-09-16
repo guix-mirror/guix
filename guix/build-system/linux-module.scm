@@ -159,6 +159,7 @@
                              (outputs '("out"))
                              (make-flags ''())
                              (system (%current-system))
+                             (source-directory ".")
                              (guile #f)
                              (substitutable? #t)
                              (imported-modules
@@ -172,6 +173,7 @@
           (use-modules #$@(sexp->gexp modules))
           (linux-module-build #:name #$name
                               #:source #+source
+                              #:source-directory #$source-directory
                               #:search-paths '#$(sexp->gexp
                                                  (map search-path-specification->sexp
                                                       search-paths))
