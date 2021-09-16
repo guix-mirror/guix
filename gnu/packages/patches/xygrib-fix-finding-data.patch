@@ -1,0 +1,131 @@
+This is a backport of the commits in PR 235 (“Fixes for packaging on
+linux-like systems”), which was merged upstream:
+
+https://github.com/opengribs/XyGrib/pull/235
+
+It fixes finding resources such as icons, maps and translations installed in
+the data directory.  This patch has been merged upstream and can be removed
+with the next release.
+
+Sightly adapted to find openjpg-2.4.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 64059ab65dae..00cc5d6aea6f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -7,6 +7,9 @@ set(VERSION_PATCH 6)
+ set(XYGRIB_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+ set(XYGRIB_VERSION_DATE "2019-07-05")
+ 
++option(GNU_PACKAGE "Install into GNU standard directories" OFF)
++option(GEN_TRANSLATIONS "Generate translations" ON)
++
+ set(CMAKE_VERBOSE_MAKEFILE ON)
+ 
+ # Find includes in corresponding build directories
+@@ -25,7 +28,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ set(CMAKE_CXX_STANDARD 11)
+ #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+ if(UNIX AND NOT APPLE)
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
++add_compile_options(-Wall -fPIC)
+ endif()
+ 
+ # Add support for address etc sanitizers, part 1/2 (other half after ADD_EXECUTABLE)
+@@ -108,17 +111,12 @@ find_path(OPENJPEG_INCLUDE_DIR
+      ~/Library/Frameworks/include
+      /Library/Frameworks/include
+      /usr/local/include
+-     /usr/local/include/openjpeg-2.3
+-     /usr/include/openjpeg-2.3
+-     /usr/local/include/openjpeg-2.1
+-     /usr/include/openjpeg-2.1
+-     /usr/local/include/openjpeg-2.2
+-     /usr/include/openjpeg-2.2
+      /usr/include
+      /sw/include # Fink
+      /opt/local/include # DarwinPorts
+      /opt/csw/include # Blastwave
+      /opt/include
++     PATH_SUFFIXES openjpeg-2.4 openjpeg-2.3 openjpeg-2.2 openjpeg-2.1
+      REQUIRED
+  )
+ include_directories(${OPENJPEG_INCLUDE_DIR})
+@@ -212,22 +210,24 @@ include_directories(${PNG_INCLUDE_DIR})
+ configure_file(cmake/Version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/Version.h)
+ include_directories(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
+ 
+-if(APPLE)
+-set(PREFIX_BIN ${PROJECT_NAME})
+-set(PREFIX_PKGDATA ${PROJECT_NAME})
+-endif()
+-if(WIN32)
+-set(PREFIX_BIN ".")
+-set(PREFIX_PKGDATA ".")
+-endif()
+-if(UNIX AND NOT APPLE)
+-# This is not exactly a good idea on linux - the code should be changed so that the executable would go to /usr/local/bin and the data to /usr/local/share/XyGrib
+-set(PREFIX_BIN ${PROJECT_NAME})
+-set(PREFIX_PKGDATA ${PROJECT_NAME})
++if(GNU_PACKAGE)
++    include(GNUInstallDirs)
++    set(PREFIX_BIN ${CMAKE_INSTALL_FULL_BINDIR})
++    set(PREFIX_PKGDATA ${CMAKE_INSTALL_FULL_DATADIR}/openGribs/${PROJECT_NAME})
++else()
++    if(WIN32)
++        set(PREFIX_BIN ".")
++        set(PREFIX_PKGDATA ".")
++    else()
++        set(PREFIX_BIN ${PROJECT_NAME})
++        set(PREFIX_PKGDATA ${PROJECT_NAME})
++    endif()
+ endif()
+ 
+ add_subdirectory(src)
+-add_subdirectory(data/tr)
++if(GEN_TRANSLATIONS)
++    add_subdirectory(data/tr)
++endif()
+ 
+ # Installation
+ # macOS bundle parameters
+@@ -241,4 +241,14 @@ set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STR
+ set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION "${XYGRIB_VERSION}")
+ set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_COPYRIGHT "${PROJECT_NAME} Authors")
+ # Install data
+-install(DIRECTORY data DESTINATION ${PREFIX_PKGDATA})
++install(DIRECTORY data DESTINATION ${PREFIX_PKGDATA}
++        PATTERN "CMakeFiles" EXCLUDE
++        PATTERN "CMakeLists.txt" EXCLUDE
++        PATTERN "Makefile" EXCLUDE
++        PATTERN "cmake_install.cmake" EXCLUDE)
++if(GNU_PACKAGE)
++    install(FILES debian/xygrib.desktop
++            DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/applications)
++    install(FILES debian/xygrib.png
++            DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/pixmaps)
++endif()
+diff --git a/INSTALL.md b/INSTALL.md
+index 2c9d3ab4da03..1190cc780182 100644
+--- a/INSTALL.md
++++ b/INSTALL.md
+@@ -22,7 +22,19 @@ https://gihub.com/opengribs/XyGrib/releases or on https://opengribs.org in the d
+   - openSUSE Tumbleweed: `sudo zypper install gcc git cmake libqt5-qtbase-devel libpng-devel openjpeg2-devel libnova-devel libproj-devel zlib-devel libbz2-devel
+ 
+ ## Build and package
++### Options
+ 
++XyGrib has two CMake options
++- GNU_PACKAGE (DEFAULT: OFF)
++```
++Files will be installed in GNU standard installation directories such as prefix/bin and prefix/share.
++Packagers are recommended to test this option.
++```
++- GEN_TRANSLATION (DEFAULT: ON)
++```
++Create targets to generate translation files.
++Turning this off removes the need for qt-linguist, part of qttools qt5 submodule, during build.
++```
+ ### macOS
+ 
+ - Get the source

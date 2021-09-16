@@ -1217,6 +1217,7 @@ map display.  Downloads map data from a number of websites, including
                      (url "https://github.com/opengribs/XyGrib")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches (search-patches "xygrib-fix-finding-data.patch"))
               (sha256
                (base32
                 "0xzsm8pr0zjk3f8j880fg5n82jyxn8xf1330qmmq1fqv7rsrg9ia"))
@@ -1231,18 +1232,15 @@ map display.  Downloads map data from a number of websites, including
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags (list "-DGNU_PACKAGE=ON")
+
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-directories
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((jpeg (assoc-ref inputs "openjpeg"))
                    (font (assoc-ref inputs "font-liberation")))
                (substitute* "CMakeLists.txt"
-                 ;; Find libjpeg.
-                 (("/usr") jpeg)
-                 ;; Fix install locations.
-                 (("set\\(PREFIX_BIN.*") "set(PREFIX_BIN \"bin\")\n")
-                 (("set\\(PREFIX_PKGDATA.*") "set(PREFIX_PKGDATA \"share/${PROJECT_NAME}\")\n")
                  ;; Skip looking for the static library.
                  (("\"libnova.a\"") ""))
                ;; Don't use the bundled font-liberation.
@@ -1251,8 +1249,7 @@ map display.  Downloads map data from a number of websites, including
                   (string-append "\"" font "/share/fonts/truetype/\"")))
                (substitute* "src/util/Util.h"
                  (("pathData\\(\\)\\+\"data/fonts/\"")
-                  (string-append "\"" font "/share/fonts/\""))))
-             #t)))
+                  (string-append "\"" font "/share/fonts/\"")))))))
        #:tests? #f)) ; no tests
     (native-inputs
      `(("qttools" ,qttools)))
@@ -1265,6 +1262,10 @@ map display.  Downloads map data from a number of websites, including
        ("proj.4" ,proj.4)
        ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))))
     (synopsis "Weather Forecast Visualization")
     (description
      "XyGrib is a Grib file reader and visualizes meteorological data providing
