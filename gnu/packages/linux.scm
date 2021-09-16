@@ -215,18 +215,8 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (file-name (string-append "linux-libre-deblob-check-" version "-" gnu-revision))
           (sha256 deblob-check-hash))))
 
-(define* (computed-origin-method gexp-promise hash-algo hash
-                                 #:optional (name "source")
-                                 #:key (system (%current-system))
-                                 (guile (default-guile)))
-  "Return a derivation that executes the G-expression that results
-from forcing GEXP-PROMISE."
-  (mlet %store-monad ((guile (package->derivation guile system)))
-    (gexp->derivation (or name "computed-origin")
-                      (force gexp-promise)
-                      #:graft? #f       ;nothing to graft
-                      #:system system
-                      #:guile-for-build guile)))
+;; XXXX: Workaround 'snippet' limitations
+(define computed-origin-method (@@ (guix packages) computed-origin-method))
 
 (define (make-linux-libre-source version
                                  upstream-source

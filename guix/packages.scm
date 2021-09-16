@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -343,6 +343,27 @@ name of its URI."
         (else
          ;; git, svn, cvs, etc. reference
          #f))))
+
+;; Work around limitations in the 'snippet' mechanism.  It is not possible for
+;; a 'snippet' to produce a tarball with a different base name than the
+;; original downloaded source.  Moreover, cherry picking dozens of upsteam
+;; patches and applying them suddenly is often impractical; especially when a
+;; comprehensive code reformatting is done upstream.  Mainly designed for
+;; Linux and IceCat packages.
+;; XXXX: do not make part of public API (export) such radical capability
+;; before a detailed review process.
+(define* (computed-origin-method gexp-promise hash-algo hash
+                                 #:optional (name "source")
+                                 #:key (system (%current-system))
+                                 (guile (default-guile)))
+  "Return a derivation that executes the G-expression that results
+from forcing GEXP-PROMISE."
+  (mlet %store-monad ((guile (package->derivation guile system)))
+    (gexp->derivation (or name "computed-origin")
+                      (force gexp-promise)
+                      #:graft? #f       ;nothing to graft
+                      #:system system
+                      #:guile-for-build guile)))
 
 
 (define %supported-systems
