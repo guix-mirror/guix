@@ -25,6 +25,7 @@
   #:use-module (guix build gnu-build-system)
   #:use-module (guix build utils)
   #:use-module (guix build-system python)
+  #:use-module (guix grafts)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix utils)
