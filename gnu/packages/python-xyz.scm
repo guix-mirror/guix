@@ -16045,23 +16045,7 @@ on a list such as @code{[@code{a20}, @code{a9}, @code{a1}, @code{a4},
 identifies numbers and sorts them separately from strings.  It can also sort
 version numbers, real numbers, mixed types and more, and comes with a shell
 command @command{natsort} that exposes this functionality in the command line.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-natsort))))))
-
-;; Natsort 6.x are the last versions with support for Python 2.
-(define-public python2-natsort
-  (let ((base (package-with-python2 (strip-python2-variant python-natsort))))
-    (package (inherit base)
-             (version "6.2.1")
-             (source (origin
-                       (method url-fetch)
-                       (uri (pypi-uri "natsort" version))
-                       (sha256
-                        (base32
-                         "1mc9hbh6fv76xyz13frm7dgi05cf74f9j5wvcyjiy5234gylz565"))))
-             (native-inputs
-              `(("python2-pathlib" ,python2-pathlib)
-                ,@(package-native-inputs base))))))
+    (license license:expat)))
 
 (define-public glances
   (package
