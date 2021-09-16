@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Xinglu Chem <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,10 +22,12 @@
 (define-module (guix import stackage)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 control)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (srfi srfi-43)
   #:use-module (guix import json)
   #:use-module (guix import hackage)
   #:use-module (guix import utils)
@@ -141,11 +144,23 @@ PACKAGE or #f if the package is not included in the Stackage LTS release."
                 (version version)
                 (urls (list url))))))))))
 
+(define (stackage-package? package)
+  "Whether PACKAGE is available on the default Stackage LTS release."
+  (and (hackage-package? package)
+       (let ((packages (lts-info-packages
+                        (stackage-lts-info-fetch %default-lts-version)))
+             (hackage-name (guix-package->hackage-name package)))
+         (vector-any identity
+                     (vector-map
+                      (lambda (_ metadata)
+                        (string=? (cdr (list-ref metadata 2)) hackage-name))
+                      packages)))))
+
 (define %stackage-updater
   (upstream-updater
    (name 'stackage)
    (description "Updater for Stackage LTS packages")
-   (pred hackage-package?)
+   (pred stackage-package?)
    (latest latest-lts-release)))
 
 ;;; stackage.scm ends here
