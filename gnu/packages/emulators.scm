@@ -16,6 +16,7 @@
 ;;; Copyright © 2021 Felipe Balbi <balbi@kernel.org>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -183,7 +184,10 @@ SuperCPU.")
          (add-after 'unpack 'fix-source
            (lambda _
              (substitute* (find-files "." ".*\\.[ch]")
-               (("\"zlib/zlib.h\"") "<zlib.h>"))))
+               (("\"zlib/zlib.h\"") "<zlib.h>"))
+             (substitute* "Makefile"
+               (("CFLAGS:=-std=gnu99" all)
+                (string-append all " -fcommon")))))
          (delete 'configure)
          (replace 'install
            (lambda* args
