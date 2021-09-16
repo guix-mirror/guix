@@ -4191,9 +4191,6 @@ for Python web development.  It is very similar to the web form API
 available in Django, but is a standalone package.")
     (license license:bsd-3)))
 
-(define-public python2-wtforms
-  (package-with-python2 python-wtforms))
-
 (define-public python-paste
   (package
     (name "python-paste")
