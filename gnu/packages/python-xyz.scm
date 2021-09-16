@@ -11819,6 +11819,27 @@ automatically detect a wide range of file encodings.")
 (define-public python2-chardet
   (package-with-python2 python-chardet))
 
+(define-public python-charset-normalizer
+  (package
+    (name "python-charset-normalizer")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "charset-normalizer" version))
+       (sha256
+        (base32 "0rr3iv2xw4rz5ijnfqk229fw85cq6p6rhqqsilm0ldzncblfg63h"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ousret/charset_normalizer")
+    (synopsis "Universal Charset Detector, alternative to Chardet")
+    (description "This library helps you read text from an unknown charset
+encoding.  Motivated by @code{chardet}, it tries to resolve the issue by
+taking a new approach.  All IANA character set names for which the Python core
+library provides codecs are supported.")
+    (license license:expat)))
+
 (define-public python-docopt
   (package
     (name "python-docopt")
