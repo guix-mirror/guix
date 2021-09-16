@@ -6735,19 +6735,28 @@ e-TeX.")
     (inherit (simple-texlive-package
               "texlive-pdftex"
               (list "/doc/pdftex/"
-                    "/doc/man/man1/pdfetex.1"
                     "/doc/man/man1/pdftex.1"
-
+                    "/doc/man/man1/pdfetex.1"
                     "/fonts/map/dvips/dummy-space/dummy-space.map"
                     "/fonts/tfm/public/pdftex/dummy-space.tfm"
                     "/fonts/type1/public/pdftex/dummy-space.pfb"
                     "/scripts/simpdftex/simpdftex"
-
                     "/tex/generic/config/pdftex-dvi.tex"
-                    "/tex/generic/pdftex/")
+                    "/tex/generic/pdftex/glyphtounicode.tex"
+                    "/tex/generic/pdftex/pdfcolor.tex")
               (base32
                "1wx928rqsv0x1a8vc7aq49w3nglr4bmlhl822slqglymfxrmb91b")
               #:trivial? #t))
+    ;; TODO: add this missing package:
+    ;; dehyph
+    (propagated-inputs
+     `(("texlive-cm" ,texlive-cm)
+       ("texlive-etex" ,texlive-etex)
+       ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+       ("texlive-hyphen-base" ,texlive-hyphen-base)
+       ("texlive-kpathsea" ,texlive-kpathsea)
+       ("texlive-tex-ini-files" ,texlive-tex-ini-files)
+       ("texlive-tex-plain" ,texlive-tex-plain)))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
