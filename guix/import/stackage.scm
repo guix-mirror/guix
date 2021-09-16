@@ -139,10 +139,10 @@ included in the Stackage LTS release."
          (mlambda ()
            (stackage-lts-packages
             (stackage-lts-info-fetch %default-lts-version)))))
-    (lambda* (package)
+    (lambda* (pkg)
       "Return an <upstream-source> for the latest Stackage LTS release of
 PACKAGE or #f if the package is not included in the Stackage LTS release."
-      (let* ((hackage-name (guix-package->hackage-name package))
+      (let* ((hackage-name (guix-package->hackage-name pkg))
              (version (lts-package-version (packages) hackage-name))
              (name-version (hackage-name-version hackage-name version)))
         (match (and=> name-version hackage-fetch)
@@ -152,9 +152,13 @@ PACKAGE or #f if the package is not included in the Stackage LTS release."
            #f)
           (_ (let ((url (hackage-source-url hackage-name version)))
                (upstream-source
-                (package (package-name package))
+                (package (package-name pkg))
                 (version version)
-                (urls (list url))))))))))
+                (urls (list url))
+                (input-changes
+                 (changed-inputs
+                  pkg
+                  (stackage->guix-package hackage-name #:packages (packages))))))))))))
 
 (define (stackage-lts-package? package)
   "Return whether PACKAGE is available on the default Stackage LTS release."
