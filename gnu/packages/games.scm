@@ -7509,7 +7509,8 @@ affect gameplay).")
       `(("automake" ,automake)
         ("autoreconf" ,autoconf))))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
            ;; The bundled autogen.sh script unconditionally runs ./configure.
