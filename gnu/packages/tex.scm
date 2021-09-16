@@ -8039,47 +8039,50 @@ Support for use with LaTeX is available in @code{freenfss}, part of
 
 (define-deprecated-package texlive-fonts-charter texlive-charter)
 
-(define-public texlive-context-base
-  (package
-    (name "texlive-context-base")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/context/base"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1xprxdy0a5bwhyiyzdffq0q0dd4ijhra8hs39djdjd32r1mk3n8a"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/context/case")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
-    (home-page "https://www.ctan.org/pkg/context")
-    (synopsis "Full featured, parameter driven macro package for TeX")
-    (description "A full featured, parameter driven macro package, which fully
-supports advanced interactive documents.  See the ConTeXt garden for a wealth
-of support information.")
-    (license license:gpl2+)))
-
 (define-public texlive-context
   (package
     (inherit (simple-texlive-package
               "texlive-context"
               (list "/doc/context/"
-                    ;; XXX Omitting /doc/man/man1/*.pdf
-                    "/bibtex/bst/context/mkii/"
-                    "/context/data/"
+                    "/doc/man/man1/context.1"
+                    "/doc/man/man1/luatools.1"
+                    "/doc/man/man1/mtx-babel.1"
+                    "/doc/man/man1/mtx-base.1"
+                    "/doc/man/man1/mtx-bibtex.1"
+                    "/doc/man/man1/mtx-cache.1"
+                    "/doc/man/man1/mtx-chars.1"
+                    "/doc/man/man1/mtx-check.1"
+                    "/doc/man/man1/mtx-colors.1"
+                    "/doc/man/man1/mtx-context.1"
+                    "/doc/man/man1/mtx-dvi.1"
+                    "/doc/man/man1/mtx-epub.1"
+                    "/doc/man/man1/mtx-evohome.1"
+                    "/doc/man/man1/mtx-fcd.1"
+                    "/doc/man/man1/mtx-flac.1"
+                    "/doc/man/man1/mtx-fonts.1"
+                    "/doc/man/man1/mtx-grep.1"
+                    "/doc/man/man1/mtx-interface.1"
+                    "/doc/man/man1/mtx-metapost.1"
+                    "/doc/man/man1/mtx-modules.1"
+                    "/doc/man/man1/mtx-package.1"
+                    "/doc/man/man1/mtx-pdf.1"
+                    "/doc/man/man1/mtx-plain.1"
+                    "/doc/man/man1/mtx-profile.1"
+                    "/doc/man/man1/mtx-rsync.1"
+                    "/doc/man/man1/mtx-scite.1"
+                    "/doc/man/man1/mtx-server.1"
+                    "/doc/man/man1/mtx-texworks.1"
+                    "/doc/man/man1/mtx-timing.1"
+                    "/doc/man/man1/mtx-tools.1"
+                    "/doc/man/man1/mtx-unicode.1"
+                    "/doc/man/man1/mtx-unzip.1"
+                    "/doc/man/man1/mtx-update.1"
+                    "/doc/man/man1/mtx-watch.1"
+                    "/doc/man/man1/mtx-youless.1"
+
+
+                    "/bibtex/bst/context/"
+                    "/context/"
 
                     "/fonts/afm/hoekwater/context/contnav.afm"
                     "/fonts/cid/fontforge/Adobe-CNS1-4.cidmap"
@@ -8094,21 +8097,36 @@ of support information.")
                     "/fonts/map/luatex/context/"
                     "/fonts/map/pdftex/context/"
                     "/fonts/misc/xetex/fontmapping/context/"
-                    "/fonts/tfm/hoekwater/context/contnav.tfm"
+                    "/fonts/tfm/hoekwater/context/"
                     "/fonts/type1/hoekwater/context/"
-
                     "/metapost/context/"
                     "/scripts/context/"
-                    "/tex/context/"
-
-                    "/tex/generic/context/luatex/"
-                    "/tex/generic/context/ppchtex/"
+                    "/tex/context/base/"
+                    "/tex/context/bib/"
+                    "/tex/context/colors/"
+                    "/tex/context/fonts/"
+                    "/tex/context/interface/"
+                    "/tex/context/modules/"
+                    "/tex/context/patterns/"
+                    "/tex/context/sample/"
+                    "/tex/context/test/"
+                    "/tex/context/user/"
+                    "/tex/generic/context/"
                     "/tex/latex/context/")
               (base32
-               "0qrc9278h50c9k94jdjlbcbjnsmidxf7pqh10azqf6sgzifx3d7s")
+               "1rsw760f52rj62i7ms89xgxdi0qw6hag5fs5hb667nclr4kdkam8")
               #:trivial? #t))
+    ;; TODO: add these missing packages:
+    ;; xetex, luatex, lm-math, manfnt-font, and mptopdf
+    (propagated-inputs
+     `(("texlive-amsfonts" ,texlive-amsfonts)
+       ("texlive-lm" ,texlive-lm)
+       ("texlive-pdftex" ,texlive-pdftex)
+       ("texlive-metapost" ,texlive-metapost)
+       ("texlive-fonts-stmaryrd" ,texlive-fonts-stmaryrd)
+       ("texlive-mflogo-font" ,texlive-mflogo-font)))
     (home-page "https://www.ctan.org/pkg/context")
-    (synopsis "ConTeXt macro package")
+    (synopsis "Full featured, parameter driven macro package for TeX")
     (description "ConTeXt is a full featured, parameter driven macro package,
 which fully supports advanced interactive documents.  See the ConTeXt garden
 for a wealth of support information.")
@@ -8117,6 +8135,8 @@ for a wealth of support information.")
     (license (list license:lppl1.3c+
                    license:gpl2+
                    license:cc-by-sa4.0))))
+
+(define-deprecated-package texlive-context-base texlive-context)
 
 (define-public texlive-beamer
   (package
