@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -543,6 +544,7 @@ proposed for standardization.")
      '(#:configure-flags
        (let ((libid3tag (assoc-ref %build-inputs "libid3tag")))
          (list
+          "CFLAGS=-fcommon"
           ;; libid3tag provides no .pc file, so pkg-config fails to find them.
           (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
           (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")))))
