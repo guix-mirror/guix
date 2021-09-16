@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +66,8 @@
                  (base32 "1pd0avlzc2rig1hd37zbhc7r2s6fjzdhshfg9l9cfzibl7caclyw"))))
       (build-system cmake-build-system)
       (arguments
-       `(#:configure-flags '("-DVIDEO_PLATFORM=egl-dri" "-DBUILTIN_LUA=off"
+       `(#:configure-flags '("-DCMAKE_C_FLAGS=-fcommon"
+                             "-DVIDEO_PLATFORM=egl-dri" "-DBUILTIN_LUA=off"
                              "-DSTATIC_OPENAL=off""-DENABLE_LWA=on"
                              "-DSTATIC_SQLITE3=off" "-DSTATIC_FREETYPE=off"
                              "-DSHMIF_TUI_ACCEL=on")
@@ -176,7 +178,8 @@ engine programmable using Lua.")
      `(,@(ensure-keyword-arguments
           (package-arguments arcan)
           '(#:configure-flags
-            '("-DVIDEO_PLATFORM=sdl" "-DBUILTIN_LUA=off"
+            '("-DCMAKE_C_FLAGS=-fcommon"
+              "-DVIDEO_PLATFORM=sdl" "-DBUILTIN_LUA=off"
               "-DSTATIC_OPENAL=off" "-DDISABLE_JIT=off"
               "-DENABLE_LWA=on" "-DSTATIC_SQLITE3=off"
               "-DSTATIC_FREETYPE=off" "-DSHMIF_TUI_ACCEL=on")))))
