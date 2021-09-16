@@ -3128,9 +3128,6 @@ this library provides functions to facilitate such comparisons.")
 SQLAlchemy Database Toolkit for Python.")
     (license license:expat)))
 
-(define-public python2-alembic
-  (package-with-python2 python-alembic))
-
 (define-public python-pickleshare
   (package
     (name "python-pickleshare")
