@@ -38407,6 +38407,29 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; rust-remove-dir-all-0.5.2 is only needed for tealdeer at 1.4.1
+;; Remove rust-remove-dir-all-0.5.2 when tealdeer is updated
+(define-public rust-remove-dir-all-0.5.2
+  (package
+    (inherit rust-remove-dir-all-0.5)
+    (name "rust-remove-dir-all")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "remove_dir_all" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bkrlyg26mgizpiy1yb2hhpgscxcag8r5fnckqsvk25608vzm0sa"))))
+    (arguments
+     `(#:tests? #f  ; README.md is missing.
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))))
+
 (define-public rust-reopen-0.3
   (package
     (name "rust-reopen")
