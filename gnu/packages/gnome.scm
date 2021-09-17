@@ -8887,7 +8887,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.34.2")
+    (version "3.38.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -8895,7 +8895,7 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19zqwq4qyyncc5wq3xls0f7rsavnw741k336p2h7kx35p4kf41mv"))))
+                "19ln84d6s05h6cvx3c500bg5pvkz4k6p6ykmr2201rblq9afp76h"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -8924,8 +8924,10 @@ shared object databases, search tools and indexing.")
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-autoar" ,gnome-autoar)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("json-glib" ,json-glib)
        ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)
+       ("libsoup" ,libsoup)
        ("tracker" ,tracker)
        ("tracker-miners" ,tracker-miners)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
