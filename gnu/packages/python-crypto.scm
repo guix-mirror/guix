@@ -23,7 +23,7 @@
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
@@ -170,9 +170,6 @@ as a framework for managing existing password hashes.  It's designed to be
 useful for a wide range of tasks, from verifying a hash found in /etc/shadow,
 to providing full-strength password hashing for multi-user application.")
     (license license:bsd-3)))
-
-(define-public python2-passlib
-  (package-with-python2 python-passlib))
 
 (define-public python-py-bcrypt
   (package
