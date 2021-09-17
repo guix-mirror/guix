@@ -11404,7 +11404,7 @@ integrate seamlessly with the GNOME desktop.")
 (define-public gnome-boxes
   (package
     (name "gnome-boxes")
-    (version "3.36.6")
+    (version "3.38.2")
     (source
      (origin
        (method url-fetch)
@@ -11412,7 +11412,7 @@ integrate seamlessly with the GNOME desktop.")
                            (version-major+minor version) "/"
                            "gnome-boxes-" version ".tar.xz"))
        (sha256
-        (base32 "0c3cw90xqqcpacc2z06ljs0gg8saxizfgjzg9alhpwgz3gl4c5pg"))))
+        (base32 "1zjvng0izbws3506998l3dwsxjbm7wnhqipb8nmqzvi096czvajl"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -11434,6 +11434,8 @@ integrate seamlessly with the GNOME desktop.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk" ,gtk+)
        ("gtk-vnc" ,gtk-vnc)
+       ("gtksourceview" ,gtksourceview)
+       ("json-glib" ,json-glib)
        ("libosinfo" ,libosinfo)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
