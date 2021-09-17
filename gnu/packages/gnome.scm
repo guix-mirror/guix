@@ -8775,7 +8775,7 @@ endpoint and it understands SPARQL. ")
 (define-public tracker-miners
   (package
     (name "tracker-miners")
-    (version "2.3.4")
+    (version "3.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker-miners/"
@@ -8783,7 +8783,7 @@ endpoint and it understands SPARQL. ")
                                   "/tracker-miners-" version ".tar.xz"))
               (sha256
                (base32
-                "10wy8d8ski52k809p7s6lbw72qmg05bbmhnl00vx4qrbzqyxvc0b"))))
+                "0fpd69lgm8cckbamcf9c2q57glxf0s3jcfwkq8p3s4lfsvdclmd0"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8792,16 +8792,54 @@ endpoint and it understands SPARQL. ")
              ;; Ensure the RUNPATH contains all installed library locations.
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out")
-                            "/lib/tracker-miners-2.0")
+                            "/lib/tracker-miners-3.0")
              ;; TODO: Enable functional tests. Currently, the following error
              ;; appears:
              ;; Exception: The functional tests require DConf to be the default
              ;; GSettings backend. Got GKeyfileSettingsBackend instead.
-             "-Dfunctional_tests=false")))
+             "-Dfunctional_tests=false"
+             "-Dsystemd_user_services=false")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-shell
+           (lambda _
+             (setenv "SHELL" (which "bash"))))
+         (add-before 'configure 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((manpage "/etc/asciidoc/docbook-xsl/manpage.xsl")
+                    (file (search-input-file inputs manpage)))
+               (substitute* "docs/manpages/meson.build"
+                 (("/etc/asciidoc[^']+")
+                  file)))))
+         (add-before 'configure 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Disable those tests that require the functional_tests option
+             ;; to be true and the UPower daemon to be started.
+             (substitute* "examples/python/meson.build"
+               (("foreach example_name:.*")
+                "foreach example_name: []"))
+             ;; Disable this test that is failing randomly:
+             ;; https://gitlab.gnome.org/GNOME/tracker-miners/-/issues/170.
+            (substitute* "tests/libtracker-miner/meson.build"
+               (("'miner-fs'.*")
+                ""))))
+        (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some tests expect to write to $HOME.
+               (setenv "HOME" "/tmp")
+               (setenv "LANG" "en_US.UTF-8")
+               (invoke "dbus-run-session" "--" "meson" "test"
+                       "--print-errorlogs")))))))
     (native-inputs
      `(("dbus" ,dbus)
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin")
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml-4.5" ,docbook-xml)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("asciidoc" ,asciidoc)
+       ("xsltproc" ,libxslt)
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("python-pygobject" ,python-pygobject)))
@@ -8813,6 +8851,7 @@ endpoint and it understands SPARQL. ")
        ("glib" ,glib)
        ("gstreamer" ,gstreamer)
        ("icu4c" ,icu4c)
+       ("json-glib" ,json-glib)
        ("libcue" ,libcue)
        ("libexif" ,libexif)
        ("libgsf" ,libgsf)
@@ -8822,10 +8861,12 @@ endpoint and it understands SPARQL. ")
        ("libosinfo" ,libosinfo)
        ("libpng" ,libpng)
        ("libseccomp" ,libseccomp)
+       ("libsoup" ,libsoup)
        ("libtiff" ,libtiff)
        ("libvorbis" ,libvorbis)
        ("libxml2" ,libxml2)
        ("poppler" ,poppler)
+       ("shared-mime-info" ,shared-mime-info)
        ("taglib" ,taglib)
        ("totem-pl-parser" ,totem-pl-parser)
        ("tracker" ,tracker)
