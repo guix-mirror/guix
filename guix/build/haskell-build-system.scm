@@ -175,15 +175,8 @@ first match and return the content of the group."
   "Generate the GHC package database."
   (let* ((haskell  (assoc-ref inputs "haskell"))
          (name-version (strip-store-file-name haskell))
-         (input-dirs (match inputs
-                       (((_ . dir) ...)
-                        dir)
-                       (_ '())))
          ;; Silence 'find-files' (see 'evaluate-search-paths')
-         (conf-dirs (with-null-error-port
-                     (search-path-as-list
-                      `(,(string-append "lib/" name-version))
-                      input-dirs #:pattern ".*\\.conf.d$")))
+         (conf-dirs (search-path-as-string->list (getenv "GHC_PACKAGE_PATH")))
          (conf-files (append-map (cut find-files <> "\\.conf$") conf-dirs)))
     (mkdir-p %tmp-db-dir)
     (for-each (lambda (file)
@@ -243,10 +236,11 @@ given Haskell package."
   (let* ((out (assoc-ref outputs "out"))
          (doc (assoc-ref outputs "doc"))
          (haskell  (assoc-ref inputs "haskell"))
-         (name-verion (strip-store-file-name haskell))
+         (name-version (strip-store-file-name haskell))
+         (version (last (string-split name-version #\-)))
          (lib (string-append (or (assoc-ref outputs "lib") out) "/lib"))
          (config-dir (string-append lib
-                                    "/" name-verion
+                                    "/ghc-" version
                                     "/" name ".conf.d"))
          (id-rx (make-regexp "^id: *(.*)$"))
          (config-file (string-append out "/" name ".conf"))
