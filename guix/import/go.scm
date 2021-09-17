@@ -480,7 +480,7 @@ build a package."
                          (strip-.git-suffix/maybe repo-url)))))
   ;; <meta name="go-import" content="import-prefix vcs repo-root">
   (let* ((meta-data (http-fetch* (format #f "https://~a?go-get=1" module-path)))
-         (select (sxpath `(// head (meta (@ (equal? (name "go-import"))))
+         (select (sxpath `(// (meta (@ (equal? (name "go-import"))))
                               // content))))
     (match (select (html->sxml meta-data #:strict? #t))
       (() #f)                           ;nothing selected
