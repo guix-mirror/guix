@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -787,14 +788,14 @@ infamous 'Wanda the Fish'.")
        ("libgxps" ,libgxps)
        ("libjpeg" ,libjpeg-turbo)
        ("libxml2" ,libxml2)
-       ("dogtail" ,python2-dogtail)
+       ("dogtail" ,python-dogtail)
        ("shared-mime-info" ,shared-mime-info)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libgnome-keyring" ,libgnome-keyring)
        ("libarchive" ,libarchive)
        ("marco" ,marco)
-       ("openjpeg" ,openjpeg-1)
+       ("openjpeg" ,openjpeg)
        ("pango" ,pango)
        ;;("texlive" ,texlive)
        ;; TODO:
