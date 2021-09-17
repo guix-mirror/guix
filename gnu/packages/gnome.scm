@@ -8374,6 +8374,12 @@ devices using the GNOME desktop.")
                   (string-append "\"" gnome-desktop
                                  "/share/gnome/gnome-version.xml\"")))
                #t)))
+         ;; XXX: This appears to be fixed in 3.35.90:
+         ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=957285.
+         (add-before 'configure 'set-cflags
+           (lambda _
+             (setenv "CFLAGS" "-fcommon")
+             #t))
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
            (lambda _
