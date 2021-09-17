@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -89,6 +89,9 @@ Return DIRECTORY on success."
        (loop rest))
       ((('tag name) rest ...)
        (git "tag" name)
+       (loop rest))
+      ((('tag name text) rest ...)
+       (git "tag" "-m" text name)
        (loop rest))
       ((('branch name) rest ...)
        (git "branch" name)
