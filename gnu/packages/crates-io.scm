@@ -6231,6 +6231,30 @@ system calls.  Second, exposing the internal buffer allows the user to work
 with data in place, which avoids another copy.")
     (license license:gpl3)))
 
+(define-public rust-buffering-0.3
+  (package
+    (name "rust-buffering")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "buffering" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11cyq2nm569j028g93jxk00h8nfwc3l6n3hqw79w34na01p3lq97"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-buffering-nocopy-macro" ,rust-buffering-nocopy-macro-0.1))))
+    (home-page "https://github.com/jbaublitz/buffering")
+    (synopsis "Library primarily designed for network packet buffer operations")
+    (description
+     "This package provides a library primarily designed for network packet
+buffer operations.")
+    (license license:bsd-3)))
+
 (define-public rust-buffering-nocopy-macro-0.2
   (package
     (name "rust-buffering-nocopy-macro")
