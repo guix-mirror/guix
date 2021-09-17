@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@ Return DIRECTORY on success."
        (with-environment-variables
         `(("GIT_CONFIG_NOSYSTEM" "1")
           ("GIT_ATTR_NOSYSTEM" "1")
+          ("GIT_CONFIG_GLOBAL" ,(string-append home "/.gitconfig"))
           ("HOME" ,home))
         (apply invoke (git-command) "-C" directory
                command args)))))
