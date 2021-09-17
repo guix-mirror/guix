@@ -154,13 +154,13 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
     (native-inputs
      `(("python-nose" ,python-nose)))
     (propagated-inputs
-     `(("python-py-bcrypt" ,python-py-bcrypt)))
+     `(("python-bcrypt" ,python-bcrypt)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-PYTHON_EGG_CACHE
            ;; Some tests require access to "$HOME/.cython".
-           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp"))))))
     (home-page "https://bitbucket.org/ecollins/passlib")
     (synopsis "Comprehensive password hashing framework")
     (description
