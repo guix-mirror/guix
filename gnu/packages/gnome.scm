@@ -10410,7 +10410,8 @@ photo-booth-like software, such as Cheese.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vyim2avlgq3a48rgdfz5g21kqk11mfb53b2l883340v88mp7ll8"))))
+                "0vyim2avlgq3a48rgdfz5g21kqk11mfb53b2l883340v88mp7ll8"))
+              (patches (search-patches "cheese-vala-update.patch"))))
     (arguments
      `(#:glib-or-gtk? #t
        ;; Tests require GDK.
