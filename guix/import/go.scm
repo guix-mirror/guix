@@ -619,7 +619,7 @@ hint: use one of the following available versions ~a\n"
          (meta-data (fetch-module-meta-data root-module-path))
          (vcs-type (module-meta-vcs meta-data))
          (vcs-repo-url (module-meta-data-repo-url meta-data goproxy))
-         (synopsis (go-package-synopsis root-module-path))
+         (synopsis (go-package-synopsis module-path))
          (description (go-package-description module-path))
          (licenses (go-package-licenses module-path)))
     (values
@@ -630,7 +630,10 @@ hint: use one of the following available versions ~a\n"
          ,(vcs->origin vcs-type vcs-repo-url version*))
         (build-system go-build-system)
         (arguments
-         '(#:import-path ,root-module-path))
+         '(#:import-path ,module-path
+           ,@(if (string=? module-path root-module-path)
+                 '()
+                 `(#:unpack-path ,root-module-path))))
         ,@(maybe-propagated-inputs
            (map (match-lambda
                   ((name version)
