@@ -5404,6 +5404,10 @@ Recording Code} (ISRC) can be extracted.}")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("\\*.inc") ""))))
          (replace 'check
            (lambda _
              ;; requires network connections
