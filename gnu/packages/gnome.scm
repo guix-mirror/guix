@@ -2086,7 +2086,7 @@ commonly used macros.")
 (define-public gnome-contacts
   (package
     (name "gnome-contacts")
-    (version "3.34")
+    (version "3.38.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-contacts/"
@@ -2094,10 +2094,10 @@ commonly used macros.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04igc9xvyc4kb5xf5g2missnvyvj9zv5cqxf5k4z7hb0sv42wq4r"))))
+                "0hsq0dwxjahcaxnm1m4r1lync9k2fkwzybfmkchrmn95vqcwwvf9"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dcheese=false")
+     `(#:configure-flags '("-Dcheese=disabled")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'generate-vapis
