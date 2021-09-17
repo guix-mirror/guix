@@ -164,7 +164,8 @@ tool to extract metadata from a file and print the results.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0bh39irwzkv48fkw43skfgkk8ka3793bx1lm21sgw6zxi0djyyx3"))))
+              "0bh39irwzkv48fkw43skfgkk8ka3793bx1lm21sgw6zxi0djyyx3"))
+            (patches (search-patches "libmicrohttpd-0.9.73-test-ssl3.patch"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
