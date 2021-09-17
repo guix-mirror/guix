@@ -1683,8 +1683,7 @@ system administrator.")
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (delete-file-recursively "lib/zlib")
-                  #t))))
+                  (delete-file-recursively "lib/zlib")))))
     (build-system gnu-build-system)
     (outputs (list "out"))
     (arguments
@@ -1737,8 +1736,7 @@ system administrator.")
              ;; not the task of the build system, and fails.
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
-                (string-append match "\ndisabled-" match)))
-             #t)))
+                (string-append match "\ndisabled-" match))))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
