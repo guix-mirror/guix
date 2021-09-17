@@ -8683,7 +8683,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "2.3.5")
+    (version "3.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -8691,7 +8691,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "1ixxyqjlv7pnl4j8g6b72fkbjvzfspza8y71ppkncry8i6xkr223"))))
+                "13zcc07wd51sz7kglk3xbjrsq7d835cxfr7iwjr7nn2xcri8jdns"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8699,19 +8699,41 @@ easy, safe, and automatic.")
        ;; Otherwise, the RUNPATH will lack the final path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib/tracker-2.0"))
+                            (assoc-ref %outputs "out") "/lib/tracker-3.0")
+             "-Ddocs=false"
+             "-Dsystemd_user_services=false")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'pre-check
+         (add-before 'configure 'set-shell
            (lambda _
-             ;; Some tests expect to write to $HOME.
-             (setenv "HOME" "/tmp")
-             #t)))))
+             (setenv "SHELL" (which "bash"))))
+         (add-before 'configure 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((manpage "/etc/asciidoc/docbook-xsl/manpage.xsl")
+                    (file (search-input-file inputs manpage)))
+               (substitute* "docs/manpages/meson.build"
+                 (("/etc/asciidoc[^']+")
+                  file)))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some tests expect to write to $HOME.
+               (setenv "HOME" "/tmp")
+               (invoke "dbus-run-session" "--" "meson" "test"
+                       "--print-errorlogs")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml-4.5" ,docbook-xml)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("asciidoc" ,asciidoc)
+       ("xsltproc" ,libxslt)
+       ("cmake-minimal" ,cmake-minimal)
        ("python-pygobject" ,python-pygobject)
+       ("gtk-doc" ,gtk-doc/stable)
        ("intltool" ,intltool)
+       ("dbus" ,dbus)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
