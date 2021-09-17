@@ -10343,6 +10343,30 @@ name suggestion or @code{nil}, they are called in turn and the first non-nil
 suggestion is taken.")
       (license license:gpl3+))))
 
+(define-public emacs-eterm-256color
+  (package
+    (name "emacs-eterm-256color")
+    (version "0.3.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dieggsy/eterm-256color")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ysxblc90kjcz84siprnyxwh94scflivqbxylzkvjm7hbx93rsh1"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-xterm-color" ,emacs-xterm-color)))
+    (home-page "https://github.com/dieggsy/eterm-256color")
+    (synopsis
+     "Customizable 256 colors for Emacs @code{term} and @code{ansi-term}")
+    (description "This package uses @code{emacs-xterm-color} to add
+customizable 256 color support to @code{term} and @code{ansi-term}.")
+    (license license:gpl3+)))
+
 (define-public emacs-mocker
   (package
     (name "emacs-mocker")
