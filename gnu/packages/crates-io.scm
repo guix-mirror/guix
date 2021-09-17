@@ -57,6 +57,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
@@ -29669,6 +29670,47 @@ with all line endings.")
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))
     (license license:cc0)))
+
+(define-public rust-notmuch-0.6
+  (package
+    (name "rust-notmuch")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "notmuch" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19q93iyvx4liksm09mhq9ibm8zj7i3dizc1s40f916z0kbpn9k5w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f         ;see https://github.com/vhdirk/notmuch-rs/issues/35
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-supercow" ,rust-supercow-0.1))
+       #:cargo-development-inputs
+       (("rust-dirs" ,rust-dirs-1)
+        ("rust-gethostname" ,rust-gethostname-0.2)
+        ("rust-lettre" ,rust-lettre-0.9)
+        ("rust-lettre-email" ,rust-lettre-email-0.9)
+        ("rust-maildir" ,rust-maildir-0.5)
+        ("rust-tempfile" ,rust-tempfile-3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-maildir-version
+           (lambda* _
+             (substitute* "Cargo.toml"
+               (("version = \"0.3.2\"") "version = \"0.5.0\"")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("notmuch" ,notmuch)))
+    (home-page "https://github.com/vhdirk/notmuch-rs")
+    (synopsis "Rust interface and bindings for Notmuch")
+    (description
+     "This crate provides a Rust interface and bindings for Notmuch.")
+    (license license:gpl3+)))
 
 (define-public rust-ntapi-0.3
   (package
