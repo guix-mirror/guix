@@ -17,7 +17,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
-;;; Copyright © 2019, 2020 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019, 2020, 2021 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
@@ -31842,3 +31842,34 @@ deleting and uploading forecast data, and downloading scores.")
 regression and obtain Bayesian inference of the model via the Markov Chain
 Monte Carlo approach implemented in JAGS.")
     (license license:gpl3+)))
+
+(define-public r-ggh4x
+  (package
+    (name "r-ggh4x")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggh4x" version))
+       (sha256
+        (base32
+         "0gv9ckkdqbcjknzsv8h3955wnikawdfypr279v74hvwyq86af29r"))))
+    (properties `((upstream-name . "ggh4x")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gtable" ,r-gtable)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/teunbrand/ggh4x")
+    (synopsis "Extension for ggplot2")
+    (description "This package is a @code{ggplot2} extension.  It provides some
+utility functions that do not entirely fit within the grammar of graphics
+concept.  The package extends @code{ggpplots} facets through customisation, by
+setting individual scales per panel, resizing panels and providing nested
+facets.  It also allows multiple colour, fill scales per plot and hosts a
+smaller collection of stats, geoms and axis guides.")
+    (license license:expat)))
