@@ -12644,6 +12644,20 @@ $ guix graph --path -t references emacs libunistring
 /gnu/store/@dots{}-libunistring-0.9.10
 @end example
 
+Sometimes you still want to visualize the graph but would like to trim
+it so it can actually be displayed.  One way to do it is via the
+@option{--max-depth} (or @option{-M}) option, which lets you specify the
+maximum depth of the graph.  In the example below, we visualize only
+@code{libreoffice} and the nodes whose distance to @code{libreoffice} is
+at most 2:
+
+@example
+guix graph -M 2 libreoffice | xdot -f fdp -
+@end example
+
+Mind you, that's still a big ball of spaghetti, but at least
+@command{dot} can render it quickly and it can be browsed somewhat.
+
 The available options are the following:
 
 @table @option
