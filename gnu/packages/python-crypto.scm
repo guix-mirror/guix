@@ -171,38 +171,6 @@ useful for a wide range of tasks, from verifying a hash found in /etc/shadow,
 to providing full-strength password hashing for multi-user application.")
     (license license:bsd-3)))
 
-(define-public python-py-bcrypt
-  (package
-    (name "python-py-bcrypt")
-    (version "0.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "py-bcrypt" version))
-       (sha256
-        (base32
-         "0y6smdggwi5s72v6p1nn53dg6w05hna3d264cq6kas0lap73p8az"))))
-    (build-system python-build-system)
-    (home-page "https://code.google.com/p/py-bcrypt")
-    (synopsis
-     "Bcrypt password hashing and key derivation")
-    (description
-     "A python wrapper of OpenBSD's Blowfish password hashing code.  This
-system hashes passwords using a version of Bruce Schneier's Blowfish block
-cipher with modifications designed to raise the cost of off-line password
-cracking and frustrate fast hardware implementation.  The computation cost of
-the algorithm is parametrised, so it can be increased as computers get faster.
-The intent is to make a compromise of a password database less likely to
-result in an attacker gaining knowledge of the plaintext passwords (e.g. using
-John the Ripper).")
-    ;; "sha2.c" is under BSD-3;
-    ;; "blowfish.c" and "bcrypt.c" are under BSD-4;
-    ;; the rest is under ISC.
-    (license (list license:isc license:bsd-3 license:bsd-4))))
-
-(define-public python2-py-bcrypt
-  (package-with-python2 python-py-bcrypt))
-
 (define-public python-pyblake2
   (package
     (name "python-pyblake2")
