@@ -8030,7 +8030,7 @@ the available networks and allows users to easily switch between them.")
                   (string-append xsldoc "/html/chunk.xsl")))))))))
     (propagated-inputs
      ;; libxml++-3.0.pc refers to all these.
-     `(("glibmm" ,glibmm)
+     `(("glibmm" ,glibmm-2.64)
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("autoconf" ,autoconf)
