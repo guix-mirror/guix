@@ -11928,6 +11928,40 @@ the updater for @uref{https://launchpad.net, Launchpad} packages.
 @item generic-html
 a generic updater that crawls the HTML page where the source tarball of
 the package is hosted, when applicable.
+
+@item generic-git
+a generic updater for packages hosted on Git repositories.  It tries to
+be smart about parsing Git tag names, but if it is not able to parse the
+tag name and compare tags correctly, users can define the following
+properties for a package.
+
+@itemize
+@item @code{release-tag-prefix}: a regular expression for matching a prefix of
+the tag name.
+
+@item @code{release-tag-suffix}: a regular expression for matching a suffix of
+the tag name.
+
+@item @code{release-tag-version-delimiter}: a string used as the delimiter in
+the tag name for separating the numbers of the version.
+
+@item @code{accept-pre-releases}: by default, the updater will ignore
+pre-releases; to make it also look for pre-releases, set the this
+property to @code{#t}.
+
+@end itemize
+
+@lisp
+(package
+  (name "foo")
+  ;; ...
+  (properties
+    '((release-tag-prefix . "^release0-")
+      (release-tag-suffix . "[a-z]?$")
+      (release-tag-version-delimiter . ":"))))
+@end lisp
+
+
 @end table
 
 For instance, the following command only checks for updates of Emacs

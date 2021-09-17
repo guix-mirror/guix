@@ -57,6 +57,8 @@
             commit-difference
             commit-relation
 
+            remote-refs
+
             git-checkout
             git-checkout?
             git-checkout-url
@@ -571,6 +573,45 @@ objects: 'ancestor (meaning that OLD is an ancestor of NEW), 'descendant, or
               (if (set-contains? oldest new)
                   'descendant
                   'unrelated))))))
+
+;;
+;;; Remote operations.
+;;;
+
+(define* (remote-refs url #:key tags?)
+  "Return the list of references advertised at Git repository URL.  If TAGS?
+is true, limit to only refs/tags."
+  (define (ref? ref)
+    ;; Like `git ls-remote --refs', only show actual references.
+    (and (string-prefix? "refs/" ref)
+         (not (string-suffix? "^{}" ref))))
+
+  (define (tag? ref)
+    (string-prefix? "refs/tags/" ref))
+
+  (define (include? ref)
+    (and (ref? ref)
+         (or (not tags?) (tag? ref))))
+
+  (define (remote-head->ref remote)
+    (let ((name (remote-head-name remote)))
+      (and (include? name)
+           name)))
+
+  (with-libgit2
+   (call-with-temporary-directory
+    (lambda (cache-directory)
+      (let* ((repository (repository-init cache-directory))
+             ;; Create an in-memory remote so we don't touch disk.
+             (remote (remote-create-anonymous repository url)))
+        (remote-connect remote)
+
+        (let* ((remote-heads (remote-ls remote))
+               (refs (filter-map remote-head->ref remote-heads)))
+          ;; Wait until we're finished with the repository before closing it.
+          (remote-disconnect remote)
+          (repository-close! repository)
+          refs))))))
 
 
 ;;;

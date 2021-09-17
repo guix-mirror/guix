@@ -254,6 +254,7 @@ MODULES =					\
   guix/import/egg.scm   			\
   guix/import/elpa.scm   			\
   guix/import/gem.scm				\
+  guix/import/git.scm                           \
   guix/import/github.scm   			\
   guix/import/gnome.scm				\
   guix/import/gnu.scm				\
@@ -473,6 +474,7 @@ SCM_TESTS =					\
   tests/graph.scm				\
   tests/gremlin.scm				\
   tests/hackage.scm				\
+  tests/import-git.scm				\
   tests/import-utils.scm			\
   tests/inferior.scm				\
   tests/lint.scm				\
