@@ -121,12 +121,12 @@ version is returned."
       (string-append package-name-prefix (string-downcase name))))
 
 (define guix-package->hackage-name
-  (let ((uri-rx (make-regexp "https?://hackage.haskell.org/package/([^/]+)/.*"))
+  (let ((uri-rx (make-regexp "(https?://hackage.haskell.org|mirror://hackage)/package/([^/]+)/.*"))
         (name-rx (make-regexp "(.*)-[0-9\\.]+")))
     (lambda (package)
       "Given a Guix package name, return the corresponding Hackage name."
       (let* ((source-url (and=> (package-source package) origin-uri))
-             (name (match:substring (regexp-exec uri-rx source-url) 1)))
+             (name (match:substring (regexp-exec uri-rx source-url) 2)))
         (match (regexp-exec name-rx name)
           (#f name)
           (m (match:substring m 1)))))))
@@ -353,7 +353,7 @@ respectively."
                     #:guix-name hackage-name->package-name))
 
 (define hackage-package?
-  (let ((hackage-rx (make-regexp "https?://hackage.haskell.org")))
+  (let ((hackage-rx (make-regexp "(https?://hackage.haskell.org|mirror://hackage/)")))
     (url-predicate (cut regexp-exec hackage-rx <>))))
 
 (define (latest-release package)
