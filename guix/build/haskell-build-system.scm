@@ -143,17 +143,6 @@ and parameters ~s~%"
                 (find-files lib "\\.a$"))))
   #t)
 
-(define (grep rx port)
-  "Given a regular-expression RX including a group, read from PORT until the
-first match and return the content of the group."
-  (let ((line (read-line port)))
-    (if (eof-object? line)
-        #f
-        (let ((rx-result (regexp-exec rx line)))
-          (if rx-result
-              (match:substring rx-result 1)
-              (grep rx port))))))
-
 (define* (setup-compiler #:key system inputs outputs #:allow-other-keys)
   "Setup the compiler environment."
   (let* ((haskell (assoc-ref inputs "haskell"))
@@ -242,7 +231,7 @@ given Haskell package."
          (config-dir (string-append lib
                                     "/ghc-" version
                                     "/" name ".conf.d"))
-         (id-rx (make-regexp "^id: *(.*)$"))
+         (id-rx (make-regexp "^id:[ \n\t]+([^ \t\n]+)$" regexp/newline))
          (config-file (string-append out "/" name ".conf"))
          (params
           (list (string-append "--gen-pkg-config=" config-file))))
@@ -250,8 +239,15 @@ given Haskell package."
     ;; The conf file is created only when there is a library to register.
     (when (file-exists? config-file)
       (mkdir-p config-dir)
-      (let ((config-file-name+id
-             (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+      (let* ((contents (call-with-input-file config-file read-string))
+             (config-file-name+id (match:substring (first (list-matches id-rx contents)) 1)))
+
+        (when (or
+                (and
+                  (string? config-file-name+id)
+                  (string-null? config-file-name+id))
+                (not config-file-name+id))
+          (error (format #f "The package id for ~a is empty. This is a bug." config-file)))
 
         ;; Remove reference to "doc" output from "lib" (or "out") by rewriting the
         ;; "haddock-interfaces" field and removing the optional "haddock-html"
