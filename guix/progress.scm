@@ -270,19 +270,25 @@ ABBREVIATION used to shorten FILE for display."
 tasks is performed.  Write PREFIX at the beginning of the line."
   (define done 0)
 
+  (define (draw-bar)
+    (let* ((ratio (* 100. (/ done total))))
+      (erase-current-line port)
+      (if (string-null? prefix)
+          (display (progress-bar ratio (current-terminal-columns)) port)
+          (let ((width (- (current-terminal-columns)
+                          (string-length prefix) 3)))
+            (display prefix port)
+            (display "  " port)
+            (display (progress-bar ratio width) port)))
+      (force-output port)))
+
+  (define draw-bar/rate-limited
+    (rate-limited draw-bar %progress-interval))
+
   (define (report-progress)
     (set! done (+ 1 done))
     (unless (> done total)
-      (let* ((ratio (* 100. (/ done total))))
-        (erase-current-line port)
-        (if (string-null? prefix)
-            (display (progress-bar ratio (current-terminal-columns)) port)
-            (let ((width (- (current-terminal-columns)
-                            (string-length prefix) 3)))
-              (display prefix port)
-              (display "  " port)
-              (display (progress-bar ratio width) port)))
-        (force-output port))))
+      (draw-bar/rate-limited)))
 
   (progress-reporter
    (start (lambda ()
