@@ -17537,6 +17537,28 @@ interactive commands and functions, such as @code{completing-read}.")
 files, allowing for actions to be performed based on search criteria.")
     (license license:gpl3+)))
 
+(define-public emacs-bing-dict
+  (package
+    (name "emacs-bing-dict")
+    (version "0.2.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cute-jumper/bing-dict.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1kn8kmljn0pj0hz7dj7r7nxw43xd6acndaqq92d02mla12hiqayz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cute-jumper/bing-dict.el")
+    (synopsis "Minimalist Bing dictionary interface in Emacs")
+    (description
+     "This package provides a minimalist Emacs extension to search
+@uref{http://www.bing.com/dict}.  It supports English to Chinese, and
+Chinese to English.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-auto-expand
   (let ((commit "4938d5f6460e2f8f051ba9ac000b291bfa43ef62")
         (revision "1"))
