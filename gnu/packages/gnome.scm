@@ -6005,7 +6005,7 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.3.12")
+    (version "0.3.13")
     (source
      (origin
        (method url-fetch)
@@ -6013,7 +6013,7 @@ as possible!")
                            (version-major+minor version) "/"
                            "grilo-" version ".tar.xz"))
        (sha256
-        (base32 "0w8sq5g6g1rg85h53vbll8va70fcp6082mlpmy98aa03444ddyyv"))))
+        (base32 "0ywjvh7xw4ql1q4fvl0q5n06n08pga1g1nc9l7c3x5214gr3fj6i"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
