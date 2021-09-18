@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (guix gexp)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -164,18 +166,19 @@ C/C++ part.")
     (build-system ant-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "-Djunit.core.jar="
-                            (car (find-files
-                                   (assoc-ref %build-inputs "java-junit")
-                                   ".*.jar$")))
-             (string-append "-Djunit.junitparams.jar="
-                            (car (find-files
-                                   (assoc-ref %build-inputs "java-junitparams")
-                                   ".*.jar$")))
-             (string-append "-Djunit.hamcrest.jar="
-                            (car (find-files
-                                   (assoc-ref %build-inputs "java-hamcrest-core")
-                                   ".*.jar$"))))
+       ,#~(list
+           (string-append "-Djunit.core.jar="
+                          (car (find-files
+                                #$(this-package-native-input "java-junit")
+                                ".*.jar$")))
+           (string-append "-Djunit.junitparams.jar="
+                          (car (find-files
+                                #$(this-package-native-input "java-junitparams")
+                                ".*.jar$")))
+           (string-append "-Djunit.hamcrest.jar="
+                          (car (find-files
+                                #$(this-package-native-input "java-hamcrest-core")
+                                ".*.jar$"))))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
