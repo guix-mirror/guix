@@ -13602,6 +13602,32 @@ traits for both structs and enums.")
 structs and enums.")
   (license license:expat)))
 
+(define-public rust-des-0.6
+  (package
+    (name "rust-des")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "des" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bigk1x1kxvnfjn1alr8cc383z1flmj8q7g2pjl2zal8i1s7qkmj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-cipher" ,rust-cipher-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3))
+       #:cargo-development-inputs
+       (("rust-cipher" ,rust-cipher-0.2))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "DES and Triple DES block ciphers implementation")
+    (description "This package provides DES and Triple DES (3DES, TDES) block
+ciphers implementations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-deunicode-0.4
   (package
     (name "rust-deunicode")
