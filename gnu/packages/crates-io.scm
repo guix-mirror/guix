@@ -16267,6 +16267,31 @@ deserialized from environment variables.")
 @code{no_std} environment.")
     (license license:boost1.0)))
 
+(define-public rust-escaper-0.1
+  (package
+    (name "rust-escaper")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "escaper" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rhn3ipb5c3zns4wakclilfqzbmax6pwx7l367dipfj9fdxvjgm5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-entities" ,rust-entities-1))
+       #:cargo-development-inputs
+       (("rust-num" ,rust-num-0.4)
+        ("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/dignifiedquire/rust-escaper")
+    (synopsis "Library for HTML entity encoding and decoding")
+    (description "This package provides a library for HTML entity encoding and
+decoding.")
+    (license (list license:asl2.0 license:expat license:mpl2.0))))
+
 (define-public rust-escargot-0.5
   (package
     (name "rust-escargot")
