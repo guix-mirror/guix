@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
+;;; Copyright © 2020-2021 James Smith <jsubuntuxp@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages game-development)
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
@@ -99,6 +101,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -446,6 +449,67 @@ Game Engine easier.  In addition to SGE's conveniences, the user has access to a
 GUI toolkit, lighting and physics frameworks and @code{Tiled} TMX format
 support.")
     (license license:gpl3+)))
+
+(define-public slade
+  (package
+    (name "slade")
+    (version "3.1.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sirjuddington/SLADE")
+             (commit version)))
+       (sha256 (base32 "009yc5m6y074wfalvwbrnv2zsmaf9yhbi8hzgs973di0zqnqv011"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "-DWX_GTK3=ON" "-DNO_WEBVIEW=ON"
+             (string-append "-DWITH_WXPATH="
+                            (assoc-ref %build-inputs "wxwidgets") "/bin")
+             (string-append "-DwxWidgets_LIBRARIES="
+                            (assoc-ref %build-inputs "wxwidgets") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'reset-slade.pk3-timestamps
+           ;; This is neccessary to make slade reproducible due to
+           ;; <https://bugs.gnu.org/44741>.  TODO: Remove on next core update
+           ;; cycle.
+           (lambda _
+             (invoke "find" "../source/dist/res" "-exec" "touch"
+                     "--no-dereference" "-t" "197001010000.00" "{}"
+                     "+")))
+         (add-after 'install 'wrap-with-x11-gdk-backend
+           ;; Set GDK_BACKEND to x11 to prevent crash on Wayland.
+           ;; See https://github.com/sirjuddington/SLADE/issues/1097 for details.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program
+                 (string-append (assoc-ref outputs "out")
+                                "/bin/slade")
+               '("GDK_BACKEND" = ("x11"))))))
+       #:tests? #f)) ;; No test suite.
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("curl" ,curl)
+       ("fluidsynth" ,fluidsynth)
+       ("freeimage" ,freeimage)
+       ("ftgl" ,ftgl)
+       ("glew" ,glew)
+       ("gtk+" ,gtk+)
+       ("sfml" ,sfml)
+       ("wxwidgets" ,wxwidgets-3.1)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://slade.mancubus.net")
+    (synopsis "Doom game data editor")
+    (description "SLADE3 is a modern editor for Doom-engine based games and
+source ports.  It has the ability to view, modify, and write many different game-
+specific formats, and even convert between some of them, or from/to other generic
+formats such as PNG.")
+    (license license:gpl2+)))
 
 (define-public tiled
   (package
