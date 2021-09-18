@@ -6045,7 +6045,7 @@ for application developers.")
 (define-public grilo-plugins
   (package
     (name "grilo-plugins")
-    (version "0.3.11")
+    (version "0.3.13")
     (source
      (origin
        (method url-fetch)
@@ -6053,7 +6053,7 @@ for application developers.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "0wyd3n5mn7b77hxylkc3f62v01mlavh96901pz342hwrn42ydqnx"))))
+        (base32 "1y10nnd711qxwgpz6spzp1rnk50fyf11kk1n71a31ab4fgb0ahqw"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -6076,12 +6076,24 @@ for application developers.")
        ("libmediaart" ,libmediaart)
        ;("librest" ,rest) ; unused
        ("libsoup" ,libsoup)
+       ("python-pygobject" ,python-pygobject)
        ("totam-pl-parser" ,totem-pl-parser)
-       ("tracker" ,tracker))) ; unused because it's too old
+       ("tracker" ,tracker)
+       ("tracker-miners" ,tracker-miners)))
     (arguments
      `(#:glib-or-gtk? #t
        ;;Disable lua-factory as it needs missing dependencies
-       #:configure-flags '("-Denable-lua-factory=no")))
+       #:configure-flags '("-Denable-lua-factory=no")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-shell
+           (lambda _
+             (setenv "SHELL" (which "bash"))))
+         ;; Disable the tracker test that requires the UPower daemon.
+         (add-before 'configure 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/tracker3/meson.build"
+               (("'test_tracker3'.*") "")))))))
     (home-page "https://live.gnome.org/Grilo")
     (synopsis "Plugins for the Grilo media discovery library")
     (description
