@@ -1329,6 +1329,13 @@ a debugging tool, @command{gssdp-device-sniffer}.")
              (base32
               "1ld7mrpdv9cszmfzh7i19qx4li25j3fr7x1jp38l8phzlmz3187p"))))
    (build-system meson-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'pre-check
+          (lambda _
+            ;; Tests require a writable HOME.
+            (setenv "HOME" (getcwd)))))))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
