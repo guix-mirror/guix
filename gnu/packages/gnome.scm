@@ -1612,7 +1612,7 @@ preview files on the GNOME desktop.")
 (define-public rygel
   (package
     (name "rygel")
-    (version "0.38.3")
+    (version "0.40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1620,23 +1620,34 @@ preview files on the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "003xficqb08r1dgid20i7cn889lbfwrglpx78rjd5nkvgxbimhh8"))))
-    (build-system gnu-build-system)
+                "0bd3d2swa8lq47b9r04x8xwdr9nhjnrwqi6scygd134wb5vxfh22"))))
+    (build-system meson-build-system)
+    (arguments
+     ;; Disable the tracker plugin.
+     '(#:configure-flags
+       (list "-Dplugins=external,gst-launch,lms,media-export,
+mpris,playbin,ruih,tracker3")))
     (native-inputs
      `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+       ("vala" ,vala)
+       ("docbook-xml" ,docbook-xml)
+       ("dockbook-xsl" ,docbook-xsl)
+       ("xsltproc" ,libxslt)))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("gssdp" ,gssdp)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-editing-services" ,gst-editing-services)
        ("gtk+" ,gtk+)
        ("gupnp" ,gupnp)
        ("gupnp-av" ,gupnp-av)
        ("gupnp-dlna" ,gupnp-dlna)
+       ("json-glib" ,json-glib)
        ("libgee" ,libgee)
        ("libmediaart" ,libmediaart)
        ("libsoup" ,libsoup)
