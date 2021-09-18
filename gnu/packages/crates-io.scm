@@ -1342,8 +1342,34 @@ This package is deprecated and was replaced by the @code{aes} crate.")
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-opaque-debug" ,rust-opaque-debug-0.2))))))
 
+(define-public rust-aesni-0.10
+  (package
+    (name "rust-aesni")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aesni" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kmh07fp9hbi1aa8dr2rybbgw8vqz6hjmk34c4w7sbscx7si2bpa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cipher" ,rust-cipher-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "AES (Rijndael) block ciphers implementation using AES-NI")
+    (description "This package provides an implementation of AES (Rijndael)
+block ciphers using AES-NI.
+
+This package is deprecated and was replaced by the @code{aes} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-aesni-0.7
   (package
+    (inherit rust-aesni-0.10)
     (name "rust-aesni")
     (version "0.7.0")
     (source
@@ -1354,7 +1380,6 @@ This package is deprecated and was replaced by the @code{aes} crate.")
        (sha256
         (base32
          "0r6j0mjkyqnwvgib01cvrwfw8rlx1biw75234niv723n1fdx6l6h"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-cipher" ,rust-block-cipher-0.7)
@@ -1362,12 +1387,7 @@ This package is deprecated and was replaced by the @code{aes} crate.")
         ("rust-stream-cipher" ,rust-stream-cipher-0.4))
        #:cargo-development-inputs
        (("rust-block-cipher" ,rust-block-cipher-0.7)
-        ("rust-stream-cipher" ,rust-stream-cipher-0.4))))
-    (home-page "https://github.com/RustCrypto/block-ciphers")
-    (synopsis "AES (Rijndael) block ciphers implementation using AES-NI")
-    (description "This package provides an implementation of AES (Rijndael)
-block ciphers using AES-NI.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-stream-cipher" ,rust-stream-cipher-0.4))))))
 
 (define-public rust-aesni-0.6
   (package
