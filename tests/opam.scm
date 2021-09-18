@@ -71,50 +71,52 @@ url {
 (test-begin "opam")
 
 (test-assert "opam->guix-package"
-  (mock ((guix import utils) url-fetch
-         (lambda (url file-name)
-           (match url
-             ("https://example.org/foo-1.0.0.tar.gz"
-              (begin
-                (mkdir-p "foo-1.0.0")
-                (system* "tar" "czvf" file-name "foo-1.0.0/")
-                (delete-file-recursively "foo-1.0.0")
-                (set! test-source-hash
-                  (call-with-input-file file-name port-sha256))))
-             (_ (error "Unexpected URL: " url)))))
-        (let ((my-package (string-append test-repo
-                                         "/packages/foo/foo.1.0.0")))
-          (mkdir-p my-package)
-          (with-output-to-file (string-append my-package "/opam")
-            (lambda _
-              (format #t "~a" test-opam-file))))
-        (match (opam->guix-package "foo" #:repo (list test-repo))
-          (('package
-             ('name "ocaml-foo")
-             ('version "1.0.0")
-             ('source ('origin
-                        ('method 'url-fetch)
-                        ('uri "https://example.org/foo-1.0.0.tar.gz")
-                        ('sha256
-                         ('base32
-                          (? string? hash)))))
-             ('build-system 'ocaml-build-system)
-             ('propagated-inputs
-              ('quasiquote
-               (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
-             ('native-inputs
-              ('quasiquote
-               (("ocaml-alcotest" ('unquote 'ocaml-alcotest))
-                ("ocamlbuild" ('unquote 'ocamlbuild)))))
-             ('home-page "https://example.org/")
-             ('synopsis "Some example package")
-             ('description "This package is just an example.")
-             ('license 'license:bsd-3))
-           (string=? (bytevector->nix-base32-string
-                      test-source-hash)
-                     hash))
-          (x
-           (pk 'fail x #f)))))
+  (mock ((guix import opam) get-opam-repository
+         (const test-repo))
+        (mock ((guix import utils) url-fetch
+               (lambda (url file-name)
+                 (match url
+                   ("https://example.org/foo-1.0.0.tar.gz"
+                    (begin
+                      (mkdir-p "foo-1.0.0")
+                      (system* "tar" "czvf" file-name "foo-1.0.0/")
+                      (delete-file-recursively "foo-1.0.0")
+                      (set! test-source-hash
+                            (call-with-input-file file-name port-sha256))))
+                   (_ (error "Unexpected URL: " url)))))
+              (let ((my-package (string-append test-repo
+                                               "/packages/foo/foo.1.0.0")))
+                (mkdir-p my-package)
+                (with-output-to-file (string-append my-package "/opam")
+                  (lambda _
+                    (format #t "~a" test-opam-file))))
+              (match (opam->guix-package "foo" #:repo (list test-repo))
+                (('package
+                   ('name "ocaml-foo")
+                   ('version "1.0.0")
+                   ('source ('origin
+                              ('method 'url-fetch)
+                              ('uri "https://example.org/foo-1.0.0.tar.gz")
+                              ('sha256
+                               ('base32
+                                (? string? hash)))))
+                   ('build-system 'ocaml-build-system)
+                   ('propagated-inputs
+                    ('quasiquote
+                     (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
+                   ('native-inputs
+                    ('quasiquote
+                     (("ocaml-alcotest" ('unquote 'ocaml-alcotest))
+                      ("ocamlbuild" ('unquote 'ocamlbuild)))))
+                   ('home-page "https://example.org/")
+                   ('synopsis "Some example package")
+                   ('description "This package is just an example.")
+                   ('license 'license:bsd-3))
+                 (string=? (bytevector->nix-base32-string
+                            test-source-hash)
+                           hash))
+                (x
+                 (pk 'fail x #f))))))
 
 ;; Test the opam file parser
 ;; We fold over some test cases. Each case is a pair of the string to parse and the
