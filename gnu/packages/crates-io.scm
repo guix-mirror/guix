@@ -48022,6 +48022,37 @@ and write it somewhere that does not easily support them, such as a log
 file.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-strong-xml-0.6
+  (package
+    (name "rust-strong-xml")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strong-xml" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gxy34j42x5a572cfkkhmxamrm764pswj5r3wcwi0bwfc4xgn68x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52 ; fix for E0658
+       #:cargo-inputs
+       (("rust-jetscii" ,rust-jetscii-0.5)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-strong-xml-derive"
+         ,rust-strong-xml-derive-0.6)
+        ("rust-xmlparser" ,rust-xmlparser-0.13))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.8))))
+    (home-page "https://github.com/PoiScript/strong-xml")
+    (synopsis "Strong typed xml")
+    (description
+     "This package provides a strong typed XML parser, based on xmlparser.")
+    (license license:expat)))
+
 (define-public rust-strong-xml-derive-0.6
   (package
     (name "rust-strong-xml-derive")
