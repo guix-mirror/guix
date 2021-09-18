@@ -26987,6 +26987,39 @@ Mach 3.0 kernel that underlies OSX.")
 library")
   (license (list license:asl2.0 license:expat))))
 
+(define-public rust-magic-crypt-3
+  (package
+    (name "rust-magic-crypt")
+    (version "3.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "magic-crypt" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jb4m8wqxm2qkg9gcflxa0sg1d33a1a0r876h47njg43h494zjfk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aes-soft" ,rust-aes-soft-0.6)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-block-modes" ,rust-block-modes-0.7)
+        ("rust-crc-any" ,rust-crc-any-2)
+        ("rust-des" ,rust-des-0.6)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-md-5" ,rust-md-5-0.9)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-tiger" ,rust-tiger-0.1))))
+    (home-page "https://magiclen.org/aes")
+    (synopsis "Library for DES or AES encryption")
+    (description
+     "MagicCrypt is a library to encrypt/decrypt strings, files, or data,
+using Data Encryption Standard(DES) or Advanced Encryption Standard(AES)
+algorithms.  It supports CBC block cipher mode, PKCS5 padding and 64, 128,
+192 or 256-bits key length.")
+    (license license:asl2.0)))
+
 (define-public rust-maildir-0.5
   (package
     (name "rust-maildir")
