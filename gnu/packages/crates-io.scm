@@ -16928,6 +16928,43 @@ descriptors limit.")
 Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
     (license license:expat)))
 
+(define-public rust-feedbin-api-0.1
+  (package
+    (name "rust-feedbin-api")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "feedbin-api" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "170xf3cgsqgqpnafpdmzzw9yvzc51r22lgr4f4hcrmidxlxpmlkp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;tests use the network
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-reqwest" ,rust-reqwest-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-dotenv" ,rust-dotenv-0.15)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-tokio" ,rust-tokio-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://gitlab.com/news-flash/feedbin_api")
+    (synopsis  "Rust implementation of the Feedbin REST API")
+    (description
+     "This package provides a Rust implementation of the Feedbin REST API.")
+    (license license:unlicense)))
+
 (define-public rust-femme-2
   (package
     (name "rust-femme")
