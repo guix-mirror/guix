@@ -39452,6 +39452,33 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-quickcheck" ,rust-quickcheck-0.2)
         ("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-region-2
+  (package
+    (name "rust-region")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "region" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q4szar3ms76552iygmhsvzhvvwkgz4l94qpx600vmyw5bm58zl7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mach" ,rust-mach-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-memmap" ,rust-memmap-0.7))))
+    (home-page "https://github.com/darfink/region-rs")
+    (synopsis "Library for manipulating memory regions")
+    (description
+     "This package provides a library for manipulating memory regions.")
+    (license license:expat)))
+
 (define-public rust-relative-path-1
   (package
     (name "rust-relative-path")
