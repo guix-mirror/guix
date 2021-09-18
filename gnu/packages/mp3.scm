@@ -9,6 +9,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -412,7 +413,8 @@ command-line tool as well as a C library, libmpg123.")
               (base32
                "0ki8mh76bbmdh77qsiw682dvi8y468yhbdabqwg05igmwc1wqvq5"))
              (patches
-              (search-patches "mpg321-CVE-2019-14247.patch"))))
+              (search-patches "mpg321-CVE-2019-14247.patch"
+                              "mpg321-gcc-10.patch"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-alsa")))
     (inputs
