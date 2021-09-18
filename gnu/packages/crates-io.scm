@@ -4115,6 +4115,29 @@ trace (backtrace) at runtime in a Rust program.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-barrel-0.6
+  (package
+    (name "rust-barrel")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "barrel" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qgzrfpp2acb06bbqrf5a8pjjwf3dwinq7sv2hqq0b1jn5wcjrwx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-diesel" ,rust-diesel-1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://rust-db.github.io/barrel/")
+    (synopsis "Powerful schema migration building API for Rust")
+    (description "This package provides a powerful schema migration building
+API for Rust.")
+    (license (list license:expat license:x11 license:asl2.0))))
+
 (define-public rust-base32-0.4
   (package
     (name "rust-base32")
