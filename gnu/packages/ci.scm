@@ -38,7 +38,6 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -48,6 +47,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages uglifyjs)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -252,7 +252,7 @@ intended as a replacement for Hydra.")
                          (let* ((file
                                  (assoc-ref inputs (string-append name ".js")))
                                 (port
-                                 (open-pipe* OPEN_READ "uglify-js" file))
+                                 (open-pipe* OPEN_READ "uglifyjs" file))
                                 (destination
                                  (string-append
                                   "../build/js/" name ".min.js")))
@@ -263,7 +263,7 @@ intended as a replacement for Hydra.")
 
                            (let ((exit (close-pipe port)))
                              (unless (zero? exit)
-                               (error "uglify-js failed" exit)))))
+                               (error "uglifyjs failed" exit)))))
 
                        '("vue"
                          "vue-router"
@@ -282,7 +282,7 @@ intended as a replacement for Hydra.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("googletest" ,googletest)
-       ("uglify-js" ,uglify-js)
+       ("uglifyjs" ,node-uglify-js)
 
        ("vue.js"
         ,(origin (method url-fetch)

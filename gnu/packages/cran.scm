@@ -84,7 +84,6 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages libevent)
-  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -104,6 +103,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages uglifyjs)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -2110,7 +2110,7 @@ previewing themes in real time.")
        ("js-strftime" ,js-strftime)
        ("js-highlight" ,js-highlight)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglifyjs" ,node-uglify-js)
        ("gfortran" ,gfortran)
        ("js-bootstrap-accessibility"
         ,(origin
@@ -2177,7 +2177,7 @@ responsive, and powerful applications with minimal effort.")
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
                                  (call-with-output-file target
                                    (lambda (port)
                                      (dump-port minified port)))))
@@ -2192,7 +2192,7 @@ responsive, and powerful applications with minimal effort.")
     (inputs
      `(("js-requirejs" ,js-requirejs)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglifyjs" ,node-uglify-js)
        ("js-jquery"
         ,(origin
            (method url-fetch)
@@ -2230,7 +2230,7 @@ supports interactive trees, to enable rich, editable trees in Shiny.")
            (lambda _
              (with-directory-excursion "inst/AdminLTE"
                (delete-file "app.min.js")
-               (let ((minified (open-pipe* OPEN_READ "uglify-js" "app.js")))
+               (let ((minified (open-pipe* OPEN_READ "uglifyjs" "app.js")))
                  (call-with-output-file "app.min.js"
                    (lambda (port)
                      (dump-port minified port))))))))))
@@ -2239,7 +2239,7 @@ supports interactive trees, to enable rich, editable trees in Shiny.")
        ("r-promises" ,r-promises)
        ("r-shiny" ,r-shiny)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)))
+     `(("uglifyjs" ,node-uglify-js)))
     (home-page "https://rstudio.github.io/shinydashboard/")
     (synopsis "Create dashboards with shiny")
     (description "This package provides an extension to the Shiny web
@@ -15423,7 +15423,7 @@ to easily call your own custom JavaScript functions from R.")
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
                                (delete-file target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
                                  (call-with-output-file target
                                    (lambda (port)
                                      (dump-port minified port)))))
@@ -15439,7 +15439,7 @@ to easily call your own custom JavaScript functions from R.")
        ("r-shinyjs" ,r-shinyjs)))
     (native-inputs
      `(("r-knitr" ,r-knitr)
-       ("uglify-js" ,uglify-js)
+       ("uglifyjs" ,node-uglify-js)
        ("js-jquery"
         ,(origin
            (method url-fetch)
@@ -17929,7 +17929,7 @@ and Learning to Rank measures (LambdaMart).")
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
                                (delete-file target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
                                  (call-with-output-file target
                                    (lambda (port)
                                      (dump-port minified port)))))
@@ -17941,7 +17941,7 @@ and Learning to Rank measures (LambdaMart).")
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-igraph" ,r-igraph)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglifyjs" ,node-uglify-js)
        ("js-jquery"
         ,(origin
            (method url-fetch)
@@ -18201,7 +18201,7 @@ etc.).  Text boxes with automatic word wrap are also supported.")
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
                                  (call-with-output-file target
                                    (lambda (port)
                                      (dump-port minified port)))))
@@ -18215,7 +18215,7 @@ etc.).  Text boxes with automatic word wrap are also supported.")
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-shiny" ,r-shiny)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglifyjs" ,node-uglify-js)
        ("js-raphael"
         ,(origin
            (method url-fetch)
@@ -20213,14 +20213,14 @@ tools for help in data interpretation.")
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
                                  (call-with-output-file target
                                    (lambda (port)
                                      (dump-port minified port)))))
                              sources targets))))
              #t)))))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglifyjs" ,node-uglify-js)
        ;; NOTE: Make sure that this version of d3 is still valid when
        ;; upgrading the package.
        ("d3.v4.js"
@@ -24566,14 +24566,14 @@ documents, Shiny applications, Plumber APIs, plots, and static web content.")
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
                                  (call-with-output-file target
                                    (lambda (port)
                                      (dump-port minified port)))))
                              sources targets))))
              #t)))))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglifyjs" ,node-uglify-js)
        ;; They actually use version 1.11.1, but this more recent version
        ;; should be just fine.
        ("js-jquery"
