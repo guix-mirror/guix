@@ -25566,6 +25566,37 @@ file.
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))))
 
+(define-public rust-libxml-0.3
+  (package
+    (name "rust-libxml")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libxml" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f42qrc1mim85ivh2d4bn2wbqrn7dfg1i3l1q32yajcr835pxh02"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-rayon" ,rust-rayon-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (home-page "https://github.com/KWARC/rust-libxml")
+    (synopsis "Rust wrapper for libxml2")
+    (description "This package provides a Rust wrapper for libxml2, the XML
+C parser and toolkit developed for the GNOME project.")
+    (license license:expat)))
+
 (define-public rust-libz-sys-1
   (package
     (name "rust-libz-sys")
