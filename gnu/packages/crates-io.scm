@@ -32507,6 +32507,31 @@ system for OpenSSL.")
      "Extra FFI bindings to OpenSSL that require a C shim.")
     (license license:expat)))
 
+(define-public rust-opml-1
+  (package
+    (name "rust-opml")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "opml" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zr7f101inkz3rknl0r3q0qkklfxhqrji7yxmqixajfn3m5mbjfa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52 ; fix for E0658
+       #:cargo-inputs
+       (("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-strong-xml" ,rust-strong-xml-0.6)
+        ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/Holllo/opml")
+    (synopsis "OPML parser for Rust")
+    (description "This package provides an OPML parser for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ord-subset-3
   (package
     (name "rust-ord-subset")
