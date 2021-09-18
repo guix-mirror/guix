@@ -2433,6 +2433,46 @@ format.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-article-scraper-1
+  (package
+    (name "rust-article-scraper")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "article_scraper" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l904hn99fgj83f3dhspxgz1j3xzgjbnbfsgvmhd1jg5l4hqfhxp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;tests use the network
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-libxml" ,rust-libxml-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-reqwest" ,rust-reqwest-0.11)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-url" ,rust-url-2))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("openssl" ,openssl)))
+    (home-page "https://gitlab.com/news-flash/article_scraper")
+    (synopsis "Scrap article contents from the web")
+    (description "This package provides a crate to scrap article contents from
+the web.")
+    ;; No copyright headers in the source code.  LICENSE indicates gpl3.
+    (license license:gpl3)))
+
 (define-public rust-askama-escape-0.10
   (package
     (name "rust-askama-escape")
