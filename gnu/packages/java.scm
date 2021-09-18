@@ -60,7 +60,6 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages ghostscript) ;lcms
@@ -1962,8 +1961,12 @@ new Date();"))
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; TODO: unbundle libpng and lcms
              (invoke "bash" "./configure"
-                     "--with-extra-cflags=-fcommon"
-                     (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                     ;; Add flags for compilation with gcc >= 10
+                     ,(string-append "--with-extra-cflags=-fcommon"
+                                     " -fno-delete-null-pointer-checks"
+                                     " -fno-lifetime-dse")
+                     (string-append "--with-freetype="
+                                    (assoc-ref inputs "freetype"))
                      "--disable-freetype-bundling"
                      "--disable-warnings-as-errors"
                      "--disable-hotspot-gtest"
@@ -2091,8 +2094,7 @@ new Date();"))
        ("libxt" ,libxt)
        ("libxtst" ,libxtst)))
     (native-inputs
-     `(("gcc" ,gcc-9) ; FIXME: segmentation faults when using gcc-10.
-       ("icedtea-8" ,icedtea-8)
+     `(("icedtea-8" ,icedtea-8)
        ("icedtea-8:jdk" ,icedtea-8 "jdk")
        ;; XXX: The build system fails with newer versions of GNU Make.
        ("make@4.2" ,gnu-make-4.2)
@@ -2138,8 +2140,12 @@ new Date();"))
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (invoke "bash" "./configure"
-                       "--with-extra-cflags=-fcommon"
-                       (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                       ;; Add flags for compilation with gcc >= 10
+                       ,(string-append "--with-extra-cflags=-fcommon"
+                                       " -fno-delete-null-pointer-checks"
+                                       " -fno-lifetime-dse")
+                       (string-append "--with-freetype="
+                                      (assoc-ref inputs "freetype"))
                        "--disable-freetype-bundling"
                        "--disable-warnings-as-errors"
                        "--disable-hotspot-gtest"
@@ -2157,8 +2163,7 @@ new Date();"))
         `(,(gexp-input openjdk9)
           ,(gexp-input openjdk9 "jdk")))))
     (native-inputs
-     `(("gcc" ,gcc-9) ; FIXME: segmentation faults when using gcc-10.
-       ("openjdk9" ,openjdk9)
+     `(("openjdk9" ,openjdk9)
        ("openjdk9:jdk" ,openjdk9 "jdk")
        ("make@4.2" ,gnu-make-4.2)
        ("unzip" ,unzip)
@@ -2193,7 +2198,11 @@ new Date();"))
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
        #:configure-flags
-       `("--disable-option-checking" ; --enable-fast-install default flag errors otherwise
+       `(;; Add flags for compilation with gcc >= 10
+         ,(string-append "--with-extra-cflags=-fcommon"
+                         " -fno-delete-null-pointer-checks"
+                         " -fno-lifetime-dse")
+         "--disable-option-checking" ; --enable-fast-install default flag errors otherwise
          "--disable-warnings-as-errors"
          ;; make validate-runpath pass, see: http://issues.guix.info/issue/32894
          "--with-native-debug-symbols=zipped"
