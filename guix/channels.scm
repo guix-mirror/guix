@@ -1089,8 +1089,13 @@ cannot be found."
   (if (channel-news-entry-commit entry)
       entry
       (let* ((tag       (channel-news-entry-tag entry))
-             (reference (string-append "refs/tags/" tag))
-             (oid       (reference-name->oid repository reference)))
+             (reference (reference-lookup repository
+                                          (string-append "refs/tags/" tag)))
+             (target    (reference-target reference))
+             (oid       (let ((obj (object-lookup repository target)))
+                          (if (= OBJ-TAG (object-type obj)) ;annotated tag?
+                              (tag-target-id (tag-lookup repository target))
+                              target))))
         (channel-news-entry (oid->string oid) tag
                             (channel-news-entry-title entry)
                             (channel-news-entry-body entry)))))

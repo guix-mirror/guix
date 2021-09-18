@@ -408,6 +408,53 @@
                     '(#f "tag-for-first-news-entry")))))))
 
 (unless (which (git-command)) (test-skip 1))
+(test-assert "channel-news, annotated tag"
+  (with-temporary-git-repository directory
+      `((add ".guix-channel"
+             ,(object->string
+               '(channel (version 0)
+                         (news-file "news.scm"))))
+        (add "src/a.txt" "A")
+        (commit "first commit")
+        (tag "tag-for-first-news-entry"
+             "This is an annotated tag.")
+        (add "news.scm"
+             ,(lambda (repository)
+                (let ((previous
+                       (reference-name->oid repository "HEAD")))
+                  (object->string
+                   `(channel-news
+                     (version 0)
+                     (entry (tag "tag-for-first-news-entry")
+                            (title (en "New file!"))
+                            (body (en "Yeah, a.txt."))))))))
+        (commit "second commit"))
+    (with-repository directory repository
+      (define (find-commit* message)
+        (oid->string (commit-id (find-commit repository message))))
+
+      (let ((channel (channel (url (string-append "file://" directory))
+                              (name 'foo)))
+            (commit1 (find-commit* "first commit"))
+            (commit2 (find-commit* "second commit")))
+        (and (null? (channel-news-for-commit channel commit1))
+             (lset= equal?
+                    (map channel-news-entry-title
+                         (channel-news-for-commit channel commit2))
+                    '((("en" . "New file!"))))
+             (lset= string=?
+                    (map channel-news-entry-tag
+                         (channel-news-for-commit channel commit2))
+                    (list "tag-for-first-news-entry"))
+             ;; This is an annotated tag, but 'channel-news-entry-commit'
+             ;; should give us the commit ID, not the ID of the annotated tag
+             ;; object.
+             (lset= string=?
+                    (map channel-news-entry-commit
+                         (channel-news-for-commit channel commit2))
+                    (list commit1)))))))
+
+(unless (which (git-command)) (test-skip 1))
 (test-assert "latest-channel-instances, missing introduction for 'guix'"
   (with-temporary-git-repository directory
       '((add "a.txt" "A")
