@@ -13945,6 +13945,35 @@ Builder for PostgreSQL, SQLite, and MySQL.")
 Diesel.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-diesel-migrations-1
+  (package
+    (name "rust-diesel-migrations")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "diesel_migrations" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k4g03ciqwya2xc1xvy5s9cs6q55k45wxa1gszswfg9m2f2dwg5z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;doctest_setup.rs: No such file or directory
+       #:cargo-inputs
+       (("rust-migrations-internals"
+         ,rust-migrations-internals-1)
+        ("rust-migrations-macros"
+         ,rust-migrations-macros-1))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-diesel" ,rust-diesel-1)
+        ("rust-dotenv" ,rust-dotenv-0.10))))
+    (home-page "https://diesel.rs")
+    (synopsis "Migration management for diesel")
+    (description "This package provides migration management for Diesel.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-diff-0.1
   (package
     (name "rust-diff")
