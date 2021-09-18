@@ -27979,6 +27979,31 @@ quality, high performance hash algorithm.")
      "This package provides a simple math expression parser and evaluator.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-migrations-internals-1
+  (package
+    (name "rust-migrations-internals")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "migrations_internals" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0q2qk4jpa16mcfcmhjz6hdg2s73az1k7j0cy08vvh87h997chkrb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-barrel" ,rust-barrel-0.6)
+        ("rust-diesel" ,rust-diesel-1))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://diesel.rs")
+    (synopsis "Internal implementation of Diesel's migration mechanism")
+    (description "This package provides an internal implementation of Diesel's
+migration mechanism.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mimalloc-0.1
   (package
     (name "rust-mimalloc")
