@@ -12450,3 +12450,28 @@ resource assignment, cost and revenue planning, risk and communication
 management, status tracking and reporting.")
     (home-page "https://taskjuggler.org")
     (license license:gpl2)))
+
+(define-public ruby-cmath
+  (package
+    (name "ruby-cmath")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cmath" version))
+       (sha256
+        (base32
+         "1xkz6xyhpkjbdvpdib8450w62rls1mjryz0gzbbnadxkxn82nb8m"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #false))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Trigonometric functions for complex numbers")
+    (description
+     "This gem is a library that provides trigonometric and transcendental
+functions for complex numbers.  The functions in this module accept integers,
+floating-point numbers or complex numbers as arguments.")
+    (home-page "https://github.com/ruby/cmath")
+    (license license:bsd-2)))
