@@ -8102,13 +8102,13 @@ callback signature using a prototype function.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "7.9.0")
+    (version "7.27.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "103jkw18z7fnwdal1mdbijjxi1fndzn31g887lmj7ddpf2r07lyz"))))
+        (base32 "04xgymypnbfgf2q0d5b0hanjbjsp53f055sh1p8xlq52vyzmxdaq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-backcall" ,python-backcall)
@@ -8116,6 +8116,7 @@ callback signature using a prototype function.")
        ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
+       ("python-matplotlib-inline" ,python-matplotlib-inline)
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
        ("python-jedi" ,python-jedi)
@@ -8174,6 +8175,9 @@ callback signature using a prototype function.")
              (delete-file "IPython/core/tests/test_display.py")
              ;; AttributeError: module 'IPython.core' has no attribute 'formatters'
              (delete-file "IPython/core/tests/test_interactiveshell.py")
+             ;; AttributeError: module 'matplotlib_inline' has no
+             ;; attribute 'backend_inline'
+             (delete-file "IPython/core/tests/test_pylabtools.py")
              #t)))))
     (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
