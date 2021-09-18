@@ -31192,6 +31192,28 @@ giga, kibi.")
      "This package can convert numbers into stack-allocated byte arrays.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-obfstr-0.3
+  (package
+    (name "rust-obfstr")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "obfstr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0y5azgk8ds43m1sd5pc4hhakxzxkfcfscl24y8gsbvwdznxjqavv"))))
+    (arguments
+     `(#:rust ,rust-1.52)) ; fix for E0658
+    (build-system cargo-build-system)
+    (home-page "https://github.com/CasualX/obfstr")
+    (synopsis "Compile time string constant obfuscation for Rust")
+    (description "This package provides a compile time string constant
+obfuscation for Rust.  The string constant itself is embedded in obfuscated
+form and deobfuscated locally.")
+    (license license:expat)))
+
 (define-public rust-obj-0.9
   (package
     (name "rust-obj")
