@@ -5524,6 +5524,39 @@ the CFFI approach used by burgled-batteries, but has the same goal.")
 (define-public ecl-py4cl
   (sbcl-package->ecl-package sbcl-py4cl))
 
+(define-public sbcl-schemeish
+  (let ((commit "dff57bafae5d0cffa104c8fdc4146502f32d7f85")
+        (revision "1"))
+    (package
+      (name "sbcl-schemeish")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chebert/schemeish")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0q9b07spmhg1b576cnnacvkf7zr3mab2rdydfylbn92y9mms9vyj"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("trivial-arguments" ,sbcl-trivial-arguments)))
+      (synopsis "Scheme style syntax/macros/functions for Common Lisp")
+      (description
+       "Schemeish implements several useful Scheme constructs for Common Lisp.
+These include named-let, define, scheme argument lists, and a shortcut to
+FUNCALL with [] instead of ().")
+      (home-page "https://github.com/chebert/schemeish")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-schemeish
+  (sbcl-package->cl-source-package sbcl-schemeish))
+
+(define-public ecl-schemeish
+  (sbcl-package->ecl-package sbcl-schemeish))
+
 (define-public sbcl-parse-declarations
   (let ((commit "549aebbfb9403a7fe948654126b9c814f443f4f2")
         (revision "1"))
