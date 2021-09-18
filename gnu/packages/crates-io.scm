@@ -25597,6 +25597,20 @@ file.
 C parser and toolkit developed for the GNOME project.")
     (license license:expat)))
 
+(define-public rust-libxml-0.2
+  (package
+    (inherit rust-libxml-0.3)
+    (name "rust-libxml")
+    (version "0.2.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libxml" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1z567rqb55hxn0g7hpvcsh3nfvz9mdzlwk4mk179z9bkf7v10r29"))))))
+
 (define-public rust-libz-sys-1
   (package
     (name "rust-libz-sys")
