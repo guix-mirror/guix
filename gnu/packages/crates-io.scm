@@ -30046,6 +30046,78 @@ cryptographic library.")
 release (fork of debug_unreachable)")
     (license license:expat)))
 
+(define-public rust-news-flash-1
+  (package
+    (name "rust-news-flash")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "news-flash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r3hz725kblxr6mhl8rkf2bffzmyya0ib3xr3jk5zm8x2jlpvlq6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52 ; some inputs fail with E0658
+       #:tests? #f ; FIXME: "error reading DNS system conf" from reqwest
+       #:cargo-inputs
+       (("rust-article-scraper" ,rust-article-scraper-1)
+        ("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-diesel" ,rust-diesel-1)
+        ("rust-diesel-migrations"
+         ,rust-diesel-migrations-1)
+        ("rust-escaper" ,rust-escaper-0.1)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-feed-rs" ,rust-feed-rs-0.6)
+        ("rust-feedbin-api" ,rust-feedbin-api-0.1)
+        ("rust-feedly-api" ,rust-feedly-api-0.4)
+        ("rust-fever-api" ,rust-fever-api-0.2)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-hmac" ,rust-hmac-0.11)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libxml" ,rust-libxml-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-magic-crypt" ,rust-magic-crypt-3)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-miniflux-api" ,rust-miniflux-api-0.3)
+        ("rust-newsblur-api" ,rust-newsblur-api-0.1)
+        ("rust-obfstr" ,rust-obfstr-0.3)
+        ("rust-opml" ,rust-opml-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-reqwest" ,rust-reqwest-0.11)
+        ("rust-rust-embed" ,rust-rust-embed-5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3)
+        ("rust-tokio" ,rust-tokio-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)))
+    (home-page "https://gitlab.com/news-flash/news_flash")
+    (synopsis "Base library for NewsFlash")
+    (description "This package provides the base library for the NewsFlash
+feed reader.")
+    ;; No copyright headers in the source code.  LICENSE indicates gpl3.
+    (license license:gpl3)))
+
 (define-public rust-newsblur-api-0.1
   (package
     (name "rust-newsblur-api")
