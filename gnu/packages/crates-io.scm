@@ -47450,6 +47450,30 @@ and write it somewhere that does not easily support them, such as a log
 file.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-strong-xml-derive-0.6
+  (package
+    (name "rust-strong-xml-derive")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strong-xml-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qf7smxaaglj7p9fs0csd0cyvwcy30w96pdy2aqi65ijk7s83iwj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/PoiScript/strong-xml")
+    (synopsis "Strong typed XML")
+    (description
+     "This package provides a strong typed XML parser, based on xmlparser.")
+    (license license:expat)))
+
 (define-public rust-strsim-0.10
   (package
     (name "rust-strsim")
