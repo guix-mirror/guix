@@ -5973,6 +5973,30 @@ toolkits.")
     (description (package-description python-matplotlib))
     (license (package-license python-matplotlib))))
 
+(define-public python-matplotlib-inline
+  (package
+    (name "python-matplotlib-inline")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "matplotlib-inline" version))
+       (sha256
+        (base32 "1vilzwj3xp00mxprmmn1hlafm3p23vn56s46kx3ra4qd5signjx0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-traitlets" ,python-traitlets)))
+    (arguments
+     ;; Tests disabled because of a circular dependency with ipython.
+     `(#:tests? #f))
+    (home-page "https://github.com/ipython/matplotlib-inline")
+    (synopsis "Inline Matplotlib backend for Jupyter")
+    (description
+     "This package provides a Matplotlib inline back-end for IPython and
+Jupyter.")
+    (license license:bsd-3)))
+
 (define-public python-matplotlib-venn
   (package
     (name "python-matplotlib-venn")
