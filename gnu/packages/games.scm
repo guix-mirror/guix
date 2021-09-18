@@ -10121,6 +10121,11 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
               (("qtchooser -run-tool=(.*) -qt=qt5" _ command)
                command))
             #t))
+        (add-after 'unpack 'fix-header
+          (lambda _
+            (substitute* "src/bitarray.h"
+              (("#include <cstring>" all)
+               (string-append all "\n#include <stdexcept>")))))
         (add-after 'unpack 'fix-paths
           (lambda _
             (substitute* '("src/pics/Makefile.in"
