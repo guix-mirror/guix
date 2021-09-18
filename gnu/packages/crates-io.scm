@@ -10591,6 +10591,32 @@ to @code{is_x86_feature_detected}.")
 64) with support for various standards.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crc-any-2
+  (package
+    (name "rust-crc-any")
+    (version "2.3.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crc-any" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fq85y5akcadahnj5nqbs47qhgp5cpfn2z19zc3gp4wpxr3989kr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-debug-helper" ,rust-debug-helper-0.3)
+        ("rust-heapless" ,rust-heapless-0.5))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1))))
+    (home-page "https://magiclen.org/crc-any")
+    (synopsis "Compute CRC values")
+    (description "This package provides a crate to compute CRC values by
+providing the length of bits, expression, reflection, an initial value and a
+final xor value.  It has many built-in CRC functions.")
+    (license license:expat)))
+
 (define-public rust-crc32fast-1
   (package
     (name "rust-crc32fast")
