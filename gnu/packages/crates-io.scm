@@ -28004,6 +28004,38 @@ quality, high performance hash algorithm.")
 migration mechanism.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-migrations-macros-1
+  (package
+    (name "rust-migrations-macros")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "migrations_macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "173qgwans6n2jf6b7qajq273rvg1r9c34p5fflzr53gx14lz2lwp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-migrations-internals"
+         ,rust-migrations-internals-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (home-page "https://diesel.rs")
+    (synopsis "Code generation macros for Diesel's embedded migrations")
+    (description "This package provides code generation macros for Diesel's
+embedded migrations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mimalloc-0.1
   (package
     (name "rust-mimalloc")
