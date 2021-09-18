@@ -29819,6 +29819,41 @@ cryptographic library.")
 release (fork of debug_unreachable)")
     (license license:expat)))
 
+(define-public rust-newsblur-api-0.1
+  (package
+    (name "rust-newsblur-api")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "newsblur_api" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1lh5njrrk4fjc168npk1q3962dzsgmvz4fzvha46g9b83cf3jxzx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;tests use the network
+       #:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-reqwest" ,rust-reqwest-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-dotenv" ,rust-dotenv-0.15)
+        ("rust-tokio" ,rust-tokio-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://gitlab.com/news-flash/newsblur_api/")
+    (synopsis "Rust implementation of the NewsBlur API")
+    (description
+     "This package provides a Rust implementation of the NewsBlur API.")
+    ;; No copyright headers in the source code.  LICENSE indicates gpl3.
+    (license license:gpl3)))
+
 (define-public rust-nibble-vec-0.1
   (package
     (name "rust-nibble-vec")
