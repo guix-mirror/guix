@@ -15689,6 +15689,25 @@ Standard.")
 order.")
     (license license:expat)))
 
+(define-public rust-entities-1
+  (package
+    (name "rust-entities")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "entities" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jnpr0zvj97wm9pnh7fnl74rzaar39hhg65p03cm08bqqgj0lcmm"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/p-jackson/entities")
+    (synopsis "Raw data needed to convert to and from HTML entities")
+    (description "This package provides the raw data needed to convert to and
+from HTML entities.")
+    (license license:expat)))
+
 (define-public rust-enum-as-inner-0.3
   (package
     (name "rust-enum-as-inner")
