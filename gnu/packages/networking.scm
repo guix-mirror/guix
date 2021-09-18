@@ -46,6 +46,7 @@
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Milkey Mouse <milkeymouse@meme.institute>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1848,7 +1849,8 @@ live network and disk I/O bandwidth monitor.")
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags
-       (list "--with-experimental=yes"  ; build wesside-ng, etc.
+       (list "CFLAGS=-fcommon"
+             "--with-experimental=yes"  ; build wesside-ng, etc.
              "--with-gcrypt")           ; openssl's the default
        #:phases (modify-phases %standard-phases
                   (add-before 'bootstrap 'patch-evalrev
