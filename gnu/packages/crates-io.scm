@@ -24261,8 +24261,35 @@ primitives to an @code{io::Write}.")
     (native-inputs
      `(("jemalloc" ,jemalloc)))))
 
+(define-public rust-jetscii-0.5
+  (package
+    (name "rust-jetscii")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jetscii" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1x4z5ixlxv1wa70d3d6ad3n8qxz6z00i13zwnv219v45qcwybbnb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52 ; fix for E0658
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-proptest" ,rust-proptest-1)
+        ("rust-region" ,rust-region-2))))
+    (home-page "https://github.com/shepmaster/jetscii")
+    (synopsis
+     "Search strings and byte slices for sets of ASCII characters or bytes")
+    (description "This package provides a tiny library to efficiently search
+strings and byte slices for sets of ASCII characters or bytes.")
+    (license license:expat)))
+
 (define-public rust-jetscii-0.3
   (package
+    (inherit rust-jetscii-0.5)
     (name "rust-jetscii")
     (version "0.3.1")
     (source
@@ -24272,15 +24299,7 @@ primitives to an @code{io::Write}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1sq6d6c9vi44gkr566w2f1d4n6mmrjx8gjdwgnhkgcsg051j391j"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/shepmaster/jetscii")
-    (synopsis
-     "Search strings and byte slices for sets of ASCII characters or bytes")
-    (description
-     "This package provides a tiny library to efficiently search strings and
-byte slices for sets of ASCII characters or bytes.")
-    (license license:expat)))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-jni-0.18
   (package
