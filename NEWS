@@ -14,9 +14,23 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 1.4.0 (since 1.3.0)
 ** Package management
-*** New 'deb' format for the 'guix pack' command
+*** New ‘deb’ format for the ‘guix pack’ command
+*** New ‘guix import minetest’ command, to import Minetest extensions
+*** ‘guix import elpa’ now supports the non-GNU ELPA repository
+*** New updater (see ‘guix refresh’): ‘generic-git’
+*** ‘--with-commit’ option now accepts strings returned by ‘git describe’
 ** Distribution
 *** The installation script can now enable local substitute servers discovery
+** Programming interfaces
+*** (guix records) now supports “field sanitizers”
+** Noteworthy bug fixes
+*** Fall back to Software Heritage when cloning a channel
+    (<https://issues.guix.gnu.org/44187>)
+*** ‘--with-patch’ can be used on packages with non-origin sources
+    (<https://issues.guix.gnu.org/49697>)
+*** Fix pathological profile building performance in the presence of grafts
+    (<https://issues.guix.gnu.org/49439>)
+
 * Changes in 1.3.0 (since 1.2.0)
 ** Package management
 *** POWER9 (powerpc64le-linux) is now supported as a technology preview
