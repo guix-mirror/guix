@@ -13012,6 +13012,25 @@ sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
 type.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-debug-helper-0.3
+  (package
+    (name "rust-debug-helper")
+    (version "0.3.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "debug-helper" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1a73xl73psmzyihd62jy30g1acfmgjmyi2k8khmh170mrq6x3yvn"))))
+    (build-system cargo-build-system)
+    (home-page "https://magiclen.org/debug-helper")
+    (synopsis "Declarative macros to implement the Debug trait manually")
+    (description "This crate provides declarative macros to help you implement
+the Debug trait manually.")
+    (license license:expat)))
+
 (define-public rust-decimal-2
   (package
     (name "rust-decimal")
