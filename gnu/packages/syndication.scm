@@ -276,29 +276,21 @@ cards.")
            (lambda* (#:key vendor-dir #:allow-other-keys)
              ;; Don't keep the whole tarball in the vendor directory
              (delete-file-recursively
-               (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))
-             #t))
+               (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))))
          (add-after 'unpack 'patch-source
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile"
-               (("Cargo.lock") ""))
-             #t))
+               (("Cargo.lock") "")
+               ;; Replace the prefix in the Makefile.
+               (("/usr/local") (assoc-ref outputs "out")))))
          (replace 'build
-           (lambda* args
-             ((assoc-ref gnu:%standard-phases 'build)
-              #:make-flags
-              (list (string-append "prefix=" (assoc-ref %outputs "out"))))))
+           (assoc-ref gnu:%standard-phases 'build))
          (replace 'check
-           (lambda* args
+           (lambda args
              ((assoc-ref gnu:%standard-phases 'check)
-              #:test-target "test"
-              #:make-flags
-              (list (string-append "prefix=" (assoc-ref %outputs "out"))))))
+              #:test-target "test")))
          (replace 'install
-           (lambda* args
-             ((assoc-ref gnu:%standard-phases 'install)
-              #:make-flags
-              (list (string-append "prefix=" (assoc-ref %outputs "out")))))))))
+           (assoc-ref gnu:%standard-phases 'install)))))
     (native-search-paths
      ;; Newsboat respects CURL_CA_BUNDLE.
      (package-native-search-paths curl))
