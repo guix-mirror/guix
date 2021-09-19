@@ -4943,7 +4943,7 @@ configuration, cache, and other data.")
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
-    (version "1.0.15")
+    (version "1.0.16")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4952,7 +4952,7 @@ configuration, cache, and other data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "194pd3g9ws72n3wy1b2pxgj3w20p1v8gn47gqg89mym9ps5hfjyv"))))
+                "0wskrp3v5gi3b3s9471ijkdncnfd888qd50c72rv2p8846174paj"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("ert-runner" ,emacs-ert-runner)))
