@@ -133,6 +133,7 @@
 /pre-inst-env
 /release-*
 /scripts/guix
+/t-*/
 /test-env
 /test-tmp
 /tests/*.trs
