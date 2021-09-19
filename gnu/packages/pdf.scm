@@ -1136,10 +1136,14 @@ information for every pixel as the input.")
              (substitute* "mk/Autoconf.mk"
                (("/bin/echo") "echo")
                (("/sbin/ldconfig -p") "echo lib")) #t))
+         (add-before 'build 'set-fcommon
+           (lambda _
+             (setenv "CFLAGS" "-fcommon")))
          (delete 'configure))
         #:tests? #f
-        #:make-flags (list ,(string-append "CC=" (cc-for-target))
-                           (string-append "prefix=" (assoc-ref %outputs "out")))))
+        #:make-flags
+        (list (string-append "CC=" ,(cc-for-target))
+              (string-append "prefix=" (assoc-ref %outputs "out")))))
     (inputs `(("libjpeg" ,libjpeg-turbo)
               ("curl" ,curl)
               ("libtiff" ,libtiff)
@@ -1161,7 +1165,6 @@ information for every pixel as the input.")
     (description
       "fbida contains a few applications for viewing and editing images on
 the framebuffer.")
-
     (license license:gpl2+)))
 
 (define-public pdf2svg
