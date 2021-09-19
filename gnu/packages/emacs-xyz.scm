@@ -21159,7 +21159,7 @@ server with @code{M-x pinentry-start}.")
 (define-public emacs-so-long
   (package
     (name "emacs-so-long")
-    (version "1.1")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -21169,7 +21169,7 @@ server with @code{M-x pinentry-start}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d886fgsbly7wpm6ppll45yq3y87a27wy5c6m0gqxq5jb4q0q7d2"))))
+         "06a76ajfqgz48yqvvyhi5b9zss9c6h4xz6acg98ibg0v99v9k5pz"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/SoLong")
     (synopsis "Improve performance in files with long lines")
