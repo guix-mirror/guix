@@ -223,6 +223,10 @@ as swords and tools made of different materials.  It also adds copper rails.")
         (base32 "0v6l3lrjgshy4sccjhfhmfxc3gk0cdy73qb02i9wd2vw506v5asx"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
+    (propagated-inputs
+     ;; basic_materials:silver_wire cannot be crafted without
+     ;; moreores:silver_ingot.
+     `(("minetest-moreores" ,minetest-moreores)))
     (home-page (minetest-topic 21000))
     (synopsis "Some \"basic\" materials and items for other Minetest mods to use")
     (description
