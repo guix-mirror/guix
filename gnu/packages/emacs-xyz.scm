@@ -20865,26 +20865,24 @@ See @code{helm-exwm-switch-browser} for an example.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-ls-git
-  (let ((commit "4da1a53f2f0a078ee2e896a914a1b19c0bf1d5ed"))
-    (package
-      (name "emacs-helm-ls-git")
-      (version (git-version "1.9.1" "2" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-helm/helm-ls-git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "12fi08w20yjsdfkxl1pk9q4w0z9l92va5fa5ghay9w33xlymc8dc"))))
-      (build-system emacs-build-system)
-      (propagated-inputs `(("emacs-helm" ,emacs-helm)))
-      (home-page "https://github.com/emacs-helm/helm-ls-git")
-      (synopsis "Helm interface for listing the files in a Git repository")
-      (description
-       "This package provides a Helm interface for Git files.
+  (package
+    (name "emacs-helm-ls-git")
+    (version "1.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-helm/helm-ls-git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07jgkc8csnc2hcg4csy07zy3wjbm4fbk4lqiy82rdlxp1vad25vi"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/emacs-helm/helm-ls-git")
+    (synopsis "Helm interface for listing the files in a Git repository")
+    (description
+     "This package provides a Helm interface for Git files.
 @itemize
 @item Display the open buffers in project.
 @item Display a status source showing state of project (modified files etc.).
@@ -20899,7 +20897,7 @@ can use ack-grep instead of grep).
 projects unrelated to current-buffer.
 @item In addition, all actions of type files and buffers are provided.
 @end itemize\n")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-mu
   (let ((commit "77e6fea24e01481418738421dbcfe28ef1bd63cf"))
