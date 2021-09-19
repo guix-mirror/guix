@@ -7622,11 +7622,8 @@ ssh-agent process using the sample server. ")
        `(#:import-path "github.com/alcortesm/tgz"
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'make-git-checkout-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each make-file-writable (find-files "."))
-               (for-each make-file-writable (find-files (assoc-ref outputs "out")))
-               #t)))))
+           ;; Files are test fixtures, not generated.
+           (delete 'reset-gzip-timestamps))))
       (home-page "https://github.com/alcortesm/tgz/")
       (synopsis "Go library to extract tgz files to temporal directories")
       (description "This package provides a Go library to extract tgz files to
