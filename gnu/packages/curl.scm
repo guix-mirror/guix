@@ -124,16 +124,16 @@
              (rename-file (string-append out "/share/man/man3")
                           (string-append doc "/share/man/man3"))
              #t)))
-        (replace
-         'check
-         (lambda _
-           (substitute* "tests/runtests.pl"
-             (("/bin/sh") (which "sh")))
+        (replace 'check
+          (lambda* (#:key tests? #:allow-other-keys)
+            (substitute* "tests/runtests.pl"
+              (("/bin/sh") (which "sh")))
 
-           ;; The top-level "make check" does "make -C tests quiet-test", which
-           ;; is too quiet.  Use the "test" target instead, which is more
-           ;; verbose.
-           (invoke "make" "-C" "tests" "test"))))))
+            (when tests?
+              ;; The top-level "make check" does "make -C tests quiet-test", which
+              ;; is too quiet.  Use the "test" target instead, which is more
+              ;; verbose.
+              (invoke "make" "-C" "tests" "test")))))))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
