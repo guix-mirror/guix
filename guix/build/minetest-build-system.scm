@@ -41,7 +41,7 @@
      ;; See <https://github.com/minetest/minetest/blob/master/doc/lua_api.txt>
      ;; for an incomple list of files that can be found in mods.
      #:include ("mod.conf" "modpack.conf" "settingtypes.txt" "depends.txt"
-                "description.txt")
+                "description.txt" "config.txt" "_config.txt")
      #:include-regexp (".lua$" ".png$" ".ogg$" ".obj$" ".b3d$" ".tr$"
                        ".mts$"))))
 
