@@ -114,6 +114,8 @@
        ;; calling the ‘true’ binary instead.  Python is only needed during
        ;; bootstrapping (for genptl.py), not when building from a release.
        (list "PYTHON=true")
+       ;; Grub fails to load stripped modules.
+       #:strip-binaries? #f
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-stuff
                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
