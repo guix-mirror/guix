@@ -217,6 +217,8 @@ given Haskell package."
          (if (not (vhash-assoc id seen))
              (let ((dep-conf  (string-append src  "/" id ".conf"))
                    (dep-conf* (string-append dest "/" id ".conf")))
+               (when (not (file-exists? dep-conf))
+                   (error (format #f "File ~a does not exist. This usually means the dependency ~a is missing. Was checking conf-file ~a." dep-conf id conf-file)))
                (copy-file dep-conf dep-conf*) ;XXX: maybe symlink instead?
                (loop (vhash-cons id #t seen)
                      (append lst (conf-depends dep-conf))))
