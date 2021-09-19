@@ -10753,6 +10753,36 @@ If features:
 (define-public ecl-sycamore
   (sbcl-package->ecl-package sbcl-sycamore))
 
+(define-public sbcl-funds
+  (let ((commit "6a93695a83d6e21f7ae1351f9b07ee01fa0b487f")
+        (revision "1"))
+    (package
+      (name "sbcl-funds")
+      (version (git-version "1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charJe/funds")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0lhzghngihy83njcnhjiqg10lyw8zxfpmg6ly8sycd4vyiw2i249"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Purely functional data structure library in Common Lisp")
+      (description
+       "Funds provides portable, purely functional data structures in Common
+Lisp.  It includes tree based implementations for Array, Hash, Queue, Stack, and
+Heap.")
+      (home-page "https://common-lisp.net/project/funds/")
+      (license license:asl2.0))))
+
+(define-public cl-funds
+  (sbcl-package->cl-source-package sbcl-funds))
+
+(define-public ecl-funds
+  (sbcl-package->ecl-package sbcl-funds))
+
 (define-public sbcl-trivial-package-local-nicknames
   (package
     (name "sbcl-trivial-package-local-nicknames")
