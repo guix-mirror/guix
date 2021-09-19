@@ -372,21 +372,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.14)))
 
-(define-public linux-libre-5.13-version "5.13.19")
-(define-public linux-libre-5.13-gnu-revision "gnu1")
-(define deblob-scripts-5.13
-  (linux-libre-deblob-scripts
-   linux-libre-5.13-version
-   linux-libre-5.13-gnu-revision
-   (base32 "0hj3w3vh1rj24xgl4v72mr6vaz1qzsnc5xzdfjga1zy84bw8lhkp")
-   (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
-(define-public linux-libre-5.13-pristine-source
-  (let ((version linux-libre-5.13-version)
-        (hash (base32 "0yxbcd1k4l4cmdn0hzcck4s0yvhvq9fpwp120dv9cz4i9rrfqxz8")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.13)))
-
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
@@ -516,14 +501,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (search-patch
                               "linux-libre-arm64-generic-pinebook-lcd.patch"))))
 
-(define-public linux-libre-5.13-source
-  (source-with-patches linux-libre-5.13-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             ;; Pinebook Pro patch to fix LCD display
-                             (search-patch
-                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
-
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
@@ -635,11 +612,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (make-linux-libre-headers* linux-libre-5.14-version
                              linux-libre-5.14-gnu-revision
                              linux-libre-5.14-source))
-
-(define-public linux-libre-headers-5.13
-  (make-linux-libre-headers* linux-libre-5.13-version
-                             linux-libre-5.13-gnu-revision
-                             linux-libre-5.13-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
@@ -949,18 +921,11 @@ It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-5.13
-  (make-linux-libre* linux-libre-5.13-version
-                     linux-libre-5.13-gnu-revision
-                     linux-libre-5.13-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.13-version)
-(define-public linux-libre-gnu-revision    linux-libre-5.13-gnu-revision)
-(define-public linux-libre-pristine-source linux-libre-5.13-pristine-source)
-(define-public linux-libre-source          linux-libre-5.13-source)
-(define-public linux-libre                 linux-libre-5.13)
+(define-public linux-libre-version         linux-libre-5.14-version)
+(define-public linux-libre-gnu-revision    linux-libre-5.14-gnu-revision)
+(define-public linux-libre-pristine-source linux-libre-5.14-pristine-source)
+(define-public linux-libre-source          linux-libre-5.14-source)
+(define-public linux-libre                 linux-libre-5.14)
 
 (define-public linux-libre-5.10
   (make-linux-libre* linux-libre-5.10-version
@@ -1194,9 +1159,9 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.13-version
-          linux-libre-5.13-gnu-revision
-          linux-libre-5.13-source
+          linux-libre-5.14-version
+          linux-libre-5.14-gnu-revision
+          linux-libre-5.14-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
