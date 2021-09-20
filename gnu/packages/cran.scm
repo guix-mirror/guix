@@ -581,6 +581,32 @@ ordered indexed observations.  It is particularly aimed at irregular time
 series of numeric vectors/matrices and factors.")
     (license license:gpl2+)))
 
+(define-public r-fingerprint
+  (package
+    (name "r-fingerprint")
+    (version "3.5.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fingerprint" version))
+       (sha256
+        (base32 "04jcwkydjrs31pia6kq8z2n9s54im950q08hs2ay15xjxxkmb8ic"))))
+    (properties `((upstream-name . "fingerprint")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=fingerprint")
+    (synopsis "Functions to Operate on Binary Fingerprint Data")
+    (description
+     "This package provides functions to manipulate binary fingerprints of
+arbitrary length.  A fingerprint is represented by an object of S4 class
+@code{fingerprint}.  The bitwise logical functions in R are overridden so that
+they can be used directly with @code{fingerprint} objects.  A number of
+distance metrics are also available.  Fingerprints can be converted to
+Euclidean vectors (i.e., points on the unit hypersphere) and can also be
+folded.  Arbitrary fingerprint formats can be handled via line handlers.
+Currently handlers are provided for CDK, MOE and BCI fingerprint data.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-ggalluvial
   (package
    (name "r-ggalluvial")
