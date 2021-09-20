@@ -585,7 +585,7 @@ built-in registry server of Docker.")
        ("xz" ,xz)))
     (native-inputs
      (list eudev ; TODO: Should be propagated by lvm2 (.pc -> .pc)
-           go gotestsum pkg-config))
+           go-1.14 gotestsum pkg-config))
     (synopsis "Docker container component library, and daemon")
     (description "This package provides a framework to assemble specialized
 container systems.  It includes components for orchestration, image

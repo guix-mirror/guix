@@ -829,7 +829,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (alist-replace "go" (list go-1.16) (package-native-inputs go-1.16))
        (package-native-inputs go-1.16)))))
 
-(define-public go go-1.14)
+(define-public go go-1.17)
 
 (define-public (make-go-std go)
   "Return a package which builds the standard library for Go compiler GO."

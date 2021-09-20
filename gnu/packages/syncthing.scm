@@ -65,7 +65,6 @@
      `(#:modules ((srfi srfi-26) ; for cut
                   (guix build utils)
                   (guix build go-build-system))
-       #:go ,go-1.17
        #:import-path "github.com/syncthing/syncthing"
        ;; We don't need to install the source code for end-user applications.
        #:install-source? #f

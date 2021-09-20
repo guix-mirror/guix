@@ -4812,7 +4812,6 @@ FIFO and UNIX interprocess communication.")
     (build-system go-build-system)
     (arguments
      `(#:unpack-path "bdd.fi/x/runitor"
-       #:go ,go-1.17
        #:build-flags '(,(string-append "-ldflags=-X main.Version=" version))
        #:import-path "bdd.fi/x/runitor/cmd/runitor"
        #:install-source? #f))
