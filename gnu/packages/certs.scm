@@ -164,9 +164,9 @@ that was originally contributed to Debian.")
                    (call-with-output-file "blacklist.txt" (const #t)))
                  ;; Extract selected single certificates from blob.
                  (invoke "certdata2pem")
-                 ;; Copy .crt files into the output.
+                 ;; Copy .pem files into the output.
                  (for-each (cut install-file <> certsdir)
-                           (find-files "." ".*\\.crt$")))
+                           (find-files "." ".*\\.pem$")))
                (invoke "openssl" "rehash" certsdir)))))))
     (synopsis "CA certificates from Mozilla")
     (description
