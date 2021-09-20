@@ -25,6 +25,8 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module ((guix packages) #:prefix package:)
+  #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (guix ui)
   #:use-module (guix i18n)
@@ -36,15 +38,19 @@
   #:use-module (json)
   #:use-module (guix base32)
   #:use-module (guix git)
+  #:use-module ((guix git-download) #:prefix download:)
   #:use-module (guix store)
   #:export (%default-sort-key
             %contentdb-api
             json->package
             contentdb-fetch
             elaborate-contentdb-name
+            minetest-package?
+            latest-minetest-release
             minetest->guix-package
             minetest-recursive-import
-            sort-packages))
+            sort-packages
+            %minetest-updater))
 
 ;; The ContentDB API is documented at
 ;; <https://content.minetest.net>.
@@ -345,6 +351,17 @@ official Minetest forum and the Git repository (if any)."
       (substring title 1)
       title))
 
+(define (version-style version)
+  "Determine the kind of version number VERSION is -- a date, or a conventional
+conventional version number."
+  (define dots? (->bool (string-index version #\.)))
+  (define hyphens? (->bool (string-index version #\-)))
+  (match (cons dots? hyphens?)
+    ((#true . #false) 'regular) ; something like "0.1"
+    ((#false . #false) 'regular) ; single component version number
+    ((#true . #true) 'regular) ; result of 'git-version'
+    ((#false . #true) 'date))) ; something like "2021-01-25"
+
 ;; If the default sort key is changed, make sure to modify 'show-help'
 ;; in (guix scripts import minetest) appropriately as well.
 (define %default-sort-key "score")
@@ -466,3 +483,37 @@ list of AUTHOR/NAME strings."
   (recursive-import author/name
                     #:repo->guix-package minetest->guix-package*
                     #:guix-name contentdb->package-name))
+
+(define (minetest-package? pkg)
+  "Is PKG a Minetest mod on ContentDB?"
+  (and (string-prefix? "minetest-" (package:package-name pkg))
+       (assq-ref (package:package-properties pkg) 'upstream-name)))
+
+(define (latest-minetest-release pkg)
+  "Return an <upstream-source> for the latest release of the package PKG,
+or #false if the latest release couldn't be determined."
+  (define author/name
+    (assq-ref (package:package-properties pkg) 'upstream-name))
+  (define contentdb-package (contentdb-fetch author/name)) ; TODO warn if #f?
+  (define release (latest-release author/name))
+  (define source (package:package-source pkg))
+  (and contentdb-package release
+       (release-commit release) ; not always set
+       ;; Only continue if both the old and new version number are both
+       ;; dates or regular version numbers, as two different styles confuses
+       ;; the logic for determining which version is newer.
+       (eq? (version-style (release-version release))
+            (version-style (package:package-version pkg)))
+       (upstream-source
+        (package (package:package-name pkg))
+        (version (release-version release))
+        (urls (list (download:git-reference
+                     (url (package-repository contentdb-package))
+                     (commit (release-commit release))))))))
+
+(define %minetest-updater
+  (upstream-updater
+    (name 'minetest)
+    (description "Updater for Minetest packages on ContentDB")
+    (pred minetest-package?)
+    (latest latest-minetest-release)))

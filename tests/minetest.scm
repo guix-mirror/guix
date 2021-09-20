@@ -17,10 +17,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-minetest)
+  #:use-module (guix build-system minetest)
+  #:use-module (guix upstream)
   #:use-module (guix memoization)
   #:use-module (guix import minetest)
   #:use-module (guix import utils)
   #:use-module (guix tests)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
+  #:use-module ((gnu packages minetest)
+                #:select (minetest minetest-technic))
+  #:use-module ((gnu packages base)
+                #:select (hello))
   #:use-module (json)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -375,8 +383,120 @@ during a dynamic extent where that package is available on ContentDB."
     (list z y x)
     (sort-packages (list x y z))))
 
+
+
+;; Update detection
+(define (upstream-source->sexp upstream-source)
+  (define urls (upstream-source-urls upstream-source))
+  (unless (= 1 (length urls))
+    (error "only a single URL is expected"))
+  (define url (first urls))
+  `(,(upstream-source-package upstream-source)
+    ,(upstream-source-version upstream-source)
+    ,(git-reference-url url)
+    ,(git-reference-commit url)))
+
+(define* (expected-sexp #:key
+                        (repo "https://example.org/foo.git")
+                        (guix-name "minetest-foo")
+                        (new-version "0.8")
+                        (commit "44941798d222901b8f381b3210957d880b90a2fc")
+                        #:allow-other-keys)
+  `(,guix-name ,new-version ,repo ,commit))
+
+(define* (example-package #:key
+                          (source 'auto)
+                          (repo "https://example.org/foo.git")
+                          (old-version "0.8")
+                          (commit "44941798d222901b8f381b3210957d880b90a2fc")
+                          #:allow-other-keys)
+  (package
+    (name "minetest-foo")
+    (version old-version)
+    (source
+     (if (eq? source 'auto)
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url repo)
+                 (commit commit #;"808f9ffbd3106da4c92d2367b118b98196c9e81e")))
+           (sha256 #f) ; not important for the following tests
+           (file-name (git-file-name name version)))
+         source))
+    (build-system minetest-mod-build-system)
+    (license #f)
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (properties '((upstream-name . "Author/foo")))))
+
+(define-syntax-rule (test-release test-case . arguments)
+  (test-equal test-case
+    (expected-sexp . arguments)
+    (and=>
+     (call-with-packages
+      (cut latest-minetest-release (example-package . arguments))
+      (list . arguments))
+     upstream-source->sexp)))
+
+(define-syntax-rule (test-no-release test-case . arguments)
+  (test-equal test-case
+    #f
+    (call-with-packages
+     (cut latest-minetest-release (example-package . arguments))
+     (list . arguments))))
+
+(test-release "same version"
+  #:old-version "0.8" #:title "0.8" #:new-version "0.8"
+  #:commit "44941798d222901b8f381b3210957d880b90a2fc")
+
+(test-release "new version (dotted)"
+  #:old-version "0.8" #:title "0.9.0" #:new-version "0.9.0"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+(test-release "new version (date)"
+  #:old-version "2014-11-17" #:title "2015-11-04"
+  #:new-version "2015-11-04"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+(test-release "new version (git -> dotted)"
+  #:old-version
+  (git-version "0.8" "1" "90422555f114d3af35e7cc4b5b6d59a5c226adc4")
+  #:title "0.9.0" #:new-version "0.9.0"
+  #:commit "90422555f114d3af35e7cc4b5b6d59a5c226adc4")
+
+;; There might actually be a new release, but guix cannot compare dates
+;; with regular version numbers.
+(test-no-release "dotted -> date"
+  #:old-version "0.8" #:title "2015-11-04"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+(test-no-release "date -> dotted"
+  #:old-version "2014-11-07" #:title "0.8"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+;; Don't let "guix refresh -t minetest" tell there are new versions
+;; if Guix has insufficient information to actually perform the update,
+;; when using --with-latest or "guix refresh -u".
+(test-no-release "no commit information, no new release"
+  #:old-version "0.8" #:title "0.9.0" #:new-version "0.9.0"
+  #:commit #false)
+
+(test-assert "minetest is not a minetest mod"
+  (not (minetest-package? minetest)))
+(test-assert "GNU hello is not a minetest mod"
+  (not (minetest-package? hello)))
+(test-assert "technic is a minetest mod"
+  (minetest-package? minetest-technic))
+(test-assert "upstream-name is required"
+  (not (minetest-package?
+        (package (inherit minetest-technic)
+                 (properties '())))))
+
 (test-end "minetest")
 
 ;;; Local Variables:
 ;;; eval: (put 'test-package* 'scheme-indent-function 1)
+;;; eval: (put 'test-release 'scheme-indent-function 1)
+;;; eval: (put 'test-no-release 'scheme-indent-function 1)
 ;;; End:
