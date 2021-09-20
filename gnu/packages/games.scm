@@ -971,7 +971,7 @@ want what you have.")
           ;; Strip image URLs as they point towards non-free web services
           '(substitute* "cockatrice/src/settings/downloadsettings.cpp"
              (("downloadURLs.append\\(\".*\"\\);") "")))))
-      (build-system cmake-build-system)
+      (build-system qt-build-system)
       (arguments
        `(#:configure-flags '("-DWITH_SERVER=1"
                              "-DWITH_CLIENT=1"
