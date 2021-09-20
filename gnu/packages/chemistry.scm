@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,9 +36,11 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gv)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
@@ -606,4 +609,63 @@ symmetries written in C.  Spglib can be used to:
 @item Find a primitive cell
 @item Search irreducible k-points
 @end enumerate")
+    (license license:bsd-3)))
+
+(define-public python-pymol
+  (package
+    (name "python-pymol")
+    (version "2.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/schrodinger/pymol-open-source")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08zmfgclkbjkqjpq8xs1mphs1i8rpqj76mcw7m2mrhvma5qj1nr5"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--glut" "--testing")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "create_shadertext.py"
+               (("time\\.time\\(\\)") "0"))))
+         (add-after 'unpack 'add-include-directories
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "freetype")
+                                    "/include/freetype2:"
+                                    (assoc-ref inputs "libxml2")
+                                    "/include/libxml2:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))))
+         ;; The setup.py script does not support one of the Python build
+         ;; system's default flags, "--single-version-externally-managed".
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/"))))))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("freeglut" ,freeglut)
+       ("glew" ,glew)
+       ("libxml2" ,libxml2)
+       ("mmtf-cpp" ,mmtf-cpp)
+       ("msgpack" ,msgpack)
+       ("python-pyqt" ,python-pyqt)
+       ("glm" ,glm)
+       ("netcdf" ,netcdf)))
+    (native-inputs
+     `(("catch2" ,catch-framework2)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://pymol.org")
+    (synopsis "Molecular visualization system")
+    (description "PyMOL is a capable molecular viewer and renderer.  It can be
+used to prepare publication-quality figures, to share interactive results with
+your colleagues, or to generate pre-rendered animations.")
     (license license:bsd-3)))
