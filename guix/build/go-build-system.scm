@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,9 +139,28 @@ of the package being built and its dependencies, and GOBIN, which determines
 where executables (\"commands\") are installed to.  This phase is sometimes used
 by packages that use (guix build-system gnu) but have a handful of Go
 dependencies, so it should be self-contained."
-  ;; The Go cache is required starting in Go 1.12.  We don't actually use it but
-  ;; we need it to be a writable directory.
-  (setenv "GOCACHE" "/tmp/go-cache")
+  (define (search-input-directories dir)
+    (filter directory-exists?
+            (map (match-lambda
+                   ((name . directory)
+                    (string-append directory "/" dir)))
+                 inputs)))
+
+  ;; Seed the Go build cache with the build caches from input packages.
+  (let ((cache (string-append (getcwd) "/go-build")))
+    (setenv "GOCACHE" cache)
+    (union-build cache
+                 (search-input-directories "/var/cache/go/build")
+                 ;; Creating all directories isn't that bad, because there are
+                 ;; only ever 256 of them.
+                 #:create-all-directories? #t
+                 #:log-port (%make-void-port "w"))
+
+    ;; Tell Go that the cache was recently trimmed, so it doesn't try to.
+    (call-with-output-file (string-append cache "/trim.txt")
+      (lambda (port)
+        (format port "~a" (current-time)))))
+
   ;; Using the current working directory as GOPATH makes it easier for packagers
   ;; who need to manipulate the unpacked source code.
   (setenv "GOPATH" (getcwd))
