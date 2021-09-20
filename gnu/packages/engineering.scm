@@ -24,6 +24,7 @@
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,7 @@
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages m4)
@@ -3008,3 +3010,80 @@ a process.")
     (description "This library provides functionality for shape modelling,
 visualization, matrix manipulation.")
     (license (list license:gpl3 license:mpl2.0))))
+
+(define-public prusa-slicer
+  (package
+    (name "prusa-slicer")
+    (version "2.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/prusa3d/PrusaSlicer")
+         (commit (string-append "version_" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "0w0synqi3iz9aigsgv6x1c6sg123fasbx19h4w3ic1l48r8qmpwm"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Prusa slicer bundles a lot of dependencies in src/ directory.
+           ;; Most of them contain prusa-specific modifications (e.g. avrdude),
+           ;; but others do not. Here we replace the latter with Guix packages.
+           ;; Remove bundled libraries that were not modified by Prusa Slicer developers.
+           (delete-file-recursively "src/hidapi")
+           (delete-file-recursively "src/eigen")
+           (delete-file-recursively "src/libigl/igl")
+           (substitute* "src/CMakeLists.txt"
+             (("add_subdirectory\\(libigl\\)" all)
+              (string-append
+               all "\ninclude_directories(libigl INTERFACE libigl::core)"))
+             (("add_subdirectory\\(hidapi\\)")
+              "pkg_check_modules(HIDAPI REQUIRED hidapi-hidraw)")
+             (("include_directories\\(hidapi/include\\)")
+              "include_directories()"))
+           (substitute* "src/slic3r/CMakeLists.txt"
+             (("add_library\\(libslic3r_gui.*" all)
+              (string-append
+               all
+               "\ntarget_include_directories(libslic3r_gui PUBLIC ${HIDAPI_INCLUDE_DIRS})\n"))
+             (("\\bhidapi\\b") "${HIDAPI_LIBRARIES}"))))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-DSLIC3R_FHS=1" ;; Use The Filesystem Hierarchy Standard.
+         "-DSLIC3R_GTK=3" ;; Use GTK+
+         ;; Use wxWidgets 3.0.x.x to prevent GUI crashes when adding support enforcers.
+         "-DSLIC3R_WX_STABLE=1")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("cereal" ,cereal)
+       ("cgal" ,cgal)
+       ("curl" ,curl)
+       ("dbus" ,dbus)
+       ("eigen" ,eigen)
+       ("expat" ,expat)
+       ("glew" ,glew)
+       ("glib" ,glib)
+       ("gmp" ,gmp)
+       ("gtk" ,gtk+)
+       ("hidapi" ,hidapi)
+       ("ilmbase" ,ilmbase)
+       ("libigl" ,libigl)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("mpfr" ,mpfr)
+       ("nlopt" ,nlopt)
+       ("openvdb" ,openvdb)
+       ("pango" ,pango)
+       ("tbb" ,tbb)
+       ("udev" ,eudev)
+       ("wxwidgets" ,wxwidgets)
+       ("zlib" ,zlib)))
+    (home-page "https://www.prusa3d.com/prusaslicer/")
+    (synopsis "G-code generator for 3D printers (RepRap, Makerbot, Ultimaker etc.)")
+    (description "PrusaSlicer takes 3D models (STL, OBJ, AMF) and converts them into
+G-code instructions for FFF printers or PNG layers for mSLA 3D printers.")
+    (license license:agpl3)))
