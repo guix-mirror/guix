@@ -636,7 +636,7 @@ address of one of the participants.")
     (inputs
      `(("avahi" ,avahi)
        ("boost" ,boost)
-       ("libsndfile" ,libsndfile)
+       ("libsndfile" ,libsndfile/fixed)
        ("libxi" ,libxi)
        ("mesa" ,mesa) ; avoid bundled
        ("openssl" ,openssl)
