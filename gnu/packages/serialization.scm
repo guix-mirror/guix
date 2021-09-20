@@ -142,32 +142,19 @@ implement RPC protocols.")
          "0hc8wh9dwpc1w1zf5lfss4vg5hmgpblqxbrpp1rggicpx9ar831p"))))
     (build-system cmake-build-system)
     (arguments
-     `(;; The only included tests are portability tests requiring
-       ;; cross-compilation and boost.  Since we are building cereal on more
-       ;; platforms anyway, there is no compelling reason to build the tests.
-       #:tests? #f
-       #:out-of-source? #f
+     `(#:configure-flags '("-DSKIP_PORTABILITY_TEST=ON")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-          (lambda _
-            (substitute* "doc/doxygen.in"
-              (("@CMAKE_CURRENT_BINARY_DIR@") ".")
-              (("@CMAKE_CURRENT_SOURCE_DIR@") "."))
-            (with-directory-excursion "doc"
-              (invoke "doxygen" "doxygen.in"))))
-         ;; There is no "install" target, so we have to provide our own
-         ;; "install" phase.
-         (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out     (assoc-ref outputs "out"))
-                   (doc     (string-append out "/share/cereal/docs"))
-                   (include (string-append out "/include/cereal")))
-              (mkdir-p doc)
-              (mkdir-p include)
-              (copy-recursively "include/cereal" include)
-              (copy-recursively "doc/html" doc)))))))
+         (add-before 'configure 'skip-sandbox
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("add_subdirectory\\(sandbox\\)") ""))))
+         (add-after 'install 'install-doc
+           (lambda _
+             (let ((doc (string-append %output "/share/doc/html")))
+               (invoke "make" "doc")
+               (mkdir-p doc)
+               (copy-recursively "doc/html" doc)))))))
     (native-inputs
      `(("doxygen" ,doxygen)))
     (home-page "https://uscilab.github.io/cereal/")
