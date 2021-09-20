@@ -1343,7 +1343,7 @@ supported by the MyPy typechecker.")
 (define-public python-mypy
   (package
     (name "python-mypy")
-    (version "0.790")
+    (version "0.910")
     (source
      (origin
        ;; Because of https://github.com/python/mypy/issues/9584, the
@@ -1360,14 +1360,15 @@ supported by the MyPy typechecker.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zq3lpdf9hphcklk40wz444h8w3dkhwa12mqba5j9lmg11klnhz7"))))
+         "16ryn9d48ilcs3yrkrm9ynx36qnv0gkdkc4sbafpagcqgr2f0mrg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "mypyc"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "mypyc")))))))
     (native-inputs
      `(("python-attrs" ,python-attrs)
        ("python-flake8" ,python-flake8)
@@ -1383,6 +1384,7 @@ supported by the MyPy typechecker.")
        ("python-virtualenv" ,python-virtualenv)))
     (propagated-inputs
      `(("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-toml" ,python-toml)
        ("python-typing-extensions" ,python-typing-extensions)
        ("python-typed-ast" ,python-typed-ast)))
     (home-page "http://www.mypy-lang.org/")
