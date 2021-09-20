@@ -104,6 +104,11 @@ port forwarding to your local machine.")
       (arguments
        `(#:phases (modify-phases %standard-phases
                     (delete 'configure)
+                    (add-before 'build 'fix-extension
+                      (lambda _
+                        (substitute* "certdata2pem.c"
+                          (("\\.crt")
+                           ".pem"))))
                     (replace 'build
                       (lambda _
                         (invoke ,(cc-for-target) "certdata2pem.c"
