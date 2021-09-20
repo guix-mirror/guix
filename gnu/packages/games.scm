@@ -8639,7 +8639,8 @@ affected by the gravity of the planets.")
          "1nfkhcm0l89jyw8yr65na97g4l385zhjf7whkyg47c3v5sdqq2g7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
@@ -8656,7 +8657,7 @@ affected by the gravity of the planets.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append
-                      (search-input-file inputs "/include/SDL")
+                      (search-input-directory inputs "/include/SDL")
                       ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("fontconfig" ,fontconfig)
