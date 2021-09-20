@@ -1113,13 +1113,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
-  %D%/packages/patches/ghc-diff-swap-cover-args.patch		\
-  %D%/packages/patches/ghc-haddock-api-fix-haddock.patch	\
-  %D%/packages/patches/ghc-hpack-fix-tests.patch		\
-  %D%/packages/patches/ghc-microlens-aeson-fix-tests.patch	\
+  %D%/packages/patches/ghc-language-haskell-extract-ghc-8.10.patch	\
   %D%/packages/patches/ghc-monad-par-fix-tests.patch		\
-  %D%/packages/patches/ghc-pandoc-fix-html-tests.patch		\
-  %D%/packages/patches/ghc-pandoc-fix-latex-test.patch		\
   %D%/packages/patches/ghostscript-CVE-2020-15900.patch		\
   %D%/packages/patches/ghostscript-freetype-compat.patch	\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
@@ -1623,7 +1618,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
   %D%/packages/patches/pulseview-qt515-compat.patch		\
-  %D%/packages/patches/purescript-relax-dependencies.patch	\
   %D%/packages/patches/pybugz-encode-error.patch		\
   %D%/packages/patches/pybugz-stty.patch			\
   %D%/packages/patches/pygpgme-disable-problematic-tests.patch  \

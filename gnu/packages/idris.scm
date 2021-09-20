@@ -97,12 +97,11 @@
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))
              #t))
-         (add-after 'unpack 'update-constraints
+         (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "idris.cabal"
-               (("ansi-terminal < 0\\.9") "ansi-terminal < 0.10")
-               (("cheapskate >= 0\\.1\\.1\\.2 && < 0\\.2") "cheapskate >= 0.1.1.1 && < 0.2"))
-             #t))
+               (("(aeson|ansi-terminal|haskeline|megaparsec|optparse-applicative)\\s+[^,]+" all dep)
+                dep))))
          (add-before 'configure 'set-cc-command
            (lambda _
              (setenv "CC" "gcc")

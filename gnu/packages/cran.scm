@@ -11247,8 +11247,7 @@ correlation, censored, ordered and multivariate problems.")
          "0aman4273i8hy3z0qay1nrsr7v27m4icm1j6f4w59ylix80l5myq"))))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)))
+     `(("pandoc" ,pandoc)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
@@ -21432,8 +21431,7 @@ the appropriate system call provided by the underlying operating system.")
     ;; These inputs are needed for vignettes
     (native-inputs
      `(("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("pandoc-citeproc" ,pandoc-citeproc)))
+       ("r-rmarkdown" ,r-rmarkdown)))
     (home-page "https://github.com/andreyshabalin/filematrix")
     (synopsis "File-backed matrix class with convenient read and write access")
     (description
@@ -24791,8 +24789,7 @@ recommendations for developers.")
     (properties `((upstream-name . "loo")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)))
+     `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
        ("r-matrixstats" ,r-matrixstats)))
@@ -24881,8 +24878,7 @@ need to derive the partial derivatives.")
     (properties `((upstream-name . "rstanarm")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)))
+     `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("r-bayesplot" ,r-bayesplot)
        ("r-bh" ,r-bh)
@@ -28207,8 +28203,7 @@ use.")
     (native-inputs
      `(("r-knitr" ,r-knitr)
        ("r-rmarkdown" ,r-rmarkdown)
-       ("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc))) ; for vignettes
+       ("pandoc" ,pandoc)))
     (home-page "https://github.com/tidymodels/tidymodels")
     (synopsis "Tidy collection for modeling and statistical analysis")
     (description

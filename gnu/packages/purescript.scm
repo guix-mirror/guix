@@ -30,36 +30,20 @@
   #:use-module (guix build-system haskell)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define ghc-happy-1.19.9
-  (package
-    (inherit ghc-happy)
-    (version "1.19.9")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/happy/happy-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "138xpxdb7x62lpmgmb6b3v3vgdqqvqn4273jaap3mjmc2gla709y"))))))
-
 (define-public purescript
   (package
     (name "purescript")
-    (version "0.13.8")
+    (version "0.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://hackage/package/purescript/purescript-"
+             "https://hackage.haskell.org/package/purescript/purescript-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "0sh9z3ir3jiwmi5h95v9p7j746xxidg1hrxha89c0zl6vr4sq7vh"))
-       (patches (search-patches "purescript-relax-dependencies.patch"))))
+         "0qda90yycv2yyjdpfqvmsnxbyxpx55b53cfp9rgnbhbrskr0w2vk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-glob" ,ghc-glob)
@@ -92,6 +76,7 @@
        ("ghc-parallel" ,ghc-parallel)
        ("ghc-pattern-arrows" ,ghc-pattern-arrows)
        ("ghc-protolude" ,ghc-protolude)
+       ("ghc-purescript-cst" ,ghc-purescript-cst)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
        ("ghc-scientific" ,ghc-scientific)
@@ -111,13 +96,13 @@
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-network" ,ghc-network)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative-0.15.1.0) ; XXX: needs specific version
        ("ghc-wai" ,ghc-wai)
        ("ghc-wai-websockets" ,ghc-wai-websockets)
        ("ghc-warp" ,ghc-warp)
        ("ghc-websockets" ,ghc-websockets)))
     (native-inputs
-     `(("ghc-happy" ,ghc-happy-1.19.9) ; build fails with 1.19.12
+     `(("ghc-happy" ,ghc-happy) 
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)
@@ -127,10 +112,78 @@
     (arguments
      `(;; Tests require npm
        #:tests? #f
-       #:configure-flags '("--flags=release")))
+       #:configure-flags '("--flags=release")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "purescript.cabal"
+               (("\\b(ansi-terminal|cryptonite|dlist|language-javascript)\\s+[^,]+" all dep)
+                dep)))))))
     (home-page "https://www.purescript.org/")
     (synopsis "Haskell inspired programming language compiling to JavaScript")
     (description
      "Purescript is a small strongly, statically typed programming language with
 expressive types, inspired by Haskell and compiling to JavaScript.")
     (license license:bsd-3)))
+
+(define-public ghc-purescript-cst
+  (package
+    (name "ghc-purescript-cst")
+    (version "0.4.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/purescript-cst/purescript-cst-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32 "0r3f5lr9lrv9wpgkwj6nyl42lvxryj2lvr1w7ld4gki8ylq24n8g"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "purescript-cst.cabal"
+               (("\\b(dlist)\\s+[^,]+" all dep)
+                dep)))))))
+    (inputs
+      `(("ghc-aeson" ,ghc-aeson)
+        ("ghc-base-compat" ,ghc-base-compat)
+        ("ghc-dlist" ,ghc-dlist)
+        ("ghc-microlens" ,ghc-microlens)
+        ("ghc-protolude" ,ghc-protolude)
+        ("ghc-scientific" ,ghc-scientific)
+        ("ghc-semigroups" ,ghc-semigroups)
+        ("ghc-serialise" ,ghc-serialise)
+        ("ghc-vector" ,ghc-vector)))
+    (native-inputs `(("ghc-happy" ,ghc-happy)))
+    (home-page "https://www.purescript.org/")
+    (synopsis "PureScript Programming Language Concrete Syntax Tree")
+    (description
+     "This package implements parser for the PureScript programming language.")
+    (license license:bsd-3)))
+
+(define-public ghc-optparse-applicative-0.15.1.0
+  (package
+    (inherit ghc-optparse-applicative)
+    (name "ghc-optparse-applicative")
+    (version "0.15.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/optparse-applicative/optparse-applicative-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32 "1ws6y3b3f6hsgv0ff0yp6lw4hba1rps4dnvry3yllng0s5gngcsd"))))
+    (inputs
+      `(("ghc-transformers-compat" ,ghc-transformers-compat)
+        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
+    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+      `(#:cabal-revision
+        ("1" "0zmhqkd96v2z1ilhqdkd9z4jgsnsxb8yi2479ind8m5zm9363zr9")))))

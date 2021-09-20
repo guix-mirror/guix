@@ -52,20 +52,11 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'update-constraints
+         (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "elm.cabal"
-               (("ansi-terminal >= 0\\.8 && < 0\\.9,")
-                "ansi-terminal >= 0.8 && < 0.10,")
-               (("containers >= 0\\.5\\.8\\.2 && < 0\\.6,")
-                "containers >= 0.5.8.2 && < 0.7,")
-               (("http-client >= 0\\.5 && < 0\\.6,")
-                "http-client >= 0.5 && < 0.7,")
-               (("language-glsl >= 0\\.0\\.2 && < 0\\.3,")
-                "language-glsl >= 0.0.2 && < 0.4,")
-               (("network >= 2\\.4 && < 2\\.7,")
-                "network >= 2.4 && < 2.9,"))
-             #t)))))
+               (("(ansi-terminal|containers|network|http-client|language-glsl)\\s+[^,]+" all dep)
+                dep)))))))
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)

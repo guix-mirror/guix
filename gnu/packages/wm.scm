@@ -712,13 +712,16 @@ desktop environment.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-data-default"          ,ghc-data-default)
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-semigroups"            ,ghc-semigroups)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
        ("ghc-x11"                   ,ghc-x11)))
     (arguments
-     `(#:phases
+     `(#:cabal-revision
+       ("1" "0yqh96qqphllr0zyz5j93cij5w2qvf39xxnrb52pz0qz3pywz9wd")
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'install 'install-xsession
@@ -749,14 +752,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.34")
+    (version "0.39")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://hackage/package/xmobar/"
+              (uri (string-append "https://hackage.haskell.org/package/xmobar/"
                                   "xmobar-" version ".tar.gz"))
               (sha256
                (base32
-                "0x09xbz7y9ay0046j1xpr9jjk5jqivqi06vm3q6mhcrgc4y922rx"))))
+                "1k1n3ff0ikdmfq0mi8r2vpqg1iq6hsw1drvxps6k98rvvn87pws6"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
@@ -771,6 +774,7 @@ tiled on several screens.")
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-iwlib" ,ghc-iwlib)
        ("ghc-libmpd" ,ghc-libmpd)
+       ("ghc-netlink" ,ghc-netlink)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-parsec-numbers" ,ghc-parsec-numbers)
        ("ghc-regex-compat" ,ghc-regex-compat)
@@ -832,6 +836,9 @@ particular, it displays commonly-chosen options before uncommon ones.")
        (sha256
         (base32 "1pddgkvnbww28wykncc7j0yb0lv15bk7xnnhdcbrwkxzw66w6wmd"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0vimkby2gq6sgzxzbvz67caba609xqlv2ii2gi8a1cjrnn6ib011")))
     (propagated-inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-random" ,ghc-random)

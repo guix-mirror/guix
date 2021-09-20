@@ -10541,7 +10541,6 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("r-rjson" ,r-rjson)
        ("salmon" ,salmon)
        ("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)
        ("python-wrapper" ,python-wrapper)
        ("python-deeptools" ,python-deeptools)
        ("python-pyyaml" ,python-pyyaml)))
@@ -10614,7 +10613,6 @@ expression report comparing samples in an easily configurable manner.")
        ("multiqc" ,multiqc)
        ("perl" ,perl)
        ("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)
        ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
        ("idr" ,idr)
@@ -10682,7 +10680,6 @@ in an easily configurable manner.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggbio" ,r-ggbio)
        ("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("snakemake" ,snakemake)
@@ -10731,7 +10728,6 @@ methylation and segmentation.")
        ("python-numpy" ,python-numpy)
        ("python-loompy" ,python-loompy)
        ("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)
        ("samtools" ,samtools)
        ("snakemake" ,snakemake)
        ("star" ,star-for-pigx)
@@ -12461,17 +12457,17 @@ datasets.")
 (define-public ngless
   (package
     (name "ngless")
-    (version "1.1.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/ngless/ngless.git")
+             (url "https://github.com/ngless-toolkit/ngless.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wim8wpqyff080dfcazynrmjwqas38m24m0v350w245mmhrapdma"))))
+         "0pb9f6b0yk9p4cdwiym8r190q1bcdiwvc7i2s6rw54qgi8r3g6pj"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
@@ -12546,7 +12542,7 @@ datasets.")
        ("ghc-http-conduit" ,ghc-http-conduit)
        ("ghc-inline-c" ,ghc-inline-c)
        ("ghc-inline-c-cpp" ,ghc-inline-c-cpp)
-       ("ghc-intervalmap" ,ghc-intervalmap)
+       ("ghc-int-interval-map" ,ghc-int-interval-map)
        ("ghc-missingh" ,ghc-missingh)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-regex" ,ghc-regex)
@@ -12573,11 +12569,48 @@ datasets.")
        ("ghc-test-framework-hunit",ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
        ("ghc-test-framework-th" ,ghc-test-framework-th)))
-    (home-page "https://gitlab.com/ngless/ngless")
+    (home-page "https://ngless.embl.de/")
     (synopsis "DSL for processing next-generation sequencing data")
     (description "Ngless is a domain-specific language for
 @dfn{next-generation sequencing} (NGS) data processing.")
     (license license:expat)))
+
+(define-public ghc-int-interval-map
+  (let ((commit "678763de7fe6d7fa3f1c44b32d18ce58670270f4")
+        (revision "1"))
+    (package
+      (name "ghc-int-interval-map")
+      (version "0.0.0.0")
+      (source
+        (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/ngless-toolkit/interval-to-int.git")
+                 (commit commit)))
+           (file-name (git-file-name name version))
+          (sha256 (base32 "0fd728b5if89vj5j4f9y7k0b2xv2ycz5a21iy15wbdcf5bhim7i8"))))
+      (build-system haskell-build-system)
+      (inputs
+        `(("ghc-either" ,ghc-either)
+          ("ghc-primitive" ,ghc-primitive)
+          ("ghc-vector" ,ghc-vector)
+          ("ghc-vector-algorithms" ,ghc-vector-algorithms)))
+      (native-inputs
+        `(("ghc-hedgehog" ,ghc-hedgehog)
+          ("ghc-tasty" ,ghc-tasty)
+          ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
+          ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+          ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+          ("ghc-tasty-th" ,ghc-tasty-th)))
+      (home-page "https://github.com/luispedro/interval-to-int#readme")
+      (synopsis "Interval map structure in Haskell")
+      (description "An interval map structure that is optimized for low
+memory (each interval is represented by about 3 words + whatever the
+cargo is) and has semantics that are appropriate for genomic intervals
+(namely, intervals can overlap and queries will return all matches
+together). It also designed to be used in two phases: a construction
+phase + query phase).")
+      (license license:expat))))
 
 (define-public filtlong
   ;; The recommended way to install is to clone the git repository

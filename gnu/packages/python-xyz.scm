@@ -25696,8 +25696,7 @@ By default it uses the open Python vulnerability database Safety DB.")
          "1zvn9764cf7kkjkmr9gw6wc8adpk06qxr1rhxwa9pg0zmdvrk90l"))))
     (build-system python-build-system)
     (inputs
-     `(("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)))
+     `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("wheel" ,python-wheel)))
     (native-inputs

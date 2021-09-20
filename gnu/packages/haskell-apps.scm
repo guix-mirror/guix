@@ -58,7 +58,7 @@
 (define-public apply-refact
   (package
     (name "apply-refact")
-    (version "0.6.0.0")
+    (version "0.9.3.0")
     (source
      (origin
        (method url-fetch)
@@ -67,13 +67,14 @@
              version ".tar.gz"))
        (sha256
         (base32
-         "0p2mqgjcqr1zcmk8zgr0yq7g8z1agsa6l493lkj6g3ya9lyhxgig"))))
+         "1sn5g71sx8xa4ggyk49m661iip6zrzl65vb87l16l31kf79bbm7w"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-refact" ,ghc-refact)
        ("ghc-exactprint" ,ghc-exactprint)
        ("ghc-syb" ,ghc-syb)
-       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-filemanip" ,ghc-filemanip)
        ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-optparse-applicative"
@@ -91,14 +92,12 @@
 library.  It is primarily used with HLint's @code{--refactor} flag.")
     (license license:bsd-3)))
 
-;; In Stackage LTS 14, this package is at 2.4.1.0.  However, that
-;; version requires version 2.4.1.0 of the 'Cabal' package, which is
-;; provided by GHC 8.6.5 at version 2.4.0.1.  Hence, we use an older
-;; version to match the compiler's library.
+;; cabal-install depends on Cabal, which is part of GHC. You can only
+;; update this packages after updating GHC.
 (define-public cabal-install
  (package
   (name "cabal-install")
-   (version "2.4.0.0")
+   (version "3.2.0.0")
    (source
     (origin
      (method url-fetch)
@@ -107,19 +106,16 @@ library.  It is primarily used with HLint's @code{--refactor} flag.")
             version
             ".tar.gz"))
       (sha256
-       (base32 "1xmyl0x8wqfrnray6ky5wy0g0samv4264fbdlzxhqsvk9dbfja8k"))))
+       (base32 "1c0cc256bha97aj7l0lf76l5swlnmwcqppiz8l4cl5xgba4mwmd0"))))
    (build-system haskell-build-system)
-   (arguments
-    `(#:cabal-revision
-      ("2" "1xil5pim6j1ckqj61zz6l7xpfxxr3rkw2hvpws2f7pr9shk645dl")
-      #:phases
+    (arguments
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "cabal-install.cabal"
-               (("zip-archive >= 0\\.3\\.2\\.5 && < 0\\.4,")
-                "zip-archive >= 0.3.2.5 && <= 0.4.1,"))
-             #t)))))
+               (("(base|base16-bytestring|random)\\s+[^,]+" all dep)
+                dep)))))))
    (inputs
     `(("ghc-async" ,ghc-async)
       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
@@ -144,41 +140,10 @@ Haskell software by automating the fetching, configuration, compilation and
 installation of Haskell libraries and programs.")
    (license license:bsd-3)))
 
-(define-public corrode
-  (let ((revision "0")
-        (commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
-    (package
-      (name "corrode")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/jameysharp/corrode")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
-      (build-system haskell-build-system)
-      (inputs
-       `(("ghc-language-c" ,ghc-language-c)
-         ("ghc-markdown-unlit" ,ghc-markdown-unlit)))
-      (home-page "https://github.com/jameysharp/corrode")
-      (synopsis "Automatic semantics-preserving translation from C to Rust")
-      (description
-       "This program reads a C source file and prints an equivalent module in
-Rust syntax.  It is intended to be useful for two different purposes:
-
-@enumerate
-@item Partial automation for migrating legacy code that was implemented in C.
-@item A new, complementary approach to static analysis for C programs.
-@end enumerate\n")
-      (license license:gpl2+))))
-
 (define-public cpphs
   (package
     (name "cpphs")
-    (version "1.20.8")
+    (version "1.20.9.1")
     (source
      (origin
        (method url-fetch)
@@ -187,7 +152,7 @@ Rust syntax.  It is intended to be useful for two different purposes:
              name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bh524asqhk9v1s0wvipl0hgn7l63iy3js867yv0z3h5v2kn8vg5"))))
+         "17wi7fma2qaqdm1hwgaam3fd140v9bpa8ky0wg708h1pqc5v2nbz"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-polyparse" ,ghc-polyparse)
@@ -210,7 +175,7 @@ unlit literate code files; and an option to turn off macro-expansion.")
 (define-public darcs
   (package
     (name "darcs")
-    (version "2.14.2")
+    (version "2.16.4")
     (source
      (origin
        (method url-fetch)
@@ -218,7 +183,7 @@ unlit literate code files; and an option to turn off macro-expansion.")
                            "darcs-" version ".tar.gz"))
        (sha256
         (base32
-         "0zm2486gyhiga1amclbg92cd09bvki6vgh0ll75hv5kl72j61lb5"))
+         "07dygwh6p4fsrlgxmq6r7yvxmf4n2y04izzd30jzqgs0pi9645p4"))
        (modules '((guix build utils)))
        ;; Remove time-dependent code for reproducibility.
        (snippet
@@ -229,8 +194,7 @@ unlit literate code files; and an option to turn off macro-expansion.")
            #t))))
     (build-system haskell-build-system)
     (arguments
-     `(#:cabal-revision
-       ("1" "0xl7j5cm704pbl2ms0dkydh7jvrz0ym76d725ifpg4h902m1zkhg")
+     `(#:tests? #f ; TODO: Needs QuickCheck ==2.13.*, and more…
        #:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
                            "-fnetwork-uri" "-fhttp" "--flag=executable"
                            "--flag=library")
@@ -244,9 +208,10 @@ unlit literate code files; and an option to turn off macro-expansion.")
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "darcs.cabal"
-               (("QuickCheck   >= 2\\.8\\.2 && < 2\\.13,")
-                "QuickCheck   >= 2.8.2 && < 2.14,"))
-             #t)))))
+               (("(constraints)\\s+[^,]+" all dep)
+                dep)
+               (("(cryptonite)\\s+[^,]+" all dep)
+                dep)))))))
     (inputs
      `(("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-split" ,ghc-split)
@@ -254,8 +219,12 @@ unlit literate code files; and an option to turn off macro-expansion.")
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-constraints" ,ghc-constraints)
        ("ghc-findbin" ,ghc-findbin)
        ("ghc-hunit" ,ghc-hunit)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
        ("ghc-async" ,ghc-async)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-base16-bytestring" ,ghc-base16-bytestring)
@@ -525,7 +494,7 @@ used to keep a folder in sync between computers.")
 (define-public hlint
   (package
     (name "hlint")
-    (version "2.1.26")
+    (version "3.2.7")
     (source
      (origin
        (method url-fetch)
@@ -534,24 +503,25 @@ used to keep a folder in sync between computers.")
              "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "16zkkpbfrd69853cdqf597fva969lirfc86b039i9zd7ghlrcayc"))))
+         "0z6gxndrh7blzapkdn6fq1pkbkjlmbgjbq9ydnvy2wm00fb3v73g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("cpphs" ,cpphs)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
+     `(("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-yaml" ,ghc-yaml)
        ("ghc-vector" ,ghc-vector)
        ("ghc-data-default" ,ghc-data-default)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("cpphs" ,cpphs)
+       ("ghc-filepattern" ,ghc-filepattern)
+       ("ghc-lib-parser-ex" ,ghc-lib-parser-ex)
+       ("hscolour" ,hscolour)
        ("ghc-cmdargs" ,ghc-cmdargs)
-       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
-       ("ghc-haskell-src-exts-util" ,ghc-haskell-src-exts-util)
        ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-extra" ,ghc-extra)
        ("ghc-refact" ,ghc-refact)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-lib-parser" ,ghc-lib-parser)
-       ("hscolour" ,hscolour)))
+       ("ghc-aeson" ,ghc-aeson)))
     (home-page "https://github.com/ndmitchell/hlint")
     (synopsis "Suggest improvements for Haskell source code")
     (description "HLint reads Haskell programs and suggests changes that
@@ -562,7 +532,7 @@ unwanted suggestions, and to add your own custom suggestions.")
 (define-public hoogle
   (package
     (name "hoogle")
-    (version "5.0.17.11")
+    (version "5.0.18.2")
     (source
      (origin
        (method url-fetch)
@@ -572,7 +542,7 @@ unwanted suggestions, and to add your own custom suggestions.")
          version ".tar.gz"))
        (sha256
         (base32
-         "1svp8z9pad8z2j386pr0dda0ds8ddxab0salnz4gm51q877w93p1"))))
+         "1xacx2f33x1a4qlv25f8rlmb4wi0cjfzrj22nlnkrd0knghik3m7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -716,7 +686,14 @@ Wayland, and Linux console environments alike.")
        ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
     (arguments
      `(#:cabal-revision
-       ("1" "1hsj0jh6siph3afd9c2wii09sffl48rzqv653n4clpd8qy0rn48d")))
+       ("1" "1hsj0jh6siph3afd9c2wii09sffl48rzqv653n4clpd8qy0rn48d")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "nixfmt.cabal"
+               (("(base|megaparsec)\\s+[^,]+" all dep)
+                dep)))))))
     (home-page "https://github.com/serokell/nixfmt")
     (synopsis "Opinionated formatter for Nix")
     (description
@@ -749,7 +726,7 @@ formatting by forgetting all existing formatting during parsing.")
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-microlens" ,ghc-microlens)
        ("ghc-microlens-mtl" ,ghc-microlens-mtl)
-       ("ghc-protolude" ,ghc-protolude-0.3)
+       ("ghc-protolude" ,ghc-protolude)
        ("ghc-vector" ,ghc-vector)
        ("ghc-wordexp" ,ghc-wordexp)))
     (home-page "https://github.com/erebe/greenclip")
@@ -848,7 +825,7 @@ too slow and you'll get wound up in the scroll and crushed.")
 (define-public shellcheck
   (package
     (name "shellcheck")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -856,11 +833,12 @@ too slow and you'll get wound up in the scroll and crushed.")
              "https://hackage.haskell.org/package/ShellCheck/ShellCheck-"
              version ".tar.gz"))
        (sha256
-        (base32 "06m4wh891nah3y0br4wh3adpsb16zawkb2ijgf1vcz61fznj6ps1"))
+        (base32 "0wl43njaq95l35y5mvipwp1db9vr551nz9wl0xy83j1x1kc38xgz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
     (arguments
-     '(#:phases
+     '(#:haddock? #f ; TODO: Fails to build.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-man-page
            (lambda _
@@ -950,17 +928,17 @@ output, stderr, and exit status.")
 (define-public stylish-haskell
   (package
     (name "stylish-haskell")
-    (version "0.9.2.2")
+    (version "0.13.0.0")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append
-         "mirror://hackage/package/stylish-haskell/"
+         "https://hackage.haskell.org/package/stylish-haskell/"
          "stylish-haskell-" version ".tar.gz"))
        (sha256
         (base32
-         "1zs624xqp6j8vrl6pfv18dm8vz8hvz25grri65ximxhcizgwhnax"))))
+         "0x9w3zh1lzp6l5xj3mynnlr0fzb5mbv0wwpfxp8fr6bk0jcrzjwf"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -968,7 +946,9 @@ output, stderr, and exit status.")
        ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-syb" ,ghc-syb)
-       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-hsyaml" ,ghc-hsyaml)
+       ("ghc-hsyaml-aeson" ,ghc-hsyaml-aeson)
+       ("ghc-lib-parser" ,ghc-lib-parser)
        ("ghc-strict" ,ghc-strict)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-hunit" ,ghc-hunit)
