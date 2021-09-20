@@ -1,0 +1,5 @@
+[diff "scheme"]
+	xfuncname = "^(\\(define.*)$"
+
+[diff "texinfo"]
+	xfuncname = "^@node[[:space:]]+([^,]+).*$"
