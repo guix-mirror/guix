@@ -1524,14 +1524,17 @@ to the OSM opening hours specification.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
                    (share-directories '("applications" "icons" "man" "menu"
-                                        "metainfo" "mime" "pixmaps")))
+                                        "metainfo" "mime" "pixmaps"))
+                   (desktop "org.openstreetmap.josm.desktop"))
                (for-each (lambda (directory)
                            (copy-recursively (string-append
                                               "native/linux/tested/usr/share/"
                                               directory)
                                              (string-append
                                               out "/share/" directory)))
-                         share-directories))
+                         share-directories)
+               (substitute* (string-append out "/share/applications/" desktop)
+                 (("josm-MainApplication") "josm-gui-MainApplication")))
              #t))
          (add-after 'install 'install-bin
            (lambda* (#:key outputs inputs #:allow-other-keys)
