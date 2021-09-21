@@ -23,6 +23,37 @@
 (channel-news
  (version 0)
 
+ (entry (commit "5b32ad4f6f555d305659cee825879df075b06331")
+        (title
+         (en "New @option{--max-depth} option for @command{guix graph}")
+         (fr "Nouvelle option @option{--max-depth} pour @command{guix graph}"))
+        (body
+         (en "The @command{guix graph} command has a new @option{--max-depth}
+(or @option{-M}) option, which allows you to restrict a graph to the given
+depth---very useful when visualizing large graphs.  For example, the command
+below displays, using the @code{xdot} package, the dependency graph of
+LibreOffice, including only nodes that are at most at distance 2 of
+LibreOffice itself:
+
+@example
+guix graph -M 2 libreoffice | xdot -
+@end example
+
+See @command{info \"(guix) Invoking guix graph\"} for more information.")
+         (fr "La commande @command{guix graph} dispose d'une nouvelle option
+@option{--max-depth} (ou @option{-M}) pour restreindre la profondeur d'un
+graphe---très utile pour visualiser des gros graphes.  Par exemple, la
+commande ci-dessous affiche, en utilisant @code{xdot}, le graphe de dépendance
+de LibreOffice en n'incluant que les nœuds qui sont au plus à distance 2 de
+LibreOffice soi-même :
+
+@example
+guix graph -M 2 libreoffice | xdot -
+@end example
+
+Voir @command{info \"(guix.fr) Invoquer guix graph\"} pour plus
+d'informations.")))
+
  (entry (commit "82daab42811a2e3c7684ebdf12af75ff0fa67b99")
         (title
          (en "New @samp{deb} format for the @command{guix pack} command")
