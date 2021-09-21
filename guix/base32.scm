@@ -53,7 +53,15 @@
        (let* ((s    (syntax->datum #'start))
               (e    (syntax->datum #'end))
               (mask (- (expt 2 (- e s)) 1)))
-         #`(logand (ash n (- start)) #,mask))))))
+         ;; The baseline compiler in Guile <= 3.0.7 miscompiles (ash x N) as
+         ;; (ash x (- N)) when N is a literal: <https://bugs.gnu.org/50696>.
+         ;; Here we take advantage of another bug in the baseline compiler,
+         ;; fixed in Guile commit 330c6ea83f492672578b62d0683acbb532d1a5d9: we
+         ;; introduce 'minus-start' such that it has a different source
+         ;; location, which in turn means that the baseline compiler pattern
+         ;; for (ash x N) doesn't match, thus avoiding the bug (!).
+         (with-syntax ((minus-start (datum->syntax #'start (- s))))
+           #`(logand (ash n minus-start) #,mask)))))))
 
 (define bytevector-quintet-ref
   (let* ((ref  bytevector-u8-ref)
