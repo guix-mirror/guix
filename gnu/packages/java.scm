@@ -1640,7 +1640,7 @@ bootstrapping purposes.")
                  (setlocale LC_ALL "en_US.utf8")
                  (setenv "LC_ALL" "en_US.utf8")
 
-                 (for-each import-cert (find-files certs-dir "\\.crt$"))
+                 (for-each import-cert (find-files certs-dir "\\.pem$"))
                  (mkdir-p (string-append (assoc-ref outputs "out")
                                          "/lib/security"))
                  (mkdir-p (string-append (assoc-ref outputs "jdk")
