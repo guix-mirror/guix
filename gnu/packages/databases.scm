@@ -53,6 +53,7 @@
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -695,6 +697,29 @@ auto-completion and syntax highlighting.")
                        (for-each delete-file
                                  (find-files (string-append out "/bin")
                                              "_embedded$"))
+                       #t)))
+                  (add-after
+                   'install 'wrap-mysql_helpers
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (bin (string-append out "/bin"))
+                            (awk (assoc-ref inputs "gawk"))
+                            (coreutils (assoc-ref inputs "coreutils"))
+                            (grep (assoc-ref inputs "grep"))
+                            (ps (assoc-ref inputs "procps"))
+                            (sed (assoc-ref inputs "sed")))
+                       (wrap-program (string-append bin "/mysql_config")
+                         `("PATH" ":" suffix
+                           (,(string-append awk "/bin")
+                            ,(string-append coreutils "/bin")
+                            ,(string-append sed "/bin"))))
+                       (wrap-program (string-append bin "/mysqld_safe")
+                         `("PATH" ":" suffix
+                           (,(string-append awk "/bin")
+                            ,(string-append coreutils "/bin")
+                            ,(string-append grep "/bin")
+                            ,(string-append ps "/bin")
+                            ,(string-append sed "/bin"))))
                        #t))))))
     (native-inputs
      `(("bison" ,bison)
@@ -702,11 +727,16 @@ auto-completion and syntax highlighting.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost-for-mysql)
+       ("coreutils" ,coreutils)
+       ("gawk" ,gawk)
+       ("grep" ,grep)
        ("libaio" ,libaio)
        ("libtirpc" ,libtirpc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
+       ("procps" ,procps)
        ("rpcsvc-proto" ,rpcsvc-proto) ; rpcgen
+       ("sed" ,sed)
        ("zlib" ,zlib)))
     (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
