@@ -51,6 +51,7 @@
   #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
@@ -2111,6 +2112,54 @@ voice formats.")
     (description
      "SDRangel is a Qt software defined radio and signal analyzer frontend for
 various hardware.")
+    (license license:gpl3+)))
+
+(define-public sdr++
+  (package
+    (name "sdr++")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AlexandreRouma/SDRPlusPlus")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mplhys07l4bqv3q301ayh35468mg0hpxp5zgrps7gkjyf3v6idr"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gcc" ,gcc-10) ; A GCC more recent than version 7 is required.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("airspyhf" ,airspyhf)
+       ("alsa-lib" ,alsa-lib)
+       ("fftwf" ,fftwf)
+       ("glew" ,glew)
+       ("glfw" ,glfw)
+       ("hackrf" ,hackrf)
+       ("jack" ,jack-2)
+       ("libusb" ,libusb)
+       ("pulseaudio" ,pulseaudio)
+       ("rtaudio" ,rtaudio)
+       ("rtl-sdr" ,rtl-sdr)
+       ("soapysdr" ,soapysdr)
+       ("volk" ,volk)))
+    (arguments
+     `(#:tests? #f ; No test suite.
+       #:configure-flags '("-DOPT_BUILD_AIRSPY_SOURCE=OFF"
+                           "-DOPT_BUILD_PLUTOSDR_SOURCE=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("/usr")
+                (assoc-ref outputs "out"))))))))
+    (home-page "https://github.com/AlexandreRouma/SDRPlusPlus")
+    (synopsis "Software defined radio software")
+    (description
+     "SDR++ is a software defined radio software for various hardware.")
     (license license:gpl3+)))
 
 (define-public inspectrum
