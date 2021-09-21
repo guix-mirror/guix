@@ -27986,6 +27986,30 @@ IOCP and Async I/O abstractions.")
     (description "This crate provides procedural macros for Mockall.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-mockall-double-0.2
+  (package
+    (name "rust-mockall-double")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mockall_double" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ib7ahq98ah13i69ypx6wrkc3ksmjw3jkmh0s2qi7dxj6j6vf99y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/asomers/mockall")
+    (synopsis "Test double adapter for Mockall")
+    (description "This crate tests double adapter for Mockall.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mockito-0.23
   (package
     (name "rust-mockito")
