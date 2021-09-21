@@ -60,6 +60,7 @@
 ;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
+;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12329,3 +12330,32 @@ world.")
     (description "OCRFeeder is a complete Optical Character Recognition and
 Document Analysis and Recognition program.")
     (license license:gpl3+)))
+
+(define-public gnome-power-manager
+  (package
+    (name "gnome-power-manager")
+    (version "3.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0drfn3wcc8l4n07qwv6p0rw2dwcd00hwzda282q62l6sasks2b2g"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("upower" ,upower)
+       ("gtk+" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin")
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-power-manager")
+    (synopsis "Power management daemon for the GNOME desktop")
+    (description "@code{gnome-power-manager} is a tool for viewing present and
+historical battery usage and related statistics.")
+    (license license:gpl2)))
