@@ -149,7 +149,7 @@ between two other data points.")
 (define-public gama
   (package
     (name "gama")
-    (version "2.14")
+    (version "2.15")
     (source
       (origin
         (method url-fetch)
@@ -157,7 +157,7 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "04mhbgpqbynnmm8ww4k2yk1w2j66c276dns9xwn8cvrq58kjimln"))
+          "1lsa7k9anxla2r3wxzg2yhxgxlp8xibz56gaxhgf5rd3mzf51flx"))
         (modules '((guix build utils)))
         (snippet
          '(begin
@@ -171,7 +171,7 @@ between two other data points.")
     (inputs
      `(("expat" ,expat)
        ("sqlite" ,sqlite)))
-    (home-page "https://www.gnu.org/software/gama")
+    (home-page "https://www.gnu.org/software/gama/")
     (synopsis "Adjustment of geodetic networks")
     (description
      "GNU Gama is a program for the adjustment of geodetic networks.  It is
