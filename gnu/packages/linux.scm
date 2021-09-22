@@ -7657,8 +7657,24 @@ IP addresses and routes, and configure IPsec.")
                (base32
                 "0dqf5j2sw4hq68rqvxbrsf44ygfzx9ypiyzipk4cvp9aimbvsbc6"))))
     (build-system meson-build-system)
+    ;; Install static libraries for use by the initrd's xfsprogs/static.
+    (outputs (list "out" "static"))
     (arguments
-     '(#:configure-flags '("-Ddistro_install=true" "-Ddefault_library=shared")))
+     `(#:configure-flags
+       (list "-Ddistro_install=true"
+             "-Ddefault_library=both")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'separate-static
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (with-directory-excursion out
+                 (for-each (lambda (source)
+                             (let ((target (string-append static "/" source)))
+                               (mkdir-p (dirname target))
+                               (rename-file source target)))
+                           (find-files "lib" "\\.a$")))))))))
     (home-page "https://github.com/benhoyt/inih")
     (synopsis "Simple .INI parser library for C")
     (description "The inih (INI Not Invented Here) library is a simple .INI file
