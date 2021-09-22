@@ -280,7 +280,7 @@ FILE-SYSTEMS."
           (list fatfsck/static)
           '())
     ,@(if (find (file-system-type-predicate "bcachefs") file-systems)
-          (list bcachefs-tools/static)
+          (list bcachefs/static)
           '())
     ,@(if (find (file-system-type-predicate "btrfs") file-systems)
           (list btrfs-progs/static)
