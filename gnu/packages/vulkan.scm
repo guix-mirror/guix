@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -222,7 +224,14 @@ interpretation of the specifications for these languages.")
          "15gx9ab6w1sjq9hkpbas7z2f8f47j6mlln6p3w26qmydjj8gfjjv"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags
+       ,#~(list
+           (string-append "-DVULKAN_HEADERS_INSTALL_DIR="
+                          #$(this-package-input "vulkan-headers"))
+           (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
+                          #$(this-package-input "vulkan-headers")
+                          "/include"))
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'unpack-googletest
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((gtest (assoc-ref inputs "googletest:source")))
@@ -243,8 +252,9 @@ interpretation of the specifications for these languages.")
        ("libxrandr" ,libxrandr)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("vulkan-headers" ,vulkan-headers)
        ("wayland" ,wayland)))
+    (inputs
+     `(("vulkan-headers" ,vulkan-headers)))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
