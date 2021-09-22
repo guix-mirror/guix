@@ -54,6 +54,30 @@ guix graph -M 2 libreoffice | xdot -
 Voir @command{info \"(guix.fr) Invoquer guix graph\"} pour plus
 d'informations.")))
 
+ (entry (commit "05f44c2d858a1e7b13c90362c35fa86bdc4d5a24")
+        (title
+         (en "Channel clones fall back to Software Heritage")
+         (fr "Les clones de canaux peuvent recourir à Software Heritage"))
+        (body
+         (en "When @command{guix time-machine} or @command{guix pull} fetches
+a channel pinned to a specific commit, it now automatically falls back to
+cloning it from the Software Heritage archive if the original URL is
+unreachable.  This contributes to long-term reproducibility.  See
+@command{info \"(guix) Replicating Guix\"}.
+
+Automatic fallback also works for other Git clones made on your behalf, such
+as when using @option{--with-commit} and related package transformation
+options.")
+         (fr "Quand la commande @command{guix time-machine} ou @command{guix
+pull} récupère un canal fixé à une révision spécifique, elle est maintenant
+capable de le cloner depuis l'archive Software Heritage si l'URL initiale
+n'est plus disponible.  Cela contribue à la reproductibilité à long terme.
+Voir @command{info \"(guix.fr) Répliquer Guix\"}.
+
+Ce recours à Software Heritage fonctionne aussi pour les autres clones Git que
+Guix peut faire, comme lorsqu'on utilise @option{--with-commit} et les options
+de transformation de paquet similaires.")))
+
  (entry (commit "82daab42811a2e3c7684ebdf12af75ff0fa67b99")
         (title
          (en "New @samp{deb} format for the @command{guix pack} command")
