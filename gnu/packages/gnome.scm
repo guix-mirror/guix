@@ -9052,16 +9052,16 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "3.34.0")
+    (version "40.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/"
+                           (version-major version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0zxlwy55fz7i582hch2wnj8zy1kzikssgaix0l2y41ccp5nzpdy2"))))
+         "03m7ldfk00cly9igrq0qizq1y0f45vijmm23f1dl5kh1lc6qmpv0"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
