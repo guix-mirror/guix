@@ -480,14 +480,14 @@ output), and Binutils.")
 (define-public llvm-12
   (package
     (name "llvm")
-    (version "12.0.0")
+    (version "12.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "0l4b79gwfvxild974aigcq1yigypjsk2j5p59syhl6ksd744gp29"))))
+        "1pzx9zrmd7r3481sbhwvkms68fwhffpp4mmz45dgrkjpyl2q96kx"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -542,22 +542,20 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public clang-runtime-12
   (clang-runtime-from-llvm
    llvm-12
-   "0d444qihq9jhqnfv003cr704v363va72zl6qaw2algj1c85cva45"))
+   "1950rg294izdwkaasi7yjrmadc9mzdd5paf0q63jjcq2m3rdbj5l"))
 
 (define-public clang-12
   (clang-from-llvm llvm-12 clang-runtime-12
-                   "1vd9rhhrd8ghdg111lac7w8by71y9l14yh5zxfijsm6lj4p4avp2"
+                   "0px4gl27az6cdz6adds89qzdwb1cqpjsfvrldbz9qvpmphrj34bf"
                    #:patches '("clang-11.0-libc-search-path.patch")
                    #:tools-extra
                    (origin
                      (method url-fetch)
                      (uri (llvm-uri "clang-tools-extra"
                                     (package-version llvm-12)))
-                     (patches
-                      (search-patches "clang-12-tools-extra-directory.patch"))
                      (sha256
                       (base32
-                       "0p3dzr0qa7mar83y66xa5m5apynf6ia0lsdsq6axwnm64ysy0hdd")))))
+                       "1r9a4fdz9ci58b5z2inwvm4z4cdp6scrivnaw05dggkxz7yrwrb5")))))
 
 (define-public clang-toolchain-12
   (make-clang-toolchain clang-12))
