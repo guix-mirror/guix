@@ -2281,15 +2281,15 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.34.0")
+    (version "40.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mb7q90lnlp97dhxhnadhjagcfd12dfqzp0vj9h6b1r61pzhy97y"))))
+                "1rr1ypb89p51b6428yqvczmpmylwjfnhnkgx78hzm3vxm3m15lff"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dlogind=libelogind")
@@ -2317,6 +2317,7 @@ and keep up to date translations of documentation.")
        ("gtk+" ,gtk+)
        ("libcanberra" ,libcanberra)
        ("libdvdread" ,libdvdread)
+       ("libhandy" ,libhandy)
        ("libnotify" ,libnotify)
        ("libpwquality" ,libpwquality)
        ("libsecret" ,libsecret)
