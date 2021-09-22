@@ -7756,6 +7756,32 @@ file systems.")
                  (package-inputs xfsprogs))))
     (synopsis "Statically linked XFS file system tools")))
 
+(define-public xfs_repair/static
+  (package
+    (name "xfs_repair-static")
+    (version (package-version xfsprogs/static))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((xfsprogs (assoc-ref %build-inputs "xfsprogs"))
+                (out      (assoc-ref %outputs "out"))
+                (sbin     (string-append out "/sbin")))
+           (install-file (string-append xfsprogs "/sbin/xfs_repair") sbin)
+           (with-directory-excursion sbin
+             (remove-store-references "xfs_repair"))))))
+    (inputs
+     `(("xfsprogs" ,xfsprogs/static)))
+    (home-page (package-home-page xfsprogs/static))
+    (synopsis "Statically linked @command{xfs_repair} from xfsprogs")
+    (description
+     "This package provides a statically linked @command{xfs_repair} taken
+from the xfsprogs package.  It is meant to be used in initrds.")
+    (license (package-license xfsprogs/static))))
+
 (define-public genext2fs
   (package
     (name "genext2fs")
