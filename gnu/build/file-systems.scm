@@ -166,8 +166,8 @@ if DEVICE does not contain an ext2 file system."
   (sub-bytevector sblock 104 16))
 
 (define (ext2-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 16 characters, or
-#f if SBLOCK has no volume name."
+  "Return the volume name of ext2 superblock SBLOCK as a string of at most 16
+characters, or #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 120 16)))
 
 (define (check-ext2-file-system device force? repair)
@@ -265,8 +265,8 @@ bytevector."
   (sub-bytevector sblock 56 16))
 
 (define (bcachefs-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 32 characters, or
-#f if SBLOCK has no volume name."
+  "Return the volume name of bcachefs superblock SBLOCK as a string of at most
+32 characters, or #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 72 32)))
 
 (define (check-bcachefs-file-system device force? repair)
@@ -317,8 +317,8 @@ if DEVICE does not contain a btrfs file system."
   (sub-bytevector sblock 32 16))
 
 (define (btrfs-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 256 characters, or
-#f if SBLOCK has no volume name."
+  "Return the volume name of btrfs superblock SBLOCK as a string of at most 256
+characters, or #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 299 256)))
 
 (define (check-btrfs-file-system device force? repair)
@@ -364,9 +364,9 @@ fix only those considered safe to repair automatically."
   (sub-bytevector sblock 67 4))
 
 (define (fat32-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 11 characters, or
-#f if SBLOCK has no volume name.  The volume name is a latin1 string.
-Trailing spaces are trimmed."
+  "Return the volume name of fat superblock SBLOCK as a string of at most 11
+characters, or #f if SBLOCK has no volume name.  The volume name is a latin1
+string.  Trailing spaces are trimmed."
   (string-trim-right (latin1->string (sub-bytevector sblock 71 11) (lambda (c) #f)) #\space))
 
 (define (check-fat-file-system device force? repair)
@@ -404,9 +404,9 @@ using the least destructive approach."
   (sub-bytevector sblock 39 4))
 
 (define (fat16-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 11 characters, or
-#f if SBLOCK has no volume name.  The volume name is a latin1 string.
-Trailing spaces are trimmed."
+  "Return the volume name of fat superblock SBLOCK as a string of at most 11
+characters, or #f if SBLOCK has no volume name.  The volume name is a latin1
+string.  Trailing spaces are trimmed."
   (string-trim-right (latin1->string (sub-bytevector sblock 43 11)
                                      (lambda (c) #f))
                      #\space))
@@ -465,8 +465,8 @@ SBLOCK as a bytevector.  If that's not set, returns the creation time."
     (sub-bytevector time 0 16))) ; strips GMT offset.
 
 (define (iso9660-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string.  The volume name is an ASCII
-string.  Trailing spaces are trimmed."
+  "Return the volume name of iso9660 superblock SBLOCK as a string.  The volume
+name is an ASCII string.  Trailing spaces are trimmed."
   ;; Note: Valid characters are of the set "[0-9][A-Z]_" (ECMA-119 Appendix A)
   (string-trim-right (latin1->string (sub-bytevector sblock 40 32)
                                      (lambda (c) #f)) #\space))
@@ -497,8 +497,8 @@ if DEVICE does not contain a JFS file system."
   (sub-bytevector sblock 136 16))
 
 (define (jfs-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 16 characters, or
-#f if SBLOCK has no volume name."
+  "Return the volume name of JFS superblock SBLOCK as a string of at most 16
+characters, or #f if SBLOCK has no volume name."
   (null-terminated-latin1->string (sub-bytevector sblock 152 16)))
 
 (define (check-jfs-file-system device force? repair)
@@ -567,8 +567,8 @@ if DEVICE does not contain an F2FS file system."
                   16))
 
 (define (f2fs-superblock-volume-name sblock)
-  "Return the volume name of SBLOCK as a string of at most 512 characters, or
-#f if SBLOCK has no volume name."
+  "Return the volume name of F2FS superblock SBLOCK as a string of at most 512
+characters, or #f if SBLOCK has no volume name."
   (null-terminated-utf16->string
    (sub-bytevector sblock (- (+ #x470 12) #x400) 512)
    %f2fs-endianness))
