@@ -2330,15 +2330,15 @@ and keep up to date translations of documentation.")
 (define-public gnome-font-viewer
   (package
     (name "gnome-font-viewer")
-    (version "3.30.0")
+    (version "40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-font-viewer/"
-                                  (version-major+minor version)
+                                  (version-major version)
                                   "/gnome-font-viewer-" version ".tar.xz"))
               (sha256
                (base32
-                "1wwnx2zrlbd2d6np7m9s78alx6j6ranrnh1g2z6zrv9qcj8rpzz5"))))
+                "0hpyi0sz3gcqqs9lkwyk8b6hr39m3n27432x98kxr436jj37dk6j"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
@@ -2365,7 +2365,9 @@ and keep up to date translations of documentation.")
     (inputs
      `(("glib" ,glib)
        ("gnome-desktop" ,gnome-desktop)
-       ("gtk+" ,gtk+)))
+       ("gtk+" ,gtk+)
+       ("libhandy" ,libhandy)
+       ("libxml2" ,libxml2)))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-font-viewer")
     (synopsis "GNOME Fonts")
     (description "Application to show you the fonts installed on your computer
