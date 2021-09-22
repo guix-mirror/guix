@@ -1,0 +1,54 @@
+Build with the system NSPR library instead of the bundled version.
+
+Originally based on this Debian patch:
+https://salsa.debian.org/chromium-team/chromium/-/blob/master/debian/patches/system/nspr.patch
+
+diff --git a/base/BUILD.gn b/base/BUILD.gn
+--- a/base/BUILD.gn
++++ b/base/BUILD.gn
+@@ -141,6 +141,12 @@ config("perfetto_config") {
+   }
+ }
+ 
++if (is_linux) {
++  ldflags = [
++    "-lnspr4",
++  ]
++}
++
+ # Base and everything it depends on should be a static library rather than
+ # a source set. Base is more of a "library" in the classic sense in that many
+ # small parts of it are used in many different contexts. This combined with a
+@@ -759,8 +765,6 @@ component("base") {
+     "third_party/cityhash_v103/src/city_v103.cc",
+     "third_party/cityhash_v103/src/city_v103.h",
+     "third_party/icu/icu_utf.h",
+-    "third_party/nspr/prtime.cc",
+-    "third_party/nspr/prtime.h",
+     "third_party/superfasthash/superfasthash.c",
+     "thread_annotations.h",
+     "threading/hang_watcher.cc",
+diff --git a/base/time/pr_time_unittest.cc b/base/time/pr_time_unittest.cc
+--- a/base/time/pr_time_unittest.cc
++++ b/base/time/pr_time_unittest.cc
+@@ -7,7 +7,7 @@
+ 
+ #include "base/compiler_specific.h"
+ #include "base/cxx17_backports.h"
+-#include "base/third_party/nspr/prtime.h"
++#include <nspr/prtime.h>
+ #include "base/time/time.h"
+ #include "build/build_config.h"
+ #include "testing/gtest/include/gtest/gtest.h"
+diff --git a/base/time/time.cc b/base/time/time.cc
+--- a/base/time/time.cc
++++ b/base/time/time.cc
+@@ -18,7 +18,7 @@
+ #include <utility>
+ 
+ #include "base/strings/stringprintf.h"
+-#include "base/third_party/nspr/prtime.h"
++#include <nspr/prtime.h>
+ #include "base/time/time_override.h"
+ #include "build/build_config.h"
+ #include "third_party/abseil-cpp/absl/types/optional.h"

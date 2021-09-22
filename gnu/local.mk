@@ -1808,6 +1808,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/ungoogled-chromium-extension-search-path.patch	\
+  %D%/packages/patches/ungoogled-chromium-ffmpeg-compat.patch	\
+  %D%/packages/patches/ungoogled-chromium-system-nspr.patch	\
   %D%/packages/patches/unison-fix-ocaml-4.08.patch		\
   %D%/packages/patches/unknown-horizons-python-3.8-distro.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

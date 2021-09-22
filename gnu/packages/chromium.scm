@@ -58,6 +58,8 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
@@ -95,7 +97,6 @@
     "third_party/angle/src/common/third_party/base" ;BSD-3
     "third_party/angle/src/common/third_party/smhasher" ;Public domain
     "third_party/angle/src/common/third_party/xxhash" ;BSD-2
-    "third_party/angle/src/third_party/compiler" ;BSD-2
     "third_party/angle/src/third_party/libXNVCtrl" ;Expat
     "third_party/angle/src/third_party/trace_event" ;BSD-3
     "third_party/angle/src/third_party/volk" ;Expat
@@ -249,6 +250,11 @@
     "third_party/skia/third_party/skcms" ;BSD-3
     "third_party/skia/third_party/vulkanmemoryallocator" ;BSD-3, Expat
     "third_party/smhasher" ;Expat, public domain
+
+    ;; FIXME: the snappy "replacement" shim (see replace_gn_files.py below) does
+    ;; not declare a library dependency added in M93, causing a link failure.
+    "third_party/snappy" ;BSD-3
+
     "third_party/speech-dispatcher" ;GPL2+
     "third_party/sqlite" ;Public domain
     "third_party/swiftshader" ;ASL2.0
@@ -300,7 +306,6 @@
 
     "third_party/zlib/google" ;BSD-3
     "third_party/zxcvbn-cpp" ;Expat
-    "tools/grit/third_party/six" ;Expat
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
     "v8/src/third_party/siphash" ;Public domain
     "v8/src/third_party/utf8-decoder" ;Expat
@@ -324,17 +329,15 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "92.0.4515.159")
+(define %chromium-version "93.0.4577.82")
 (define %debian-revision "debian/90.0.4430.85-1")
 ;; Note: use 'git describe --long' even for exact tags to placate the
 ;; custom version format for ungoogled-chromium.
-(define %ungoogled-revision "92.0.4515.159-1-8-g8164c91")
+(define %ungoogled-revision "93.0.4577.82-1-2-g3f62dbc")
 
 (define %debian-patches
   (list (debian-patch "fixes/nomerge.patch"
                       "0lybs2b5gk08j8cr6vjrs9d3drd7qfw013z2r0y00by8dnpm74i3")
-        (debian-patch "system/nspr.patch"
-                      "1gdirn1k1i841l8zp8xgr95kl16b5nx827am9rcxj8sfkm8hgkn3")
         (debian-patch "system/zlib.patch"
                       "0j313bd3q8qc065j60x97dckrfgbwl4qxc8jhz33iihvv4lwziwv")
         (debian-patch "system/openjpeg.patch"
@@ -348,12 +351,18 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "0wbcbjzh5ak4nciahqw4yvxc4x8ik4x0iz9h4kfy0m011sxzy174"))))
+      "1n0bffmwrzp3g1zzsy6qq325mbp4yn629m5zlfyz261szhvl9rgw"))))
 
 (define %guix-patches
   (list (local-file
          (assume-valid-file-name
-          (search-patch "ungoogled-chromium-extension-search-path.patch")))))
+          (search-patch "ungoogled-chromium-extension-search-path.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-ffmpeg-compat.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-system-nspr.patch")))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
@@ -397,7 +406,7 @@
 
           (format #t "Pruning third party files...~%")
           (force-output)
-          (apply invoke (string-append #+python-2 "/bin/python")
+          (apply invoke "python"
                  "build/linux/unbundle/remove_bundled_libraries.py"
                  "--do-remove" '#$%preserved-third-party-files)
 
@@ -414,7 +423,7 @@
                   "--system-libraries" "ffmpeg" "flac" "fontconfig"
                   "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
                   "libjpeg" "libpng" "libwebp" "libxml" "libxslt"
-                  "openh264" "opus" "snappy" "zlib")))))
+                  "openh264" "opus" "zlib")))))
 
 (define opus+custom
   (package/inherit opus
@@ -427,22 +436,6 @@
         ;; sizes.  Chromium requires that this is enabled.
         `(cons "--enable-custom-modes"
                ,flags))))))
-
-;; WebRTC in Chromium 88 requires an unreleased version of libvpx.  Use the
-;; commit mentioned in "third_party/libvpx/README.chromium".
-(define libvpx/chromium
-  (package
-    (inherit libvpx)
-    (version "1.9.0-147-g61edec1ef")
-    (source (origin
-              (inherit (package-source libvpx))
-              (uri (git-reference
-                    (url "https://chromium.googlesource.com/webm/libvpx")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "libvpx" version))
-              (sha256
-               (base32
-                "0mw13y7j2lg8jj3alm9367c3b40b6s218fdz3nn1m2k85c78wzr7"))))))
 
 ;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
 ;; this trick to make it wrap 'lld'.
@@ -484,7 +477,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "04gxgimg5ygzx6nvfws5y9dppdfjg1fhyl8zbykmksbh1myk6zfr"))
+                "0lr8zdq06smncdzd6knzww9hxl8ynvxadmrkyyl13fpwb1422rjx"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -506,6 +499,8 @@
              ;; a developer build.
              "is_official_build=true"
              "clang_use_chrome_plugins=false"
+             "is_cfi=false"             ;requires Clang 13
+             "use_thin_lto=false"       ;XXX ICE with Clang+LLD 12.0.1
              "chrome_pgo_phase=0"
              "use_sysroot=false"
              "goma_dir=\"\""
@@ -529,6 +524,8 @@
              ;; Disable code using TensorFlow until it has been scrutinized
              ;; by the ungoogled project.
              "build_with_tflite_lib=false"
+             ;; Avoid dependency on code formatting tools.
+             "blink_enable_generated_code_formatting=false"
 
              ;; Define a custom toolchain that simply looks up CC, AR and
              ;; friends from the environment.
@@ -823,21 +820,20 @@
                   '("24" "48" "64" "128" "256")))))))))
     (native-inputs
      `(("bison" ,bison)
-       ("clang" ,clang-11)
+       ("clang" ,clang-12)
        ("gn" ,gn)
        ("gperf" ,gperf)
        ("ld-wrapper" ,(make-lld-wrapper lld))
        ("ninja" ,ninja)
-       ("node" ,node)
+       ("node" ,node-lts)
        ("pkg-config" ,pkg-config)
        ("which" ,which)
+
        ;; This file contains defaults for new user profiles.
        ("master-preferences" ,(local-file "aux-files/chromium/master-preferences.json"))
 
-       ;; Try unbundling these when upstream has completed its Python 3 transition.
-       ;; ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ;; ("python-html5lib" ,python-html5lib)
-       ("python2" ,python-2)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-html5lib" ,python-html5lib)
        ("python" ,python-wrapper)
        ("wayland-scanner" ,wayland)))
     (inputs
@@ -862,7 +858,7 @@
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libva" ,libva)
-       ("libvpx" ,libvpx/chromium)
+       ("libvpx" ,libvpx)
        ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
