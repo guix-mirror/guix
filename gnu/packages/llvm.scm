@@ -918,6 +918,34 @@ of programming tools as well as libraries with equivalent functionality.")
                   ,@(package-properties llvm-12)))))
 
 
+
+(define-public libunwind-headers
+  (package
+    (name "libunwind-headers")
+    (version "12.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-uri "libunwind" version))
+              (sha256
+               (base32
+                "192ww6n81lj2mb9pj4043z79jp3cf58a9c2qrxjwm5c3a64n1shb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases (modify-phases (map (lambda (phase)
+                                      (assq phase %standard-phases))
+                                    '(set-paths unpack))
+                  (add-after 'unpack 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (mkdir out)
+                        (copy-recursively "include"
+                                          (string-append out "/include"))))))))
+    (home-page "https://clang.llvm.org/docs/Toolchain.html")
+    (synopsis "LLVM libunwind header files")
+    (description
+     "This package contains header files for the LLVM C++ unwinding library.")
+    (license license:asl2.0)))          ;with LLVM exceptions
+
 (define-public lld
   (package
     (name "lld")
