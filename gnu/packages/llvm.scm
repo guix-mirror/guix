@@ -977,13 +977,13 @@ components which highly leverage existing libraries in the larger LLVM Project."
 (define-public lldb
   (package
     (name "lldb")
-    (version "11.0.0")
+    (version "12.0.1")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "lldb" version))
               (sha256
                (base32
-                "0wic9lyb2la9bkzdc13szkm4f793w1mddp50xvh237iraygw0w45"))))
+                "0g3pj1m3chafavpr35r9fynm85y2hdyla6klj0h28khxs2613i78"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_CXX_COMPILER=clang++")))
@@ -991,8 +991,8 @@ components which highly leverage existing libraries in the larger LLVM Project."
      `(("pkg-config" ,pkg-config)
        ("swig" ,swig)))
     (inputs
-     `(("clang" ,clang-11)
-       ("llvm" ,llvm-11)
+     `(("clang" ,clang-12)
+       ("llvm" ,llvm-12)
 
        ;; Optional (but recommended) inputs.
        ("curses" ,ncurses)
