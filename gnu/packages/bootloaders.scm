@@ -611,6 +611,7 @@ def test_ctrl_c"))
                            "tools/mkenvimage"
                            "tools/dumpimage"
                            "tools/mkimage"
+                           "tools/kwboot"
                            "tools/proftool"
                            "tools/fdtgrep"
                            "tools/env/fw_printenv"
