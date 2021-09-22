@@ -678,6 +678,18 @@ and write the output to FILE."
                (false-if-exception*
                 (disarchive-assemble spec file #:resolver resolve))))))))
 
+(define (internet-archive-uri uri)
+  "Return a URI corresponding to an Internet Archive backup of URI, or #f if
+URI does not denote a Web URI."
+  (and (memq (uri-scheme uri) '(http https))
+       (let* ((now  (time-utc->date (current-time time-utc)))
+              (date (date->string now "~Y~m~d~H~M~S")))
+         ;; Note: the date in the URL can be anything and web.archive.org
+         ;; automatically redirects to the closest date.
+         (build-uri 'https #:host "web.archive.org"
+                    #:path (string-append "/web/" date "/"
+                                          (uri->string uri))))))
+
 (define* (url-fetch url file
                     #:key
                     (timeout 10) (verify-certificate? #t)
@@ -769,7 +781,12 @@ otherwise simply ignore them."
 
   (setvbuf (current-error-port) 'line)
 
-  (let try ((uri (append uri content-addressed-uris)))
+  (let try ((uri (append uri content-addressed-uris
+                   (match uri
+                     ((first . _)
+                      (or (and=> (internet-archive-uri first) list)
+                          '()))
+                     (() '())))))
     (match uri
       ((uri tail ...)
        (or (fetch uri file)
