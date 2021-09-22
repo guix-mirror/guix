@@ -7731,6 +7731,31 @@ file systems.")
     ;; licensed under lgpl2.1. the other stuff is licensed under gpl2.
     (license (list license:gpl2 license:lgpl2.1))))
 
+(define-public xfsprogs/static
+  (package
+    (inherit xfsprogs)
+    (name "xfsprogs-static")
+    (outputs (list "out"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments xfsprogs)
+       ((#:make-flags make-flags ''())
+        `(cons* "LLDFLAGS=-all-static" ,make-flags))
+       ((#:phases _ ''())
+        `(modify-phases %standard-phases
+           (add-after 'install 'delete-useless-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (with-directory-excursion (assoc-ref outputs "out")
+                 (for-each delete-file-recursively
+                           (list "include" "lib")))))))))
+    (inputs
+     `(("libinih:static" ,libinih "static")
+       ("util-linux:static" ,util-linux "static")
+       ,@(remove (match-lambda
+                   ((label . _)
+                    (member label '("python"))))
+                 (package-inputs xfsprogs))))
+    (synopsis "Statically linked XFS file system tools")))
+
 (define-public genext2fs
   (package
     (name "genext2fs")
