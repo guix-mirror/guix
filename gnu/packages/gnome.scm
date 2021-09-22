@@ -1721,7 +1721,7 @@ project.")
 (define-public gnome-menus
   (package
     (name "gnome-menus")
-    (version "3.32.0")
+    (version "3.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-menus/"
@@ -1729,7 +1729,7 @@ project.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0x2blzqrapmbsbfzxjcdcpa3vkw9hq5k96h9kvjmy9kl415wcl68"))))
+                "07xvaf8s0fiv0035nk8zpzymn5www76w2a1vflrgqmp9plw8yd6r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
