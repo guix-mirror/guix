@@ -9080,16 +9080,16 @@ can add your own files to the collection.")
 (define-public gnome-screenshot
   (package
     (name "gnome-screenshot")
-    (version "3.34.0")
+    (version "40.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/"
+                           (version-major version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1rmiq890j7gfn5mcz31xy6jfnnxgc17dq67bhn2k9m5ylbvza2n8"))))
+         "1qm544ymwibk31s30k47vnn79xg30m18r7l4di0c57g375dak31n"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
@@ -9109,6 +9109,7 @@ can add your own files to the collection.")
     (inputs
      `(("gtk+" ,gtk+)
        ("libcanberra" ,libcanberra)
+       ("libhandy" ,libhandy)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-screenshot")
