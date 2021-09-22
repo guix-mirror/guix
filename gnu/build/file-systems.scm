@@ -679,6 +679,69 @@ dirty flag to indicate that it's now safe to mount."
     (_ 'fatal-error)))
 
 
+
+;;;
+;;; XFS file systems.
+;;;
+
+;; <https://git.kernel.org/pub/scm/fs/xfs/xfs-documentation.git/tree/design/XFS_Filesystem_Structure/allocation_groups.asciidoc>
+
+(define-syntax %xfs-endianness
+  ;; Endianness of XFS file systems.
+  (identifier-syntax (endianness big)))
+
+(define (xfs-superblock? sblock)
+  "Return #t when SBLOCK is an XFS superblock."
+  (bytevector=? (sub-bytevector sblock 0 4)
+                (string->utf8 "XFSB")))
+
+(define (read-xfs-superblock device)
+  "Return the raw contents of DEVICE's XFS superblock as a bytevector, or #f
+if DEVICE does not contain an XFS file system."
+  (read-superblock device 0 120 xfs-superblock?))
+
+(define (xfs-superblock-uuid sblock)
+  "Return the UUID of XFS superblock SBLOCK as a 16-byte bytevector."
+  (sub-bytevector sblock 32 16))
+
+(define (xfs-superblock-volume-name sblock)
+  "Return the volume name of XFS superblock SBLOCK as a string of at most 12
+characters, or #f if SBLOCK has no volume name."
+  (null-terminated-latin1->string (sub-bytevector sblock 108 12)))
+
+(define (check-xfs-file-system device force? repair)
+  "Return the health of an unmounted XFS file system on DEVICE.  If FORCE? is
+false, return 'PASS unconditionally as XFS claims no need for off-line checks.
+When FORCE? is true, do perform a thorough check.  If REPAIR is false, do not
+write to DEVICE.  If it's #t, replay the log, check, and fix any errors found.
+Otherwise, only replay the log, and check without attempting further repairs."
+  (define (xfs_repair)
+    (status:exit-val
+     (apply system* `("xfs_repair" "-Pv"
+                      ,@(match repair
+                          (#t '("-e"))
+                          (_  '("-n"))) ; will miss some errors
+                      ,device))))
+  (if force?
+      ;; xfs_repair fails with exit status 2 if the log is dirty, which is
+      ;; likely in situations where you're running xfs_repair.  Only the kernel
+      ;; can replay the log by {,un}mounting it cleanly.
+      (match (let ((status (xfs_repair)))
+               (if (and repair (eq? 2 status))
+                   (let ((target "/replay-XFS-log"))
+                     ;; The kernel helpfully prints a ‘Mounting…’ notice for us.
+                     (mkdir target)
+                     (mount device target "xfs")
+                     (umount target)
+                     (rmdir target)
+                     (xfs_repair))
+                   status))
+        (0 'pass)
+        (4 'errors-corrected)
+        (_ 'fatal-error))
+      'pass))
+
+
 ;;;
 ;;; Partition lookup.
 ;;;
@@ -771,7 +834,9 @@ partition field reader that returned a value."
         (partition-field-reader read-jfs-superblock
                                 jfs-superblock-volume-name)
         (partition-field-reader read-f2fs-superblock
-                                f2fs-superblock-volume-name)))
+                                f2fs-superblock-volume-name)
+        (partition-field-reader read-xfs-superblock
+                                xfs-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-iso9660-superblock
@@ -793,7 +858,9 @@ partition field reader that returned a value."
         (partition-field-reader read-f2fs-superblock
                                 f2fs-superblock-uuid)
         (partition-field-reader read-ntfs-superblock
-                                ntfs-superblock-uuid)))
+                                ntfs-superblock-uuid)
+        (partition-field-reader read-xfs-superblock
+                                xfs-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -904,6 +971,7 @@ an exception in such cases but perform the nearest sane action."
      ((string-prefix? "f2fs" type) check-f2fs-file-system)
      ((string-prefix? "ntfs" type) check-ntfs-file-system)
      ((string-prefix? "nfs" type) (const 'pass))
+     ((string-prefix? "xfs" type) check-xfs-file-system)
      (else #f)))
 
   (if check-procedure
