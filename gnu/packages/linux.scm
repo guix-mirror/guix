@@ -7700,6 +7700,8 @@ compatible with Python's ConfigParser style of .INI files, including RFC
     (outputs (list "out" "python"))
     (arguments
      `(#:tests? #f   ; kernel/user integration tests are in package "xfstests"
+       #:make-flags
+       (list "V=1")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'separate-python-output
@@ -7713,8 +7715,8 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                                (string-append python script)))
                 (list "/sbin/xfs_scrub_all")))))
          (add-after 'install 'install-headers
-           (lambda _
-             (invoke "make" "install-dev"))))))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install-dev" make-flags))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
