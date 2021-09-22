@@ -11413,15 +11413,15 @@ index files needed for Adwaita to be used outside of GNOME.")
 (define-public gnote
   (package
     (name "gnote")
-    (version "3.38.1")
+    (version "40.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version)  "/"
+                           (version-major version)  "/"
                            "gnote-" version ".tar.xz"))
        (sha256
-        (base32 "1adjfjhmsm2d33999khjyzvli6kiz1jlzavn77jhd49kfzhxa9y4"))))
+        (base32 "01fqdfgcl32cf40jw9q0h7f5bghl1lvf89vln1lh41ncrk0iw6vy"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
