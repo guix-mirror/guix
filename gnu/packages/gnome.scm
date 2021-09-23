@@ -10877,23 +10877,27 @@ functionality.")
                             (assoc-ref %outputs "out")
                             "/lib/gthumb/extensions"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
        ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
-       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("intltool" ,intltool)
-       ("itstool" ,itstool)))
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("exiv2" ,exiv2)
-       ("gtk" ,gtk+)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gstreamer" ,gstreamer)
-       ("clutter" ,clutter)
+     `(("clutter" ,clutter)
        ("clutter-gst" ,clutter-gst)
        ("clutter-gtk" ,clutter-gtk)
+       ("colord" ,colord)
+       ("exiv2" ,exiv2)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("gtk" ,gtk+)
+       ("libheif" ,libheif)
        ("libjpeg" ,libjpeg-turbo)
+       ("libraw" ,libraw)
+       ("librsvg" ,librsvg)
        ("libtiff" ,libtiff)
-       ("libraw" ,libraw)))
+       ("libwebp" ,libwebp)))
     (home-page "https://wiki.gnome.org/Apps/Gthumb")
     (synopsis "GNOME image viewer and browser")
     (description "GThumb is an image viewer, browser, organizer, editor and
