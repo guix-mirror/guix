@@ -31869,6 +31869,27 @@ regression and obtain Bayesian inference of the model via the Markov Chain
 Monte Carlo approach implemented in JAGS.")
     (license license:gpl3+)))
 
+(define-public r-logger
+  (package
+    (name "r-logger")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "logger" version))
+       (sha256
+        (base32 "0p607da2rdrfj9sbrrq9hpqp26nyj3imd1590c13bxskqfhv0sz8"))))
+    (properties `((upstream-name . "logger")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://daroczig.github.io/logger/")
+    (synopsis "Lightweight and flexible logging utility")
+    (description
+     "Inspired by the the @code{futile.logger} R package and @code{logging}
+Python module, this utility provides a flexible and extensible way of
+formatting and delivering log messages with low overhead.")
+    (license license:agpl3+)))
+
 (define-public r-ggh4x
   (package
     (name "r-ggh4x")
