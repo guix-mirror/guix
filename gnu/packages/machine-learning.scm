@@ -2539,6 +2539,57 @@ technique that can be used for visualisation similarly to t-SNE, but also for
 general non-linear dimension reduction.")
     (license license:bsd-3)))
 
+(define-public nnpack
+  (let ((version "0.0")
+        (commit "c07e3a0400713d546e0dea2d5466dd22ea389c73")
+        (revision "1"))
+    (package
+      (name "nnpack")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/NNPACK")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0s0kk3a35w3yzf0q447p72350sbsh4qhg6vm3y2djbj4xpg7jc8v"))
+                (patches (search-patches "nnpack-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      ;; XXX: The test suite runs but it's very expensive, and on x86_64 CPUs
+      ;; that lack the right ISA extensions, tests fail with:
+      ;;
+      ;; Expected equality of these values:
+      ;;   nnp_status_success
+      ;;     Which is: 0
+      ;;   status
+      ;;     Which is: 51
+      ;;
+      ;; where 51 is 'nnp_status_unsupported_hardware'.
+      (arguments '(#:tests? #f))
+      (synopsis "Acceleration package for neural network computations")
+      (description
+       "NNPACK is an acceleration package for neural network computations.
+NNPACK aims to provide high-performance implementations of convnet layers for
+multi-core CPUs.
+
+NNPACK is not intended to be directly used by machine learning researchers;
+instead it provides low-level performance primitives leveraged in leading deep
+learning frameworks, such as PyTorch, Caffe2, MXNet, tiny-dnn, Caffe, Torch,
+and Darknet.")
+      (inputs
+       `(("cpuinfo" ,cpuinfo)
+         ("fp16" ,fp16)
+         ("fxdiv" ,fxdiv)
+         ("psimd" ,psimd)
+         ("pthreadpool" ,pthreadpool)
+         ("googletest" ,googletest)))
+      (native-inputs
+       `(("python" ,python)
+         ("python-peachpy" ,python-peachpy)
+         ("python-six" ,python-six)))
+      (license license:bsd-2))))
+
 (define-public xnnpack
   ;; There's currently no tag on this repo.
   (let ((version "0.0")
