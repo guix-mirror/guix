@@ -47,6 +47,7 @@
             string->fat-uuid
             string->jfs-uuid
             string->ntfs-uuid
+            string->xfs-uuid
             iso9660-uuid->string
 
             ;; XXX: For lack of a better place.
@@ -239,7 +240,9 @@ ISO9660 UUID representation."
 (define string->ext4-uuid string->dce-uuid)
 (define string->bcachefs-uuid string->dce-uuid)
 (define string->btrfs-uuid string->dce-uuid)
+(define string->f2fs-uuid string->dce-uuid)
 (define string->jfs-uuid string->dce-uuid)
+(define string->xfs-uuid string->dce-uuid)
 
 (define-syntax vhashq
   (syntax-rules (=>)
@@ -253,14 +256,16 @@ ISO9660 UUID representation."
 
 (define %uuid-parsers
   (vhashq
-   ('dce 'ext2 'ext3 'ext4 'bcachefs 'btrfs 'jfs 'luks => string->dce-uuid)
+   ('dce 'ext2 'ext3 'ext4 'bcachefs 'btrfs 'f2fs 'jfs 'xfs 'luks
+         => string->dce-uuid)
    ('fat32 'fat16 'fat => string->fat-uuid)
    ('ntfs => string->ntfs-uuid)
    ('iso9660 => string->iso9660-uuid)))
 
 (define %uuid-printers
   (vhashq
-   ('dce 'ext2 'ext3 'ext4 'bcachefs 'btrfs 'jfs 'luks => dce-uuid->string)
+   ('dce 'ext2 'ext3 'ext4 'bcachefs 'btrfs 'f2fs 'jfs 'xfs 'luks
+         => dce-uuid->string)
    ('iso9660 => iso9660-uuid->string)
    ('fat32 'fat16 'fat => fat-uuid->string)
    ('ntfs => ntfs-uuid->string)))
