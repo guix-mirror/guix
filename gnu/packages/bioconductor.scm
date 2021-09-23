@@ -14641,6 +14641,57 @@ with a nested autoregressive correlated error structure for the effect of
 interest on transformed methylation proportions.")
     (license license:expat)))
 
+(define-public r-omnipathr
+  (package
+    (name "r-omnipathr")
+    (version "3.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "OmnipathR" version))
+       (sha256
+        (base32 "0rbq3h3cp5dgpy5ifmbnfm6z8w4jv45wjzyl1f4qacgrbyf2l30a"))))
+    (properties `((upstream-name . "OmnipathR")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-igraph" ,r-igraph)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-later" ,r-later)
+       ("r-logger" ,r-logger)
+       ("r-magrittr" ,r-magrittr)
+       ("r-progress" ,r-progress)
+       ("r-purrr" ,r-purrr)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-readr" ,r-readr)
+       ("r-readxl" ,r-readxl)
+       ("r-rlang" ,r-rlang)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-xml2" ,r-xml2)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://saezlab.github.io/OmnipathR/")
+    (synopsis "OmniPath web service client and more")
+    (description
+     "This package provides a client for the OmniPath web service and many
+other resources.  It also includes functions to transform and pretty print
+some of the downloaded data, functions to access a number of other resources.
+Furthermore, OmnipathR features a close integration with the NicheNet method
+for ligand activity prediction from transcriptomics data.")
+    (license license:expat)))
+
 (define-public r-biscuiteer
   (package
     (name "r-biscuiteer")
