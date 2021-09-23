@@ -6573,7 +6573,14 @@ DAV, and others.")
      `(("glib" ,glib)
        ("libusb" ,libusb)))
     (arguments
-     `(#:tests? #f)) ;libusb fails to initialize.  Wonder what that is.
+     `(#:tests? #f ;libusb fails to initialize.  Wonder what that is.
+       #:configure-flags
+       ,(if (%current-target-system)
+            ;; Introspection data cannot currently be cross-compiled.
+            ''("-Dintrospection=false"
+               ;; Requires introspection data.
+               "-Dvapi=false")
+            ''())))
     (home-page "https://github.com/hughsie/libgusb")
     (synopsis "GLib binding for libusb1")
     (description
