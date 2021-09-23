@@ -72,6 +72,7 @@
             %test-btrfs-raid-root-os
             %test-jfs-root-os
             %test-f2fs-root-os
+            %test-xfs-root-os
             %test-lvm-separate-home-os
 
             %test-gui-installed-os
@@ -1393,6 +1394,79 @@ build (current-guix) and then store a couple of full system images.")
                                                %f2fs-root-installation-script))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %f2fs-root-os command "f2fs-root-os")))))
+
+
+;;;
+;;; XFS root file system.
+;;;
+
+(define-os-with-source (%xfs-root-os %xfs-root-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (targets (list "/dev/vdb"))))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons (file-system
+                          (device (file-system-label "my-root"))
+                          (mount-point "/")
+                          (type "xfs"))
+                        %base-file-systems))
+    (users (cons (user-account
+                  (name "charlie")
+                  (group "users")
+                  (supplementary-groups '("wheel" "audio" "video")))
+                 %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %xfs-root-installation-script
+  ;; Shell script of a simple installation.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+ls -l /run/current-system/gc-roots
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 2G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mkfs.xfs -L my-root -q /dev/vdb2
+mount /dev/vdb2 /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system build /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-xfs-root-os
+  (system-test
+   (name "xfs-root-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand.
+This test is expensive in terms of CPU and storage usage since we need to
+build (current-guix) and then store a couple of full system images.")
+   (value
+    (mlet* %store-monad ((image   (run-install %xfs-root-os
+                                               %xfs-root-os-source
+                                               #:script
+                                               %xfs-root-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %xfs-root-os command "xfs-root-os")))))
 
 
 ;;;
