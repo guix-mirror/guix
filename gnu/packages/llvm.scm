@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix memoization)
   #:use-module (guix utils)
@@ -498,13 +500,30 @@ output), and Binutils.")
     (propagated-inputs
      `(("zlib" ,zlib)))                 ;to use output from llvm-config
     (arguments
-     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
-                           "-DLLVM_ENABLE_FFI:BOOL=TRUE"
-                           "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
-                           "-DLLVM_INSTALL_UTILS=ON") ; Needed for rustc.
-
+     ;; TODO(core-updates): Unconditionally use quasiquote
+     `(#:configure-flags
+       ,#~(#$(if (%current-target-system)
+                 #~quasiquote
+                 #~quote)
+           ;; These options are required for cross-compiling LLVM according to
+           ;; https://llvm.org/docs/HowToCrossCompileLLVM.html.
+           (#$@(if (%current-target-system)
+                   #~(,(string-append "-DLLVM_TABLEGEN="
+                                      #+(file-append this-package
+                                                     "/bin/llvm-tblgen"))
+                      #$(string-append "-DLLVM_DEFAULT_TARGET_TRIPLE="
+                                       (%current-target-system))
+                      #$(string-append "-DLLVM_TARGET_ARCH="
+                                       (system->llvm-target))
+                      #$(string-append "-DLLVM_TARGETS_TO_BUILD="
+                                       (system->llvm-target)))
+                   #~())
+            "-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+            "-DBUILD_SHARED_LIBS:BOOL=TRUE"
+            "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+            "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
+            "-DLLVM_INSTALL_UTILS=ON")) ; Needed for rustc.
        ;; Don't use '-g' during the build, to save space.
        #:build-type "Release"
        #:phases
