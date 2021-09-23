@@ -23559,10 +23559,7 @@ constant expressions.")
        ("emacs-s" ,emacs-s)
        ("emacs-tablist" ,emacs-tablist)
        ("emacs-transient" ,emacs-transient)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'check))))             ;no tests
+    (arguments `(#:tests? #false))      ;no tests
     (build-system emacs-build-system)
     (home-page "https://github.com/Silex/docker.el")
     (synopsis "Manage docker from Emacs")
