@@ -29898,6 +29898,34 @@ Defaults to @samp{"powersave"}.
 
 @end deftypevr
 
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer start-charge-thresh-bat0
+Percentage when battery 0 should begin charging.  Only supported on some laptops.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer stop-charge-thresh-bat0
+Percentage when battery 0 should stop charging.  Only supported on some laptops.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer start-charge-thresh-bat1
+Percentage when battery 1 should begin charging.  Only supported on some laptops.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer stop-charge-thresh-bat1
+Percentage when battery 1 should stop charging.  Only supported on some laptops.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
 @deftypevr {@code{tlp-configuration} parameter} string radeon-power-profile-on-ac
 Radeon graphics clock speed level.  Alternatives are low, mid, high,
 auto, default.

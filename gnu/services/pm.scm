@@ -253,6 +253,22 @@ default, performance, powersave.")
    (string "powersave")
    "Same as @code{pcie-aspm-ac} but on BAT mode.")
 
+  (start-charge-thresh-bat0
+   (maybe-non-negative-integer 'disabled)
+   "Percentage when battery 0 should begin charging.")
+
+  (stop-charge-thresh-bat0
+   (maybe-non-negative-integer 'disabled)
+   "Percentage when battery 0 should stop charging.")
+
+  (start-charge-thresh-bat1
+   (maybe-non-negative-integer 'disabled)
+   "Percentage when battery 1 should begin charging.")
+
+  (stop-charge-thresh-bat1
+   (maybe-non-negative-integer 'disabled)
+   "Percentage when battery 1 should stop charging.")
+
   (radeon-power-profile-on-ac
    (string "high")
    "Radeon graphics clock speed level.  Alternatives are
