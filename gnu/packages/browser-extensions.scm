@@ -48,30 +48,19 @@ supported content to the Kodi media center.")
 (define-public play-to-kodi/chromium
   (make-chromium-extension play-to-kodi))
 
-(define uassets
-  (let ((commit "54e217d9051831d0d8856286a877962e0f592d45"))
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/uBlockOrigin/uAssets")
-            (commit commit)))
-      (file-name (git-file-name "uAssets" (string-take commit 9)))
-      (sha256
-       (base32
-        "1xhxadm6qyph6kkq3gxg1rar1psb586mniwp7bkyj5zpzzj31wmj")))))
-
 (define ublock-origin
   (package
     (name "ublock-origin")
-    (version "1.37.2")
+    (version "1.38.0")
     (home-page "https://github.com/gorhill/uBlock")
     (source (origin
               (method git-fetch)
-              (uri (git-reference (url home-page) (commit version)))
+              (uri (git-reference (url home-page) (commit version)
+                                  (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c1dh9kkimvahs9yw1hv67290h8xvmbl10film7g1wamdxydj97y"))))
+                "0zw8ys60x2nszdiad0k1hnhr3ddgh54f07c978l26yvvlqnvmgbh"))))
     (build-system gnu-build-system)
     (outputs '("xpi" "firefox" "chromium"))
     (arguments
@@ -81,18 +70,18 @@ supported content to the Kodi media center.")
        (modify-phases (map (lambda (phase)
                              (assq phase %standard-phases))
                            '(set-paths unpack patch-source-shebangs))
-         (add-after 'unpack 'link-uassets
-           (lambda* (#:key native-inputs inputs #:allow-other-keys)
-             (symlink (string-append (assoc-ref (or native-inputs inputs)
-                                                "uassets"))
-                      "../uAssets")
-             #t))
+         (add-after 'unpack 'do-not-depend-on-git
+           (lambda _
+             ;; The script attempts to checkout the uAssets submodule,
+             ;; but we already did so with git-fetch.
+             (substitute* "tools/make-assets.sh"
+               (("^git submodule update.*")
+                ""))))
          (add-after 'unpack 'make-files-writable
            (lambda _
              ;; The build system copies some files and later tries
              ;; modifying them.
-             (for-each make-file-writable (find-files "."))
-             #t))
+             (for-each make-file-writable (find-files "."))))
          (add-after 'patch-source-shebangs 'build-xpi
            (lambda _
              (invoke "./tools/make-firefox.sh" "all")))
@@ -107,11 +96,9 @@ supported content to the Kodi media center.")
                (install-file "dist/build/uBlock0.firefox.xpi"
                              (string-append xpi "/lib/mozilla/extensions"))
                (copy-recursively "dist/build/uBlock0.firefox" firefox)
-               (copy-recursively "dist/build/uBlock0.chromium" chromium)
-               #t))))))
+               (copy-recursively "dist/build/uBlock0.chromium" chromium)))))))
     (native-inputs
      `(("python" ,python-wrapper)
-       ("uassets" ,uassets)
        ("zip" ,zip)))
     (synopsis "Block unwanted content from web sites")
     (description
