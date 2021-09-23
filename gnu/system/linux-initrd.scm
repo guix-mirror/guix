@@ -290,6 +290,9 @@ FILE-SYSTEMS."
           '())
     ,@(if (find (file-system-type-predicate "f2fs") file-systems)
           (list f2fs-fsck/static)
+          '())
+    ,@(if (find (file-system-type-predicate "xfs") file-systems)
+          (list xfs_repair/static)
           '())))
 
 (define-syntax vhash                              ;TODO: factorize
@@ -322,6 +325,7 @@ FILE-SYSTEMS."
                     ("iso9660" => '("isofs"))
                     ("jfs" => '("jfs"))
                     ("f2fs" => '("f2fs" "crc32_generic"))
+                    ("xfs" => '("xfs"))
                     (else '())))
 
 (define (file-system-modules file-systems)
