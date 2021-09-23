@@ -26,6 +26,7 @@
  (entry (commit "5b32ad4f6f555d305659cee825879df075b06331")
         (title
          (en "New @option{--max-depth} option for @command{guix graph}")
+         (de "Neue Option @option{--max-depth} für @command{guix graph}")
          (fr "Nouvelle option @option{--max-depth} pour @command{guix graph}"))
         (body
          (en "The @command{guix graph} command has a new @option{--max-depth}
@@ -40,6 +41,20 @@ guix graph -M 2 libreoffice | xdot -
 @end example
 
 See @command{info \"(guix) Invoking guix graph\"} for more information.")
+         (de "Der Befehl @command{guix graph} verfügt über eine neue
+Befehlszeilenoption @option{--max-depth} (oder @option{-M}), mit der
+Sie einen Graphen auf die angegebene Tiefe einschränken. Das ist vor
+allem bei großen Graphen nützlich; zum Beispiel zeigt der folgende
+Befehl, unter Verwendung des Pakets @code{xdot}, den
+Abhängigkeitsgraphen von LibreOffice unter Ausschluss der Knoten, die
+eine Distanz größer als 2 von LibreOffice selbst haben:
+
+@example
+guix graph -M 2 libreoffice | xdot -
+@end example
+
+Führen Sie @code{info \"(guix.de) Aufruf von guix graph\"} aus, um mehr zu
+erfahren.")
          (fr "La commande @command{guix graph} dispose d'une nouvelle option
 @option{--max-depth} (ou @option{-M}) pour restreindre la profondeur d'un
 graphe---très utile pour visualiser des gros graphes.  Par exemple, la
