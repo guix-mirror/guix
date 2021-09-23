@@ -21,6 +21,8 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘--with-commit’ option now accepts strings returned by ‘git describe’
 ** Distribution
 *** The installation script can now enable local substitute servers discovery
+*** More control over boot-time file system checks and repairs
+*** XFS file systems can be created by the installer and mounted by label/UUID
 ** Programming interfaces
 *** (guix records) now supports “field sanitizers”
 ** Noteworthy bug fixes
