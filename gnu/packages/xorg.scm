@@ -2441,6 +2441,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
           (base32
             "1ql592pdhddhkipkrsxn929y9l2nn02a5fh2z3dx47kmzs5y006p"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags ',(malloc0-flags)))
     (inputs
       `(("libxrender" ,libxrender)
         ("libxrandr" ,libxrandr)
