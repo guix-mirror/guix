@@ -166,5 +166,5 @@ exec ~a \"$@\""
      (map (lambda (original)
             (search-path-specification
              (inherit original)
-             (variable "PKG_CONFIG_FOR_BUILD")))
+             (variable "PKG_CONFIG_PATH_FOR_BUILD")))
           (package-native-search-paths %pkg-config)))))
