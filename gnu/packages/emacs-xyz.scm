@@ -23554,14 +23554,15 @@ constant expressions.")
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-docker-tramp" ,emacs-docker-tramp)
+       ("emacs-json-mode" ,emacs-json-mode)
        ("emacs-magit-popup" ,emacs-magit-popup)
        ("emacs-s" ,emacs-s)
        ("emacs-tablist" ,emacs-tablist)
-       ("emacs-json-mode" ,emacs-json-mode)))
+       ("emacs-transient" ,emacs-transient)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)))) ;no tests
+         (delete 'check))))             ;no tests
     (build-system emacs-build-system)
     (home-page "https://github.com/Silex/docker.el")
     (synopsis "Manage docker from Emacs")
