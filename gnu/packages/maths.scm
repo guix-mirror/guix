@@ -6891,6 +6891,29 @@ when an application performs repeated divisions by the same divisor.")
                   "05mm4vrxsac35hjf5djif9r6rdxj9ippg97ia3p6q6b8lrp7srwv"))
                 (patches (search-patches "fp16-system-libraries.patch"))))
       (build-system cmake-build-system)
+      (arguments
+       `(#:imported-modules ((guix build python-build-system)
+                             ,@%cmake-build-system-modules)
+         #:modules (((guix build python-build-system)
+                     #:select (site-packages))
+                    (guix build cmake-build-system)
+                    (guix build utils))
+         #:phases (modify-phases %standard-phases
+                    (add-after 'install 'move-python-files
+                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                        ;; Python files get installed to $includedir (!).
+                        ;; Move them to the usual Python site directory.
+                        (let* ((out     (assoc-ref outputs "out"))
+                               (include (string-append out "/include"))
+                               (site    (site-packages inputs outputs))
+                               (target  (string-append site "/fp16")))
+                          (mkdir-p target)
+                          (for-each (lambda (file)
+                                      (rename-file file
+                                                   (string-append target "/"
+                                                                  (basename
+                                                                   file))))
+                                    (find-files include "\\.py$"))))))))
       (native-inputs
        `(("python-wrapper" ,python-wrapper)))
       (inputs
