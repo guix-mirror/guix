@@ -330,6 +330,7 @@ selected keymap."
                        btrfs-progs
                        jfsutils ;jfs_mkfs
                        ntfs-3g ;mkfs.ntfs
+                       xfsprogs ;mkfs.xfs
                        kbd ;chvt
                        guix ;guix system init call
                        util-linux ;mkwap

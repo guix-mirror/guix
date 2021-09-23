@@ -231,6 +231,7 @@ inferior to MAX-SIZE, #f otherwise."
     ((fat32) "fat32")
     ((jfs)   "jfs")
     ((ntfs)  "ntfs")
+    ((xfs)   "xfs")
     ((swap)  "linux-swap")))
 
 (define (user-fs-type->mount-type fs-type)
@@ -241,7 +242,8 @@ inferior to MAX-SIZE, #f otherwise."
     ((fat16) "vfat")
     ((fat32) "vfat")
     ((jfs)   "jfs")
-    ((ntfs)  "ntfs")))
+    ((ntfs)  "ntfs")
+    ((xfs)   "xfs")))
 
 (define (partition-filesystem-user-type partition)
   "Return the filesystem type of PARTITION, to be stored in the FS-TYPE field
@@ -256,6 +258,7 @@ of <user-partition> record."
             ((string=? name "fat32") 'fat32)
             ((string=? name "jfs") 'jfs)
             ((string=? name "ntfs") 'ntfs)
+            ((string=? name "xfs") 'xfs)
             ((or (string=? name "swsusp")
                  (string=? name "linux-swap(v0)")
                  (string=? name "linux-swap(v1)"))
@@ -1125,6 +1128,11 @@ bit bucket."
   (with-null-output-ports
    (invoke "mkfs.ntfs" "-F" "-f" partition)))
 
+(define (create-xfs-file-system partition)
+  "Create an XFS file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.xfs" "-f" partition)))
+
 (define (create-swap-partition partition)
   "Set up swap area on PARTITION file-name."
   (with-null-output-ports
@@ -1206,6 +1214,10 @@ NEED-FORMATING? field set to #t."
           (and need-formatting?
                (not (eq? type 'extended))
                (create-ntfs-file-system file-name)))
+         ((xfs)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-xfs-file-system file-name)))
          ((swap)
           (create-swap-partition file-name))
          (else
