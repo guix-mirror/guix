@@ -57,6 +57,7 @@ d'informations.")))
  (entry (commit "05f44c2d858a1e7b13c90362c35fa86bdc4d5a24")
         (title
          (en "Channel clones fall back to Software Heritage")
+         (de "Zum Klonen von Kanälen wird notfalls auf Software Heritage zurückgegriffen")
          (fr "Les clones de canaux peuvent recourir à Software Heritage"))
         (body
          (en "When @command{guix time-machine} or @command{guix pull} fetches
@@ -68,6 +69,17 @@ unreachable.  This contributes to long-term reproducibility.  See
 Automatic fallback also works for other Git clones made on your behalf, such
 as when using @option{--with-commit} and related package transformation
 options.")
+         (de "Wenn bei @command{guix time-machine} oder @command{guix
+pull} ein bestimmter Commit eines Kanals bezogen werden soll, wird
+jetzt für den Fall, dass die ursprüngliche URL unerreichbar ist,
+automatisch vom Software-Heritage-Archiv geklont. Das trägt zur
+langfristigen Reproduzierbarkeit bei. Siehe @command{info \"(guix.de)
+Guix nachbilden\"}.
+
+Der automatische Rückgriff auf Software Heritage findet auch
+Verwendung bei anderen Arten von Git-Klon, die Guix durchführt, z.B.@:
+wenn Sie @option{--with-commit} und ähnliche Paketumwandlungsoptionen
+einsetzen.")
          (fr "Quand la commande @command{guix time-machine} ou @command{guix
 pull} récupère un canal fixé à une révision spécifique, elle est maintenant
 capable de le cloner depuis l'archive Software Heritage si l'URL initiale
