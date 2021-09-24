@@ -309,7 +309,7 @@ e.g. emacs-geiser-guile for Guile.")
                  "(eval-after-load 'geiser-impl '" all ")")))
              #t)))))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (propagated-inputs
      `(("geiser" ,emacs-geiser)))
     (home-page "https://nongnu.org/geiser/")
