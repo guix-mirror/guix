@@ -923,9 +923,8 @@ corresponding <derivation-input> or store item."
 
   (match graphs
     (((file-names . inputs) ...)
-     (mlet %store-monad ((inputs (without-grafting
-                                  (lower-inputs (map tuple->gexp-input inputs)
-                                                system target))))
+     (mlet %store-monad ((inputs (lower-inputs (map tuple->gexp-input inputs)
+                                               system target)))
        (return (map cons file-names inputs))))))
 
 (define* (lower-references lst #:key system target)
@@ -938,15 +937,13 @@ names and file names suitable for the #:allowed-references argument to
        ((? string? output)
         (return output))
        (($ <gexp-input> thing output native?)
-        (mlet %store-monad ((drv (without-grafting
-                                  (lower-object thing system
-                                                #:target (if native?
-                                                             #f target)))))
+        (mlet %store-monad ((drv (lower-object thing system
+                                               #:target (if native?
+                                                            #f target))))
           (return (derivation->output-path drv output))))
        (thing
-        (mlet %store-monad ((drv (without-grafting
-                                  (lower-object thing system
-                                                #:target target))))
+        (mlet %store-monad ((drv (lower-object thing system
+                                               #:target target)))
           (return (derivation->output-path drv))))))
 
     (mapm/accumulate-builds lower lst)))

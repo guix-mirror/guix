@@ -423,9 +423,12 @@ are allowed to refer to."
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system #:graft? #f)))
+    ;; Note: Always pass #:graft? #f.  Without it, ALLOWED-REFERENCES &
+    ;; co. would be interpreted as referring to grafted packages.
     (gexp->derivation name builder
                       #:system system
                       #:target #f
+                      #:graft? #f
                       #:substitutable? substitutable?
                       #:allowed-references allowed-references
                       #:disallowed-references disallowed-references
@@ -560,6 +563,7 @@ platform."
     (gexp->derivation name builder
                       #:system system
                       #:target target
+                      #:graft? #f
                       #:modules imported-modules
                       #:substitutable? substitutable?
                       #:allowed-references allowed-references

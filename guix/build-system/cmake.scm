@@ -158,6 +158,7 @@ provides a 'CMakeLists.txt' file as its build system."
     (gexp->derivation name build
                       #:system system
                       #:target #f
+                      #:graft? #f
                       #:substitutable? substitutable?
                       #:guile-for-build guile)))
 
@@ -248,6 +249,7 @@ build system."
     (gexp->derivation name builder
                       #:system system
                       #:target target
+                      #:graft? #f
                       #:substitutable? substitutable?
                       #:guile-for-build guile)))
 

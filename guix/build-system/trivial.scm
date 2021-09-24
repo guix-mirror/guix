@@ -61,6 +61,7 @@ ignored."
     (gexp->derivation name (with-build-variables inputs outputs builder)
                       #:system system
                       #:target #f
+                      #:graft? #f
                       #:modules modules
                       #:allowed-references allowed-references
                       #:guile-for-build guile)))
@@ -85,6 +86,7 @@ ignored."
                              builder)
                       #:system system
                       #:target target
+                      #:graft? #f
                       #:modules modules
                       #:allowed-references allowed-references
                       #:guile-for-build guile)))

@@ -233,6 +233,7 @@ has a 'meson.build' file."
     (gexp->derivation name builder
                       #:system system
                       #:target #f
+                      #:graft? #f
                       #:substitutable? substitutable?
                       #:allowed-references allowed-references
                       #:disallowed-references disallowed-references
@@ -332,6 +333,7 @@ SOURCE has a 'meson.build' file."
     (gexp->derivation name builder
                       #:system system
                       #:target target
+                      #:graft? #f
                       #:substitutable? substitutable?
                       #:allowed-references allowed-references
                       #:disallowed-references disallowed-references

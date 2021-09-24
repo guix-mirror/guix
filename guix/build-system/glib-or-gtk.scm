@@ -186,6 +186,7 @@
     (gexp->derivation name build
                       #:system system
                       #:target #f
+                      #:graft? #f
                       #:allowed-references allowed-references
                       #:disallowed-references disallowed-references
                       #:guile-for-build guile)))
@@ -279,6 +280,7 @@
     (gexp->derivation name builder
                       #:system system
                       #:target target
+                      #:graft? #f
                       #:modules imported-modules
                       #:allowed-references allowed-references
                       #:disallowed-references disallowed-references

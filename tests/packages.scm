@@ -882,6 +882,28 @@
       (build-derivations %store (list d))
       #f)))
 
+(test-assert "trivial with #:allowed-references + grafts"
+  (let* ((g (package
+              (inherit %bootstrap-guile)
+              (replacement (package
+                             (inherit %bootstrap-guile)
+                             (version "9.9")))))
+         (p (package
+              (inherit (dummy-package "trivial"))
+              (build-system trivial-build-system)
+              (inputs (list g))
+              (arguments
+               `(#:guile ,g
+                 #:allowed-references (,g)
+                 #:builder (mkdir %output)))))
+         (d0 (package-derivation %store p #:graft? #f))
+         (d1 (parameterize ((%graft? #t))
+               (package-derivation %store p #:graft? #t))))
+    ;; D1 should be equal to D2 because there's nothing to graft.  In
+    ;; particular, its #:disallowed-references should be lowered in the same
+    ;; way (ungrafted) whether or not #:graft? is true.
+    (string=? (derivation-file-name d1) (derivation-file-name d0))))
+
 (test-assert "search paths"
   (let* ((p (make-prompt-tag "return-search-paths"))
          (t (make-parameter "guile-0"))

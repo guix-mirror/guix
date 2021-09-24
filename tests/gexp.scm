@@ -1475,6 +1475,42 @@ importing.* \\(guix config\\) from the host"
                      (string=? (readlink (string-append comp "/text"))
                                text)))))))
 
+(test-assert "lower-object, computed-file + grafts"
+  ;; The reference graph should refer to grafted packages when grafts are
+  ;; enabled.  See <https://issues.guix.gnu.org/50676>.
+  (let* ((base    (package
+                    (inherit (dummy-package "trivial"))
+                    (build-system trivial-build-system)
+                    (arguments
+                     `(#:guile ,%bootstrap-guile
+                       #:builder (mkdir %output)))))
+         (pkg     (package
+                    (inherit base)
+                    (version "1.1")
+                    (replacement (package
+                                   (inherit base)
+                                   (version "9.9")))))
+         (exp      #~(begin
+                       (use-modules (ice-9 rdelim))
+                       (let ((item (call-with-input-file "graph" read-line)))
+                         (call-with-output-file #$output
+                           (lambda (port)
+                             (display item port))))))
+         (computed (computed-file "computed" exp
+                                  #:options
+                                  `(#:references-graphs (("graph" ,pkg)))))
+         (drv0     (package-derivation %store pkg #:graft? #t))
+         (drv1     (parameterize ((%graft? #t))
+                     (run-with-store %store
+                       (lower-object computed)))))
+    (build-derivations %store (list drv1))
+
+    ;; The graph obtained in COMPUTED should refer to the grafted version of
+    ;; PKG, not to PKG itself.
+    (string=? (call-with-input-file (derivation->output-path drv1)
+                get-string-all)
+              (derivation->output-path drv0))))
+
 (test-equal "lower-object, computed-file, #:system"
   '("mips64el-linux")
   (run-with-store %store
