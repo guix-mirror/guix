@@ -25,6 +25,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -302,7 +303,7 @@ of the Nyan Cat / Poptart Cat animation.")
 (define-public cbonsai
   (package
     (name "cbonsai")
-    (version "1.2.1")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -311,7 +312,7 @@ of the Nyan Cat / Poptart Cat animation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16q02mr5zmnd9bmhnlkvjddcxvk0s8323pvmazmz3ch1ralck1wj"))))
+                "1krsrf7gilmpnba6hjgz8mk32vs55b4i1rxlp7ajrw0v487blljw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No test suite
@@ -328,7 +329,8 @@ of the Nyan Cat / Poptart Cat animation.")
                                         ,(package-version this-package))))
                (install-file "README.md" doc)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
     (inputs
      `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/jallbrit/cbonsai")
