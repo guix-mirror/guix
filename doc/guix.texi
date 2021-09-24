@@ -35262,6 +35262,12 @@ command (@pxref{Invoking guix home}).
 @c Maybe later, it will be possible to make home configuration a part of
 @c system configuration to make everything managed by guix system.
 
+@quotation Note
+The functionality described in this section is still under development
+and is subject to change.  Get in touch with us on
+@email{guix-devel@@gnu.org}!
+@end quotation
+
 The user's home environment usually consists of three basic parts:
 software, configuration, and state.  Software in mainstream distros are
 usually installed system-wide, but with GNU Guix most software packages
