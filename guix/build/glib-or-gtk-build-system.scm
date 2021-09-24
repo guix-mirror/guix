@@ -51,12 +51,24 @@
   "Check for the existence of \"libdir/gtk-v.0\" in INPUTS.  Return a list
 with all found directories."
   (let* ((version
-          (if (string-match "gtk\\+-3"
-                            (or (assoc-ref inputs "gtk+")
-                                (assoc-ref inputs "source")
-                                "gtk+-3")) ; we default to version 3
-              "3.0"
-              "2.0"))
+          (cond
+           ((string-match "gtk-4"
+                          (or (assoc-ref inputs "gtk")
+                              (assoc-ref inputs "source")
+                              ""))
+            "4.0")
+           ((string-match "gtk\\+-3"
+                          (or (assoc-ref inputs "gtk+")
+                              (assoc-ref inputs "source")
+                              ""))
+            "3.0")
+           ((string-match "gtk\\+-2"
+                           (or (assoc-ref inputs "gtk+")
+                               (assoc-ref inputs "source")
+                               ""))
+            "2.0")
+           (else
+            "4.0"))) ; We default to version 4.0.
          (gtk-module
           (lambda (input prev)
             (let* ((in (match input
