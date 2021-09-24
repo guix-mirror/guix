@@ -211,15 +211,15 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.38.5")
+    (version "40.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1llgzm2ni3iy31dznqkc81vadv0fpqgpz2l9zzrj5jshvyq0akgh"))))
+                "02bdkmb3wyzfrbq726634v4g1hyh9za70cc2ivlbp7zc2n1jgp5c"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -229,14 +229,13 @@ topology functions.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "meson_post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'unpack 'patch-dbus-service
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "data/org.gnome.Maps.service.in"
                (("@pkgdatadir@/org.gnome.Maps")
-                (string-append  (assoc-ref outputs "out") "/bin/gnome-maps")))
-             #t))
+                (string-append  (assoc-ref outputs "out")
+                                "/bin/gnome-maps")))))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -274,6 +273,7 @@ topology functions.")
        ("folks" ,folks)
        ("libchamplain" ,libchamplain)
        ("libgee" ,libgee)
+       ("libhandy" ,libhandy)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
        ("libgweather" ,libgweather)
