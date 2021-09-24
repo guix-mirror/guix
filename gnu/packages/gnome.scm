@@ -9981,18 +9981,25 @@ handling the startup notification side.")
 (define-public gnome-calculator
   (package
     (name "gnome-calculator")
-    (version "3.36.0")
+    (version "40.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/"
+                           (version-major version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cqd4b25qp1i0p04m669jssg1l5sdapc1mniv9jssvw5r7wk1s52"))))
+         "1xkazxbkpn1z5pfphhps7fc5q4yc8lp7f6b222n8bx5iyxhwbrkz"))))
     (build-system meson-build-system)
-    (arguments '(#:glib-or-gtk? #t))
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a writable HOME.
+             (setenv "HOME" (getcwd)))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
@@ -10004,6 +10011,7 @@ handling the startup notification side.")
      `(("glib" ,glib)
        ("gtksourceview" ,gtksourceview)
        ("libgee" ,libgee)
+       ("libhandy" ,libhandy)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("mpc" ,mpc)
