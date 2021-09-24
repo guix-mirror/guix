@@ -5657,7 +5657,7 @@ which are easy to play with the aid of a mouse.")
 (define-public amtk
   (package
     (name "amtk")
-    (version "5.0.2")
+    (version "5.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/amtk/"
@@ -5665,10 +5665,8 @@ which are easy to play with the aid of a mouse.")
                                   "amtk-" version ".tar.xz"))
               (sha256
                (base32
-                "11jgz2i9wjzv4alrxl1qyxiapb52w7vs5ygfgsw0qgdap8gqkk3i"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--enable-gtk-doc")))
+                "12v3nj1bb7507ndprjggq0hpz8k719b4bwvl8sm43p3ibmn27anm"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")         ; for glib-mkenums
