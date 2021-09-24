@@ -127,7 +127,7 @@
   (check?           file-system-check?            ; Boolean
                     (default #t))
   (skip-check-if-clean? file-system-skip-check-if-clean? ; Boolean
-                        (default #f))
+                        (default #t))
   (repair           file-system-repair            ; symbol or #f
                     (default 'preen))
   (create-mount-point? file-system-create-mount-point? ; Boolean
