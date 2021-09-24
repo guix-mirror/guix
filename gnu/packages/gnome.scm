@@ -7126,15 +7126,15 @@ such as gzip tarballs.")
 (define-public gnome-session
   (package
     (name "gnome-session")
-    (version "3.34.2")
+    (version "40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qgqp97f8k2zi2ydvhds14zsjzfj7cv521r6wx5sw0qacn0p7dwb"))))
+                "02z0xr6sv9ibl7awbw9j4y05hf4jk1zgvsbbmh7n27hhjvsvc8pl"))))
     (arguments
      '(#:glib-or-gtk? #t
        #:phases
@@ -7150,20 +7150,20 @@ such as gzip tarballs.")
                 "#include <elogind/sd-login.h>"))
              ;; Remove uses of the systemd daemon.
              (substitute* "gnome-session/gsm-autostart-app.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             #t))
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))))
          (add-after 'install 'wrap-gnome-session
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'gnome-session' finds the 'gsettings' program.
              (let ((glib (assoc-ref inputs "glib:bin"))
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
-                 `("PATH" ":" prefix (,(string-append glib "/bin"))))
-               #t))))
+                 `("PATH" ":" prefix (,(string-append glib "/bin"))))))))
 
        #:configure-flags
        '("-Ddocbook=false" ; FIXME: disabled because of docbook validation error
          "-Dman=false" ; FIXME: disabled because of docbook validation error
+         "-Dsystemd=false"
+         "-Dsystemd_session=disable"
          "-Dsystemd_journal=false")))
     (build-system meson-build-system)
     (native-inputs
