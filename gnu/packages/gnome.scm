@@ -9647,46 +9647,43 @@ desktop.  It supports multiple calendars, month, week and year view.")
 (define-public gnome-todo
   (package
     (name "gnome-todo")
-    (version "3.28.1")
+    (version "40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08ygqbib72jlf9y0a16k54zz51sncpq2wa18wp81v46q8301ymy7"))
-              (patches
-               (search-patches "gnome-todo-delete-esource-duplicate.patch"))))
+                "1r1fb3zgjvkhx93by24j8cg1w1g3zvwr49vqkscjn261vqs44jq3"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                      'install 'wrap-gnome-todo
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out               (assoc-ref outputs "out"))
-                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                            (python-path       (getenv "GUIX_PYTHONPATH")))
-                        (wrap-program (string-append out "/bin/gnome-todo")
-                          ;; XXX: gi plugins are broken.
-                          ;; See https://bugzilla.gnome.org/show_bug.cgi?id=787212
-                          ;; For plugins.
-                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                          `("GUIX_PYTHONPATH" ":" prefix (,python-path))))
-                      #t)))))
+     `(#:glib-or-gtk? #t
+       ;; XXX: Some tests fail with the following error:
+       ;; Settings schema 'org.gnome.todo' is not installed.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson/meson_post_install.py"
+               (("gtk-update-icon-cache") "true")))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")         ; For glib-compile-resources
-       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("gtk-bin" ,gtk "bin")           ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("rest" ,rest)                   ; For Todoist plugin
+       ("gtk" ,gtk)
        ("json-glib" ,json-glib)         ; For Todoist plugin
+       ("libadwaita" ,libadwaita)
        ("libedataserverui" ,evolution-data-server)
        ("libical" ,libical)
        ("libpeas" ,libpeas)
+       ("libportal" ,libportal)
        ("python-pygobject" ,python-pygobject)
        ("evolution-data-server" ,evolution-data-server)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")

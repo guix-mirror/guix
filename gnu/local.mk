@@ -1161,7 +1161,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnome-shell-disable-test.patch		\
   %D%/packages/patches/gnome-shell-CVE-2020-17489.patch		\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\
-  %D%/packages/patches/gnome-todo-delete-esource-duplicate.patch \
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
