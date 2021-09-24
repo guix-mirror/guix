@@ -270,6 +270,13 @@ without requiring the source code to be rewritten.")
                           (for-each delete-file
                                     (find-files "prebuilt" "\\.go$"))
                           #t))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-2.0)
+       ((#:configure-flags flags ''())
+        (if (target-x86-32?)            ;<https://issues.guix.gnu.org/49368>
+            `(append ,flags '("CFLAGS=-g -O2 -fexcess-precision=standard"))
+            flags))))
+
     (properties '((timeout . 72000)               ;20 hours
                   (max-silent-time . 36000)))     ;10 hours (needed on ARM
                                                   ;  when heavily loaded)
@@ -324,7 +331,7 @@ without requiring the source code to be rewritten.")
                   (package-propagated-inputs guile-2.2)
                   '("gmp" "libltdl")))
     (arguments
-     (substitute-keyword-arguments (package-arguments guile-2.2)
+     (substitute-keyword-arguments (package-arguments guile-2.0)
        ((#:configure-flags flags ''())
         ;; XXX: JIT-enabled Guile crashes in obscure ways on GNU/Hurd.
         `(cons* ,@(if (hurd-target?)
@@ -334,6 +341,8 @@ without requiring the source code to be rewritten.")
                 ;; i686-linux, otherwise "numbers.test" will fail
                 ;; (see <https://issues.guix.gnu.org/49368> and
                 ;; <https://issues.guix.gnu.org/49659>).
+                ;; TODO: Keep this in GUILE-2.2 and remove from here on next
+                ;; rebuild cycle.
                 ,@(if (target-x86-32?)
                       '("CFLAGS=-g -O2 -fexcess-precision=standard")
                       '())
