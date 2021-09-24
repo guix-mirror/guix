@@ -11717,11 +11717,10 @@ designed to work with various laser/ink-jet peel-off label and business
 card sheets that you’ll find at most office supply stores.")
     (license license:gpl3+)))
 
-;; Version 3.38.0 is out but requires tepl>=5 which requires glib>=2.64.
 (define-public gnome-latex
   (package
     (name "gnome-latex")
-    (version "3.36.0")
+    (version "3.38.0")
     (source
      (origin
        (method url-fetch)
@@ -11729,7 +11728,7 @@ card sheets that you’ll find at most office supply stores.")
                            (version-major+minor version)  "/"
                            "gnome-latex-" version ".tar.xz"))
        (sha256
-        (base32 "1869kr1zhcp04mzbi67lwgk497w840dbbc7427i9yh9b9s7j6mqn"))))
+        (base32 "0xqd49pgi82dygqnxj08i1v22b0vwwhx3zvdinhrx4jny339yam8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -11749,7 +11748,7 @@ card sheets that you’ll find at most office supply stores.")
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
        ("libgee" ,libgee)
-       ("tepl" ,tepl)
+       ("tepl" ,tepl-5)
        ("uchardet" ,uchardet)))
     (home-page "https://wiki.gnome.org/Apps/GNOME-LaTeX")
     (synopsis "LaTeX editor for the GNOME desktop")
