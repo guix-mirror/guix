@@ -9578,15 +9578,15 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-clocks
   (package
     (name "gnome-clocks")
-    (version "3.34.0")
+    (version "40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0g7hjk55smhkd09hwa9kag3h5a12l494wj89w9smpdk3ghsmy6b1"))))
+                "02d3jg46sn8d9gd4dsaly22gg5vkbz2gpq4pmwpvncb4rsqk7sn2"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -9596,8 +9596,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/post-install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t)))))
+               (("gtk-update-icon-cache") "true")))))))
     (native-inputs
      `(("vala" ,vala)
        ("pkg-config" ,pkg-config)
@@ -9612,6 +9611,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
        ("geoclue" ,geoclue)
        ("geocode-glib" ,geocode-glib)
        ("libgweather" ,libgweather)
+       ("libhandy" ,libhandy)
        ("gnome-desktop" ,gnome-desktop)))
     (home-page "https://wiki.gnome.org/Apps/Clocks")
     (synopsis "GNOME's clock application")
