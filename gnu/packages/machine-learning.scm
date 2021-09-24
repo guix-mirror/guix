@@ -2668,7 +2668,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
                               ;; needs these.
                               ;; "FP16" "FXdiv" "gemmlowp" "psimd"
 
-                              "gloo" "googletest" "ios-cmake"
+                              "gloo" "googletest" "ios-cmake" "NNPACK"
                               "onnx" "protobuf" "pthreadpool"
                               "pybind11" "python-enum" "python-peachpy"
                               "python-six" "tbb" "XNNPACK" "zstd"))
@@ -2733,6 +2733,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
        ("googletest" ,googletest)
        ("googlebenchmark" ,googlebenchmark)
        ("gloo" ,gloo)
+       ("nnpack" ,nnpack)
        ("openblas" ,openblas)
        ("openmpi" ,openmpi)
        ("pthreadpool" ,pthreadpool)
@@ -2746,7 +2747,6 @@ TensorFlow.js, PyTorch, and MediaPipe.")
        ("python-numpy" ,python-numpy)
        ("python-pyyaml" ,python-pyyaml)
        ("python-cffi" ,python-cffi)
-       ("python-peachpy" ,python-peachpy)
        ("python-typing-extensions" ,python-typing-extensions)
        ("python-future" ,python-future)
        ("python-six" ,python-six)

@@ -81,7 +81,7 @@ diff --git a/torch/lib/c10d/test/CMakeLists.txt b/torch/lib/c10d/test/CMakeLists
 index b74d4b65f7..fc7c207505 100644
 --- a/torch/lib/c10d/test/CMakeLists.txt
 +++ b/torch/lib/c10d/test/CMakeLists.txt
-@@ -16,25 +16,25 @@ function(c10d_add_test test_src)
+@@ -16,24 +16,24 @@ function(c10d_add_test test_src)
    add_test(NAME ${test_name} COMMAND $<TARGET_FILE:${test_name}>)
  endfunction()
  
@@ -114,18 +114,26 @@ index b74d4b65f7..fc7c207505 100644
 +    c10d_add_test(ProcessGroupGlooTest.cpp c10d gtest_main gtest)
    endif()
  endif()
+
+diff --git a/cmake/External/nnpack.cmake b/cmake/External/nnpack.cmake
+index a41343cbb5..6075bdd0a4 100644
+--- a/cmake/External/nnpack.cmake
++++ b/cmake/External/nnpack.cmake
+@@ -40,7 +40,7 @@ endif()
+ # (3) Android, iOS, Linux, macOS - supported
+ ##############################################################################
  
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5ecd2df..24feae3 100644
---- a/third_party/NNPACK/CMakeLists.txt
-+++ b/third_party/NNPACK/CMakeLists.txt
-@@ -427,8 +427,7 @@ IF(NNPACK_BACKEND STREQUAL "x86-64")
-       FILE(MAKE_DIRECTORY ${obj_dir})
-       ADD_CUSTOM_COMMAND(
-         OUTPUT ${obj}
--        COMMAND "PYTHONPATH=${PEACHPY_PYTHONPATH}"
--          ${PYTHON_EXECUTABLE} -m peachpy.x86_64
-+        COMMAND ${PYTHON_EXECUTABLE} -m peachpy.x86_64
-             -mabi=sysv -g4 -mimage-format=${PEACHPY_IMAGE_FORMAT}
-             "-I${PROJECT_SOURCE_DIR}/src" "-I${PROJECT_SOURCE_DIR}/src/x86_64-fma" "-I${FP16_SOURCE_DIR}/include"
-             -o ${obj} "${PROJECT_SOURCE_DIR}/${src}"
+-if(ANDROID OR IOS OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
++if(FALSE)
+   message(STATUS "Brace yourself, we are building NNPACK")
+   set(CAFFE2_THIRD_PARTY_ROOT ${PROJECT_SOURCE_DIR}/third_party)
+ 
+@@ -114,6 +114,5 @@ endif()
+ # (4) Catch-all: not supported.
+ ##############################################################################
+ 
+-message(WARNING "Unknown platform - I don't know how to build NNPACK. "
+-                "See cmake/External/nnpack.cmake for details.")
+-set(USE_NNPACK OFF)
++set(NNPACK_FOUND TRUE)
++set(USE_NNPACK ON)
