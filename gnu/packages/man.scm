@@ -225,14 +225,14 @@ the traditional flat-text whatis databases.")
 (define-public mandoc
   (package
     (name "mandoc")
-    (version "1.14.5")
+    (version "1.14.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mandoc.bsd.lv/snapshots/mandoc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xyqllxpjj1kimlipx11pzyywf5c25i4wmv0lqm7ph3gnlnb86c2"))))
+                "174x2x9ws47b14lm339j6rzm7mxy1j3qhh484khscw0yy1qdbw4b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "regress"
