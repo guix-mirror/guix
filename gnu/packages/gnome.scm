@@ -6723,15 +6723,15 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.34.4")
+    (version "40.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/epiphany/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   "epiphany-" version ".tar.xz"))
               (sha256
                (base32
-                "13ar3s40cds1rplwbzx0fzigf120w0rydiv05r3k6zpc0zy91qb0"))))
+                "0r7m34xzz3shdfxf2abxb069izak3yv3ijlg29qy4pfmyawkilfs"))))
 
     (build-system meson-build-system)
     (arguments
@@ -6742,23 +6742,20 @@ a secret password store, an adblocker, and a modern UI.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              (substitute* "tests/meson.build"
-               ;; embed_shell fails, because webkitgtk apparently no longer supports
-               ;; overriding the ftp schema
-               ;; web_app_utils fails due to missing network access
+               ;; embed_shell fails, because webkitgtk apparently no longer
+               ;; supports overriding the ftp schema web_app_utils fails due
+               ;; to missing network access.
                (("(embed_shell|web_app_utils)_test,")
-                "find_program('sh'), args: ['-c', 'exit 77'],"))
-             #t))
+                "find_program('sh'), args: ['-c', 'exit 77'],"))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
              (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t)))
+             (setenv "DISPLAY" ":1"))))
        #:configure-flags
        ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
@@ -6782,8 +6779,11 @@ a secret password store, an adblocker, and a modern UI.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("json-glib" ,json-glib)
        ("iso-codes" ,iso-codes)
+       ("libarchive" ,libarchive)
        ("libdazzle" ,libdazzle)
+       ("libhandy" ,libhandy)
        ("libnotify" ,libnotify)
+       ("libportal" ,libportal)
        ("libsecret" ,libsecret)
        ("libxslt" ,libxslt)
        ("nettle" ,nettle) ; for hogweed
