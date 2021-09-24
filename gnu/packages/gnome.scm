@@ -9602,15 +9602,15 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.34.2")
+    (version "40.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bnmd191044zn2kr6f5vg7sm5q59qf7z652awll1f7s6ahijr8rw"))))
+                "0czasxnmbw2zm21lmxam8qixacagciq3f815s809hn0f9byh2dwy"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -9635,6 +9635,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
        ("libdazzle" ,libdazzle)
        ("libedataserverui" ,evolution-data-server)
        ("libgweather" ,libgweather)
+       ("libhandy" ,libhandy)
        ("geoclue" ,geoclue)))
     (propagated-inputs
      `(("evolution-data-server" ,evolution-data-server)))
