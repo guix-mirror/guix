@@ -5530,6 +5530,34 @@ algorithm.  Patiencediff provides a good balance of performance, nice output for
 humans, and implementation simplicity.")
     (license license:gpl2)))
 
+(define-public python-wmctrl
+  (package
+    (name "python-wmctrl")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wmctrl" version))
+       (sha256
+        (base32
+         "1q0l1sqnj5wma87k3dsgmsyph464syjc6fl8qcpa41nan1rgzjv6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((wmctrl (assoc-ref inputs "wmctrl")))
+                        (substitute* "wmctrl.py"
+                          (("'wmctrl")
+                           (string-append "'" wmctrl "/bin/wmctrl")))))))))
+    (inputs `(("wmctrl" ,wmctrl)))
+    (home-page "https://github.com/antocuni/wmctrl")
+    (synopsis "Tool to programmatically control Xorg windows")
+    (description "This package provides a library for programmatically
+controlling Xorg windows using Python.  The library relies on the
+@command{wmctrl} to do so.")
+    (license license:expat)))
+
 (define-public python-pdftotext
   (package
     (name "python-pdftotext")
