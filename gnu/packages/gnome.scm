@@ -10307,16 +10307,16 @@ accessibility infrastructure.")
 (define-public orca
   (package
     (name "orca")
-    (version "3.34.1")
+    (version "40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/" name "/"
-                    (version-major+minor version) "/"
+                    (version-major version) "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1q38n7hyshkiszmn361skxjynxr31lcms7a1iny6d0zlpmh1vnk4"))))
+                "0hq0zdcn80ficpcffbk667907v6m7dih3dhyc7ss01mrj3iyw000"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
