@@ -5438,15 +5438,15 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.34.0")
+    (version "40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fgiqswkhiaijanml3mb16ajn5aanrk7x6yiwagp9n9rssam6902"))))
+                "1rkf4yv43qcahyx7bismdv6z2vh5azdnm1fqfmnzrada9cm8ykna"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f ; one of two tests requires network access
@@ -5459,7 +5459,8 @@ service via the system message bus.")
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ("python-pygobject" ,python-pygobject)))
     (propagated-inputs
      ;; gweather-3.0.pc refers to GTK+, GDK-Pixbuf, GLib/GObject, libxml, and
      ;; libsoup.
