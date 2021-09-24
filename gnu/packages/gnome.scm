@@ -1054,6 +1054,22 @@ GtkSourceView-based text editors and IDEs.")
     (home-page "https://wiki.gnome.org/Projects/Tepl")
     (license license:lgpl2.1+)))
 
+(define-public tepl-5
+  (package
+    (inherit tepl)
+    (name "tepl")
+    (version "5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0118j64s4fb350phbgda2rk6sv19rfgglxc7nf248llzc1klj9xi"))))))
+
 (define-public krb5-auth-dialog
   (package
     (name "krb5-auth-dialog")
