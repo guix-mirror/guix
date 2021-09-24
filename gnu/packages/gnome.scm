@@ -8976,15 +8976,15 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.38.2")
+    (version "40.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19ln84d6s05h6cvx3c500bg5pvkz4k6p6ykmr2201rblq9afp76h"))))
+                "03gn416vvpvyy75pj3xkpxrqilbvjhqbvrdi5fdaivp50zzg47mp"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -8994,8 +8994,7 @@ shared object databases, search tools and indexing.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/meson/postinstall.py"
-               (("gtk-update-icon-cache") "true"))
-             #t)))
+               (("gtk-update-icon-cache") "true")))))
        ;; XXX: FAIL: check-nautilus
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
@@ -9014,6 +9013,8 @@ shared object databases, search tools and indexing.")
        ("gnome-autoar" ,gnome-autoar)
        ("gst-plugins-base" ,gst-plugins-base)
        ("json-glib" ,json-glib)
+       ("libhandy" ,libhandy)
+       ("libportal" ,libportal)
        ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)
        ("libsoup" ,libsoup)
