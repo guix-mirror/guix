@@ -9038,16 +9038,16 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.38.0")
+    (version "40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/" name "/"
-                    (version-major+minor version) "/"
+                    (version-major version) "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ac3fbl15l836yvgw724q4whbkws9v4b6l2xy6bnp0b0g0a6i104"))))
+                "19yii3bdgivxrcka1c4g6dpbmql5nyawwhzlsph7z6bs68nambm6"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t))
@@ -9061,7 +9061,8 @@ files.")
        ("glib" ,glib "bin")
        ("vala" ,vala)))
     (inputs
-     `(("gtk+" ,gtk+)))
+     `(("gtk+" ,gtk+)
+       ("libhandy" ,libhandy)))
     (synopsis "Disk usage analyzer for GNOME")
     (description
      "Baobab (Disk Usage Analyzer) is a graphical application to analyse disk
