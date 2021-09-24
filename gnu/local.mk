@@ -1680,6 +1680,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pytorch-system-libraries.patch	\
   %D%/packages/patches/python-robotframework-source-date-epoch.patch \
   %D%/packages/patches/python-seaborn-kde-test.patch		\
+  %D%/packages/patches/python-trezor-agent-fix-argv0.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\

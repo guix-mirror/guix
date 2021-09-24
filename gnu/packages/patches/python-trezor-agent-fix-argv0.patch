@@ -1,0 +1,27 @@
+diff --git a/libagent/gpg/__init__.py b/libagent/gpg/__init__.py
+index 3711bc8..67085de 100644
+--- a/libagent/gpg/__init__.py
++++ b/libagent/gpg/__init__.py
+@@ -122,15 +122,19 @@ def run_init(device_type, args):
+     verify_gpg_version()
+ 
+     # Prepare new GPG home directory for hardware-based identity
+-    device_name = os.path.basename(sys.argv[0]).rsplit('-', 1)[0]
+-    log.info('device name: %s', device_name)
++    exe_name = os.path.basename(sys.argv[0])
++    # drop the Guix wrapper's dot prefix from the name
++    if exe_name[0] == '.' and exe_name.endswith('-real'):
++        exe_name = exe_name[1:-5:]
++    device_name = exe_name.rsplit('-', 1)[0]
++    log.info('exe name: %s, device name: %s', exe_name, device_name)
+     homedir = args.homedir
+     if not homedir:
+         homedir = os.path.expanduser('~/.gnupg/{}'.format(device_name))
+ 
+     log.info('GPG home directory: %s', homedir)
+ 
+-    if os.path.exists(homedir):
++    if os.path.exists(homedir) and not args.subkey:
+         log.error('GPG home directory %s exists, '
+                   'remove it manually if required', homedir)
+         sys.exit(1)

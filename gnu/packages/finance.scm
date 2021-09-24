@@ -844,7 +844,8 @@ the Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0q99vbfd3h85s8rnjipnmldixabqmmlk5w9karv6f0rhyi54f4zv"))))
+        (base32 "0q99vbfd3h85s8rnjipnmldixabqmmlk5w9karv6f0rhyi54f4zv"))
+       (patches (search-patches "python-trezor-agent-fix-argv0.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1091,7 +1092,15 @@ the KeepKey Hardware Wallet.")
          (add-after 'wrap 'fixup-agent-py
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
-               ;; overwrite the wrapper with the real thing.
+               ;; The wrap phase also wraps trezor_agent.py (besides the
+               ;; public facing executable called trezor-agent). We need to
+               ;; undo that wrapping. The reason this is needed is that the
+               ;; python easy install generates a toplevel script (?) that
+               ;; messes with argv[0] and then re-opens the python
+               ;; module. This fails when the wrapped file is actually a shell
+               ;; script, not a python file.
+               (delete-file (string-append out "/bin/.trezor_agent.py-real"))
+               ;; Overwrite the wrapped one with the real thing.
                (install-file "./trezor_agent.py"
                              (string-append out "/bin"))
              #t))))))
