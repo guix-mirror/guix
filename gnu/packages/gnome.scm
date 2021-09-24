@@ -1577,7 +1577,7 @@ sharing to the masses.")
 (define-public sushi
   (package
     (name "sushi")
-    (version "3.32.1")
+    (version "3.38.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1585,7 +1585,7 @@ sharing to the masses.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02idvqjk76lii9xyg3b1yz4rw721709bdm5j8ikjym6amcghl0aj"))))
+                "1sc8i0vrw6bn43rklnwp2fl1gq0r0xfd3bszcqxd0a2mh46d3rpk"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -1595,11 +1595,11 @@ sharing to the masses.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
                                         "/bin/sushi")))
-               ;; Put existing typelibs before sushi's deps, so as to correctly
-               ;; infer gdk-pixbuf
+               ;; Put existing typelibs before sushi's deps, so as to
+               ;; correctly infer gdk-pixbuf.
                (wrap-program prog
-                 `("GI_TYPELIB_PATH" suffix (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
+                 `("GI_TYPELIB_PATH" suffix
+                   (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gettext" ,gettext-minimal)
@@ -1615,7 +1615,7 @@ sharing to the masses.")
        ("gjs" ,gjs)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gstreamer" ,gstreamer)
-       ("gtksourceview" ,gtksourceview-3)
+       ("gtksourceview" ,gtksourceview)
        ("harfbuzz" ,harfbuzz)
        ("libepoxy" ,libepoxy)
        ("libmusicbrainz" ,libmusicbrainz)
@@ -1623,8 +1623,8 @@ sharing to the masses.")
        ("neon" ,neon)
        ("webkitgtk" ,webkitgtk)))
     (synopsis "File previewer for the GNOME desktop")
-    (description "Sushi is a DBus-activated service that allows applications to
-preview files on the GNOME desktop.")
+    (description "Sushi is a DBus-activated service that allows applications
+to preview files on the GNOME desktop.")
     (home-page "https://gitlab.gnome.org/GNOME/sushi")
     (license license:gpl2+)))
 
