@@ -2819,14 +2819,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 (define python-urllib3/fixed
   (package
     (inherit python-urllib3)
-    (version "1.26.4")
+    (version "1.26.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urllib3" version))
        (sha256
         (base32
-         "0dw9w9bs3hmr5dp3r3h43jyzzb1g1046ag7lj8pqf58i4kvj3c77"))))))
+         "1kkf6gi8a1fs0dqkf6kpmdpsy97iirvliz8q1krxp8ppaiawd1s9"))))))
 
 ;; Some software requires an older version of urllib3, notably Docker.
 (define-public python-urllib3-1.24
@@ -2838,7 +2838,6 @@ supports url redirection and retries, and also gzip and deflate decoding.")
                      (sha256
                       (base32
                        "1x0slqrv6kixkbcdnxbglvjliwhc1payavxjvk8fvbqjrnasd4r3"))))))
-
 
 (define-public python2-urllib3
   (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
