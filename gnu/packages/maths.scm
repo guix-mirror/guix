@@ -2194,6 +2194,55 @@ Computational Engineering and Sciences} at The University of Texas at Austin.
 includes a complete LAPACK implementation.")
     (license license:bsd-3)))
 
+(define-public libpotassco
+  ;; No public release, update together with clasp
+  (let ((revision "1")
+        (commit "2f9fb7ca2c202f1b47643aa414054f2f4f9c1821"))
+    (package
+      (name "libpotassco")
+      (version (git-version "0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/potassco/libpotassco")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1c32f9gqclf7qx07lpx8wd720vfhkjqhzc6nyy8mjmgwpmb3iyyn"))))
+      (arguments
+       `(#:configure-flags '("-DLIB_POTASSCO_BUILD_TESTS=on"
+                             "-DLIB_POTASSCO_INSTALL_LIB=on"
+                             "-DBUILD_SHARED_LIBS=on")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-cmake
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 ;; clasp expects lowercase potassco and include directory is
+                 ;; lowercase as well, so let's use that
+                 (("\"cmake/Potassco\"") "\"cmake/potassco\"")
+                 (("PotasscoConfig\\.cmake") "potassco-config.cmake")
+                 (("PotasscoConfigVersion\\.cmake")
+                  "potassco-config-version.cmake"))
+               (rename-file "cmake/PotasscoConfig.cmake.in"
+                            "cmake/potassco-config.cmake.in"))))))
+      (build-system cmake-build-system)
+      (home-page "https://potassco.org/")
+      (synopsis "Utility library for Potassco's projects")
+      (description "@code{libpotassco} is a utility library providing functions
+and datatypes for
+@itemize
+@item parsing, writing, and converting logic programs in aspif and smodels
+format,
+@item passing information between a grounder and a solver,
+@item and defining and parsing command-line options and for creating
+command-line applications.
+@end itemize
+Furthermore, it comes with the tool @command{lpconvert} that converts either
+between aspif and smodels format or to a human-readable text format.")
+      (license license:expat))))
+
 (define-public ceres
   (package
     (name "ceres-solver")
