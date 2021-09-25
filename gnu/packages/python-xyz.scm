@@ -27221,6 +27221,49 @@ command-line applications.
 @end itemize")
     (license license:bsd-3)))
 
+(define-public python-glom
+  (package
+    (name "python-glom")
+    (version "20.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "glom" version))
+       (sha256
+        (base32 "04pba09vdr3qjvqvy14g60fscdsi35chbbyqpczdp76cpir101al"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               ;; Make installed executable available for running the tests.
+               (setenv "PATH"
+                       (string-append (assoc-ref outputs "out") "/bin"
+                                      ":" (getenv "PATH")))
+               (invoke "pytest" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pyyaml" ,python-pyyaml)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-boltons" ,python-boltons)
+       ("python-face" ,python-face)))
+    (home-page "https://github.com/mahmoud/glom")
+    (synopsis "Declaratively restructure data")
+    (description "Real applications have real data, and real data
+nests---objects inside of objects inside of lists of objects.  glom is a new
+and powerful way to handle real-world data, featuring:
+
+@itemize
+@item Path-based access to nested data structures
+@item Readable, meaningful error messages
+@item Declarative data transformation, using lightweight, Pythonic specifications
+@item Built-in data exploration and debugging features
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public python-box
   (package
     (name "python-box")
