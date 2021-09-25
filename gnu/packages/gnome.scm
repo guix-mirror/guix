@@ -6615,15 +6615,15 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.38.2")
+    (version "40.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/simple-scan/"
-                           (version-major+minor version) "/"
+                           (version-major version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "02sdkhxgr6i7iy481h4xavgaqd0a5dlsipzwrm4qd242jrr813d8"))))
+        (base32 "195rh8zj5n497gj42rd77mvkdl15hk0i08ll5h4hb9kcrgj7jlzb"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -6635,6 +6635,7 @@ USB transfers with your high-level application or system daemon.")
        ("colord" ,colord)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gusb" ,gusb)
+       ("libhandy" ,libhandy)
        ("libsane" ,sane-backends)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
