@@ -27182,6 +27182,45 @@ location.  This small Python module determines the appropriate
 platform-specific directories, e.g. the ``user data dir''.")
     (license license:expat)))
 
+(define-public python-face
+  (package
+    (name "python-face")
+    (version "20.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "face" version))
+       (sha256
+        (base32 "0gpd9f0rmbv3rd2szi2na37l29fabkwazikjrxc6wca1lddwlnbx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               ;; Make installed package available for running the tests.
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-boltons" ,python-boltons)))
+    (home-page "https://github.com/mahmoud/face")
+    (synopsis "CLI parsing and dispatching microframework")
+    (description "@code{python-face} is a Pythonic microframework for building
+command-line applications.
+
+@itemize
+@item First-class subcommand support
+@item Powerful middleware architecture
+@item Separate parser layer
+@item Built-in flagfile support
+@item Handy testing utilities
+@item Themeable help display
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public python-box
   (package
     (name "python-box")
