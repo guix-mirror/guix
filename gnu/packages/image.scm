@@ -30,6 +30,7 @@
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1852,7 +1853,7 @@ Features:
 (define-public swappy
   (package
     (name "swappy")
-    (version "1.2.1")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -1861,7 +1862,7 @@ Features:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14ac2jmnak7avcz0jhqjm30vk7pv3gq5aq5rdyh84k8c613kkicf"))))
+        (base32 "1s2lp3bz30svqdg6467jvncim0qgl0q1b1nqxnnci6kljbp5g0xh"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
