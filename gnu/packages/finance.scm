@@ -884,6 +884,31 @@ the Monero GUI client.")
 Ledger Nano as a hardware SSH/GPG agent.")
     (license license:lgpl3)))
 
+(define-public trezor-gpg-pinentry-tk
+  (package
+    (name "trezor-gpg-pinentry-tk")
+    (version "0.0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rendaw/trezor-gpg-pinentry-tk/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mblx4favmw4nf7k9rfl00ivv77kgdiwghyz4xv5cp0v410kjaqc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-tkinter" ,python "tk")))
+    (home-page "https://github.com/rendaw/trezor-gpg-pinentry-tk")
+    (synopsis "GPG pinentry program for use with @code{trezor-agent}")
+    (description
+     "This package provides a GPG pinentry program for use with
+@code{trezor-agent}, or for people with number-only PINs.  It displays
+a grid of unlabeled buttons and supports configurable keyboard
+settings.")
+    (license license:bsd-2)))
+
 (define-public python-mnemonic
   (package
     (name "python-mnemonic")
