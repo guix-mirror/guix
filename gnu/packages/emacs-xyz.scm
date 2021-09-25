@@ -13659,7 +13659,7 @@ reached with the right hand.")
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
-    (version "0.12.0")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -13668,7 +13668,7 @@ reached with the right hand.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x40xm9d5sbxbnyxl12ppkzlgxzyn0bjg2vmc139jpkazmmw7r7k"))))
+        (base32 "1gdr1y8q93xr5vlx6jj95js6rmmsspq2bn870igbaijwwsn0sf7g"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/josteink/csharp-mode")
     (synopsis "Major mode for C# code")
@@ -13677,8 +13677,7 @@ reached with the right hand.")
 syntax coloring, indentation, insertion of matched pairs of curly braces and
 documentation generation.  In addition, it provides menu-based navigation
 using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
-    ;; XXX: Project switched to GPL3+ after 0.10.0 release.
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public emacs-php-mode
   (package
