@@ -911,7 +911,9 @@
     (home-page "https://github.com/Eloston/ungoogled-chromium")
     (description
      "Ungoogled-Chromium is the Chromium web browser, with some functionality
-disabled in order to protect the users privacy.")
+disabled in order to protect the users privacy.  This package also includes
+the @command{chromedriver} command, which can be useful for automated web
+testing.")
     ;; Chromium is developed as BSD-3, but bundles a large number of third-party
     ;; components with other licenses.  For full information, see chrome://credits.
     (license (list license:bsd-3
