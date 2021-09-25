@@ -6804,7 +6804,7 @@ variants.")
 (define-public ocaml-mdx
   (package
     (name "ocaml-mdx")
-    (version "1.9.0")
+    (version "1.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6813,7 +6813,7 @@ variants.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fhwaci8j73fx9xqapa9iv9xwjx73r6p8wh9xg6brnfbqkc38d5b"))))
+                "1w2vx4my9z6n57vjvsa3b9vwkbdzs1kq0cc58rf088qrh2lrx2ba"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml-fmt" ,ocaml-fmt)
@@ -6824,6 +6824,7 @@ variants.")
        ("ocaml-result" ,ocaml-result)
        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)
        ("ocaml-odoc" ,ocaml-odoc)
+       ("ocaml-odoc-parser" ,ocaml-odoc-parser)
        ("ocaml-version" ,ocaml-version)))
     (native-inputs
      `(("ocaml-cppo" ,ocaml-cppo)
