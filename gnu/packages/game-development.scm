@@ -840,7 +840,13 @@ programming language.")
     (build-system cmake-build-system)
     (arguments
      `(#:build-type "Release"
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION .") "DESTINATION lib/love")))))))
     (inputs
      `(("luajit" ,luajit)))
     (synopsis "Lightweight immediate mode GUI for LÖVE games")
