@@ -9245,15 +9245,15 @@ associations for GNOME.")
 (define-public gnome-weather
   (package
    (name "gnome-weather")
-   (version "3.34.0")
+   (version "40.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version) "/"
+                                (version-major version) "/"
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1g63xzs17i36if923b36k9fwbk0nqa5vz6zh1k6q2axrzhhpx1i4"))))
+              "0k9wnyinvx6433r07kvjyahgqc605g7gbpf3d0h6vi4p8x61849x"))))
    (build-system meson-build-system)
    (native-inputs
     `(("gettext" ,gettext-minimal)
@@ -9268,7 +9268,8 @@ associations for GNOME.")
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("gjs" ,gjs)
       ("gnome-desktop" ,gnome-desktop)
-      ("libgweather" ,libgweather)))
+      ("libgweather" ,libgweather)
+      ("libhandy" ,libhandy)))
    (arguments
     `(#:glib-or-gtk? #t
       #:phases
