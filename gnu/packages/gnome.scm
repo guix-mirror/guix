@@ -5167,7 +5167,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.34.2")
+    (version "3.40.3")
     (source
      (origin
        (method url-fetch)
@@ -5176,7 +5176,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0gc004f9b5k94gkdanmqjz3wqgnpny0l3nqm8zd19h4f0ps27mrv"))))
+         "08hsic7sn32xw12i3j0ard2bhfhp8gmzqm0pa8xzl5l1jhzsmsfb"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -5185,14 +5185,16 @@ more fun.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true"))))))))
+           (lambda _
+             (substitute* "configure"
+               (("/bin/true") (which "true"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("docbook-xsl" ,docbook-xsl)
+       ("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("libxslt" ,libxslt)
        ("xmllint" ,libxml2)))
     (propagated-inputs
      `(("dconf" ,dconf)))
