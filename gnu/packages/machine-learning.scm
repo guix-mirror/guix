@@ -2370,6 +2370,75 @@ tree boosting (also known as GBDT, GBM) that solve many data science problems
 in a fast and accurate way.")
     (license license:asl2.0)))
 
+(define-public python-xgboost
+  (package
+    (inherit xgboost)
+    (name "python-xgboost")
+    (source (package-source xgboost))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Move python-package content to parent directory to silence
+             ;; some warnings about files not being found if we chdir.
+             (rename-file "python-package/xgboost" "xgboost")
+             (rename-file "python-package/README.rst" "README.rst")
+             (rename-file "python-package/setup.cfg" "setup.cfg")
+             (rename-file "python-package/setup.py" "setup.py")
+             ;; Skip rebuilding libxgboost.so.
+             (substitute* "setup.py"
+               (("ext_modules=\\[CMakeExtension\\('libxgboost'\\)\\],") "")
+               (("'install_lib': InstallLib,") ""))))
+         (add-after 'install 'install-version-and-libxgboost
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pylib (string-append out "/lib/python"
+                                          ,(version-major+minor
+                                            (package-version python))
+                                          "/site-packages"))
+                    (xgbdir (string-append pylib "/xgboost"))
+                    (version-file (string-append xgbdir "/VERSION"))
+                    (libxgboost (string-append (assoc-ref inputs "xgboost")
+                                               "/lib/libxgboost.so")))
+               (with-output-to-file version-file
+                 (lambda ()
+                   (display ,(package-version xgboost))))
+               (mkdir-p (string-append xgbdir "/lib"))
+               (symlink libxgboost (string-append xgbdir "/lib"
+                                                  "/libxgboost.so")))))
+         (replace 'check
+           ;; Python-specific tests are located in tests/python.
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests/python"
+                       ;; FIXME: CLI tests fail with PermissionError.
+                       "--ignore" "tests/python/test_cli.py" "-k"
+                       (string-append
+                        "not test_cli_regression_demo"
+                        ;; The tests below open a network connection.
+                        " and not test_model_compatibility"
+                        " and not test_get_group"
+                        " and not test_cv_no_shuffle"
+                        " and not test_cv"
+                        " and not test_training"
+                        ;; FIXME: May pass in the next version.
+                        " and not test_pandas"
+                        ;; "'['./runexp.sh']' returned non-zero exit status 1"
+                        " and not test_cli_binary_classification"))))))))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)
+       ("python-scikit-learn" ,python-scikit-learn)))
+    (inputs
+     `(("xgboost" ,xgboost)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (synopsis "Python interface for the XGBoost library")))
+
 (define-public python-iml
   (package
     (name "python-iml")
