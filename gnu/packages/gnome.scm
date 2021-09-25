@@ -6367,15 +6367,15 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 (define-public eog
  (package
    (name "eog")
-   (version "3.34.1")
+   (version "40.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version) "/"
+                                (version-major version) "/"
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0b7ld4azs9xbdjsk9b91ywhdzvxgajhndiwiivxjzbr0hjgp7c7x"))))
+              "0ddjwcd77nw0rxb5x5bz5hd671m8gya9827p8rsnb58x103kpai8"))))
    (build-system meson-build-system)
    (arguments
     `(#:configure-flags
@@ -6388,15 +6388,13 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "meson_post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
         (add-after 'install 'wrap-eog
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out               (assoc-ref outputs "out"))
                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
               (wrap-program (string-append out "/bin/eog")
-                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-            #t)))))
+                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
    (propagated-inputs
     `(("dconf" ,dconf)))
    (native-inputs
@@ -6414,6 +6412,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
       ("lcms" ,lcms)
       ("libexif" ,libexif)
       ("libpeas" ,libpeas)
+      ("libportal" ,libportal)
       ("libjpeg" ,libjpeg-turbo)
       ("librsvg" ,librsvg)
       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
