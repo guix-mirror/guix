@@ -7491,7 +7491,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.36.0")
+    (version "3.40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7499,7 +7499,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bigfi225g1prnxpb9lcc1i7mdcrkplwb05vilc43jik12cn53qw"))))
+                "1yn3n9pn2afrfv36cy2vxhm5r8lbn4gb0kyvpxvknm3gkyblyp2q"))))
     (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -7518,8 +7518,7 @@ window manager.")
                  (("@datadir@") (string-append lib "/share")))
                ;; Make sure gobject-introspection knows about the output
                ;; too (see <https://bugs.gnu.org/36535>).
-               (setenv "outputs" "out lib")
-               #t))))))
+               (setenv "outputs" "out lib")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -7540,9 +7539,9 @@ window manager.")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineAccounts")
     (description
      "GNOME Online Accounts provides interfaces so that applications and
-libraries in GNOME can access the user's online accounts.  It has providers for
-Google, ownCloud, Facebook, Flickr, Windows Live, Pocket, Foursquare, Microsoft
-Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
+libraries in GNOME can access the user's online accounts.  It has providers
+for Google, ownCloud, Facebook, Flickr, Windows Live, Pocket, Foursquare,
+Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
     (license license:lgpl2.0+)))
 
 (define-public evolution-data-server
