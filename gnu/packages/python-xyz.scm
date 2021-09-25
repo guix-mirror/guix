@@ -5675,6 +5675,26 @@ includes the following improvements compared to @code{pdb}:
 flexible plugin systems in Python.")
     (license license:bsd-3)))
 
+(define-public python-node-semver
+  (package
+    (name "python-node-semver")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "node-semver" version))
+       (sha256
+        (base32
+         "000ypfns5x72b41w5f9pk6k3jnr35scliqfbvmilyvv0178005i8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/podhmo/python-node-semver")
+    (synopsis "Python port of node-semver")
+    (description "This module provides a Python version of node-semver, a
+semantic version parser for Node.js.")
+    (license license:expat)))
+
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
