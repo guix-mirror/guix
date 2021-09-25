@@ -2340,6 +2340,37 @@ this package.  E.g.: @code{(udev-rules-service 'rfcat rfcat)}")
       (license (list license:bsd-3
                      license:gpl2)))))
 
+(define-public rx-tools
+  ;; No tagged release since 2016, use commit instead.
+  (let ((commit "811b21c4c8a592515279bd19f7460c6e4ff0551c")
+        (revision "1"))
+    (package
+      (name "rx-tools")
+      (version (git-version "1.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rxseger/rx_tools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qr8q00cv6q0ikjrph0qh07mlbvgk4yimccpkn3ir8ib5ma0r9sr"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("soapysdr" ,soapysdr)))
+      (arguments
+       `(#:tests? #f)) ; No test suite.
+      (home-page "https://github.com/rxseger/rx_tools")
+      (synopsis "Command line programs for receiving data from SDRs")
+      (description
+       "This package provides the @code{rx_fm}, @code{rx_power} and
+@code{rx_sdr} tools for receiving data from SDRs, based on @code{rtl_fm},
+@code{rtl_power} and @code{rtl_sdr} from RTL-SDR, but using the SoapySDR
+vendor-neutral SDR support library instead, intended to support a wider range
+of devices than RTL-SDR.")
+      (license license:gpl2+))))
+
 (define-public gnss-sdr
   (package
     (name "gnss-sdr")
