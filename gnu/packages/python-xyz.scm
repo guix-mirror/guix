@@ -5695,6 +5695,38 @@ flexible plugin systems in Python.")
 semantic version parser for Node.js.")
     (license license:expat)))
 
+(define-public python-patch-ng
+  (package
+    (name "python-patch-ng")
+    (version "1.17.4")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI archive
+       (uri (git-reference
+             (url "https://github.com/conan-io/python-patch-ng")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0qxn4ss2s54qy87xrpcybz26kp2fwlaq41x4k9jcmp6d7p0w569m"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "tests/run_tests.py" "-v")))))))
+    (home-page "https://github.com/conan-io/python-patch-ng")
+    (synopsis "Python library to parse and apply unified diffs")
+    (description "Patch NG (New Generation) is a command and Python library to
+parse and apply unified diffs.  It has features such as:
+@itemize
+@item automatic correction of common patch formatting corruption
+@item patch format detection (SVN, Hg, Git)
+@item nice diffstat histogram.
+@end itemize")
+    (license license:expat)))
+
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
