@@ -5558,6 +5558,35 @@ controlling Xorg windows using Python.  The library relies on the
 @command{wmctrl} to do so.")
     (license license:expat)))
 
+(define-public python-fancycompleter
+  (package
+    (name "python-fancycompleter")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fancycompleter" version))
+       (sha256
+        (base32 "0wkj4h01pxa8prv59zl09a0i3w26k835bfpjgvyvsai4mswgxq09"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-setup.py
+                    (lambda _
+                      (substitute* "setup.py"
+                        ((".*setupmeta.*")
+                         "")
+                        (("versioning=.*")
+                         (string-append "version='" ,version "',"))
+                        ((".*pyrepl.*") ;broken on Python 3
+                         "")))))))
+    (home-page "https://github.com/pdbpp/fancycompleter")
+    (synopsis "TAB completion library for Python")
+    (description "@code{fancycompleter} is a module that adds TAB completion
+to the interactive prompt.  It is an extension of the @code{rlcompleter}
+module from the standard Python library.")
+    (license license:bsd-3)))
+
 (define-public python-pdftotext
   (package
     (name "python-pdftotext")
