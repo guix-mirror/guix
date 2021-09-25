@@ -514,7 +514,7 @@ formats such as PNG.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.5.0")
+    (version "1.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -523,7 +523,7 @@ formats such as PNG.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1prajkx1xpp3csa0xpkrn3c2cnzvmwzxgrqb9d3gqszp3sllr2dg"))))
+                "1ifxh3sv6gz32gahgi7ba0ivcw5mfgwnrw6iycpav150w9xla43i"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase-5)
