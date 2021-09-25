@@ -2310,6 +2310,34 @@ learning models.  This package provides the \"lite\" variant for mobile
 devices.")
     (license license:asl2.0)))
 
+(define-public dmlc-core
+  (package
+    (name "dmlc-core")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmlc/dmlc-core")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x4ad1jhn84fywlk031fmv1kxyiscclmrqn9hhj8gz0mh7z9vcrh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DGOOGLE_TEST=ON")))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("python" ,python-wrapper)))
+    (home-page "https://github.com/dmlc/dmlc-core")
+    (synopsis "Common bricks library for machine learning")
+    (description
+     "DMLC-Core is the backbone library to support all DMLC projects,
+offers the bricks to build efficient and scalable distributed machine
+learning libraries.")
+    (license license:asl2.0)))
+
 (define-public python-iml
   (package
     (name "python-iml")
