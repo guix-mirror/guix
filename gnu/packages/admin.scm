@@ -4794,3 +4794,31 @@ setup, maintenance, supervision, or any long-running processes.")
       (description "Utility to convert @code{lsof} output to a graph showing
 FIFO and UNIX interprocess communication.")
       (license license:bsd-2))))
+
+(define-public runitor
+  (package
+    (name "runitor")
+    (version "0.8.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/bdd/runitor")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "0vjfbyrbp5ywgzdz9j3x0qgjvnq7nw7193x8v9yy6k2cih1zsacn"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "bdd.fi/x/runitor"
+       #:go ,go-1.17
+       #:build-flags '(,(string-append "-ldflags=-X main.Version=" version))
+       #:import-path "bdd.fi/x/runitor/cmd/runitor"
+       #:install-source? #f))
+    (home-page "https://github.com/bdd/runitor")
+    (synopsis "Command runner with healthchecks.io integration")
+    (description
+      "Runitor runs the supplied command, captures its output, and based on its
+exit code reports successful or failed execution to
+@url{https://healthchecks.io,https://healthchecks.io} or your private instance.")
+    (license license:bsd-0)))
