@@ -5650,6 +5650,31 @@ includes the following improvements compared to @code{pdb}:
     (description "Pdftotext is a Python library of PDF text extraction.")
     (license license:expat)))
 
+(define-public python-pluginbase
+  (package
+    (name "python-pluginbase")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pluginbase" version))
+       (sha256
+        (base32
+         "11z2vvbp13828y0x3w39f29p9r9xcix7h7c4fff2w8yfiylk6v7z"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "make" "test")))))))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/mitsuhiko/pluginbase")
+    (synopsis "Simple but flexible plugin system for Python")
+    (description "PluginBase is a library useful in the development of
+flexible plugin systems in Python.")
+    (license license:bsd-3)))
+
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
