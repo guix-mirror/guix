@@ -6750,7 +6750,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -6759,7 +6759,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14fcnaz9pw534v4d8dddqq4wcvpf1kghr8zlrk62r5lrl46sp1p5"))))
+        (base32 "0bnsz9bw9rj1apl80jwz39zj5mnlps3jbckihvl8bbdbrbhj6p06"))))
     (native-inputs
      `(("shellcheck" ,shellcheck)))
     (inputs
@@ -6810,6 +6810,8 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_CONFDEF"
                        (string-append out "/share/tlp/defaults.conf"))
                (setenv "TLP_CONFDIR" (string-append out "/etc/tlp.d"))
+               (setenv "TLP_CONFREN"
+                       (string-append out "/share/tlp/rename.conf"))
                (setenv "TLP_ELOD"
                        (string-append out "/lib/elogind/system-sleep"))
                (setenv "TLP_SHCPL"
