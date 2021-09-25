@@ -23706,7 +23706,7 @@ processes for Emacs")
 (define-public emacs-treemacs
   (package
     (name "emacs-treemacs")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -23715,7 +23715,7 @@ processes for Emacs")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m083g3pg0n4ymi1w0jx34awr7cqbm4r561adij9kklblxsz7sc2"))))
+                "141mgd742grvs94mnr62w1fiwmlhkq8b2131dh4mqrdjgcrd1kl8"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ace-window" ,emacs-ace-window)
@@ -23732,6 +23732,7 @@ processes for Emacs")
      `(("python" ,python)))
     (arguments
      `(#:tests? #t
+       #:test-command '("make" "-C" "../.." "test")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-makefile
@@ -23739,22 +23740,11 @@ processes for Emacs")
              (substitute* "Makefile"
                (("@\\$\\(CASK\\) exec ") "")
                ;; Guix does not need to prepare dependencies before testing.
-               (("test: prepare") "test:"))
-             #t))
+               (("test: prepare") "test:"))))
          (add-after 'fix-makefile 'chdir-elisp
            ;; Elisp directory is not in root of the source.
            (lambda _
              (chdir "src/elisp")))
-         (replace 'check
-           ;; FIXME: Work around ‘treemacs--parse-collapsed-dirs’ and
-           ;; `treemacs-collect-child-nodes' test failures.
-           (lambda _
-             (with-directory-excursion "../.." ;treemacs root
-               (chmod "test/test-treemacs.el" #o644)
-               (emacs-substitute-sexps "test/test-treemacs.el"
-                 ("(describe \"treemacs--parse-collapsed-dirs\"" "")
-                 ("\"Finds only direct childre\"" ""))
-               (invoke "make" "test"))))
          (add-before 'install 'patch-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (with-directory-excursion "../.." ;treemacs root
@@ -23771,18 +23761,16 @@ processes for Emacs")
                   (string-append (assoc-ref inputs "python") "/bin/python3")))
                (chmod "src/elisp/treemacs-async.el" #o644)
                (substitute* "src/elisp/treemacs-async.el"
-                 (("src/scripts") (string-append "share/" ,name "/scripts"))))
-             #t))
+                 (("src/scripts") (string-append "share/" ,name "/scripts"))))))
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (with-directory-excursion "../.." ;treemacs root
                  (copy-recursively "icons/default"
-                  (string-append out "/share/" ,name "/images"))
+                                   (string-append out "/share/" ,name "/images"))
                  (copy-recursively
                   "src/scripts"
-                  (string-append out "/share/" ,name "/scripts"))
-                 #t)))))))
+                  (string-append out "/share/" ,name "/scripts")))))))))
     (home-page "https://github.com/Alexander-Miller/treemacs")
     (synopsis "Emacs tree style file explorer")
     (description
