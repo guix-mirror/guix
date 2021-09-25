@@ -2219,14 +2219,14 @@ functions.")
 (define-public ocaml-astring
   (package
     (name "ocaml-astring")
-    (version "0.8.3")
+    (version "0.8.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/astring/releases/astring-"
                             version ".tbz"))
         (sha256 (base32
-                  "0ixjwc3plrljvj24za3l9gy0w30lsbggp8yh02lwrzw61ls4cri0"))))
+                  "1ykhg9gd3iy7zsgyiy2p9b1wkpqg9irw5pvcqs3sphq71iir4ml6"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
