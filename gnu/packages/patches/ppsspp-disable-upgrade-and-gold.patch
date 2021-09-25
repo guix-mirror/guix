@@ -1,9 +1,9 @@
 From 942730ce7148cd54a30d4a606ce71a2654c8a2e0 Mon Sep 17 00:00:00 2001
-From: Leo Prikler <leo.prikler@student.tugraz.at>
+From: Liliana Marie Prikler <liliana.prikler@gmail.com>
 Date: Sat, 5 Jun 2021 22:47:00 -0400
 Subject: [PATCH] ppsspp: Remove upgrade code and gold support.
 
-Original patch from Leo Prikler.
+Original patch from Liliana Marie Prikler.
 Rebased on master (commit 69fa20744958aef8da9ca052ba7675fdc1636e46) by
 Maxim Cournoyer.
 ---

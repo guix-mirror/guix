@@ -70,7 +70,7 @@ Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
 Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@*
-Copyright @copyright{} 2020 Leo Prikler@*
+Copyright @copyright{} 2020 Liliana Marie Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*

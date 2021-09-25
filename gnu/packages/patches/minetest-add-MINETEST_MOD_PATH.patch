@@ -8,7 +8,7 @@ When it exists, Minetest will look there for mods
 in addition to ~/.minetest/mods/.  Mods can still be
 installed to ~/.minetest/mods/ with the built-in installer.
 
-With thanks to Leo Prikler.
+With thanks to Liliana Marie Prikler.
 ---
  builtin/mainmenu/pkgmgr.lua       |  7 +++----
  doc/menu_lua_api.txt              |  8 +++++++-

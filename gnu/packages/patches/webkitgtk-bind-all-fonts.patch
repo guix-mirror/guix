@@ -1,7 +1,7 @@
 Add fonts from all XDG_DATA_DIRS, not just XDG_DATA_HOME.
 
 See <http://bugs.gnu.org/41174>.
-Author: Leo Prikler <leo.prikler@student.tugraz.at>
+Author: Liliana Marie Prikler <liliana.prikler@gmail.com>
 Index: webkitgtk-2.28.2/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
 ===================================================================
 --- a/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
