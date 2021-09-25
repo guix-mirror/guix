@@ -2243,6 +2243,49 @@ Furthermore, it comes with the tool @command{lpconvert} that converts either
 between aspif and smodels format or to a human-readable text format.")
       (license license:expat))))
 
+(define-public clasp
+  (package
+    (name "clasp")
+    (version "3.3.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/potassco/clasp")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rahqiq530jckvx717858h1q5p8znp1kb6sjm95p8blkr4n3pvmj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DCLASP_BUILD_TESTS=on"
+                           "-DCLASP_INSTALL_LIB=on"
+                           "-DCLASP_USE_LOCAL_LIB_POTASSCO=off"
+                           "-DBUILD_SHARED_LIBS=on")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ;; Use lowercase to be consistent with libpotassco
+               (("\"cmake/Clasp\"") "\"cmake/clasp\"")
+               (("ClaspConfig\\.cmake") "clasp-config.cmake")
+               (("ClaspConfigVersion\\.cmake")
+                "clasp-config-version.cmake"))
+             (substitute* "cmake/ClaspConfig.cmake.in"
+               (("find_package\\(Potassco") "find_package(potassco"))
+             (rename-file "cmake/ClaspConfig.cmake.in"
+                          "cmake/clasp-config.cmake.in"))))))
+    (inputs
+     `(("libpotassco" ,libpotassco)))
+    (home-page "https://potassco.org/")
+    (synopsis "Answer set solver")
+    (description "clasp is an answer set solver for (extended) normal and
+disjunctive logic programs.  The primary algorithm of clasp relies on
+conflict-driven nogood learning, a technique that proved very successful for
+satisfiability checking (SAT).")
+    (license license:expat)))
+
 (define-public ceres
   (package
     (name "ceres-solver")
