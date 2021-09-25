@@ -2338,6 +2338,38 @@ offers the bricks to build efficient and scalable distributed machine
 learning libraries.")
     (license license:asl2.0)))
 
+(define-public xgboost
+  (package
+    (name "xgboost")
+    (version "1.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmlc/xgboost")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (patches (search-patches "xgboost-use-system-dmlc-core.patch"))
+       (sha256
+        (base32 "00liz816ahk9zj3jv3m2fqwlf6xxfbgvpmpl72iklx32vl192w5d"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DGOOGLE_TEST=ON")))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("dmlc-core" ,dmlc-core)))
+    (home-page "https://xgboost.ai/")
+    (synopsis "Gradient boosting (GBDT, GBRT or GBM) library")
+    (description
+     "XGBoost is an optimized distributed gradient boosting library designed
+to be highly efficient, flexible and portable.  It implements machine learning
+algorithms under the Gradient Boosting framework.  XGBoost provides a parallel
+tree boosting (also known as GBDT, GBM) that solve many data science problems
+in a fast and accurate way.")
+    (license license:asl2.0)))
+
 (define-public python-iml
   (package
     (name "python-iml")
