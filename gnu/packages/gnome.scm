@@ -4408,7 +4408,7 @@ targeting the GNOME stack simple.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.60.3")
+    (version "0.64.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vte/"
@@ -4416,7 +4416,7 @@ targeting the GNOME stack simple.")
                                   "vte-" version ".tar.xz"))
               (sha256
                (base32
-                "0al2v6fn061v4j1wwvppim1q283y2a6s0iyl29hxhmx3h48nxdzy"))))
+                "063ys3330cvhbz1dln9irhciavb2prw098lvhpcc2rx6cl5q4g1b"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
