@@ -57,6 +57,7 @@ PORT."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "rsync")
 
           ;; Wait for rsync to be up and running.
@@ -106,8 +107,7 @@ PORT."
                     (read-line port))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "rsync-test" test))
 

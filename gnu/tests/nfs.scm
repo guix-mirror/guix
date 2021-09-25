@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -95,6 +95,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "rpc-daemon")
 
           ;; Wait for the rpcbind daemon to be up and running.
@@ -130,8 +131,7 @@
              '(zero? (system* "rpcinfo" "-p"))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation name test))
 
@@ -201,6 +201,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "nfs-daemon")
           (marionette-eval
            '(begin
@@ -252,8 +253,7 @@
                                      "nfs-server:/" "/remote" "-v"))
                      (file-exists? "/remote/hello")))
              marionette))
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "nfs-server-test" test))
 
@@ -313,6 +313,7 @@ directories can be mounted.")
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "start-nfs-boot-test")
 
           ;;; Start up NFS server host.
@@ -401,8 +402,7 @@ directories can be mounted.")
               (call-with-input-file "/export/mounts" display))
            server-marionette)
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "nfs-root-fs-test" test))
 

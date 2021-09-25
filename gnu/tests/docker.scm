@@ -79,6 +79,7 @@ inside %DOCKER-OS."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "docker")
 
           (test-assert "service running"
@@ -143,8 +144,7 @@ inside %DOCKER-OS."
                         (string->number response4))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "docker-test" test))
 
@@ -224,6 +224,7 @@ inside %DOCKER-OS."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "docker")
 
           (test-assert "service running"
@@ -288,8 +289,7 @@ inside %DOCKER-OS."
                          "status" "guix-daemon")))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "docker-system-test" test))
 

@@ -51,6 +51,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "mpd")
 
           (test-assert "service is running"
@@ -70,8 +71,7 @@
              '(system* #$(file-append mpd-mpc "/bin/mpc"))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
   (gexp->derivation "mpd-test" test))
 
 (define %test-mpd

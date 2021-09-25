@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
@@ -135,6 +135,7 @@ HTTP-PORT."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "cgit")
 
           ;; XXX: Shepherd reads the config file *before* binding its control
@@ -210,8 +211,7 @@ HTTP-PORT."
             (test-url "/test/tree/does-not-exist" 404)
             (test-url "/does-not-exist" 404))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "cgit-test" test))
 
@@ -273,6 +273,7 @@ HTTP-PORT."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "git-http")
 
           ;; Wait for nginx to be up and running.
@@ -302,8 +303,7 @@ HTTP-PORT."
               (call-with-input-file "/tmp/clone/README"
                 get-string-all)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "git-http" test))
 
@@ -370,6 +370,7 @@ HTTP-PORT."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "gitolite")
 
           ;; Wait for sshd to be up and running.
@@ -410,8 +411,7 @@ HTTP-PORT."
             (test-assert "pushing, and the associated hooks"
               (invoke #$(file-append git "/bin/git") "push")))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "gitolite" test))
 
@@ -475,6 +475,7 @@ HTTP-PORT."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "gitile")
 
           ;; XXX: Shepherd reads the config file *before* binding its control
@@ -540,8 +541,7 @@ HTTP-PORT."
             (test-url "/test/tree/-/does-not-exist" 404)
             (test-url "/does-not-exist" 404))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "gitile-test" test))
 

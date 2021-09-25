@@ -64,6 +64,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "memcached")
 
           ;; Wait for memcached to be up and running.
@@ -115,8 +116,7 @@
              '(file-exists? "/var/log/memcached")
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "memcached-test" test))
 
@@ -182,6 +182,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "postgresql")
 
           (test-assert "service running"
@@ -241,8 +242,7 @@
                   (string-contains output "1")))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "postgresql-test" test))
 
@@ -286,6 +286,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "mysql")
 
           (test-assert "service running"
@@ -341,8 +342,7 @@
                   output))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "mysql-test" test))
 

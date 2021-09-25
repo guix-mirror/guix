@@ -94,6 +94,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "transmission-daemon")
 
           ;; Make sure the "transmission" user and group have been created.
@@ -259,8 +260,7 @@
                                   "--auth" auth-string
                                   "--session-info"))))))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "transmission-daemon-test" test))
 

@@ -97,6 +97,7 @@ Otherwise assume that there is no password for root."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "basic")
 
           #$(and initialization
@@ -505,8 +506,7 @@ info --version")
                                      "root@"
                                      #$(operating-system-host-name os))))))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation name test))
 
@@ -645,6 +645,7 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "cleanup")
 
           (test-assert "dirty service worked"
@@ -657,8 +658,7 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
                                 (scandir "/tmp"))
                              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "cleanup" test))
 
@@ -716,6 +716,7 @@ non-ASCII names from /tmp.")
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "mcron")
 
           (test-assert "service running"
@@ -752,8 +753,7 @@ non-ASCII names from /tmp.")
                                 result)
                              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation name test))
 
@@ -824,6 +824,7 @@ non-ASCII names from /tmp.")
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "avahi")
 
           (test-assert "nscd PID file is created"
@@ -902,8 +903,7 @@ non-ASCII names from /tmp.")
                     (= (hostent:addrtype result) AF_INET)))))
 
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "nss-mdns" test))
 

@@ -120,6 +120,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "ganeti")
 
           ;; Ganeti uses the Shepherd to start/stop daemons, so make sure
@@ -248,8 +249,7 @@
                          "destroy" "--yes-do-it"))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 1)))))
+          (test-end))))
 
   (gexp->derivation (string-append "ganeti-" hypervisor "-test") test))
 

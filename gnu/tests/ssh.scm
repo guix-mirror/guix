@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -111,6 +111,7 @@ root with an empty password."
             (mkdir #$output)
             (chdir #$output)
 
+            (test-runner-current (system-test-runner))
             (test-begin "ssh-daemon")
 
             ;; Wait for sshd to be up and running.
@@ -209,8 +210,7 @@ root with an empty password."
                    (channel-request-exec channel "path-witness")
                    (zero? (channel-get-exit-status channel))))))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0))))))
+            (test-end)))))
 
   (gexp->derivation name test))
 

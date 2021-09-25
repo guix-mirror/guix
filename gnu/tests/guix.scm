@@ -77,6 +77,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "guix-build-coordinator")
 
           (test-assert "service running"
@@ -99,8 +100,7 @@
                             #:decode-body? #t)))
               (response-code response)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "guix-build-coordinator-test" test))
 
@@ -202,6 +202,7 @@ host	all	all	::1/128 	trust"))))))
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "guix-data-service")
 
           (test-assert "service running"
@@ -235,8 +236,7 @@ host	all	all	::1/128 	trust"))))))
                             #:decode-body? #t)))
               (response-code response)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "guix-data-service-test" test))
 

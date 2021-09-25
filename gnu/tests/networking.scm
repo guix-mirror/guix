@@ -107,6 +107,7 @@ port 7, and a dict service on port 2628."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "inetd")
 
           ;; Make sure the PID file is created.
@@ -137,8 +138,7 @@ port 7, and a dict service on port 2628."
                 (close dict)
                 response)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "inetd-test" test))
 
@@ -207,6 +207,7 @@ port 7, and a dict service on port 2628."
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "openvswitch")
 
           ;; Make sure the bridge is created.
@@ -244,8 +245,7 @@ port 7, and a dict service on port 2628."
                        (current-services))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "openvswitch-test" test))
 
@@ -307,6 +307,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "dhcpd")
 
           (test-assert "pid file exists"
@@ -339,8 +340,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
                        (current-services))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "dhcpd-test" test))
 
@@ -402,6 +402,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "tor")
 
           ;; Test the usual Tor service.
@@ -433,8 +434,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
               (wait-for-unix-socket "/var/run/tor/socks-sock"
                                     marionette/unix-socks-socket)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "tor-test" test))
 
@@ -529,6 +529,7 @@ COMMIT
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "iptables")
 
           (test-equal "iptables-save dumps the same rules that were loaded"
@@ -557,8 +558,7 @@ COMMIT
           ;;      marionette)
           ;;     (wait-for-tcp-port inetd-echo-port marionette #:timeout 5)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "iptables" test))
 
@@ -625,6 +625,7 @@ COMMIT
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "ipfs")
 
           ;; Test the IPFS service.
@@ -644,8 +645,7 @@ COMMIT
             test-bv
             (read-contents (add-data test-bv)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
   (gexp->derivation "ipfs-test" test))
 
 (define %test-ipfs

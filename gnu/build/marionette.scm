@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,7 @@
 (define-module (gnu build marionette)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -33,7 +34,9 @@
             marionette-screen-text
             wait-for-screen-text
             %qwerty-us-keystrokes
-            marionette-type))
+            marionette-type
+
+            system-test-runner))
 
 ;;; Commentary:
 ;;;
@@ -357,5 +360,22 @@ keystrokes."
 to actual keystrokes."
   (for-each (cut marionette-control <> marionette)
             (string->keystroke-commands str keystrokes)))
+
+
+;;;
+;;; Test helper.
+;;;
+
+(define (system-test-runner)
+  "Return a SRFI-64 test runner that calls 'exit' upon 'test-end'."
+  (let ((runner  (test-runner-simple)))
+    ;; On 'test-end', display test results and exit with zero if and only if
+    ;; there were no test failures.
+    (test-runner-on-final! runner
+      (lambda (runner)
+        (let ((success? (= (test-runner-fail-count runner) 0)))
+          (test-on-final-simple runner)
+          (exit success?))))
+    runner))
 
 ;;; marionette.scm ends here

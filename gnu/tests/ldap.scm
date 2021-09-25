@@ -72,6 +72,7 @@
           (mkdir #$output)
           (chdir #$output)
 
+          (test-runner-current (system-test-runner))
           (test-begin "ldap")
 
           ;; Set up LDAP directory server
@@ -148,8 +149,7 @@ suffix = dc=example,dc=com")))
                               #$(file-append coreutils "/bin/true")))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "ldap-test" test))
 
