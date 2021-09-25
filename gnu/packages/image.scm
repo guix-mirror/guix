@@ -91,6 +91,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fonts)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1871,6 +1872,9 @@ Features:
     (inputs
      `(("gtk+" ,gtk+)
        ("libnotify" ,libnotify)))
+    (propagated-inputs
+     ;; Needed to properly render the icons.
+     `(("font-awesome" ,font-awesome)))
     (home-page "https://github.com/jtheoof/swappy")
     (synopsis "Grab and edit on the fly snapshots of a Wayland compositor")
     (description
