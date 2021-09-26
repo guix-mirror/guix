@@ -92,10 +92,7 @@
                        (error "Socket didn't show up: " ,file))))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "rpc-daemon")
 
           ;; Wait for the rpcbind daemon to be up and running.
@@ -198,10 +195,7 @@
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "nfs-daemon")
           (marionette-eval
            '(begin
@@ -310,10 +304,7 @@ directories can be mounted.")
           (use-modules (gnu build marionette)
                        (srfi srfi-64))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "start-nfs-boot-test")
 
           ;;; Start up NFS server host.

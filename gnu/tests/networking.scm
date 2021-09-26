@@ -104,10 +104,7 @@ port 7, and a dict service on port 2628."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "inetd")
 
           ;; Make sure the PID file is created.
@@ -204,10 +201,7 @@ port 7, and a dict service on port 2628."
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "openvswitch")
 
           ;; Make sure the bridge is created.
@@ -304,10 +298,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "dhcpd")
 
           (test-assert "pid file exists"
@@ -399,10 +390,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
                        (current-services))))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "tor")
 
           ;; Test the usual Tor service.
@@ -526,10 +514,7 @@ COMMIT
                            (loop (read-line in)))))))))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "iptables")
 
           (test-equal "iptables-save dumps the same rules that were loaded"
@@ -622,10 +607,7 @@ COMMIT
              marionette))
 
           (marionette-eval '(use-modules (guix ipfs)) marionette)
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "ipfs")
 
           ;; Test the IPFS service.

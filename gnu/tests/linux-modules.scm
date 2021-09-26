@@ -88,10 +88,7 @@ that MODULES are actually loaded."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "loadable-kernel-modules")
           (test-assert "script successfully evaluated"
             (marionette-eval

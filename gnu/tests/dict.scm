@@ -79,10 +79,7 @@
           (define %dico-socket
             (socket PF_INET SOCK_STREAM 0))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "dicod")
 
           ;; Wait for the service to be started.

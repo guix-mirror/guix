@@ -113,10 +113,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin #$name)
 
           (test-assert #$(string-append name " service running")
@@ -309,10 +306,7 @@ HTTP-PORT, along with php-fpm."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "php-fpm")
 
           (test-assert "php-fpm running"
@@ -393,10 +387,7 @@ HTTP-PORT, along with php-fpm."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin #$name)
 
           (test-assert "hpcguix-web running"
@@ -485,10 +476,7 @@ HTTP-PORT."
             ;; port 8080 in the host.
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "tailon")
 
           (test-assert "service running"
@@ -629,10 +617,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "patchwork")
 
           (test-assert "patchwork-postgresql-user-and-service started"

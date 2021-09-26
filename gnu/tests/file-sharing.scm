@@ -91,10 +91,7 @@
                       (port-forwardings
                        `((9091 . ,%transmission-daemon-rpc-port)))))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "transmission-daemon")
 
           ;; Make sure the "transmission" user and group have been created.

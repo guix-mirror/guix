@@ -98,10 +98,7 @@
                     (else
                      (error "file didn't show up" file)))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "xmpp")
 
           ;; Wait for XMPP service to be up and running.
@@ -191,10 +188,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "bitlbee")
 
           (test-assert "service started"
@@ -264,10 +258,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "quassel")
 
           (test-assert "service started"

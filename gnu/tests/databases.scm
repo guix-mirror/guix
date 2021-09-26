@@ -61,10 +61,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "memcached")
 
           ;; Wait for memcached to be up and running.
@@ -179,10 +176,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "postgresql")
 
           (test-assert "service running"
@@ -283,10 +277,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "mysql")
 
           (test-assert "service running"

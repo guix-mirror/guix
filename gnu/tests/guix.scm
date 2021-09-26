@@ -74,10 +74,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "guix-build-coordinator")
 
           (test-assert "service running"
@@ -199,10 +196,7 @@ host	all	all	::1/128 	trust"))))))
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "guix-data-service")
 
           (test-assert "service running"

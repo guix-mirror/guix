@@ -79,10 +79,7 @@ generation of the system profile."
                           entries)))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "switch-to-system")
 
           (let ((generations-prior (system-generations marionette)))
@@ -153,10 +150,7 @@ Shepherd (PID 1) by unloading obsolete services and loading new services."
                 (map live-service-canonical-name (current-services)))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "upgrade-services")
 
           (let ((services-prior (running-services marionette)))
@@ -220,10 +214,7 @@ bootloader's configuration file."
                      (second (string-split (match:substring parameter) #\=)))
                    (list-matches "system=[^ ]*" grub-cfg))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "install-bootloader")
 
           (test-assert "no prior menu entry for system generation"

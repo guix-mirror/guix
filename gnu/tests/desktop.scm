@@ -43,10 +43,7 @@
           (define marionette
             (make-marionette '(#$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "elogind")
 
           ;; Log in as root on tty1, and check what 'loginctl' returns.

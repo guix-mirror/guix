@@ -85,10 +85,7 @@ match from any for local action inbound
                   code
                   (read-reply-code port))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "opensmptd")
 
           (test-assert "service is running"
@@ -230,10 +227,7 @@ acl_check_data:
           (define smtp (socket AF_INET SOCK_STREAM 0))
           (define addr (make-socket-address AF_INET INADDR_LOOPBACK 1025))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "exim")
 
           (test-assert "service is running"
@@ -338,10 +332,7 @@ acl_check_data:
           (define message "From: test@example.com\n\
 Subject: Hello Nice to meet you!")
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "dovecot")
 
           ;; Wait for dovecot to be up and running.
@@ -489,10 +480,7 @@ Subject: Hello Nice to meet you!")
           (define message "From: test@example.com\n\
 Subject: Hello Nice to meet you!")
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "getmail")
 
           ;; Wait for dovecot to be up and running.

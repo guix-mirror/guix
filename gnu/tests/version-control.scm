@@ -132,10 +132,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "cgit")
 
           ;; XXX: Shepherd reads the config file *before* binding its control
@@ -270,10 +267,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "git-http")
 
           ;; Wait for nginx to be up and running.
@@ -367,10 +361,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "gitolite")
 
           ;; Wait for sshd to be up and running.
@@ -472,10 +463,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "gitile")
 
           ;; XXX: Shepherd reads the config file *before* binding its control

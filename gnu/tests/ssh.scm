@@ -108,10 +108,7 @@ root with an empty password."
                         ('denied
                          (loop rest)))))))))
 
-            (mkdir #$output)
-            (chdir #$output)
-
-            (test-runner-current (system-test-runner))
+            (test-runner-current (system-test-runner #$output))
             (test-begin "ssh-daemon")
 
             ;; Wait for sshd to be up and running.

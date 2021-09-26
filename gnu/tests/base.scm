@@ -94,10 +94,7 @@ Otherwise assume that there is no password for root."
           (define marionette
             (make-marionette #$command))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "basic")
 
           #$(and initialization
@@ -642,10 +639,7 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "cleanup")
 
           (test-assert "dirty service worked"
@@ -713,10 +707,7 @@ non-ASCII names from /tmp.")
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "mcron")
 
           (test-assert "service running"

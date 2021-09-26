@@ -76,10 +76,7 @@ inside %DOCKER-OS."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "docker")
 
           (test-assert "service running"
@@ -221,10 +218,7 @@ inside %DOCKER-OS."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "docker")
 
           (test-assert "service running"

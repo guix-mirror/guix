@@ -70,10 +70,7 @@ HTTP-PORT."
             ;; port 8080 in the host.
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-runner-current (system-test-runner))
+          (test-runner-current (system-test-runner #$output))
           (test-begin "laminar")
 
           (test-assert "service running"
