@@ -6493,7 +6493,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.40.2")
+    (version "1.48.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gvfs/"
@@ -6501,10 +6501,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   "gvfs-" version ".tar.xz"))
               (sha256
                (base32
-                "07lpcfric3h0302n9b1pwa38mjb76r9s98kg2867y2d1qvzfivxx"))
-              ;; This patch may be removed when upgrading to version 1.46.x.
-              (patches
-               (search-patches "gvfs-add-support-for-libplist-2.2.patch"))))
+                "1hlxl6368h6nyqp1888szxs9hnpcw98k3h23dgqi29xd38klzsmj"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -6526,10 +6523,11 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("docbook-xsl" ,docbook-xsl)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
-       ("fuse" ,fuse)
+       ("fuse" ,fuse-3)
        ("gcr" ,gcr)
        ("glib" ,glib)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libarchive" ,libarchive)
        ("libbluray" ,libbluray)
        ("libcap" ,libcap)
@@ -6548,17 +6546,13 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("openssh" ,openssh)
        ("polkit" ,polkit)
        ("udisks" ,udisks)))
-    ;; CVE-2019-{12447,12448,12449} are fixed in the 1.40.2 release.
-    (properties '((lint-hidden-cve . ("CVE-2019-12447"
-                                      "CVE-2019-12448"
-                                      "CVE-2019-12449"))))
     (home-page "https://wiki.gnome.org/gvfs/")
     (synopsis "Userspace virtual file system for GIO")
     (description
      "GVFS is a userspace virtual file system designed to work with the I/O
-abstraction of GIO.  It contains a GIO module that seamlessly adds GVFS support
-to all applications using the GIO API.  It also supports exposing the GVFS
-mounts to non-GIO applications using FUSE.
+abstraction of GIO.  It contains a GIO module that seamlessly adds GVFS
+support to all applications using the GIO API.  It also supports exposing the
+GVFS mounts to non-GIO applications using FUSE.
 
 GVFS comes with a set of backends, including trash support, SFTP, SMB, HTTP,
 DAV, and others.")
