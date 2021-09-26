@@ -1472,15 +1472,15 @@ extraction, and lookup for applications on the desktop.")
 (define-public gnome-initial-setup
   (package
    (name "gnome-initial-setup")
-   (version "3.32.1")
+   (version "40.4")
    (source (origin
             (method url-fetch)
            (uri (string-append "mirror://gnome/sources/gnome-initial-setup/"
-                                (version-major+minor version)
+                                (version-major version)
                                 "/gnome-initial-setup-" version ".tar.xz"))
             (sha256
              (base32
-              "1gwhp7dalyc8zsb2pa66cmpdrj2d6drbq5p331sq6zp8ds10k9ry"))))
+              "06q3p4f8g9zr7a4mw3qr556mi0dg9qzrj8n46ybdz93fxs26aaj1"))))
    (build-system meson-build-system)
    (arguments
     '(#:configure-flags '(;; Enable camera support for user selfie.
@@ -1506,10 +1506,10 @@ extraction, and lookup for applications on the desktop.")
    (inputs
     `(("accountsservice" ,accountsservice)
       ;("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("elogind" ,elogind)
       ("gdm" ,gdm)
       ("geoclue" ,geoclue)
       ("gnome-desktop" ,gnome-desktop)
-      ("gnome-getting-started-docs" ,gnome-getting-started-docs)
       ("gnome-online-accounts" ,gnome-online-accounts)
       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
       ("gstreamer" ,gstreamer)
