@@ -935,17 +935,17 @@ cloud integration is offered through GNOME Online Accounts.")
 (define-public gnome-music
   (package
     (name "gnome-music")
-    (version "3.34.5")
+    (version "40.1.1")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "mirror://gnome/sources/" name "/"
-                       (version-major+minor version) "/"
+                       (version-major version) "/"
                        name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1r5sfw5cbd6qqh27lzhblazir0bfi3k7nqppw66qw990isqm5psy"))))
+         "0lcdal4qdhclr8961p57xf010y92l6wwmkw86lyi9wy224z6gjr0"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -960,11 +960,14 @@ cloud integration is offered through GNOME Online Accounts.")
                                           (package-version python))
                                         "/site-packages")))
                (wrap-program (string-append out "/bin/gnome-music")
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
-                 `("GST_PLUGIN_SYSTEM_PATH" = (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
-                 `("GRL_PLUGIN_PATH" = (,(getenv "GRL_PLUGIN_PATH")))
-                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))))
-             #t)))))
+                 `("GI_TYPELIB_PATH" =
+                   (,(getenv "GI_TYPELIB_PATH")))
+                 `("GST_PLUGIN_SYSTEM_PATH" =
+                   (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 `("GRL_PLUGIN_PATH" =
+                   (,(getenv "GRL_PLUGIN_PATH")))
+                 `("GUIX_PYTHONPATH" =
+                   (,(getenv "GUIX_PYTHONPATH") ,pylib)))))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
@@ -980,6 +983,7 @@ cloud integration is offered through GNOME Online Accounts.")
        ("gst-plugins-base" ,gst-plugins-base)
        ("gstreamer" ,gstreamer)
        ("gvfs" ,gvfs)
+       ("json-glib" ,json-glib)
        ("libdazzle" ,libdazzle)
        ("libmediaart" ,libmediaart)
        ("libsoup" ,libsoup)
