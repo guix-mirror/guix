@@ -375,6 +375,23 @@ to actual keystrokes."
       (lambda (runner)
         (let ((success? (= (test-runner-fail-count runner) 0)))
           (test-on-final-simple runner)
+
+          (when (not success?)
+            (let* ((log-port (test-runner-aux-value runner))
+                   (log-file (port-filename log-port)))
+              (format (current-error-port)
+                      "\nTests failed, dumping log file '~a'.\n\n"
+                      log-file)
+
+              ;; At this point LOG-PORT is not closed yet; flush it.
+              (force-output log-port)
+
+              ;; Brute force to avoid dependency on (guix build utils) for
+              ;; 'dump-port'.
+              (let ((content (call-with-input-file log-file
+                               get-bytevector-all)))
+                (put-bytevector (current-error-port) content))))
+
           (exit success?))))
     runner))
 
