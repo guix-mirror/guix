@@ -42,6 +42,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages certs)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages compression)
@@ -69,6 +70,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
@@ -82,10 +84,61 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial))
+
+(define-public cloudflare-cli
+  (let ((commit "2d986d3ec1b0e3158c4bd40e8918947cb74aa392")
+        (revision "1"))
+    (package
+      (name "cloudflare-cli")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/earlchew/cloudflare-cli")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0f86g6n86kwykl3jnhqjrdfy8ybkp03ghr3dlr70q2552qw4axw2"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan '(("cloudflare-cli" "bin/") ("cloudflare-cli.sh" "bin/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'find-jsonsh
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cloudflare-cli.sh"
+                 (("\\$\\{0%/\\*\\}/jsonsh")
+                  (string-append (assoc-ref inputs "json.sh") "/bin/JSON.sh")))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (wrap-program (string-append (assoc-ref outputs "out") "/bin/cloudflare-cli")
+                 `("PATH" ":" prefix
+                   (,(string-join
+                      (map (lambda (in) (string-append (assoc-ref inputs in) "/bin"))
+                           '("grep" "curl"))
+                      ":"))))
+               #t)))))
+      (inputs
+       `(("bash-minimal" ,bash-minimal)
+         ("curl" ,curl)
+         ("grep" ,grep)
+         ("json.sh" ,json.sh)))
+      (synopsis
+        "CLI to edit Cloudflare DNS records")
+      (description
+        "This command line tool to update Cloudfare DNS records is useful for tasks
+such as updating dynamic DNS records or updating DNS records for the ACME DNS-01
+protocol.")
+      (home-page "https://github.com/earlchew/cloudflare-cli")
+      (license license:expat))))
 
 (define-public ldns
   (package
