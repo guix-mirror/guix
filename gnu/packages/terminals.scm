@@ -878,7 +878,8 @@ usable with any list--including files, command history, processes and more.")
     (arguments
      (ensure-keyword-arguments
       (package-arguments go-github-com-junegunn-fzf)
-      `(#:phases
+      `(#:install-source? #f
+        #:phases
         (modify-phases %standard-phases
           (add-after 'install 'copy-binaries
             (lambda* (#:key outputs #:allow-other-keys)
