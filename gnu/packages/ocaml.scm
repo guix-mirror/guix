@@ -2148,14 +2148,14 @@ dates and times.")
 (define-public ocaml-cmdliner
   (package
     (name "ocaml-cmdliner")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
+              (uri (string-append "https://erratique.ch/software/cmdliner/releases/"
                                   "cmdliner-" version ".tbz"))
               (sha256
                (base32
-                "0g3w4hvc1cx9x2yp5aqn6m2rl8lf9x1dn754hfq8m1sc1102lxna"))))
+                "1h04q0zkasd0mw64ggh4y58lgzkhg6yhzy60lab8k8zq9ba96ajw"))))
     (build-system ocaml-build-system)
     (inputs
      `(("ocaml-result" ,ocaml-result)))
