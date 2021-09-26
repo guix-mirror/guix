@@ -8370,15 +8370,15 @@ devices using the GNOME desktop.")
 (define-public gnome-control-center
   (package
     (name "gnome-control-center")
-    (version "3.34.2")
+    (version "40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "054igagvmyzpaa5nwzz98gv7bk7l5dwp6g813707132si3szlpx8"))))
+                "0rr4d5m2a72vrb31jgyx49dp0s2pwgyxsrk4hyw5ym66wq63c3v1"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -8406,8 +8406,8 @@ devices using the GNOME desktop.")
                  (("\"gkbd-keyboard-display")
                   (string-append "\"" libgnomekbd
                                  "/bin/gkbd-keyboard-display")))
-               (substitute* '("panels/network/net-device-wifi.c"
-                              "panels/network/net-device.c"
+               (substitute* '("panels/network/net-device-bluetooth.c"
+                              "panels/network/net-device-mobile.c"
                               "panels/network/connection-editor/net-connection-editor.c")
                  (("\"nm-connection-editor")
                   (string-append "\"" nm-applet
@@ -8415,23 +8415,15 @@ devices using the GNOME desktop.")
                (substitute* '("panels/user-accounts/run-passwd.c")
                  (("/usr/bin/passwd")
                   "/run/setuid-programs/passwd"))
-               (substitute* "panels/info/cc-info-overview-panel.c"
+               (substitute* "panels/info-overview/cc-info-overview-panel.c"
                  (("DATADIR \"/gnome/gnome-version.xml\"")
                   (string-append "\"" gnome-desktop
-                                 "/share/gnome/gnome-version.xml\"")))
-               #t)))
-         ;; XXX: This appears to be fixed in 3.35.90:
-         ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=957285.
-         (add-before 'configure 'set-cflags
-           (lambda _
-             (setenv "CFLAGS" "-fcommon")
-             #t))
+                                 "/share/gnome/gnome-version.xml\""))))))
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/meson/meson_post_install.py"
-               (("gtk-update-icon-cache") (which "true")))
-             #t)))))
+               (("gtk-update-icon-cache") (which "true"))))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("intltool" ,intltool)
