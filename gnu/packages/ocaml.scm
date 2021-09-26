@@ -3657,14 +3657,14 @@ tool and piqi-ocaml.")
 (define-public ocaml-uuidm
   (package
     (name "ocaml-uuidm")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/uuidm/"
                                   "releases/uuidm-" version ".tbz"))
               (sha256
                (base32
-                "0hz4fdx0x16k0pw9995vkz5d1hmzz6b16wck9li399rcbfnv5jlc"))))
+                "1ivxb3hxn9bk62rmixx6px4fvn52s4yr1bpla7rgkcn8981v45r8"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:build-flags
