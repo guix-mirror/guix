@@ -8508,34 +8508,21 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.34.5")
+    (version "40.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0l3mdn7g2c22mdhrqkxvvc1pk2w0v32f2v4a6n1phvaalwcg75nj"))
-              (patches (search-patches "gnome-shell-CVE-2020-17489.patch"
-                                       "gnome-shell-theme.patch"
-                                       "gnome-shell-disable-test.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               #~(begin
-                   ;; Copy images for use on the GDM log-in screen.
-                   (copy-file #$(file-append %artwork-repository
-                                             "/slim/0.x/background.png")
-                              "data/theme/guix-background.png")
-                   (copy-file #$(file-append %artwork-repository
-                                             "/logo/Guix-horizontal-white.svg")
-                              "data/theme/guix-logo.svg")
-                   #t))))
+                "0kph3g4ix23sm3ip2b13rs7hx8sa7fvlvcyy4zdk2iaj56rmadvd"))
+              (patches (search-patches "gnome-shell-disable-test.patch"))
+              (modules '((guix build utils)))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
        #:disallowed-references ,(list (gexp-input glib "bin")
-                                      (gexp-input inkscape)
                                       (gexp-input libxslt)
                                       (gexp-input ruby-sass))
        #:configure-flags
@@ -8558,13 +8545,12 @@ properties, screen resolution, and other GNOME parameters.")
                               out "/share/gnome-control-center/keybindings")))
                (substitute* "meson.build"
                  (("keysdir =.*")
-                  (string-append "keysdir = '" keysdir "'\n")))
-               #t)))
-         (add-before 'configure 'convert-logo-to-png
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Convert the logo from SVG to PNG.
-             (invoke "inkscape" "--export-png=data/theme/guix-logo.png"
-                     "data/theme/guix-logo.svg")))
+                  (string-append "keysdir = '" keysdir "'\n"))))))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson/postinstall.py"
+               (("gtk-update-icon-cache") "true"))))
          (add-before 'configure 'record-absolute-file-names
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "js/misc/ibusManager.js"
@@ -8574,14 +8560,12 @@ properties, screen resolution, and other GNOME parameters.")
              (substitute* "js/ui/status/keyboard.js"
                (("'gkbd-keyboard-display'")
                 (string-append "'" (assoc-ref inputs "libgnomekbd")
-                               "/bin/gkbd-keyboard-display'")))
-             #t))
+                               "/bin/gkbd-keyboard-display'")))))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Tests require a running X server.
              (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t))
+             (setenv "DISPLAY" ":1")))
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out              (assoc-ref outputs "out"))
@@ -8602,23 +8586,22 @@ properties, screen resolution, and other GNOME parameters.")
                   (wrap-program (string-append out "/bin/" prog)
                     `("GUIX_PYTHONPATH"      ":" prefix (,python-path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-                '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
-               #t)))
+                '("gnome-shell-extension-tool" "gnome-shell-perf-tool")))))
          (replace 'glib-or-gtk-wrap
            (let ((wrap (assoc-ref %standard-phases 'glib-or-gtk-wrap)))
              (lambda* (#:key inputs outputs #:allow-other-keys #:rest rest)
-               ;; By default Inkscape et al. would end up in the XDG_DATA_DIRS
+               ;; By default intltool et al. would end up in the XDG_DATA_DIRS
                ;; settings of the wrappers created by the 'glib-or-gtk-wrap'
                ;; phase.  Fix that since we don't need these.
                (wrap #:inputs (fold alist-delete inputs
-                                    '("inkscape" "intltool" "glib:bin"))
+                                    '("intltool" "glib:bin"))
                      #:outputs outputs)))))))
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("gobject-introspection" ,gobject-introspection)
-       ("inkscape" ,inkscape)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
@@ -8636,10 +8619,12 @@ properties, screen resolution, and other GNOME parameters.")
        ("gdm" ,gdm)
        ("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("gjs" ,gjs)
+       ("gtk" ,gtk)
        ("gnome-autoar" ,gnome-autoar)
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("graphene" ,graphene)
        ("gst-plugins-base" ,gst-plugins-base)
        ("ibus" ,ibus)
        ("libcanberra" ,libcanberra)
@@ -8661,9 +8646,6 @@ properties, screen resolution, and other GNOME parameters.")
        ;; Missing propagation? See also: <https://bugs.gnu.org/27264>
        ("librsvg" ,librsvg)
        ("geoclue" ,geoclue)))
-    ;; CVE-2019-3820 was fixed before GNOME 3.34 was released, in upstream
-    ;; commit f0a7395b3006360905ccdc642982f9fc67378927.
-    (properties '((lint-hidden-cve . ("CVE-2019-3820"))))
     (synopsis "Desktop shell for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GnomeShell")
     (description
