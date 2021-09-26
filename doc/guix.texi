@@ -17158,6 +17158,10 @@ Data type representing the configuration for @code{rsync-service}.
 @item @code{package} (default: @var{rsync})
 @code{rsync} package to use.
 
+@item @code{address} (default: @code{#f})
+IP address on which @command{rsync} listens for incoming connections.
+If unspecified, it defaults to listening on all available addresses.
+
 @item @code{port-number} (default: @code{873})
 TCP port on which @command{rsync} listens for incoming connections.  If port
 is less than @code{1024} @command{rsync} needs to be started as the
