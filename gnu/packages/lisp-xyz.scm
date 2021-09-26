@@ -10768,8 +10768,8 @@ If features:
   (sbcl-package->ecl-package sbcl-sycamore))
 
 (define-public sbcl-funds
-  (let ((commit "6a93695a83d6e21f7ae1351f9b07ee01fa0b487f")
-        (revision "1"))
+  (let ((commit "39d425818876b898c20780a678803df506df8424")
+        (revision "2"))
     (package
       (name "sbcl-funds")
       (version (git-version "1" revision commit))
@@ -10781,7 +10781,7 @@ If features:
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0lhzghngihy83njcnhjiqg10lyw8zxfpmg6ly8sycd4vyiw2i249"))))
+          (base32 "13y1jhvnpzrs9daz6f3z67w6h2y21ggb10j3j4vnc5p3m8i7ps4p"))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Purely functional data structure library in Common Lisp")
       (description
