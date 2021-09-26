@@ -5108,16 +5108,16 @@ once.")
 (define-public gnome-sudoku
   (package
     (name "gnome-sudoku")
-    (version "3.34.1")
+    (version "40.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/"
+                           (version-major version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "025y85r4qqardivvwiwhbmgarziykdy224m8zlrq8b79zv82793b"))))
+         "18slsxifad5cjz4fqi818i66jc9b7kzgn01qxa0ra4y7wcqha4in"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -5126,8 +5126,7 @@ once.")
          (add-after 'unpack 'skip-gtk-update-icon-cache
            (lambda _
              (substitute* "build-aux/post_install.py"
-               (("gtk-update-icon-cache") (which "true")))
-             #t)))))
+               (("gtk-update-icon-cache") (which "true"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
