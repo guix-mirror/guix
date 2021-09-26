@@ -4,11 +4,9 @@ and not in the directories listed in $XDG_DATA_DIRS.  The latter includes
 /run/current-system/profile, and only then.
 
 Fixes <https://bugs.gnu.org/37831>.
-
-diff -ur a/daemon/gdm-session.c b/daemon/gdm-session.c
---- a/daemon/gdm-session.c	2019-09-25 10:40:24.000000000 -0400
-+++ b/daemon/gdm-session.c	2020-04-18 18:30:02.671856808 -0400
-@@ -348,24 +348,18 @@
+--- a/daemon/gdm-session.c	2021-07-23 15:16:15.164201000 +0000
++++ b/daemon/gdm-session.c	2021-09-26 08:18:58.730134555 +0000
+@@ -354,13 +354,12 @@
          GArray *search_array = NULL;
          char **search_dirs;
          int i;
@@ -19,22 +17,23 @@ diff -ur a/daemon/gdm-session.c b/daemon/gdm-session.c
                  DMCONFDIR "/Sessions/",
                  DATADIR "/gdm/BuiltInSessions/",
 -                DATADIR "/xsessions/",
-+                "/run/current-system/profile/share/xsessions/"
++                "/run/current-system/profile/share/xsessions/",
          };
  
          static const char *wayland_search_dir = DATADIR "/wayland-sessions/";
- 
+@@ -368,11 +367,6 @@
          search_array = g_array_new (TRUE, TRUE, sizeof (char *));
  
--        for (i = 0; system_data_dirs[i]; i++) {
--                gchar *dir = g_build_filename (system_data_dirs[i], "xsessions", NULL);
--                g_array_append_val (search_array, dir);
--        }
+         if (type == NULL || g_str_equal (type, "x11")) {
+-                for (i = 0; system_data_dirs[i]; i++) {
+-                        gchar *dir = g_build_filename (system_data_dirs[i], "xsessions", NULL);
+-                        g_array_append_val (search_array, dir);
+-                }
 -
-         g_array_append_vals (search_array, x_search_dirs, G_N_ELEMENTS (x_search_dirs));
+                 g_array_append_vals (search_array, x_search_dirs, G_N_ELEMENTS (x_search_dirs));
+         }
  
- #ifdef ENABLE_WAYLAND_SUPPORT
-@@ -373,16 +367,7 @@
+@@ -382,16 +376,7 @@
  #ifdef ENABLE_USER_DISPLAY_SERVER
                  g_array_prepend_val (search_array, wayland_search_dir);
  

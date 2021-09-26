@@ -8116,128 +8116,132 @@ library.")
 (define-public gdm
   (package
     (name "gdm")
-    (version "3.34.1")
+    (version "40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lyqvcwxhwxklbxn4xjswjzr6fhjix6h28mi9ypn34wdm9bzcpg8"))
-              (patches (search-patches "gdm-default-session.patch"))))
-    (build-system glib-or-gtk-build-system)
+                "1zbks7bwbys1pn7sk0aq0dbn09adx51amb441z4z4j28cvma3f5b"))
+              (patches
+               (search-patches
+                "gdm-default-session.patch"
+                "gdm-elogind-support.patch"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       `("--without-plymouth"
-         "--disable-systemd-journal"
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       ,#~(list
+           "-Dplymouth=disabled"
+           "-Dsystemd-journal=false"
 
-         ;; Using --with-initial-vt=7 allows GDM to run alongside TTY 1,
-         ;; instead of having to replace it (i.e., stopping the mingetty
-         ;; service for TTY 1 before starting GDM).
-         "--with-initial-vt=7"
+           ;; Using --with-initial-vt=7 allows GDM to run alongside TTY 1,
+           ;; instead of having to replace it (i.e., stopping the mingetty
+           ;; service for TTY 1 before starting GDM).
+           "-Dinitial-vt=7"
 
-         ;; Use '/etc/environment' for locale settings instead of the
-         ;; systemd-specific '/etc/locale.conf'.
-         "--with-lang-file=/etc/environment"
+           ;; Use elogind instead of systemd.
+           "-Dlogind-provider=elogind"
+           "-Dsystemdsystemunitdir=no"
+           "-Dsystemduserunitdir=no"
 
-         ,(string-append "--with-udevdir="
-                         (assoc-ref %outputs "out") "/lib/udev")
+           ;; Use '/etc/environment' for locale settings instead of the
+           ;; systemd-specific '/etc/locale.conf'.
+           "-Dlang-file=/etc/environment"
 
-         "--localstatedir=/var"
-         ,(string-append "--with-default-path="
-                         (string-join '("/run/setuid-programs"
-                                        "/run/current-system/profile/bin"
-                                        "/run/current-system/profile/sbin")
-                                      ":"))
-         ;; Put GDM in bindir so that glib-or-gtk-build-system wraps the
-         ;; XDG_DATA_DIRS so that it finds its schemas.
-         "--sbindir" ,(string-append (assoc-ref %outputs "out") "/bin"))
+           (string-append "-Dudev-dir=" #$output "/lib/udev")
+
+           "--localstatedir=/var"
+           (string-append "-Ddefault-path="
+                          (string-join '("/run/setuid-programs"
+                                         "/run/current-system/profile/bin"
+                                         "/run/current-system/profile/sbin")
+                                       ":"))
+           ;; Put GDM in bindir so that glib-or-gtk-build-system wraps the
+           ;; XDG_DATA_DIRS so that it finds its schemas.
+           "--sbindir" (string-append #$output "/bin"))
        #:phases
        (modify-phases %standard-phases
          (add-before
-          'configure 'pre-configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; We don't have <systemd/sd-daemon.h>.
-            (substitute* '("common/gdm-log.c"
-                           "daemon/gdm-server.c"
-                           "daemon/gdm-session-worker.c"
-                           "daemon/gdm-session-worker-job.c")
-              (("#include <systemd/sd-daemon\\.h>") ""))
-            ;; Use elogind for sd-login.
-            (substitute* '("common/gdm-common.c"
-                           "daemon/gdm-local-display-factory.c"
-                           "daemon/gdm-manager.c"
-                           "libgdm/gdm-user-switching.c")
-              (("#include <systemd/sd-login\\.h>")
-               "#include <elogind/sd-login.h>"))
-            ;; Check for elogind.
-            (substitute* '("configure")
-              (("libsystemd")
-               "libelogind"))
-            ;; Look for system-installed sessions in
-            ;; /run/current-system/profile/share.
-            (substitute* '("libgdm/gdm-sessions.c"
-                           "daemon/gdm-session.c"
-                           "daemon/gdm-display.c"
-                           "daemon/gdm-launch-environment.c")
-              (("DATADIR \"/x")
-               "\"/run/current-system/profile/share/x")
-              (("DATADIR \"/wayland")
-               "\"/run/current-system/profile/share/wayland")
-              (("DATADIR \"/gnome")
-               "\"/run/current-system/profile/share/gnome"))
-            (let ((propagate '("GDM_CUSTOM_CONF"
-                               "GDM_DBUS_DAEMON"
-                               "GDM_X_SERVER"
-                               "GDM_X_SESSION"
-                               ;; XXX: Remove this once GNOME Shell is
-                               ;; a dependency of GDM.
-                               "XDG_DATA_DIRS")))
-              (substitute* "daemon/gdm-session.c"
-                (("set_up_session_environment \\(self\\);")
-                 (apply string-append
-                        "set_up_session_environment (self);\n"
-                        (map (lambda (name)
-                               (string-append
-                                "gdm_session_set_environment_variable "
-                                "(self, \"" name "\","
-                                "g_getenv (\"" name "\"));\n"))
-                             propagate)))))
-            ;; Find the configuration file using an environment variable.
-            (substitute* '("common/gdm-settings.c")
-              (("GDM_CUSTOM_CONF")
-               (string-append "(g_getenv(\"GDM_CUSTOM_CONF\") != NULL"
-                              " ? g_getenv(\"GDM_CUSTOM_CONF\")"
-                              " : GDM_CUSTOM_CONF)")))
-            ;; Use service-supplied path to X.
-            (substitute* '("daemon/gdm-server.c")
-              (("\\(X_SERVER X_SERVER_ARG_FORMAT")
-               "(\"%s\" X_SERVER_ARG_FORMAT, g_getenv (\"GDM_X_SERVER\")"))
-            (substitute* '("daemon/gdm-wayland-session.c"
-                           "daemon/gdm-x-session.c")
-              (("\"dbus-daemon\"")
-               "g_getenv (\"GDM_DBUS_DAEMON\")")
-              (("X_SERVER")
-               "g_getenv (\"GDM_X_SERVER\")")
-              (("GDMCONFDIR \"/Xsession\"")
-               "g_getenv (\"GDM_X_SESSION\")"))
-            ;; Use an absolute path for GNOME Session.
-            (substitute* "daemon/gdm-launch-environment.c"
-              (("\"gnome-session\"")
-               (string-append "\"" (assoc-ref inputs "gnome-session")
-                              "/bin/gnome-session\"")))
-            ;; Do not automatically select the placeholder session.
-            (substitute* "daemon/gdm-session.c"
-              (("!g_str_has_suffix [(]base_name, \"\\.desktop\"[)]")
-               (string-append "!g_str_has_suffix (base_name, \".desktop\") || "
-                              "(g_strcmp0(search_dirs[i], \""
-                              (assoc-ref outputs "out") "/share/gdm/BuiltInSessions/"
-                              "\") == 0 && "
-                              "g_strcmp0(base_name, \"fail.desktop\") == 0)"))
-              (("g_error [(]\"GdmSession: no session desktop files installed, aborting\\.\\.\\.\"[)];")
-               "{ self->fallback_session_name = g_strdup(\"fail\"); goto out; }"))
-            #t))
+             'configure 'pre-configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; We don't have <systemd/sd-daemon.h>.
+             (substitute* '("common/gdm-log.c"
+                            "daemon/gdm-server.c"
+                            "daemon/gdm-session-worker.c"
+                            "daemon/gdm-session-worker-job.c")
+               (("#include <systemd/sd-daemon\\.h>") ""))
+             ;; Use elogind for sd-login.
+             (substitute* '("common/gdm-common.c"
+                            "daemon/gdm-local-display-factory.c"
+                            "daemon/gdm-manager.c"
+                            "libgdm/gdm-user-switching.c")
+               (("#include <systemd/sd-login\\.h>")
+                "#include <elogind/sd-login.h>"))
+             ;; Look for system-installed sessions in
+             ;; /run/current-system/profile/share.
+             (substitute* '("libgdm/gdm-sessions.c"
+                            "daemon/gdm-session.c"
+                            "daemon/gdm-display.c"
+                            "daemon/gdm-launch-environment.c")
+               (("DATADIR \"/x")
+                "\"/run/current-system/profile/share/x")
+               (("DATADIR \"/wayland")
+                "\"/run/current-system/profile/share/wayland")
+               (("DATADIR \"/gnome")
+                "\"/run/current-system/profile/share/gnome"))
+             (let ((propagate '("GDM_CUSTOM_CONF"
+                                "GDM_DBUS_DAEMON"
+                                "GDM_X_SERVER"
+                                "GDM_X_SESSION"
+                                ;; XXX: Remove this once GNOME Shell is
+                                ;; a dependency of GDM.
+                                "XDG_DATA_DIRS")))
+               (substitute* "daemon/gdm-session.c"
+                 (("set_up_session_environment \\(self\\);")
+                  (apply string-append
+                         "set_up_session_environment (self);\n"
+                         (map (lambda (name)
+                                (string-append
+                                 "gdm_session_set_environment_variable "
+                                 "(self, \"" name "\","
+                                 "g_getenv (\"" name "\"));\n"))
+                              propagate)))))
+             ;; Find the configuration file using an environment variable.
+             (substitute* '("common/gdm-settings.c")
+               (("GDM_CUSTOM_CONF")
+                (string-append "(g_getenv(\"GDM_CUSTOM_CONF\") != NULL"
+                               " ? g_getenv(\"GDM_CUSTOM_CONF\")"
+                               " : GDM_CUSTOM_CONF)")))
+             ;; Use service-supplied path to X.
+             (substitute* '("daemon/gdm-server.c")
+               (("\\(X_SERVER X_SERVER_ARG_FORMAT")
+                "(\"%s\" X_SERVER_ARG_FORMAT, g_getenv (\"GDM_X_SERVER\")"))
+             (substitute* '("daemon/gdm-wayland-session.c"
+                            "daemon/gdm-x-session.c")
+               (("\"dbus-daemon\"")
+                "g_getenv (\"GDM_DBUS_DAEMON\")")
+               (("X_SERVER")
+                "g_getenv (\"GDM_X_SERVER\")")
+               (("GDMCONFDIR \"/Xsession\"")
+                "g_getenv (\"GDM_X_SESSION\")"))
+             ;; Use an absolute path for GNOME Session.
+             (substitute* "daemon/gdm-launch-environment.c"
+               (("\"gnome-session\"")
+                (string-append "\"" (assoc-ref inputs "gnome-session")
+                               "/bin/gnome-session\"")))
+             ;; Do not automatically select the placeholder session.
+             (substitute* "daemon/gdm-session.c"
+               (("!g_str_has_suffix [(]base_name, \"\\.desktop\"[)]")
+                (string-append "!g_str_has_suffix (base_name, \".desktop\") || "
+                               "(g_strcmp0(search_dirs[i], \""
+                               (assoc-ref outputs "out") "/share/gdm/BuiltInSessions/"
+                               "\") == 0 && "
+                               "g_strcmp0(base_name, \"fail.desktop\") == 0)"))
+               (("g_error [(]\"GdmSession: no session desktop files installed, aborting\\.\\.\\.\"[)];")
+                "{ self->fallback_session_name = g_strdup(\"fail\"); goto out; }"))))
          ;; GDM requires that there be at least one desktop entry
          ;; file.  This phase installs a hidden one that simply
          ;; fails.  This enables users to use GDM with a
@@ -8259,8 +8263,7 @@ library.")
                       "Name=Fail\n"
                       "Comment=This session fails immediately.\n"
                       "NoDisplay=true\n"
-                      "Exec=false\n"))))
-               #t)))
+                      "Exec=false\n")))))))
          ;; GDM needs GNOME Session to run these applications.  We link
          ;; their autostart files in `share/gdm/greeter/autostart'
          ;; because GDM explicitly tells GNOME Session to look there.
@@ -8277,8 +8280,8 @@ library.")
                (with-directory-excursion autostart
                  (for-each (lambda (desktop)
                              (symlink desktop (basename desktop)))
-                           (find-files (string-append settings "/etc/xdg"))))
-               #t))))))
+                           (find-files
+                            (string-append settings "/etc/xdg"))))))))))
     (native-inputs
      `(("dconf" ,dconf)
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -8291,6 +8294,7 @@ library.")
      `(("accountsservice" ,accountsservice)
        ("check" ,check-0.14)            ;for testing
        ("elogind" ,elogind)
+       ("eudev" ,eudev)
        ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gtk+" ,gtk+)
