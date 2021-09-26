@@ -2689,16 +2689,16 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.34.0")
+    (version "40.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnome/sources/" name "/"
-                          (version-major+minor version)  "/"
+                          (version-major version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1bayr76aylawf2fhyjhv9zgk4kpv7ivrrmd80khb0h3h1wk092r8"))))
+        "11an29br55dp0b26kfqlrfxj19glfrmhcdpds2n1w9n04gq3pf7i"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2707,13 +2707,12 @@ on the GNOME Desktop with a single simple application.")
                       (let ((theme (assoc-ref inputs "gnome-backgrounds")))
                         (substitute* (find-files "schemas"
                                                  "\\.gschema\\.xml\\.in$")
-                          ;; Provide the correct file name of the default GNOME
-                          ;; background, 'adwaita-timed.xml'.
+                          ;; Provide the correct file name of the default
+                          ;; GNOME background, 'adwaita-timed.xml'.
                           (("@datadir@/backgrounds/gnome")
                            (string-append theme "/share/backgrounds/gnome"))
                           ;; Do not reference fonts, that may not exist.
-                          (("'Source Code Pro 10'") "'Monospace 11'"))
-                        #t))))))
+                          (("'Source Code Pro 10'") "'Monospace 11'"))))))))
     (inputs
      `(("glib" ,glib)
        ("gnome-backgrounds" ,gnome-backgrounds)))
