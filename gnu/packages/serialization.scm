@@ -34,10 +34,13 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -457,6 +460,53 @@ it a convenient format to store user input files.")
               (sha256
                (base32
                 "1180ln8blrb0mwzpcf78k49hlki6di65q77rsvglf83kfcyh4d7z"))))))
+
+(define-public json.sh
+  (let ((commit "0d5e5c77365f63809bf6e77ef44a1f34b0e05840") ;no releases
+        (revision "1"))
+    (package
+      (name "json.sh")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dominictarr/JSON.sh")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14lxvp5xbdk0dcwkjbdp098z1108j8z48zaibndh4i731kkcz43i"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan '(("JSON.sh" "bin/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests? (invoke "./all-tests.sh"))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (wrap-program (string-append (assoc-ref outputs "out") "/bin/JSON.sh")
+                 `("PATH" ":" prefix
+                   (,(string-join
+                     (map (lambda (in) (string-append (assoc-ref inputs in) "/bin"))
+                          '("grep" "sed"))
+                      ":"))))
+                #t)))))
+      (inputs
+       `(("bash-minimal" ,bash-minimal)
+         ("grep" ,grep)
+         ("sed" ,sed)))
+      (synopsis "Pipeable JSON parser written in shell")
+      (description
+        "This package provides a JSON parser written in shell, compatible with
+ash, Bash, Dash and Zsh.  Pipe JSON to it, and it traverses the JSON objects
+and prints out the path to the current object (as a JSON array) and then the
+object, without whitespace.")
+      (home-page "https://github.com/dominictarr/JSON.sh")
+      (license (list license:expat license:asl2.0))))) ;dual-licensed
 
 (define-public capnproto
   (package
