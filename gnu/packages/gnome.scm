@@ -919,6 +919,7 @@ tomorrow, the rest of the week and for special occasions.")
        ("libdazzle" ,libdazzle)
        ("libgdata" ,libgdata)
        ("libgfbgraph" ,gfbgraph)
+       ("libhandy" ,libhandy)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("librest" ,rest)
@@ -1284,13 +1285,30 @@ in the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n2jz9i8a42zwxx5h8j2gdy6q1vyydh4vl00r0al7w8jzdh24p44"))))
+                "1n2jz9i8a42zwxx5h8j2gdy6q1vyydh4vl00r0al7w8jzdh24p44"))
+              (patches
+               (search-patches
+                "gnome-online-miners-tracker-3.patch"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configure
+           (lambda _
+             (substitute* "configure.ac"
+               (("AX_CHECK_ENABLE_DEBUG.*")
+                ""))))
+         (add-after 'fix-configure 'autoreconf
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnome-online-accounts" ,gnome-online-accounts)
