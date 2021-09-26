@@ -2533,15 +2533,15 @@ GNOME Desktop.")
 (define-public gnome-keyring
   (package
     (name "gnome-keyring")
-    (version "3.34.0")
+    (version "40.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
-                                 (version-major+minor version)  "/"
+                                 (version-major version)  "/"
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0hqrsh5g9q9lm190f0m85q4nki8k4ng7wphl6qbccdry59aakkg9"))))
+               "0cdrlcw814zayhvlaxqs1sm9bqlfijlp22dzzd0g5zg2isq4vlm3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;48 of 603 tests fail because /var/lib/dbus/machine-id does
@@ -2592,7 +2592,7 @@ GNOME Desktop.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libxslt" ,libxslt) ;for documentation
-       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)))
     (propagated-inputs
      `(("gcr" ,gcr)))
