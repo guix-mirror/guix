@@ -385,6 +385,21 @@ LOG-DIRECTORY is specified, create log file within it."
                   (string-append log-directory "/" suite-name ".log")))
           (on-begin runner suite-name count))))
 
+    ;; The default behavior on 'test-end' is to only write a line if the test
+    ;; failed.  Arrange to also write a line on success.
+    (test-runner-on-test-end! runner
+      (let ((on-end (test-runner-on-test-end runner)))
+        (lambda (runner)
+          (let* ((kind      (test-result-ref runner 'result-kind))
+                 (results   (test-result-alist runner))
+                 (test-name (assq-ref results 'test-name)))
+            (unless (memq kind '(fail xpass))
+              (format (current-output-port) "~a: ~a~%"
+                      (string-upcase (symbol->string kind))
+                      test-name)))
+
+          (on-end runner))))
+
     ;; On 'test-end', display test results and exit with zero if and only if
     ;; there were no test failures.
     (test-runner-on-final! runner
