@@ -366,9 +366,25 @@ to actual keystrokes."
 ;;; Test helper.
 ;;;
 
-(define (system-test-runner)
-  "Return a SRFI-64 test runner that calls 'exit' upon 'test-end'."
+(define* (system-test-runner #:optional log-directory)
+  "Return a SRFI-64 test runner that calls 'exit' upon 'test-end'.  When
+LOG-DIRECTORY is specified, create log file within it."
   (let ((runner  (test-runner-simple)))
+    ;; Log to a file under LOG-DIRECTORY.
+    (test-runner-on-group-begin! runner
+      (let ((on-begin (test-runner-on-group-begin runner)))
+        (lambda (runner suite-name count)
+          (when log-directory
+            (catch 'system-error
+              (lambda ()
+                (mkdir log-directory))
+              (lambda args
+                (unless (= (system-error-errno args) EEXIST)
+                  (apply throw args))))
+            (set! test-log-to-file
+                  (string-append log-directory "/" suite-name ".log")))
+          (on-begin runner suite-name count))))
+
     ;; On 'test-end', display test results and exit with zero if and only if
     ;; there were no test failures.
     (test-runner-on-final! runner
