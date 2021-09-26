@@ -1393,57 +1393,62 @@ message bus.")
 (define-public accountsservice
   (package
     (name "accountsservice")
-    (version "0.6.50")
+    (version "0.6.55")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/"
-                           "accountsservice/accountsservice-" version ".tar.xz"))
+                           "accountsservice/accountsservice-"
+                           version ".tar.xz"))
        (sha256
-        (base32 "0jn7vg1z4vxnna0hl33hbcb4bb3zpilxc2vyclh24vx4vvsjhn83"))))
-    (build-system gnu-build-system)
+        (base32 "16wwd633jak9ajyr1f1h047rmd09fhf3kzjz6g5xjsz0lwcj8azz"))))
+    (build-system meson-build-system)
     (arguments
      '(#:tests? #f ; XXX: tests require DocBook 4.1.2
        #:configure-flags
        '("--localstatedir=/var"
-         "--disable-systemd"
-         "--enable-elogind")
+         "-Dsystemdsystemunitdir=/tmp/empty"
+         "-Dsystemd=false"
+         "-Delogind=true")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/cat
            (lambda _
              (substitute* "src/user.c"
-               (("/bin/cat") (which "cat")))
-             #t))
+               (("/bin/cat") (which "cat")))))
          (add-before
           'configure 'pre-configure
           (lambda* (#:key inputs #:allow-other-keys)
-            ;; Don't try to create /var/lib/AccountsService.
-            (substitute* "src/Makefile.in"
-              (("\\$\\(MKDIR_P\\).*/lib/AccountsService.*") "true"))
+            (substitute* "meson_post_install.py"
+              (("in dst_dirs") "in []"))
             (let ((shadow (assoc-ref inputs "shadow")))
               (substitute* '("src/user.c" "src/daemon.c")
-                (("/usr/sbin/usermod") (string-append shadow "/sbin/usermod"))
-                (("/usr/sbin/useradd") (string-append shadow "/sbin/useradd"))
-                (("/usr/sbin/userdel") (string-append shadow "/sbin/userdel"))
-                (("/usr/bin/passwd")   (string-append shadow "/bin/passwd"))
-                (("/usr/bin/chage")    (string-append shadow "/bin/chage"))))
-            #t)))))
+                (("/usr/sbin/usermod")
+                 (string-append shadow "/sbin/usermod"))
+                (("/usr/sbin/useradd")
+                 (string-append shadow "/sbin/useradd"))
+                (("/usr/sbin/userdel")
+                 (string-append shadow "/sbin/userdel"))
+                (("/usr/bin/passwd")
+                 (string-append shadow "/bin/passwd"))
+                (("/usr/bin/chage")
+                 (string-append shadow "/bin/chage")))))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("elogind" ,elogind)
+     `(("dbus" ,dbus)
+       ("elogind" ,elogind)
        ("polkit" ,polkit)
        ("shadow" ,shadow)))
     (home-page "https://www.freedesktop.org/wiki/Software/AccountsService/")
     (synopsis "D-Bus interface for user account query and manipulation")
     (description
-     "The AccountService project provides a set of D-Bus interfaces for querying
-and manipulating user account information and an implementation of these
-interfaces, based on the useradd, usermod and userdel commands.")
+     "The AccountService project provides a set of D-Bus interfaces for
+querying and manipulating user account information and an implementation of
+these interfaces, based on the useradd, usermod and userdel commands.")
     (license license:gpl3+)))
 
 (define-public libmbim
