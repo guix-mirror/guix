@@ -7377,15 +7377,15 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.34.2")
+    (version "40.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0b8bz5kvs7rlwvqsg87cf6jhrrj95vgd1l235mjx8rip35ipfvrd"))))
+                "0bmd6p9qcwx0hv0y2bp33xjfaw4lyfkl55r0qn2cm04465riddny"))))
     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
     ;; versions of cogl and clutter.  As a result, many of the inputs,
     ;; propagated-inputs, and configure flags used in cogl and clutter are
@@ -7402,7 +7402,7 @@ to display dialog boxes from the commandline and shell scripts.")
              ;; Otherwise, the RUNPATH will lack the final path component.
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib/mutter-5")
+                            (assoc-ref %outputs "out") "/lib/mutter-8")
 
              ;; The following flags are needed for the bundled clutter
              (string-append "-Dxwayland_path="
@@ -7413,20 +7413,13 @@ to display dialog boxes from the commandline and shell scripts.")
              (string-append "-Dopengl_libname="
                             (assoc-ref %build-inputs "mesa")
                             "/lib/libGL.so"))
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-build-with-mesa-20
-                    (lambda _
-                      ;; Mimic upstream commit a444a4c5f58ea516ad for
-                      ;; compatibility with Mesa 20.  Remove for 3.36.
-                      (substitute* '("src/backends/meta-egl-ext.h"
-                                     "src/backends/meta-egl.c"
-                                     "src/backends/meta-egl.h")
-                        (("#include <EGL/eglext\\.h>" all)
-                         (string-append all "\n#include <EGL/eglmesaext.h>")))
-                      (substitute* "cogl/cogl/meson.build"
-                        (("#include <EGL/eglext\\.h>" all)
-                         (string-append all "\\n#include <EGL/eglmesaext.h>")))
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-udev-dir
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "PKG_CONFIG_UDEV_UDEVDIR"
+                     (string-append (assoc-ref outputs "out")
+                                    "/lib/udev")))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -7455,6 +7448,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("libxext" ,libxext)
        ("libxfixes" ,libxfixes)
        ("libxkbcommon" ,libxkbcommon)
+       ("libxml2" ,libxml2)
        ("libxrandr" ,libxrandr)
        ("mesa" ,mesa)
        ("pango" ,pango)
@@ -7464,6 +7458,7 @@ to display dialog boxes from the commandline and shell scripts.")
      `(("elogind" ,elogind)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("graphene" ,graphene)
        ("libcanberra-gtk" ,libcanberra)
        ("libgudev" ,libgudev)
        ("libice" ,libice)
@@ -7472,7 +7467,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("libxkbfile" ,libxkbfile)
        ("libxrandr" ,libxrandr)
        ("libxtst" ,libxtst)
-       ("pipewire" ,pipewire)
+       ("pipewire" ,pipewire-0.3)
        ("startup-notification" ,startup-notification)
        ("upower-glib" ,upower)
        ("xkeyboard-config" ,xkeyboard-config)
