@@ -9710,17 +9710,17 @@ existing databases over the internet.")
 (define-public gnome-tweaks
   (package
     (name "gnome-tweaks")
-    (version "3.34.1")
+    (version "40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweaks/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   "gnome-tweaks-" version ".tar.xz"))
               (patches
                (list (search-patch "gnome-tweaks-search-paths.patch")))
               (sha256
                (base32
-                "19y62dj4n5i6v4zpjllxl51dch6ndy8xs45v5aqmmq9xyfrqk5yq"))))
+                "0sn3xsjhnini0f2dyi1ymrr3fb8mi7w5j5lsyw11rc5h67h3ypzr"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -9734,8 +9734,7 @@ existing databases over the internet.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "meson-postinstall.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'install 'wrap
            (@@ (guix build python-build-system) wrap))
          (add-after 'wrap 'wrap-gi-typelib
@@ -9743,10 +9742,10 @@ existing databases over the internet.")
              (let ((out               (assoc-ref outputs "out"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
                (wrap-program (string-append out "/bin/gnome-tweaks")
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-             #t)))))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnome-desktop" ,gnome-desktop)
