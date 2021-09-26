@@ -5,7 +5,7 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -757,35 +757,38 @@ use than similar tools like @command{mtrace}.")
     (license license:gpl2+)))
 
 (define-public mspdebug
-  (package
-    (name "mspdebug")
-    (version "0.25")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/dlbeer/mspdebug")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "0prgwb5vx6fd4bj12ss1bbb6axj2kjyriyjxqrzd58s5jyyy8d3c"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                         ; no test suite
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))              ; no configure script
-       #:make-flags
-       (list (string-append "CC=" ,(cc-for-target))
-             "INSTALL=install"
-             (string-append "PREFIX=" %output))))
-  (inputs
-     `(("libusb-compat" ,libusb-compat)
-       ("readline" ,readline)))
-    (synopsis "Debugging tool for MSP430 MCUs")
-    (description "MspDebug supports FET430UIF, eZ430, RF2500 and Olimex
+  ;; Last official release was 24 July 2017
+  (let ((commit "4c4d94e43bc4a18ecf82070ff81cd38dd5641e3b")
+        (revision "0"))
+    (package
+      (name "mspdebug")
+      (version (git-version "0.25" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dlbeer/mspdebug")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "1lgw1dsc1aglyja610ichadvgs5b0df3wlarinczb0ykf431gjln"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                         ; no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))              ; no configure script
+         #:make-flags
+         (list (string-append "CC=" ,(cc-for-target))
+               "INSTALL=install"
+               (string-append "PREFIX=" %output))))
+      (inputs
+       `(("libusb-compat" ,libusb-compat)
+         ("readline" ,readline)))
+      (synopsis "Debugging tool for MSP430 MCUs")
+      (description "MspDebug supports FET430UIF, eZ430, RF2500 and Olimex
 MSP430-JTAG-TINY programmers, as well as many other compatible
 devices.  It can be used as a proxy for gdb or as an independent
 debugger with support for programming, disassembly and reverse
 engineering.")
-    (home-page "https://github.com/dlbeer/mspdebug")
-    (license license:gpl2+)))
+      (home-page "https://github.com/dlbeer/mspdebug")
+      (license license:gpl2+))))
