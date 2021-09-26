@@ -821,7 +821,7 @@ visual language \"Material Design\".")
 (define-public font-borg-sans-mono
   (package
     (name "font-borg-sans-mono")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -830,7 +830,7 @@ visual language \"Material Design\".")
              "/releases/download/v" version "/borg-sans-mono.zip"))
        (sha256
         (base32
-         "1xxakd9nfb8wz76rh0gbd69gh0mlqs2453g0j516xgxn8bxip2yj"))))
+         "0q16gw3ry9hpgbl2636qq00ap59xyx15jf3gzvx2ybz3gja164c4"))))
     (build-system font-build-system)
     (home-page "https://github.com/charje/borg-sans-mono")
     (synopsis "The Borg Sans Mono font")
