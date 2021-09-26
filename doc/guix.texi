@@ -27656,6 +27656,9 @@ The interface name for the VPN.
 @item @code{addresses} (default: @code{'("10.0.0.1/32")})
 The IP addresses to be assigned to the above interface.
 
+@item @code{port} (default: @code{51820})
+The port on which to listen for incoming connections.
+
 @item @code{private-key} (default: @code{"/etc/wireguard/private.key"})
 The private key file for the interface.  It is automatically generated if
 the file does not exist.
