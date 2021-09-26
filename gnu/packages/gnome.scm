@@ -1969,12 +1969,10 @@ relationship modeling, and network diagrams.  The program supports various file
 formats like PNG, SVG, PDF and EPS.")
       (license license:gpl2+))))
 
-;; This is the unstable release, but it is required for the current stable
-;; release of gvfs (1.38.1).
 (define-public libgdata
   (package
     (name "libgdata")
-    (version "0.17.9")
+    (version "0.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1982,29 +1980,25 @@ formats like PNG, SVG, PDF and EPS.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0fj54yqxdapdppisqm1xcyrpgcichdmipq0a0spzz6009ikzgi45"))))
-    (build-system gnu-build-system)
+                "1iq4d1qy0vkmy29xvr13dgz4pxvn5v3yi2swryld0ajinvp951fx"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-home-for-tests
            (lambda _
-             (setenv "HOME" "/tmp")))
-         (add-before 'check 'disable-failing-tests
-           (lambda _
-             ;; The PicasaWeb API tests fail with gnome-online-accounts@3.24.2.
-             ;; They have been removed in libgdata 0.17.6, so just do the same.
-             (substitute* "gdata/tests/Makefile"
-               (("picasaweb\\$\\(EXEEXT\\) ") "")))))))
+             (setenv "HOME" "/tmp"))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("uhttpmock" ,uhttpmock)))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
-       ("glib-networking" ,glib-networking)))
+       ("glib-networking" ,glib-networking)
+       ("vala" ,vala)))
     (propagated-inputs
      `(("gcr" ,gcr)
        ("glib" ,glib)
