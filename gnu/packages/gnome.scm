@@ -865,17 +865,17 @@ tomorrow, the rest of the week and for special occasions.")
 (define-public gnome-photos
   (package
     (name "gnome-photos")
-    (version "3.34.2")
+    (version "40.0")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "mirror://gnome/sources/" name "/"
-                       (version-major+minor version) "/"
+                       (version-major version) "/"
                        name "-" version ".tar.xz"))
        (sha256
         (base32
-         "06ml5sf8xhpan410msqz085hmfc7082d368pb82yq646y9pcfn9w"))))
+         "1bzi79plw6ji6qlckhxnwfnswy6jpnhzmmyanml2i2xg73hp6bg0"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -891,8 +891,8 @@ tomorrow, the rest of the week and for special occasions.")
              (let*
                  ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-photos")
-                 `("GRL_PLUGIN_PATH" = (,(getenv "GRL_PLUGIN_PATH")))))
-             #t)))))
+                 `("GRL_PLUGIN_PATH" =
+                   (,(getenv "GRL_PLUGIN_PATH"))))))))))
     (native-inputs
      `(("dbus" ,dbus)
        ("desktop-file-utils" ,desktop-file-utils)
