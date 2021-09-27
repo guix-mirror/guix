@@ -9316,6 +9316,7 @@ world.")
        ("nautilus" ,nautilus)
        ("simple-scan" ,simple-scan)
        ("totem" ,totem)
+       ("tracker-miners" ,tracker-miners)
        ("yelp" ,yelp)
        ;; Others
        ("hicolor-icon-theme" ,hicolor-icon-theme)
