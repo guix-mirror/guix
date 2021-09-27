@@ -35,7 +35,7 @@
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1113,6 +1113,39 @@ and many external plugins.")
         ("python-pluggy" ,python2-pluggy-bootstrap)
         ("python-py" ,python2-py)
         ("python-wcwidth" ,python2-wcwidth))))))
+
+(define-public python-pytest-assume
+  (package
+    (name "python-pytest-assume")
+    (version "2.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-assume" version))
+       (sha256
+        (base32 "0zilqsy9fcjr6l2f9qzfxpkp40h24csnjm5mifhpmzb0fr9r0glq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/astraw38/pytest-assume")
+    (synopsis "Pytest plugin that allows multiple failures per test")
+
+    (description "This package provides a Pytest plugin that allows multiple
+failures per test.  This is a fork from pytest-expect which includes the
+following improvements:
+@itemize
+@item showlocals support (the Pytest option)
+@item global usage support (a fixture is not required)
+@item output refinements and tweaks.
+@end itemize")
+    (license license:expat)))
 
 (define-public python-pytest-cov
   (package
