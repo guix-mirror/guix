@@ -27445,6 +27445,27 @@ symbolic expressions in pure Python using the technique of logical unification."
 cons cells in Python.")
     (license license:lgpl3+)))
 
+(define-public python-etuples
+  (package
+    (name "python-etuples")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "etuples" version))
+       (sha256
+        (base32
+         "0jhfyp177v37rl0i7wqfx7q6s5qkz027hl283d1x8d0vm3w0zqc8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cons" ,python-cons)
+       ("python-multipledispatch" ,python-multipledispatch)))
+    (home-page "https://github.com/pythological/etuples")
+    (synopsis "S-expressions in Python")
+    (description
+     "This library implements eval'able S-expression in Python using tuple-like objects.")
+    (license license:asl2.0)))
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
