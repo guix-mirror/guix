@@ -4270,7 +4270,7 @@ ungapped alignment formats.")
     (home-page "https://github.com/jokergoo/simplifyEnrichment")
     (synopsis "Simplify functional enrichment results")
     (description "This package provides a new clustering algorithm, binary
-cut, for clustering similarity matrices of functional terms is implemeted in
+cut, for clustering similarity matrices of functional terms is implemented in
 this package.  It also provides functionalities for visualizing, summarizing
 and comparing the clusterings.")
     (license license:expat)))
