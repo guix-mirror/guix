@@ -898,7 +898,7 @@ partition."
                 (format #f "Unable to create partition ~a~%" name)))))))))
 
 (define (force-user-partitions-formatting user-partitions)
-  "Set the NEED-FORMATING? fields to #t on all <user-partition> records of
+  "Set the NEED-FORMATTING? fields to #t on all <user-partition> records of
 USER-PARTITIONS list and return the updated list."
   (map (lambda (p)
          (user-partition
@@ -1177,7 +1177,7 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
 
 (define (format-user-partitions user-partitions)
   "Format the <user-partition> records in USER-PARTITIONS list with
-NEED-FORMATING? field set to #t."
+NEED-FORMATTING? field set to #t."
   (for-each
    (lambda (user-partition)
      (let* ((need-formatting?
