@@ -16111,7 +16111,16 @@ to Python.")
           "1d70vwam9gjhx7fqzsa03x7lc6ivcqki5r9pk8m7rslmb7pagmbh"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; The tests are not distributed
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests")))))))
+    (native-inputs
+     (list
+       python-pytest
+       python-pytest-asyncio))
     (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)))
     (home-page "https://github.com/graphql-python/graphql-relay-py")
