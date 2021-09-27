@@ -2742,9 +2742,6 @@ retried.")
  allowing you to declaratively define \"match\" rules.")
       (license license:bsd-3))))
 
-(define-public python2-pyhamcrest
-  (package-with-python2 python-pyhamcrest))
-
 (define-public unittest-cpp
   (package
     (name "unittest-cpp")
