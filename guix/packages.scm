@@ -1770,7 +1770,7 @@ This is an internal procedure."
                          (return drv))
                         (grafts
                          (mlet %store-monad ((guile (package->derivation
-                                                     (default-guile)
+                                                     (guile-for-grafts)
                                                      system #:graft? #f)))
                            (graft-derivation* drv grafts
                                               #:system system
@@ -1793,7 +1793,7 @@ system identifying string)."
                          (return drv))
                         (grafts
                          (mlet %store-monad ((guile (package->derivation
-                                                     (default-guile)
+                                                     (guile-for-grafts)
                                                      system #:graft? #f)))
                            (graft-derivation* drv grafts
                                               #:system system
