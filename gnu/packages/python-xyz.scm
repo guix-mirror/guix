@@ -16449,21 +16449,19 @@ to Python.")
 (define-public python-graphql-relay
   (package
     (name "python-graphql-relay")
-    (version "0.4.5")
+    (version "3.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "graphql-relay" version))
         (sha256
          (base32
-          "1nv5dxcj59zv31qvl8bd142njmxcmymny2dz3br1l2cpbljbf5i7"))))
+          "1d70vwam9gjhx7fqzsa03x7lc6ivcqki5r9pk8m7rslmb7pagmbh"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; The tests are not distributed
     (propagated-inputs
-     `(("python-graphql-core" ,python-graphql-core)
-       ("python-promise" ,python-promise)
-       ("python-six" ,python-six)))
+     `(("python-graphql-core" ,python-graphql-core)))
     (home-page "https://github.com/graphql-python/graphql-relay-py")
     (synopsis "Relay implementation for Python")
     (description
