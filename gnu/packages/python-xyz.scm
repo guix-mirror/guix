@@ -27381,6 +27381,25 @@ objects in the combined source, and how they define or use each other.  The
 graph can be output for rendering by GraphViz or yEd.")
     (license license:gpl2)))
 
+(define-public python-multipledispatch
+  (package
+    (name "python-multipledispatch")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multipledispatch" version))
+       (sha256
+        (base32
+         "1slblghfjg9fdi9zpd7gmrkvfbv20nrdgnrymcnbky8bzm8i9ax7"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page "https://github.com/mrocklin/multipledispatch/")
+    (synopsis "Multiple dispatch for Python based on pattern matching")
+    (description "This library provides an efficient mechanism for overloading
+function implementations based on the types of the arguments.")
+    (license license:bsd-3)))
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
