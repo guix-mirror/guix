@@ -20272,7 +20272,7 @@ configuration.
 @item @code{ident-file} (default: @code{%default-postgres-ident})
 Filename or G-expression for the user name mapping configuration.
 
-@item @code{socket-directory} (default: @code{#false})
+@item @code{socket-directory} (default: @code{"/var/run/postgresql"})
 Specifies the directory of the Unix-domain socket(s) on which PostgreSQL
 is to listen for connections from client applications. If set to
 @code{""} PostgreSQL does not listen on any Unix-domain sockets, in
