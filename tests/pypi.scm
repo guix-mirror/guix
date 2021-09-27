@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
-(define test-json
+(define test-json-1
   "{
   \"info\": {
     \"version\": \"1.0.0\",
@@ -51,6 +52,34 @@
         \"packagetype\": \"sdist\"
       }, {
         \"url\": \"https://example.com/foo-1.0.0-py2.py3-none-any.whl\",
+        \"packagetype\": \"bdist_wheel\"
+      }
+    ]
+  }
+}")
+
+(define test-json-2
+  "{
+  \"info\": {
+    \"version\": \"1.0.0\",
+    \"name\": \"foo-99\",
+    \"license\": \"GNU LGPL\",
+    \"summary\": \"summary\",
+    \"home_page\": \"http://example.com\",
+    \"classifiers\": [],
+    \"download_url\": \"\"
+  },
+  \"urls\": [],
+  \"releases\": {
+    \"1.0.0\": [
+      {
+        \"url\": \"https://example.com/foo-99-1.0.0.egg\",
+        \"packagetype\": \"bdist_egg\"
+      }, {
+        \"url\": \"https://example.com/foo-99-1.0.0.tar.gz\",
+        \"packagetype\": \"sdist\"
+      }, {
+        \"url\": \"https://example.com/foo-99-1.0.0-py2.py3-none-any.whl\",
         \"packagetype\": \"bdist_wheel\"
       }
     ]
@@ -147,6 +176,13 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                     (uri (list "https://bitheap.org/cram/cram-0.7.tar.gz"
                                (pypi-uri "cram" "0.7"))))))))
 
+(test-equal "guix-package->pypi-name, honor 'upstream-name'"
+  "bar-3"
+  (guix-package->pypi-name
+   (dummy-package "foo"
+                  (properties
+                   '((upstream-name . "bar-3"))))))
+
 (test-equal "specification->requirement-name"
   '("Fizzy" "PickyThing" "SomethingWithMarker" "requests" "pip")
   (map specification->requirement-name test-specifications))
@@ -198,8 +234,8 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                  (lambda (url . rest)
                    (match url
                      ("https://pypi.org/pypi/foo/json"
-                      (values (open-input-string test-json)
-                              (string-length test-json)))
+                      (values (open-input-string test-json-1)
+                              (string-length test-json-1)))
                      ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
                      (_ (error "Unexpected URL: " url)))))
                 (match (pypi->guix-package "foo")
@@ -264,8 +300,8 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                (lambda (url . rest)
                  (match url
                    ("https://pypi.org/pypi/foo/json"
-                    (values (open-input-string test-json)
-                            (string-length test-json)))
+                    (values (open-input-string test-json-1)
+                            (string-length test-json-1)))
                    ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
                    (_ (error "Unexpected URL: " url)))))
               ;; Not clearing the memoization cache here would mean returning the value
@@ -317,8 +353,8 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                (lambda (url . rest)
                  (match url
                    ("https://pypi.org/pypi/foo/json"
-                    (values (open-input-string test-json)
-                            (string-length test-json)))
+                    (values (open-input-string test-json-1)
+                            (string-length test-json-1)))
                    ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
                    (_ (error "Unexpected URL: " url)))))
               ;; Not clearing the memoization cache here would mean returning the value
@@ -335,6 +371,62 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                                ('base32
                                 (? string? hash)))))
                    ('build-system 'python-build-system)
+                   ('home-page "http://example.com")
+                   ('synopsis "summary")
+                   ('description "summary")
+                   ('license 'license:lgpl2.0))
+                 (string=? (bytevector->nix-base32-string
+                            test-source-hash)
+                           hash))
+                (x
+                 (pk 'fail x #f))))))
+
+(test-assert "pypi->guix-package, package name contains \"-\" followed by digits"
+  ;; Replace network resources with sample data.
+  (mock ((guix import utils) url-fetch
+         (lambda (url file-name)
+           (match url
+             ("https://example.com/foo-99-1.0.0.tar.gz"
+              (begin
+                ;; Unusual requires.txt location should still be found.
+                (mkdir-p "foo-99-1.0.0/src/bizarre.egg-info")
+                (with-output-to-file "foo-99-1.0.0/src/bizarre.egg-info/requires.txt"
+                  (lambda ()
+                    (display test-requires.txt)))
+                (parameterize ((current-output-port (%make-void-port "rw+")))
+                  (system* "tar" "czvf" file-name "foo-99-1.0.0/"))
+                (delete-file-recursively "foo-99-1.0.0")
+                (set! test-source-hash
+                  (call-with-input-file file-name port-sha256))))
+             ("https://example.com/foo-99-1.0.0-py2.py3-none-any.whl" #f)
+             (_ (error "Unexpected URL: " url)))))
+        (mock ((guix http-client) http-fetch
+               (lambda (url . rest)
+                 (match url
+                   ("https://pypi.org/pypi/foo-99/json"
+                    (values (open-input-string test-json-2)
+                            (string-length test-json-2)))
+                   ("https://example.com/foo-99-1.0.0-py2.py3-none-any.whl" #f)
+                   (_ (error "Unexpected URL: " url)))))
+              (match (pypi->guix-package "foo-99")
+                (('package
+                   ('name "python-foo-99")
+                   ('version "1.0.0")
+                   ('source ('origin
+                              ('method 'url-fetch)
+                              ('uri ('pypi-uri "foo-99" 'version))
+                              ('sha256
+                               ('base32
+                                (? string? hash)))))
+                   ('properties ('quote (("upstream-name" . "foo-99"))))
+                   ('build-system 'python-build-system)
+                   ('propagated-inputs
+                    ('quasiquote
+                     (("python-bar" ('unquote 'python-bar))
+                      ("python-foo" ('unquote 'python-foo)))))
+                   ('native-inputs
+                    ('quasiquote
+                     (("python-pytest" ('unquote 'python-pytest)))))
                    ('home-page "http://example.com")
                    ('synopsis "summary")
                    ('description "summary")

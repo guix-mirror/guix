@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,12 +164,13 @@ package on PyPI."
     (hyphen-package-name->name+version
      (basename (file-sans-extension url))))
 
-  (match (and=> (package-source package) origin-uri)
-    ((? string? url)
-     (url->pypi-name url))
-    ((lst ...)
-     (any url->pypi-name lst))
-    (#f #f)))
+  (or (assoc-ref (package-properties package) 'upstream-name)
+      (match (and=> (package-source package) origin-uri)
+        ((? string? url)
+         (url->pypi-name url))
+        ((lst ...)
+         (any url->pypi-name lst))
+        (#f #f))))
 
 (define (wheel-url->extracted-directory wheel-url)
   (match (string-split (basename wheel-url) #\-)
@@ -423,6 +425,11 @@ return the unaltered list of upstream dependency names."
                         description license)
   "Return the `package' s-expression for a python package with the given NAME,
 VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
+  (define (maybe-upstream-name name)
+    (if (string-match ".*\\-[0-9]+" (pk name))
+        `((properties ,`'(("upstream-name" . ,name))))
+        '()))
+  
   (call-with-temporary-output-file
    (lambda (temp port)
      (and (url-fetch source-url temp)
@@ -461,6 +468,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                       (sha256
                        (base32
                         ,(guix-hash-url temp)))))
+                   ,@(maybe-upstream-name name)
                    (build-system python-build-system)
                    ,@(maybe-inputs required-inputs 'propagated-inputs)
                    ,@(maybe-inputs native-inputs 'native-inputs)
