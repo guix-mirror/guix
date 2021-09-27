@@ -6229,7 +6229,7 @@ communicate with Microsoft Azure Storage services.")
     (home-page "https://github.com/scrapy/w3lib")
     (synopsis "Python library of web-related functions")
     (description
-     "This is a Python library of web-related functions, such as: remove comments,
-or tags from HTML snippets, extract base url from HTML snippets, translate entites
-on HTML strings, among other things.")
+     "This is a Python library of web-related functions, such as: remove
+comments, or tags from HTML snippets, extract base url from HTML snippets,
+translate entities on HTML strings, among other things.")
     (license license:bsd-3)))
