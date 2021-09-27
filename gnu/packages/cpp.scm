@@ -1309,3 +1309,29 @@ of reading and writing XML.")
     (description "Jsonnet is a templating language extending JSON
 syntax with variables, conditions, functions and more.")
     (license license:asl2.0)))
+
+(define-public simdjson
+  (package
+    (name "simdjson")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/simdjson/simdjson")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08qpsw0i8481xlyyghzyszb1vh4c8i7krzzghvr9m4yg394vf6zn"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; tests require downloading dependencies
+       #:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (synopsis "JSON parser for C++ using SIMD instructions")
+    (description
+     "The simdjson library uses commonly available SIMD instructions and
+microparallel algorithms to implement a strict JSON parser with UTF-8
+validation.")
+    (home-page "https://github.com/simdjson/simdjson")
+    (license license:asl2.0)))
