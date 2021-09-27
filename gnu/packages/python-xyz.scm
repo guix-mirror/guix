@@ -27400,6 +27400,27 @@ graph can be output for rendering by GraphViz or yEd.")
 function implementations based on the types of the arguments.")
     (license license:bsd-3)))
 
+(define-public python-logical-unification
+  (package
+    (name "python-logical-unification")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "logical-unification" version))
+       (sha256
+        (base32
+         "0j57953hi7kg2rl0163vzjzsvzdyjimnklhx6idf5vaqqf1d3p1j"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-multipledispatch" ,python-multipledispatch)
+       ("python-toolz" ,python-toolz)))
+    (home-page "https://github.com/pythological/unification/")
+    (synopsis "Logical unification in Python for solving symbolic expressions")
+    (description "This library provides algorithms and data types for solving
+symbolic expressions in pure Python using the technique of logical unification.")
+    (license license:bsd-3)))
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
