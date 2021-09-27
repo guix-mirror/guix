@@ -12865,7 +12865,7 @@ sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
      `(("dbus" ,dbus)))
     (home-page "https://github.com/diwic/dbus-rs")
     (synopsis "Rust bindings to D-Bus")
-    (description "This package provies Rust bindings to D-Bus.")
+    (description "This package provides Rust bindings to D-Bus.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-dbus-0.6
