@@ -380,29 +380,29 @@ historical data.")
 (define-public python2-whisper
   (package-with-python2 python-whisper))
 
-(define-public python2-carbon
+(define-public python-carbon
   (package
-    (name "python2-carbon")
-    (version "1.0.2")
+    (name "python-carbon")
+    (version "1.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "carbon" version))
        (sha256
         (base32
-         "142smpmgbnjinvfb6s4ijazish4vfgzyd8zcmdkh55y051fkixkn"))))
+         "1wb91fipk1niciffq5xwqbh8g7rl7ghdam4m97cjbig12i5qr4cm"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2   ; only supports Python 2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ;; Don't install to /opt
          (add-after 'unpack 'do-not-install-to-/opt
            (lambda _ (setenv "GRAPHITE_NO_PREFIX" "1") #t)))))
     (propagated-inputs
-     `(("python2-whisper" ,python2-whisper)
-       ("python2-configparser" ,python2-configparser)
-       ("python2-txamqp" ,python2-txamqp)))
+     `(("python-cachetools" ,python-cachetools)
+       ("python-txamqp" ,python-txamqp)
+       ("python-urllib3" ,python-urllib3)
+       ("python-whisper" ,python-whisper)))
     (home-page "http://graphiteapp.org/")
     (synopsis "Backend data caching and persistence daemon for Graphite")
     (description "Carbon is a backend data caching and persistence daemon for
@@ -484,9 +484,6 @@ service.
 Metrics can be exposed through a standalone web server, or through Twisted,
 WSGI and the node exporter textfile collector.")
     (license license:asl2.0)))
-
-(define-public python2-prometheus-client
-  (package-with-python2 python-prometheus-client))
 
 (define-public go-github-com-prometheus-node-exporter
   (package
