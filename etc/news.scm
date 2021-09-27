@@ -15,6 +15,7 @@
 ;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -22,6 +23,35 @@
 
 (channel-news
  (version 0)
+(entry (commit "a2324d8b56eabf8117bca220a507cc791edffd2e")
+        (title
+         (en "Guix Home is a part of GNU Guix")
+         (ru "Guix Home теперь поставляется в составе GNU Guix"))
+        (body
+         (en "Guix Home splitted out from rde project and now is a part of
+Guix proper.  The new @command{guix home} with its actions allows users to
+manage their packages and configurations (aka. dotfiles) in a declarative way,
+similar to how many people manage their system with @command{guix system}.
+
+Take a look at available actions and arguments:
+@example
+guix home --help
+@end example
+
+See @command{info \"(guix) Home Configuration\"} for more information.")
+         (ru "Guix Home отделился от проекта rde и теперь является частью
+Guix.  Новая команда @command{guix home} даёт возможность пользователям
+управлять их пакетами и конфигурациями (дотфайлами) для них в декларативном
+стиле, аналогично тому, как многие люди управляют своими системами с помощью
+@command{guix system}.
+
+Чтобы получить список доступных действий и аргументов:
+@example
+guix home --help
+@end example
+
+Смотрите @command{info \"(guix) Home Configuration\"} для получения более
+детальных сведений.")))
 
  (entry (commit "5b32ad4f6f555d305659cee825879df075b06331")
         (title

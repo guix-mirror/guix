@@ -958,13 +958,23 @@ itself."
                  #:guile-for-build
                  guile-for-build))
 
+  (define *home-modules*
+    (scheme-node "guix-home"
+                 `((gnu home)
+                   (gnu home-services)
+                   ,@(scheme-modules* source "gnu/home-services"))
+                 (list *core-package-modules* *package-modules*
+                       *extra-modules* *core-modules* *system-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
+
   (define *cli-modules*
     (scheme-node "guix-cli"
                  (append (scheme-modules* source "/guix/scripts")
                          `((gnu ci)))
                  (list *core-modules* *extra-modules*
                        *core-package-modules* *package-modules*
-                       *system-modules*)
+                       *system-modules* *home-modules*)
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
@@ -1012,6 +1022,7 @@ itself."
                                        *cli-modules*
                                        *system-test-modules*
                                        *system-modules*
+                                       *home-modules*
                                        *package-modules*
                                        *core-package-modules*
                                        *extra-modules*

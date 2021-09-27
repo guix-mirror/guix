@@ -15,6 +15,7 @@
 # Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+# Copyright © 2021 Andrew Tropin <andrew@trop.in>
 #
 # This file is part of GNU Guix.
 #
@@ -295,6 +296,8 @@ MODULES =					\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/system/reconfigure.scm		\
+  guix/scripts/home.scm			\
+  guix/scripts/home/import.scm			\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/crate.scm			\
