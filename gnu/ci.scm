@@ -301,20 +301,16 @@ otherwise use the IMAGE name."
 
 (define channel-build-system
   ;; Build system used to "convert" a channel instance to a package.
-  (let* ((build (lambda* (store name inputs
-                                #:key source commit system
-                                #:allow-other-keys)
-                  (run-with-store store
-                    ;; SOURCE can be a lowerable object such as <local-file>
-                    ;; or a file name.  Adjust accordingly.
-                    (mlet* %store-monad ((source (if (string? source)
-                                                     (return source)
-                                                     (lower-object source)))
-                                         (instance
-                                          -> (checkout->channel-instance
-                                              source #:commit commit)))
-                      (channel-instances->derivation (list instance)))
-                    #:system system)))
+  (let* ((build (lambda* (name inputs
+                               #:key source commit system
+                               #:allow-other-keys)
+                  (mlet* %store-monad ((source (if (string? source)
+                                                   (return source)
+                                                   (lower-object source)))
+                                       (instance
+                                        -> (checkout->channel-instance
+                                            source #:commit commit)))
+                    (channel-instances->derivation (list instance)))))
          (lower (lambda* (name #:key system source commit
                                #:allow-other-keys)
                   (bag
