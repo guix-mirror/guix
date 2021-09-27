@@ -180,6 +180,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
@@ -5894,6 +5895,43 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 
 (define-public python2-colorspacious
   (package-with-python2 python-colorspacious))
+
+(define-public python-proto-matcher
+  (package
+    (name "python-proto-matcher")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "proto_matcher" version))
+       (sha256
+        (base32 "1644x0hrl398ji3281n44ymfgc3cspzfagjckhqjn4nja5nlikxg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-protobuf" ,python-protobuf)
+       ("python-pyhamcrest" ,python-pyhamcrest)))
+    (home-page "https://github.com/dayfine/proto-matcher")
+    (synopsis "PyHamcrest test matchers for protocol buffers")
+    (description "This package provides the following PyHamcrest test
+matchers, that enable matching a protocol buffer message:
+@table @code
+@item equals_proto
+Test the argument equals the given protobuf message.
+@item approximately
+Test the argument equals the given protobuf message, while comparing any float
+field using approximation.
+@item ignoring_field_paths
+Test the argument equals the given protobuf message, while ignoring those
+fields specified in the field paths.
+@item ignoring_repeated_field_ordering
+Test the argument equals the given protobuf message, ignoring the ordering of
+any repeated field.
+@item partially
+Test the argument partially equals the given protobuf message, i.e. if a field
+is in the argument but not in the expected message, it's ignored in the
+comparison.
+@end table")
+    (license license:asl2.0)))
 
 (define-public python-matplotlib
   (package
