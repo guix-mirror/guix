@@ -27322,7 +27322,7 @@ data, including buffers, window configuration, variables, and more.")
 (define-public emacs-parseedn
   (package
     (name "emacs-parseedn")
-    (version "0.2.0")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -27332,7 +27332,7 @@ data, including buffers, window configuration, variables, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0271amhw63650rrzikcyqxa8sb42npnk7q3yrsay2v79wbqkdaw9"))))
+         "15rp708s46f86w8scd72pr7ikp87c69pzfybnslqbahw7s53lhpq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-a" ,emacs-a)
