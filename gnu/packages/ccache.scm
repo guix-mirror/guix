@@ -31,22 +31,23 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "4.4")
+    (version "4.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/ccache/ccache/releases/download/v"
                            version "/ccache-" version ".tar.xz"))
        (sha256
-        (base32 "0qbmcs6c3m071vsd1ppa31r8s0dzpaw5y38z8ga1bz48rwpfl2xl"))))
+        (base32 "0nc1mlmj92lfa25d12nzf5n55az6zfx38n0z1qqkkzjxn6sxzmpb"))
+       (patches
+        (search-patches "ccache-fix-basedir-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs `(("perl" ,perl)     ; for test/run
                      ("which" ,(@ (gnu packages base) which))))
     (inputs `(("zlib" ,zlib)
               ("zstd" ,zstd "lib")))
     (arguments
-     '(;; Disable redis backend explicitly. Build system insists on present dependency
-       ;; or on explicit flag.
+     '( ;; The Redis backend must be explicitly disabled to build without Redis.
        #:configure-flags
        '("-DREDIS_STORAGE_BACKEND=OFF")
 
@@ -55,13 +56,11 @@
          (add-before 'configure 'setup-tests
            (lambda _
              (substitute* '("unittest/test_hashutil.cpp" "test/suites/base.bash")
-               (("#!/bin/sh") (string-append "#!" (which "sh"))))
-             #t))
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))))
          (add-before 'check 'set-home
            ;; Tests require a writable HOME.
            (lambda _
-             (setenv "HOME" (getenv "TMPDIR"))
-             #t)))))
+             (setenv "HOME" (getenv "TMPDIR")))))))
     (home-page "https://ccache.dev/")
     (synopsis "Compiler cache")
     (description

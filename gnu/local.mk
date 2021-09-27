@@ -915,6 +915,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
   %D%/packages/patches/casync-renameat2-declaration.patch	\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
+  %D%/packages/patches/ccache-fix-basedir-test.patch		\
   %D%/packages/patches/circos-remove-findbin.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
