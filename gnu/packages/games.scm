@@ -1134,6 +1134,34 @@ regular @command{cat}, but it also adds terminal escape codes between
 characters and lines resulting in a rainbow effect.")
       (license license:wtfpl2))))
 
+(define-public falltergeist
+  (package
+    (name "falltergeist")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/falltergeist/falltergeist")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05cg58i2g32wbmrvmdsicic8xs83gld3qr1p7r4lnlckcl1l7dy4"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests provided
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("sdl" ,(sdl-union (list sdl2
+                                       sdl2-image
+                                       sdl2-mixer)))
+              ("glew" ,glew)
+              ("glm" ,glm)))
+    (home-page "https://falltergeist.org/")
+    (synopsis "Fallout 2 game engine")
+    (description "This package provides the Fallout 2 game engine.  Game data
+should be placed in @file{~/.local/share/falltergeist}.")
+    (license license:gpl3+)))
+
 (define-public foobillard++
   ;; Even though this latest revision is old already, stable release is
   ;; lagging way behind it, and has issues with textures rendering.
