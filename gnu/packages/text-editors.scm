@@ -280,10 +280,10 @@ Rust.")
     (inputs
      `(("clang" ,clang)))
     (home-page "https://github.com/justinbarclay/parinfer-rust")
-    (synopsis "Infer parantheses for Clojure, Lisp and Scheme")
+    (synopsis "Infer parentheses for Clojure, Lisp and Scheme")
     (description
      "Parinfer is a plugin for Kakoune, Vim, Neovim and Emacs that infers
-paretheses and indentation.  This library can be called from other editors that
+parentheses and indentation.  This library can be called from other editors that
 can load dynamic libraries.")
     (license license:expat)))
 
