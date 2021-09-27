@@ -4576,6 +4576,6 @@ streams, data files or other data streams, and to sort, filter, or alter the
 incoming files or data streams according to the user's wildest desires.
 Criteria for categorization of data can be via a host of methods, including
 regexes, approximate regexes, a Hidden Markov Model, Orthogonal Sparse
-Bigrams, WINNOW, Correllation, KNN/Hyperspace, or Bit Entropy (or by other
+Bigrams, WINNOW, Correlation, KNN/Hyperspace, or Bit Entropy (or by other
 means--it's all programmable).")
     (license license:gpl3)))
