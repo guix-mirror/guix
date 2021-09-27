@@ -14882,9 +14882,6 @@ format.")
 focus on event-based network programming and multiprotocol integration.")
     (license license:expat)))
 
-(define-public python2-twisted
-  (package-with-python2 python-twisted))
-
 (define-public python-pika
   (package
     (name "python-pika")
