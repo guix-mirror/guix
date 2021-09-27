@@ -912,6 +912,8 @@ interface.")
   (package
     (name "av-98")
     (version "1.0.1")
+    (properties
+     '((upstream-name . "AV-98")))
     (source
      (origin
        (method url-fetch)
