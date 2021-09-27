@@ -251,7 +251,8 @@ provided, as well as a framework to add new color models and data types.")
      `(("cairo" ,cairo)
        ("pango" ,pango)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-turbo)))
+       ("libjpeg" ,libjpeg-turbo)
+       ("libraw" ,libraw)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
