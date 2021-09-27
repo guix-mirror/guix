@@ -750,7 +750,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                                (string-append "ac_cv_path_PPR_LIB="
                                               (assoc-ref %outputs "out")
                                               "/lib/ppr/lib")
-
+                               "CFLAGS=-fcommon"
                                ;; For some reason these are misdiagnosed.
                                "ac_cv_func_malloc_0_nonnull=yes"
                                "ac_cv_func_realloc_0_nonnull=yes")
