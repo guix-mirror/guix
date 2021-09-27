@@ -3644,7 +3644,7 @@ Lisp, featuring:
        "Markup allows the use of HTML syntax with in Common Lisp code.
 This has the advantage of being able to copy HTML snippets and have them
 instantly be functional, less double quotes than a s-expression approach,
-and designers will be able to understand the embeded HTML.")
+and designers will be able to understand the embedded HTML.")
       (license license:asl2.0))))
 
 (define-public ecl-markup-reader
