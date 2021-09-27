@@ -13595,9 +13595,6 @@ also includes support for using Thrift RPC over AMQP in Twisted
 applications.")
     (license license:asl2.0)))
 
-(define-public python2-txamqp
-  (package-with-python2 python-txamqp))
-
 (define-public python-kombu
   (package
     (name "python-kombu")
