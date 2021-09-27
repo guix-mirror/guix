@@ -434,6 +434,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/parallel.scm			\
   %D%/packages/pascal.scm			\
   %D%/packages/password-utils.scm		\
+  %D%/packages/patool.scm			\
   %D%/packages/patchutils.scm			\
   %D%/packages/pciutils.scm			\
   %D%/packages/pcre.scm				\
