@@ -27466,6 +27466,52 @@ cons cells in Python.")
      "This library implements eval'able S-expression in Python using tuple-like objects.")
     (license license:asl2.0)))
 
+(define-public python-minikanren
+  (package
+    (name "python-minikanren")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pythological/kanren")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g7wfj5hxalwz7k1301nsjqhjpzsif1bj6wjm2x2kavlm2ypv9jc"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "python" "-m" "pytest" "-v" "tests/" "kanren/"))
+                      #t)))))
+    (native-inputs
+     `(("python-coveralls" ,python-coveralls)
+       ("python-pydocstyle" ,python-pydocstyle)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pylint" ,python-pylint)
+       ("python-black" ,python-black)
+       ("python-sympy" ,python-sympy)
+       ("python-versioneer" ,python-versioneer)
+       ("python-coverage" ,python-coverage)
+       ("python-pre-commit" ,python-pre-commit)))
+    (propagated-inputs
+     `(("python-toolz" ,python-toolz)
+       ("python-cons" ,python-cons)
+       ("python-multipledispatch" ,python-multipledispatch)
+       ("python-etuples" ,python-etuples)
+       ("python-logical-unification" ,python-logical-unification)))
+    (home-page "https://github.com/pythological/kanren")
+    (synopsis "Relational logic programming in pure Python")
+    (description
+     "The minikanren library provides an algorithmic core for computer algebra
+systems in Python.")
+    (license license:bsd-3)))
+
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
