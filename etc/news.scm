@@ -30,7 +30,10 @@
          (ru "Guix Home теперь поставляется в составе GNU Guix"))
         (body
          (en "Guix Home splitted out from rde project and now is a part of
-Guix proper.  The new @command{guix home} with its actions allows users to
+Guix proper.  It is available as a @emph{technology preview} and thus subject
+to change.
+
+The new @command{guix home} command with its actions allows users to
 manage their packages and configurations (aka. dotfiles) in a declarative way,
 similar to how many people manage their system with @command{guix system}.
 
