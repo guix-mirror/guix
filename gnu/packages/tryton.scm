@@ -3784,7 +3784,7 @@ consignment stock from supplier or at customer warehouse.")
     (synopsis "Tryton module with stock forecasts")
     (description "The @emph{Stock Forecast} Tryton module provide a simple way
 to create stock moves toward customers with a date in the future.  This allows
-other stock mecanisms to anticipate customer demand.")
+other stock mechanisms to anticipate customer demand.")
     (license license:gpl3+)))
 
 (define-public trytond-stock-inventory-location
