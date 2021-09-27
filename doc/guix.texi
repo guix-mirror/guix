@@ -11707,7 +11707,7 @@ Repositories are assumed to be passed to this option by order of
 preference.  The additional repositories will not replace the default
 @code{opam} repository, which is always kept as a fallback.
 
-Also, please note that versions are not compared accross repositories.
+Also, please note that versions are not compared across repositories.
 The first repository (from left to right) that has at least one version
 of a given package will prevail over any others, and the version
 imported will be the latest one found @emph{in this repository only}.
@@ -31704,7 +31704,7 @@ repo foo
 @end example
 
 In addition, Gitile can read the repository configuration to display more
-infomation on the repository.  Gitile uses the gitweb namespace for its
+information on the repository.  Gitile uses the gitweb namespace for its
 configuration.  As an example, you can use the following in your
 @file{conf/gitolite.conf}:
 
