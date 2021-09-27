@@ -45,6 +45,7 @@
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
@@ -63,7 +64,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
-;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12479,6 +12480,62 @@ wreckage.  You're stranded on a desert island and have to survive.  In order to
 do so you need to explore the island, find food, build a shelter and try to
 get attention, so you get found.")
       (license license:cc-by4.0))))
+
+(define-public sdlpop
+  (package
+    (name "sdlpop")
+    (version "1.22")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/NagyD/SDLPoP")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yy5r1r0hv0xggk8qd8bwk2zy7abpv89nikq4flqgi53fc5q9xl7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests provided
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'prepare-build
+           ;; Set correct environment for SDL.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL2:"
+                                    (or (getenv "CPATH") "")))))
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (opt (string-append out "/opt/sdlpop"))
+                    (app (string-append out "/usr/share/applications"))
+                    (template "src/SDLPoP.desktop.template"))
+               (chdir "..")
+               (install-file "prince" bin)
+               (substitute* template (("\\$ROOT") out))
+               (install-file template app)
+               (rename-file (string-append app "/SDLPoP.desktop.template")
+                            (string-append app "/SDLPoP.desktop"))
+               (install-file "SDLPoP.ini" opt)
+               (copy-recursively "data" (string-append bin "/data"))
+               (copy-recursively "doc" opt)
+               (copy-recursively "mods" opt)))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("sdl" ,(sdl-union (list sdl2
+                                       sdl2-image
+                                       sdl2-mixer)))))
+    (synopsis "Port of Prince of Persia game")
+    (description "This package provides port of Prince of Persia, based on the
+disassembly of the DOS version, extended with new features.")
+    (home-page "https://github.com/NagyD/SDLPoP")
+    (license license:gpl3+)))
 
 (define-public fheroes2
   (package
