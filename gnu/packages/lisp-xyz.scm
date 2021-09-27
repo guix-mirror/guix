@@ -18607,7 +18607,7 @@ customizable errors.")
       (home-page "https://github.com/interactive-ssr/hunchenissr")
       (synopsis "Interactive Server Side Rendering backend for Hunchentoot")
       (description
-       "Hunchenissr works together with issr.js for the develpment of
+       "Hunchenissr works together with issr.js for the development of
 interactive (changing without page refreshes) websites making use of websocket
 and Common Lisp server HTML generation instead of mountains of convoluted
 Javascript.")
