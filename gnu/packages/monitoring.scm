@@ -377,9 +377,6 @@ recent data to degrade into lower resolutions for long-term retention of
 historical data.")
     (license license:asl2.0)))
 
-(define-public python2-whisper
-  (package-with-python2 python-whisper))
-
 (define-public python-carbon
   (package
     (name "python-carbon")
