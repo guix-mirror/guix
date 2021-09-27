@@ -14091,16 +14091,21 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                license:asl2.0))))
 
 (define-public tla2tools
-  (let* ((version "1.8.0")
-         (tag (string-append "v" version)))
+  ;; This package was originally based on the "v1.8.0" tag, but that merely
+  ;; points to the moving master branch.  That might be because the ‘latest
+  ;; release’ at GitHub is currently 1.7.1.  We'll see!  For now, rather than
+  ;; downgrade to 1.7.1 proper, use the commit that we originally dubbed 1.8.0.
+  (let* ((release "1.7.1")
+         (revision "0")
+         (commit "6932e19083fc6df42473464857fc1280cb5aaecc"))
     (package
       (name "tla2tools")
-      (version version)
+      (version (git-version release revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/tlaplus/tlaplus")
-                      (commit tag)))
+                      (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
@@ -14124,7 +14129,7 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
            #:make-flags '("-f" ,build-xml)
            #:phases
            (modify-phases %standard-phases
-            ;; Replace packed libs with references to jars in store
+             ;; Replace packed libs with references to jars in store
              (add-after 'unpack 'replace-libs
                (lambda* (#:key inputs #:allow-other-keys)
                  (define (input-jar input)
@@ -14147,12 +14152,12 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                     ("junit-4.12.jar" . "java-junit")
                     ("easymock-3.3.1.jar" . "java-easymock")))
                  ;; Retain a tiny subset of the original X-Git-*
-                 ;; manifest values just to aid in debugging
+                 ;; manifest values just to aid in debugging.
                  (substitute* ,build-xml
-                   (("\\$\\{git.tag\\}") ,tag))))
+                   (("\\$\\{git.tag\\}") (string-append "v" ,release)))))
              (add-before 'check 'prepare-tests
                (lambda _
-                 ;; pcal tests write to cfg files
+                 ;; The pcal tests write to .cfg files.
                  (for-each (cut chmod <> #o644)
                            (find-files (string-append ,tlatools
                                                       "/test-model/pcal")
