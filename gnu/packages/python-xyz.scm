@@ -27421,6 +27421,30 @@ function implementations based on the types of the arguments.")
 symbolic expressions in pure Python using the technique of logical unification.")
     (license license:bsd-3)))
 
+(define-public python-cons
+  (package
+    (name "python-cons")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cons" version))
+       (sha256
+        (base32
+         "0w9giq196wps7mbm47c4shdzs5yvwvqajqzkim2p92i51sm5qgvm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest-6)
+       ("python-toml" ,python-toml)))
+    (propagated-inputs
+     `(("python-logical-unification" ,python-logical-unification)))
+    (home-page "https://github.com/pythological/python-cons")
+    (synopsis "Cons cell data structures and related algorithms for Python")
+    (description
+     "This library implements algorithms and data structures for Lisp-style
+cons cells in Python.")
+    (license license:lgpl3+)))
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
