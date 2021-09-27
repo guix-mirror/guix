@@ -2702,45 +2702,32 @@ retried.")
   (package-with-python2 python-flaky))
 
 (define-public python-pyhamcrest
-  ;; The latest release was in 2016 and its test suite does not work with recent
-  ;; versions of Pytest.  Just take the master branch for now, which seems stable.
-  (let ((commit "25fdc5f00bdf3084335353bc9247253098ec4cf2")
-        (revision "0"))
-    (package
-      (name "python-pyhamcrest")
-      (version (git-version "1.9.0" revision commit))
-      (source (origin
-                ;; Tests not distributed from pypi release.
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/hamcrest/PyHamcrest")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1miqmhhi68vaix8sqc1lvpvbm27bacffxh5anm5cbfsvk7g9n6f3"))))
-      (native-inputs                    ;all native inputs are for tests
-       `(("python-pytest-cov" ,python-pytest-cov)
-         ("python-mock" ,python-mock)
-         ("python-pytest" ,python-pytest)
-         ("python-hypothesis" ,python-hypothesis)))
-      (propagated-inputs
-       `(("python-six" ,python-six)))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (replace 'check
-                      (lambda _
-                        (setenv "PYTHONPATH"
-                                (string-append "build/lib:"
-                                               (getenv "PYTHONPATH")))
-                        (invoke "pytest" "-vv"))))))
-      (home-page "http://hamcrest.org/")
-      (synopsis "Hamcrest matchers for Python")
-      (description
-       "PyHamcrest is a framework for writing matcher objects,
- allowing you to declaratively define \"match\" rules.")
-      (license license:bsd-3))))
+  (package
+    (name "python-pyhamcrest")
+    (version "2.0.2")
+    (source (origin
+              (method git-fetch)        ;no tests in PyPI archive
+              (uri (git-reference
+                    (url "https://github.com/hamcrest/PyHamcrest")
+                    (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05kdzlhs2kvj82pfca13qszszcj6dyrk4b9pbr46x06sq2s4qyls"))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (add-installed-pythonpath inputs outputs)
+                      (invoke "pytest" "-vv"))))))
+    (home-page "http://hamcrest.org/")
+    (synopsis "Hamcrest matchers for Python")
+    (description "PyHamcrest is a framework for writing matcher objects,
+allowing you to declaratively define \"match\" rules.")
+    (license license:bsd-3)))
 
 (define-public unittest-cpp
   (package
