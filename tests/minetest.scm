@@ -249,14 +249,14 @@ during a dynamic extent where that package is available on ContentDB."
               #:guix-name "minetest-foo-bar"
               #:upstream-name "Author/foo_bar")
 
-(test-equal "elaborate names, unambigious"
+(test-equal "elaborate names, unambiguous"
   "Jeija/mesecons"
   (call-with-packages
    (cut elaborate-contentdb-name "mesecons")
    '(#:name "mesecons" #:author "Jeija")
    '(#:name "something" #:author "else")))
 
-(test-equal "elaborate name, ambigious (highest score)"
+(test-equal "elaborate name, ambiguous (highest score)"
   "Jeija/mesecons"
   (call-with-packages
    ;; #:sort "score" is the default
@@ -266,7 +266,7 @@ during a dynamic extent where that package is available on ContentDB."
    '(#:name "mesecons" #:author "Jeija" #:score 999)))
 
 
-(test-equal "elaborate name, ambigious (most downloads)"
+(test-equal "elaborate name, ambiguous (most downloads)"
   "Jeija/mesecons"
   (call-with-packages
    (cut elaborate-contentdb-name "mesecons" #:sort "downloads")
@@ -308,7 +308,7 @@ during a dynamic extent where that package is available on ContentDB."
 
 
 ;; Dependencies
-(test-package* "minetest->guix-package, unambigious dependency"
+(test-package* "minetest->guix-package, unambiguous dependency"
   (list #:requirements '(("mesecons" #f
                           ("Jeija/mesecons"
                            "some-modpack/containing-mese")))
@@ -316,7 +316,7 @@ during a dynamic extent where that package is available on ContentDB."
   (list #:author "Jeija" #:name "mesecons")
   (list #:author "some-modpack" #:name "containing-mese" #:type "modpack"))
 
-(test-package* "minetest->guix-package, ambigious dependency (highest score)"
+(test-package* "minetest->guix-package, ambiguous dependency (highest score)"
   (list #:name "frobnicate"
         #:guix-name "minetest-frobnicate"
         #:upstream-name "Author/frobnicate"
@@ -327,7 +327,7 @@ during a dynamic extent where that package is available on ContentDB."
   (list #:author "Author" #:name "foo" #:score 0)
   (list #:author "Author" #:name "bar" #:score 9999))
 
-(test-package* "minetest->guix-package, ambigious dependency (most downloads)"
+(test-package* "minetest->guix-package, ambiguous dependency (most downloads)"
   (list #:name "frobnicate"
         #:guix-name "minetest-frobnicate"
         #:upstream-name "Author/frobnicate"

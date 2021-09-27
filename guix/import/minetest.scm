@@ -203,7 +203,7 @@ raise an exception."
         (match correctly-named
           ((one) (package-keys-full-name one))
           ((too . many)
-           (warning (G_ "~a is ambigious, presuming ~a (other options include: ~a)~%")
+           (warning (G_ "~a is ambiguous, presuming ~a (other options include: ~a)~%")
                     name (package-keys-full-name too)
                     (map package-keys-full-name many))
            (package-keys-full-name too))
@@ -256,7 +256,7 @@ and possibly some other packages as well, or #f on failure."
                                    (order "desc"))
   "Search ContentDB for Q (a string).  Sort by SORT, in ascending order
 if ORDER is \"asc\" or descending order if ORDER is \"desc\".  TYPE must
-be \"mod\", \"game\" or \"txp\", restricting thes search results to
+be \"mod\", \"game\" or \"txp\", restricting the search results to
 respectively mods, games and texture packs.  Limit to at most LIMIT
 results.  The return value is a list of <package-keys> records."
   ;; XXX does Guile have something for constructing (and, when necessary,
