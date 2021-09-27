@@ -3410,16 +3410,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
     (synopsis "Implementation of JSON Schema for Python")
     (description
      "Jsonschema is an implementation of JSON Schema for Python.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-jsonschema))))))
-
-(define-public python2-jsonschema
-  (let ((jsonschema (package-with-python2
-                     (strip-python2-variant python-jsonschema))))
-    (package/inherit jsonschema
-             (propagated-inputs
-              `(("python2-functools32" ,python2-functools32)
-                ,@(package-propagated-inputs jsonschema))))))
+    (license license:expat)))
 
 (define-public python-schema
   (package
