@@ -1660,7 +1660,7 @@ typographic detail of symbols on the page.")
     (propagated-inputs
      `(("abjad" ,abjad)))
     (home-page "https://abjad.github.io")
-    (synopsis "Abjad rhythm-maker exension package")
+    (synopsis "Abjad rhythm-maker extension package")
     (description
      "@code{abjad-ext-rmakers} includes a collection of classes for creating and
 and manipulating rhythms such as accelerandi, taleas, and more.")
