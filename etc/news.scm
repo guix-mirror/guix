@@ -26,6 +26,7 @@
 (entry (commit "a2324d8b56eabf8117bca220a507cc791edffd2e")
         (title
          (en "Guix Home is a part of GNU Guix")
+         (de "Guix Home ist jetzt Teil von GNU Guix")
          (ru "Guix Home теперь поставляется в составе GNU Guix"))
         (body
          (en "Guix Home splitted out from rde project and now is a part of
@@ -39,6 +40,19 @@ guix home --help
 @end example
 
 See @command{info \"(guix) Home Configuration\"} for more information.")
+         (de "Guix Home ist aus dem rde-Projekt ins offizielle Guix übernommen
+worden. Der neue Befehl @command{guix home} ermöglicht es, die Pakete und
+Konfigurationsdateien (Dotfiles) für ein Benutzerkonto im deklarativen Stil zu
+verwalten. Es ist analog dazu, wie man @command{guix system} benutzen kann, um
+sein System zu verwalten.
+
+Werfen Sie einen Blick auf die verfügbaren Aktionen und Argumente:
+@example
+guix home --help
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix) Home Configuration\"}
+aus.")
          (ru "Guix Home отделился от проекта rde и теперь является частью
 Guix.  Новая команда @command{guix home} даёт возможность пользователям
 управлять их пакетами и конфигурациями (дотфайлами) для них в декларативном
