@@ -18933,9 +18933,6 @@ from your Flask project.  It is a fork of Flask-Swagger.")
 validating Swagger API specifications.")
     (license license:asl2.0)))
 
-(define-public python2-swagger-spec-validator
-  (package-with-python2 python-swagger-spec-validator))
-
 (define-public python-apache-libcloud
   (package
     (name "python-apache-libcloud")
