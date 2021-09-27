@@ -484,10 +484,11 @@ info --version")
 
           (test-assert "screendump"
             (begin
-              (marionette-control (string-append "screendump " #$output
-                                                 "/tty1.ppm")
-                                  marionette)
-              (file-exists? "tty1.ppm")))
+              (let ((capture
+                     (string-append #$output "/tty1.ppm")))
+                (marionette-control
+                 (string-append "screendump " capture) marionette)
+                (file-exists? capture))))
 
           (test-assert "screen text"
             (let ((text (marionette-screen-text marionette
