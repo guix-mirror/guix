@@ -2227,7 +2227,7 @@ system is under heavy load.")
 (define-public detox
   (package
     (name "detox")
-    (version "1.4.2")
+    (version "1.4.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2236,7 +2236,7 @@ system is under heavy load.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q16dvjbry573j4ayh9dwskdh1dxx8dk4rj94w6f2dcv4ww37is1"))))
+                "116bgpbkh3c96h6vq0880rmnpb5kbnnlvvkpsrcib6928bj8lfvi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
