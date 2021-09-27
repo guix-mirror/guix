@@ -9213,10 +9213,8 @@ associations for GNOME.")
       ("gtk+:bin" ,gtk+ "bin")
       ("pkg-config" ,pkg-config)))
    (inputs
-    `( ;("adwaita-icon-theme" ,adwaita-icon-theme)
-      ("appstream-glib" ,appstream-glib)
+    `(("appstream-glib" ,appstream-glib)
       ("geoclue" ,geoclue)
-      ("gdk-pixbuf" ,gdk-pixbuf)
       ("gjs" ,gjs)
       ("gnome-desktop" ,gnome-desktop)
       ("libgweather" ,libgweather)
@@ -9224,24 +9222,29 @@ associations for GNOME.")
    (arguments
     `(#:glib-or-gtk? #t
       #:phases
-      (modify-phases %standard-phases
-        (add-after 'install 'fix-desktop-file
-          ;; FIXME: "gapplication launch org.gnome.Weather" fails for some reason.
-          ;; See https://issues.guix.gnu.org/issue/39324.
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (applications (string-append out "/share/applications")))
-              (substitute* (string-append applications "/org.gnome.Weather.desktop")
-                (("Exec=.*") "Exec=gnome-weather\n"))
-              #t)))
-        (add-after 'install 'wrap
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out               (assoc-ref outputs "out"))
-                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
-              ;; GNOME Weather needs the typelib files of GTK+, Pango etc at runtime.
-              (wrap-program (string-append out "/bin/gnome-weather")
-                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
-              #t))))))
+      ,#~(modify-phases %standard-phases
+           (add-after 'unpack 'fix-service-file
+             (lambda _
+               (substitute* "data/org.gnome.Weather.service.in"
+                 (("Exec=[[:graph:]]+")
+                  (string-append "Exec=" #$output
+                                 "/bin/gnome-weather")))))
+           (add-after 'install 'fix-desktop-file
+             ;; FIXME: "gapplication launch org.gnome.Weather" fails for some
+             ;; reason.  See https://issues.guix.gnu.org/issue/39324.
+             (lambda _
+               (let ((applications
+                      (string-append #$output "/share/applications")))
+                 (substitute* (string-append applications
+                                             "/org.gnome.Weather.desktop")
+                   (("Exec=.*") "Exec=gnome-weather\n")))))
+           (add-after 'install 'wrap
+             (lambda _
+               (let ((gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                 ;; GNOME Weather needs the typelib files of GTK+, Pango etc
+                 ;; at runtime.
+                 (wrap-program (string-append #$output "/bin/gnome-weather")
+                   `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
    (synopsis "Weather monitoring for GNOME desktop")
    (description "GNOME Weather is a small application that allows you to
 monitor the current weather conditions for your city, or anywhere in the
