@@ -4491,7 +4491,7 @@ interface to pause.")
     (home-page "http://elpa.gnu.org/packages/filladapt.html")
     (synopsis "Adaptive fill for Emacs")
     (description
-     "This package provides funtions which enhance the default behavior of
+     "This package provides functions which enhance the default behavior of
 Emacs' Auto Fill mode and the commands @code{fill-paragraph},
 @code{lisp-fill-paragraph}, @code{fill-region-as-paragraph}, and
 @code{fill-region}.
