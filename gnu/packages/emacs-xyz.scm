@@ -8150,7 +8150,7 @@ single theme but a set of guidelines with numerous implementations.")
 (define-public emacs-solaire-mode
   (package
     (name "emacs-solaire-mode")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method git-fetch)
@@ -8159,7 +8159,7 @@ single theme but a set of guidelines with numerous implementations.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01c1lkr21y0cd6gixzd38mql89k70jn049jr0xhazgz16cnw1g7j"))))
+        (base32 "0wq5ckwx3wv4c4l8f9hz3ak6v5wy4lg5yh8xlsgn1h1x6yf8afpp"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/hlissner/emacs-solaire-mode")
     (synopsis "Change background of file-visiting buffers in Emacs")
