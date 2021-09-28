@@ -5907,6 +5907,8 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        (sha256
         (base32 "1644x0hrl398ji3281n44ymfgc3cspzfagjckhqjn4nja5nlikxg"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test suite
     (propagated-inputs
      `(("python-protobuf" ,python-protobuf)
        ("python-pyhamcrest" ,python-pyhamcrest)))
