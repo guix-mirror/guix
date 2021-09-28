@@ -3309,6 +3309,30 @@ with sensible defaults out of the box.")
         (base32 "0njsm0wn31l21bi118g5825ma5sa3rwn7v2x4wjd7yiiahkri337"))))
     (arguments `())))
 
+(define-public python-cligj
+  (package
+    (name "python-cligj")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "cligj" version))
+        (sha256
+          (base32
+            "09vbkik6kyn6yrqzl2r74vaybjk8kjykvi975hy3fsrm4gb17g54"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-click" ,python-click)))
+    (native-inputs
+      `(("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/mapbox/cligj")
+    (synopsis "Click params for commmand line interfaces to GeoJSON")
+    (description
+      "cligj is for Python developers who create command line interfaces
+for geospatial data.  cligj allows you to quickly build consistent,
+well-tested and interoperable CLIs for handling GeoJSON.")
+    (license license:bsd-3)))
+
 (define-public python-vcversioner
   (package
     (name "python-vcversioner")
