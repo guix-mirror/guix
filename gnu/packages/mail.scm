@@ -1821,7 +1821,7 @@ delivery.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; We'd use #:make-flags but the top-level Makefile calls others
@@ -1883,7 +1883,7 @@ delivery.")
              (substitute* "src/version.c"
                (("#include \"cnumber.h\"") "1")))))
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "INSTALL_ARG=-no_chown")
        ;; No 'check' target.  There is a test suite in test/, which assumes that
        ;; certain build options were (not) used and that it can freely ‘sudo’.
