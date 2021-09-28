@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,9 @@ Some ACTIONS support additional ARGS.\n"))
 
   (show-build-options-help)
   (display (G_ "
+  -e, --expression=EXPR  consider the home-environment EXPR evaluates to
+                         instead of reading FILE, when applicable"))
+  (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (G_ "
@@ -115,6 +119,9 @@ Some ACTIONS support additional ARGS.\n"))
                    (let ((level (string->number* arg)))
                      (alist-cons 'verbosity level
                                  (alist-delete 'verbosity result)))))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
          %standard-build-options))
 
 (define %default-options

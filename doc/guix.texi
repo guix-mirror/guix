@@ -79,7 +79,7 @@ Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
 Copyright @copyright{} 2020, 2021 Brice Waegeneire@*
 Copyright @copyright{} 2020 R Veera Kumar@*
-Copyright @copyright{} 2020 Pierre Langlois@*
+Copyright @copyright{} 2020, 2021 Pierre Langlois@*
 Copyright @copyright{} 2020 pinoaffe@*
 Copyright @copyright{} 2020 André Batista@*
 Copyright @copyright{} 2020, 2021 Alexandru-Sergiu Marton@*
@@ -36090,6 +36090,20 @@ generations that are up to 10 days old:
 @example
 $ guix home list-generations 10d
 @end example
+
+@end table
+
+@var{options} can contain any of the common build options (@pxref{Common
+Build Options}).  In addition, @var{options} can contain one of the
+following:
+
+@table @option
+
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the home-environment @var{expr} evaluates to.
+This is an alternative to specifying a file which evaluates to a home
+environment.
 
 @end table
 
