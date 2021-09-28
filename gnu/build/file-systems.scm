@@ -336,7 +336,10 @@ fix only those considered safe to repair automatically."
                                    ;; Upstream considers ALL repairs dangerous
                                    ;; and will warn the user at run time.
                                    (#t '("--repair"))
-                                   (_  '("--readonly"))) ; a no-op for clarity
+                                   (_  '("--readonly" ; a no-op for clarity
+                                         ;; A 466G file system with 180G used is
+                                         ;; enough to kill btrfs with 6G of RAM.
+                                         "--mode" "lowmem")))
                                ,device)))
         (0 'pass)
         (_ 'fatal-error))
