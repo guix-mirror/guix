@@ -16940,7 +16940,7 @@ official @command{sqlite3} executable to access SQL database.")
 (define-public emacs-closql
   (package
     (name "emacs-closql")
-    (version "1.0.6")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -16950,7 +16950,7 @@ official @command{sqlite3} executable to access SQL database.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ghqxnn39i032ibm5sbnv67r2dd2hgfnfpqbmb8wzg9wc6smnacq"))))
+         "1xa9rzyfm6bfskm2mfckd7jwmjwcraky7vsp7yyrnrqfksrl5na8"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-emacsql" ,emacs-emacsql)))
