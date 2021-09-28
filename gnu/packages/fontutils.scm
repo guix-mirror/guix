@@ -952,18 +952,17 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
 (define-public libraqm
   (package
     (name "libraqm")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/HOST-Oman/libraqm/"
-                           "releases/download/v" version "/"
-                           "raqm-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/HOST-Oman/libraqm")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0a4q9dziirb85sa9rmkamg2krdhd009di2vlz91njwxcp3q8qj46"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags (list "--disable-static")))
+        (base32 "1shcs5l27l7380dvacvhl8wrdq3lix0wnhzvfdh7vx2pkzjs3zk6"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
