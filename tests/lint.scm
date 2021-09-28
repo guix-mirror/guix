@@ -1317,29 +1317,30 @@
 
 (test-assert "haskell-stackage"
   (let* ((stackage (string-append "{ \"packages\": [{"
-                                  "    \"name\":\"x\","
+                                  "    \"name\":\"pandoc\","
+                                  "    \"synopsis\":\"synopsis\","
                                   "    \"version\":\"1.0\" }]}"))
          (packages (map (lambda (version)
                           (dummy-package
-                           (string-append "ghc-x")
+                           "ghc-pandoc"
                            (version version)
                            (source
                             (dummy-origin
                              (method url-fetch)
                              (uri (string-append
                                    "https://hackage.haskell.org/package/"
-                                   "x-" version "/x-" version ".tar.gz"))))))
-                        '("0.9" "1.0" "2.0")))
+                                   "pandoc-" version "/pandoc-" version ".tar.gz"))))))
+                        '("0.9" "1.0" "100.0")))
          (warnings (pk (with-http-server `((200 ,stackage) ; memoized
-                                           (200 "name: x\nversion: 1.0\n")
-                                           (200 "name: x\nversion: 1.0\n")
-                                           (200 "name: x\nversion: 1.0\n"))
+                                           (200 "name: pandoc\nversion: 1.0\n")
+                                           (200 "name: pandoc\nversion: 1.0\n")
+                                           (200 "name: pandoc\nversion: 1.0\n"))
                          (parameterize ((%hackage-url (%local-url))
                                         (%stackage-url (%local-url)))
                            (append-map check-haskell-stackage packages))))))
     (match warnings
       (((? lint-warning? warning))
-       (and (string=? (package-version (lint-warning-package warning)) "2.0")
+       (and (string=? (package-version (lint-warning-package warning)) "100.0")
             (string-contains (lint-warning-message warning)
                              "ahead of Stackage LTS version"))))))
 
