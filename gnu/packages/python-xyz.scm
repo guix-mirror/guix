@@ -16052,6 +16052,24 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
 (define-public python2-pyserial
   (package-with-python2 python-pyserial))
 
+(define-public python-pyserial-asyncio
+  (package
+    (name "python-pyserial-asyncio")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyserial-asyncio" version))
+       (sha256
+        (base32 "0cwd2cjz859v6jrm3y6hikfqjyhyfj5vhfjb8vvflvl6791yah8n"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-pyserial" ,python-pyserial)))
+    (home-page "https://github.com/pyserial/pyserial-asyncio")
+    (synopsis "Pyserial asynchronous I/O extension")
+    (description "This package extends Pyserial with asynchronous I/O
+support.")
+    (license license:bsd-3)))
+
 (define-public python-kivy
   (package
     (name "python-kivy")
