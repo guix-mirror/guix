@@ -9408,7 +9408,9 @@ for reading and writing JPEG image files.")
                (commit commit)))
          (file-name (git-file-name "cl-png" version))
          (sha256
-          (base32 "173hqwpd0rwqf95mfx1h9l9c3i8bb0gvnpspzmmz3g5x3440czy4"))))
+          (base32 "173hqwpd0rwqf95mfx1h9l9c3i8bb0gvnpspzmmz3g5x3440czy4"))
+         ;; Patch to fix compiling with SBCL >= 2.1.6.
+         (patches (search-patches "sbcl-png-fix-sbcl-compatibility.patch"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:phases
