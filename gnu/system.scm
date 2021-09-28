@@ -852,6 +852,19 @@ syntactically correct."
                                "--check" "--file" #$file)
                        (copy-file #$file #$output)))))
 
+(define (os-release)
+  (plain-file "os-release"
+              "\
+NAME=\"Guix System\"
+ID=guix
+PRETTY_NAME=\"Guix System\"
+LOGO=guix-icon
+HOME_URL=\"https://guix.gnu.org\"
+DOCUMENTATION_URL=\"https://guix.gnu.org/en/manual\"
+SUPPORT_URL=\"https://guix.gnu.org/en/help\"
+BUG_REPORT_URL=\"https://lists.gnu.org/mailman/listinfo/bug-guix\"
+"))
+
 (define* (operating-system-etc-service os)
   "Return a <service> that builds a directory containing the static part of
 the /etc directory."
@@ -957,7 +970,8 @@ then
   source /run/current-system/profile/etc/profile.d/bash_completion.sh
 fi\n")))
     (etc-service
-     `(("services" ,(file-append net-base "/etc/services"))
+     `(("os-release" ,#~#$(os-release))
+       ("services" ,(file-append net-base "/etc/services"))
        ("protocols" ,(file-append net-base "/etc/protocols"))
        ("rpc" ,(file-append net-base "/etc/rpc"))
        ("login.defs" ,#~#$login.defs)
