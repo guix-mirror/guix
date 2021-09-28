@@ -641,6 +641,63 @@ projections.")
 projections and coordinate transformations library.")
     (license license:expat)))
 
+(define-public python-fiona
+  (package
+    (name "python-fiona")
+    (version "1.8.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Fiona" version))
+        (sha256
+          (base32
+            "0fql7i7dg1xpbadmk8d26dwp91v7faixxc4wq14zg0kvhp9041d7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-local-fiona
+           (lambda _
+             ; This would otherwise interfere with finding the installed
+             ; fiona when running tests.
+             (delete-file-recursively "fiona")))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (when tests?
+               (invoke "pytest" "-m" "not network and not wheel")))))))
+    (inputs
+      `(("gdal" ,gdal)))
+    (propagated-inputs
+      `(("python-attrs" ,python-attrs)
+        ("python-certifi" ,python-certifi)
+        ("python-click" ,python-click)
+        ("python-click-plugins" ,python-click-plugins)
+        ("python-cligj" ,python-cligj)
+        ("python-munch" ,python-munch)
+        ("python-setuptools" ,python-setuptools)
+        ("python-six" ,python-six)
+        ("python-pytz" ,python-pytz)))
+    (native-inputs
+      `(("gdal" ,gdal) ; for gdal-config
+        ("python-boto3" ,python-boto3)
+        ("python-cython" ,python-cython)
+        ("python-pytest" ,python-pytest)
+        ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/Toblerity/Fiona")
+    (synopsis
+      "Fiona reads and writes spatial data files")
+    (description
+      "Fiona is GDAL’s neat and nimble vector API for Python programmers.
+Fiona is designed to be simple and dependable.  It focuses on reading
+and writing data in standard Python IO style and relies upon familiar
+Python types and protocols such as files, dictionaries, mappings, and
+iterators instead of classes specific to OGR.  Fiona can read and write
+real-world data using multi-layered GIS formats and zipped virtual file
+systems and integrates readily with other Python GIS packages such as
+pyproj, Rtree, and Shapely.")
+    (license license:bsd-3)))
+
 (define-public mapnik
   (package
     (name "mapnik")
