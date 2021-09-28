@@ -93,6 +93,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -599,6 +600,46 @@ projections.")
                    (license:non-copyleft "http://www.epsg.org/TermsOfUse")
                    ;; cmake/*
                    license:boost1.0))))
+
+(define-public python-pyproj
+  (package
+    (name "python-pyproj")
+    (version "3.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyproj" version))
+        (sha256
+          (base32
+            "0xrqpy708qlyd7nqjra0dl7nvkqzaj9w0v7wq4j5pxazha9n14sa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-proj-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((proj (assoc-ref inputs "proj")))
+               (setenv "PROJ_DIR" proj)
+               (substitute* "pyproj/datadir.py"
+                 (("(internal_datadir = ).*$" all var)
+                  (string-append var "Path(\"" proj "/share/proj\")\n")))))))))
+    (inputs
+      `(("proj" ,proj)))
+    (propagated-inputs
+      `(("python-certifi" ,python-certifi)))
+    (native-inputs
+      `(("python-cython" ,python-cython)
+        ("python-numpy" ,python-numpy)
+        ("python-pandas" ,python-pandas)
+        ("python-pytest" ,python-pytest)
+        ("python-xarray" ,python-xarray)))
+    (home-page "https://github.com/pyproj4/pyproj")
+    (synopsis
+      "Python interface to PROJ")
+    (description
+      "This package provides a Python interface to PROJ, a cartographic
+projections and coordinate transformations library.")
+    (license license:expat)))
 
 (define-public mapnik
   (package
