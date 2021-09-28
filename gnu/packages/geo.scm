@@ -698,6 +698,47 @@ systems and integrates readily with other Python GIS packages such as
 pyproj, Rtree, and Shapely.")
     (license license:bsd-3)))
 
+(define-public python-geopandas
+  (package
+    (name "python-geopandas")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "geopandas" version))
+        (sha256
+          (base32
+            "02k389zyyjv51gd09c92vlr83sv46awdq0066jgh5i24vjs2m5v3"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"
+                       ; Disable test that fails with
+                       ; NotImplementedError in pandas.
+                       "-k" "not test_fillna_no_op_returns_copy"
+                       ; Disable tests that require internet access.
+                       "-m" "not web")))))))
+    (propagated-inputs
+      `(("python-fiona" ,python-fiona)
+        ("python-pandas" ,python-pandas)
+        ("python-pyproj" ,python-pyproj)
+        ("python-shapely" ,python-shapely)))
+    (native-inputs
+      `(("python-pytest" ,python-pytest)))
+    (home-page "http://geopandas.org")
+    (synopsis "Geographic pandas extensions")
+    (description "The goal of GeoPandas is to make working with
+geospatial data in Python easier.  It combines the capabilities of
+Pandas and Shapely, providing geospatial operations in Pandas and a
+high-level interface to multiple geometries to Shapely.  GeoPandas
+enables you to easily do operations in Python that would otherwise
+require a spatial database such as PostGIS.")
+    (license license:bsd-3)))
+
 (define-public mapnik
   (package
     (name "mapnik")
