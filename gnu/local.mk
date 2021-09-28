@@ -1741,6 +1741,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/sbc-fix-build-non-x86.patch		\
+  %D%/packages/patches/sbcl-burgled-batteries3-fix-signals.patch	\
   %D%/packages/patches/sbcl-clml-fix-types.patch		\
   %D%/packages/patches/sbcl-png-fix-sbcl-compatibility.patch	\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\

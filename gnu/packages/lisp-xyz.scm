@@ -5657,7 +5657,9 @@ high-level way.  This library provides such operators.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1nzn7jawrfajyzwfnzrg2cmn9xxadcqh4szbpg0jggkhdkdzz4wa"))))
+           "1nzn7jawrfajyzwfnzrg2cmn9xxadcqh4szbpg0jggkhdkdzz4wa"))
+         (patches
+          (search-patches "sbcl-burgled-batteries3-fix-signals.patch"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:tests? #f
