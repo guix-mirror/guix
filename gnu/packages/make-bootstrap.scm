@@ -206,8 +206,17 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                   (("^xz_LDADD =")
                                    "xz_LDADD = -all-static"))
                                 #t)))))))
-        (gawk (package (inherit gawk)
-                (source (origin (inherit (package-source gawk))
+        (gawk (package
+                (inherit gawk)
+                (source (origin
+                          (inherit (package-source gawk))
+                          (modules '((guix build utils)))
+                          (snippet
+                           ;; Do not build 'getopt.c' since that leads to a
+                           ;; link failure due to duplicate symbols with
+                           ;; 'libc.a'.
+                           '(substitute* "support/Makefile.in"
+                              (("getopt\\.\\$\\(OBJEXT\\)") "")))
                           (patches (cons (search-patch "gawk-shell.patch")
                                          (origin-patches
                                           (package-source gawk))))))
