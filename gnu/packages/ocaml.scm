@@ -4014,7 +4014,7 @@ long and size_t whose sizes depend on the host platform.")
 (define-public ocaml-ctypes
   (package
    (name "ocaml-ctypes")
-   (version "0.18.0")
+   (version "0.19.1")
    (home-page "https://github.com/ocamllabs/ocaml-ctypes")
    (source (origin
              (method git-fetch)
@@ -4024,34 +4024,27 @@ long and size_t whose sizes depend on the host platform.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "03zrbnl16m67ls0yfhq7a4k4238x6x6b3m456g4dw2yqwc153vks"))))
+               "1xi1a486gssrb23zln3sf7zn0rmyl1k684bdf9iqkhgpz607fq6s"))))
    (build-system ocaml-build-system)
    (arguments
-    `(#:tests? #f; require an old lwt
-      #:make-flags
+    `(#:make-flags
       (list (string-append "INSTALL_HEADERS = $(wildcard $($(PROJECT).dir)/*.h)"))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'make-writable
           (lambda _
-            (for-each
-              (lambda (file)
-                (let ((stat (stat file)))
-                  (chmod file (+ #o200 (stat:mode stat)))))
-              (find-files "." "."))
-            #t))
+            (for-each make-file-writable
+                      (find-files "."))))
         (delete 'configure))))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ("ounit" ,ocaml-ounit)
+      ("lwt" ,ocaml-lwt)))
    (propagated-inputs
     `(("bigarray-compat" ,ocaml-bigarray-compat)
       ("integers" ,ocaml-integers)))
    (inputs
-    `(("libffi" ,libffi)
-      ("ounit" ,ocaml-ounit)
-      ("lwt" ,ocaml-lwt)
-      ("topkg" ,ocaml-topkg)
-      ("opam" ,opam)))
+    `(("libffi" ,libffi)))
    (synopsis "Library for binding to C libraries using pure OCaml")
    (description "Ctypes is a library for binding to C libraries using pure
 OCaml.  The primary aim is to make writing C extensions as straightforward as
