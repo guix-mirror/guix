@@ -40,6 +40,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system haskell)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gl)
@@ -105,6 +106,8 @@ library.  It is primarily used with HLint's @code{--refactor} flag.")
             "https://hackage.haskell.org/package/cabal-install/cabal-install-"
             version
             ".tar.gz"))
+      (patches (search-patches "cabal-install-base16-bytestring1.0.patch"
+                               "cabal-install-ghc8.10.patch"))
       (sha256
        (base32 "1c0cc256bha97aj7l0lf76l5swlnmwcqppiz8l4cl5xgba4mwmd0"))))
    (build-system haskell-build-system)
