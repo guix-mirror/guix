@@ -20,9 +20,13 @@
 (define-module (guix scripts home import)
   #:use-module (guix profiles)
   #:use-module (guix ui)
+  #:use-module (guix utils)
+  #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (import-manifest))
 
 ;;; Commentary:

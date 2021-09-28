@@ -23,6 +23,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 curried-definitions)
   #:use-module (ice-9 match)
+  #:use-module (guix i18n)
+  #:use-module (guix diagnostics)
 
   #:export (filter-configuration-fields
 

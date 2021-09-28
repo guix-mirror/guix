@@ -287,9 +287,9 @@ The value of an XDG MIME entry must be a list, string or symbol, was given ~a")
 
 @example
 (merge-duplicates '((key1 . value1)
-                      (key2 . value2)
-                      (key1 . value3)
-                      (key1 . value4)) '())
+                    (key2 . value2)
+                    (key1 . value3)
+                    (key1 . value4)) '())
 
 @result{} ((key1 . (value4 value3 value1)) (key2 . value2))
 @end example"
@@ -299,14 +299,16 @@ The value of an XDG MIME entry must be a list, string or symbol, was given ~a")
                   (tail (cdr alist))
                   (key (first head))
                   (value (cdr head))
-                  (duplicate? (assoc key acc)))
+                  (duplicate? (assoc key acc))
+                  (ensure-list (lambda (x)
+                                 (if (list? x) x (list x)))))
              (if duplicate?
                  ;; XXX: This will change the order of things,
                  ;; though, it shouldn't be a problem for XDG MIME.
                  (merge-duplicates
                   tail
                   (alist-cons key
-                              (cons value (maybe-list (cdr duplicate?)))
+                              (cons value (ensure-list (cdr duplicate?)))
                               (alist-delete key acc)))
                  (merge-duplicates tail (cons head acc)))))))
 
