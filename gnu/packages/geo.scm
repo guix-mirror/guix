@@ -514,7 +514,7 @@ fully fledged Spatial SQL capabilities.")
 (define-public proj
   (package
     (name "proj")
-    (version "6.3.1")
+    (version "7.2.1")
     (source
      (origin
        (method url-fetch)
@@ -522,22 +522,28 @@ fully fledged Spatial SQL capabilities.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1y46ij32j9b4x1kjnnlykcwk3kkjwkg44sfc1ziwm3a3g0ki3q3d"))))
-    (build-system gnu-build-system)
+         "050apzdn0isxpsblys1shrl9ccli5vd32kgswlgx1imrbwpg915k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DUSE_EXTERNAL_GTEST=ON")))
     (inputs
-     `(("sqlite" ,sqlite)))
+     `(("curl" ,curl)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("sqlite" ,sqlite)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://proj.org/")
     (synopsis "Coordinate transformation software")
     (description
      "Proj is a generic coordinate transformation software that transforms
-geospatial coordinates from one coordinate reference system (CRS) to another.
-This includes cartographic projections as well as geodetic transformations.
-PROJ includes command line applications for easy conversion of coordinates
-from text files or directly from user input.  In addition, proj also exposes
-an application programming interface that lets developers use the
-functionality of proj in their own software.")
+geospatial coordinates from one @acronym{CRS, coordinate reference system}
+to another.  This includes cartographic projections as well as geodetic
+transformations.  Proj includes command line applications for easy
+conversion of coordinates from text files or directly from user input.
+In addition, Proj also exposes an application programming interface that
+lets developers use the functionality of Proj in their own software.")
     (license (list license:expat
                    ;; src/projections/patterson.cpp
                    license:asl2.0
