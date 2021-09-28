@@ -8139,6 +8139,24 @@ answers.")
        (sha256
         (base32 "01w89g413s1da6rf94y1xnhw79cjy2bqb01yfjs58cy492cm0vr6"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons "^build\\/.*\\.el$"
+                       %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'mv-themes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (ice-9 regex))
+             (let* ((out (assoc-ref outputs "out"))
+                    (theme-dir (string-append (elpa-directory out) "/build")))
+               (for-each (lambda (theme)
+                           (rename-file
+                            theme
+                            (regexp-substitute #f
+                                               (string-match "build\\/" theme)
+                                               'pre 'post)))
+                         (find-files theme-dir "\\.el$"))
+               (delete-file-recursively theme-dir)))))))
     (home-page "https://github.com/belak/base16-emacs")
     (synopsis "Base16 color themes for Emacs")
     (description
