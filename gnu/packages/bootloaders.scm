@@ -380,7 +380,10 @@ menu to select one of the installed operating systems.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k8dvafd6410kqxf3kyr4y8jzmpmrih6wbjqg6gklak7945yflrc"))))
+                  "0k8dvafd6410kqxf3kyr4y8jzmpmrih6wbjqg6gklak7945yflrc"))
+                (patches
+                 (search-patches "syslinux-gcc10.patch"
+                                 "syslinux-strip-gnu-property.patch"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("nasm" ,nasm)
@@ -400,6 +403,7 @@ menu to select one of the installed operating systems.")
                (string-append "MANDIR=" %output "/share/man")
                "PERL=perl"
                "bios")
+         #:strip-flags '("--strip-debug" "--enable-deterministic-archives")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-files
