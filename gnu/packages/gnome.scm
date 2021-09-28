@@ -8262,6 +8262,22 @@ library.")
                                "g_strcmp0(base_name, \"fail.desktop\") == 0)"))
                (("g_error [(]\"GdmSession: no session desktop files installed, aborting\\.\\.\\.\"[)];")
                 "{ self->fallback_session_name = g_strdup(\"fail\"); goto out; }"))))
+         (add-before 'install 'install-logo
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (guix-icons (assoc-ref inputs "guix-icons"))
+                    (icon
+                     (string-append guix-icons "/share/icons/hicolor/\
+scalable/apps/guix-white-icon.svg"))
+                    (schema
+                     (string-append out "/share/glib-2.0/schemas/\
+org.gnome.login-screen.gschema.override")))
+               (mkdir-p (dirname schema))
+               (with-output-to-file schema
+                 (lambda ()
+                   (format #t "\
+[org.gnome.login-screen]
+logo='~a'~%" icon))))))
          ;; GDM requires that there be at least one desktop entry
          ;; file.  This phase installs a hidden one that simply
          ;; fails.  This enables users to use GDM with a
@@ -8306,6 +8322,7 @@ library.")
      `(("dconf" ,dconf)
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
+       ("guix-icons" ,guix-icons)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
