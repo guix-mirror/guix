@@ -16070,6 +16070,74 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
 support.")
     (license license:bsd-3)))
 
+(define-public python-pymodbus
+  (package
+    (name "python-pymodbus")
+    (version "2.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/riptideio/pymodbus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "009blvzi56434f0qfjdg3r8q1flb1jcx2786wi0i0xf81025z9cf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-problematic-tests
+                    (lambda _
+                      ;; The following test module rely on Python's own 'test'
+                      ;; module, which is not distributed in the Python
+                      ;; package of Guix.
+                      (delete-file "test/test_client_async_asyncio.py")
+                      (delete-file "test/test_client_sync_diag.py")))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     `(("python-asynctest" ,python-asynctest)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-redis" ,python-redis)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-tornado" ,python-tornado)
+       ("python-twisted" ,python-twisted)))
+    (propagated-inputs
+     `(("python-pyserial" ,python-pyserial)
+       ("python-six" ,python-six)
+       ;; For the REPL.
+       ("python-aiohttp" ,python-aiohttp)
+       ("python-click" ,python-click)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pygments" ,python-pygments)
+       ("python-pyserial-asyncio" ,python-pyserial-asyncio)))
+    (home-page "https://github.com/riptideio/pymodbus/")
+    (synopsis "Modbus protocol stack in Python")
+    (description "Pymodbus is a full Modbus protocol implementation using
+@code{asyncio}, @code{tornado} or @code{twisted} for its asynchronous
+communications core.  It includes the following @emph{client} features:
+@itemize
+@item full read/write protocol on discrete and register
+@item most of the extended protocol (diagnostic/file/pipe/setting/information)
+@item TCP, UDP, Serial ASCII, Serial RTU, and Serial Binary
+@item asynchronous and synchronous versions
+@item payload builder/decoder utilities
+@item pymodbus read eval print loop (REPL).
+@end itemize
+It also includes the following @emph{server} features:
+@itemize
+@item can function as a fully implemented Modbus server
+@item TCP, UDP, Serial ASCII, Serial RTU, and Serial Binary
+@item asynchronous and synchronous versions
+@item full server control context (device information, counters, etc)
+@item a number of backing contexts (database, redis, sqlite, a slave device).
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public python-kivy
   (package
     (name "python-kivy")
