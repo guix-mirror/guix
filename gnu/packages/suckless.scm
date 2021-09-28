@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -487,6 +488,36 @@ allows you to write down the presentation for a quick lightning talk within a
 few minutes.")
     (home-page "https://tools.suckless.org/sent")
     (license license:x11)))
+
+(define-public wmname
+  (package
+    (name "wmname")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.suckless.org/tools/wmname-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1i82ilhbk36hspc2j0fbpg27wjj7xnvzpv1ppgf6fccina4d36jm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases                         ; no tests
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("libx11" ,libx11)))
+    (home-page "https://tools.suckless.org/x/wmname/")
+    (synopsis "Print or set the window manager name")
+    (description "@command{wmname} prints/sets the window manager name
+property of the root window similar to how @command{hostname} behaves.  It is
+useful for fixing problems with JDK versions and other broken programs
+assuming a reparenting window manager for instance.")
+    (license license:expat)))
 
 (define-public xbattmon
   (package
