@@ -6105,7 +6105,7 @@ for asynchronous tasks.")
 (define-public emacs-butler
   (package
     (name "emacs-butler")
-    (version "0.2.4")
+    (version "0.2.6")
     (home-page "https://github.com/AshtonKem/Butler")
     (source (origin
               (method git-fetch)
@@ -6115,7 +6115,7 @@ for asynchronous tasks.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pii9dw4skq7nr4na6qxqasl36av8cwjp71bf1fgppqpcd9z8skj"))))
+                "1wsk5isza8xqr84w6haal95ssifz6j2lrr5phbsdc90jb9hicbff"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)))
