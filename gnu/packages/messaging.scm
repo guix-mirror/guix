@@ -1935,7 +1935,9 @@ support, and more.")
                 "1rmrn7a1bb7vm26yaklrvx008a9qhwc32s57dwrlf40lv9gffwny"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          ;; For 'system' commands in Scheme code.
          (add-after 'install 'wrap-program
