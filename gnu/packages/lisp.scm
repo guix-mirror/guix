@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -404,14 +405,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.1.6")
+    (version "2.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1vydq6mmssla2vn0plpsrm50n3b42a464zxw72j6qihas9fhq8cb"))))
+        (base32 "189gjqzdz10xh3ybiy4ch1r98bsmkcb4hpnrmggd4y2g5kqnyx4y"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
