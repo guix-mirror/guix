@@ -4028,7 +4028,14 @@ over, or update a value in arbitrary data structures.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "16k61f1jn3g48jaf3730b9l0izr5j933jzyri73nmcnjd09gm35i"))))
+         "16k61f1jn3g48jaf3730b9l0izr5j933jzyri73nmcnjd09gm35i"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Guile >= 3.0.7 no longer uses libltdl so we need to explicitly add
+        ;; ".libs" so that 'load-extension' finds the '.so' file.
+        '(substitute* "pre-inst-env.in"
+           (("^LD_LIBRARY_PATH=.*$")
+            "LD_LIBRARY_PATH=\"$abs_top_builddir/.libs\"\n")))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
