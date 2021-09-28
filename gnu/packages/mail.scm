@@ -1863,8 +1863,7 @@ delivery.")
                  (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
                  (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
                  (("'xzcat'") (string-append "'" xz "/bin/xzcat'"))
-                 (("'lzma'") (string-append "'" xz "/bin/lzma'"))))
-             #t))
+                 (("'lzma'") (string-append "'" xz "/bin/lzma'"))))))
          (add-before 'build 'fix-sh-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("scripts/lookups-Makefile" "scripts/reversion")
@@ -1873,8 +1872,7 @@ delivery.")
                (("\\| /bin/sh") "| sh"))
              (let ((bash (assoc-ref inputs "bash")))
                (substitute* '("scripts/Configure-eximon")
-                 (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
-             #t))
+                 (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))))
          (add-before 'build 'build-reproducibly
            (lambda _
              ;; The ‘compilation number’ is incremented for every build from the
