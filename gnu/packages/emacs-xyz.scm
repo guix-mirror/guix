@@ -9820,7 +9820,7 @@ mode with the package emacs-julia-mode.")
 (define-public emacs-julia-snail
   (package
     (name "emacs-julia-snail")
-    (version "1.0.0rc4")               ;rc5 requires CSTParser (julia package)
+    (version "1.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9829,7 +9829,7 @@ mode with the package emacs-julia-mode.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "065ix3jycsx3wvkq7a6060i93caxisdvgxgqb1l6rq15n4qln78y"))))
+                "11spibld7dyggr38hzkrd05lmdf847d57cc9qyk01mb3bli21vxd"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons "^JuliaSnail\\.jl" %default-include)))
