@@ -1213,6 +1213,36 @@ supports coverage of subprocesses.")
 contacting the real http server.")
     (license license:expat)))
 
+(define-public python-pytest-random-order
+  (package
+    (name "python-pytest-random-order")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-random-order" version))
+       (sha256
+        (base32 "0lpzl218l04vjy4gckrbrcacc3w9xrjnvz64bf2i132c58s5j8bb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "python" "-m" "pytest" "--random-order")))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/jbasko/pytest-random-order")
+    (synopsis "Pytest plugin to randomize the order of tests")
+    (description "@code{pytest-random-order} is a Pytest plugin that
+randomizes the order of tests.  This can be useful to detect a test that
+passes just because it happens to run after an unrelated test that leaves the
+system in a favourable state.  The plugin allows user to control the level of
+randomness they want to introduce and to disable reordering on subsets of
+tests.  Tests can be rerun in a specific order by passing a seed value
+reported in a previous test run.")
+    (license license:expat)))
+
 (define-public python-pytest-runner
   (package
     (name "python-pytest-runner")
