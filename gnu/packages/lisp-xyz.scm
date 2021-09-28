@@ -1813,8 +1813,8 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
   (sbcl-package->ecl-package sbcl-eos))
 
 (define-public sbcl-esrap
-  (let ((commit "da6b24fb18bdb8e7e177bcf2820cdaf0b560deb6")
-        (revision "1"))
+  (let ((commit "866f28fa7a2c1d3fb6d0d0423850d1f9d955750f")
+        (revision "2"))
     (package
       (name "sbcl-esrap")
       (version (git-version "0.18" revision commit))
@@ -1825,13 +1825,15 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
                (url "https://github.com/scymtym/esrap")
                (commit commit)))
          (sha256
-          (base32 "12vf3bxwzf8icnf6rw1xalvm7493cfbb46r2vlhc09s59djkf39q"))
+          (base32 "19rb3dmpw3csqqagmrf80dpk5d2qn0l7fpfmxx5zwdnjk367kbwg"))
          (file-name (git-file-name "esrap" version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (inputs
-       `(("alexandria" ,sbcl-alexandria)))
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivial-with-current-source-form"
+          ,sbcl-trivial-with-current-source-form)))
       (synopsis "Common Lisp packrat parser")
       (description
        "This is a packrat parser for Common Lisp.
