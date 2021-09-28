@@ -376,15 +376,21 @@ tagged text in SDL applications.")
 (define-public sdl-ttf
   (package
     (name "sdl-ttf")
-    (version "2.0.11")
+    (version "2.0.11.1")
+    ;; No release tarball for 2.0.11.1, changes:
+    ;; <https://github.com/libsdl-org/SDL_ttf/commit/e31d11a692>
     (source (origin
-             (method url-fetch)
-             (uri
-              (string-append "https://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-"
-                             version ".tar.gz"))
-             (sha256
-              (base32
-               "1dydxd4f5kb1288i5n5568kdk2q7f8mqjr7i7sd33nplxjaxhk3j"))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libsdl-org/SDL_ttf")
+                    (commit "e31d11a692e5b55e8e624ad766e4e44d655422c8")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1id1cdign615wd5rq0g4ppzwclvhkwd61yb5rwvvvakkpplp3lvd"))
+              ;; Remove bundled libraries.
+              (modules '((guix build utils)))
+              (snippet '(delete-file-recursively "external"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("sdl" ,sdl)))
     (inputs `(("freetype" ,freetype)
