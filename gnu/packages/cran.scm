@@ -16923,14 +16923,14 @@ include
 (define-public r-haplo-stats
   (package
     (name "r-haplo-stats")
-    (version "1.8.6")
+    (version "1.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haplo.stats" version))
        (sha256
         (base32
-         "1imz4gs0n57vixwwbirrihpgvn2pyj5da4rgjcjk14n2xkk0nay7"))))
+         "1q2zn72j92bwhcdswk4qqfgzch56p9pcy2xhkd3safvqp3l9rzpw"))))
     (properties `((upstream-name . "haplo.stats")))
     (build-system r-build-system)
     (propagated-inputs
