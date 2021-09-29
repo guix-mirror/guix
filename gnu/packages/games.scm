@@ -9343,6 +9343,7 @@ play with up to four players simultaneously.  It has network support.")
               (method url-fetch)
               (uri (string-append "https://www.hedgewars.org/download/releases/"
                                   "hedgewars-src-" version ".tar.bz2"))
+              (patches (search-patches "hedgewars-network-bsd.patch"))
               (sha256
                (base32
                 "0nqm9w02m0xkndlsj6ys3wr0ik8zc14zgilq7k6fwjrf3zk385i1"))))
