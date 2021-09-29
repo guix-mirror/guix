@@ -349,14 +349,14 @@ can read and write both the metadata and the cell data in a Sheet.")
 (define-public r-waldo
   (package
     (name "r-waldo")
-    (version "0.2.5")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "waldo" version))
        (sha256
         (base32
-         "09jhwpgd6hg4qyip4r7wzpjz0jr139fyspd5ncriqimp522snqbr"))))
+         "16q1xjbl9g04l1r1x3nid9hmz1sa35q6j33bigdzh4y4zcd8qb7c"))))
     (properties `((upstream-name . "waldo")))
     (build-system r-build-system)
     (propagated-inputs
