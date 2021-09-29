@@ -4388,6 +4388,31 @@ acceleration scheme.  A tutorial style introduction to this package is
 available in a vignette.")
     (license license:gpl2+)))
 
+(define-public r-progressr
+  (package
+    (name "r-progressr")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "progressr" version))
+       (sha256
+        (base32 "03sk5cv8cywahlszjkd8pfqmhbj6cv0j54d3lassa7h44f20zryg"))))
+    (properties `((upstream-name . "progressr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)))
+    (home-page "https://progressr.futureverse.org")
+    (synopsis "Inclusive, unifying API for progress updates")
+    (description
+     "This package provides a minimal, unifying API for scripts and packages
+to report progress updates from anywhere including when using parallel
+processing.  The package is designed such that the developer can to focus on
+what progress should be reported on without having to worry about how to
+present it.  The end user has full control of how, where, and when to render
+these progress updates.")
+    (license license:gpl3+)))
+
 (define-public r-lava
   (package
     (name "r-lava")
