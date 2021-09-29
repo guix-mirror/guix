@@ -1929,20 +1929,21 @@ language, which is stable, powerful, and CSS compatible.")
 (define-public r-bslib
   (package
     (name "r-bslib")
-    (version "0.2.5.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bslib" version))
        (sha256
         (base32
-         "16f8d7lp2bdq1vipr60l75gibgdq08hmx212dhrh66nwf7qglhky"))
+         "0zfjavz5jw4lfbrmc3rgsivcrxq2ia9jwmfbcrdxnxlmyri8qinr"))
        (snippet
         '(for-each delete-file
                    '("inst/lib/bs-a11y-p/plugins/js/bootstrap-accessibility.min.js"
                      "inst/lib/bs-colorpicker/js/bootstrap-colorpicker.min.js"
-                     "inst/lib/bs-sass/assets/javascripts/bootstrap.min.js"
-                     "inst/lib/bs/dist/js/bootstrap.bundle.min.js")))))
+                     "inst/lib/bs3/assets/javascripts/bootstrap.min.js"
+                     "inst/lib/bs4/dist/js/bootstrap.bundle.min.js"
+                     "inst/lib/bs5/dist/js/bootstrap.bundle.min.js")))))
     (properties `((upstream-name . "bslib")))
     (build-system r-build-system)
     (arguments
@@ -1961,10 +1962,12 @@ language, which is stable, powerful, and CSS compatible.")
                          "bs-a11y-p/plugins/js/bootstrap-accessibility.min.js")
                         ("bs-colorpicker/js/bootstrap-colorpicker.js"
                          "bs-colorpicker/js/bootstrap-colorpicker.min.js")
-                        ("bs-sass/assets/javascripts/bootstrap.js"
-                         "bs-sass/assets/javascripts/bootstrap.min.js")
-                        (,(assoc-ref inputs "js-bootstrap-bundle")
-                         "bs/dist/js/bootstrap.bundle.min.js"))))
+                        ("bs3/assets/javascripts/bootstrap.js"
+                         "bs3/assets/javascripts/bootstrap.min.js")
+                        (,(assoc-ref inputs "js-bootstrap4-bundle")
+                         "bs4/dist/js/bootstrap.bundle.min.js")
+                        (,(assoc-ref inputs "js-bootstrap5-bundle")
+                         "bs5/dist/js/bootstrap.bundle.min.js"))))
                  (lambda (sources targets)
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
@@ -1976,18 +1979,24 @@ language, which is stable, powerful, and CSS compatible.")
      `(("r-htmltools" ,r-htmltools)
        ("r-jquerylib" ,r-jquerylib)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-magrittr" ,r-magrittr)
        ("r-rlang" ,r-rlang)
        ("r-sass" ,r-sass)))
     (native-inputs
      `(("esbuild" ,esbuild)
-       ("js-bootstrap-bundle"
+       ("js-bootstrap4-bundle"
         ,(origin
            (method url-fetch)
-           (uri "https://raw.githubusercontent.com/twbs/bootstrap/v4.5.3/dist/js/bootstrap.bundle.js")
+           (uri "https://raw.githubusercontent.com/twbs/bootstrap/v4.6.0/dist/js/bootstrap.bundle.js")
            (sha256
             (base32
-             "1lcsxj7gcm56va3gck47ggpwzjxrzq27sgjzdw6c54qkp0487sak"))))))
+             "04abvgp923w36qfqkkl2syim3bl119nwxbgials90z1jyb8jgss1"))))
+       ("js-bootstrap5-bundle"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/twbs/bootstrap/v5.0.2/dist/js/bootstrap.bundle.js")
+           (sha256
+            (base32
+             "06vin94nqw1vzs4zrqcms8z9js9fckbj8gwyx07awm8jkjhnqfhl"))))))
     (home-page "https://rstudio.github.io/bslib/")
     (synopsis "Custom Bootstrap Sass themes for shiny and rmarkdown")
     (description
