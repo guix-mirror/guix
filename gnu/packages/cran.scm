@@ -28976,14 +28976,14 @@ vector machines, and gradient boosting.")
 (define-public r-bbotk
   (package
     (name "r-bbotk")
-    (version "0.3.2")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bbotk" version))
        (sha256
         (base32
-         "0bd9nxfgsj4ixpgky1mj6knb8l8nivvxpqpyw8vgpkj0za7gp4gr"))))
+         "09cw6z397laszsg5wsgpjh7jda74amqrcl2p25bgjg33ina2nvg7"))))
     (properties `((upstream-name . "bbotk")))
     (build-system r-build-system)
     (propagated-inputs
