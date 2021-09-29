@@ -12994,17 +12994,17 @@ manipulate tree data.")
 (define-public r-rvcheck
   (package
     (name "r-rvcheck")
-    (version "0.1.8")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvcheck" version))
        (sha256
-        (base32 "0627bc8qmhxmd63yh6f90qni3qw1zwdpxjln2qbychzmzd4am9ac"))))
+        (base32 "09gx29q882vh4q1qbb8z8lc3pgmpn7bk8skzcm85mrf3x3vgvkpa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocmanager" ,r-biocmanager)
-       ("r-rlang" ,r-rlang)))
+       ("r-yulab-utils" ,r-yulab-utils)))
     (home-page "https://cran.r-project.org/web/packages/rvcheck")
     (synopsis "R package version check")
     (description
