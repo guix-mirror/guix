@@ -88,6 +88,43 @@ data in a standard way.")
 interfaces with pytest.")
     (license license:expat)))
 
+(define-public python-pytest-csv
+  (package
+    (name "python-pytest-csv")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI archive
+       (uri (git-reference
+             (url "https://github.com/nicoulaj/pytest-csv")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17518f2fn5l98lyk9p8r7215c1whi61imzrh6ahrmcksr8w0zz04"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-xdist" ,python-pytest-xdist-next)
+       ("python-tabulate" ,python-tabulate)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest-6)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/nicoulaj/pytest-csv")
+    (synopsis "CSV reporter for Pytest")
+    (description "This packages provides a plugin for Pytest that enables a
+CSV output mode for Pytest.  It can be enabled via the @option{--csv} option
+it adds to the Pytest command line interface (CLI).")
+    (license license:gpl3+)))
+
 (define-public python-testfixtures
   (package
     (name "python-testfixtures")
