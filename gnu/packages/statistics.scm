@@ -2331,24 +2331,24 @@ tables, autolinks and strikethrough text.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "7.1.1")
+    (version "7.1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "0qc8akwfwmaqsjaza87f5fi0zk6sh3l6j3assbs6chvx0gnmvidx"))))
+                "1zf55wywlpy7mk7zfyi3s9fhhg1m9kvafzj46iqw5cbvnlg3ssdk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
        ("r-commonmark" ,r-commonmark)
+       ("r-cpp11" ,r-cpp11)
        ("r-desc" ,r-desc)
        ("r-digest" ,r-digest)
        ("r-knitr" ,r-knitr)
        ("r-pkgload" ,r-pkgload)
        ("r-purrr" ,r-purrr)
        ("r-r6" ,r-r6)
-       ("r-rcpp" ,r-rcpp)
        ("r-rlang" ,r-rlang)
        ("r-stringi" ,r-stringi)
        ("r-stringr" ,r-stringr)
