@@ -23316,14 +23316,14 @@ PDF or PostScript.")
 (define-public r-influencer
   (package
     (name "r-influencer")
-    (version "0.1.0")
+    (version "0.1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "influenceR" version))
        (sha256
         (base32
-         "12p9362hkndlnz1rd8j2rykg57kbm6l7ks60by3rd25xg50k5jag"))))
+         "0rj7rm236vn3v8302nwl12s0kvpv6xpdbm3q3gxk7vgwfl8nzi33"))))
     (properties `((upstream-name . "influenceR")))
     (build-system r-build-system)
     (propagated-inputs
