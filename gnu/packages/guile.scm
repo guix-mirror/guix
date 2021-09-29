@@ -63,9 +63,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix deprecation)
-  #:use-module (guix utils)
-  #:use-module (ice-9 match)
-  #:use-module ((srfi srfi-1) #:prefix srfi-1:))
+  #:use-module (guix utils))
 
 ;;; Commentary:
 ;;;
@@ -327,9 +325,8 @@ without requiring the source code to be rewritten.")
     ;; Build with the bundled mini-GMP to avoid interference with GnuTLS' own
     ;; use of GMP via Nettle: <https://issues.guix.gnu.org/46330>.
     (propagated-inputs
-     (srfi-1:fold srfi-1:alist-delete
-                  (package-propagated-inputs guile-2.2)
-                  '("gmp" "libltdl")))
+     (modify-inputs (package-propagated-inputs guile-2.2)
+       (delete "gmp" "libltdl")))
     (arguments
      (substitute-keyword-arguments (package-arguments guile-2.0)
        ((#:configure-flags flags ''())
@@ -394,8 +391,8 @@ without requiring the source code to be rewritten.")
    (package
      (inherit guile-3.0-latest)
      (propagated-inputs
-      `(("bdw-gc" ,libgc-7)
-        ,@(srfi-1:alist-delete "bdw-gc" (package-propagated-inputs guile-3.0)))))))
+      (modify-inputs (package-propagated-inputs guile-3.0)
+        (replace "bdw-gc" libgc-7))))))
 
 (define-public guile-3.0/fixed
   ;; A package of Guile that's rarely changed.  It is the one used in the
@@ -596,18 +593,18 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
                  ;; FAIL: test-out-of-memory
                  (substitute* "test-suite/standalone/Makefile.am"
                    (("(check_SCRIPTS|TESTS) \\+= test-out-of-memory") ""))
-                 
+
                  (patch-shebang "build-aux/git-version-gen")
                  (invoke "sh" "autogen.sh")
                  #t))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("flex" ,flex)
-         ("texinfo" ,texinfo)
-         ("gettext" ,gettext-minimal)
-         ,@(package-native-inputs guile-2.2))))))
+       (modify-inputs (package-native-inputs guile-2.2)
+         (prepend autoconf
+                  automake
+                  libtool
+                  flex
+                  texinfo
+                  gettext-minimal))))))
 
 
 ;;;

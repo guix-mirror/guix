@@ -686,13 +686,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
       (outputs (delete "debug" (package-outputs guile)))
 
       (inputs
-       `(("libunistring:static" ,libunistring "static")
-         ,@(package-inputs guile)))
+       (modify-inputs (package-inputs guile)
+         (prepend `(,libunistring "static"))))
 
       (propagated-inputs
-       `(("bdw-gc" ,libgc/static-libs)
-         ,@(alist-delete "bdw-gc"
-                         (package-propagated-inputs guile))))
+       (modify-inputs (package-propagated-inputs guile)
+         (replace "bdw-gc" libgc/static-libs)))
       (arguments
        (substitute-keyword-arguments (package-arguments guile)
          ((#:configure-flags flags '())
