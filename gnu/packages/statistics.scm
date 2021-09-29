@@ -2030,14 +2030,14 @@ chain.")
 (define-public r-ade4
   (package
     (name "r-ade4")
-    (version "1.7-17")
+    (version "1.7-18")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "ade4" version))
         (sha256
           (base32
-            "0s9x29xscgfdk1cdk1hanmkrrgj9vibf5gvwlbx21mhjnf0dzngf"))))
+            "09f5kh2mwygqpnvf53k0r54k0cvaafxm9x4nm819gwv05k2g9dpc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
