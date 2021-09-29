@@ -23670,14 +23670,14 @@ programming} (OOP) using R Reference Class.")
 (define-public r-proxyc
   (package
     (name "r-proxyc")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proxyC" version))
        (sha256
         (base32
-         "08h79wzk8hp5yn3sxy1jcd1yljj25s7fac96l2jqavwd026y6j3l"))))
+         "1j8zsxdnpi8bywd7hhm47icgl1jhfyd8myj78bqgk7warai6m3iq"))))
     (properties `((upstream-name . "proxyC")))
     (build-system r-build-system)
     (propagated-inputs
