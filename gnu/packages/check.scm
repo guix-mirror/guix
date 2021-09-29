@@ -1014,6 +1014,14 @@ and many external plugins.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version
+           ;; The version string is usually derived via setuptools-scm, but
+           ;; without the git metadata available, the version string is set to
+           ;; '0.0.0'.
+           (lambda _
+             (substitute* "setup.py"
+               (("setup\\(\\)")
+                (format #f "setup(version=~s)" ,version)))))
          (replace 'check
            (lambda* (#:key (tests? #t) #:allow-other-keys)
              (setenv "TERM" "dumb")     ;attempt disabling markup tests
