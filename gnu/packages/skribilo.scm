@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +65,12 @@
                                  " -c"))))
              #t)))
 
-       #:parallel-build? #f))
+       #:parallel-build? #f
+
+       ;; XXX: Temporarily disable tests because they rely on
+       ;; 'test-runner-current' *not* returning #f after 'test-end', which is
+       ;; no longer the case in Guile >= 3.0.6.  This is fixed upstream.
+       #:tests? #f))
 
     (native-inputs `(("pkg-config" ,pkg-config)))
 
