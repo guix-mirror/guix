@@ -31520,14 +31520,14 @@ functions-as-a-service, containers, batch processing, and more.")
 (define-public r-paws
   (package
     (name "r-paws")
-    (version "0.1.11")
+    (version "0.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "paws" version))
        (sha256
         (base32
-         "1pkwjdrziyh6bhpilx29zsv2nmv60z6fqxgx2kvjqvl8z36yqfhw"))))
+         "0kn1z045r106fwqcaz52hb02bhrcblh479cajfjiq480s1iljcw6"))))
     (properties `((upstream-name . "paws")))
     (build-system r-build-system)
     (propagated-inputs
@@ -31537,6 +31537,8 @@ functions-as-a-service, containers, batch processing, and more.")
        ("r-paws-cost-management" ,r-paws-cost-management)
        ("r-paws-customer-engagement" ,r-paws-customer-engagement)
        ("r-paws-database" ,r-paws-database)
+       ("r-paws-developer-tools" ,r-paws-developer-tools)
+       ("r-paws-end-user-computing" ,r-paws-end-user-computing)
        ("r-paws-machine-learning" ,r-paws-machine-learning)
        ("r-paws-management" ,r-paws-management)
        ("r-paws-networking" ,r-paws-networking)
