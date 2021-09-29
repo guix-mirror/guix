@@ -31260,6 +31260,28 @@ tools services, including version control, continuous integration and
 deployment, and more.")
     (license license:asl2.0)))
 
+(define-public r-paws-end-user-computing
+  (package
+    (name "r-paws-end-user-computing")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.end.user.computing" version))
+       (sha256
+        (base32 "1xxsz86nx128sizym9np8vldzkbym0p3i6vcy94kq1y0cylaicv3"))))
+    (properties `((upstream-name . "paws.end.user.computing")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services end user computing services")
+    (description
+     "This package provides an interface to Amazon Web Services end user
+computing services, including collaborative document editing, mobile intranet,
+and more.")
+    (license license:asl2.0)))
+
 (define-public r-paws-application-integration
   (package
     (name "r-paws-application-integration")
