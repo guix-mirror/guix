@@ -474,7 +474,7 @@ Optionally include a VERSION string to append to the name."
 because goproxy servers don't currently provide all the information needed to
 build a package."
   (define (go-import->module-meta content-text)
-    (match (string-split content-text #\space)
+    (match (string-tokenize content-text char-set:graphic)
       ((root-path vcs repo-url)
        (make-module-meta root-path (string->symbol vcs)
                          (strip-.git-suffix/maybe repo-url)))))
