@@ -2532,14 +2532,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "1kmlw5hs2c69qgkkipjxb6j05wdk6jiqrac3y4z9ds63c3r9lng8"))))
+         "0qlh4s1g9rbm6c3s906dhw3xsz28m8fg6cyynlkhvis533dk0pvb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
