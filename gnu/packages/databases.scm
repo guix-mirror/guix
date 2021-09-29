@@ -900,14 +900,16 @@ Language.")
                (for-each disable-plugin disabled-plugins)
                #t)))
          (replace 'check
-           (lambda* (#:key (tests? #t) #:allow-other-keys)
+           (lambda* (#:key (tests? #t) parallel-tests? #:allow-other-keys)
              (if tests?
                  (with-directory-excursion "mysql-test"
                    (invoke "./mtr" "--verbose"
                            "--retry=3"
                            "--testcase-timeout=40"
                            "--suite-timeout=600"
-                           "--parallel" (number->string (parallel-job-count))
+                           "--parallel" (number->string (if parallel-tests?
+                                                          (parallel-job-count)
+                                                          1))
                            ;; Skip the replication tests: they are very I/O
                            ;; intensive and frequently causes indeterministic
                            ;; failures even on powerful hardware.
