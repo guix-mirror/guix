@@ -17752,14 +17752,14 @@ that fills this gap.")
 (define-public r-europepmc
   (package
     (name "r-europepmc")
-    (version "0.4")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "europepmc" version))
        (sha256
         (base32
-         "174nnyc2mbgqxb5kgqabn1vf71c2mps7ig2bclq4is0f7nb64pym"))))
+         "16japbndid34shqg8n0bmjrxn84xmhrylvz832zclcllm6i93fn1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
