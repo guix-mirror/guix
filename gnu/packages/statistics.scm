@@ -3726,14 +3726,14 @@ package registries.")
 (define-public r-rngtools
   (package
     (name "r-rngtools")
-    (version "1.5")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rngtools" version))
        (sha256
         (base32
-         "0xgmg3qb6insc157as47mcm9sdjdpy9jirh7w06bxb7pfcxqfx42"))))
+         "0kd7x214cqw7hzpmk1iqy1bn7j6x0ady0yz2hsdbclbq9k57d33z"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)))
