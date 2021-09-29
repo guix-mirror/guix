@@ -21185,14 +21185,14 @@ See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
 (define-public r-lhs
   (package
     (name "r-lhs")
-    (version "1.1.1")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lhs" version))
        (sha256
         (base32
-         "1p4h03qlijs2a59wfd4rlvdlb9i87pw2zm8xsjd6yzz8vlm9yglh"))))
+         "1l861h76q5w0nbnbybhgg7hiw7fks677jakyd49n1whwvd48sfz4"))))
     (properties `((upstream-name . "lhs")))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
