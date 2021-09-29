@@ -1617,17 +1617,18 @@ a list of p-values.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.5.1.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "1fm4cymz4hz6lds80m9j5q00xy5flkrmfn5dkrn3s3rkzqpyggzh"))))
+                "1yv74ydyqm28gfhimmr7825sj1iaawpwsnzq05c2ma756q2dbivx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
        ("r-digest" ,r-digest)
+       ("r-fastmap" ,r-fastmap)
        ("r-rlang" ,r-rlang)))
     (home-page "https://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
