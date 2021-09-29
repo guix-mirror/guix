@@ -21537,6 +21537,11 @@ the @code{aroma.affymetrix} package.")
          "08xv8b3c81nf54viyr3w912al18483k5gfnjpg7bxbdfk70dfzbh"))))
     (properties `((upstream-name . "R.filesets")))
     (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-r-cache" ,r-r-cache)
