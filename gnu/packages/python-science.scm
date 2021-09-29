@@ -453,8 +453,61 @@ doing practical, real world data analysis in Python.")
                     ;; from <https://github.com/pandas-dev/pandas/pull/29294>.
                     (substitute* "pandas/io/parsers.py"
                       (("if 'NULL byte' in msg:")
-                       "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
-                    #t)))))))
+                       "if 'NULL byte' in msg or 'line contains NUL' in msg:"))))))
+      (arguments
+       `(#:modules ((guix build utils)
+                    (guix build python-build-system)
+                    (ice-9 ftw)
+                    (srfi srfi-26))
+         #:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-which
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((which (assoc-ref inputs "which")))
+                 (substitute* "pandas/io/clipboard/__init__.py"
+                   (("^CHECK_CMD = .*")
+                    (string-append "CHECK_CMD = \"" which "\"\n"))))))
+           (replace 'check
+             (lambda _
+               (let ((build-directory
+                      (string-append
+                       (getcwd) "/build/"
+                       (car (scandir "build"
+                                     (cut string-prefix? "lib." <>))))))
+                 ;; Disable the "strict data files" option which causes
+                 ;; the build to error out if required data files are
+                 ;; not available (as is the case with PyPI archives).
+                 (substitute* "setup.cfg"
+                   (("addopts = --strict-data-files") "addopts = "))
+                 (with-directory-excursion build-directory
+                   ;; Delete tests that require "moto" which is not yet
+                   ;; in Guix.
+                   (for-each delete-file
+                             '("pandas/tests/io/conftest.py"
+                               "pandas/tests/io/json/test_compression.py"
+                               "pandas/tests/io/parser/test_network.py"
+                               "pandas/tests/io/test_parquet.py"))
+                   (invoke "pytest" "-vv" "pandas" "--skip-slow"
+                           "--skip-network" "-k"
+                           ;; XXX: Due to the deleted tests above.
+                           "not test_read_s3_jsonl"))))))))
+      (propagated-inputs
+       `(("python-numpy" ,python2-numpy)
+         ("python-openpyxl" ,python2-openpyxl)
+         ("python-pytz" ,python2-pytz)
+         ("python-dateutil" ,python2-dateutil)
+         ("python-xlrd" ,python2-xlrd)))
+      (inputs
+       `(("which" ,which)))
+      (native-inputs
+       `(("python-cython" ,python2-cython)
+         ("python-beautifulsoup4" ,python2-beautifulsoup4)
+         ("python-lxml" ,python2-lxml)
+         ("python-html5lib" ,python2-html5lib)
+         ("python-nose" ,python2-nose)
+         ("python-pytest" ,python2-pytest)
+         ("python-pytest-mock" ,python2-pytest-mock))))))
 
 (define-public python-pyflow
   (package
