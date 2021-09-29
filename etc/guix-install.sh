@@ -139,12 +139,12 @@ chk_gpg_keyring()
 required to verify the Guix binary signature: $gpg_key_id.
 Would you like me to fetch it for you? (yes/no)"; then
                 wget "https://sv.gnu.org/people/viewgpg.php?user_id=$user_id" \
-                     -qO - | gpg --import -
+                     --no-verbose -O- | gpg --import -
             else
                 _err "${ERR}Missing OpenPGP public key ($gpg_key_id).
 Fetch it with this command:
 
-  wget \"https://sv.gnu.org/people/viewgpg.php?user_id=$user_id\" -qO - | \
+  wget \"https://sv.gnu.org/people/viewgpg.php?user_id=$user_id\" -O - | \
 sudo -i gpg --import -"
                 exit_flag=yes
             fi
@@ -272,7 +272,7 @@ guix_get_bin_list()
     _debug "--- [ ${FUNCNAME[0]} ] ---"
 
     # Filter only version and architecture
-    bin_ver_ls=("$(wget -qO- "$gnu_url" \
+    bin_ver_ls=("$(wget "$gnu_url" --no-verbose -O- \
         | sed -n -e 's/.*guix-binary-\([0-9.]*[a-z0-9]*\)\..*.tar.xz.*/\1/p' \
         | sort -Vu)")
 
@@ -305,7 +305,7 @@ guix_get_bin()
     _msg "${INF}Downloading Guix release archive"
 
     wget --help | grep -q '\--show-progress' \
-        && wget_args=("-q" "--show-progress")
+        && wget_args=("--no-verbose" "--show-progress")
 
     if wget "${wget_args[@]}" -P "$dl_path" \
             "${url}/${bin_ver}.tar.xz" "${url}/${bin_ver}.tar.xz.sig"; then
