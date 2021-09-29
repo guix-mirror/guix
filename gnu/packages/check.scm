@@ -981,21 +981,19 @@ standard library.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-version
+         (add-before 'build 'pretend-version
            ;; The version string is usually derived via setuptools-scm, but
            ;; without the git metadata available, the version string is set to
            ;; '0.0.0'.
            (lambda _
-             (substitute* "setup.py"
-               (("setup\\(\\)")
-                (format #f "setup(version=~s)" ,version)))))
+             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)))
          (replace 'check
            (lambda* (#:key (tests? #t) #:allow-other-keys)
              (setenv "TERM" "dumb")     ;attempt disabling markup tests
              (if tests?
                  (invoke "pytest" "-vv" "-k"
                          (string-append
-                          ;; This test involve the /usr directory, and fails.
+                          ;; This test involves the /usr directory, and fails.
                           " not test_argcomplete"
                           ;; These test do not honor the isatty detection and
                           ;; fail.
