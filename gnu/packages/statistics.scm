@@ -5219,14 +5219,14 @@ analysis} (PCA) by projection pursuit.")
 (define-public r-rrcov
   (package
     (name "r-rrcov")
-    (version "1.5-5")
+    (version "1.6-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rrcov" version))
        (sha256
         (base32
-         "0ag6q16ajkqwj28dk9vp4xkvqw26fqqqdxnz38gpszilirahfzqz"))))
+         "0i69gv55c86gkclwhch0jzdfyb20l20mx1nx1xp9qz71nd4klpvr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
