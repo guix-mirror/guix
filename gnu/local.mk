@@ -1426,8 +1426,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mailutils-variable-lookup.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/marble-qt-add-qt-headers.patch		\
-  %D%/packages/patches/mariadb-CVE-2021-27928.patch		\
-  %D%/packages/patches/mariadb-cmake-compat.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\

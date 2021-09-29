@@ -719,7 +719,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.5.8")
+    (version "10.5.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -727,9 +727,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1s3vfm73911cddjhgpcbkya6nz7ag2zygg56qqzwscn5ybv28j7b"))
-              (patches (search-patches "mariadb-CVE-2021-27928.patch"
-                                       "mariadb-cmake-compat.patch"))
+                "1gg4h9ahmk78cx01zyw0fqr6hhd78fsyhs0s34p3gi9hkak1qkxb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -839,29 +837,25 @@ Language.")
                     '(;; These fail because root@hostname == root@localhost in
                       ;; the build environment, causing a user count mismatch.
                       ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
-                      "funcs_1.is_columns_mysql"
-                      "main.join_cache"
                       "main.explain_non_select"
-                      "main.stat_tables"
-                      "main.stat_tables_innodb"
                       "main.upgrade_MDEV-19650"
                       "roles.acl_statistics"
+
+                      ;; Probably same as above, test failure reported upstream:
+                      ;; <https://jira.mariadb.org/browse/MDEV-26320>.
+                      "main.selectivity_no_engine"
 
                       ;; FIXME: This test checks various table encodings and
                       ;; fails because Guix defaults to UTF8 instead of the
                       ;; upstream default latin1_swedish_ci.  It's not easily
                       ;; substitutable because several encodings are tested.
-                      "main.sp2"
+                      "main.system_mysql_db"
 
                       ;; XXX: This test occasionally fails on i686-linux:
                       ;; <https://jira.mariadb.org/browse/MDEV-24458>
                       ,@(if (string-prefix? "i686" (%current-system))
                             '("main.myisampack")
-                            '())
-
-                      ;; This file contains a time bomb which makes it fail after
-                      ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
-                      "main.mysqldump"))
+                            '())))
 
                    ;; This file contains a list of known-flaky tests for this
                    ;; release.  Append our own items.
