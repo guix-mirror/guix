@@ -10548,7 +10548,7 @@ metrics, with methods for objects produced by the @code{methylumi} and
            (substitute* "src/Makevars"
              (("all: \\$\\(SHLIB\\)") "all:")
              (("\\$\\(SHLIB\\): liblzma.a") "")
-             (("(ZLIB|LZ4)/.*") "")
+             (("^	(ZLIB|LZ4)/.*") "")
              (("CoreArray/dVLIntGDS.cpp.*")
               "CoreArray/dVLIntGDS.cpp")
              (("CoreArray/dVLIntGDS.o.*")
@@ -10557,8 +10557,7 @@ metrics, with methods for objects produced by the @code{methylumi} and
               "PKG_LIBS = -llz4"))
            (substitute* "src/CoreArray/dStream.h"
              (("include \"../(ZLIB|LZ4|XZ/api)/(.*)\"" _ _ header)
-              (string-append "include <" header ">")))
-           #t))))
+              (string-append "include <" header ">")))))))
     (properties `((upstream-name . "gdsfmt")))
     (build-system r-build-system)
     (inputs
