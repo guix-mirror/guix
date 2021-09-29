@@ -25871,20 +25871,21 @@ including means, variances, intervals, and highest density regions.")
 (define-public r-posterior
   (package
     (name "r-posterior")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "posterior" version))
        (sha256
         (base32
-         "000k2sih7r89nmw3nwndx5jljcvkyr61b96mdkqrw83rs74lnh6f"))))
+         "1lpldkkkxv94dr30q5wb5qr61qrgp9shqnskgwriigy1phnjdxpg"))))
     (properties `((upstream-name . "posterior")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
        ("r-checkmate" ,r-checkmate)
        ("r-distributional" ,r-distributional)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-pillar" ,r-pillar)
        ("r-rlang" ,r-rlang)
        ("r-tensora" ,r-tensora)
