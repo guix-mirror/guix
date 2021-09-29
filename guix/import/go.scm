@@ -612,6 +612,8 @@ hint: use one of the following available versions ~a\n"
          (dependencies (if pin-versions?
                            dependencies+versions
                            (map car dependencies+versions)))
+         (module-path-sans-suffix
+          (match:prefix (string-match "([\\./]v[0-9]+)?$" module-path)))
          (guix-name (go-module->guix-package-name module-path))
          (root-module-path (module-path->repository-root module-path))
          ;; The VCS type and URL are not included in goproxy information. For
@@ -631,7 +633,7 @@ hint: use one of the following available versions ~a\n"
         (build-system go-build-system)
         (arguments
          '(#:import-path ,module-path
-           ,@(if (string=? module-path root-module-path)
+           ,@(if (string=? module-path-sans-suffix root-module-path)
                  '()
                  `(#:unpack-path ,root-module-path))))
         ,@(maybe-propagated-inputs
