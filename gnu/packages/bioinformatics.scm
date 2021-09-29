@@ -10560,7 +10560,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.52")
+    (version "0.0.53")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -10568,7 +10568,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "097cvc8kr3r1nq0sgjpirzmixwjl074qp4qq3sx4ngfqi06af6r9"))))
+                "0c6npx35sszycf059w1x1k4k9hq1qqxny0i4p57q1188czr4561h"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))
@@ -10592,6 +10592,7 @@ expression report comparing samples in an easily configurable manner.")
        ("r-ggrepel" ,r-ggrepel)
        ("r-gprofiler2" ,r-gprofiler2)
        ("r-heatmaply" ,r-heatmaply)
+       ("r-hexbin" ,r-hexbin)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-jsonlite" ,r-jsonlite)
        ("r-pheatmap" ,r-pheatmap)
