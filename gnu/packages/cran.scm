@@ -683,6 +683,26 @@ variables.")
 ")
     (license license:gpl2+)))
 
+(define-public r-lmodel2
+  (package
+    (name "r-lmodel2")
+    (version "1.7-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lmodel2" version))
+       (sha256
+        (base32 "1fiin2nkffbihz1s8ixmw9lgf8mn3j9krr8iiflizk10mdv54hnb"))))
+    (properties `((upstream-name . "lmodel2")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=lmodel2")
+    (synopsis "Model II regression")
+    (description
+     "This package computes model II simple linear regression using
+@dfn{ordinary least squares} (OLS), @dfn{major axis} (MA), @dfn{standard major
+axis} (SMA), and @dfn{ranged major axis} (RMA).")
+    (license license:gpl2)))
+
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
