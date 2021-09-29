@@ -31238,6 +31238,28 @@ management services, including cost and usage reports, budgets, pricing, and
 more.")
     (license license:asl2.0)))
 
+(define-public r-paws-developer-tools
+  (package
+    (name "r-paws-developer-tools")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "paws.developer.tools" version))
+       (sha256
+        (base32 "16gb8g8s67al7qdd95fbigxqkih9a9p7slkyf3cga42wb6miiby2"))))
+    (properties `((upstream-name . "paws.developer.tools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-paws-common" ,r-paws-common)))
+    (home-page "https://github.com/paws-r/paws")
+    (synopsis "Amazon Web Services developer tools services")
+    (description
+     "This package provides an interface to Amazon Web Services developer
+tools services, including version control, continuous integration and
+deployment, and more.")
+    (license license:asl2.0)))
+
 (define-public r-paws-application-integration
   (package
     (name "r-paws-application-integration")
