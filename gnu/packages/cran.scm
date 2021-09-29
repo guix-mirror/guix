@@ -706,19 +706,20 @@ axis} (SMA), and @dfn{ranged major axis} (RMA).")
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
-    (version "0.4.2-1")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggpmisc" version))
               (sha256
                (base32
-                "1jkxcmpxq3b5ng276adph25s5w9imjxr1lqasqw50d2kcdhq58cy"))))
+                "0ff84ybj4648c1v05ng3l62g9n52igjwvm320qkfbdzdxzncpzik"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-generics" ,r-generics)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggpp" ,r-ggpp)
+       ("r-lmodel2" ,r-lmodel2)
        ("r-lubridate" ,r-lubridate)
        ("r-mass" ,r-mass)
        ("r-plyr" ,r-plyr)
