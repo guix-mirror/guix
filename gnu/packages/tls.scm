@@ -1110,10 +1110,10 @@ coding footprint.")
             (separator #f)
             (files '("etc/ssl/certs/ca-certificates.crt")))))
     (home-page "https://dehydrated.io/")
-    (synopsis "Let's Encrypt/ACME client implemented as a shell script")
-    (description "Dehydrated is a client for signing certificates with an
-ACME-server (currently only provided by Let's Encrypt) implemented as a
-relatively simple Bash script.")
+    (synopsis "ACME client implemented as a shell script")
+    (description "Dehydrated is a client for obtaining certificates from an
+ACME server (such as Let's Encrypt) implemented as a relatively simple Bash
+script.")
     (license license:expat)))
 
 (define-public go-github-com-certifi-gocertifi
