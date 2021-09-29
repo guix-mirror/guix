@@ -10528,14 +10528,14 @@ metrics, with methods for objects produced by the @code{methylumi} and
 (define-public r-gdsfmt
   (package
     (name "r-gdsfmt")
-    (version "1.28.0")
+    (version "1.28.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gdsfmt" version))
        (sha256
         (base32
-         "119qdivd7vaaqkjb0nrwidi6g26hh8znhif3g4prqn7x5pl2clvy"))
+         "1w3z718q3bhh8bp71va9pbcd62pwbvgjw33ffg960jya40xssvc7"))
        (modules '((guix build utils)))
        ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
        ;; them and link with system libraries instead.
