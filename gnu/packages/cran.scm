@@ -28815,13 +28815,13 @@ Services (AWS) Simple Storage Service (S3) REST API.")
 (define-public r-lgr
   (package
     (name "r-lgr")
-    (version "0.4.2")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lgr" version))
               (sha256
                (base32
-                "0k4kacjk7swm3gmdpha1rg44xb29vzvhvx48jhpb78glj5c9phyr"))))
+                "18s92qyakhvp336kk2777ydypwfrfwfz6a1gqkq812zy3kcb4mcc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-r6" ,r-r6)))
