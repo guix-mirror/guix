@@ -19496,14 +19496,14 @@ path of values for the regularization parameter.")
 (define-public r-rhpcblasctl
   (package
     (name "r-rhpcblasctl")
-    (version "0.20-137")
+    (version "0.21-247")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RhpcBLASctl" version))
        (sha256
         (base32
-         "0vv144sgjhf7fazk633i16fc06g9k43syyxj1g34pi9gsgdcn0nv"))))
+         "09276fpkj6xa0zpzzdckclj923b0xr0rhfjiiwfli3kyqi2m37v2"))))
     (properties `((upstream-name . "RhpcBLASctl")))
     (build-system r-build-system)
     (home-page "https://prs.ism.ac.jp/~nakama/Rhpc/")
