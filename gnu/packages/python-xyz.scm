@@ -7700,24 +7700,37 @@ child application and control it as if a human were typing commands.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "5.0.1")
+    (version "6.3.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "setuptools_scm" version))
               (sha256
-               (base32
-                "0ahlrxxkx2xhmxskx57gc96w3bdndflxx30304ihvm7ds136nny8"))))
+               (base32 "1wm0i27siyy1yqr9rv7lqvb65agay9051yi8jzmi8dgb3q4ai6m4"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-packaging",python-packaging-bootstrap)
+       ("python-tomli" ,python-tomli)))
     (home-page "https://github.com/pypa/setuptools_scm/")
     (synopsis "Manage Python package versions in SCM metadata")
     (description
      "Setuptools_scm handles managing your Python package versions in
 @dfn{software configuration management} (SCM) metadata instead of declaring
 them as the version argument or in a SCM managed file.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-setuptools-scm))))))
 
 (define-public python2-setuptools-scm
-  (package-with-python2 python-setuptools-scm))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-setuptools-scm))))
+    (package/inherit base
+      (version "5.0.2")                  ;no python 2 support in version 6
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "setuptools_scm" version))
+                (sha256
+                 (base32
+                  "1j75i8avp9fhrkpbabsa8vyvbi49kmxlq6l10xir9qs96kfwx843"))))
+      (propagated-inputs '()))))
 
 (define-public python-sexpdata
   (package
