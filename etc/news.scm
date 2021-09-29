@@ -44,7 +44,10 @@ guix home --help
 
 See @command{info \"(guix) Home Configuration\"} for more information.")
          (de "Guix Home ist aus dem rde-Projekt ins offizielle Guix übernommen
-worden. Der neue Befehl @command{guix home} ermöglicht es, die Pakete und
+worden. Es ist als @emph{Technologievorschau} bereits verfügbar, aber die
+Schnittstelle kann sich in Zukunft noch ändern.
+
+Der neue Befehl @command{guix home} ermöglicht es, die Pakete und
 Konfigurationsdateien (Dotfiles) für ein Benutzerkonto im deklarativen Stil zu
 verwalten. Es ist analog dazu, wie man @command{guix system} benutzen kann, um
 sein System zu verwalten.
