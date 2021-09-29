@@ -62,6 +62,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
@@ -81,11 +82,13 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages uglifyjs)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 
 (define-public pspp
@@ -3209,43 +3212,400 @@ using the multicore functionality of the parallel package.")
     (license license:gpl2+)))
 
 (define-public r-dt
-  (package
-    (name "r-dt")
-    (version "0.18")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "DT" version))
-              (sha256
-               (base32
-                "1vxqmj01504k9639m2cig1s4qflz3dj54h9rgx5qa72fpkvkk411"))))
-    (properties
-     `((upstream-name . "DT")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-crosstalk" ,r-crosstalk)
-       ("r-htmltools" ,r-htmltools)
-       ("r-htmlwidgets" ,r-htmlwidgets)
-       ("r-jsonlite" ,r-jsonlite)
-       ("r-magrittr" ,r-magrittr)
-       ("r-promises" ,r-promises)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://rstudio.github.io/DT")
-    (synopsis "R wrapper of the DataTables JavaScript library")
-    (description
-     "This package allows for data objects in R to be rendered as HTML tables
+  (let ((javascript-sources
+         '(("https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"
+            "03ln7ys1q1hy3xpsrjxnjpg9hq3lfpqz0firrxsgjzj8fsw20is3"
+            "datatables")
+           ("https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.js"
+            "16clrnxm7axn6cdimyf3qbskxg10gpn9ld5ls2xdfw5q1qf2i4ml"
+            "datatables")
+           ("https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.js"
+            "16v49zqxr1zil19bcx3wdnv95zdpiz2m979aazan7z04ymqb2rzb"
+            "datatables")
+           ("https://cdn.datatables.net/1.10.20/js/dataTables.foundation.js"
+            "1gpjm1pi2pl0hxsn0pg3s3f382y2s7nsr06866vxld6gb8054lld"
+            "datatables")
+           ("https://cdn.datatables.net/1.10.20/js/dataTables.jqueryui.js"
+            "0nxd8jph34vsk8k8whs2yiybrn6nsnwzhri0bxn2k1dzmcvpn24i"
+            "datatables")
+           ("https://cdn.datatables.net/1.10.20/js/dataTables.semanticui.js"
+            "1477f49xyxs4phias789mbspv23w8alxchhl5b5iy0aw6vd35c43"
+            "datatables")
+           
+           ("https://cdn.datatables.net/autofill/2.3.4/js/dataTables.autoFill.js"
+            "04i6n7r3512gzfihl5wnhrvm0klnjp41g1z6cny3j803hvmnp8zk"
+            "datatables-extensions/AutoFill")
+           ("https://cdn.datatables.net/autofill/2.3.4/js/autoFill.bootstrap.js"
+            "1zi7iiq63i5qx3p9cyynn6am4idxwj8xaz8mp4n3klm1x68sc0ja"
+            "datatables-extensions/AutoFill")
+           ("https://cdn.datatables.net/autofill/2.3.4/js/autoFill.bootstrap4.js"
+            "1vk2smcz14raf0cz88a65yf36a7mnmbml02q03apg2b8bqy91m7w"
+            "datatables-extensions/AutoFill")
+           ("https://cdn.datatables.net/autofill/2.3.4/js/autoFill.foundation.js"
+            "0sbcib1461pkglk69fzzqi73g4abylah74f264v0f79dc5247yzz"
+            "datatables-extensions/AutoFill")
+           ("https://cdn.datatables.net/autofill/2.3.4/js/autoFill.jqueryui.js"
+            "1dw9vbbchzbd2c7id8na2p1cxac2kgjbzjrvqafra715hr0i4z3z"
+            "datatables-extensions/AutoFill")
+           ("https://cdn.datatables.net/autofill/2.3.4/js/autoFill.semanticui.js"
+            "07ck81y6wpqchq8jfym6gjgc57xwj6vv9h5w9grc1gps6p7q9xnr"
+            "datatables-extensions/AutoFill")
+
+           ("https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.js"
+            "15l9kd9898zm8xf996d5c761rwl55k4w718k9k5fzz2gh91g21g5"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.colVis.js"
+            "1rqlv5pacipl652xgyzsdq1gbfwv52rwl4mr2fx9a3py21yskppk"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.js"
+            "150r2ypxl017kl5agrn17cnyvwpf7x2x7vkqbc1qxif8vclf35kj"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.js"
+            "1d8is99yrh95hycjijzbrbxy1anfslab6krmhj2xbwsmssyn16xh"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.js"
+            "1irgspv2zidv6v0ay92152d8cvhz2zyrwb71xk3nw903223vc2gl"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.semanticui.js"
+            "1p02r953ampxlzfzpay227ya6qdzsxz2anjxpnx3q8qs6gv6y2jl"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.foundation.js"
+            "0aykm1sk8rwvxp5r4qnvbb2scx2bln5kh88h36829mcqcdksfc50"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.jqueryui.js"
+            "1im6f6jw3yc3959rw1i3bghvz863kmp3wgfvz661r1r2wjzzfs4d"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.bootstrap.js"
+            "1mzmpabhrk0iag7hb16n8bhghx4cprq39p2vqn3v65mpklajzznc"
+            "datatables-extensions/Buttons")
+           ("https://cdn.datatables.net/buttons/1.6.1/js/buttons.bootstrap4.js"
+            "0hfclipg43wr9p7irrcn9vp5wji8z7gz6y5mclkq88z1mlpwklzf"
+            "datatables-extensions/Buttons")
+           ;; It is not clear what version the bundled file corresponds to.
+           ("https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.js"
+            "18hpj9vwgki56ijb20l5gwmqa5p1d0xprn57z2mlg3ph6ll0bdkd"
+            "datatables-extensions/Buttons")
+           ("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.js"
+            "1sfw80az2cgzin5wk7q1p2n9zm66c35cz0m6isdygml81i594wia"
+            "datatables-extensions/Buttons")
+           ("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"
+            "1k324s0hw4lfpd71bb1cnv4j5096k8smk64fjdsh81sl0ykizf2w"
+            "datatables-extensions/Buttons")
+
+           ("https://cdn.datatables.net/colreorder/1.5.2/js/dataTables.colReorder.js"
+            "1dalc28km19xzzszsa82hsd9alikrqpzjvf9vzxkccjpf7m2sdqg"
+            "datatables-extensions/ColReorder")
+           ("https://cdn.datatables.net/colreorder/1.5.2/js/colReorder.foundation.js"
+            "0nrddc8swkmsfzji518kh6ks55ykyk9p8r4x5fmf8ckr9fhjkh0s"
+            "datatables-extensions/ColReorder")
+           ("https://cdn.datatables.net/colreorder/1.5.2/js/colReorder.bootstrap.js"
+            "0crgmjwcn817yz6ibjkji6gsickvv2a4las9asyldfcpj2c99x84"
+            "datatables-extensions/ColReorder")
+           ("https://cdn.datatables.net/colreorder/1.5.2/js/colReorder.bootstrap4.js"
+            "065fhw4v2d9rp3ic9zfb1q5d7pfq4f2949rr24hdjbspf19m3ymd"
+            "datatables-extensions/ColReorder")
+           ("https://cdn.datatables.net/colreorder/1.5.2/js/colReorder.semanticui.js"
+            "17kw143ny0nq0yidsffw3cpghvlg2bzlzavfi0ihkamcn26ymxcp"
+            "datatables-extensions/ColReorder")
+           ("https://cdn.datatables.net/colreorder/1.5.2/js/colReorder.jqueryui.js"
+            "1rd8hijz3prg2y36fvqczrpdzixibjy2dxgs2fmgr8wrm8k01rrm"
+            "datatables-extensions/ColReorder")
+           
+           ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/dataTables.fixedColumns.js"
+            "0vsqk2fv59n351bdfcbvhmvpq38qwf41j1cn810xz1l1i07cg4hg"
+            "datatables-extensions/FixedColumns")
+           ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/fixedColumns.bootstrap.js"
+            "1j4wvg694l960gk5dg7wghwa3dpgq8mnrcgp78ghm92i08djb1wy"
+            "datatables-extensions/FixedColumns")
+           ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/fixedColumns.bootstrap4.js"
+            "1p79k9bjslyvmp1bdhmg4nm2l9nbfsi4kgw7rx3vjka3n50qy730"
+            "datatables-extensions/FixedColumns")
+           ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/fixedColumns.foundation.js"
+            "0f0xkrsapzgma58f6l63rpn68xid098dxwqqddsyddl0hy0x1z82"
+            "datatables-extensions/FixedColumns")
+           ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/fixedColumns.jqueryui.js"
+            "0lw35c8vkajx75pg4ddik4gyzmjak1jaw3flq850frwgnzsvhahx"
+            "datatables-extensions/FixedColumns")
+           ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/fixedColumns.semanticui.js"
+            "1kqsap9y0d25a7m5zjakipifl5qi2qr72kfj4ap3zxavd8md2wyn"
+            "datatables-extensions/FixedColumns")
+           
+           ("https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.js"
+            "1ml5ilnm8nirr6rsgmzn75l1k0hcjz3sqk6h1y1gy8cpwpklvqri"
+            "datatables-extensions/FixedHeader")
+           ("https://cdn.datatables.net/fixedheader/3.1.6/js/fixedHeader.bootstrap.js"
+            "1qf3pkb3svpia7g8bwyql7ma3x2g4zj5bp0d14pnv8xpc9h52r93"
+            "datatables-extensions/FixedHeader")
+           ("https://cdn.datatables.net/fixedheader/3.1.6/js/fixedHeader.bootstrap4.js"
+            "19jcvnk7zh4k6fd5si3b743x70qzlkqiw3m10jbc5jzbpz8sj6qd"
+            "datatables-extensions/FixedHeader")
+           ("https://cdn.datatables.net/fixedheader/3.1.6/js/fixedHeader.foundation.js"
+            "0xmpx1r76vykqygksyjaf4d1ql1fid69rqhvk4k857iybqz3gdcv"
+            "datatables-extensions/FixedHeader")
+           ("https://cdn.datatables.net/fixedheader/3.1.6/js/fixedHeader.jqueryui.js"
+            "1lc0g2cag1sj3bqmh7rh5z00pmfv1srxfhwi32y4mgpzhrzpfzxn"
+            "datatables-extensions/FixedHeader")
+           ("https://cdn.datatables.net/fixedheader/3.1.6/js/fixedHeader.semanticui.js"
+            "1v0i6dc68h8l8673fb5970igzkl7as36riv504iyg82glfi7n877"
+            "datatables-extensions/FixedHeader")
+           
+           ("https://cdn.datatables.net/keytable/2.5.1/js/dataTables.keyTable.js"
+            "16iib2icxsjh93x5hd42gpsl7bzpcsqb7zjgj0m1s02ls45bdlv5"
+            "datatables-extensions/KeyTable")
+           ("https://cdn.datatables.net/keytable/2.5.1/js/keyTable.bootstrap.js"
+            "0hnhk6am4yl6h6bb7as935k8h2syil9hf8g7nn409yd3ws736xpj"
+            "datatables-extensions/KeyTable")
+           ("https://cdn.datatables.net/keytable/2.5.1/js/keyTable.bootstrap4.js"
+            "0r85mp5yf9hgl5ayzzs46dfbxa231bjlvgb8lqpyzik1m6afa51i"
+            "datatables-extensions/KeyTable")
+           ("https://cdn.datatables.net/keytable/2.5.1/js/keyTable.foundation.js"
+            "11fr14p33lyvs0wfcx228m600i4qcaqb44q3hk723jxcz59k17dw"
+            "datatables-extensions/KeyTable")
+           ("https://cdn.datatables.net/keytable/2.5.1/js/keyTable.jqueryui.js"
+            "0572rxrvwyprdr8l5jkgacj2bkmhmgxjy5vybm65n54g9j19l6bc"
+            "datatables-extensions/KeyTable")
+           ("https://cdn.datatables.net/keytable/2.5.1/js/keyTable.semanticui.js"
+            "157mqn9mhmmf7vas2das4hbpwipk3wshs8n0808q04rbijr0g2bz"
+            "datatables-extensions/KeyTable")
+
+           ("https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js"
+            "1jnsx4sqf7qjd1gz5ag9hn6n76cwwfms23rzw37lgbd6h54yqzwr"
+            "datatables-extensions/Responsive")
+           ("https://cdn.datatables.net/responsive/2.2.3/js/responsive.foundation.js"
+            "1vzzqpd9l8xv0am42g4cilx9igmq60mgk0hab4ssqvbicrmrgq9z"
+            "datatables-extensions/Responsive")
+           ("https://cdn.datatables.net/responsive/2.2.3/js/responsive.semanticui.js"
+            "1cjiwcf0d07482k08dhn5ffsizshw4hqgz5l58p03pq9g6wc9pvm"
+            "datatables-extensions/Responsive")
+           ("https://cdn.datatables.net/responsive/2.2.3/js/responsive.jqueryui.js"
+            "10nykak2kf4sai64girh26xdmdil29jvw3zja2rpp2qzjg4172z9"
+            "datatables-extensions/Responsive")
+           ("https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.js"
+            "1xxlh01vmzmfwwlsa611pl2nrl2sx58rp8xmx301bfsylmp2v5b2"
+            "datatables-extensions/Responsive")
+           ("https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.js"
+            "1zjh15p7n1038sggaxv1xvcwbkhw2nk1ndx745s6cxiqb69y3i0h"
+            "datatables-extensions/Responsive")
+           
+           ("https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.js"
+            "0s4q7ir2d6q36g29nn9mqk7vrqrdig2mm5zbcv0sn2lixqi29pkj"
+            "datatables-extensions/RowGroup")
+           ("https://cdn.datatables.net/rowgroup/1.1.1/js/rowGroup.bootstrap.js"
+            "1xfdhqgznz9x1v8spvql6b0wbna13h8cbzvkjza14nqsmccxck66"
+            "datatables-extensions/RowGroup")
+           ("https://cdn.datatables.net/rowgroup/1.1.1/js/rowGroup.bootstrap4.js"
+            "1xm53sda4fabwdaglngrj09bpiygkn9mm17grxbykn1jazqqdp62"
+            "datatables-extensions/RowGroup")
+           ("https://cdn.datatables.net/rowgroup/1.1.1/js/rowGroup.foundation.js"
+            "0832i10vils1wv1sm10qvsnd4i2k2xkhskz6i9y2q0axkmk73hcd"
+            "datatables-extensions/RowGroup")
+           ("https://cdn.datatables.net/rowgroup/1.1.1/js/rowGroup.jqueryui.js"
+            "0n53cd294s9mjblkykkqvd9n414bsc26wpcg5spxdscjl6hxh79p"
+            "datatables-extensions/RowGroup")
+           ("https://cdn.datatables.net/rowgroup/1.1.1/js/rowGroup.semanticui.js"
+            "010wls5nf387p21fdc2k952bxq89r5kxkv7j4wbvwf8k2a18cmc9"
+            "datatables-extensions/RowGroup")
+
+           ("https://cdn.datatables.net/rowreorder/1.2.6/js/dataTables.rowReorder.js"
+            "13ymbn3h9755pgb0gmlb9gl54vz9nqnz4mws7g6mlmz53r3sqhmj"
+            "datatables-extensions/RowReorder")
+           ("https://cdn.datatables.net/rowreorder/1.2.6/js/rowReorder.bootstrap.js"
+            "185if2pxgc940rm49hdgln57pc5h9cszlii3bfpdf3pdc1fjhckm"
+            "datatables-extensions/RowReorder")
+           ("https://cdn.datatables.net/rowreorder/1.2.6/js/rowReorder.bootstrap4.js"
+            "14129x4md57i4ff7j18m49jn5fw8r716np84cdrcawlydgjsxp4a"
+            "datatables-extensions/RowReorder")
+           ("https://cdn.datatables.net/rowreorder/1.2.6/js/rowReorder.foundation.js"
+            "0zg94jckymxzda2xjyj9p38y5v61cji55kak1ylq72l6a9sw8sg6"
+            "datatables-extensions/RowReorder")
+           ("https://cdn.datatables.net/rowreorder/1.2.6/js/rowReorder.jqueryui.js"
+            "08gm419xcixgqw0i5yv2mxyyvafhzviibifp6nv129vdxx0a5d8v"
+            "datatables-extensions/RowReorder")
+           ("https://cdn.datatables.net/rowreorder/1.2.6/js/rowReorder.semanticui.js"
+            "1zjrx2rlgw3qannsqa88pcp3i4pc87pwv7rmgfw1dar8namkr9kk"
+            "datatables-extensions/RowReorder")
+           
+           ("https://cdn.datatables.net/scroller/2.0.1/js/dataTables.scroller.js"
+            "0zfjjdvwwlsnps24i9l4c97hmway2qs6addks1is5bxl4k1r6d16"
+            "datatables-extensions/Scroller")
+           ("https://cdn.datatables.net/scroller/2.0.1/js/scroller.foundation.js"
+            "04bk6ink8wqay7655v93jvv86m3bn6asrsfb22i99rgxdvm8gn1z"
+            "datatables-extensions/Scroller")
+           ("https://cdn.datatables.net/scroller/2.0.1/js/scroller.bootstrap.js"
+            "19dl40dl8ir21xvs1j7xhm2a4py1m21xbypwn499fg2awj8vaidi"
+            "datatables-extensions/Scroller")
+           ("https://cdn.datatables.net/scroller/2.0.1/js/scroller.bootstrap4.js"
+            "0pbkgncijlafwdmyh4l65dabd18hzjh8r01cad3b9iy8cfif6iwd"
+            "datatables-extensions/Scroller")
+           ("https://cdn.datatables.net/scroller/2.0.1/js/scroller.jqueryui.js"
+            "1md5mpx5in7wzsr38yn801cmv3phm0i0ikdnpd0b1nsna5ccpj14"
+            "datatables-extensions/Scroller")
+           ("https://cdn.datatables.net/scroller/2.0.1/js/scroller.semanticui.js"
+            "1dfbblbzbryjgiv31qfdjnijz19lmyijg12win3y8gsgfd4fp9zz"
+            "datatables-extensions/Scroller")
+           
+           ("https://cdn.datatables.net/searchbuilder/1.0.0/js/dataTables.searchBuilder.js"
+            "0n5g0j0yfzqvdpsmwb27bj1rd8zx864fsx2k7b2kpv6mqqavzpqc"
+            "datatables-extensions/SearchBuilder")
+           ("https://cdn.datatables.net/searchbuilder/1.0.0/js/searchBuilder.bootstrap.js"
+            "1gnd8rjcg9c96xayshn9rwinzgmlwzddczjlpfmf2j33npmyka2y"
+            "datatables-extensions/SearchBuilder")
+           ("https://cdn.datatables.net/searchbuilder/1.0.0/js/searchBuilder.bootstrap4.js"
+            "0vdv5mi6zbp2dspmj0lw2vaqxvfadcydlmc6frqv4a68rms7wz05"
+            "datatables-extensions/SearchBuilder")
+           ("https://cdn.datatables.net/searchbuilder/1.0.0/js/searchBuilder.dataTables.js"
+            "0fbzfnaqswb2xq7m1vdzcg7l7qi0wmyz64ml6k4002kp0dm4xnlx"
+            "datatables-extensions/SearchBuilder")
+
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/dataTables.searchPanes.js"
+            "1s697avk42h24fsaq79d1kkw66dqig7xgpx9bvmhwncv8amkmz6i"
+            "datatables-extensions/SearchPanes")
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.bootstrap.js"
+            "0n3z4fdx1nsga4l5hmd4s93piv9k0v607xd7q9h2zpq613if7sld"
+            "datatables-extensions/SearchPanes")
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.bootstrap4.js"
+            "1i1arnvxp57z01wc207jxnw9h8clcish6l96c2gnmachgkaz8lqa"
+            "datatables-extensions/SearchPanes")
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.dataTables.js"
+            "04zzg7i46igcd6gfvdln5alpgjn7m663yf9bf2f3fk9va4fvis6y"
+            "datatables-extensions/SearchPanes")
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.foundation.js"
+            "0m78wdajxn1m3j9jn9jfwqf73wwsxrsfw4zf84h5y6saj4rrcz72"
+            "datatables-extensions/SearchPanes")
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.jqueryui.js"
+            "0zb2x736isb8nxrmd7j8nb78lj8h0h9j3axnbjiybwzzk819xw1m"
+            "datatables-extensions/SearchPanes")
+           ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.semanticui.js"
+            "1781d0xmx7xz0jly0wsw2zbrdmfc1crahmcdbsfbj5s66kdsnd7c"
+            "datatables-extensions/SearchPanes")
+           
+           ("https://cdn.datatables.net/select/1.3.1/js/dataTables.select.js"
+            "0a7bkbz1cizhiq4h417b4rcdr7998pn8q4dlyzx8449xdp0h0n0v"
+            "datatables-extensions/Select")
+           ("https://cdn.datatables.net/select/1.3.1/js/select.bootstrap.js"
+            "0mm5ly3p2iprlfi8ajz548rjqx8lz1sbjj5ysgqmwqg14gw7l9k7"
+            "datatables-extensions/Select")
+           ("https://cdn.datatables.net/select/1.3.1/js/select.bootstrap4.js"
+            "1hv6d9lwgflmxhy7mdfb9rvli2wa2cbkdhqjz64zkf1a1a7wlb5q"
+            "datatables-extensions/Select")
+           ("https://cdn.datatables.net/select/1.3.1/js/select.foundation.js"
+            "1zzygcbngvrqh7m22x0s23k8m5xj5fv1p466pzjs23p94qq24a2r"
+            "datatables-extensions/Select")
+           ("https://cdn.datatables.net/select/1.3.1/js/select.jqueryui.js"
+            "1hv5zlmfifd27hylfqsji09y2hbp3m2hnb7j41418sjrxs63f6x6"
+            "datatables-extensions/Select")
+           ("https://cdn.datatables.net/select/1.3.1/js/select.semanticui.js"
+            "0q6q3vb6pa5nmkxy7zcnjs0bkn4ldw8ykdcfrc04bf1d2hjjaw47"
+            "datatables-extensions/Select"))))
+    (package
+      (name "r-dt")
+      (version "0.19")
+      (source (origin
+                (method url-fetch)
+                (uri (cran-uri "DT" version))
+                (sha256
+                 (base32
+                  "04rv1rprqlc56hycxpqkbmwmq4wjvmanq2lwxrflmf2s46pbv9ms"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(for-each delete-file
+                            (find-files "inst/htmlwidgets/lib" "\\.min\\.js$")))))
+      (properties
+       `((upstream-name . "DT")))
+      (build-system r-build-system)
+      (arguments
+       `(#:modules
+         ((guix build r-build-system)
+          (guix build minify-build-system)
+          (guix build utils)
+          (ice-9 match))
+         #:imported-modules
+         (,@%r-build-system-modules
+          (guix build minify-build-system))
+         #:phases
+         (modify-phases (@ (guix build r-build-system) %standard-phases)
+           (add-after 'unpack 'process-javascript
+             (lambda* (#:key inputs #:allow-other-keys)
+               (with-directory-excursion "inst/htmlwidgets/lib/"
+                 (for-each (match-lambda
+                             ((url hash dir)
+                              (let* ((input (string-append "js:" (basename url)))
+                                     (source (assoc-ref inputs input))
+                                     (target (string-append dir "/"
+                                                            (basename url ".js")
+                                                            ".min.js")))
+                                (mkdir-p dir)
+                                (minify source #:target target))))
+                           ',javascript-sources)
+                 (minify (string-append (assoc-ref inputs "datatables-plugins")
+                                        "/features/scrollResize/dataTables.scrollResize.js")
+                         #:target "datatables-plugins/features/scrollResize/source.min.js")
+                 (minify (string-append (assoc-ref inputs "datatables-plugins")
+                                        "/features/searchHighlight/dataTables.searchHighlight.js")
+                         #:target "datatables-plugins/features/searchHighlight/source.min.js")
+                 (minify (assoc-ref inputs "js-nouislider")
+                         #:target "nouislider/jquery.nouislider.min.js")
+
+                 (let ((replace-file (lambda (old new)
+                                       (format #t "replacing ~a with ~a\n" old new)
+                                       (symlink new old))))
+                   (replace-file "selectize/selectize.min.js"
+                                 (string-append (assoc-ref inputs "js-selectize")
+                                                "/share/javascript/selectize.min.js")))))))))
+      (propagated-inputs
+       `(("r-crosstalk" ,r-crosstalk)
+         ("r-htmltools" ,r-htmltools)
+         ("r-htmlwidgets" ,r-htmlwidgets)
+         ("r-jquerylib" ,r-jquerylib)
+         ("r-jsonlite" ,r-jsonlite)
+         ("r-magrittr" ,r-magrittr)
+         ("r-promises" ,r-promises)))
+      (inputs
+       `(("js-selectize" ,js-selectize)))
+      (native-inputs
+       `(("r-knitr" ,r-knitr)
+         ("uglifyjs" ,node-uglify-js)
+         ("datatables-plugins"
+          ,(let ((version "1.10.20"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/DataTables/Plugins.git")
+                     (commit version)))
+               (file-name (git-file-name "datatables-plugins" version))
+               (sha256
+                (base32
+                 "05zni20863ml1711lfllljdfkb3k05h0kpqhkijkbp0bp7q0ak94")))))
+         ("js-nouislider"
+          ,(let ((version "7.0.10"))
+             (origin
+               (method url-fetch)
+               (uri (string-append "https://raw.githubusercontent.com/leongersen/noUiSlider/"
+                                   version "/distribute/jquery.nouislider.js"))
+               (sha256
+                (base32
+                 "1f7vsfcn7wwzngib6j0wpl0psd6qriiaa6kv728ynfn5da73zfxm")))))
+         ,@(map (match-lambda
+                  ((url hash dir)
+                   `(,(string-append "js:" (basename url))
+                     ,(origin (method url-fetch)
+                              (uri url)
+                              (sha256 (base32 hash))))))
+                javascript-sources)))
+      (home-page "https://rstudio.github.io/DT")
+      (synopsis "R wrapper of the DataTables JavaScript library")
+      (description
+       "This package allows for data objects in R to be rendered as HTML tables
 using the JavaScript library @code{DataTables} (typically via R Markdown or
 Shiny).  The @code{DataTables} library has been included in this R package.")
-    ;; The DT package as a whole is distributed under GPLv3.  The DT package
-    ;; inludes other software components under different licenses:
-    ;;
-    ;;   * Expat: jQuery, jquery.highlight.js, DataTables
-    ;;   * ASL2.0: selectize.js
-    ;;   * WTFPL: noUiSlider
-    (license (list license:gpl3
-                   license:expat
-                   license:asl2.0
-                   license:wtfpl2))))
+      ;; The DT package as a whole is distributed under GPLv3.  The DT package
+      ;; inludes other software components under different licenses:
+      ;;
+      ;;   * Expat: jquery.highlight.js, DataTables
+      ;;   * WTFPL: noUiSlider
+      (license (list license:gpl3
+                     license:expat
+                     license:wtfpl2)))))
 
 (define-public r-base64enc
   (package
