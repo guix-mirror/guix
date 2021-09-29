@@ -20116,13 +20116,13 @@ programming problems.")
 (define-public r-desolve
   (package
     (name "r-desolve")
-    (version "1.28")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "deSolve" version))
        (sha256
-        (base32 "0jasvdzig0pzhzspmy20089az19r91xjfb9q6h8gj7c4mr6fymac"))))
+        (base32 "02hrd31ky9id7q2bwkj436j4fj4xbs3j9sfmyi1nl7hml5dy2vr6"))))
     (properties `((upstream-name . "deSolve")))
     (build-system r-build-system)
     (native-inputs
