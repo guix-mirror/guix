@@ -18516,14 +18516,14 @@ colored by the number of neighboring points.  This is useful to visualize the
 (define-public r-arrow
   (package
     (name "r-arrow")
-    (version "5.0.0")
+    (version "5.0.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "arrow" version))
        (sha256
         (base32
-         "1x9z7jr7rnsqi04vfs54qidhn8hi0j533lm7ka074jp4xdv1gxjx"))))
+         "1ajkcmasj22j5k15ms7iyd1rg9qpdj5jya6nmhzh8z4iiv7gy13j"))))
     (properties `((upstream-name . "arrow")))
     (build-system r-build-system)
     (inputs
@@ -18532,7 +18532,6 @@ colored by the number of neighboring points.  This is useful to visualize the
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-bit64" ,r-bit64)
-       ("r-cpp11" ,r-cpp11)
        ("r-purrr" ,r-purrr)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
