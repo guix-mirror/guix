@@ -1372,11 +1372,21 @@ same arguments.")
 
 (define-public python2-pytest-mock
   (let ((base (package-with-python2
-                (strip-python2-variant python-pytest-mock))))
+               (strip-python2-variant python-pytest-mock))))
     (package/inherit base
+      (version "1.10.1")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "pytest-mock" version))
+         (sha256
+          (base32
+           "1i5mg3ff1qk0wqfcxfz60hwy3q5dskdp36i10ckigkzffg8hc3ad"))))
+      (arguments
+       `(#:python ,python-2))
       (propagated-inputs
        `(("python2-mock" ,python2-mock)
-         ,@(package-propagated-inputs base))))))
+         ("python2-pytest" ,python2-pytest))))))
 
 (define-public python-pytest-xdist
   (package
