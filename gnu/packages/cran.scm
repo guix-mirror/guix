@@ -8074,21 +8074,22 @@ always locate the files relative to your project root.")
 (define-public r-reticulate
   (package
     (name "r-reticulate")
-    (version "1.20")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reticulate" version))
        (sha256
         (base32
-         "0ay8cb0d3lj702aw338lkc7sxj9j05izji3waww1z0lph16406bh"))))
+         "0v7m2pv94lfqiw8rhz3c9g66vvz4qvih4vd29rhfk2phmcwpnvmh"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
-     `(("r-rappdirs" ,r-rappdirs)
+     `(("r-here" ,r-here)
        ("r-jsonlite" ,r-jsonlite)
        ("r-matrix" ,r-matrix)
        ("r-png" ,r-png)
+       ("r-rappdirs" ,r-rappdirs)
        ("r-rcpp" ,r-rcpp)
        ("r-withr" ,r-withr)))
     (native-inputs
