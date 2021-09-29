@@ -8045,6 +8045,28 @@ weak stationarity, column means by group, weighted biplots, and a heuristic to
 obtain a better initial configuration in non-metric MDS.")
     (license license:gpl2)))
 
+(define-public r-here
+  (package
+    (name "r-here")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "here" version))
+       (sha256
+        (base32 "0srlr8h8qmr0wrmp7gs4g2ry5dni2hx8n947bik3s3a26f091v88"))))
+    (properties `((upstream-name . "here")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rprojroot" ,r-rprojroot)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://here.r-lib.org/")
+    (synopsis "Simpler way to find files")
+    (description
+     "This package lets you construct paths to your project's files.  Use the
+@code{here} function as a drop-in replacement for @code{file.path}, it will
+always locate the files relative to your project root.")
+    (license license:expat)))
+
 (define-public r-reticulate
   (package
     (name "r-reticulate")
