@@ -398,32 +398,31 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
 (define %binutils-static-stripped
   ;; The subset of Binutils that we need.
-  (package (inherit %binutils-static)
+  (package
+    (inherit %binutils-static)
     (name (string-append (package-name %binutils-static) "-stripped"))
     (build-system trivial-build-system)
     (outputs '("out"))
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (guix build utils))
 
-         (setvbuf (current-output-port)
-                  (cond-expand (guile-2.0 _IOLBF) (else 'line)))
-         (let* ((in  (assoc-ref %build-inputs "binutils"))
-                (out (assoc-ref %outputs "out"))
-                (bin (string-append out "/bin")))
-           (mkdir-p bin)
-           (for-each (lambda (file)
-                       (let ((target (string-append bin "/" file)))
-                         (format #t "copying `~a'...~%" file)
-                         (copy-file (string-append in "/bin/" file)
-                                    target)
-                         (remove-store-references target)))
-                     '("ar" "as" "ld" "nm"  "objcopy" "objdump"
-                       "ranlib" "readelf" "size" "strings" "strip"))
-           #t))))
-    (inputs `(("binutils" ,%binutils-static)))))
+               (setvbuf (current-output-port)
+                        (cond-expand (guile-2.0 _IOLBF) (else 'line)))
+               (let* ((in  #$%binutils-static)
+                      (out #$output)
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (for-each (lambda (file)
+                             (let ((target (string-append bin "/" file)))
+                               (format #t "copying `~a'...~%" file)
+                               (copy-file (string-append in "/bin/" file)
+                                          target)
+                               (remove-store-references target)))
+                           '("ar" "as" "ld" "nm"  "objcopy" "objdump"
+                             "ranlib" "readelf" "size" "strings" "strip"))))))))
 
 (define (%glibc-stripped)
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
@@ -536,56 +535,54 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
-  (package (inherit gcc-7)
+  (package
+    (inherit gcc-7)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
     (outputs '("out"))                            ;only one output
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (srfi srfi-1)
-                      (srfi srfi-26)
-                      (guix build utils))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (srfi srfi-1)
+                            (srfi srfi-26)
+                            (guix build utils))
 
-         (setvbuf (current-output-port)
-                  (cond-expand (guile-2.0 _IOLBF) (else 'line)))
-         (let* ((out        (assoc-ref %outputs "out"))
-                (bindir     (string-append out "/bin"))
-                (libdir     (string-append out "/lib"))
-                (includedir (string-append out "/include"))
-                (libexecdir (string-append out "/libexec"))
-                (gcc        (assoc-ref %build-inputs "gcc")))
-           (copy-recursively (string-append gcc "/bin") bindir)
-           (for-each remove-store-references
-                     (find-files bindir ".*"))
+               (setvbuf (current-output-port)
+                        (cond-expand (guile-2.0 _IOLBF) (else 'line)))
+               (let* ((out        #$output)
+                      (bindir     (string-append out "/bin"))
+                      (libdir     (string-append out "/lib"))
+                      (includedir (string-append out "/include"))
+                      (libexecdir (string-append out "/libexec"))
+                      (gcc        #$%gcc-static))
+                 (copy-recursively (string-append gcc "/bin") bindir)
+                 (for-each remove-store-references
+                           (find-files bindir ".*"))
 
-           (copy-recursively (string-append gcc "/lib") libdir)
-           (for-each remove-store-references
-                     (remove (cut string-suffix? ".h" <>)
-                             (find-files libdir ".*")))
+                 (copy-recursively (string-append gcc "/lib") libdir)
+                 (for-each remove-store-references
+                           (remove (cut string-suffix? ".h" <>)
+                                   (find-files libdir ".*")))
 
-           (copy-recursively (string-append gcc "/libexec")
-                             libexecdir)
-           (for-each remove-store-references
-                     (find-files libexecdir ".*"))
+                 (copy-recursively (string-append gcc "/libexec")
+                                   libexecdir)
+                 (for-each remove-store-references
+                           (find-files libexecdir ".*"))
 
-           ;; Starting from GCC 4.8, helper programs built natively
-           ;; (‘genchecksum’, ‘gcc-nm’, etc.) rely on C++ headers.
-           (copy-recursively (string-append gcc "/include/c++")
-                             (string-append includedir "/c++"))
+                 ;; Starting from GCC 4.8, helper programs built natively
+                 ;; (‘genchecksum’, ‘gcc-nm’, etc.) rely on C++ headers.
+                 (copy-recursively (string-append gcc "/include/c++")
+                                   (string-append includedir "/c++"))
 
-           ;; For native builds, check whether the binaries actually work.
-           ,@(if (%current-target-system)
-                 '()
-                 '((for-each (lambda (prog)
-                               (invoke (string-append gcc "/bin/" prog)
-                                       "--version"))
-                             '("gcc" "g++" "cpp"))))
-
-           #t))))
-    (inputs `(("gcc" ,%gcc-static)))))
+                 ;; For native builds, check whether the binaries actually work.
+                 #$@(if (%current-target-system)
+                        '()
+                        '((for-each (lambda (prog)
+                                      (invoke (string-append gcc "/bin/" prog)
+                                              "--version"))
+                                    '("gcc" "g++" "cpp"))))))))))
 
 ;; Two packages: first build static, bare minimum content.
 (define %mescc-tools-static
@@ -608,23 +605,21 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (name (string-append (package-name %mescc-tools-static) "-stripped"))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((in  (assoc-ref %build-inputs "mescc-tools"))
-                (out (assoc-ref %outputs "out"))
-                (bin (string-append out "/bin")))
-           (mkdir-p bin)
-           (for-each (lambda (file)
-                       (let ((target (string-append bin "/" file)))
-                         (format #t "copying `~a'...~%" file)
-                         (copy-file (string-append in "/bin/" file)
-                                    target)
-                         (remove-store-references target)))
-                     '( "M1" "blood-elf" "hex2"))
-           #t))))
-    (inputs `(("mescc-tools" ,%mescc-tools-static)))))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (guix build utils))
+               (let* ((in  #$%mescc-tools-static)
+                      (out #$output)
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (for-each (lambda (file)
+                             (let ((target (string-append bin "/" file)))
+                               (format #t "copying `~a'...~%" file)
+                               (copy-file (string-append in "/bin/" file)
+                                          target)
+                               (remove-store-references target)))
+                           '( "M1" "blood-elf" "hex2"))))))))
 
 ;; Two packages: first build static, bare minimum content.
 (define-public %mes-minimal
@@ -660,22 +655,20 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (name (string-append (package-name %mes-minimal) "-stripped"))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:allowed-references ()
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((in  (assoc-ref %build-inputs "mes"))
-               (out (assoc-ref %outputs "out")))
+     (list #:modules '((guix build utils))
+           #:allowed-references '()
+           #:builder
+           #~(begin
+               (use-modules (guix build utils))
+               (let ((in  #$%mes-minimal)
+                     (out #$output))
 
-           (copy-recursively in out)
-           (for-each (lambda (dir)
-                       (for-each remove-store-references
-                                 (find-files (string-append out "/" dir)
-                                             ".*")))
-                     '("bin" "share/mes"))
-           #t))))
-    (inputs `(("mes" ,%mes-minimal)))))
+                 (copy-recursively in out)
+                 (for-each (lambda (dir)
+                             (for-each remove-store-references
+                                       (find-files (string-append out "/" dir)
+                                                   ".*")))
+                           '("bin" "share/mes"))))))))
 
 (define* (make-guile-static guile patches)
   (package-with-relocatable-glibc
@@ -754,44 +747,41 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (build-system trivial-build-system)
     (arguments
      ;; The end result should depend on nothing but itself.
-     `(#:allowed-references ("out")
-       #:modules ((guix build utils))
-       #:builder
-       (let ((version ,(version-major+minor (package-version static-guile))))
-         (use-modules (guix build utils))
+     (list #:allowed-references '("out")
+           #:modules '((guix build utils))
+           #:builder
+           #~(let ((version #$(version-major+minor (package-version static-guile))))
+               (use-modules (guix build utils))
 
-         (let* ((in     (assoc-ref %build-inputs "guile"))
-                (out    (assoc-ref %outputs "out"))
-                (guile1 (string-append in "/bin/guile"))
-                (guile2 (string-append out "/bin/guile")))
-           (mkdir-p (string-append out "/share/guile/" version))
-           (copy-recursively (string-append in "/share/guile/" version)
-                             (string-append out "/share/guile/" version))
+               (let* ((in     #$static-guile)
+                      (out    #$output)
+                      (guile1 (string-append in "/bin/guile"))
+                      (guile2 (string-append out "/bin/guile")))
+                 (mkdir-p (string-append out "/share/guile/" version))
+                 (copy-recursively (string-append in "/share/guile/" version)
+                                   (string-append out "/share/guile/" version))
 
-           (mkdir-p (string-append out "/lib/guile/" version "/ccache"))
-           (copy-recursively (string-append in "/lib/guile/" version "/ccache")
-                             (string-append out "/lib/guile/" version "/ccache"))
+                 (mkdir-p (string-append out "/lib/guile/" version "/ccache"))
+                 (copy-recursively (string-append in "/lib/guile/" version "/ccache")
+                                   (string-append out "/lib/guile/" version "/ccache"))
 
-           (mkdir (string-append out "/bin"))
-           (copy-file guile1 guile2)
+                 (mkdir (string-append out "/bin"))
+                 (copy-file guile1 guile2)
 
-           ;; Verify that the relocated Guile works.
-           ,@(if (%current-target-system)
-                 '()
-                 '((invoke guile2 "--version")))
+                 ;; Verify that the relocated Guile works.
+                 #$@(if (%current-target-system)
+                        '()
+                        '((invoke guile2 "--version")))
 
-           ;; Strip store references.
-           (remove-store-references guile2)
+                 ;; Strip store references.
+                 (remove-store-references guile2)
 
-           ;; Verify that the stripped Guile works.  If it aborts, it could be
-           ;; that it tries to open iconv descriptors and fails because libc's
-           ;; iconv data isn't available (see `guile-default-utf8.patch'.)
-           ,@(if (%current-target-system)
-                 '()
-                 '((invoke guile2 "--version")))
-
-           #t))))
-    (inputs `(("guile" ,static-guile)))
+                 ;; Verify that the stripped Guile works.  If it aborts, it could be
+                 ;; that it tries to open iconv descriptors and fails because libc's
+                 ;; iconv data isn't available (see `guile-default-utf8.patch'.)
+                 #$@(if (%current-target-system)
+                        '()
+                        '((invoke guile2 "--version")))))))
     (outputs '("out"))
     (synopsis "Minimal statically-linked and relocatable Guile")))
 
