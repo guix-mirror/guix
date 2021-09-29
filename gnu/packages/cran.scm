@@ -1030,13 +1030,13 @@ high-dimensional data.")
 (define-public r-shadowtext
   (package
    (name "r-shadowtext")
-   (version "0.0.8")
+   (version "0.0.9")
    (source (origin
             (method url-fetch)
             (uri (cran-uri "shadowtext" version))
             (sha256
              (base32
-              "16lhhd7q1qz82grkq1q4fn5mkq8nphh4wvva4jijrl605cd6cc7v"))))
+              "1g6mgnfnzf2c17yzqk3zybfc5y62p5ndrbikxb3xcm2hiljiiqna"))))
    (properties `((upstream-name . "shadowtext")))
    (build-system r-build-system)
    (propagated-inputs
