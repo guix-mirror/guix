@@ -13185,14 +13185,14 @@ structure of any data type.")
 (define-public r-corpcor
   (package
     (name "r-corpcor")
-    (version "1.6.9")
+    (version "1.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "corpcor" version))
        (sha256
         (base32
-         "1hi3i9d3841snppq1ks5pd8cliq1b4rm4dpsczmfqvwksg8snkrf"))))
+         "028fw61n61i79fhnaqx7gmdifdpbvp3yiaq9vvfrbv4k7i84r83i"))))
     (build-system r-build-system)
     (home-page "http://strimmerlab.org/software/corpcor/")
     (synopsis "Efficient estimation of covariance and (partial) correlation")
