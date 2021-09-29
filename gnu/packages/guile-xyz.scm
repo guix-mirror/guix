@@ -1285,7 +1285,9 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
              version ".tar.lz"))
        (sha256
         (base32
-         "1rc8r0fgvflnyq5ckl7ii8sghpsgpkzxa8vskjr1ak2kyar6m35k"))))
+         "1rc8r0fgvflnyq5ckl7ii8sghpsgpkzxa8vskjr1ak2kyar6m35k"))
+       (patches
+        (search-patches "guile-email-fix-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

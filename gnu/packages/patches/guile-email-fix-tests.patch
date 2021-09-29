@@ -1,0 +1,35 @@
+This patch has been proposed upstream:
+https://lists.systemreboot.net/guile-email/87mtnv1r2p.fsf@gnu.org/T/#u.
+
+From c21fe0f0e28b80b606973d3e372e2bc8528c9766 Mon Sep 17 00:00:00 2001
+From: Mathieu Othacehe <othacehe@gnu.org>
+Date: Wed, 29 Sep 2021 12:47:35 +0000
+Subject: [PATCH 1/1] email: Do not use an empty bytevector to test the
+ charset.
+
+Using an empty bytevector no longer throws an exception since this Guile
+commit: 5ea8c69e9153a970952bf6f0b32c4fad6a28e839.
+
+* email/email.scm (post-process-content-transfer-encoding): Use a bytevector
+containg the 'e' character to test the charset validity.
+---
+ email/email.scm | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/email/email.scm b/email/email.scm
+index 3f4e194..ac70463 100644
+--- a/email/email.scm
++++ b/email/email.scm
+@@ -832,7 +832,8 @@ values. The returned headers is a string and body is a bytevector."
+   (define (valid-charset? charset)
+     (catch #t
+       (lambda ()
+-        (bytevector->string (make-bytevector 0 0) charset)
++        ;; Try to convert a bytevector containg the 'e' character.
++        (bytevector->string (make-bytevector 1 48) charset)
+         #t)
+       (const #f)))
+ 
+-- 
+2.33.0
+
