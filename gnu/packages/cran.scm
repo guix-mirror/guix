@@ -4418,17 +4418,19 @@ these progress updates.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.6.9")
+    (version "1.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "07difbrz8zmvdyns63958v0zw4hyv48956mcww8zh7064a564k83"))))
+         "0bi3c1aqwlq7jbz4raz6vga4r264w7lldi0i62xjlbl7hnlgi23s"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-numderiv" ,r-numderiv)
+     `(("r-future-apply" ,r-future-apply)
+       ("r-numderiv" ,r-numderiv)
+       ("r-progressr" ,r-progressr)
        ("r-squarem" ,r-squarem)
        ("r-survival" ,r-survival)))
     (native-inputs
