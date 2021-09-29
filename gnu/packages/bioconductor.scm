@@ -5840,29 +5840,30 @@ platform for merging tree with associated data and converting file formats.")
 (define-public r-ggtree
   (package
     (name "r-ggtree")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggtree" version))
        (sha256
         (base32
-         "02ydi5iyxwrvwfjmv8pbanmzpi1r99mc4gxl17fpq2jf1d1mk6g0"))))
+         "0xf4b9vfdyzzivwgw4ymapl5bb4k9p04mmr53822kxgfd5qrs1zx"))))
     (properties `((upstream-name . "ggtree")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
        ("r-aplot" ,r-aplot)
        ("r-dplyr" ,r-dplyr)
+       ("r-ggfun" ,r-ggfun)
        ("r-ggplot2" ,r-ggplot2)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
-       ("r-rvcheck" ,r-rvcheck)
        ("r-scales" ,r-scales)
        ("r-tidyr" ,r-tidyr)
        ("r-tidytree" ,r-tidytree)
-       ("r-treeio" ,r-treeio)))
+       ("r-treeio" ,r-treeio)
+       ("r-yulab-utils" ,r-yulab-utils)))
     (native-inputs `(("r-knitr" ,r-knitr)))
     (home-page "https://yulab-smu.top/treedata-book/")
     (synopsis "R package for visualization of trees and annotation data")
