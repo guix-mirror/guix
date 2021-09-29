@@ -7438,14 +7438,14 @@ All the visualization methods are developed based on ggplot2 graphics.")
 (define-public r-clusterprofiler
   (package
     (name "r-clusterprofiler")
-    (version "4.0.4")
+    (version "4.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "clusterProfiler" version))
        (sha256
         (base32
-         "161w9mn2plmymvzf1hkk9fwi3d9c26kbcpndyyrfcl6bg2nxr1s8"))))
+         "1dccrl2ffhgmv3iqlmpln7z86ahpf0j9ma194fnknsgi3cd9rhrl"))))
     (properties
      `((upstream-name . "clusterProfiler")))
     (build-system r-build-system)
@@ -7461,8 +7461,8 @@ All the visualization methods are developed based on ggplot2 graphics.")
        ("r-plyr" ,r-plyr)
        ("r-qvalue" ,r-qvalue)
        ("r-rlang" ,r-rlang)
-       ("r-rvcheck" ,r-rvcheck)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-tidyr" ,r-tidyr)
+       ("r-yulab-utils" ,r-yulab-utils)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/clusterProfiler/")
