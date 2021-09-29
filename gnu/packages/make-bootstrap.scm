@@ -274,19 +274,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        (delete 'fix-egrep-and-fgrep)))))))
         (finalize (compose static-package
                            package-with-relocatable-glibc)))
-    `(,@(map (match-lambda
-              ((name package)
-               (list name (finalize package))))
-             `(("tar" ,tar)
-               ("gzip" ,gzip)
-               ("bzip2" ,bzip2)
-               ("xz" ,xz)
-               ("patch" ,patch)
-               ("coreutils" ,coreutils)
-               ("sed" ,sed)
-               ("grep" ,grep)
-               ("gawk" ,gawk)))
-      ("bash" ,static-bash))))
+    (append (map finalize
+                 (list tar gzip bzip2 xz patch coreutils sed grep gawk))
+        (list static-bash))))
 
 (define %static-binaries
   (package
@@ -331,7 +321,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ;; same name as the input.
             (for-each (match-lambda
                        ((name . dir)
-                        (let ((source (string-append dir "/bin/" name)))
+                        (let* ((name   (if (string-prefix? "bash" name)
+                                           "bash"
+                                           name))
+                               (source (string-append dir "/bin/" name)))
                           (format #t "copying ~s...~%" source)
                           (copy-file source
                                      (string-append bin "/" name)))))
@@ -376,7 +369,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                 (out (assoc-ref %outputs "out")))
            (copy-linux-headers out in)
            #t))))
-    (inputs `(("linux-libre-headers" ,linux-libre-headers)))))
+    (inputs (list linux-libre-headers))))
 
 (define %binutils-static
   ;; Statically-linked Binutils.
@@ -639,8 +632,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (package
     (inherit mes)
     (name "mes-minimal")
-    (native-inputs
-     `(("guile" ,guile-3.0)))
+    (native-inputs (list guile-3.0))
     (arguments
      `(#:system "i686-linux"
        #:strip-binaries? #f
@@ -814,37 +806,35 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
-  (package (inherit pkg)
+  (package
+    (inherit pkg)
     (name (string-append (package-name pkg) "-tarball"))
     (build-system trivial-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("xz" ,xz)))
-    (inputs `(("input" ,pkg)))
+    (native-inputs (list tar xz))
     (arguments
-     (let ((name    (package-name pkg))
-           (version (package-version pkg)))
-       `(#:modules ((guix build utils))
-         #:builder
-         (begin
-           (use-modules (guix build utils))
-           (let ((out   (assoc-ref %outputs "out"))
-                 (input (assoc-ref %build-inputs "input"))
-                 (tar   (assoc-ref %build-inputs "tar"))
-                 (xz    (assoc-ref %build-inputs "xz")))
-             (mkdir out)
-             (set-path-environment-variable "PATH" '("bin") (list tar xz))
-             (with-directory-excursion input
-               (invoke "tar" "cJvf"
-                       (string-append out "/"
-                                      ,name "-" ,version
-                                      "-"
-                                      ,(or (%current-target-system)
-                                           (%current-system))
-                                      ".tar.xz")
-                       "."
-                       ;; avoid non-determinism in the archive
-                       "--sort=name" "--mtime=@0"
-                       "--owner=root:0" "--group=root:0")))))))))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (guix build utils))
+               (let ((out   #$output)
+                     (input #$pkg)
+                     (tar   #+(this-package-native-input "tar"))
+                     (xz    #+(this-package-native-input "xz")))
+                 (mkdir out)
+                 (set-path-environment-variable "PATH" '("bin") (list tar xz))
+                 (with-directory-excursion input
+                   (invoke "tar" "cJvf"
+                           (string-append out "/"
+                                          #$(package-name pkg) "-"
+                                          #$(package-version pkg)
+                                          "-"
+                                          #$(or (%current-target-system)
+                                                (%current-system))
+                                          ".tar.xz")
+                           "."
+                           ;; avoid non-determinism in the archive
+                           "--sort=name" "--mtime=@0"
+                           "--owner=root:0" "--group=root:0"))))))))
 
 (define %bootstrap-binaries-tarball
   ;; A tarball with the statically-linked bootstrap binaries.
@@ -907,17 +897,18 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                         (symlink file (basename file)))
                                       (find-files directory "\\.tar\\."))))
                          %build-inputs))))
-    (inputs `(("guile-tarball" ,%guile-bootstrap-tarball)
-              ,@(match (or (%current-target-system) (%current-system))
-                  ((or "i686-linux" "x86_64-linux")
-                   `(("bootstrap-mescc-tools" ,%mescc-tools-bootstrap-tarball)
-                     ("bootstrap-mes" ,%mes-bootstrap-tarball)
-                     ("bootstrap-linux-libre-headers"
-                      ,%linux-libre-headers-bootstrap-tarball)))
-                  (_ `(("gcc-tarball" ,%gcc-bootstrap-tarball)
-                       ("binutils-tarball" ,%binutils-bootstrap-tarball)
-                       ("glibc-tarball" ,(%glibc-bootstrap-tarball))
-                       ("coreutils&co-tarball" ,%bootstrap-binaries-tarball))))))
+    (inputs
+     (append (list %guile-bootstrap-tarball)
+         (match (or (%current-target-system) (%current-system))
+           ((or "i686-linux" "x86_64-linux")
+            (list %mescc-tools-bootstrap-tarball
+                  %mes-bootstrap-tarball
+                  %linux-libre-headers-bootstrap-tarball))
+           (_
+            (list %gcc-bootstrap-tarball
+                  %binutils-bootstrap-tarball
+                  (%glibc-bootstrap-tarball)
+                  %bootstrap-binaries-tarball)))))
     (synopsis "Tarballs containing all the bootstrap binaries")
     (description synopsis)
     (home-page #f)
