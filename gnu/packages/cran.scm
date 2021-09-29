@@ -30851,19 +30851,20 @@ runs.")
 (define-public r-tfautograph
   (package
     (name "r-tfautograph")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tfautograph" version))
        (sha256
         (base32
-         "1fgpvv330g61ghzhkwnzx04gd9l3d6x1vxd1xqslb05h5acagwqn"))))
+         "0fmaq1ggjyxgf2ss7qb8jk74sfwc3s1vc123pd5glclxcy1ib0j2"))))
     (properties `((upstream-name . "tfautograph")))
     (build-system r-build-system)
     (inputs `(("tensorflow" ,tensorflow)))
     (propagated-inputs
-     `(("r-reticulate" ,r-reticulate)))
+     `(("r-backports" ,r-backports)
+       ("r-reticulate" ,r-reticulate)))
     (home-page "https://t-kalinowski.github.io/tfautograph/")
     (synopsis "Autograph R for Tensorflow")
     (description
