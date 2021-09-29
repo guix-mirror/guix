@@ -16620,13 +16620,13 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.1-8")
+    (version "1.1-11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "spdep" version))
               (sha256
                (base32
-                "1k82vx58kpn0fwgcpxq2jc3qfffl8wzbgr4cdkxihrfk28kkqh7l"))
+                "1ym523dzpiji6c8ypa3gvw8va36gl1gnzcsvdg9drly3mlq42rpr"))
               (snippet
                '(for-each delete-file '("inst/doc/nb_igraph.html"
                                         "inst/doc/nb_igraph.R"
@@ -16645,15 +16645,18 @@ datum transformations.")
      `(("r-boot" ,r-boot)
        ("r-coda" ,r-coda)
        ("r-deldir" ,r-deldir)
+       ("r-e1071" ,r-e1071)
        ("r-expm" ,r-expm)
        ("r-gmodels" ,r-gmodels)
        ("r-learnbayes" ,r-learnbayes)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
        ("r-nlme" ,r-nlme)
+       ("r-s2" ,r-s2)
        ("r-sf" ,r-sf)
        ("r-sp" ,r-sp)
-       ("r-spdata" ,r-spdata)))
+       ("r-spdata" ,r-spdata)
+       ("r-units" ,r-units)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-spatial/spdep/")
