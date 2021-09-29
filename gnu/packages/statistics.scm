@@ -6651,14 +6651,14 @@ deviation from the common work patterns of @code{ggplot2} and tidy data.")
 (define-public r-glinternet
   (package
     (name "r-glinternet")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glinternet" version))
        (sha256
         (base32
-         "1lqph2hj0h826gcfyk290ahkfalpnrd6jzymm60xi2qxia14lzk5"))))
+         "0aphdscj0s6kqxlkgqkw2d6snrylz6hiis6307pl8ldh7q5cvm33"))))
     (build-system r-build-system)
     (home-page "http://web.stanford.edu/~hastie/Papers/glinternet_jcgs.pdf")
     (synopsis "Learning interactions via hierarchical group-lasso regularization")
