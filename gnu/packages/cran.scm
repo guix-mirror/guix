@@ -18847,18 +18847,24 @@ batch correction, and data correction.")
 (define-public r-styler
   (package
     (name "r-styler")
-    (version "1.5.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "styler" version))
        (sha256
         (base32
-         "11vskz58mxkiq74bdz72nyzr2jrpyq4h7g47aai7rc5r3fzl6clc"))))
+         "0p7p2mh4f469drfn5z4wc4xrg06mpnm9wkw76fghclf8m9vcqbx6"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-backports" ,r-backports)
        ("r-cli" ,r-cli)
+       ("r-glue" ,r-glue)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-r-cache" ,r-r-cache)
