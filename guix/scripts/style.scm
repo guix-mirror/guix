@@ -419,7 +419,7 @@ simplify inputs!)."
                                 label-matches?))
                            ('always
                             ;; Assume it's gonna be alright.
-                            (const #f))))
+                            (const #t))))
 
                        (simplify-inputs location
                                         (package-name package)
