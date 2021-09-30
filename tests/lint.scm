@@ -1319,7 +1319,11 @@
   (let* ((stackage (string-append "{ \"packages\": [{"
                                   "    \"name\":\"pandoc\","
                                   "    \"synopsis\":\"synopsis\","
-                                  "    \"version\":\"1.0\" }]}"))
+                                  "    \"version\":\"1.0\" }],"
+                                  "  \"snapshot\": {"
+                                  "    \"ghc\": \"8.6.5\","
+                                  "    \"name\": \"lts-14.27\""
+                                  "  }}"))
          (packages (map (lambda (version)
                           (dummy-package
                            "ghc-pandoc"
