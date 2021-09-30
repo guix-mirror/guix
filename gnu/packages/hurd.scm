@@ -301,6 +301,8 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (name "gnumach")
     (arguments
      (substitute-keyword-arguments (package-arguments gnumach-headers)
+       ((#:make-flags flags ''())
+        `(cons "CFLAGS=-fcommon" ,flags))
        ((#:configure-flags flags ''())
         `(cons "--enable-kdb" ,flags))            ;enable kernel debugger
        ((#:phases phases '%standard-phases)
@@ -310,8 +312,7 @@ Hurd-minimal package which are needed for both glibc and GCC.")
                (let* ((out  (assoc-ref outputs "out"))
                       (boot (string-append out "/boot")))
                  (invoke "make" "gnumach.gz")
-                 (install-file "gnumach.gz" boot)
-                 #t)))))))
+                 (install-file "gnumach.gz" boot))))))))
     (native-inputs
      `(("mig" ,mig)
        ("perl" ,perl)
