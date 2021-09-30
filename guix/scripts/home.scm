@@ -111,6 +111,9 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda args
                    (show-help)
                    (exit 0)))
+         (option '(#\n "dry-run") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'dry-run? #t result)))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix show")))
