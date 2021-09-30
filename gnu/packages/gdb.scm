@@ -145,6 +145,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
+              (patches (search-patches "gdb-9.2-sim-ppc-fno-common.patch"))
               (sha256
                (base32
                 "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))
