@@ -553,6 +553,35 @@ developers to control unit tests that require access to data from the
 internet.")
     (license license:bsd-3)))
 
+(define-public python-pytest-repeat
+  (package
+    (name "python-pytest-repeat")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-repeat" version))
+       (sha256
+        (base32 "0nxdbghjz6v4xidl5ky9wlx6z4has3vygj5r7va5ccdb8nbjilsw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/pytest-dev/pytest-repeat")
+    (synopsis "Pytest plugin for repeating tests")
+    (description "@code{pytest-repeat} is a plugin for Pytest that makes it
+enables repeating a single test, or multiple tests, a specific number of
+times.")
+    (license license:mpl2.0)))
+
 (define-public python-pytest-mpl
   (package
     (name "python-pytest-mpl")
