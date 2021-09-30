@@ -216,14 +216,14 @@ servers from Python programs.")
 (define-public 389-ds-base
   (package
     (name "389-ds-base")
-    (version "1.4.0.31")
+    (version "1.4.4.17")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://releases.pagure.org/389-ds-base/"
-                                  "389-ds-base-" version ".tar.bz2"))
+              (uri (string-append "https://github.com/389ds/389-ds-base/archive/"
+                                  "389-ds-base-" version ".tar.gz"))
               (sha256
                (base32
-                "1rs218iqxyclccsdqb529favdsmz88zw785lsxd9ln43ja3x3l65"))))
+                "0i8m4crbnjjhfb7cq758rd0fxyz36i291yq6fykkprjykz9s3zv4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-1)
@@ -322,8 +322,7 @@ servers from Python programs.")
                            "/sbin/dsctl"
                            "/sbin/dsidm"
                            "/bin/ds-logpipe.py"
-                           "/bin/ds-replcheck"
-                           "/bin/readnsstate"))))))))
+                           "/bin/ds-replcheck"))))))))
     (inputs
      `(("bdb" ,bdb)
        ("cracklib" ,cracklib)
