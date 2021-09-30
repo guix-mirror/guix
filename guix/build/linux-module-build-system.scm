@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,7 @@
   (apply invoke "make" "-C"
          (string-append (assoc-ref inputs "linux-module-builder")
                         "/lib/modules/build")
-         (string-append "M=" (getcwd) "/" source-directory)
+         (string-append "M=" (canonicalize-path source-directory))
          (or make-flags '())))
 
 ;; This block was copied from make-linux-libre--only took the "modules_install"
@@ -68,7 +69,7 @@
     (apply invoke "make" "-C"
             (string-append (assoc-ref inputs "linux-module-builder")
                            "/lib/modules/build")
-            (string-append "M=" (getcwd) "/" source-directory)
+            (string-append "M=" (canonicalize-path source-directory))
             ;; Disable depmod because the Guix system's module directory
             ;; is an union of potentially multiple packages.  It is not
             ;; possible to use depmod to usefully calculate a dependency
