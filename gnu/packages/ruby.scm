@@ -1149,18 +1149,10 @@ structure.  Supports custom object formatting via plugins.")
          "03a11clhycyn0jhc7g9davpqd83sn60jqwjy1y145ag9sq6sp935"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Disable tests since they depend on pandoc behavior
+                   ; and there are no upstream releases.
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-tests
-           ;; TODO: Remove this phase after ghc-pandoc gets upgraded to 2.9.2+
-           ;; (see: https://github.com/xwmx/pandoc-ruby/issues/39).
-           (lambda _
-             (substitute* "test/test_conversions.rb"
-               (("next if from == to.*" all)
-                (string-append
-                 all
-                 "      next if ['plain', 'beamer'].include? to\n")))
-             #t))
          (add-after 'unpack 'patch-pandoc-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((pandoc (string-append (assoc-ref inputs "pandoc")
