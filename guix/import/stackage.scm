@@ -32,6 +32,8 @@
   #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix upstream)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:export (%stackage-url
             stackage->guix-package
             stackage-recursive-import
@@ -71,9 +73,6 @@
   (version     stackage-package-version)
   (synopsis    stackage-package-synopsis))
 
-(define (leave-with-message fmt . args)
-  (raise (condition (&message (message (apply format #f fmt args))))))
-
 (define stackage-lts-info-fetch
   ;; "Retrieve the information about the LTS Stackage release VERSION."
   (memoize
@@ -84,7 +83,8 @@
                                             version)))
             (lts-info (and=> (json-fetch url) json->stackage-lts)))
        (or lts-info
-           (leave-with-message "LTS release version not found: ~a" version))))))
+           (raise (formatted-message (G_ "LTS release version not found: ~a")
+                                     version)))))))
 
 (define (lts-package-version packages name)
   "Return the version of the package with upstream NAME included in PACKAGES."
@@ -120,7 +120,8 @@ included in the Stackage LTS release."
            (hackage->guix-package name-version
                                   #:include-test-dependencies?
                                   include-test-dependencies?)
-           (leave-with-message "~a: Stackage package not found" package-name))))))
+           (raise (formatted-message (G_ "~a: Stackage package not found")
+                                     package-name)))))))
 
 (define (stackage-recursive-import package-name . args)
   (recursive-import package-name
@@ -145,10 +146,10 @@ PACKAGE or #f if the package is not included in the Stackage LTS release."
              (version (lts-package-version (packages) hackage-name))
              (name-version (hackage-name-version hackage-name version)))
         (match (and=> name-version hackage-fetch)
-          (#f (format (current-error-port)
-                      "warning: failed to parse ~a~%"
-                      (hackage-cabal-url hackage-name))
-              #f)
+          (#f
+           (warning (G_ "failed to parse ~a~%")
+                    (hackage-cabal-url hackage-name))
+           #f)
           (_ (let ((url (hackage-source-url hackage-name version)))
                (upstream-source
                 (package (package-name package))
