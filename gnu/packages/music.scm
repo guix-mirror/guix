@@ -43,6 +43,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Thomas Albers Raviola <thomas@thomaslabs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2310,38 +2311,43 @@ special variant of additive synthesis.")
 (define-public amsynth
   (package
     (name "amsynth")
-    (version "1.7.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/amsynth/amsynth/releases/"
                            "download/release-" version
-                           "/amsynth-" version ".tar.bz2"))
+                           "/amsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "1882pfcmf3rqg3vd4qflzkppcv158d748i603spqjbxqi8z7x7w0"))))
+         "0lhp7fymm2fids02y43cy422jzmdiraszll1mk3gzlbfwg33ds1i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/GUI/editor_pane.c"
-               (("/usr/bin/unzip") (which "unzip")))
-             (substitute* "src/GUI/GUI.cc"
-               (("/usr/bin/which") (which "which")))
+               (("/usr/bin/unzip")
+                (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
+             (substitute* "src/GUI/MainMenu.cpp"
+               (("/usr/bin/which")
+                (string-append (assoc-ref inputs "which") "/bin/which")))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("gtk+" ,gtk+-2)
-       ("gtkmm" ,gtkmm-2)
        ("jack" ,jack-1)
-       ("lash" ,lash)
        ("libsndfile" ,libsndfile)
        ("lv2" ,lv2)
        ;; External commands invoked at run time.
        ("unzip" ,unzip)
        ("which" ,which)))
+    (propagated-inputs
+     ;; avoid runtime error:
+     ;; GLib-GIO-ERROR **: 22:14:48.344: Settings schema
+     ;;   'org.gnome.desktop.interface' is not installed
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
