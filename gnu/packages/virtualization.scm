@@ -21,6 +21,9 @@
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2021 Dion Mendel <guix@dm9.info>
 ;;; Copyright © 2021 Andrew Whatson <whatson@gmail.com>
+;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -436,6 +439,74 @@ server and embedded PowerPC, and S390 guests.")
     (string-append "qemu-system-" (match (string-split system #\-)
                                     ((arch kernel) arch)
                                     (_ system))))))
+
+(define-public libx86emu
+  (package
+    (name "libx86emu")
+    (version "3.1")
+    (home-page "https://github.com/wfeldt/libx86emu")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url home-page)
+         (commit version)))
+       (file-name (git-file-name name version))
+       (modules
+        '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Remove git2log program file.
+           (delete-file "git2log")
+           ;; Remove variables that depends on git2log.
+           (substitute* "Makefile"
+             (("GIT2LOG.*=.*$") "")
+             (("GITDEPS.*=.*$") "")
+             (("BRANCH.*=.*$") ""))
+           #t))
+       (sha256
+        (base32 "104xqc6nj9rpi7knl3dfqvasf087hlz2n5yndb1iycw35a6j509b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (include (string-append out "/include"))
+                    (lib (string-append out "/lib")))
+               ;; Correct the values of version and install directories.
+               (substitute* "Makefile"
+                 (("VERSION.*=.*$")
+                  (string-append "VERSION := "
+                                 ,version "\n"))
+                 (("PREFIX.*=.*$")
+                  (string-append "PREFIX := " out "\n"))
+                 (("MAJOR_VERSION.*=.*$")
+                  (string-append "MAJOR_VERSION := "
+                                 ,(version-major version) "\n"))
+                 (("LIBDIR.*=.*$")
+                  (string-append "LIBDIR = " lib "\n"))
+                 (("/usr/include") include)))))
+         (delete 'configure))))         ; no configure script
+    (native-inputs
+     `(("nasm" ,nasm)
+       ("perl" ,perl)))
+    (synopsis "Library for x86 emulation")
+    (description "Libx86emu is a small library to emulate x86 instructions.  The
+focus here is not a complete emulation but to cover enough for typical
+firmware blobs.  You can
+@enumerate
+@item intercept any memory access or directly map real memory ranges
+@item intercept any i/o access, map real i/o ports, or block any real i/o
+@item intercept any interrupt
+@item add a hook to run after each instruction
+@item recognize a special x86 instruction that can trigger logging
+@item use integrated logging
+@end enumerate")
+    (license license:x11-style)))
 
 (define-public ganeti
   (package
