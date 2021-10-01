@@ -2424,47 +2424,19 @@ in the current session, Python, and the OS.")
     (license license:bsd-3)))
 
 (define-public python-six
-  (package
+  (package/inherit python-six-bootstrap
     (name "python-six")
-    (version "1.15.0")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (pypi-uri "six" version))
-      (sha256
-       (base32
-        "0n82108wxn5giff50hd9ykjhd3zl7cndabdasi6568yvbh1rqqrh"))))
-    (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "py.test" "-v"))))))
+             (invoke "pytest" "-v"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-bootstrap)))
-    (home-page "https://pypi.org/project/six/")
-    (synopsis "Python 2 and 3 compatibility utilities")
-    (description
-     "Six is a Python 2 and 3 compatibility library.  It provides utility
-functions for smoothing over the differences between the Python versions with
-the goal of writing Python code that is compatible on both Python versions.
-Six supports every Python version since 2.5.  It is contained in only one
-Python file, so it can be easily copied into your project.")
-    (license license:x11)))
+     `(("python-pytest" ,python-pytest-bootstrap)))))
 
 (define-public python2-six
   (package-with-python2 python-six))
-
-(define-public python-six-bootstrap
-  (package
-    (inherit python-six)
-    (name "python-six-bootstrap")
-    (native-inputs `())
-    (arguments `(#:tests? #f))))
-
-(define-public python2-six-bootstrap
-  (package-with-python2 python-six-bootstrap))
 
 (define-public python-schedule
   (package
@@ -5906,61 +5878,6 @@ parse and apply unified diffs.  It has features such as:
 @item nice diffstat histogram.
 @end itemize")
     (license license:expat)))
-
-(define-public python-pyparsing
-  (package
-    (name "python-pyparsing")
-    (version "2.4.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyparsing" version))
-       (sha256
-        (base32 "17wn5zlijc9m9zj26gy3f541y7smpj8rfhl51d025c2gm210b0sc"))))
-    (build-system python-build-system)
-    (outputs '("out" "doc"))
-    (arguments
-     `(#:tests? #f ; no test target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((doc (string-append (assoc-ref outputs "doc")
-                                        "/share/doc/" ,name "-" ,version))
-                    (html-doc (string-append doc "/html"))
-                    (examples (string-append doc "/examples")))
-               (mkdir-p html-doc)
-               (mkdir-p examples)
-               (for-each
-                (lambda (dir tgt)
-                  (map (lambda (file)
-                         (install-file file tgt))
-                       (find-files dir ".*")))
-                (list "docs" "htmldoc" "examples")
-                (list doc html-doc examples))
-               #t))))))
-    (home-page "https://github.com/pyparsing/pyparsing")
-    (synopsis "Python parsing class library")
-    (description
-     "The pyparsing module is an alternative approach to creating and
-executing simple grammars, vs. the traditional lex/yacc approach, or the use
-of regular expressions.  The pyparsing module provides a library of classes
-that client code uses to construct the grammar directly in Python code.")
-    (license license:expat)))
-
-(define-public python2-pyparsing
-  (package-with-python2 python-pyparsing))
-
-(define-public python-pyparsing-2.4.7
-  (package
-    (inherit python-pyparsing)
-    (version "2.4.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyparsing" version))
-       (sha256
-        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))))
 
 (define-public python-numpydoc
   (package
@@ -18550,28 +18467,15 @@ several utilities, as well as an API for building localization tools.")
   (package-with-python2 python-translate-toolkit))
 
 (define-public python-packaging
-  (package
+  (package/inherit python-packaging-bootstrap
     (name "python-packaging")
-    (version "20.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "packaging" version))
-        ;; XXX: The URL in the patch file is wrong, it should be
-        ;; <https://github.com/pypa/packaging/pull/256>.
-        (patches (search-patches "python-packaging-test-arch.patch"))
-        (sha256
-         (base32
-          "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
-    (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
-                          (invoke "py.test" "-vv")
-                          (format #t "test suite not run~%"))
-                      #t)))))
+                          (invoke "pytest" "-vv")
+                          (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-pretend" ,python-pretend)
        ("python-pytest" ,python-pytest)))
@@ -18591,37 +18495,6 @@ information.")
 
 (define-public python2-packaging
   (package-with-python2 python-packaging))
-
-;; Variants with minimal dependencies, for bootstrapping Pytest.
-(define-public python-packaging-bootstrap
-  (hidden-package
-   (package/inherit
-    python-packaging
-    (name "python-packaging-bootstrap")
-    (arguments
-      (substitute-keyword-arguments (package-arguments python-packaging)
-        ((#:phases phases)
-         `(modify-phases ,phases
-            (add-after 'unpack 'fix-dependencies
-              (lambda* (#:key tests? #:allow-other-keys)
-                (substitute* "setup.py" (("\"six\"") ""))))))
-         ((#:tests? _ #f) #f)))
-    (native-inputs '())
-    (propagated-inputs
-     `(("python-pyparsing" ,python-pyparsing))))))
-
-(define-public python2-packaging-bootstrap
-  (hidden-package
-   (package/inherit
-    python2-packaging
-    (name "python2-packaging-bootstrap")
-    (native-inputs '())
-    (propagated-inputs
-     `(("python-pyparsing" ,python2-pyparsing)
-       ("python-six" ,python2-six-bootstrap)))
-    (arguments
-     `(#:tests? #f
-       ,@(package-arguments python2-packaging))))))
 
 (define-public python-relatorio
   (package

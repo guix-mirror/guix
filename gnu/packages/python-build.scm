@@ -23,6 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python-build)
+  #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -107,6 +108,32 @@ Language (TOML) configuration files.")
     (description "This package provides a Python parser for TOML-0.4.0.")
     (license license:expat)))
 
+(define-public python-six-bootstrap
+  (package
+    (name "python-six-bootstrap")
+    (version "1.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "six" version))
+       (sha256
+        (base32
+         "0n82108wxn5giff50hd9ykjhd3zl7cndabdasi6568yvbh1rqqrh"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))          ;to avoid pytest dependency
+    (home-page "https://pypi.org/project/six/")
+    (synopsis "Python 2 and 3 compatibility utilities")
+    (description
+     "Six is a Python 2 and 3 compatibility library.  It provides utility
+functions for smoothing over the differences between the Python versions with
+the goal of writing Python code that is compatible on both Python versions.
+Six supports every Python version since 2.5.  It is contained in only one
+Python file, so it can be easily copied into your project.")
+    (license license:x11)))
+
+(define-public python2-six-bootstrap
+  (package-with-python2 python-six-bootstrap))
+
 (define-public python-pep517-bootstrap
   (hidden-package
    (package
@@ -130,6 +157,93 @@ Language (TOML) configuration files.")
      (description
       "Wrappers to build Python packages using PEP 517 hooks.")
      (license license:expat))))
+
+(define-public python-pyparsing
+  (package
+    (name "python-pyparsing")
+    (version "2.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyparsing" version))
+       (sha256
+        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f                      ;no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
+                    (html-doc (string-append doc "/html"))
+                    (examples (string-append doc "/examples")))
+               (mkdir-p html-doc)
+               (mkdir-p examples)
+               (for-each
+                (lambda (dir tgt)
+                  (map (lambda (file)
+                         (install-file file tgt))
+                       (find-files dir ".*")))
+                (list "docs" "htmldoc" "examples")
+                (list doc html-doc examples))))))))
+    (home-page "https://github.com/pyparsing/pyparsing")
+    (synopsis "Python parsing class library")
+    (description
+     "The pyparsing module is an alternative approach to creating and
+executing simple grammars, vs. the traditional lex/yacc approach, or the use
+of regular expressions.  The pyparsing module provides a library of classes
+that client code uses to construct the grammar directly in Python code.")
+    (license license:expat)))
+
+(define-public python-pyparsing-2.4.7
+  (package
+    (inherit python-pyparsing)
+    (version "2.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyparsing" version))
+       (sha256
+        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))))
+
+(define-public python2-pyparsing
+  (package-with-python2 python-pyparsing))
+
+(define-public python-packaging-bootstrap
+  (package
+    (name "python-packaging-bootstrap")
+    (version "20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "packaging" version))
+       ;; XXX: The URL in the patch file is wrong, it should be
+       ;; <https://github.com/pypa/packaging/pull/256>.
+       (patches (search-patches "python-packaging-test-arch.patch"))
+       (sha256
+        (base32
+         "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)
+       ("python-six-bootstrap" ,python-six-bootstrap)))
+    (home-page "https://github.com/pypa/packaging")
+    (synopsis "Core utilities for Python packages")
+    (description "Packaging is a Python module for dealing with Python packages.
+It offers an interface for working with package versions, names, and dependency
+information.")
+    ;; From 'LICENSE': This software is made available under the terms of
+    ;; *either* of the licenses found in LICENSE.APACHE or LICENSE.BSD.
+    ;; Contributions to this software is made under the terms of *both* these
+    ;; licenses.
+    (license (list license:asl2.0 license:bsd-2))))
+
+(define-public python2-packaging-bootstrap
+  (package-with-python2 python-packaging-bootstrap))
 
 ;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
 ;;; a name clash with python-build from (guix build-system python).
