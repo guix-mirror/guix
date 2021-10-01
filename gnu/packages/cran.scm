@@ -32145,6 +32145,43 @@ function, including setting the field used and background value, and
 options for aggregating multi-layer rasters.")
     (license license:expat)))
 
+(define-public r-bien
+  (package
+    (name "r-bien")
+    (version "1.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "BIEN" version))
+        (sha256
+          (base32 "1dagrs54ciagm2mgqrvxl6k2akahr0qk63ifxqnks7iljm0x1gw6"))))
+    (properties `((upstream-name . "BIEN")))
+    (build-system r-build-system)
+    (native-inputs
+      `(("r-knitr" ,r-knitr)
+        ("r-testthat" ,r-testthat)))
+    (propagated-inputs
+      `(("r-ape" ,r-ape)
+        ("r-dbi" ,r-dbi)
+        ("r-doparallel" ,r-doparallel)
+        ("r-fasterize" ,r-fasterize)
+        ("r-foreach" ,r-foreach)
+        ("r-raster" ,r-raster)
+        ("r-rgdal" ,r-rgdal)
+        ("r-rgeos" ,r-rgeos)
+        ("r-rpostgresql" ,r-rpostgresql)
+        ("r-sf" ,r-sf)
+        ("r-sp" ,r-sp)))
+    (home-page "https://cran.r-project.org/package=BIEN")
+    (synopsis "Tools for accessing the BIEN database")
+    (description
+     "This package provides tools for accessing the Botanical Information and
+Ecology Network (BIEN) database.  The BIEN database contains cleaned and
+standardized botanical data including occurrence, trait, plot and taxonomic
+data.  This package provides functions that query the BIEN database by
+constructing and executing optimized SQL queries.")
+    (license license:expat)))
+
 (define-public r-ggh4x
   (package
     (name "r-ggh4x")
