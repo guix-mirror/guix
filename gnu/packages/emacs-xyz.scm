@@ -25270,14 +25270,14 @@ well as an option for visually flashing evaluated s-expressions.")
 (define-public emacs-tramp
   (package
     (name "emacs-tramp")
-    (version "2.5.1.2")
+    (version "2.5.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "tramp-" version ".tar"))
        (sha256
-        (base32 "0p8m8prxrvrr455ahb626c1dry04m80y017h16ngr4i5ais0r85g"))))
+        (base32 "1qcwdavfrbw8yyfy5rbzbcfyqavqbz13jncahkqlgwbkqvmgh7y5"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs                   ;need D-Bus
