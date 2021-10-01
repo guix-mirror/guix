@@ -27,6 +27,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages))
 
 ;;; Commentary:
@@ -298,3 +299,44 @@ implementation developed for Poetry.  This project is intended to be
 a light weight, fully compliant, self-contained package allowing PEP 517
 compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
+
+(define-public python-flit-core
+  (package
+    (name "python-flit-core")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flit" version))
+       (sha256
+        (base32 "10vjqnybvjdqdbmyc0asbhhvq51yjnnj00645yiq9849gnr8h0ir"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-toml" ,python-toml)))
+    (arguments
+     ;; flit-core has a test suite, but it requires Pytest.  Disable it so
+     ;; as to not pull pytest as an input.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; flit-core requires itself to build.  Luckily, a
+           ;; bootstrapping script exists, which does so using just
+           ;; the checkout sources and Python.
+           (lambda _
+             (invoke "python" "flit_core/build_dists.py")))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (whl (car (find-files "." "\\.whl$"))))
+               (invoke "pip" "--no-cache-dir" "--no-input"
+                       "install" "--no-deps" "--prefix" out whl))))
+         ;; The sanity-check phase fails because flit depends on tomli at
+         ;; run-time, but this core variant avoids it to avoid a cycle.
+         (delete 'sanity-check))))
+    (home-page "https://github.com/takluyver/flit")
+    (synopsis "Core package of the Flit Python build system")
+    (description "This package provides @code{flit-core}, a PEP 517 build
+backend for packages using Flit.  The only public interface is the API
+specified by PEP 517, @code{flit_core.buildapi}.")
+    (license license:bsd-3)))
