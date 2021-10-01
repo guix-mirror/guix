@@ -1401,8 +1401,13 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
          #:phases
          (modify-phases %standard-phases
            (replace 'build
-             (lambda* (#:key (make-flags '()) #:allow-other-keys)
-               (apply invoke "make" make-flags))))
+             (lambda* (#:key (make-flags '()) (parallel-build? #t)
+                       #:allow-other-keys)
+               (apply invoke "make"
+                      `(,@(if parallel-build?
+                              `("-j" ,(number->string (parallel-job-count)))
+                              '())
+                        ,@make-flags)))))
          #:tests? #f))                  ; no test suite
       (home-page "https://github.com/tomaspinho/rtl8821ce")
       (synopsis "Linux driver for Realtek RTL8821CE wireless network adapters")
