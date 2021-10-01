@@ -256,9 +256,14 @@ servers from Python programs.")
            (lambda _
              (substitute* "include/ldaputil/certmap.h"
                (("nss3/cert.h") "nss/cert.h"))
+             (substitute* "src/lib389/lib389/utils.py"
+               (("'/sbin/ip'")
+                (string-append "'" (which "ip") "'")))
              (substitute* "src/lib389/lib389/nss_ssl.py"
                (("'/usr/bin/certutil'")
                 (string-append "'" (which "certutil") "'"))
+               (("'/usr/bin/openssl'")
+                (string-append "'" (which "openssl") "'"))
                (("'/usr/bin/c_rehash'")
                 (string-append "'" (which "perl") "', '"
                                (which "c_rehash") "'")))))
@@ -330,6 +335,7 @@ servers from Python programs.")
        ("gnutls" ,gnutls)
        ("httpd" ,httpd)
        ("icu4c" ,icu4c)
+       ("iproute" ,iproute)
        ("libevent" ,libevent)
        ("libselinux" ,libselinux)
        ("linux-pam" ,linux-pam)
