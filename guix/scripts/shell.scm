@@ -31,7 +31,15 @@
   #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:autoload   (ice-9 rdelim) (read-line)
-  #:autoload   (guix utils) (config-directory)
+  #:autoload   (guix base32) (bytevector->base32-string)
+  #:autoload   (rnrs bytevectors) (string->utf8)
+  #:autoload   (guix utils) (config-directory cache-directory)
+  #:autoload   (guix describe) (current-channels)
+  #:autoload   (guix channels) (channel-commit)
+  #:autoload   (gcrypt hash) (sha256)
+  #:use-module ((guix build utils) #:select (mkdir-p))
+  #:use-module (guix cache)
+  #:use-module ((ice-9 ftw) #:select (scandir))
   #:export (guix-shell))
 
 (define (show-help)
@@ -48,6 +56,8 @@ interactive shell in that environment.\n"))
                          FILE evaluates to"))
   (display (G_ "
   -q                     inhibit loading of 'guix.scm' and 'manifest.scm'"))
+  (display (G_ "
+      --rebuild-cache    rebuild cached environment, if any"))
 
   (show-environment-options-help)
   (newline)
@@ -109,7 +119,10 @@ interactive shell in that environment.\n"))
                                     result)))
               (option '(#\q) #f #f
                       (lambda (opt name arg result)
-                        (alist-cons 'explicit-loading? #t result))))
+                        (alist-cons 'explicit-loading? #t result)))
+              (option '("rebuild-cache") #f #f
+                      (lambda (opt name arg result)
+                        (alist-cons 'rebuild-cache? #t result))))
         (filter-map (lambda (opt)
                       (and (not (any (lambda (name)
                                        (member name to-remove))
@@ -132,11 +145,12 @@ interactive shell in that environment.\n"))
   (let ((args command (break (cut string=? "--" <>) args)))
     (let ((opts (parse-command-line args %options (list %default-options)
                                     #:argument-handler handle-argument)))
-      (auto-detect-manifest
-       (match command
-         (() opts)
-         (("--") opts)
-         (("--" command ...) (alist-cons 'exec command opts)))))))
+      (options-with-caching
+       (auto-detect-manifest
+        (match command
+          (() opts)
+          (("--") opts)
+          (("--" command ...) (alist-cons 'exec command opts))))))))
 
 (define (find-file-in-parent-directories candidates)
   "Find one of CANDIDATES in the current directory or one of its ancestors."
@@ -186,6 +200,53 @@ a hash-prefixed comment, or a blank line."
                         (warning loc (G_ "ignoring invalid file name: '~a'~%")
                                  line))))))))))
     (const #f)))
+
+(define (options-with-caching opts)
+  "If OPTS contains exactly one 'load' or one 'manifest' key, automatically
+add a 'profile' key (when a profile for that file is already in cache) or a
+'gc-root' key (to add the profile to cache)."
+  (define (single-file-for-caching opts)
+    (let loop ((opts opts)
+               (file #f))
+      (match opts
+        (() file)
+        ((('package . _) . _) #f)
+        ((('load . ('package candidate)) . rest)
+         (and (not file) (loop rest candidate)))
+        ((('manifest . candidate) . rest)
+         (and (not file) (loop rest candidate)))
+        ((('expression . _) . _) #f)
+        ((_ . rest) (loop rest file)))))
+
+  ;; Check whether there's a single 'load' or 'manifest' option.  When that is
+  ;; the case, arrange to automatically cache the resulting profile.
+  (match (single-file-for-caching opts)
+    (#f opts)
+    (file
+     (let* ((root (profile-cached-gc-root file))
+            (stat (and root (false-if-exception (lstat root)))))
+       (if (and (not (assoc-ref opts 'rebuild-cache?))
+                stat
+                (<= (stat:mtime ((@ (guile) stat) file))
+                    (stat:mtime stat)))
+           (let ((now (current-time)))
+             ;; Update the atime on ROOT to reflect usage.
+             (utime root
+                    now (stat:mtime stat) 0 (stat:mtimensec stat)
+                    AT_SYMLINK_NOFOLLOW)
+             (alist-cons 'profile root
+                         (remove (match-lambda
+                                   (('load . _) #t)
+                                   (('manifest . _) #t)
+                                   (_ #f))
+                                 opts)))          ;load right away
+           (if (and root (not (assq-ref opts 'gc-root)))
+               (begin
+                 (if stat
+                     (delete-file root)
+                     (mkdir-p (dirname root)))
+                 (alist-cons 'gc-root root opts))
+               opts))))))
 
 (define (auto-detect-manifest opts)
   "If OPTS do not specify packages or a manifest, load a \"guix.scm\" or
@@ -237,8 +298,58 @@ echo ~a >> ~a
                opts))))))
 
 
+;;;
+;;; Profile cache.
+;;;
+
+(define %profile-cache-directory
+  ;; Directory where profiles created by 'guix shell' alone (without extra
+  ;; options) are cached.
+  (make-parameter (string-append (cache-directory #:ensure? #f)
+                                 "/profiles")))
+
+(define (profile-cache-key file)
+  "Return the cache key for the profile corresponding to FILE, a 'guix.scm' or
+'manifest.scm' file, or #f if we lack channel information."
+  (match (current-channels)
+    (() #f)
+    (((= channel-commit commits) ...)
+     (let ((stat (stat file)))
+       (bytevector->base32-string
+        ;; Since FILE is not canonicalized, only include the device/inode
+        ;; numbers.  XXX: In some rare cases involving Btrfs and NFS, this can
+        ;; be insufficient: <https://lwn.net/Articles/866582/>.
+        (sha256 (string->utf8
+                 (string-append (string-join commits) ":"
+                                (number->string (stat:dev stat)) ":"
+                                (number->string (stat:ino stat))))))))))
+
+(define (profile-cached-gc-root file)
+  "Return the cached GC root for FILE, a 'guix.scm' or 'manifest.scm' file, or
+#f if we lack information to cache it."
+  (match (profile-cache-key file)
+    (#f  #f)
+    (key (string-append (%profile-cache-directory) "/" key))))
+
+
 (define-command (guix-shell . args)
   (category development)
   (synopsis "spawn one-off software environments")
 
-  (guix-environment* (parse-args args)))
+  (define (cache-entries directory)
+    (filter-map (match-lambda
+                  ((or "." "..") #f)
+                  (file (string-append directory "/" file)))
+                (or (scandir directory) '())))
+
+  (define* (entry-expiration file)
+    ;; Return the time at which FILE, a cached profile, is considered expired.
+    (match (false-if-exception (lstat file))
+      (#f 0)                       ;FILE may have been deleted in the meantime
+      (st (+ (stat:atime st) (* 60 60 24 7)))))
+
+  (let ((result (guix-environment* (parse-args args))))
+    (maybe-remove-expired-cache-entries (%profile-cache-directory)
+                                        cache-entries
+                                        #:entry-expiration entry-expiration)
+    result))

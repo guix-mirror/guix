@@ -5769,6 +5769,17 @@ This is similar to the same-named option in @command{guix package}
 (@pxref{profile-manifest, @option{--manifest}}) and uses the same
 manifest files.
 
+@item --rebuild-cache
+When using @option{--manifest}, @option{--file}, or when invoked without
+arguments, @command{guix shell} caches the environment so that
+subsequent uses are instantaneous.  The cache is invalidated anytime the
+file is modified.
+
+The @option{--rebuild-cache} forces the cached environment to be
+refreshed even if the file has not changed.  This is useful if the
+@command{guix.scm} or @command{manifest.scm} has external dependencies,
+or if its behavior depends, say, on environment variables.
+
 @item --pure
 Unset existing environment variables when building the new environment, except
 those specified with @option{--preserve} (see below).  This has the effect of
