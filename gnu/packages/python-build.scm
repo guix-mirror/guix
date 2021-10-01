@@ -135,6 +135,44 @@ Python file, so it can be easily copied into your project.")
 (define-public python2-six-bootstrap
   (package-with-python2 python-six-bootstrap))
 
+(define-public python-tomli
+  (package
+    (name "python-tomli")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tomli" version))
+       (sha256
+        (base32 "1vjg44narb7hdiazdmbv8bfv7pi6phnq7nxm6aphx0iqxcah1kn6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;disabled to avoid extra dependencies
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (setenv "PYTHONPATH" (string-append (getcwd) ":"
+                                                 (getenv "GUIX_PYTHONPATH")))
+             (invoke "python" "-m" "build" "--wheel" "--no-isolation"
+                     "--skip-dependency-check")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (whl (car (find-files "dist" "\\.whl$"))))
+               (invoke "pip" "--no-cache-dir" "--no-input"
+                       "install" "--no-deps" "--prefix" out whl)))))))
+    (native-inputs
+     `(("python-flit-core" ,python-flit-core)
+       ("python-pypa-build" ,python-pypa-build)
+       ("python-six", python-six-bootstrap)))
+    (home-page "https://github.com/hukkin/tomli")
+    (synopsis "Small and fast TOML parser")
+    (description "Tomli is a minimal TOML parser that is fully compatible with
+@url{https://toml.io/en/v1.0.0,TOML v1.0.0}.  It is about 2.4 times as fast as
+@code{python-toml}.")
+    (license license:expat)))
+
 (define-public python-pep517-bootstrap
   (hidden-package
    (package
