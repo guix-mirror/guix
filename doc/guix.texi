@@ -3341,6 +3341,17 @@ objects, like this:
  '("emacs" "guile@@2.2" "guile@@2.2:debug"))
 @end lisp
 
+@findex package->development-manifest
+You might also want to create a manifest for all the dependencies of a
+package, rather than the package itself:
+
+@lisp
+(package->development-manifest (specification->package "emacs"))
+@end lisp
+
+The example above gives you all the software required to develop Emacs,
+similar to what @command{guix environment emacs} provides.
+
 @xref{export-manifest, @option{--export-manifest}}, to learn how to
 obtain a manifest file from an existing profile.
 

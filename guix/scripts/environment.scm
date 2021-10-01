@@ -66,24 +66,6 @@ do not augment existing environment variables with additional search paths."
                (newline)))
             (profile-search-paths profile manifest)))
 
-(define (input->manifest-entry input)
-  "Return a manifest entry for INPUT, or #f if INPUT does not correspond to a
-package."
-  (match input
-    ((_ (? package? package))
-     (package->manifest-entry package))
-    ((_ (? package? package) output)
-     (package->manifest-entry package output))
-    (_
-     #f)))
-
-(define (package-environment-inputs package)
-  "Return a list of manifest entries corresponding to the transitive input
-packages for PACKAGE."
-  ;; Remove non-package inputs such as origin records.
-  (filter-map input->manifest-entry
-              (package-development-inputs package)))
-
 (define (show-help)
   (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
 Build an environment that includes the dependencies of PACKAGE and execute
@@ -297,11 +279,11 @@ for the corresponding packages."
       ((? package? package)
        (if (eq? mode 'ad-hoc-package)
            (list (package->manifest-entry* package))
-           (package-environment-inputs package)))
+           (manifest-entries (package->development-manifest package))))
       (((? package? package) (? string? output))
        (if (eq? mode 'ad-hoc-package)
            (list (package->manifest-entry* package output))
-           (package-environment-inputs package)))
+           (manifest-entries (package->development-manifest package))))
       ((lst ...)
        (append-map (cut packages->outputs <> mode) lst))))
 
@@ -313,8 +295,9 @@ for the corresponding packages."
                                  (specification->package+output spec)))
                      (list (package->manifest-entry* package output))))
                   (('package 'package (? string? spec))
-                   (package-environment-inputs
-                    (transform (specification->package+output spec))))
+                   (manifest-entries
+                    (package->development-manifest
+                     (transform (specification->package+output spec)))))
                   (('expression mode str)
                    ;; Add all the outputs of the package STR evaluates to.
                    (packages->outputs (read/eval str) mode))
