@@ -1394,7 +1394,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (build-system linux-module-build-system)
       (arguments
        `(#:make-flags
-         (list "CC=gcc"
+         (list (string-append "CC=" ,(cc-for-target))
                (string-append "KSRC="
                               (assoc-ref %build-inputs "linux-module-builder")
                               "/lib/modules/build"))
