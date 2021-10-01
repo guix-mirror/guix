@@ -101,7 +101,13 @@ CLEANUP-PERIOD denotes the minimum time between two cache cleanups."
                                   #:now now
                                   #:entry-expiration entry-expiration
                                   #:delete-entry delete-entry)
-    (call-with-output-file expiry-file
-      (cute write (time-second now) <>))))
+    (catch 'system-error
+      (lambda ()
+        (call-with-output-file expiry-file
+          (cute write (time-second now) <>)))
+      (lambda args
+        ;; ENOENT means CACHE does not exist.
+        (unless (= ENOENT (system-error-errno args))
+          (apply throw args))))))
 
 ;;; cache.scm ends here
