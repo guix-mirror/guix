@@ -32117,6 +32117,34 @@ Python module, this utility provides a flexible and extensible way of
 formatting and delivering log messages with low overhead.")
     (license license:agpl3+)))
 
+(define-public r-fasterize
+  (package
+    (name "r-fasterize")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "fasterize" version))
+        (sha256
+          (base32 "10bzl77c1b9jhcn1xp467qzp2n8c7s3wpxn53qjh1nwvbri5kd32"))))
+    (properties `((upstream-name . "fasterize")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-raster" ,r-raster)
+        ("r-rcpp" ,r-rcpp)
+        ("r-rcpparmadillo" ,r-rcpparmadillo)
+        ("r-sp" ,r-sp)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ecohealthalliance/fasterize")
+    (synopsis "Fast Polygon to Raster Conversion")
+    (description
+"This package provides a drop-in replacement for @code{rasterize} from
+the @code{raster} package that takes sf-type objects, and is much faster.
+There is support for the main options provided by the @code{rasterize}
+function, including setting the field used and background value, and
+options for aggregating multi-layer rasters.")
+    (license license:expat)))
+
 (define-public r-ggh4x
   (package
     (name "r-ggh4x")
