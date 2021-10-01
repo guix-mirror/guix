@@ -34,15 +34,18 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix transformations)
-  #:use-module (gnu build linux-container)
-  #:use-module (gnu build accounts)
-  #:use-module ((guix build syscalls) #:select (set-network-interface-up))
-  #:use-module (gnu system linux-container)
+  #:autoload   (gnu build linux-container) (call-with-container %namespaces
+                                            user-namespace-supported?
+                                            unprivileged-user-namespace-supported?
+                                            setgroups-supported?)
+  #:autoload   (gnu build accounts) (password-entry group-entry
+                                     password-entry-name password-entry-directory
+                                     write-passwd write-group)
+  #:autoload   (guix build syscalls) (set-network-interface-up)
   #:use-module (gnu system file-systems)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages bash)
-  #:use-module ((gnu packages bootstrap)
-                #:select (bootstrap-executable %bootstrap-guile))
+  #:autoload   (gnu packages) (specification->package+output)
+  #:autoload   (gnu packages bash) (bash)
+  #:autoload   (gnu packages bootstrap) (bootstrap-executable %bootstrap-guile)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
