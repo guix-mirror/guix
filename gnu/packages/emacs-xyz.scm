@@ -12247,52 +12247,40 @@ programming and reproducible research.")
 
 (define-public emacs-org-contrib
   (package
-    (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20210519")
+    (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://orgmode.org/elpa/"
-                           "org-plus-contrib-" version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~bzg/org-contrib")
+             (commit (string-append "release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0g765fsc7ssn779xnhjzrxy1sz5b019h7dk1q26yk2w6i540ybfl"))
+        (base32 "0dn6arrmm0rrm2vi94fj5fjb030ggxf8cvpmi68wr0fh8xm5l1sh"))
        ;; ob-sclang.el is packaged separately to avoid the dependency on
        ;; SuperCollider and qtwebengine.
        (modules '((guix build utils)))
-       (snippet '(begin (delete-file "ob-sclang.el") #t))))
+       (snippet '(begin (delete-file "lisp/ob-sclang.el")))))
+    (build-system emacs-build-system)
     (arguments
-     `(#:modules ((guix build emacs-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils)
-                  (ice-9 ftw)
-                  (srfi srfi-1))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'delete-org-files
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (org (assoc-ref inputs "org"))
-                    (contrib-files
-                     (map basename (find-files out)))
-                    (org+contrib-files
-                     (map basename (find-files org)))
-                    (duplicates (lset-intersection string=?
-                                                   contrib-files
-                                                   org+contrib-files)))
-               (with-directory-excursion (elpa-directory out)
-                 (for-each delete-file duplicates))
-               #t))))))
+         (add-after 'unpack 'enter-source-directory
+           (lambda _
+             (chdir "lisp"))))))
     (propagated-inputs
      `(("arduino-mode" ,emacs-arduino-mode)
        ("cider" ,emacs-cider)
        ("org" ,emacs-org)))
-    (synopsis "Contributed packages to Org mode")
+    (home-page "https://git.sr.ht/~bzg/org-contrib")
+    (synopsis "Unmaintained add-ons for Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
 
 This package is equivalent to org-plus-contrib, but only includes additional
-files that you would find in @file{contrib/} from the git repository.")))
+files that you would find in @file{contrib/} from the git repository.")
+    (license license:gpl3+)))
 
 (define-public emacs-org-pretty-table
   ;; There is no release yet.
