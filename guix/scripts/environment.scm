@@ -729,18 +729,21 @@ command-line option processing with 'parse-command-line'."
             ;; Use the bootstrap Guile when requested.
             (parameterize ((%graft? (assoc-ref opts 'graft?))
                            (%guile-for-build
-                            (package-derivation
-                             store
-                             (if bootstrap?
-                                 %bootstrap-guile
-                                 (default-guile)))))
+                            (and (or container? (not profile))
+                                 (package-derivation
+                                  store
+                                  (if bootstrap?
+                                      %bootstrap-guile
+                                      (default-guile))))))
               (run-with-store store
                 ;; Containers need a Bourne shell at /bin/sh.
                 (mlet* %store-monad ((bash       (environment-bash container?
                                                                    bootstrap?
                                                                    system))
-                                     (prof-drv   (manifest->derivation
-                                                  manifest system bootstrap?))
+                                     (prof-drv   (if profile
+                                                     (return #f)
+                                                     (manifest->derivation
+                                                      manifest system bootstrap?)))
                                      (profile -> (if profile
                                                      (readlink* profile)
                                                      (derivation->output-path prof-drv)))
@@ -750,9 +753,9 @@ command-line option processing with 'parse-command-line'."
                   ;; --search-paths.  Additionally, we might need to build bash for
                   ;; a container.
                   (mbegin %store-monad
-                    (built-derivations (if (derivation? bash)
-                                           (list prof-drv bash)
-                                           (list prof-drv)))
+                    (built-derivations (append
+                                           (if prof-drv (list prof-drv) '())
+                                           (if (derivation? bash) (list bash) '())))
                     (mwhen gc-root
                       (register-gc-root profile gc-root))
 
