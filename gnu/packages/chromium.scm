@@ -110,8 +110,6 @@
     "third_party/catapult" ;BSD-3
     "third_party/catapult/common/py_vulcanize/third_party/rcssmin" ;ASL2.0
     "third_party/catapult/common/py_vulcanize/third_party/rjsmin" ;ASL2.0
-    "third_party/catapult/third_party/beautifulsoup4" ;Expat
-    "third_party/catapult/third_party/html5lib-python" ;Expat
     "third_party/catapult/third_party/polymer" ;BSD-3
     "third_party/catapult/third_party/six" ;Expat
     ;; XXX: This is a minified version of <https://d3js.org/>.
@@ -134,6 +132,7 @@
     "third_party/cros_system_api" ;BSD-3
     "third_party/dav1d" ;BSD-2
     "third_party/dawn" ;ASL2.0
+    "third_party/dawn/third_party/tint"
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/acorn" ;Expat
@@ -319,6 +318,14 @@
   ;; run the Blink performance tests, just remove everything to save ~70MiB.
   '("third_party/blink/perf_tests"))
 
+(define* (arch-patch name hash #:optional (revision %arch-revision))
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://raw.githubusercontent.com/archlinux"
+                        "/svntogit-packages/" revision "/trunk/" name))
+    (file-name (string-append "ungoogled-chromium-" name))
+    (sha256 (base32 hash))))
+
 (define* (debian-patch name hash #:optional (revision %debian-revision))
   (origin
     (method url-fetch)
@@ -329,11 +336,20 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "93.0.4577.82")
+(define %chromium-version "94.0.4606.71")
+(define %ungoogled-revision "94.0.4606.71-1")
+(define %arch-revision "db2157b84924ce84201a8245e68a02f7d55f6491")
 (define %debian-revision "debian/90.0.4430.85-1")
-;; Note: use 'git describe --long' even for exact tags to placate the
-;; custom version format for ungoogled-chromium.
-(define %ungoogled-revision "93.0.4577.82-1-2-g3f62dbc")
+
+(define %arch-patches
+  (list (arch-patch "chromium-94-ffmpeg-roll.patch"
+                    "1kiskdjr9v3d491sq0wdjxliflh2vq5700gbygcixayj8gkvdb2n")
+        (arch-patch "replace-blacklist-with-ignorelist.patch"
+                    "0ddvbyks7s8nijmg2nmirpwdv08dqx0z99sb6c1d4vlckfilnd6k")
+        (arch-patch "add-a-TODO-about-a-missing-pnacl-flag.patch"
+                    "0mf4zn94ckd3vxzw441wka7ak4aajq1x33h4dqd78blgacba4gfm")
+        (arch-patch "use-ffile-compilation-dir.patch"
+                    "0vk0vyxr55c716vkn4y4yhhrxb4zng4ni2y6fsz30pxbiz6i044j")))
 
 (define %debian-patches
   (list (debian-patch "fixes/nomerge.patch"
@@ -351,7 +367,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "1n0bffmwrzp3g1zzsy6qq325mbp4yn629m5zlfyz261szhvl9rgw"))))
+      "12p39ay8lmdni6gnmw3w67pg4w3nrphhgn6bmz3cr6cy7nx4kiv2"))))
 
 (define %guix-patches
   (list (local-file
@@ -386,6 +402,13 @@
                       (invoke "patch" "-p1" "--force" "--input"
                               patch "--no-backup-if-mismatch"))
                     (append '#+%debian-patches '#+%guix-patches))
+
+          ;; These patches are "reversed"; i.e. they represent changes
+          ;; already present in the source, but which should be reverted.
+          (for-each (lambda (patch)
+                      (invoke "patch" "-Rp1" "--force" "--input"
+                              patch "--no-backup-if-mismatch"))
+                    '#$%arch-patches)
 
           (with-directory-excursion #+%ungoogled-origin
             (format #t "Ungooglifying...~%")
@@ -465,10 +488,12 @@
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version (string-append %chromium-version "-0."
-                            (match (string-split %ungoogled-revision #\-)
-                              ((version revision commits g+short)
-                               (string-drop g+short 1)))))
+    (version (if (string-prefix? %chromium-version %ungoogled-revision)
+                 %ungoogled-revision
+                 ;; ungoogled-chromium version tags always have a "-1" suffix,
+                 ;; so we can hijack "-0" in cases where the Chromium source
+                 ;; is newer than the latest available tag.
+                 (string-append %chromium-version "-0")))
     (synopsis "Graphical web browser")
     (source (origin
               (method url-fetch)
@@ -477,7 +502,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "0lr8zdq06smncdzd6knzww9hxl8ynvxadmrkyyl13fpwb1422rjx"))
+                "0nywwcdjda1b1swfslks8i28qq6jx9gyw50bhl8c2plcc0pbmfya"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -509,7 +534,7 @@
              "use_unofficial_version_number=false"
              "treat_warnings_as_errors=false"
              "use_official_google_api_keys=false"
-             "fieldtrial_testing_like_official_build=true"
+             "disable_fieldtrial_testing_config=true"
              "safe_browsing_mode=0"
              "enable_mdns=false"
              "enable_one_click_signin=false"
@@ -850,7 +875,7 @@
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
-       ("harfbuzz" ,harfbuzz)
+       ("harfbuzz" ,harfbuzz-3.0)
        ("icu4c" ,icu4c-69)
        ("lcms" ,lcms)
        ("libevent" ,libevent)
