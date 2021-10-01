@@ -12214,15 +12214,13 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    ;; emacs-org-contrib inherits from this package.  Please update it as
-    ;; well.
-    (version "9.4.6")
+    (version "9.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "1k49ymsi77366as2wi4kzv2f1xnbwpb47iw7iw07yxwlhmm7vskq"))))
+        (base32 "16cflg5nms5nb8w86nvwkg49zkl0rvdhigkf4xpvbs0v7zb5y3ky"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -12234,7 +12232,7 @@ passive voice.")
                     (doc-dir (string-append share "/doc/" ,name "-" ,version)))
                (install-file "org.info" info-dir)
                (install-file "orgguide.info" info-dir)
-               ;; XXX: "orgcard.pdf" is not built in Org 9.4.6.
+               ;; XXX: "orgcard.pdf" is not built in Org 9.5.
                ;; (install-file "orgcard.pdf" doc-dir)
                ))))))
     (home-page "https://orgmode.org/")
