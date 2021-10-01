@@ -238,6 +238,19 @@ affine transformation (scale, rotation, shear, etc.).")
                        "See 'COPYING' in the distribution."))
    (home-page "https://www.freedesktop.org/wiki/Software/HarfBuzz/")))
 
+(define-public harfbuzz-3.0
+  (package
+    (inherit harfbuzz)
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/harfbuzz/harfbuzz"
+                                  "/releases/download/" version
+                                  "/harfbuzz-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ngk8vn06rryx3s4v5pbl91bw1j1pd4431n77rw3j5a533hhwsq3"))))))
+
 (define-public libdatrie
   (package
     (name "libdatrie")
