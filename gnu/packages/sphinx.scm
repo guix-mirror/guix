@@ -202,6 +202,32 @@ sources.")
 Apple help books.")
     (license license:bsd-2)))
 
+(define-public python-sphinx-click
+  (package
+    (name "python-sphinx-click")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-click" version))
+       (sha256
+        (base32
+         "118ppsymp1p2gn8v7mifika817qx6v07mja7kxizq9cg7dpw894v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;requires python-coverage<5.0
+    (native-inputs
+     (list python-click
+           python-coverage
+           python-docutils
+           python-pbr
+           python-sphinx))
+    (home-page "https://github.com/click-contrib/sphinx-click")
+    (synopsis "Sphinx extension that documents click applications")
+    (description "This package provide sphinx extension that automatically
+documents click applications.")
+    (license license:expat)))
+
 (define-public python-sphinx-copybutton
   (package
     (name "python-sphinx-copybutton")
