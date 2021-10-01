@@ -6848,6 +6848,47 @@ cross-compiling:
 It is an error to refer to @code{this-package} outside a package definition.
 @end deffn
 
+@cindex development inputs, of a package
+@cindex implicit inputs, of a package
+Sometimes you will want to obtain the list of inputs needed to
+@emph{develop} a package---all the inputs that are visible when the
+package is compiled.  This is what the @code{package-development-inputs}
+procedure returns.
+
+@deffn {Scheme Procedure} package-development-inputs @var{package} @
+   [@var{system}] [#:target #f]
+Return the list of inputs required by @var{package} for development
+purposes on @var{system}.  When @var{target} is true, return the inputs
+needed to cross-compile @var{package} from @var{system} to
+@var{triplet}, where @var{triplet} is a triplet such as
+@code{"aarch64-linux-gnu"}.
+
+Note that the result includes both explicit inputs and implicit
+inputs---inputs automatically added by the build system (@pxref{Build
+Systems}).  Let us take the @code{hello} package to illustrate that:
+
+@lisp
+(use-modules (gnu packages base) (guix packages))
+
+hello
+@result{} #<package hello@@2.10 gnu/packages/base.scm:79 7f585d4f6790>
+
+(package-direct-inputs hello)
+@result{} ()
+
+(package-development-inputs hello)
+@result{} (("source" @dots{}) ("tar" #<package tar@@1.32 @dots{}>) @dots{})
+@end lisp
+
+In this example, @code{package-direct-inputs} returns the empty list,
+because @code{hello} has zero explicit dependencies.  Conversely,
+@code{package-development-inputs} includes inputs implicitly added by
+@code{gnu-build-system} that are required to build @code{hello}: tar,
+gzip, GCC, libc, Bash, and more.  To visualize it, @command{guix graph
+hello} would show you explicit inputs, whereas @command{guix graph -t
+bag hello} would include implicit inputs (@pxref{Invoking guix graph}).
+@end deffn
+
 Because packages are regular Scheme objects that capture a complete
 dependency graph and associated build procedures, it is often useful to
 write procedures that take a package and return a modified version

@@ -82,7 +82,7 @@ package."
 packages for PACKAGE."
   ;; Remove non-package inputs such as origin records.
   (filter-map input->manifest-entry
-              (bag-transitive-inputs (package->bag package))))
+              (package-development-inputs package)))
 
 (define (show-help)
   (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]

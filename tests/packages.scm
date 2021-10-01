@@ -353,6 +353,20 @@
           (package-transitive-supported-systems d)
           (package-transitive-supported-systems e))))
 
+(test-assert "package-development-inputs"
+  ;; Note: Due to propagated inputs, 'package-development-inputs' returns a
+  ;; couple more inputs, such as 'linux-libre-headers'.
+  (lset<= equal?
+          `(("source" ,(package-source hello)) ,@(standard-packages))
+          (package-development-inputs hello)))
+
+(test-assert "package-development-inputs, cross-compilation"
+  (lset<= equal?
+          `(("source" ,(package-source hello))
+            ,@(standard-cross-packages "mips64el-linux-gnu" 'host)
+            ,@(standard-cross-packages "mips64el-linux-gnu" 'target))
+          (package-development-inputs hello #:target "mips64el-linux-gnu")))
+
 (test-assert "package-closure"
   (let-syntax ((dummy-package/no-implicit
                 (syntax-rules ()

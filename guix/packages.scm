@@ -153,6 +153,7 @@
             bag-transitive-host-inputs
             bag-transitive-build-inputs
             bag-transitive-target-inputs
+            package-development-inputs
             package-closure
 
             default-guile
@@ -1069,6 +1070,15 @@ dependencies are known to build on SYSTEM."
   (parameterize ((%current-target-system (bag-target bag))
                  (%current-system (bag-system bag)))
     (transitive-inputs (bag-target-inputs bag))))
+
+(define* (package-development-inputs package
+                                     #:optional (system (%current-system))
+                                     #:key target)
+  "Return the list of inputs required by PACKAGE for development purposes on
+SYSTEM.  When TARGET is true, return the inputs needed to cross-compile
+PACKAGE from SYSTEM to TRIPLET, where TRIPLET is a triplet such as
+\"aarch64-linux-gnu\"."
+  (bag-transitive-inputs (package->bag package system target)))
 
 (define* (package-closure packages #:key (system (%current-system)))
   "Return the closure of PACKAGES on SYSTEM--i.e., PACKAGES and the list of
