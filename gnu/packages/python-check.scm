@@ -418,6 +418,35 @@ are too large to conveniently hard-code them in the tests.")
 advanced doctest support and enables the testing of reStructuredText files.")
     (license license:bsd-3)))
 
+(define-public python-pytest-exploratory
+  (package
+    (name "python-pytest-exploratory")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest_exploratory" version))
+       (sha256
+        (base32 "159rcqv6wrdqdlag1gz39n6fk58232hbxshan043ljgpp1qfs6xk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests")))))))
+    (propagated-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/nokia/pytest-exploratory")
+    (synopsis "Interactive console for Pytest")
+    (description "This Pytest plugin provides an IPython extension that allows
+for interactively selecting and running Pytest tests.")
+    (license license:expat)))
+
 (define-public python-pytest-filter-subpackage
   (package
     (name "python-pytest-filter-subpackage")
