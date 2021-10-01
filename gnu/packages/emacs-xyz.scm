@@ -12256,8 +12256,9 @@ programming and reproducible research.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0dn6arrmm0rrm2vi94fj5fjb030ggxf8cvpmi68wr0fh8xm5l1sh"))
-       ;; ob-sclang.el is packaged separately to avoid the dependency on
-       ;; SuperCollider and qtwebengine.
+       ;; XXX: ob-sclang.el is packaged separately to avoid the dependency on
+       ;; SuperCollider and qtwebengine.  This will be unnecessary in 0.3+
+       ;; release as the file is going to be removed from the repository.
        (modules '((guix build utils)))
        (snippet '(begin (delete-file "lisp/ob-sclang.el")))))
     (build-system emacs-build-system)
@@ -12268,16 +12269,15 @@ programming and reproducible research.")
            (lambda _
              (chdir "lisp"))))))
     (propagated-inputs
-     `(("arduino-mode" ,emacs-arduino-mode)
+     `(("arduino-mode" ,emacs-arduino-mode) ;XXX: remove after 0.3+ release.
        ("cider" ,emacs-cider)
        ("org" ,emacs-org)))
     (home-page "https://git.sr.ht/~bzg/org-contrib")
     (synopsis "Unmaintained add-ons for Org mode")
-    (description "Org is an Emacs mode for keeping notes, maintaining TODO
-lists, and project planning with a fast and effective plain-text system.
-
-This package is equivalent to org-plus-contrib, but only includes additional
-files that you would find in @file{contrib/} from the git repository.")
+    (description
+     "This package contains add-ons to Org.  Be warned that these libraries
+receive little if no maintainance and there is no guaranty that they are
+compatible with the Org stable version.")
     (license license:gpl3+)))
 
 (define-public emacs-org-pretty-table
