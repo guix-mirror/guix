@@ -50,16 +50,22 @@
   ; TODO: kernel ".config".
   #t)
 
-(define* (build #:key inputs make-flags (source-directory ".") #:allow-other-keys)
+(define* (build #:key (make-flags '()) (parallel-build? #t)
+                (source-directory ".")
+                inputs
+                #:allow-other-keys)
   (apply invoke "make" "-C"
          (string-append (assoc-ref inputs "linux-module-builder")
                         "/lib/modules/build")
          (string-append "M=" (canonicalize-path source-directory))
-         (or make-flags '())))
+         `(,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '())
+           ,@make-flags)))
 
-;; This block was copied from make-linux-libre--only took the "modules_install"
-;; part.
-(define* (install #:key make-flags (source-directory ".")
+;; Similar to the "modules_install" part of make-linux-libre.
+(define* (install #:key (make-flags '()) (parallel-build? #t)
+                  (source-directory ".")
                   inputs native-inputs outputs
                   #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
@@ -80,7 +86,10 @@
             (string-append "INSTALL_MOD_PATH=" out)
             "INSTALL_MOD_STRIP=1"
             "modules_install"
-            (or make-flags '()))))
+         `(,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '())
+           ,@make-flags))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
