@@ -5621,6 +5621,20 @@ before @command{guix shell} was invoked.  The next garbage collection
 (@pxref{Invoking guix gc}) may clean up packages that were installed in
 the environment and that are no longer used outside of it.
 
+As an added convenience, when running from a directory that contains a
+@file{manifest.scm} or a @file{guix.scm} file (in this order), possibly
+in a parent directory, @command{guix shell} automatically loads the
+file---provided the directory is listed in
+@file{~/.config/guix/shell-authorized-directories}, and only for
+interactive use:
+
+@example
+guix shell
+@end example
+
+This provides an easy way to define, share, and enter development
+environments.
+
 By default, the shell session or command runs in an @emph{augmented}
 environment, where the new packages are added to search path environment
 variables such as @code{PATH}.  You can, instead, choose to create an

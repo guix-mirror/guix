@@ -18,15 +18,20 @@
 
 (define-module (guix scripts shell)
   #:use-module (guix ui)
+  #:use-module ((guix diagnostics) #:select (location))
   #:use-module (guix scripts environment)
   #:autoload   (guix scripts build) (show-build-options-help)
   #:autoload   (guix transformations) (show-transformation-options-help)
   #:use-module (guix scripts)
+  #:use-module (guix packages)
+  #:use-module (guix profiles)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 rdelim) (read-line)
+  #:autoload   (guix utils) (config-directory)
   #:export (guix-shell))
 
 (define (show-help)
@@ -41,6 +46,8 @@ interactive shell in that environment.\n"))
   (display (G_ "
   -f, --file=FILE        create environment for the package that the code within
                          FILE evaluates to"))
+  (display (G_ "
+  -q                     inhibit loading of 'guix.scm' and 'manifest.scm'"))
 
   (show-environment-options-help)
   (newline)
@@ -99,7 +106,10 @@ interactive shell in that environment.\n"))
               (option '(#\f "file") #t #f
                       (lambda (opt name arg result)
                         (alist-cons 'load (tag-package-arg result arg)
-                                    result))))
+                                    result)))
+              (option '(#\q) #f #f
+                      (lambda (opt name arg result)
+                        (alist-cons 'explicit-loading? #t result))))
         (filter-map (lambda (opt)
                       (and (not (any (lambda (name)
                                        (member name to-remove))
@@ -122,10 +132,109 @@ interactive shell in that environment.\n"))
   (let ((args command (break (cut string=? "--" <>) args)))
     (let ((opts (parse-command-line args %options (list %default-options)
                                     #:argument-handler handle-argument)))
-      (match command
-        (() opts)
-        (("--") opts)
-        (("--" command ...) (alist-cons 'exec command opts))))))
+      (auto-detect-manifest
+       (match command
+         (() opts)
+         (("--") opts)
+         (("--" command ...) (alist-cons 'exec command opts)))))))
+
+(define (find-file-in-parent-directories candidates)
+  "Find one of CANDIDATES in the current directory or one of its ancestors."
+  (define start (getcwd))
+  (define device (stat:dev (stat start)))
+
+  (let loop ((directory start))
+    (let ((stat (stat directory)))
+      (and (= (stat:uid stat) (getuid))
+           (= (stat:dev stat) device)
+           (or (any (lambda (candidate)
+                      (let ((candidate (string-append directory "/" candidate)))
+                        (and (file-exists? candidate) candidate)))
+                    candidates)
+               (and (not (string=? directory "/"))
+                    (loop (dirname directory)))))))) ;lexical ".." resolution
+
+(define (authorized-directory-file)
+  "Return the name of the file listing directories for which 'guix shell' may
+automatically load 'guix.scm' or 'manifest.scm' files."
+  (string-append (config-directory) "/shell-authorized-directories"))
+
+(define (authorized-shell-directory? directory)
+  "Return true if DIRECTORY is among the authorized directories for automatic
+loading.  The list of authorized directories is read from
+'authorized-directory-file'; each line must be either: an absolute file name,
+a hash-prefixed comment, or a blank line."
+  (catch 'system-error
+    (lambda ()
+      (call-with-input-file (authorized-directory-file)
+        (lambda (port)
+          (let loop ()
+            (match (read-line port)
+              ((? eof-object?) #f)
+              ((= string-trim line)
+               (cond ((string-prefix? "#" line)   ;comment
+                      (loop))
+                     ((string-prefix? "/" line)   ;absolute file name
+                      (or (string=? line directory)
+                          (loop)))
+                     ((string-null? (string-trim-right line)) ;blank line
+                      (loop))
+                     (else                        ;bogus line
+                      (let ((loc (location (port-filename port)
+                                           (port-line port)
+                                           (port-column port))))
+                        (warning loc (G_ "ignoring invalid file name: '~a'~%")
+                                 line))))))))))
+    (const #f)))
+
+(define (auto-detect-manifest opts)
+  "If OPTS do not specify packages or a manifest, load a \"guix.scm\" or
+\"manifest.scm\" file from the current directory or one of its ancestors.
+Return the modified OPTS."
+  (define (options-contain-payload? opts)
+    (match opts
+      (() #f)
+      ((('package . _) . _) #t)
+      ((('load . _) . _) #t)
+      ((('manifest . _) . _) #t)
+      ((('expression . _) . _) #t)
+      ((_ . rest) (options-contain-payload? rest))))
+
+  (define interactive?
+    (not (assoc-ref opts 'exec)))
+
+  (define disallow-implicit-load?
+    (assoc-ref opts 'explicit-loading?))
+
+  (if (or (not interactive?)
+          disallow-implicit-load?
+          (options-contain-payload? opts))
+      opts
+      (match (find-file-in-parent-directories '("manifest.scm" "guix.scm"))
+        (#f
+         (warning (G_ "no packages specified; creating an empty environment~%"))
+         opts)
+        (file
+         (if (authorized-shell-directory? (dirname file))
+             (begin
+               (info (G_ "loading environment from '~a'...~%") file)
+               (match (basename file)
+                 ("guix.scm" (alist-cons 'load `(package ,file) opts))
+                 ("manifest.scm" (alist-cons 'manifest file opts))))
+             (begin
+               (warning (G_ "not loading '~a' because not authorized to do so~%")
+                        file)
+               (display-hint (format #f (G_ "To allow automatic loading of
+@file{~a} when running @command{guix shell}, you must explicitly authorize its
+directory, like so:
+
+@example
+echo ~a >> ~a
+@end example\n")
+                                     file
+                                     (dirname file)
+                                     (authorized-directory-file)))
+               opts))))))
 
 
 (define-command (guix-shell . args)
