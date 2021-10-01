@@ -1329,52 +1329,6 @@ battery charging thresholds, keyboard backlight, fans and thermal monitors,
 and the notification, WiFi, and Bluetooth LED.")
     (license license:gpl2)))
 
-(define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "b8167e66b4ac046b3b76c2c40008d84528e91594")
-        (revision "5"))
-    (package
-      (name "rtl8812au-aircrack-ng-linux-module")
-      (version (git-version "5.6.4.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/aircrack-ng/rtl8812au")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1940f2yz5c4q2fhcd91zfzl32fhdsgr297vzamm7nd8kdk0gymi2"))
-         (modules '((guix build utils)))
-         (snippet
-          '(begin
-             ;; Remove bundled tarballs, APKs, word lists, speadsheets,
-             ;; and other unnecessary unlicenced things.
-             (for-each delete-file-recursively (list "android"
-                                                     "docs"
-                                                     "tools"))
-             #t))))
-      (build-system linux-module-build-system)
-      (arguments
-       `(#:make-flags
-         (list (string-append "KSRC="
-                              (assoc-ref %build-inputs "linux-module-builder")
-                              "/lib/modules/build"))
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'build
-             (lambda* (#:key (make-flags '()) #:allow-other-keys)
-               (apply invoke "make" make-flags))))
-         #:tests? #f))                  ; no test suite
-      (supported-systems '("x86_64-linux" "i686-linux"))
-      (home-page "https://github.com/aircrack-ng/rtl8812au")
-      (synopsis "Linux driver for Realtek USB wireless network adapters")
-      (description
-       "This is Realtek's rtl8812au Linux driver for USB 802.11n wireless
-network adapters, modified by the aircrack-ng project to support monitor mode
-and frame injection.  It provides a @code{88XXau} kernel module that supports
-RTL8812AU, RTL8821AU, and RTL8814AU chips.")
-      (license license:gpl2+))))
-
 (define-public rtl8821ce-linux-module
   (let ((commit "897e7c4c15dd5a0a569745dc223d969a26ff5bfc")
         (revision "3"))
@@ -1414,6 +1368,40 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (description "This is Realtek's RTL8821CE Linux driver for wireless
 network adapters.")
       (license license:gpl2))))
+
+(define-public rtl8812au-aircrack-ng-linux-module
+  (let ((commit "b8167e66b4ac046b3b76c2c40008d84528e91594")
+        (revision "5"))
+    (package
+      (inherit rtl8821ce-linux-module)
+      (name "rtl8812au-aircrack-ng-linux-module")
+      (version (git-version "5.6.4.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aircrack-ng/rtl8812au")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1940f2yz5c4q2fhcd91zfzl32fhdsgr297vzamm7nd8kdk0gymi2"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove bundled tarballs, APKs, word lists, speadsheets,
+             ;; and other unnecessary unlicenced things.
+             (for-each delete-file-recursively (list "android"
+                                                     "docs"
+                                                     "tools"))))))
+      (supported-systems '("x86_64-linux" "i686-linux"))
+      (home-page "https://github.com/aircrack-ng/rtl8812au")
+      (synopsis "Linux driver for Realtek USB wireless network adapters")
+      (description
+       "This is Realtek's rtl8812au Linux driver for USB 802.11n wireless
+network adapters, modified by the aircrack-ng project to support monitor mode
+and frame injection.  It provides a @code{88XXau} kernel module that supports
+RTL8812AU, RTL8821AU, and RTL8814AU chips.")
+      (license license:gpl2+))))
 
 (define-public vhba-module
   (package
