@@ -34,7 +34,7 @@
 ;;
 ;; Code:
 
-;; Copied from make-linux-libre's "configure" phase.
+;; Similar to make-linux-libre's "configure" phase.
 (define* (configure #:key inputs target arch #:allow-other-keys)
   (setenv "KCONFIG_NOTIMESTAMP" "1")
   (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -43,12 +43,11 @@
   (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
   (when target
+    ;; TODO? (setenv "EXTRA_VERSION" ,extra-version)
+    ;; TODO? kernel ".config".
     (setenv "CROSS_COMPILE" (string-append target "-"))
     (format #t "`CROSS_COMPILE' set to `~a'~%"
-               (getenv "CROSS_COMPILE")))
-  ; TODO: (setenv "EXTRA_VERSION" ,extra-version)
-  ; TODO: kernel ".config".
-  #t)
+            (getenv "CROSS_COMPILE"))))
 
 (define* (build #:key (make-flags '()) (parallel-build? #t)
                 (source-directory ".")
