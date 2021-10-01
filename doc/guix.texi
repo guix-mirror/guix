@@ -119,6 +119,7 @@ Documentation License''.
 
 @dircategory Software development
 @direntry
+* guix shell: (guix)Invoking guix shell.      Creating software environments.
 * guix environment: (guix)Invoking guix environment.  Building development environments with Guix.
 * guix build: (guix)Invoking guix build.      Building packages.
 * guix pack: (guix)Invoking guix pack.        Creating binary bundles.
@@ -262,6 +263,7 @@ Channels
 
 Development
 
+* Invoking guix shell::         Spawning one-off software environments.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
 * The GCC toolchain::           Working with languages supported by GCC.
@@ -3067,10 +3069,10 @@ substitutes: they can force a local build and @emph{challenge} providers
 (@pxref{Invoking guix challenge}).
 
 Control over the build environment is a feature that is also useful for
-developers.  The @command{guix environment} command allows developers of
+developers.  The @command{guix shell} command allows developers of
 a package to quickly set up the right development environment for their
 package, without having to manually install the dependencies of the
-package into their profile (@pxref{Invoking guix environment}).
+package into their profile (@pxref{Invoking guix shell}).
 
 @cindex replication, of software environments
 @cindex provenance tracking, of software artifacts
@@ -3234,7 +3236,7 @@ As an example, @var{file} might contain a definition like this
 Developers may find it useful to include such a @file{guix.scm} file
 in the root of their project source tree that can be used to test
 development snapshots and create reproducible development environments
-(@pxref{Invoking guix environment}).
+(@pxref{Invoking guix shell}).
 
 The @var{file} may also contain a JSON representation of one or more
 package definitions.  Running @code{guix package -f} on
@@ -5559,31 +5561,352 @@ If you are a software developer, Guix provides tools that you should find
 helpful---independently of the language you're developing in.  This is what
 this chapter is about.
 
-The @command{guix environment} command provides a convenient way to set up
-@dfn{development environments} containing all the dependencies and tools
-necessary to work on the software package of your choice.  The @command{guix
+The @command{guix shell} command provides a convenient way to set up
+one-off software environments, be it for development purposes or to run
+a command without installing it in your profile.  The @command{guix
 pack} command allows you to create @dfn{application bundles} that can be
 easily distributed to users who do not run Guix.
 
 @menu
+* Invoking guix shell::         Spawning one-off software environments.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
 * The GCC toolchain::           Working with languages supported by GCC.
 * Invoking guix git authenticate:: Authenticating Git repositories.
 @end menu
 
-@node Invoking guix environment
-@section Invoking @command{guix environment}
+@node Invoking guix shell
+@section Invoking @command{guix shell}
 
 @cindex reproducible build environments
 @cindex development environments
 @cindex @command{guix environment}
 @cindex environment, package build environment
-The purpose of @command{guix environment} is to assist hackers in
-creating reproducible development environments without polluting their
-package profile.  The @command{guix environment} tool takes one or more
-packages, builds all of their inputs, and creates a shell
-environment to use them.
+The purpose of @command{guix shell} is to make it easy to create one-off
+software environments, without changing one's profile.  It is typically
+used to create development environments; it is also a convenient way to
+run applications without ``polluting'' your profile.
+
+@quotation Note
+The @command{guix shell} command was recently introduced to supersede
+@command{guix environment} (@pxref{Invoking guix environment}).  If you
+are familiar with @command{guix environment}, you will notice that it is
+similar but also---we hope!---more convenient.
+@end quotation
+
+The general syntax is:
+
+@example
+guix shell [@var{options}] [@var{package}@dots{}]
+@end example
+
+The following example creates an environment containing Python and NumPy,
+building or downloading any missing package, and runs the
+@command{python3} command in that environment:
+
+@example
+guix shell python python-numpy -- python3
+@end example
+
+Development environments can be created as in the example below, which
+spawns an interactive shell containing all the dependencies and
+environment variables needed to work on Inkscape:
+
+@example
+guix shell --development inkscape
+@end example
+
+Exiting the shell places the user back in the original environment
+before @command{guix shell} was invoked.  The next garbage collection
+(@pxref{Invoking guix gc}) may clean up packages that were installed in
+the environment and that are no longer used outside of it.
+
+By default, the shell session or command runs in an @emph{augmented}
+environment, where the new packages are added to search path environment
+variables such as @code{PATH}.  You can, instead, choose to create an
+@emph{isolated} environment containing nothing but the packages you
+asked for.  Passing the @option{--pure} option clears environment
+variable definitions found in the parent environment@footnote{Users
+sometimes wrongfully augment environment variables such as @env{PATH} in
+their @file{~/.bashrc} file.  As a consequence, when @command{guix
+environment} launches it, Bash may read @file{~/.bashrc}, thereby
+introducing ``impurities'' in these environment variables.  It is an
+error to define such environment variables in @file{.bashrc}; instead,
+they should be defined in @file{.bash_profile}, which is sourced only by
+log-in shells.  @xref{Bash Startup Files,,, bash, The GNU Bash Reference
+Manual}, for details on Bash start-up files.}; passing
+@option{--container} goes one step further by spawning a @dfn{container}
+isolated from the rest of the system:
+
+@example
+guix shell --container emacs gcc-toolchain
+@end example
+
+The command above spawns an interactive shell in a container when
+nothing but @code{emacs}, @code{gcc-toolchain}, and their dependencies
+is available.  The container lacks network access and shares no files
+other than the current working directory with the surrounding
+environment.  This is useful to prevent access to system-wide resources
+such as @file{/usr/bin} on foreign distros.
+
+This @option{--container} option can also prove useful if you wish to
+run a security-sensitive application, such as a web browser, in an
+isolated environment.  For example, the command below launches
+Ungoogled-Chromium in an isolated environment, this time sharing network
+access with the host and preserving its @code{DISPLAY} environment
+variable, but without even sharing the current directory:
+
+@example
+guix shell --container --network --no-cwd ungoogled-chromium \
+  --preserve='^DISPLAY$' -- chromium
+@end example
+
+@vindex GUIX_ENVIRONMENT
+@command{guix shell} defines the @env{GUIX_ENVIRONMENT}
+variable in the shell it spawns; its value is the file name of the
+profile of this environment.  This allows users to, say, define a
+specific prompt for development environments in their @file{.bashrc}
+(@pxref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}):
+
+@example
+if [ -n "$GUIX_ENVIRONMENT" ]
+then
+    export PS1="\u@@\h \w [dev]\$ "
+fi
+@end example
+
+@noindent
+...@: or to browse the profile:
+
+@example
+$ ls "$GUIX_ENVIRONMENT/bin"
+@end example
+
+The available options are summarized below.
+
+@table @code
+@item --development
+@itemx -D
+Cause @command{guix shell} to include in the environment the
+dependencies of the following package rather than the package itself.
+This can be combined with other packages.  For instance, the command
+below starts an interactive shell containing the build-time dependencies
+of GNU@tie{}Guile, plus Autoconf, Automake, and Libtool:
+
+@example
+guix shell -D guile autoconf automake libtool
+@end example
+
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Create an environment for the package or list of packages that
+@var{expr} evaluates to.
+
+For example, running:
+
+@example
+guix shell -D -e '(@@ (gnu packages maths) petsc-openmpi)'
+@end example
+
+starts a shell with the environment for this specific variant of the
+PETSc package.
+
+Running:
+
+@example
+guix shell -e '(@@ (gnu) %base-packages)'
+@end example
+
+starts a shell with all the base system packages available.
+
+The above commands only use the default output of the given packages.
+To select other outputs, two element tuples can be specified:
+
+@example
+guix shell -e '(list (@@ (gnu packages bash) bash) "include")'
+@end example
+
+@item --file=@var{file}
+@itemx -f @var{file}
+Create an environment containing the package or list of packages that
+the code within @var{file} evaluates to.
+
+As an example, @var{file} might contain a definition like this
+(@pxref{Defining Packages}):
+
+@lisp
+@verbatiminclude environment-gdb.scm
+@end lisp
+
+With the file above, you can enter a development environment for GDB by
+running:
+
+@example
+guix shell -D -f gdb-devel.scm
+@end example
+
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Create an environment for the packages contained in the manifest object
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
+
+This is similar to the same-named option in @command{guix package}
+(@pxref{profile-manifest, @option{--manifest}}) and uses the same
+manifest files.
+
+@item --pure
+Unset existing environment variables when building the new environment, except
+those specified with @option{--preserve} (see below).  This has the effect of
+creating an environment in which search paths only contain package inputs.
+
+@item --preserve=@var{regexp}
+@itemx -E @var{regexp}
+When used alongside @option{--pure}, preserve the environment variables
+matching @var{regexp}---in other words, put them on a ``white list'' of
+environment variables that must be preserved.  This option can be repeated
+several times.
+
+@example
+guix shell --pure --preserve=^SLURM openmpi @dots{} \
+  -- mpirun @dots{}
+@end example
+
+This example runs @command{mpirun} in a context where the only environment
+variables defined are @env{PATH}, environment variables whose name starts
+with @samp{SLURM}, as well as the usual ``precious'' variables (@env{HOME},
+@env{USER}, etc.).
+
+@item --search-paths
+Display the environment variable definitions that make up the
+environment.
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}.
+
+@item --container
+@itemx -C
+@cindex container
+Run @var{command} within an isolated container.  The current working
+directory outside the container is mapped inside the container.
+Additionally, unless overridden with @option{--user}, a dummy home
+directory is created that matches the current user's home directory, and
+@file{/etc/passwd} is configured accordingly.
+
+The spawned process runs as the current user outside the container.  Inside
+the container, it has the same UID and GID as the current user, unless
+@option{--user} is passed (see below).
+
+@item --network
+@itemx -N
+For containers, share the network namespace with the host system.
+Containers created without this flag only have access to the loopback
+device.
+
+@item --link-profile
+@itemx -P
+For containers, link the environment profile to @file{~/.guix-profile}
+within the container and set @code{GUIX_ENVIRONMENT} to that.
+This is equivalent to making @file{~/.guix-profile} a symlink to the
+actual profile within the container.
+Linking will fail and abort the environment if the directory already
+exists, which will certainly be the case if @command{guix shell}
+was invoked in the user's home directory.
+
+Certain packages are configured to look in @file{~/.guix-profile} for
+configuration files and data;@footnote{For example, the
+@code{fontconfig} package inspects @file{~/.guix-profile/share/fonts}
+for additional fonts.}  @option{--link-profile} allows these programs to
+behave as expected within the environment.
+
+@item --user=@var{user}
+@itemx -u @var{user}
+For containers, use the username @var{user} in place of the current
+user.  The generated @file{/etc/passwd} entry within the container will
+contain the name @var{user}, the home directory will be
+@file{/home/@var{user}}, and no user GECOS data will be copied.  Furthermore,
+the UID and GID inside the container are 1000.  @var{user}
+need not exist on the system.
+
+Additionally, any shared or exposed path (see @option{--share} and
+@option{--expose} respectively) whose target is within the current user's
+home directory will be remapped relative to @file{/home/USER}; this
+includes the automatic mapping of the current working directory.
+
+@example
+# will expose paths as /home/foo/wd, /home/foo/test, and /home/foo/target
+cd $HOME/wd
+guix shell --container --user=foo \
+     --expose=$HOME/test \
+     --expose=/tmp/target=$HOME/target
+@end example
+
+While this will limit the leaking of user identity through home paths
+and each of the user fields, this is only one useful component of a
+broader privacy/anonymity solution---not one in and of itself.
+
+@item --no-cwd
+For containers, the default behavior is to share the current working
+directory with the isolated container and immediately change to that
+directory within the container.  If this is undesirable,
+@option{--no-cwd} will cause the current working directory to @emph{not}
+be automatically shared and will change to the user's home directory
+within the container instead.  See also @option{--user}.
+
+@item --expose=@var{source}[=@var{target}]
+@itemx --share=@var{source}[=@var{target}]
+For containers, @option{--expose} (resp. @option{--share}) exposes the
+file system @var{source} from the host system as the read-only
+(resp. writable) file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible read-only via the @file{/exchange}
+directory:
+
+@example
+guix shell --container --expose=$HOME=/exchange guile -- guile
+@end example
+
+@item --root=@var{file}
+@itemx -r @var{file}
+@cindex persistent environment
+@cindex garbage collector root, for environments
+Make @var{file} a symlink to the profile for this environment, and
+register it as a garbage collector root.
+
+This is useful if you want to protect your environment from garbage
+collection, to make it ``persistent''.
+
+When this option is omitted, the environment is protected from garbage
+collection only for the duration of the @command{guix shell}
+session.  This means that next time you recreate the same environment,
+you could have to rebuild or re-download packages.  @xref{Invoking guix
+gc}, for more on GC roots.
+@end table
+
+@command{guix shell} also supports all of the common build options that
+@command{guix build} supports (@pxref{Common Build Options}) as well as
+package transformation options (@pxref{Package Transformation Options}).
+
+@node Invoking guix environment
+@section Invoking @command{guix environment}
+
+The purpose of @command{guix environment} is to assist in creating
+development environments.
+
+@quotation Deprecation warning
+The @command{guix environment} command is deprecated in favor of
+@command{guix shell}, which performs similar functions but is more
+convenient to use.  @xref{Invoking guix shell}.
+
+Being deprecated, @command{guix environment} is slated for eventual
+removal, but the Guix project is committed to keeping it until May 1st,
+2023.  Please get in touch with us at @email{guix-devel@@gnu.org} if you
+would like to discuss it.
+@end quotation
 
 The general syntax is:
 
@@ -11099,14 +11422,14 @@ a container similar to the one the build daemon creates:
 $ guix build -K foo
 @dots{}
 $ cd /tmp/guix-build-foo.drv-0
-$ guix environment --no-grafts -C foo --ad-hoc strace gdb
+$ guix shell --no-grafts -C foo strace gdb
 [env]# source ./environment-variables
 [env]# cd foo-1.2
 @end example
 
-Here, @command{guix environment -C} creates a container and spawns a new
-shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
-strace gdb} part adds the @command{strace} and @command{gdb} commands to
+Here, @command{guix shell -C} creates a container and spawns a new
+shell in it (@pxref{Invoking guix shell}).  The @command{strace gdb}
+part adds the @command{strace} and @command{gdb} commands to
 the container, which you may find handy while debugging.  The
 @option{--no-grafts} option makes sure we get the exact same
 environment, with ungrafted packages (@pxref{Security Updates}, for more
@@ -11120,7 +11443,7 @@ remove @file{/bin/sh}:
 @end example
 
 (Don't worry, this is harmless: this is all happening in the throw-away
-container created by @command{guix environment}.)
+container created by @command{guix shell}.)
 
 The @command{strace} command is probably not in the search path, but we
 can run:
@@ -13316,8 +13639,8 @@ is subject to radical change in the future.
 
 The purpose of @command{guix container} is to manipulate processes
 running within an isolated environment, commonly known as a
-``container'', typically created by the @command{guix environment}
-(@pxref{Invoking guix environment}) and @command{guix system container}
+``container'', typically created by the @command{guix shell}
+(@pxref{Invoking guix shell}) and @command{guix system container}
 (@pxref{Invoking guix system}) commands.
 
 The general syntax is:
@@ -13503,7 +13826,7 @@ listed.}.  Here's an example of the information it returns:
 $ sudo guix processes
 SessionPID: 19002
 ClientPID: 19090
-ClientCommand: guix environment --ad-hoc python
+ClientCommand: guix shell python
 
 SessionPID: 19402
 ClientPID: 19367
@@ -29699,8 +30022,7 @@ When the service is running, you can view its console by connecting to
 it with a VNC client, for example with:
 
 @example
-guix environment --ad-hoc tigervnc-client -- \
-         vncviewer localhost:5900
+guix shell tigervnc-client -- vncviewer localhost:5900
 @end example
 
 The default configuration (see @code{hurd-vm-configuration} below)

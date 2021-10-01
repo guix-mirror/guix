@@ -73,10 +73,10 @@ all the dependencies and appropriate environment variables are set up to
 hack on Guix:
 
 @example
-guix environment guix --pure
+guix shell -D guix --pure
 @end example
 
-@xref{Invoking guix environment}, for more information on that command.
+@xref{Invoking guix shell}, for more information on that command.
 
 If you are unable to use Guix when building Guix from a checkout, the
 following are the required packages in addition to those mentioned in the
@@ -92,10 +92,10 @@ installation instructions (@pxref{Requirements}).
 @end itemize
 
 On Guix, extra dependencies can be added by instead running @command{guix
-environment} with @option{--ad-hoc}:
+shell}:
 
 @example
-guix environment guix --pure --ad-hoc help2man git strace
+guix shell -D guix help2man git strace --pure
 @end example
 
 Run @command{./bootstrap} to generate the build system infrastructure

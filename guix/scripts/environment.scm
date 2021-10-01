@@ -50,7 +50,11 @@
   #:use-module (srfi srfi-37)
   #:use-module (srfi srfi-98)
   #:export (assert-container-features
-            guix-environment))
+            guix-environment
+            guix-environment*
+            show-environment-options-help
+            (%options . %environment-options)
+            (%default-options . %environment-default-options)))
 
 (define %default-shell
   (or (getenv "SHELL") "/bin/sh"))
@@ -66,23 +70,16 @@ do not augment existing environment variables with additional search paths."
                (newline)))
             (profile-search-paths profile manifest)))
 
-(define (show-help)
-  (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
-Build an environment that includes the dependencies of PACKAGE and execute
-COMMAND or an interactive shell in that environment.\n"))
+(define (show-environment-options-help)
+  "Print help about options shared between 'guix environment' and 'guix
+shell'."
   (display (G_ "
   -e, --expression=EXPR  create environment for the package that EXPR
                          evaluates to"))
   (display (G_ "
-  -l, --load=FILE        create environment for the package that the code within
-                         FILE evaluates to"))
-  (display (G_ "
   -m, --manifest=FILE    create environment with the manifest from FILE"))
   (display (G_ "
   -p, --profile=PATH     create environment from profile at PATH"))
-  (display (G_ "
-      --ad-hoc           include all specified packages in the environment instead
-                         of only their inputs"))
   (display (G_ "
       --pure             unset existing environment variables"))
   (display (G_ "
@@ -118,7 +115,24 @@ COMMAND or an interactive shell in that environment.\n"))
   (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
-      --bootstrap        use bootstrap binaries to build the environment"))
+      --bootstrap        use bootstrap binaries to build the environment")))
+
+(define (show-help)
+  (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
+Build an environment that includes the dependencies of PACKAGE and execute
+COMMAND or an interactive shell in that environment.\n"))
+  (warning (G_ "This command is deprecated in favor of 'guix shell'.\n"))
+  (newline)
+
+  ;; These two options are left out in 'guix shell'.
+  (display (G_ "
+  -l, --load=FILE        create environment for the package that the code within
+                         FILE evaluates to"))
+  (display (G_ "
+      --ad-hoc           include all specified packages in the environment instead
+                         of only their inputs"))
+
+  (show-environment-options-help)
   (newline)
   (show-build-options-help)
   (newline)
@@ -649,11 +663,15 @@ message if any test fails."
 
 (define-command (guix-environment . args)
   (category development)
-  (synopsis "spawn one-off software environments")
+  (synopsis "spawn one-off software environments (deprecated)")
 
+  (guix-environment* (parse-args args)))
+
+(define (guix-environment* opts)
+  "Run the 'guix environment' command on OPTS, an alist resulting for
+command-line option processing with 'parse-command-line'."
   (with-error-handling
-    (let* ((opts       (parse-args args))
-           (pure?      (assoc-ref opts 'pure))
+    (let* ((pure?      (assoc-ref opts 'pure))
            (container? (assoc-ref opts 'container?))
            (link-prof? (assoc-ref opts 'link-profile?))
            (network?   (assoc-ref opts 'network?))
@@ -724,8 +742,8 @@ message if any test fails."
                                      (prof-drv   (manifest->derivation
                                                   manifest system bootstrap?))
                                      (profile -> (if profile
-                                                   (readlink* profile)
-                                                   (derivation->output-path prof-drv)))
+                                                     (readlink* profile)
+                                                     (derivation->output-path prof-drv)))
                                      (gc-root -> (assoc-ref opts 'gc-root)))
 
                   ;; First build the inputs.  This is necessary even for
