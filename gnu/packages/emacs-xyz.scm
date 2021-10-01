@@ -1661,7 +1661,7 @@ scripts.")
 (define-public emacs-a
   (package
     (name "emacs-a")
-    (version "0.1.1")
+    (version "1.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1669,8 +1669,7 @@ scripts.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32
-                "00v9w6qg3bkwdhypq0ssf0phdh0f4bcq59c20lngd6vhk0204dqi"))))
+               (base32 "0zkv4xvw1jdsfxqqkxskl2l380gfs13n86hj4hhzrqf0sb6aymws"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/plexus/a.el/")
     (synopsis
