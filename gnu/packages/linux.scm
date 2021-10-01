@@ -6973,143 +6973,141 @@ userspace queueing component and the logging subsystem.")
     (license license:gpl2)))
 
 (define-public proot
-  (package
-    (name "proot")
-    ;; The last stable release was made in 2015, and fails to build for
-    ;; the aarch64 platform.
-    (version "5.2.0-alpha")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/proot-me/PRoot")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "09vp806y4hqfq2fn2hpi873rh4j6a3c572ph4mkirx1n32wj8srl"))))
-    (build-system gnu-build-system)
-    ;; The powerpc64le-linux and mips64el-linux architectures are not
-    ;; supported (see:
-    ;; https://github.com/proot-me/proot/blob/master/src/arch.h#L51).
-    (supported-systems '("x86_64-linux" "i686-linux"
-                         "armhf-linux" "aarch64-linux" "i586-gnu"))
-    (arguments
-     ;; Disable the test suite on ARM platforms, as there are too many
-     ;; failures to keep track of (see for example:
-     ;; https://github.com/proot-me/proot/issues/263).
-     `(#:tests? ,(not (string-match "^(arm|aarch64)"
-                                    (or (%current-target-system)
-                                        (%current-system))))
-       #:make-flags '("-C" "src")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-sources
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* (find-files "src" "\\.[ch]$")
-                        (("\"/bin/sh\"")
-                         (string-append "\"" (assoc-ref inputs "bash")
-                                        "/bin/sh\"")))
+  (let ((revision "0")
+        (commit "a70023ab3db47d011265451b99a1abef7b9d7afc"))
+    (package
+      (name "proot")
+      ;; The last stable release was made in 2015, and fails to build for the
+      ;; aarch64 platform.  Use the latest commit, which includes fixes for
+      ;; the supported ARM architectures and the test suite, among others.
+      (version (git-version "5.2.0-alpha" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/proot-me/PRoot")
+               (commit (string-append commit))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1kmry3rb967phxnxjfnx310gy1d4gpmjd6fp3hbm9v9jciysxy4z"))))
+      (build-system gnu-build-system)
+      ;; The powerpc64le-linux and mips64el-linux architectures are not
+      ;; supported (see:
+      ;; https://github.com/proot-me/proot/blob/master/src/arch.h#L51).
+      (supported-systems '("x86_64-linux" "i686-linux"
+                           "armhf-linux" "aarch64-linux" "i586-gnu"))
+      (arguments
+       ;; Disable the test suite on armhf-linux, as there are too many
+       ;; failures to keep track of (see for example:
+       ;; https://github.com/proot-me/proot/issues/286).
+       `(#:tests? ,(not (string-prefix? "armhf"
+                                        (or (%current-target-system)
+                                            (%current-system))))
+         #:make-flags '("-C" "src")
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'patch-sources
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* (find-files "src" "\\.[ch]$")
+                          (("\"/bin/sh\"")
+                           (string-append "\"" (assoc-ref inputs "bash")
+                                          "/bin/sh\"")))
 
-                      (substitute* "src/GNUmakefile"
-                        (("/bin/echo") (which "echo")))
+                        (substitute* "src/GNUmakefile"
+                          (("/bin/echo") (which "echo"))
+                          (("^VERSION = .*")
+                           (string-append "VERSION := " ,version "\n")))
 
-                      (substitute* (find-files "test" "\\.sh$")
-                        ;; Some of the tests try to "bind-mount" /bin/true.
-                        (("-b /bin/true:")
-                         (string-append "-b " (which "true") ":"))
-                        ;; Likewise for /bin.
-                        (("-b /bin:") "-b /gnu:")
-                        ;; Others try to run /bin/sh.
-                        (("/bin/sh") (which "sh"))
-                        ;; Others assume /etc/fstab exists.
-                        (("/etc/fstab") "/etc/passwd"))
-                      (substitute* "test/GNUmakefile"
-                        (("-b /bin:") "-b /gnu:"))
-                      (substitute* "test/test-c6b77b77.mk"
-                        (("/bin/bash") (which "bash"))
-                        (("/usr/bin/test") (which "test")))
-                      (substitute* "test/test-16573e73.c"
-                        (("/bin/([a-z-]+)" _ program)
-                         (which program)))
-                      (substitute* "test/test-d2175fc3.sh"
-                        (("\\^/bin/true\\$") "$(which true)"))
-                      (substitute* "test/test-5467b986.sh"
-                        (("-w /usr") "-w /gnu")
-                        (("-w usr") "-w gnu")
-                        (("/usr/share") "/gnu/store")
-                        (("share") "store"))
-                      (substitute* "test/test-092c5e26.sh"
-                        (("-q echo ")
-                         "-q $(which echo) "))
+                        (substitute* (find-files "test" "\\.sh$")
+                          ;; Some of the tests try to "bind-mount" /bin/true.
+                          (("-b /bin/true:")
+                           (string-append "-b " (which "true") ":"))
+                          ;; Likewise for /bin.
+                          (("-b /bin:") "-b /gnu:")
+                          ;; Others try to run /bin/sh.
+                          (("/bin/sh") (which "sh"))
+                          ;; Others assume /etc/fstab exists.
+                          (("/etc/fstab") "/etc/passwd"))
+                        (substitute* "test/GNUmakefile"
+                          (("-b /bin:") "-b /gnu:"))
+                        (substitute* "test/test-c6b77b77.mk"
+                          (("/bin/bash") (which "bash"))
+                          (("/usr/bin/test") (which "test")))
+                        (substitute* "test/test-16573e73.c"
+                          (("/bin/([a-z-]+)" _ program)
+                           (which program)))
+                        (substitute* "test/test-d2175fc3.sh"
+                          (("\\^/bin/true\\$") "$(which true)"))
+                        (substitute* "test/test-5467b986.sh"
+                          (("-w /usr") "-w /gnu")
+                          (("-w usr") "-w gnu")
+                          (("/usr/share") "/gnu/store")
+                          (("share") "store"))
+                        (substitute* "test/test-092c5e26.sh"
+                          (("-q echo ")
+                           "-q $(which echo) "))
 
-                      ;; The following tests are known to fail (see:
-                      ;; https://github.com/proot-me/proot/issues/184).
-                      (delete-file "test/test-0228fbe7.sh")
-                      (delete-file "test/test-2db65cd2.sh")
+                        ;; The following tests are known to fail (see:
+                        ;; https://github.com/proot-me/proot/issues/184).
+                        (delete-file "test/test-0228fbe7.sh")
+                        (delete-file "test/test-2db65cd2.sh")
+                        (delete-file "test/test-cdd39012.sh")
+                        (delete-file "test/test-d92b57ca.sh")
 
-                      ;; This one fails with "bind: Address already in use"
-                      ;; (see: https://github.com/proot-me/proot/issues/260).
-                      (delete-file "test/test-ssssssss.c")
+                        ;; This one fails on a waitpid call that returns 1 (see:
+                        ;; https://github.com/proot-me/proot/issues/261).
+                        (delete-file "test/test-ptrace01.c")
 
-                      ;; This one fails on a waitpid call that returns 1 (see:
-                      ;; https://github.com/proot-me/proot/issues/261).
-                      (delete-file "test/test-ptrace01.c")
+                        ;; XXX: This test fails in an obscure corner case, just
+                        ;; skip it.
+                        (delete-file "test/test-kkkkkkkk.c")
 
-                      ;; XXX: This test fails in an obscure corner case, just
-                      ;; skip it.
-                      (delete-file "test/test-kkkkkkkk.c")
+                        ;; This one requires Docker.
+                        (delete-file "test/test-docker.sh")
 
-                      ;; The socket tests requires networking.
-                      (for-each delete-file
-                                (find-files "test" "test-socket.*\\.sh$"))))
-                  (delete 'configure)
-                  (add-after 'build 'build-manpage
-                    (lambda _
-                      (with-directory-excursion "doc"
-                        (invoke "make" "proot/man.1" "SUFFIX=.py"))))
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (when tests?
-                        (let ((n (parallel-job-count)))
-                          ;; There are lots of segfaults with seccomp support
-                          ;; (x86_64, Linux-libre 4.11.0) (see:
-                          ;; https://github.com/proot-me/proot/issues/106).
-                          (setenv "PROOT_NO_SECCOMP" "1")
-                          ;; Most of the tests expect "/bin" to be in $PATH so
-                          ;; they can run things that live in $ROOTFS/bin.
-                          (setenv "PATH"
-                                  (string-append (getenv "PATH") ":/bin"))
-                          (invoke "make" "check" "-C" "test"
-                                  ;;"V=1"
-                                  "-j" (number->string n))))))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; The 'install' rule does nearly nothing.
-                      (let* ((out (assoc-ref outputs "out"))
-                             (man1 (string-append out "/share/man/man1")))
-                        ;; TODO: 'make install-care' (does not even
-                        ;; build currently.)
-                        (invoke "make" "-C" "src" "install"
-                                (string-append "PREFIX=" out))
-                        (mkdir-p man1)
-                        (copy-file "doc/proot/man.1"
-                                   (string-append man1 "/proot.1"))))))))
-    (native-inputs `(("which" ,which)
-                     ;; For 'mcookie', used by some of the tests.
-                     ("util-linux" ,util-linux)
-                     ;; XXX: Choose the old coreutils because its 'stat'
-                     ;; program does not use statx(2) when running 'stat -c
-                     ;; %a' or similar, which PRoot doesn't properly support
-                     ;; (see: https://github.com/proot-me/proot/issues/262).
-                     ("coreutils-old" ,coreutils-8.30)
-                     ("pkg-config" ,pkg-config)
-                     ;; For rst2man, used to generate the manual page.
-                     ("python-docutils" ,python-docutils)))
-    (inputs `(("libarchive" ,libarchive)
-              ("talloc" ,talloc)))
-    (home-page "https://github.com/proot-me/PRoot")
-    (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
-    (description
-     "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},
+                        ;; The socket tests requires networking.
+                        (for-each delete-file
+                                  (find-files "test" "test-socket.*\\.sh$"))))
+                    (delete 'configure)
+                    (add-after 'build 'build-manpage
+                      (lambda _
+                        (with-directory-excursion "doc"
+                          (invoke "make" "proot/man.1" "SUFFIX=.py"))))
+                    (replace 'check
+                      (lambda* (#:key tests? #:allow-other-keys)
+                        (when tests?
+                          (let ((n (parallel-job-count)))
+                            ;; Most of the tests expect "/bin" to be in $PATH so
+                            ;; they can run things that live in $ROOTFS/bin.
+                            (setenv "PATH"
+                                    (string-append (getenv "PATH") ":/bin"))
+                            (invoke "make" "check" "-C" "test"
+                                    ;;"V=1"
+                                    "-j" (number->string n))))))
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; The 'install' rule does nearly nothing.
+                        (let* ((out (assoc-ref outputs "out"))
+                               (man1 (string-append out "/share/man/man1")))
+                          ;; TODO: 'make install-care' (does not even
+                          ;; build currently.)
+                          (invoke "make" "-C" "src" "install"
+                                  (string-append "PREFIX=" out))
+                          (mkdir-p man1)
+                          (copy-file "doc/proot/man.1"
+                                     (string-append man1 "/proot.1"))))))))
+      (native-inputs `(("which" ,which)
+                       ;; For 'mcookie', used by some of the tests.
+                       ("util-linux" ,util-linux)
+                       ("coreutils" ,coreutils)
+                       ("pkg-config" ,pkg-config)
+                       ;; For rst2man, used to generate the manual page.
+                       ("python-docutils" ,python-docutils)))
+      (inputs `(("libarchive" ,libarchive)
+                ("talloc" ,talloc)))
+      (home-page "https://github.com/proot-me/PRoot")
+      (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
+      (description
+       "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},
 and @code{binfmt_misc}.  This means that users don't need any privileges or
 setup to do things like using an arbitrary directory as the new root
 file system, making files accessible somewhere else in the file system
@@ -7118,7 +7116,7 @@ transparently through QEMU user-mode.  Also, developers can use PRoot as a
 generic process instrumentation engine thanks to its extension mechanism.
 Technically PRoot relies on @code{ptrace}, an unprivileged system-call
 available in the kernel Linux.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public proot-static
   (package
