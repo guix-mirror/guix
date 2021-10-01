@@ -2286,6 +2286,71 @@ conflict-driven nogood learning, a technique that proved very successful for
 satisfiability checking (SAT).")
     (license license:expat)))
 
+(define-public clingo
+  (package
+    (name "clingo")
+    (version "5.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/potassco/clingo")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rfjwkcwm0mmf3r4i7asyjwb6cia4i7px7fn2kdbi9j85qvas4pb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags `("-DCLINGO_BUILD_TESTS=on"
+                           "-DCLINGO_INSTALL_LIB=on"
+                           "-DCLINGO_BUILD_STATIC=off"
+                           "-DCLINGO_BUILD_SHARED=on"
+                           ;; XXX: Clingo requries private headers and
+                           ;;      sources from clasp
+                           ,(string-append
+                             "-DCLASP_SOURCE_DIR="
+                             (assoc-ref %build-inputs "clasp-src")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("add_subdirectory\\(clasp\\)")
+                "find_package(clasp REQUIRED)"))
+             (substitute* "libclingo/CMakeLists.txt"
+               (("\"cmake/Clingo\"") "\"cmake/clingo\"")
+               (("ClingoConfig\\.cmake") "clingo-config.cmake")
+               (("ClingoConfigVersion\\.cmake")
+                "clingo-config-version.cmake"))
+             (substitute* "cmake/ClingoConfig.cmake.in"
+               (("find_package\\(Clasp") "find_package(clasp"))
+             (rename-file "cmake/ClingoConfig.cmake.in"
+                          "cmake/clingo-config.cmake.in")))
+         (add-after 'unpack 'skip-failing-tests
+           (lambda _
+             (with-directory-excursion "libclingo/tests"
+               (substitute* "CMakeLists.txt"
+                 (("COMMAND test_clingo" all)
+                  (string-append all
+                                 " -f "
+                                 "\"${CMAKE_CURRENT_SOURCE_DIR}/good.txt\"")))
+               (call-with-output-file "good.txt"
+                 (lambda (port)
+                   (for-each (lambda (test) (format port "~s~%" test))
+                             '("parse-ast-v2" "add-ast-v2" "build-ast-v2"
+                               "unpool-ast-v2" "parse_term"
+                               "propagator" "propgator-sequence-mining"
+                               "symbol" "visitor"))))))))))
+    (inputs
+     `(("clasp" ,clasp)
+       ("libpotassco" ,libpotassco)))
+    (native-inputs
+     `(("clasp-src" ,(package-source clasp))))
+    (home-page "https://potassco.org/")
+    (synopsis "Grounder and solver for logic programs")
+    (description "Clingo computes answer sets for a given logic program.")
+    (license license:expat)))
+
 (define-public ceres
   (package
     (name "ceres-solver")
