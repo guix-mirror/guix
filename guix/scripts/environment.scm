@@ -691,6 +691,26 @@ command-line option processing with 'parse-command-line'."
            (mappings   (pick-all opts 'file-system-mapping))
            (white-list (pick-all opts 'inherit-regexp)))
 
+      (define store-needed?
+        ;; Whether connecting to the daemon is needed.
+        (or container? (not profile)))
+
+      (define-syntax-rule (with-store/maybe store exp ...)
+        ;; Evaluate EXP... with STORE bound to a connection, unless
+        ;; STORE-NEEDED? is false, in which case STORE is bound to #f.
+        (let ((proc (lambda (store) exp ...)))
+          (if store-needed?
+              (with-store s
+                (set-build-options-from-command-line s opts)
+                (with-build-handler (build-notifier #:use-substitutes?
+                                                    (assoc-ref opts 'substitutes?)
+                                                    #:verbosity
+                                                    (assoc-ref opts 'verbosity)
+                                                    #:dry-run?
+                                                    (assoc-ref opts 'dry-run?))
+                  (proc s)))
+              (proc #f))))
+
       (when container? (assert-container-features))
 
       (when (and (not container?) link-prof?)
@@ -701,88 +721,85 @@ command-line option processing with 'parse-command-line'."
         (leave (G_ "--no-cwd cannot be used without --container~%")))
 
 
-      (with-store store
-        (with-build-handler (build-notifier #:use-substitutes?
-                                            (assoc-ref opts 'substitutes?)
-                                            #:verbosity
-                                            (assoc-ref opts 'verbosity)
-                                            #:dry-run?
-                                            (assoc-ref opts 'dry-run?))
-          (with-status-verbosity (assoc-ref opts 'verbosity)
-            (define manifest-from-opts
-              (options/resolve-packages store opts))
+      (with-store/maybe store
+        (with-status-verbosity (assoc-ref opts 'verbosity)
+          (define manifest-from-opts
+            (options/resolve-packages store opts))
 
-            (define manifest
-              (if profile
-                  (profile-manifest profile)
-                  manifest-from-opts))
+          (define manifest
+            (if profile
+                (profile-manifest profile)
+                manifest-from-opts))
 
-            (when (and profile
-                       (> (length (manifest-entries manifest-from-opts)) 0))
-              (leave (G_ "'--profile' cannot be used with package options~%")))
+          (when (and profile
+                     (> (length (manifest-entries manifest-from-opts)) 0))
+            (leave (G_ "'--profile' cannot be used with package options~%")))
 
-            (when (null? (manifest-entries manifest))
-              (warning (G_ "no packages specified; creating an empty environment~%")))
+          (when (null? (manifest-entries manifest))
+            (warning (G_ "no packages specified; creating an empty environment~%")))
 
-            (set-build-options-from-command-line store opts)
+          ;; Use the bootstrap Guile when requested.
+          (parameterize ((%graft? (assoc-ref opts 'graft?))
+                         (%guile-for-build
+                          (and store-needed?
+                               (package-derivation
+                                store
+                                (if bootstrap?
+                                    %bootstrap-guile
+                                    (default-guile))))))
+            (run-with-store store
+              ;; Containers need a Bourne shell at /bin/sh.
+              (mlet* %store-monad ((bash       (environment-bash container?
+                                                                 bootstrap?
+                                                                 system))
+                                   (prof-drv   (if profile
+                                                   (return #f)
+                                                   (manifest->derivation
+                                                    manifest system bootstrap?)))
+                                   (profile -> (if profile
+                                                   (readlink* profile)
+                                                   (derivation->output-path prof-drv)))
+                                   (gc-root -> (assoc-ref opts 'gc-root)))
 
-            ;; Use the bootstrap Guile when requested.
-            (parameterize ((%graft? (assoc-ref opts 'graft?))
-                           (%guile-for-build
-                            (and (or container? (not profile))
-                                 (package-derivation
-                                  store
-                                  (if bootstrap?
-                                      %bootstrap-guile
-                                      (default-guile))))))
-              (run-with-store store
-                ;; Containers need a Bourne shell at /bin/sh.
-                (mlet* %store-monad ((bash       (environment-bash container?
-                                                                   bootstrap?
-                                                                   system))
-                                     (prof-drv   (if profile
-                                                     (return #f)
-                                                     (manifest->derivation
-                                                      manifest system bootstrap?)))
-                                     (profile -> (if profile
-                                                     (readlink* profile)
-                                                     (derivation->output-path prof-drv)))
-                                     (gc-root -> (assoc-ref opts 'gc-root)))
-
-                  ;; First build the inputs.  This is necessary even for
-                  ;; --search-paths.  Additionally, we might need to build bash for
-                  ;; a container.
-                  (mbegin %store-monad
+                ;; First build the inputs.  This is necessary even for
+                ;; --search-paths.  Additionally, we might need to build bash for
+                ;; a container.
+                (mbegin %store-monad
+                  (mwhen store-needed?
                     (built-derivations (append
                                            (if prof-drv (list prof-drv) '())
-                                           (if (derivation? bash) (list bash) '())))
-                    (mwhen gc-root
-                      (register-gc-root profile gc-root))
+                                           (if (derivation? bash) (list bash) '()))))
+                  (mwhen gc-root
+                    (register-gc-root profile gc-root))
 
-                    (cond
-                     ((assoc-ref opts 'search-paths)
-                      (show-search-paths profile manifest #:pure? pure?)
-                      (return #t))
-                     (container?
-                      (let ((bash-binary
-                             (if bootstrap?
-                                 (derivation->output-path bash)
-                                 (string-append (derivation->output-path bash)
-                                                "/bin/sh"))))
-                        (launch-environment/container #:command command
-                                                      #:bash bash-binary
-                                                      #:user user
-                                                      #:user-mappings mappings
-                                                      #:profile profile
-                                                      #:manifest manifest
-                                                      #:white-list white-list
-                                                      #:link-profile? link-prof?
-                                                      #:network? network?
-                                                      #:map-cwd? (not no-cwd?))))
+                  (cond
+                   ((assoc-ref opts 'search-paths)
+                    (show-search-paths profile manifest #:pure? pure?)
+                    (return #t))
+                   (container?
+                    (let ((bash-binary
+                           (if bootstrap?
+                               (derivation->output-path bash)
+                               (string-append (derivation->output-path bash)
+                                              "/bin/sh"))))
+                      (launch-environment/container #:command command
+                                                    #:bash bash-binary
+                                                    #:user user
+                                                    #:user-mappings mappings
+                                                    #:profile profile
+                                                    #:manifest manifest
+                                                    #:white-list white-list
+                                                    #:link-profile? link-prof?
+                                                    #:network? network?
+                                                    #:map-cwd? (not no-cwd?))))
 
-                     (else
-                      (return
-                       (exit/status
-                        (launch-environment/fork command profile manifest
-                                                 #:white-list white-list
-                                                 #:pure? pure?)))))))))))))))
+                   (else
+                    (return
+                     (exit/status
+                      (launch-environment/fork command profile manifest
+                                               #:white-list white-list
+                                               #:pure? pure?))))))))))))))
+
+;;; Local Variables:
+;;; (put 'with-store/maybe 'scheme-indent-function 1)
+;;; End:
