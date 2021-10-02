@@ -702,15 +702,14 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.18.4")
+    (version "1.19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
-              (patches (search-patches "gst-plugins-bad-fix-overflow.patch"))
               (sha256
                (base32
-                "0py8k4pbalm9mxkpjbjxis0gp7g74wg5g4yax5q8rccmany0ds3l"))
+                "0y895s0jpfdpdqh2n55ki6gzvji5228v7z541if2xjgjka5gk0jk"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -719,6 +718,7 @@ model to base your own plug-in on, here it is.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dsctp-internal-usrsctp=disabled")
+       #:meson ,meson-0.55
        #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
@@ -756,8 +756,7 @@ model to base your own plug-in on, here it is.")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/932
                  ((".*elements/curlhttpsrc\\.c.*") "")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
-                 ((".*elements/dtls\\.c.*") ""))
-               #t)))
+                 ((".*elements/dtls\\.c.*") "")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -768,8 +767,7 @@ model to base your own plug-in on, here it is.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t)))))
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (propagated-inputs
      `(("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)))
