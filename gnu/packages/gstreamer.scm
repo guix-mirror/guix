@@ -612,7 +612,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.18.4")
+    (version "1.19.2")
     (source
      (origin
        (method url-fetch)
@@ -620,14 +620,12 @@ for the GStreamer multimedia library.")
         (string-append
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
-       (patches (search-patches "gst-plugins-good-fix-test.patch"
-                                "gst-plugins-good-CVE-2021-3497.patch"
-                                "gst-plugins-good-CVE-2021-3498.patch"))
        (sha256
-        (base32 "1c1rpq709cy8maaykyn1n0kckj9c6fl3mhvixkk6xmdwkcx0xrdn"))))
+        (base32 "0bjfipap6wc3w28hgf817hc6jvjbblkjil42a356vg242412xsab"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+     `(#:meson ,meson-0.55
+       #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
@@ -641,8 +639,7 @@ for the GStreamer multimedia library.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t)))))
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
