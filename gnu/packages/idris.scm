@@ -47,7 +47,9 @@
               (sha256
                (base32
                 "1pachwc6msw3n1mz2z1r1w6h518w9gbhdvbaa5vi1qp3cn3wm6q4"))
-              (patches (search-patches "idris-disable-test.patch"))))
+              (patches (search-patches "idris-disable-test.patch"
+                                       "idris-build-with-haskeline-0.8.patch"
+                                       "idris-build-with-megaparsec-9.patch"))))
     (build-system haskell-build-system)
     (native-inputs                      ;For tests
      `(("perl" ,perl)
