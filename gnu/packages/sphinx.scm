@@ -350,13 +350,13 @@ documents.")
 (define-public python-sphinxcontrib-serializinghtml
   (package
     (name "python-sphinxcontrib-serializinghtml")
-    (version "1.1.4")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-serializinghtml" version))
               (sha256
                (base32
-                "1g3pbx0g88zd9xzcrbaypa2k60axrh92vf5j76wsk0p9hv6fr87a"))))
+                "0lk91cl9bi4ynhz971zjs0bsr7jwxx8mx2f40psrx06zvzjnspxa"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
