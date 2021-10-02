@@ -19,7 +19,6 @@
 
 (define-module (gnu home services xdg)
   #:use-module (gnu services configuration)
-  #:use-module (gnu home services configuration)
   #:use-module (gnu home services)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu home services utils)

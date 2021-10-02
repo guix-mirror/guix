@@ -54,10 +54,13 @@ trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
     # Test 'guix home reconfigure'.
     #
 
+    printf "# dot-bashrc test file for guix home" > "dot-bashrc"
+
     cat > "home.scm" <<'EOF'
 (use-modules (guix gexp)
              (gnu home)
              (gnu home services)
+             (gnu home services shells)
              (gnu services))
 
 (home-environment
@@ -68,11 +71,33 @@ trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
                    (list `("config/test.conf"
                            ,(plain-file
                              "tmp-file.txt"
-                             "the content of ~/.config/test.conf")))))))
+                             "the content of ~/.config/test.conf"))))
+
+   (service home-bash-service-type
+            (home-bash-configuration
+             (guix-defaults? #t)
+             (bashrc
+              (list
+               (local-file (string-append (dirname (current-filename))
+                                          "/dot-bashrc"))))))
+
+   (simple-service 'home-bash-service-extension-test
+                   home-bash-service-type
+                   (home-bash-extension
+                    (bashrc
+                     (list
+                      (plain-file
+                       "bashrc-test-config.sh"
+                       "# the content of bashrc-test-config.sh"))))))))
 EOF
 
     guix home reconfigure "${test_directory}/home.scm"
     test -d "${HOME}/.guix-home"
+    test -h "${HOME}/.bash_profile"
+    test -h "${HOME}/.bashrc"
+    test "$(tail -n 2 "${HOME}/.bashrc")" == "\
+# dot-bashrc test file for guix home
+# the content of bashrc-test-config.sh"
     grep -q "the content of ~/.config/test.conf" "${HOME}/.config/test.conf"
 
     #
