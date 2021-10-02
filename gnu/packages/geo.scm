@@ -1953,7 +1953,7 @@ track your position right from your laptop.")
          ("openblas" ,openblas)
          ("perl" ,perl)
          ("postgresql" ,postgresql)
-         ("proj.4" ,proj.4)
+         ("proj" ,proj)
          ("python" ,python)
          ("python-dateutil" ,python-dateutil)
          ("python-numpy" ,python-numpy)
@@ -2009,7 +2009,7 @@ track your position right from your laptop.")
                        "--with-netcdf"
                        "--with-postgres"
                        (string-append "--with-proj-share="
-                                      (assoc-ref inputs "proj.4")
+                                      (assoc-ref inputs "proj")
                                       "/share/proj")
                        "--with-pthread"
                        "--with-readline"
