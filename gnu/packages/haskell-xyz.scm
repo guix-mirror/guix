@@ -12045,8 +12045,6 @@ spirit to POSIX shells.  Shelly is originally forked  from the Shellish package.
          "1lgs1gsr5dp0x21diqn4l03fxgai2kgdmj85gqp0iz3zykvbmjbz"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ;; circular dependency with nanospec
-    ;; (inputs
-    ;;  `(("ghc-temporary" ,ghc-temporary)))
     (home-page "https://github.com/hspec/silently")
     (synopsis "Prevent writing to stdout")
     (description "This package provides functions to prevent or capture
