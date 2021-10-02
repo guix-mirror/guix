@@ -979,7 +979,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.18.4")
+    (version "1.19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -987,11 +987,12 @@ decoders, muxers, and demuxers provided by FFmpeg.")
                     "gst-editing-services-" version ".tar.xz"))
               (sha256
                (base32
-                "010xg960qsh5dwmf0y9l1q13h0cymmrgapzla2zsw66ylxqbi1s6"))))
+                "007rd6vn9ly6djzgb8hilgj8rgdy2530w72vps0d0631fxckxh4g"))))
     (build-system meson-build-system)
     (arguments
      ;; FIXME: 16/22 failing tests.
-     `(#:tests? #f
+     `(#:meson ,meson-0.55
+       #:tests? #f
        #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases (modify-phases %standard-phases
                   ,@%common-gstreamer-phases)))
