@@ -10,6 +10,8 @@
 ;;; Copyright © 2020 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2020 Dion Mendel <guix@dm9.info>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,6 +139,57 @@ text.")
      "Fish-like fast/unobtrusive autosuggestions for zsh.  It suggests commands
 as you type.")
     (license license:expat)))
+
+(define-public zsh-syntax-highlighting
+  (package
+    (name "zsh-syntax-highlighting")
+    (version "0.7.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zsh-users/zsh-syntax-highlighting")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "039g3n59drk818ylcyvkciv8k9mf739cv6v4vis1h9fv9whbcmwl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("zsh" ,zsh)))
+    (arguments
+     ;; FIXME: Tests fail when running test regexp
+     ;; there is no pcre module in the Guix zsh package
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("/usr/local") out)
+                 (("share/\\$\\(NAME\\)") "share/zsh/plugins/$(NAME)")))))
+         (add-after 'patch-paths 'make-writable
+           (lambda _
+             (for-each make-file-writable
+                       '("docs/highlighters.md"
+                         "README.md"))))
+         (add-before 'build 'add-all-md
+           (lambda _
+             (invoke "make" "all")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "test")
+               (invoke "make" "perf")))))))
+    (home-page "https://github.com/zsh-users/zsh-syntax-highlighting")
+    (synopsis "Fish shell-like syntax highlighting for Zsh")
+    (description
+     "This package provides syntax highlighting for Zsh.  It enables
+highlighting of commands whilst they are typed at a Zsh prompt into an
+interactive terminal.  This helps in reviewing commands before running them,
+particularly in catching syntax errors.")
+    (license license:bsd-3)))
 
 (define-public sh-z
   (package
