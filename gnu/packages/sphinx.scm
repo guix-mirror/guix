@@ -245,13 +245,13 @@ users from Sphinx docs.")
 (define-public python-sphinxcontrib-htmlhelp
   (package
     (name "python-sphinxcontrib-htmlhelp")
-    (version "1.0.3")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-htmlhelp" version))
               (sha256
                (base32
-                "16v5jdnibwrqjdr5aqchgyzpwy3rgamwhdf4kidv5nxj65zbpxg8"))))
+                "1ckd5xx4ngd6f4prxbc1bbvnafy1gg06j3bxyj5kk7v21lnvpy7m"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
