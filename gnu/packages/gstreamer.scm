@@ -532,16 +532,15 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.18.4")
+    (version "1.19.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gstreamer.freedesktop.org/src/" name "/"
                           name "-" version ".tar.xz"))
-      (patches (search-patches "gst-plugins-base-fix-id3v2-invalid-read.patch"))
       (sha256
        (base32
-        "08w3ivbc6n4vdds2ap6q7l8zdk9if8417nznyqidf0adm0lk5r99"))))
+        "04x5666vgg89dd9psxmnr99dszk8ykkc9dclg2ln2sq07kyh9qyd"))))
     (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
@@ -584,14 +583,14 @@ This package provides the core library and elements.")
        ("gettext" ,gettext-minimal)
        ("xorg-server" ,xorg-server-for-tests)))
     (arguments
-     `(#:phases
+     `(#:meson ,meson-0.55
+       #:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
          (add-before 'configure 'patch
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -602,8 +601,7 @@ This package provides the core library and elements.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t)))))
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
