@@ -10,6 +10,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
@@ -479,25 +481,13 @@ the GStreamer multimedia framework.")
              version ".tar.xz"))
        (sha256
         (base32
-         "1igv9l4hm21kp1jmlwlagzs7ly1vaxv1sbda29q8247372dwkvls"))))
+         "03bfgsxd3njkaa5vm99hi36b4n98ywand60h3p18jlqyjfjpnnvf"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:meson ,meson-0.55
+       #:phases
        (modify-phases %standard-phases
-         ,@%common-gstreamer-phases
-         ;; FIXME: Since switching to the meson-build-system, two tests
-         ;; started failing on i686.  See
-         ;; <https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/499>.
-         ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                          (%current-system)))
-               `((add-after 'unpack 'disable-some-tests
-                   (lambda _
-                     (substitute* "tests/check/gst/gstsystemclock.c"
-                       (("tcase_add_test \\(tc_chain, test_stress_cleanup_unschedule.*")
-                        "")
-                       (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
-                        "")))))
-               '()))))
+         ,@%common-gstreamer-phases)))
     (propagated-inputs
      ;; In gstreamer-1.0.pc:
      ;;   Requires: glib-2.0, gobject-2.0
