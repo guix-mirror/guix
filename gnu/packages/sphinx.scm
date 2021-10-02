@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,26 +57,27 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "4.0.3")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "1f7vnk3g135b2zs9yq3kgrczxa91mhrlfw8243dpxsq8lbk5gwyz"))))
+         "19jq21py7m061v8142y2dbqrbv0adqcdjmharrdy34a432wqs1wl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; Requires Internet access.
-             (delete-file "tests/test_build_linkcheck.py")
-             (substitute* "tests/test_build_latex.py"
-               (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
-                "@pytest.mark.skip()"))
-             (invoke "make" "test"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Requires Internet access.
+               (delete-file "tests/test_build_linkcheck.py")
+               (substitute* "tests/test_build_latex.py"
+                 (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
+                  "@pytest.mark.skip()"))
+               (invoke "make" "test")))))))
     (propagated-inputs
      `(("python-babel" ,python-babel)
        ("python-docutils" ,python-docutils)
