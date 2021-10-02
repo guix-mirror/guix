@@ -8150,7 +8150,8 @@ library.")
                (search-patches
                 "gdm-default-session.patch"
                 "gdm-elogind-support.patch"
-                "gdm-remove-hardcoded-xwayland-path.patch"))))
+                "gdm-remove-hardcoded-xwayland-path.patch"
+                "gdm-wayland-session-wrapper-from-env.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

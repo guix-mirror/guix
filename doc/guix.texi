@@ -18309,6 +18309,10 @@ The GDM package to use.
 
 @item @code{wayland?} (default: @code{#f})
 When true, enables Wayland in GDM, necessary to use Wayland sessions.
+
+@item @code{wayland-session} (default: @code{gdm-wayland-session-wrapper})
+The Wayland session wrapper to use, needed to setup the
+environment.
 @end table
 @end deftp
 
