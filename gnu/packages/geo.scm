@@ -1273,7 +1273,7 @@ map display.  Downloads map data from a number of websites, including
        ("libnova" ,libnova)
        ("libpng" ,libpng)
        ("openjpeg" ,openjpeg)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (synopsis "Weather Forecast Visualization")
