@@ -409,7 +409,7 @@ arrays of data.")
 (define-public gstreamer-docs
   (package
     (name "gstreamer-docs")
-    (version "1.18.2")
+    (version "1.19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -417,7 +417,7 @@ arrays of data.")
                     "/gstreamer-docs-" version ".tar.xz"))
               (sha256
                (base32
-                "07hrgn11ll16yahyyh5684k8ms1j9npsyb8lj0skwbapin4czshm"))))
+                "1isrp3c9gm59br9vbidd1sgqdjgl1ka2p269bqxmh5dcn4f2gz6a"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -435,8 +435,7 @@ arrays of data.")
              (invoke (string-append tar "/bin/tar") "-xvf" source
                      "--strip-components=3"
                      (string-append ,name "-" ,version
-                                    "/devhelp/books/GStreamer")))
-           #t))))
+                                    "/devhelp/books/GStreamer")))))))
     (native-inputs
      `(("tar" ,tar)
        ("xz" ,xz)))
@@ -466,13 +465,12 @@ the GStreamer multimedia framework.")
           (("'CK_DEFAULT_TIMEOUT', '[0-9]*'")
            "'CK_DEFAULT_TIMEOUT', '600'")
           (("timeout ?: .*\\)")
-           "timeout: 90 * 60)"))
-        #t))))
+           "timeout: 90 * 60)"))))))
 
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.18.4")
+    (version "1.19.2")
     (source
      (origin
        (method url-fetch)
