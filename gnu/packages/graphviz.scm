@@ -258,7 +258,7 @@ structure and layout algorithms.")
 (define-public python-uqbar
   (package
     (name "python-uqbar")
-    (version "0.5.1")
+    (version "0.5.6")
     (source
      (origin
        (method git-fetch)
@@ -268,7 +268,7 @@ structure and layout algorithms.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0413nyhd8z8v3lvsgaghhafnyxg90fi1q80j1kbl21gpmpnc9a7n"))))
+         "1ml3x2mf7nlnvrh9lari5yk0sz2mmg39jwsbjxnpzhnw4kcwpdrs"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -277,8 +277,8 @@ structure and layout algorithms.")
            (lambda _
              (substitute* "setup.py"
                ;; Latest versions of sphink-rtd-theme require npm to build.
-               (("sphinx-rtd-theme >= 0.4.0") "sphinx-rtd-theme >= 0.2.4")
-               (("black == 19.10b0") "black >= 19.10b0"))
+               (("sphinx-rtd-theme >= 0.5.0") "sphinx-rtd-theme >= 0.2.4")
+               (("black") "black >= 19.10b0"))
              #t))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
