@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -66,7 +66,7 @@
 (define-public cawbird
   (package
     (name "cawbird")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -75,7 +75,7 @@
              (commit (string-append "v"version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lmrgcj1ky1vhzynl36k6ba3ws089x4qdrnkjk3lbr334kicx9na"))))
+        (base32 "17575cp5qcgsqf37y3xqg3vr6l2j8bbbkmy2c1l185rxghfacida"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -109,8 +109,7 @@
                (setenv "XDG_DATA_DIRS"
                        (string-append (getenv "XDG_DATA_DIRS")
                                       ":" (assoc-ref outputs "out") "/share"))
-               (invoke "meson" "test"))
-             #t))
+               (invoke "meson" "test"))))
          (add-after 'glib-or-gtk-wrap 'wrap-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -119,8 +118,7 @@
                     (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                (wrap-program (string-append bin "cawbird")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-             #t)))))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
