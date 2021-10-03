@@ -1001,7 +1001,7 @@ allows users to brew while offline.")
 (define-public corsix-th
   (package
     (name "corsix-th")
-    (version "0.65")
+    (version "0.65.1")
     (source
      (origin
        (method git-fetch)
@@ -1010,7 +1010,7 @@ allows users to brew while offline.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hp7da7b73dpn1h22rw3h8w6aaj9azn18qnp3ap3lrlqhj4fzcb3"))))
+        (base32 "0hw92ln9jm9v55drmbfqjng58yshgwfpv7fqynryrg3gvg8zhbvh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
