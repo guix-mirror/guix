@@ -909,7 +909,7 @@ This package allows you to create and extract such file systems.")
 (define-public squashfs-tools-ng
   (package
     (name "squashfs-tools-ng")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method git-fetch)
@@ -918,7 +918,7 @@ This package allows you to create and extract such file systems.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13gx6mc57wjjnrpnkb74zi2wiqazz2q715y1zz7rff02wh1vb5k9"))
+        (base32 "12ipqmjp10574sz64ls8qbgzkxz5dcbzk0l2fxyh2yrrhnjp34mi"))
        (modules '((guix build utils)))
        (snippet
         '(begin
