@@ -1584,7 +1584,7 @@ typographic detail of symbols on the page.")
 (define-public abjad-ext-rmakers
   (package
     (name "abjad-ext-rmakers")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -1594,7 +1594,7 @@ typographic detail of symbols on the page.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03nry8lzh3s81yq4lw8y6j63m7zdsl20q7rvx9cfmp3rmbvlaycs"))))
+         "0wma9vzn42h1rhbzh2dwjsrzjhsi1yqdgn6wx1dfk78vaki6prd8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
