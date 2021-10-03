@@ -32,7 +32,7 @@ _guix_complete_command ()
                                      | grep '^    ' \
 				     | sed '-es/^ *\([a-z-]\+\).*$/\1/g')"
     fi
-    COMPREPLY=($(compgen -W "$_guix_commands" -- "$word_at_point"))
+    COMPREPLY+=($(compgen -W "$_guix_commands" -- "$word_at_point"))
 }
 
 _guix_complete_subcommand ()
@@ -41,7 +41,7 @@ _guix_complete_subcommand ()
     local subcommands="$(${COMP_WORDS[0]} $command --help 2> /dev/null \
                          | grep '^   [a-z]' \
                          | sed -e's/^ \+\([a-z-]\+\).*$/\1/g')"
-    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[$COMP_CWORD]}"))
+    COMPREPLY+=($(compgen -W "$subcommands" -- "${COMP_WORDS[$COMP_CWORD]}"))
 }
 
 _guix_complete_available_package ()
@@ -54,7 +54,7 @@ _guix_complete_available_package ()
 	_guix_available_packages="$(${COMP_WORDS[0]} package -A 2> /dev/null \
                                     | cut -f1)"
     fi
-    COMPREPLY=($(compgen -W "$_guix_available_packages" -- "$prefix"))
+    COMPREPLY+=($(compgen -W "$_guix_available_packages" -- "$prefix"))
 }
 
 _guix_complete_installed_package ()
@@ -64,7 +64,7 @@ _guix_complete_installed_package ()
     local prefix="$1"
     local packages="$(${COMP_WORDS[0]} package -I "^$prefix" 2> /dev/null \
                       | cut -f1)"
-    COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
+    COMPREPLY+=($(compgen -W "$packages" -- "$prefix"))
 }
 
 _guix_complete_option ()
@@ -79,7 +79,7 @@ _guix_complete_option ()
                             | grep '^  \+-' \
                             | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
     compopt -o nospace
-    COMPREPLY=($(compgen -W "$options" -- "$2"))
+    COMPREPLY+=($(compgen -W "$options" -- "$2"))
 }
 
 _guix_is_option ()
@@ -174,7 +174,7 @@ _guix_complete_file ()
 _guix_complete_pid ()
 {
     local pids="$(cd /proc; echo [0-9]*)"
-    COMPREPLY=($(compgen -W "$pids" -- "$1"))
+    COMPREPLY+=($(compgen -W "$pids" -- "$1"))
 }
 
 _guix_complete ()
