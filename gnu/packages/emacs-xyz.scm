@@ -18175,9 +18175,9 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
 
 (define-public emacs-crdt
   ;; XXX: Upstream does not always tag new releases.  The commit below
-  ;; corresponds exactly to 0.2.6 bump.
-  (let ((commit "3bd1a57999576249d726afa5f2cae1891535747c")
-        (version "0.2.6"))
+  ;; corresponds exactly to 0.2.7 bump.
+  (let ((commit "b8a02a5c1f759003343c10f8cedef4daae95f9fe")
+        (version "0.2.7"))
     (package
       (name "emacs-crdt")
       (version version)
@@ -18189,7 +18189,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0v8b9ml3357ajlxgn5ys93px4axfav48qyz2ddxgrnnfq0c1h17n"))))
+          (base32 "0av65dnfzc0qapl5cvm6ha3vax4c19y6rxbn2qy1ir87q6lpk2xc"))))
       (build-system emacs-build-system)
       (home-page "https://code.librehq.com/qhong/crdt.el")
       (synopsis "Real-time collaborative editing environment")
