@@ -185,8 +185,6 @@
                      (default '()))
   (semantic-checks?  knot-zone-configuration-semantic-checks?
                      (default #f))
-  (disable-any?      knot-zone-configuration-disable-any?
-                     (default #f))
   (zonefile-sync     knot-zone-configuration-zonefile-sync
                      (default 0))
   (zonefile-load     knot-zone-configuration-zonefile-load
@@ -509,7 +507,6 @@
                 (notify (list #$@(knot-zone-configuration-notify zone)))
                 (acl (list #$@(knot-zone-configuration-acl zone)))
                 (semantic-checks? #$(knot-zone-configuration-semantic-checks? zone))
-                (disable-any? #$(knot-zone-configuration-disable-any? zone))
                 (zonefile-sync #$(knot-zone-configuration-zonefile-sync zone))
                 (zonefile-load '#$(knot-zone-configuration-zonefile-load zone))
                 (journal-content #$(knot-zone-configuration-journal-content zone))
@@ -541,7 +538,6 @@
                       #$(format-string-list
                           (knot-zone-configuration-acl zone))))
             (format #t "      semantic-checks: ~a\n" (if semantic-checks? "on" "off"))
-            (format #t "      disable-any: ~a\n" (if disable-any? "on" "off"))
             (if zonefile-sync
               (format #t "      zonefile-sync: ~a\n" zonefile-sync))
             (if zonefile-load

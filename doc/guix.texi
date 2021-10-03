@@ -26799,9 +26799,6 @@ A list of acl identifiers.
 @item @code{semantic-checks?} (default: @code{#f})
 When set, this adds more semantic checks to the zone.
 
-@item @code{disable-any?} (default: @code{#f})
-When set, this forbids queries of the ANY type.
-
 @item @code{zonefile-sync} (default: @code{0})
 The delay between a modification in memory and on disk.  0 means immediate
 synchronization.
