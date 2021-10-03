@@ -583,16 +583,17 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (substitute* "test_gnupg.py"
-               ;; Unsure why this test fails.
-               (("'test_search_keys'") "True")
-               (("def test_search_keys") "def disabled__search_keys"))
-             (setenv "USERNAME" "guixbuilder")
-             ;; The doctests are extremely slow and sometimes time out,
-             ;; so we disable them.
-             (invoke "python"
-                     "test_gnupg.py" "--no-doctests"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (substitute* "test_gnupg.py"
+                 ;; Unsure why this test fails.
+                 (("'test_search_keys'") "True")
+                 (("def test_search_keys") "def disabled__search_keys"))
+               (setenv "USERNAME" "guixbuilder")
+               ;; The doctests are extremely slow and sometimes time out,
+               ;; so we disable them.
+               (invoke "python"
+                       "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
      `(("gnupg" ,gnupg)))
     (home-page "https://pythonhosted.org/python-gnupg/index.html")
