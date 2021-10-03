@@ -171,6 +171,18 @@ _guix_complete_file ()
     COMPREPLY=()
 }
 
+_guix_complete_available_package_or_store_file ()
+{
+    _guix_complete_available_package "$@"
+
+    # The current _guix_complete_file implementation doesn't compose (append to
+    # COMPREPLY), so we suggest file names only if no package names matched.
+    if [[ -z "$COMPREPLY" ]]
+    then
+	_guix_complete_file # TODO: restrict to store files
+    fi
+}
+
 _guix_complete_pid ()
 {
     local pids="$(cd /proc; echo [0-9]*)"
@@ -251,7 +263,7 @@ _guix_complete ()
                 then
                     _guix_complete_file
 		else
-		    _guix_complete_available_package "$word_at_point"
+		    _guix_complete_available_package_or_store_file "$word_at_point"
                 fi
 	    elif [[ "$command" = "environment" ]]
 	    then
