@@ -32965,7 +32965,7 @@ designated like this:
 
 @example
 (setuid-program
-  (program (file-append #$shadow "/bin/passwd")))
+  (program (file-append shadow "/bin/passwd")))
 @end example
 
 @deftp {Data Type} setuid-program
