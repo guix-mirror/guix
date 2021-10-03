@@ -31,16 +31,14 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "4.4.1")
+    (version "4.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/ccache/ccache/releases/download/v"
                            version "/ccache-" version ".tar.xz"))
        (sha256
-        (base32 "0nc1mlmj92lfa25d12nzf5n55az6zfx38n0z1qqkkzjxn6sxzmpb"))
-       (patches
-        (search-patches "ccache-fix-basedir-test.patch"))))
+        (base32 "186b5lfbdd48cvbxqv2yh93pgr8lhahl1jzw00k2rmjzmbxwl04j"))))
     (build-system cmake-build-system)
     (native-inputs `(("perl" ,perl)     ; for test/run
                      ("which" ,(@ (gnu packages base) which))))
@@ -53,9 +51,13 @@
 
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'setup-tests
+         (add-before 'configure 'fix-shell
+           ;; Run early whilst we're still in the source directory.
            (lambda _
-             (substitute* '("unittest/test_hashutil.cpp" "test/suites/base.bash")
+             (substitute* (list "test/run"
+                                "test/suites/base.bash"
+                                "unittest/test_hashutil.cpp")
+               (("compgen -e") "env | cut -d= -f1")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))))
          (add-before 'check 'set-home
            ;; Tests require a writable HOME.
