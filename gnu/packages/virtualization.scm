@@ -1623,7 +1623,12 @@ domains, their live performance and resource utilization statistics.")
                                          "/site-packages:"
                                          (getenv "PYTHONPATH"))))
                (wrap-program (string-append out "/bin/crit")
-                 `("PYTHONPATH" ":" prefix (,path)))))))))
+                 `("PYTHONPATH" ":" prefix (,path))))))
+         (add-after 'install 'delete-static-libraries
+           ;; Not building/installing these at all doesn't seem to be supported.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each delete-file (find-files out "\\.a$"))))))))
     (inputs
      `(("protobuf" ,protobuf)
        ("python" ,python-2)
