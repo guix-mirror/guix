@@ -279,6 +279,9 @@ _guix_complete ()
 	    elif [[ "$command" = "download" || "$command" = "gc" || "$command" = "hash" ]]
 	    then
 		_guix_complete_file
+	    elif [[ "$command" = "size" ]]
+	    then
+		_guix_complete_available_package_or_store_file "$word_at_point"
 	    elif [[ "$command" = "system" ]]
 	    then
 		case $COMP_CWORD in
