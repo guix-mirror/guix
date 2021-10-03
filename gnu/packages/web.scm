@@ -5948,14 +5948,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.59")
+  (version "5.60")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "17yf2n47j5hw2y9527mrkx3j7q9jk5vvg46m3hgp1wg8dggpcxqk"))))
+       (base32 "0zbqiydyz9dvfg3axh18a42v6j3xvnwjbd03kgm1z1i12mdpcpf4"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
@@ -5975,16 +5975,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
                               "doc/Makefile.in"
                               "tools/Makefile.in")
              (("/doc/stunnel")
-              (string-append "/doc/" ,name "-" ,version)))
-           #t))
+              (string-append "/doc/" ,name "-" ,version)))))
        (add-before 'check 'patch-tests
          (lambda _
            (substitute* "tests/make_test"
              (("/bin/sh ")
               (string-append (which "sh") " ")))
-           ;; test requires networking
-           (delete-file "tests/recipes/055_socket_closed")
-           #t)))))
+           ;; This test requires networking.
+           (delete-file "tests/recipes/055_socket_closed"))))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption
