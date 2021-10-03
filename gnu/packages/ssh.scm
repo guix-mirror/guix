@@ -186,7 +186,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "8.7p1")
+   (version "8.8p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
@@ -194,7 +194,7 @@ a server that supports the SSH-2 protocol.")
              (patches (search-patches "openssh-hurd.patch"))
              (sha256
               (base32
-               "090yxpi03pxxzb4ppx8g8hdpw7c4nf8p0avr6c7ybsaana5lp8vw"))))
+               "1s8z6f7mi1pwsl79cqai8cr350m5lf2ifcxff57wx6mvm478k425"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
@@ -244,8 +244,7 @@ a server that supports the SSH-2 protocol.")
            (let ((out (assoc-ref outputs "out")))
              (substitute* "Makefile"
                (("PRIVSEP_PATH=/var/empty")
-                (string-append "PRIVSEP_PATH=" out "/var/empty")))
-             #t)))
+                (string-append "PRIVSEP_PATH=" out "/var/empty"))))))
         (add-before 'check 'patch-tests
          (lambda _
            (substitute* "regress/test-exec.sh"
@@ -255,8 +254,7 @@ a server that supports the SSH-2 protocol.")
            (substitute* (list "Makefile"
                               "regress/Makefile")
              (("^(tests:.*) t-exec(.*)" all pre post)
-              (string-append pre post)))
-           #t))
+              (string-append pre post)))))
         (replace 'install
          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
            ;; Install without host keys and system configuration files.
@@ -268,8 +266,7 @@ a server that supports the SSH-2 protocol.")
                                  "/bin/ssh-copy-id") #o555)
            (install-file "contrib/ssh-copy-id.1"
                          (string-append (assoc-ref outputs "out")
-                                        "/share/man/man1/"))
-           #t)))))
+                                        "/share/man/man1/")))))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
