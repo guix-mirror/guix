@@ -2869,8 +2869,13 @@ and execute @file{.desktop} files of the Application type.")
          (list (string-append "PREFIX=" out)))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-xauth
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "sx"
+               (("\\bxauth\\b" command)
+                (string-append (assoc-ref inputs "xauth") "/bin/" command)))))
          (delete 'configure))))         ; no configure script
-    (propagated-inputs
+    (inputs
      `(("xauth" ,xauth)))
     (home-page "https://github.com/Earnestly/sx")
     (synopsis "Start an xorg server")
