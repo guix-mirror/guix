@@ -55,7 +55,7 @@
              ("readline" ,readline)
              ("zlib" ,zlib)))
    (arguments
-    '(#:disallowed-references ("doc")
+    `(#:disallowed-references ("doc")
       #:configure-flags '("--enable-utf"
                           "--enable-pcregrep-libz"
                           "--enable-pcregrep-libbz2"
@@ -63,7 +63,10 @@
                           "--enable-unicode-properties"
                           "--enable-pcre16"
                           "--enable-pcre32"
-                          "--enable-jit")
+                          ;; pcretest fails on powerpc32.
+                          ,@(if (target-ppc32?)
+                              '()
+                              `("--enable-jit")))
       #:phases (modify-phases %standard-phases
                  (add-after 'install 'move-static-libs
                    (lambda* (#:key outputs #:allow-other-keys)
