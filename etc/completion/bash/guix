@@ -284,8 +284,8 @@ _guix_complete ()
 		_guix_complete_available_package_or_store_file "$word_at_point"
 	    elif [[ "$command" = "system" ]]
 	    then
-		case $COMP_CWORD in
-		    2) _guix_complete_subcommand;;
+		case $((COMP_CWORD - command_index)) in
+		    1) _guix_complete_subcommand;;
 		    *) _guix_complete_file;; # TODO: restrict to *.scm
 		esac
             elif [[ "$command" = "pull" ]]
@@ -304,9 +304,9 @@ _guix_complete ()
                 fi
 	    elif [[ "$command" = "container" ]]
 	    then
-		case $COMP_CWORD in
-		    2) _guix_complete_subcommand;;
-		    3) _guix_complete_pid "$word_at_point";;
+		case $((COMP_CWORD - command_index)) in
+		    1) _guix_complete_subcommand;;
+		    2) _guix_complete_pid "$word_at_point";;
 		    *) _guix_complete_file;;
 		esac
 	    elif [[ "$command" = "import" ]]
