@@ -10029,7 +10029,7 @@ win.")
 (define-public freeorion
   (package
     (name "freeorion")
-    (version "0.4.10")
+    (version "0.4.10.2")
     (source
      (origin
        (method git-fetch)
@@ -10037,7 +10037,7 @@ win.")
              (url "https://github.com/freeorion/freeorion")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1hq212pbsqpgn193wkvcl45m8bjvx730486xkffivylxgbiyvv2c"))
+        (base32 "12fhwa3cs6lvdbdhina310qk2g7zcphldsh7ibsbxn8d1m731xlk"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
