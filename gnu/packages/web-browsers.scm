@@ -151,21 +151,21 @@ management, extensions such as advertisement blocker and colorful tabs.")
 (define-public links
   (package
     (name "links")
-    (version "2.23")
+    (version "2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   "links-" version ".tar.bz2"))
               (sha256
                (base32
-                "0idcwryfbf6ds5x2fx1k21m459qz5mrz3hw4a6ziiz91yl1d4q36"))))
+                "0b6x97xi8i4pag2scba02c0h95cm3sia58q99zppk0lfd448bmrd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The tarball uses a very old version of autconf. It doesn't
+             ;; The tarball uses a very old version of autoconf. It doesn't
              ;; understand extra flags like `--enable-fast-install', so
              ;; we need to invoke it with just what it understands.
              (let ((out (assoc-ref outputs "out")))
@@ -176,8 +176,7 @@ management, extensions such as advertisement blocker and colorful tabs.")
                (setenv "CONFIG_SHELL" (which "bash"))
                (invoke "./configure"
                        (string-append "--prefix=" out)
-                       "--enable-graphics")
-               #t))))))
+                       "--enable-graphics")))))))
     (native-inputs `(("linux-libre-headers" ,linux-libre-headers)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("gpm" ,gpm)
