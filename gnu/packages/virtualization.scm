@@ -2264,14 +2264,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20210809")
+    (version "20210903")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "16gas6ahxwim1vdjlc4p1gm6q5gfy25h82ngykcm94x69sl6qsan"))))
+                "0d08ffvwdzwr16gv7pz2r7brds5gciirz8ixs97s5ly03grd7rrh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -2285,8 +2285,7 @@ administrators and developers in managing the database.")
                  (string-append (assoc-ref %build-inputs "osinfo-db-tools")
                                 "/bin/osinfo-db-import")))
            (mkdir-p osinfo-dir)
-           (invoke osinfo-db-import "--dir" osinfo-dir source)
-           #t))))
+           (invoke osinfo-db-import "--dir" osinfo-dir source)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("osinfo-db-tools" ,osinfo-db-tools)))
