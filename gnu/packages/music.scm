@@ -1529,7 +1529,7 @@ Guile.")
 (define-public abjad
   (package
     (name "abjad")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -1539,7 +1539,7 @@ Guile.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dzf5v7pawbzkb4qxp4s5z4r3gibkk705pag83yvgzkx6fd6jf2g"))))
+         "0s63vk9fifp0im9c31kb9ck39mbaxhrls993d8fvg0nkg41z1jnz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
