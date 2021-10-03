@@ -870,19 +870,30 @@ Extensions} (DNSSEC).")
              ;; This is needed even when using ‘make config_dir=... install’.
              (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))))
          (add-after 'build 'build-info
-           (lambda _
-             (invoke "make" "info")))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "info"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags))))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key make-flags outputs parallel-build? #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/" ,name "-" ,version))
                     (etc (string-append doc "/examples/etc")))
-               (invoke "make"
-                       (string-append "config_dir=" etc)
-                       "install"))))
+               (apply invoke "make" "install"
+                      (string-append "config_dir=" etc)
+                      `(,@(if parallel-build?
+                              `("-j" ,(number->string (parallel-job-count)))
+                              '())
+                        ,@make-flags)))))
          (add-after 'install 'install-info
-           (lambda _
-             (invoke "make" "install-info")))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "install-info"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags))))
          (add-after 'install 'break-circular-:lib->:out-reference
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((lib (assoc-ref outputs "lib")))
