@@ -846,6 +846,7 @@ Extensions} (DNSSEC).")
              (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
              "--sysconfdir=/etc"
              "--localstatedir=/var"
+             "--disable-static"         ; static libraries are built by default
              "--enable-dnstap"          ; let tools read/write capture files
              "--enable-fastparser"      ; disabled by default when .git/ exists
              "--enable-xdp=auto"        ; XXX [=yes] currently means =embedded
