@@ -372,14 +372,14 @@ the same, being completely separated from the Internet.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Please update the nginx-documentation package together with this one!
-    (version "1.21.2")
+    (version "1.21.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11ail85iw6mg8fxd2qnxhcghi0frjk5r70cfar83dms61rb1qxri"))))
+                "0nhps7igdqcpcy1r8677ar807rfclpylmz3y858a678m1np4lxql"))))
     (build-system gnu-build-system)
     (inputs `(("libxml2" ,libxml2)
               ("libxslt" ,libxslt)
