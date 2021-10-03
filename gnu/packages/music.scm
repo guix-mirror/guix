@@ -1626,7 +1626,7 @@ and manipulating rhythms such as accelerandi, taleas, and more.")
 (define-public abjad-ext-nauert
   (package
     (name "abjad-ext-nauert")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -1636,7 +1636,7 @@ and manipulating rhythms such as accelerandi, taleas, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07vgfjh32vmf652lcl2vrbzr0h6nld00qbgwbf9i1kk3xwhvklc9"))))
+         "05hr2lr6myzi493k8vc19cqzraxxnbdwlckwbnras19l5g5ns38x"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
