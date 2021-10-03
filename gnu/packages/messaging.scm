@@ -1295,7 +1295,7 @@ Encryption to Gajim.")
      ;; NOTE: Commented-out lines are to be enabled in v0.3.0.
      `(("atk" ,atk)
        ("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)
        ("gpgme" ,gpgme)

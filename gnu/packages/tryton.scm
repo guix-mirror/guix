@@ -113,7 +113,7 @@ and security.")
      `(("glib-compile-schemas" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf+svg)
+     `(("librsvg" ,librsvg)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("python-dateutil" ,python-dateutil)

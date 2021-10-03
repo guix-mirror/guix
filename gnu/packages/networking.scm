@@ -745,7 +745,7 @@ systems with no further dependencies.")
     (inputs
      `(("bluez" ,bluez)
        ("dbus" ,dbus)
-       ("gdkpixbuf" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("iproute2" ,iproute)

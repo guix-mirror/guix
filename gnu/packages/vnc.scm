@@ -119,7 +119,7 @@
        ("ffmpeg" ,ffmpeg)
        ("freerdp" ,freerdp)             ; for rdp plugin
        ("gcrypt" ,libgcrypt)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("glib" ,glib)
        ("gnome-keyring" ,gnome-keyring)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)

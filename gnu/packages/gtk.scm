@@ -712,35 +712,6 @@ scaled, composited, modified, saved, or rendered.")
     (home-page "https://wiki.gnome.org/Projects/GdkPixbuf")
     (license license:lgpl2.1+)))
 
-;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
-;; on gdk-pixbuf, so this new variable.  Also, librsvg adds 90MiB to the
-;; closure size.
-(define-public gdk-pixbuf+svg
-  (package/inherit gdk-pixbuf
-    (name "gdk-pixbuf+svg")
-    (inputs
-     `(("librsvg" ,librsvg)
-       ,@(package-inputs gdk-pixbuf)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments gdk-pixbuf)
-        ((#:phases phases)
-          `(modify-phases ,phases
-         (add-after 'install 'register-svg-loader
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (librsvg (assoc-ref inputs "librsvg"))
-                    (loaders
-                     (append
-                      (find-files out "^libpixbufloader-.*\\.so$")
-                      (find-files librsvg "^libpixbufloader-.*\\.so$")))
-                    (gdk-pixbuf-query-loaders
-                     (string-append out "/bin/gdk-pixbuf-query-loaders")))
-               (apply invoke
-                      gdk-pixbuf-query-loaders
-                      "--update-cache"
-                      loaders))))))))
-    (synopsis "Image loading library, with SVG support")))
-
 ;;; A minimal variant used to prevent a cycle with Inkscape.
 (define-public at-spi2-core-minimal
   (hidden-package
@@ -901,7 +872,7 @@ is part of the GNOME accessibility project.")
        ;; Rust is not supported well on every architecture yet.
        ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
                                                        (%current-system)))
-                          gdk-pixbuf+svg
+                          librsvg
                           gdk-pixbuf))
        ("glib" ,glib)
        ("pango" ,pango)))
@@ -1003,7 +974,7 @@ application suites.")
        ;; SVG support is optional and requires librsvg, which pulls in rust.
        ;; Rust is not supported well on every architecture yet.
        ("gdk-pixbuf" ,(if (target-x86-64?)
-                          gdk-pixbuf+svg
+                          librsvg
                           gdk-pixbuf))
        ("glib" ,glib)
        ("libcloudproviders" ,libcloudproviders-minimal)
@@ -1263,7 +1234,7 @@ application suites.")
      ;; Following dependencies are referenced in .pc files.
      `(("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
-       ("gdk-pixbuf+svg" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("glib" ,glib)
        ("graphene" ,graphene)
        ("libepoxy" ,libepoxy)

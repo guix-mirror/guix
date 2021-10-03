@@ -357,7 +357,7 @@ Graphviz and LaTeX.")
                  (,(dirname (search-input-file inputs "bin/dot"))))))))))
     (inputs
      `(("atk" ,atk)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("graphviz" ,graphviz)
        ("gtk+" ,gtk+)
        ("python-pycairo" ,python-pycairo)

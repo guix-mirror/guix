@@ -67,7 +67,7 @@
        ("which" ,which)))
     (inputs
      `(("dbus" ,dbus)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)   ; for svg support
+       ("librsvg" ,librsvg)   ; for svg support
        ("glib" ,glib)
        ("cairo" ,cairo)
        ("pango" ,pango)

@@ -2352,7 +2352,7 @@ GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libmypaint" ,libmypaint)
        ("mypaint-brushes" ,mypaint-brushes)
