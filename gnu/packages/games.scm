@@ -10032,18 +10032,18 @@ win.")
     (version "0.4.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/freeorion/freeorion/releases/"
-                           "download/v" version "/FreeOrion_v" version
-                           "_2020-07-10.f3d403e_Source.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/freeorion/freeorion")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "12xspixrkx6mmmsdqjha0hg02r4y73pk229l0wjq9s0yp8nb8ap7"))
+        (base32 "1hq212pbsqpgn193wkvcl45m8bjvx730486xkffivylxgbiyvv2c"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; There are some bundled fonts.
-           (for-each delete-file-recursively '("default/data/fonts"))
-           #t))))
+           (for-each delete-file-recursively '("default/data/fonts"))))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test
