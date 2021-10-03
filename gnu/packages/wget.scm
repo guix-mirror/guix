@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -139,14 +139,14 @@ online pastebin services.")
 (define-public wget2
   (package
    (name "wget2")
-   (version "1.99.2")
+   (version "2.0.0")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/wget/wget2-" version ".tar.gz"))
        (sha256
         (base32
-         "0qv55f4bablrlhc8bnic8g3mkk1kq44c4cphrk5jmv92z9aqzi6b"))))
+         "0i0m4k6w9smsr2m5mj05zvl1fb110izyl2qqrk0yqlxnmfhgpqjg"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
