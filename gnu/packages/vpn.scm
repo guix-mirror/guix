@@ -1016,7 +1016,7 @@ WireGuard was added to Linux 5.6.")
 (define-public wireguard-tools
   (package
     (name "wireguard-tools")
-    (version "1.0.20210424")
+    (version "1.0.20210914")
     (source
      (origin
        (method git-fetch)
@@ -1025,7 +1025,7 @@ WireGuard was added to Linux 5.6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12v0ykaz7phv1gqin35wf6ndgb9819vai17ynjxssq00xwcbsq43"))))
+        (base32 "1nafrb2naif0z7z3vijnlyp81z89ywzlagc64k4sqa3ayzn95sm0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1043,27 +1043,27 @@ WireGuard was added to Linux 5.6.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         ;; No configure script
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-after 'install 'install-contrib-docs
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (copy-recursively "contrib/"
-                                 (string-append out "/share/doc/wireguard-tools"))
-               #t)))
+             (let ((out (assoc-ref outputs "out"))
+                   (doc "/share/doc/wireguard-tools"))
+               (copy-recursively "contrib/" doc))))
          (add-after 'install 'wrap-wg-quick
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (inputs-sbin (map (lambda (input)
-                                        (string-append (assoc-ref inputs input) "/sbin"))
-                                      (list "resolvconf" "iproute" "procps"
-                                            "iptables")))
-                   (coreutils (string-append (assoc-ref inputs "coreutils")
-                                             "/bin")))
+                                        (string-append (assoc-ref inputs input)
+                                                       "/sbin"))
+                                      (list "iproute"
+                                            "iptables"
+                                            "procps"
+                                            "resolvconf")))
+                    (coreutils (string-append (assoc-ref inputs "coreutils")
+                                              "/bin")))
                (wrap-program (string-append out "/bin/wg-quick")
                  `("PATH" ":" prefix ,(append inputs-sbin
-                                              (list coreutils))))
-               #t))))))
+                                              (list coreutils))))))))))
     (inputs
      `(("resolvconf" ,openresolv)
        ("coreutils" ,coreutils)
