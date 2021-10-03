@@ -296,7 +296,7 @@ prompt the user with the option to go with insecure DNS only.")
      `(#:phases
        (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc"
+                          (string-append "CC=" ,(cc-for-target))
                           "COPTS=\"-DHAVE_DBUS\"")
        #:tests? #f))                    ; no ‘check’ target
     (home-page "http://www.thekelleys.org.uk/dnsmasq/doc.html")
