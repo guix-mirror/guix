@@ -39,7 +39,7 @@
 (define-public gramps
   (package
     (name "gramps")
-    (version "5.1.3")
+    (version "5.1.4")
     (source
      (origin
        (method git-fetch)
@@ -48,7 +48,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "109dwkswz2h2328xkqk2zj736d117s9pp7rz5cc1qg2vxn1lpm93"))))
+        (base32 "00358nzyw686ypqv45imc5k9frcqnhla0hpx9ynna3iy6iz5006x"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
