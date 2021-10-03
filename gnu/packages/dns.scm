@@ -817,7 +817,7 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "3.0.7")
+    (version "3.1.2")
     (source
      (origin
        (method git-fetch)
@@ -826,7 +826,7 @@ Extensions} (DNSSEC).")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ihd0lfh0r1nzz2di2rqkrx5j1017xv7m54irlhccx21inwv6g3y"))
+        (base32 "1kyjf6d1jx8q0zjzwy06f4d3ar5cbbqxka8cc7ckwmbpf1n6cij5"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -834,8 +834,7 @@ Extensions} (DNSSEC).")
            (for-each delete-file (find-files "." "\\.c\\.[gt]."))
            (delete-file "src/libknot/yparser/ypbody.c")
            ;; Remove bundled library to ensure we always use the system's.
-           (delete-file-recursively "src/contrib/libbpf")
-           #t))))
+           (delete-file-recursively "src/contrib/libbpf")))))
     (build-system gnu-build-system)
     (outputs (list "out" "doc" "lib" "tools"))
     (arguments
@@ -859,8 +858,7 @@ Extensions} (DNSSEC).")
            (lambda _
              (substitute* "configure.ac"
                (("enable_xdp=yes" match)
-                (string-append match "\nlibbpf_LIBS=\"$libbpf_LIBS -lz\"")))
-             #true))
+                (string-append match "\nlibbpf_LIBS=\"$libbpf_LIBS -lz\"")))))
          (add-before 'bootstrap 'update-parser
            (lambda _
              (with-directory-excursion "src"
@@ -869,8 +867,7 @@ Extensions} (DNSSEC).")
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
              ;; This is needed even when using ‘make config_dir=... install’.
-             (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
-             #t))
+             (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))))
          (add-after 'build 'build-info
            (lambda _
              (invoke "make" "info")))
@@ -892,8 +889,7 @@ Extensions} (DNSSEC).")
                            (substitute* file
                              (("(prefix=).*" _ assign)
                               (string-append assign lib "\n"))))
-                         (find-files lib "\\.pc$"))
-               #true)))
+                         (find-files lib "\\.pc$")))))
          (add-after 'install 'split-:tools
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
@@ -902,8 +898,7 @@ Extensions} (DNSSEC).")
                (rename-file (string-append out   "/bin")
                             (string-append tools "/bin"))
                (rename-file (string-append out   "/share/man/man1")
-                            (string-append tools "/share/man/man1"))
-               #true))))))
+                            (string-append tools "/share/man/man1"))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -921,6 +916,7 @@ Extensions} (DNSSEC).")
        ("libedit" ,libedit)
        ("libelf" ,libelf)
        ("libidn" ,libidn)
+       ("libmnl" ,libmnl)
        ("libnghttp2" ,nghttp2 "lib")
        ("liburcu" ,liburcu)
        ("lmdb" ,lmdb)
