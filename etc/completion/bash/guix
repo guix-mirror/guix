@@ -237,15 +237,7 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif [[ "$command" = "remove" ]]
-	    then
-                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
-                then
-                    _guix_complete_file
-		else
-		    _guix_complete_installed_package "$word_at_point"
-		fi
-	    elif [[ "$command" = "upgrade" ]]
+	    elif [[ "$command" = "upgrade" || "$command" = "remove" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
                 then
@@ -272,9 +264,9 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif [[ "$command" = "download" ]]
+	    elif [[ "$command" = "download" || "$command" = "gc" || "$command" = "hash" ]]
 	    then
-		 _guix_complete_file
+		_guix_complete_file
 	    elif [[ "$command" = "system" ]]
 	    then
 		case $COMP_CWORD in
@@ -305,9 +297,6 @@ _guix_complete ()
 	    elif [[ "$command" = "import" ]]
 	    then
 		_guix_complete_subcommand
-	    elif [[ "$command" = "hash" || "$command" = "gc" ]]
-	    then
-		_guix_complete_file
             elif [[ "$command" = "weather" ]]
             then
                 if _guix_is_dash_m
