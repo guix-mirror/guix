@@ -5982,7 +5982,12 @@ tools like SSH (Secure Shell) to reach the outside world.")
              (("/bin/sh ")
               (string-append (which "sh") " ")))
            ;; This test requires networking.
-           (delete-file "tests/recipes/055_socket_closed"))))))
+           (delete-file "tests/recipes/055_socket_closed")))
+       (add-after 'install 'prune-documentation
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (doc (string-append out "/share/doc/" ,name "-" ,version)))
+             (for-each delete-file (find-files doc "^INSTALL"))))))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption
