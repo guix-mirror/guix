@@ -89,11 +89,13 @@
          (commit version)))
        (file-name
         (git-file-name name version))
+       (patches (search-patches "range-v3-build-with-gcc10.patch"))
        (sha256
         (base32 "18230bg4rq9pmm5f8f65j444jpq56rld4fhmpham8q3vr1c1bdjh"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
+       ("gcc" ,gcc-9)
        ("perl" ,perl)))
     (inputs
      `(("boost" ,boost)))
