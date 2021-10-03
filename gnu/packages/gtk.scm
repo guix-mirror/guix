@@ -697,6 +697,14 @@ highlighting and other features typical of a source code editor.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
+    (native-search-paths
+     ;; This file is produced by the gdk-pixbuf-loaders-cache-file
+     ;; profile hook.
+     (list (search-path-specification
+            (variable "GDK_PIXBUF_MODULE_FILE")
+            (files (list %gdk-pixbuf-loaders-cache-file))
+            (separator #f)              ;single valued
+            (file-type 'regular))))
     (synopsis "Image loading library")
     (description "GdkPixbuf is a library that loads image data in various
 formats and stores it as linear buffers in memory.  The buffers can then be
