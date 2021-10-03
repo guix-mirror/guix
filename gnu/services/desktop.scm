@@ -1021,7 +1021,7 @@ rules."
                         (use-modules (guix build utils))
                         (let ((directory "/tmp/.X11-unix"))
                           (mkdir-p directory)
-                          (chmod directory #o777))))))
+                          (chmod directory #o1777))))))
 
 ;;;
 ;;; Enlightenment desktop service.
