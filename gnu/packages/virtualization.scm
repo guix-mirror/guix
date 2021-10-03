@@ -1551,14 +1551,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.15")
+    (version "3.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "09d0j24x0cyc7wkgi7cnxqgfjk7kbdlm79zxpj8d356sa3rw2z24"))))
+                "13x4s7nms3ckb016d03icdsrw4k6f7i33qz9n84fzhmibm0grj70"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1579,8 +1579,7 @@ domains, their live performance and resource utilization statistics.")
              (setenv "C_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "libnl")
                                     "/include/libnl3:"
-                                    (or (getenv "C_INCLUDE_PATH") "")))
-             #t))
+                                    (or (getenv "C_INCLUDE_PATH") "")))))
          (add-after 'configure 'fix-documentation
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Documentation/Makefile"
@@ -1590,8 +1589,7 @@ domains, their live performance and resource utilization statistics.")
                  (assoc-ref inputs "docbook-xsl") "/xml/xsl/"
                  ,(package-name docbook-xsl) "-"
                  ,(package-version docbook-xsl)
-                 "/manpages/docbook.xsl")))
-             #t))
+                 "/manpages/docbook.xsl")))))
          (add-after 'unpack 'hardcode-variables
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Hardcode arm version detection
@@ -1603,8 +1601,7 @@ domains, their live performance and resource utilization statistics.")
              (substitute* "lib/Makefile"
                (("\\$\\(PYTHON\\)")
                 (string-append (assoc-ref inputs "python")
-                               "/bin/python")))
-             #t))
+                               "/bin/python")))))
          (add-before 'build 'fix-symlink
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The file 'images/google/protobuf/descriptor.proto' points to
@@ -1614,8 +1611,7 @@ domains, their live performance and resource utilization statistics.")
                     (source (string-append (assoc-ref inputs "protobuf")
                                            "/include/" file)))
                (delete-file target)
-               (symlink source target)
-               #t)))
+               (symlink source target))))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'crit' runs with the correct PYTHONPATH.
@@ -1627,8 +1623,7 @@ domains, their live performance and resource utilization statistics.")
                                          "/site-packages:"
                                          (getenv "PYTHONPATH"))))
                (wrap-program (string-append out "/bin/crit")
-                 `("PYTHONPATH" ":" prefix (,path))))
-             #t)))))
+                 `("PYTHONPATH" ":" prefix (,path)))))))))
     (inputs
      `(("protobuf" ,protobuf)
        ("python" ,python-2)
