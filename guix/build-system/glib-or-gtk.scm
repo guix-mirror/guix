@@ -26,6 +26,8 @@
   #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
+  #:use-module ((guix build glib-or-gtk-build-system)
+                #:select (%gdk-pixbuf-loaders-cache-file))
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
@@ -33,7 +35,8 @@
   #:export (%glib-or-gtk-build-system-modules
             glib-or-gtk-build
             glib-or-gtk-cross-build
-            glib-or-gtk-build-system))
+            glib-or-gtk-build-system)
+  #:re-export (%gdk-pixbuf-loaders-cache-file)) ;for convenience
 
 ;; Commentary:
 ;;
