@@ -849,7 +849,7 @@ Extensions} (DNSSEC).")
              "--disable-static"         ; static libraries are built by default
              "--enable-dnstap"          ; let tools read/write capture files
              "--enable-fastparser"      ; disabled by default when .git/ exists
-             "--enable-xdp=auto"        ; XXX [=yes] currently means =embedded
+             "--enable-xdp=yes"
              "--with-module-dnstap=yes") ; detailed query capturing & logging
        #:phases
        (modify-phases %standard-phases
