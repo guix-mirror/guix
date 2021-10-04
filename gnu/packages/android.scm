@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -703,7 +703,7 @@ file system.")
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
-    (version "20200613")
+    (version "20210501")
     (source
      (origin
        (method git-fetch)
@@ -712,7 +712,7 @@ file system.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cf5br8x6iwxc1cifv0i1klw7skgs8hghdx6qlqby68kyqg81bb2"))))
+        (base32 "0pl1wfd7k9vz8mvy2jb2icc5f11c5p07aixpyhjs6gi5cyaywm5f"))))
     (build-system trivial-build-system)
     (native-inputs `(("source" ,source)))
     (arguments
@@ -722,8 +722,7 @@ file system.")
          (use-modules (guix build utils))
          (let ((source (assoc-ref %build-inputs "source")))
            (install-file (string-append source "/51-android.rules")
-                         (string-append %output "/lib/udev/rules.d"))
-           #t))))
+                         (string-append %output "/lib/udev/rules.d"))))))
     (home-page "https://github.com/M0Rf30/android-udev-rules")
     (synopsis "udev rules for Android devices")
     (description "Provides a set of udev rules to allow using Android devices
