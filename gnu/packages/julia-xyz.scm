@@ -4276,6 +4276,40 @@ are defined for @code{AbstractStrings}, and any iterator that define
 applied to any distance.")
     (license license:expat)))
 
+(define-public julia-structarrays
+  (package
+    (name "julia-structarrays")
+    (version "0.6.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaArrays/StructArrays.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0rjcpyjwzg70n87q5r9c5i1qzigavncslxssm3rk5a3y549py56v"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-dataapi" ,julia-dataapi)
+       ("julia-staticarrays" ,julia-staticarrays)
+       ("julia-tables" ,julia-tables)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)
+       ("julia-offsetarrays" ,julia-offsetarrays)
+       ("julia-pooledarrays" ,julia-pooledarrays)
+       ("julia-typedtables" ,julia-typedtables)
+       ("julia-weakrefstrings" ,julia-weakrefstrings)))
+    (home-page "https://github.com/JuliaArrays/StructArrays.jl")
+    (synopsis "Efficient implementation of struct arrays in Julia")
+    (description "This package introduces the type @code{StructArray} which is
+an @code{AbstractArray} whose elements are @code{struct} (for example
+@code{NamedTuples}, or @code{ComplexF64}, or a custom user defined
+@code{struct}).  While a @code{StructArray} iterates @code{structs}, the layout
+is column based (meaning each field of the @code{struct} is stored in a separate
+@code{Array}).")
+    (license license:expat)))
+
 (define-public julia-structtypes
   (package
     (name "julia-structtypes")
