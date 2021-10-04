@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,9 +39,10 @@
     (home-page "https://www.ivarch.com/programs/pv.shtml")
     (synopsis "Pipeline progress indicator")
     (description
-     "pv (Pipe Viewer) is a terminal-based tool for monitoring the progress
+     "@acronym{pv, Pipe Viewer} is a terminal tool for monitoring the progress
 of data through a pipeline.  It can be inserted into any normal pipeline
-between two processes to give a visual indication of how quickly data is
-passing through, how long it has taken, how near to completion it is, and an
-estimate of how long it will be until completion.")
+between two processes.  It gives a visual indication of how quickly data is
+passing through, how much has been transferred and how near to completion it is
+(with a progress bar), how long it has taken, and an estimate of the remaining
+time before completion.")
     (license artistic2.0)))
