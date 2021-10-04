@@ -5361,7 +5361,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.14")
+    (version "5.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5369,7 +5369,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0mwxhwws6scjjpfws5xp7988wwwfa46jp5y3kn6jjmjpxiqm85da"))))
+                "0ny5z3x8rqin0aci9qxpjc6dk5y0c1yvgk7353qnv92wai396jnm"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5380,8 +5380,7 @@ and copy/paste text in the console and in xterm.")
                       (substitute* "Makefile"
                         (("\\$\\(DESTDIR\\)\\$\\(udevruledir\\)")
                          (string-append (assoc-ref outputs "out")
-                                        "/lib/udev/rules.d")))
-                      #t))
+                                        "/lib/udev/rules.d")))))
                  (add-after 'build 'build-static
                    (lambda _ (invoke "make" "static")))
                  (add-after 'install 'install-bash-completion
@@ -5390,8 +5389,7 @@ and copy/paste text in the console and in xterm.")
                             (bashcomp (string-append out "/etc/bash_completion.d")))
                        (mkdir-p bashcomp)
                        (copy-file "btrfs-completion"
-                                  (string-append bashcomp "/btrfs"))
-                       #t)))
+                                  (string-append bashcomp "/btrfs")))))
                  (add-after 'install 'install-static
                    (let ((staticbin (string-append (assoc-ref %outputs "static")
                                                   "/bin")))
