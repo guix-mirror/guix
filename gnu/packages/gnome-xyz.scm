@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Ellis Kenyo <me@elken.dev>
 ;;; Copyright © 2020 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -603,7 +604,7 @@ notebooks and tiling window managers.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20201013")
+    (version "20210412")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -612,24 +613,19 @@ notebooks and tiling window managers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
-    (build-system gnu-build-system)
+                "0zs44dagp6baiyszlr1kj5ncap43fg32dv07rl46nxbds2p65lh4"))))
+    (build-system meson-build-system)
     (arguments
      '(#:configure-flags
-       (list "--disable-cinnamon")
+       '("-Dthemes=gnome-shell,gtk2,gtk3,metacity,plank,unity,xfwm")
        #:phases
        (modify-phases %standard-phases
-         ;; autogen.sh calls configure at the end of the script.
-         (replace 'bootstrap
-           (lambda _ (invoke "autoreconf" "-vfi")))
          (add-before 'build 'set-home   ;placate Inkscape
            (lambda _
              (setenv "HOME" (getcwd))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("glib" ,glib "bin")             ; for glib-compile-resources
+     `(("glib" ,glib "bin")             ; for glib-compile-resources
        ("gnome-shell" ,gnome-shell)
        ("gtk+" ,gtk+)
        ("inkscape" ,inkscape)
