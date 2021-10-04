@@ -93,6 +93,11 @@
        (list "--enable-man")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'bootstrap 'trigger-bootstrap
+           ;; The shipped configure script is buggy, e.g., it contains a
+           ;; unexpanded literal ‘LIBCAP_NG_PATH’ line).
+           (lambda _
+             (delete-file "configure")))
          (add-before 'configure 'set-root-sbin
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Don't try to install into "/sbin".
