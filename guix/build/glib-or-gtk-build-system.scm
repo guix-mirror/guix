@@ -63,9 +63,9 @@ with all found directories."
                               ""))
             "3.0")
            ((string-match "gtk\\+-2"
-                           (or (assoc-ref inputs "gtk+")
-                               (assoc-ref inputs "source")
-                               ""))
+                          (or (assoc-ref inputs "gtk+")
+                              (assoc-ref inputs "source")
+                              ""))
             "2.0")
            (else
             "4.0"))) ; We default to version 4.0.
@@ -156,32 +156,32 @@ add a dependency of that output on GLib and GTK+."
   (define (sh) (force %sh))
   (define handle-output
     (match-lambda
-     ((output . directory)
-      (unless (member output glib-or-gtk-wrap-excluded-outputs)
-        (let* ((bindir       (string-append directory "/bin"))
-               (libexecdir   (string-append directory "/libexec"))
-               (bin-list     (filter (negate wrapped-program?)
-                                     (append (find-files bindir ".*")
-                                             (find-files libexecdir ".*"))))
-               (datadirs     (data-directories
-                              (alist-cons output directory inputs)))
-               (gtk-mod-dirs (gtk-module-directories
-                              (alist-cons output directory inputs)))
-               (gio-mod-dirs (gio-module-directories
-                              (alist-cons output directory inputs)))
-               (env-vars `(,@(if (not (null? datadirs))
-                                 (list `("XDG_DATA_DIRS" ":" prefix ,datadirs))
-                                 '())
-                           ,@(if (not (null? gtk-mod-dirs))
-                                 (list `("GTK_PATH" ":" prefix ,gtk-mod-dirs))
-                                 '())
-                           ,@(if (not (null? gio-mod-dirs))
-                                 (list `("GIO_EXTRA_MODULES" ":"
-                                         prefix ,gio-mod-dirs))
-                                 '()))))
-          (for-each (lambda (program)
-                      (apply wrap-program program #:sh (sh) env-vars))
-                    bin-list))))))
+      ((output . directory)
+       (unless (member output glib-or-gtk-wrap-excluded-outputs)
+         (let* ((bindir       (string-append directory "/bin"))
+                (libexecdir   (string-append directory "/libexec"))
+                (bin-list     (filter (negate wrapped-program?)
+                                      (append (find-files bindir ".*")
+                                          (find-files libexecdir ".*"))))
+                (datadirs     (data-directories
+                               (alist-cons output directory inputs)))
+                (gtk-mod-dirs (gtk-module-directories
+                               (alist-cons output directory inputs)))
+                (gio-mod-dirs (gio-module-directories
+                               (alist-cons output directory inputs)))
+                (env-vars `(,@(if (not (null? datadirs))
+                                  (list `("XDG_DATA_DIRS" ":" prefix ,datadirs))
+                                  '())
+                            ,@(if (not (null? gtk-mod-dirs))
+                                  (list `("GTK_PATH" ":" prefix ,gtk-mod-dirs))
+                                  '())
+                            ,@(if (not (null? gio-mod-dirs))
+                                  (list `("GIO_EXTRA_MODULES" ":"
+                                          prefix ,gio-mod-dirs))
+                                  '()))))
+           (for-each (lambda (program)
+                       (apply wrap-program program #:sh (sh) env-vars))
+                     bin-list))))))
 
   (for-each handle-output outputs)
   #t)
