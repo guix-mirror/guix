@@ -1745,14 +1745,14 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public squid
   (package
     (name "squid")
-    (version "4.15")
+    (version "4.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
                            version ".tar.xz"))
        (sha256
-        (base32 "09aaz0hi7q4s5jalgl5i5fakmgzv5akf03gnajlah498mgjs94xn"))))
+        (base32 "0qxswdv90lmbxpb47hnqhjv32q0c8j7qkja6wpd0473wfn8yh03y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1766,8 +1766,7 @@ TCP connection, TLS handshake and so on) in the terminal.")
              (substitute* "test-suite/testheaders.sh"
                (("/bin/true")
                 (string-append (assoc-ref inputs "coreutils")
-                               "/bin/true")))
-             #t)))))
+                               "/bin/true"))))))))
     (inputs
      `(("perl" ,perl)
        ("openldap" ,openldap)
