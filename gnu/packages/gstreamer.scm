@@ -685,10 +685,16 @@ model to base your own plug-in on, here it is.")
               (patches (search-patches "gst-plugins-bad-fix-overflow.patch"))
               (sha256
                (base32
-                "06ildd4rl6cynirv3p00d2ddf5is9svj4i7mkahldzhq24pq5mca"))))
+                "06ildd4rl6cynirv3p00d2ddf5is9svj4i7mkahldzhq24pq5mca"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled copy of usrsctp.
+                  (delete-file-recursively "ext/sctp/usrsctp")))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-Dsctp-internal-usrsctp=disabled")
+       #:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
          ,@(if (string-prefix? "arm" (or (%current-target-system)
@@ -773,6 +779,7 @@ model to base your own plug-in on, here it is.")
        ("soundtouch" ,soundtouch)
        ;; GStreamer is not yet compatible with srt > 1.4.1.
        ("srt" ,srt-1.4.1)
+       ("usrsctp" ,usrsctp)
        ("x265" ,x265)
        ("webrtc-audio-processing" ,webrtc-audio-processing)
        ("wayland" ,wayland)))
