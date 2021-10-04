@@ -388,7 +388,7 @@ any other grammar rules.")
 (define-public sparse
   (package
     (name "sparse")
-    (version "0.6.3")
+    (version "0.6.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -396,7 +396,7 @@ any other grammar rules.")
                               "sparse-"  version ".tar.xz"))
               (sha256
                (base32
-                "16d8c4dhipjzjf8z4z7pix1pdpqydz0v4r7i345f5s09hjnxpxnl"))))
+                "0z1qds52144nvsdnl82r3zs3vax618v920jmffyyssmwj54qpcka"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -406,8 +406,7 @@ any other grammar rules.")
                   (add-after 'unpack 'patch-cgcc
                     (lambda _
                       (substitute* "cgcc"
-                        (("'cc'") (string-append "'" (which "gcc") "'")))
-                      #t)))))
+                        (("'cc'") (string-append "'" (which "gcc") "'"))))))))
     (synopsis "Semantic C parser for Linux development")
     (description
      "Sparse is a semantic parser for C and is required for Linux development.
