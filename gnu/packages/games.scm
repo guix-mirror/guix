@@ -3817,7 +3817,10 @@ either by Infocom or created using the Inform compiler.")
               (base32
                "0wkahvqpzq6lzl5r49a4sd4p52frdmphnqsfdv7gdp24bykdfs6s"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)))
+    (inputs
+     `(("readline" ,readline)))
+    (arguments
+     `(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "Play the game of Go")
     (description
      "GNU Go is a program that plays the game of Go, in which players
