@@ -769,7 +769,7 @@ and Game Boy Color games.")
 (define-public sameboy
   (package
     (name "sameboy")
-    (version "0.14.4")
+    (version "0.14.5")
     (source
      (origin
        (method git-fetch)
@@ -778,7 +778,7 @@ and Game Boy Color games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zp11qm8b3cmx70pzczyh4vv4jyhlh4jnci8kn6b30c8lzl43g83"))))
+        (base32 "0qqribyksm51fhq923rdhrzb9c4yf16szymprbw8fsz0nzv8frm3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("rgbds" ,rgbds)
@@ -803,8 +803,7 @@ and Game Boy Color games.")
                (with-directory-excursion "build/bin/SDL"
                  (install-file "sameboy" bin)
                  (delete-file "sameboy")
-                 (copy-recursively "." data))
-               #t))))))
+                 (copy-recursively "." data))))))))
     (home-page "https://sameboy.github.io/")
     (synopsis "Accurate Game Boy, Game Boy Color and Super Game Boy emulator")
     (description "SameBoy is a user friendly Game Boy, Game Boy Color
