@@ -1353,14 +1353,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.33.1")
+    (version "0.33.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1lhhkg9aw2ychj8lvkmk4bnj7rjz3v9w9r7sdp8bqjpfv41mz41d"))))
+                "1bic1f2va136aygfy53bsgziwiidcpb7qf1v05mlza2jmgv94j14"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
