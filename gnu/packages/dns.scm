@@ -606,6 +606,60 @@ run in a @code{chroot} jail, thus making any security flaws in NSD less likely
 to result in system-wide compromise.")
     (license (list license:bsd-3))))
 
+(define-public rbldnsd
+  (package
+    (name "rbldnsd")
+    (version "0.998b")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spamhaus/rbldnsd")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jj3kyir43qnjgd9rk0wz13iggf3p4p1779v0wgmx3ci0ypnglcr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; The ./configure is hand-written and doesn't ignore unknown
+           ;; standard autotools options like CONFIG_SHELL.
+           (lambda _
+             (invoke "./configure")))
+         (replace 'install
+           ;; There is no Makefile ‘install’ target.  contrib/debian/rules has
+           ;; one but relies on Debian-specific helpers, so install manually.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin"))
+                    (man8 (string-append out "/share/man/man8")))
+               (install-file "rbldnsd" sbin)
+               (install-file "rbldnsd.8" man8)))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     ;; For running the test suite.  Python 3 is not yet supported by a release:
+     ;; see <https://github.com/spamhaus/rbldnsd/issues/16>.
+     `(("python" ,python-2)))
+    (home-page "https://rbldnsd.io/")
+    (synopsis
+     "Small nameserver to efficiently serve @acronym{DNSBL, DNS blocklists}")
+    (description
+     "This package contains a small DNS daemon especially made to handle queries
+of @acronym{DNSBL, DNS blocklists}, a simple way to publish IP addresses and/or
+(domain) names which are somehow notable.  Such lists are frequently used to
+refuse e-mail service to clients known to send unwanted (spam) messages.
+
+@command{rbldnsd} is not a general-purpose nameserver.  It answers to a limited
+variety of queries.  This makes it extremely fast---greatly outperforming both
+BIND and djbdns---whilst using relatively little memory.")
+    (license
+     (list license:bsd-3                ; btrie.[ch]
+           license:lgpl2.1+             ; qsort.c
+           license:gpl2+))))            ; the rest
+
 (define-public unbound
   (package
     (name "unbound")
