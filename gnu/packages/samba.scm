@@ -113,7 +113,7 @@
                       ,@make-flags)))))))
     (synopsis "User-space utilities for Linux CIFS (Samba) mounts")
     (description "@code{cifs-utils} is a set of user-space utilities for
-mounting and managing @dfn{Common Internet File System} (CIFS) shares using
+mounting and managing @acronym{CIFS, Common Internet File System} shares using
 the Linux kernel CIFS client.")
     (home-page "https://wiki.samba.org/index.php/LinuxCIFS_utils")
     ;; cifs-utils is licensed as GPL3 or later, but 3 files contain LGPL code.
