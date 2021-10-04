@@ -55,6 +55,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -76,7 +77,10 @@
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+
+       ;; To generate the manpages.
+       ("python-docutils" ,python-docutils))) ; rst2man
     (inputs
      `(("keytuils" ,keyutils)
        ("linux-pam" ,linux-pam)
@@ -85,20 +89,23 @@
        ("samba" ,samba)
        ("talloc" ,talloc)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--enable-man")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-root-sbin
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Don't try to install into "/sbin".
              (setenv "ROOTSBINDIR"
-                     (string-append (assoc-ref outputs "out") "/sbin"))
-             #t))
-         (add-before 'install 'create-man8dir
+                     (string-append (assoc-ref outputs "out") "/sbin"))))
+         (add-before 'install 'install-man-pages
            ;; Create a directory that isn't created since version 6.10.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p (string-append out "/share/man/man8"))
-               #t))))))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "install-man"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (synopsis "User-space utilities for Linux CIFS (Samba) mounts")
     (description "@code{cifs-utils} is a set of user-space utilities for
 mounting and managing @dfn{Common Internet File System} (CIFS) shares using
