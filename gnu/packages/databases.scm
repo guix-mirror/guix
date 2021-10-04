@@ -490,14 +490,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.6.9")
+    (version "1.6.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1lcjy1b9krnb2gk72qd1fvivlfiyfvknfi3wngyvyk9ifzijr9nm"))))
+        (base32 "0ii3z2mhjrimc6mv5z5x6bwp1s2bbzppja4m3pnmd5zgh9gs74gj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
