@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
@@ -86,7 +86,7 @@
 (define* (derivation->job name drv
                           #:key
                           (max-silent-time 3600)
-                          (timeout 3600))
+                          (timeout (* 5 3600)))
   "Return a Cuirass job called NAME and describing DRV.
 
 MAX-SILENT-TIME and TIMEOUT are build options passed to the daemon when
@@ -443,19 +443,40 @@ valid."
               (map channel-url channels)))
        arguments))
 
-(define (manifests->packages store manifests)
-  "Return the list of packages found in MANIFESTS."
+(define (manifests->jobs store manifests)
+  "Return the list of jobs for the entries in MANIFESTS, a list of file
+names."
   (define (load-manifest manifest)
     (save-module-excursion
      (lambda ()
        (set-current-module (make-user-module '((guix profiles) (gnu))))
        (primitive-load manifest))))
 
-  (delete-duplicates!
-   (map manifest-entry-item
-        (append-map (compose manifest-entries
-                             load-manifest)
-                    manifests))))
+  (define (manifest-entry-job-name entry)
+    (string-append (manifest-entry-name entry) "-"
+                   (manifest-entry-version entry)))
+
+  (define (manifest-entry->job entry)
+    (let* ((obj (manifest-entry-item entry))
+           (drv (parameterize ((%graft? #f))
+                  (run-with-store store
+                    (lower-object obj))))
+           (max-silent-time (or (and (package? obj)
+                                     (assoc-ref (package-properties obj)
+                                                'max-silent-time))
+                                3600))
+           (timeout (or (and (package? obj)
+                             (assoc-ref (package-properties obj) 'timeout))
+                        (* 5 3600))))
+      (derivation->job (manifest-entry-job-name entry) drv
+                       #:max-silent-time max-silent-time
+                       #:timeout timeout)))
+
+  (map manifest-entry->job
+       (delete-duplicates
+        (append-map (compose manifest-entries load-manifest)
+                    manifests)
+        manifest-entry=?)))
 
 (define (arguments->systems arguments)
   "Return the systems list from ARGUMENTS."
@@ -568,12 +589,8 @@ valid."
                  packages)))
          (('manifests . rest)
           ;; Build packages in the list of manifests.
-          (let* ((manifests (arguments->manifests rest channels))
-                 (packages (manifests->packages store manifests)))
-            (map (lambda (package)
-                   (package-job store (job-name package)
-                                package system))
-                 packages)))
+          (let ((manifests (arguments->manifests rest channels)))
+            (manifests->jobs store manifests)))
          (else
           (error "unknown subset" subset))))
      systems)))
