@@ -256,17 +256,19 @@ a server that supports the SSH-2 protocol.")
              (("^(tests:.*) t-exec(.*)" all pre post)
               (string-append pre post)))))
         (replace 'install
-         (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
-           ;; Install without host keys and system configuration files.
-           (apply invoke "make" "install-nosysconf" make-flags)
-           (install-file "contrib/ssh-copy-id"
-                         (string-append (assoc-ref outputs "out")
-                                        "/bin/"))
-           (chmod (string-append (assoc-ref outputs "out")
-                                 "/bin/ssh-copy-id") #o555)
-           (install-file "contrib/ssh-copy-id.1"
-                         (string-append (assoc-ref outputs "out")
-                                        "/share/man/man1/")))))))
+          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; Install without host keys and system configuration files.
+              (apply invoke "make" "install-nosysconf" make-flags)
+              (with-directory-excursion out
+                (rmdir "var/empty")
+                (rmdir "var"))
+              (with-directory-excursion "contrib"
+                (chmod "ssh-copy-id" #o555)
+                (install-file "ssh-copy-id"
+                              (string-append out "/bin/"))
+                (install-file "ssh-copy-id.1"
+                              (string-append out "/share/man/man1/")))))))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
