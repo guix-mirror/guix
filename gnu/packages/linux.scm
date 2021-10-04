@@ -57,6 +57,7 @@
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6842,7 +6843,8 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-udev-rules-absolute-path-bins
            (lambda* (#:key inputs #:allow-other-keys)
