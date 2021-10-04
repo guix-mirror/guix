@@ -280,7 +280,7 @@
 (define-public brasero
   (package
     (name "brasero")
-    (version "3.12.2")
+    (version "3.12.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/brasero/"
@@ -288,7 +288,7 @@
                                  "brasero-" version ".tar.xz"))
              (sha256
               (base32
-               "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
+               "05gabybkl7xfinwx97i4scp9hic0dlxj7gh03dyj0hd16fp9wx47"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list
