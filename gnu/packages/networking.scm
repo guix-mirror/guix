@@ -829,14 +829,14 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public ndisc6
   (package
     (name "ndisc6")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.remlab.net/files/ndisc6/ndisc6-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "07swyar1hl83zxmd7fqwb2q0c0slvrswkcfp3nz5lknrk15dmcdb"))))
+                "0lgkbnnll8nrr7h63ywd42sg8fiv6jhhymd7rnml8a3yqjgjz4rn"))))
     (build-system gnu-build-system)
     (home-page "https://www.remlab.net/ndisc6/")
     (synopsis "IPv6 diagnostic tools")
