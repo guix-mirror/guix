@@ -6426,7 +6426,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -6434,7 +6434,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0m8dlg1v7kflcxvajs4p76p275qwsm2abbf5mfapkakp7hw7wc7f"))))
+                "1pw7rd4gwqpmraipgdqkdkhnx4ql35wrn3lnjgl6pncinkgm59hp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
@@ -6443,8 +6443,7 @@ of flash storage.")
                     (lambda _
                       ;; This test does a native system call and fails when
                       ;; run under QEMU user-mode emulation.  Just skip it.
-                      (delete-file "tests/52-basic-load.tests")
-                      #t)))))
+                      (delete-file "tests/52-basic-load.tests"))))))
     (native-inputs
      `(("gperf" ,gperf)
        ("which" ,which)))
