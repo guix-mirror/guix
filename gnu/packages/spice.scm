@@ -329,17 +329,16 @@ resolution scaling on graphical console window resize.")
 (define-public libcacard
   (package
     (name "libcacard")
-    (version "2.8.0")
+    (version "2.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://gitlab.freedesktop.org/spice/libcacard/uploads/"
-                    "9d8f24b131bcbbd7846727ea92952cb5"
+                    "13b249e695a0d9aa7cb501b1a85ebab1"
                     "/libcacard-" version ".tar.xz"))
-              (patches (search-patches "libcacard-unknown-variable.patch"))
               (sha256
                (base32
-                "0azj3rqr2smg0lai24xrn3zr628xmjfrzcggay877zrr64ybj1c0"))))
+                "1rrjlclm6ad63gah1fa4yfwrz4z6vgq2yrybbvzvvdbxrgl4vgzv"))))
     (build-system meson-build-system)
     (arguments
      '(#:tests? #f                      ; TODO Tests require gnutls built with
