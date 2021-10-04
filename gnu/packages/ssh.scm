@@ -259,10 +259,9 @@ a server that supports the SSH-2 protocol.")
           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               ;; Install without host keys and system configuration files.
+              ;; This will install /var/empty to the store, which is needed
+              ;; by the system openssh-service-type.
               (apply invoke "make" "install-nosysconf" make-flags)
-              (with-directory-excursion out
-                (rmdir "var/empty")
-                (rmdir "var"))
               (with-directory-excursion "contrib"
                 (chmod "ssh-copy-id" #o555)
                 (install-file "ssh-copy-id"
