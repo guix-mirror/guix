@@ -6198,6 +6198,9 @@ cpufreq sub-system is enabled or not.")
        (sha256
         (base32 "1zb790adsmqq3r26zlaxfrk2hpgxjcjz8l73hn3hli3l3javykvd"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
     (description
