@@ -169,52 +169,19 @@ add a dependency of that output on GLib and GTK+."
                               (alist-cons output directory inputs)))
                (gio-mod-dirs (gio-module-directories
                               (alist-cons output directory inputs)))
-               (data-env-var
-                (if (not (null? datadirs))
-                    `("XDG_DATA_DIRS" ":" prefix ,datadirs)
-                    #f))
-               (gtk-mod-env-var
-                (if (not (null? gtk-mod-dirs))
-                    `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
-                    #f))
-               (gio-mod-env-var 
-                (if (not (null? gio-mod-dirs))
-                    `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-dirs)
-                    #f)))
-          (cond
-           ((and data-env-var gtk-mod-env-var gio-mod-env-var)
-            (for-each (cut wrap-program <> #:sh (sh)
-                           data-env-var
-                           gtk-mod-env-var
-                           gio-mod-env-var)
-                      bin-list))
-           ((and data-env-var gtk-mod-env-var (not gio-mod-env-var))
-            (for-each (cut wrap-program <> #:sh (sh)
-                           data-env-var
-                           gtk-mod-env-var)
-                      bin-list))
-           ((and data-env-var (not gtk-mod-env-var) gio-mod-env-var)
-            (for-each (cut wrap-program <> #:sh (sh)
-                           data-env-var
-                           gio-mod-env-var)
-                      bin-list))
-           ((and (not data-env-var) gtk-mod-env-var gio-mod-env-var)
-            (for-each (cut wrap-program <> #:sh (sh)
-                           gio-mod-env-var
-                           gtk-mod-env-var)
-                      bin-list))
-           ((and data-env-var (not gtk-mod-env-var) (not gio-mod-env-var))
-            (for-each (cut wrap-program <> #:sh (sh)
-                           data-env-var)
-                      bin-list))
-           ((and (not data-env-var) gtk-mod-env-var (not gio-mod-env-var))
-            (for-each (cut wrap-program <> #:sh (sh)
-                           gtk-mod-env-var)
-                      bin-list))
-           ((and (not data-env-var) (not gtk-mod-env-var) gio-mod-env-var)
-            (for-each (cut wrap-program <> #:sh (sh)
-                           gio-mod-env-var)
-                      bin-list))))))))
+               (env-vars `(,@(if (not (null? datadirs))
+                                 (list `("XDG_DATA_DIRS" ":" prefix ,datadirs))
+                                 '())
+                           ,@(if (not (null? gtk-mod-dirs))
+                                 (list `("GTK_PATH" ":" prefix ,gtk-mod-dirs))
+                                 '())
+                           ,@(if (not (null? gio-mod-dirs))
+                                 (list `("GIO_EXTRA_MODULES" ":"
+                                         prefix ,gio-mod-dirs))
+                                 '()))))
+          (for-each (lambda (program)
+                      (apply wrap-program program #:sh (sh) env-vars))
+                    bin-list))))))
 
   (for-each handle-output outputs)
   #t)
