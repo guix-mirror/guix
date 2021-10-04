@@ -65,14 +65,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.13")
+    (version "6.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
                            "cifs-utils/cifs-utils-" version ".tar.bz2"))
        (sha256 (base32
-                "0mnhcc4ayj2vn2azhk45fnal1hibsv0q2c4ihkxcrjhkhrn7in23"))))
+                "1f2n0yzqsy5v5qv83731bi0mi86rrh11z8qjy1gjj8al9c3yh2b6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
