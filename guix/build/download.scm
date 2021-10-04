@@ -674,7 +674,8 @@ and write the output to FILE."
      (match (fetch-specification uris)
        (#f (format #t "could not find its Disarchive specification~%")
            #f)
-       (spec (parameterize ((%disarchive-log-port (current-output-port)))
+       (spec (parameterize ((%disarchive-log-port (current-output-port))
+                            (%verify-swh-certificate? verify-certificate?))
                (false-if-exception*
                 (disarchive-assemble spec file #:resolver resolve))))))))
 
