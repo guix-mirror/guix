@@ -6062,7 +6062,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.13")
+    (version "6.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -6070,7 +6070,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m4895f44a668r0z7md5ifq7syndsb2by2dfhk794vmhprsk1406"))))
+                "1hrbm4y7fbzkg5j2f7vpj19ri2ff2lp77al17fhi4mv0bvdfjd9m"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Disable support for various hardware entropy sources as they need
