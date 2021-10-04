@@ -975,6 +975,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/desmume-gcc6-fixes.patch			\
   %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
+  %D%/packages/patches/diffoscope-fix-test_item3_deflate_llvm_bitcode.patch	\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/disarchive-cross-compilation.patch	\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
