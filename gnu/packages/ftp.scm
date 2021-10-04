@@ -5,6 +5,7 @@
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,6 +133,7 @@ reliability in mind.")
                     (let ((out (assoc-ref outputs "out")))
                       (setenv "CONFIG_SHELL" (which "sh"))
                       (setenv "SHELL" (which "sh"))
+                      (setenv "CFLAGS" "-fcommon")
                       (invoke "./configure"
                               (string-append "--prefix=" out))))))
        #:tests? #f)) ;there are no tests
