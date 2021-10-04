@@ -1228,7 +1228,7 @@ command.")
     (name "tzdata")
     ;; This package should be kept in sync with python-pytz in (gnu packages
     ;; time).
-    (version "2021a")
+    (version "2021e")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1236,7 +1236,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "022fn6gkmp7pamlgab04x0dm5hnyn2m2fcnyr3pvm36612xd5rrr"))))
+               "1cdjdcxl0s9xf0dg1z64kh7llm80byxqlzrkkjzcdlyh6yvl5v07"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f
@@ -1304,7 +1304,7 @@ command.")
                           version ".tar.gz"))
                     (sha256
                      (base32
-                      "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb")))))
+                      "0x8pcfmjvxk29yfh8bklchv2f0vpl4yih0gc4wyx292l78wncijq")))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1319,28 +1319,10 @@ and daylight-saving rules.")
 ;;; thousands of packages (for example, in a core-updates rebuild). This package
 ;;; will typically be obsolete and should never be referred to by a built
 ;;; package.
-(define-public tzdata-for-tests
-  (hidden-package
-   (package
-     (inherit tzdata)
-     (version "2021a")
-     (source (origin
-               (method url-fetch)
-               (uri (string-append
-                     "https://data.iana.org/time-zones/releases/tzdata"
-                     version ".tar.gz"))
-               (sha256
-                (base32
-                 "022fn6gkmp7pamlgab04x0dm5hnyn2m2fcnyr3pvm36612xd5rrr"))))
-     (inputs
-      (list (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://data.iana.org/time-zones/releases/tzcode"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1l02b0jiwp3fl0xd6227i69d26rmx3yrnq0ssq9vvdmm4jhvyipb"))))))))
+;;;
+;;; Please make this a hidden-package if it is different from the primary tzdata
+;;; package.
+(define-public tzdata-for-tests tzdata)
 
 (define-public libiconv
   (package
