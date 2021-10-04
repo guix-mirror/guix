@@ -2500,7 +2500,7 @@ possibly untrusted extraction shell script.")
 (define-public ncompress
   (package
     (name "ncompress")
-    (version "4.2.4.6")
+    (version "5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2510,13 +2510,13 @@ possibly untrusted extraction shell script.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1a4yir1ilafz0nzxdwigj204j4yy2zljbc501nsaqqm3dxdap8zn"))))
+                "090kksxrlqnsdc76fzz2j2ajc98mhmfwyn163ca2ia9niqmlpcm0"))))
     (arguments
      '(#:make-flags (list "CC=gcc"
                           (string-append "BINDIR=" %output "/bin")
                           (string-append "MANDIR=" %output "/share/man/man1"))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)))) ; no configure script
     (build-system gnu-build-system)
     (home-page "https://github.com/vapier/ncompress/")
     (synopsis "Original Lempel-Ziv compress/uncompress programs")
