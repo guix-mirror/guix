@@ -136,14 +136,14 @@
     (name "librecad")
     (version "2.2.0-rc2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/LibreCAD/LibreCAD/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/LibreCAD/LibreCAD")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0a7fzhxkkn2s3hkgqrw3s3wyspzfla3c5lgbsjyqzvlnrp3anxnm"))))
+                "08cl4935c9vznz9qdw1zgd86rn7hl64zpfayxl07x21bhf53pn24"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
