@@ -47,10 +47,11 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages backup)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -102,6 +103,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python))
 
 (define-public vice
@@ -398,7 +400,7 @@ older games.")
   ;; This is not a patch staging area for DOSBox, but an unaffiliated fork.
   (package
     (name "dosbox-staging")
-    (version "0.76.0")
+    (version "0.77.1")
     (source
      (origin
        (method git-fetch)
@@ -407,34 +409,20 @@ older games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14zlkm9qmaq2x4zdiadczsxvdnrf35w13ccvkxzd8cwrzxv84fvd"))))
-    (build-system gnu-build-system)
+        (base32 "07jwmmm1bhfxavlhl854cj8l5iy5hqx5hpwkkjbcwqg7yh9jfs2x"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       (let* ((flags (list "-O3"
-                           ;; From scripts/automator/build/gcc-defaults.
-                           "-fstrict-aliasing"
-                           "-fno-signed-zeros"
-                           "-fno-trapping-math"
-                           "-fassociative-math"
-                           "-frename-registers"
-                           "-ffunction-sections"
-                           "-fdata-sections"))
-              (CFLAGS (string-join flags " ")))
-         ;; Several files #include <SDL_net.h> instead of <SDL2/SDL_net.h>,
-         ;; including configure.ac itself.
-         (list (string-append "CPPFLAGS=-I" (assoc-ref %build-inputs "sdl2")
-                              "/include/SDL2")
-               (string-append "CFLAGS=" CFLAGS)
-               (string-append "CXXFLAGS=-DNDEBUG " CFLAGS)))))
+     `(#:meson ,meson-0.55 #:configure-flags
+       ;; These both try to git clone subprojects.
+       (list "-Dunit_tests=disabled"     ; gtest
+             "-Duse_mt32emu=false")))    ; mt32emu
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fluidsynth" ,fluidsynth)
        ("libpng" ,libpng)
+       ("mesa" ,mesa)
        ("opusfile" ,opusfile)
        ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
        ("zlib" ,zlib)))
