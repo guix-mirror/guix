@@ -221,14 +221,14 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
 (define-public gpsd
   (package
     (name "gpsd")
-    (version "3.23")
+    (version "3.23.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download-mirror.savannah.gnu.org"
                            "/releases/gpsd/gpsd-" version ".tar.xz"))
        (sha256
-        (base32 "1px9im0qfn8k7mnvjcw5myakzd7mad2drwyzji400hpwyswjjr73"))))
+        (base32 "1hd8b09is4gd73lpsdywxxdx11iijikmqgxd0y57pic3yxnlcb6a"))))
     (build-system scons-build-system)
     (native-inputs
      `(("bc" ,bc)
@@ -261,8 +261,7 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
              (setenv "TAR" "noop")
              (substitute* "SConscript"
                (("envs = \\{\\}")
-                "envs = os.environ"))
-             #t))
+                "envs = os.environ"))))
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -283,8 +282,7 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
                            (wrap-program (string-append out "/bin/" script)
                              `("PYTHONPATH" ":" prefix (,pythonpath))))
                          '("gegps" "gpscat" "gpsfake" "gpsprof"
-                           "ubxtool" "xgps" "xgpsspeed" "zerk")))
-             #t)))))
+                           "ubxtool" "xgps" "xgpsspeed" "zerk"))))))))
     (synopsis "GPS service daemon")
     (description
      "@code{gpsd} is a service daemon that monitors one or more GPSes or AIS
