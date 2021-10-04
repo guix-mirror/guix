@@ -40,6 +40,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 François J. <francois-oss@avalenn.eu>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2876,9 +2877,9 @@ interrupted, published, and collaborated on while in progress.")
                (invoke "make" "man"))
              #t))
          (add-after 'install 'install-man-pages
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (with-directory-excursion "src/github.com/git-lfs/git-lfs/man"
-               (let ((out (assoc-ref %outputs "out")))
+               (let ((out (assoc-ref outputs "out")))
                  (for-each
                    (lambda (manpage)
                      (install-file manpage (string-append out "/share/man/man1")))
