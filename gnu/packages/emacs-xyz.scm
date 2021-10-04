@@ -783,7 +783,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "3.2.1")
+    (version "3.3.0")
     (source
      (origin
        (method git-fetch)
@@ -792,7 +792,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "179mgh8l5p7fhfmbg5rz810mhbzsxqsxd66jdb2a68vsazs1jw2m"))))
+        (base32 "0cxyvp2aav27znc7mf6c83q5pddpdniaqkrxn1r8dbgr540qmnpn"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs-no-x             ;module support is required
