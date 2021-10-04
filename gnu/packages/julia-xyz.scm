@@ -368,6 +368,29 @@ A @code{BlockBandedMatrix} is a subtype of @code{BlockMatrix} of
 @code{BlockArrays.jl} whose layout of non-zero blocks is banded.")
     (license license:expat)))
 
+(define-public julia-bson
+  (package
+    (name "julia-bson")
+    (version "0.3.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/BSON.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1l5608ma2ys7v2gpcqbiv9mwfc6yrlqkihrfx1pf7fgv5llhd4fn"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-dataframes" ,julia-dataframes)))
+    (home-page "https://github.com/JuliaIO/BSON.jl")
+    (synopsis "Binary JSON serialisation format")
+    (description "@code{BSON.jl} is a Julia package for working with the Binary
+JSON serialisation format.  It can be used as a general store for Julia data
+structures.")
+    (license license:expat)))
+
 (define-public julia-bufferedstreams
   (package
     (name "julia-bufferedstreams")
