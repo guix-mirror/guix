@@ -3281,6 +3281,35 @@ types between Julia and Python), define Python classes from Julia methods, and
 share large data structures between Julia and Python without copying them.")
     (license license:expat)))
 
+(define-public julia-pyplot
+  (package
+    (name "julia-pyplot")
+    (version "2.10.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaPy/PyPlot.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "007zs0imfgs69f30pp2a3rc93kl0qiq7qjx6ig35z4wzkmps4skd"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-colors" ,julia-colors)
+       ("julia-latexstrings" ,julia-latexstrings)
+       ("julia-pycall" ,julia-pycall)
+       ("julia-versionparsing" ,julia-versionparsing)
+       ;; python-matplotlib is expected to be available at runtime.
+       ("python-matplotlib" ,python-matplotlib)))
+    (home-page "https://github.com/JuliaPy/PyPlot.jl")
+    (synopsis "Plotting for Julia based on matplotlib.pyplot")
+    (description "This package provides a Julia interface to the Matplotlib
+plotting library from Python, and specifically to the @code{matplotlib.pyplot}
+module.  PyPlot uses the Julia PyCall package to call Matplotlib directly from
+Julia with little or no overhead (arrays are passed without making a copy).")
+    (license license:expat)))
+
 (define-public julia-quadgk
   (package
     (name "julia-quadgk")
