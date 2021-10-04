@@ -4912,27 +4912,29 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "4.2.0")
+    (version "4.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "0mp7hjyhs38ag1hyfcy882g400z0babqi72pnli46dqijfhajzmy"))))
+         "0g1sbzlz5mfc70gwgnj3lz4kf4psdjl96n6ywklv8z817m1khxdd"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (inputs
      `(("python-blinker" ,python-blinker)
        ("python-dateutil" ,python-dateutil)
+       ;; Ignoring `guix lint` warning as python-docutils is used to support
+       ;; reStructuredText processing at runtime.
        ("python-docutils" ,python-docutils)
        ("python-feedgenerator" ,python-feedgenerator)
        ("python-jinja2" ,python-jinja2)
        ("python-markdown" ,python-markdown)
        ("python-pygments" ,python-pygments)
        ("python-pytz" ,python-pytz)
-       ("python-six" ,python-six)
+       ("python-rich" ,python-rich)
        ("python-unidecode" ,python-unidecode)))
-    (home-page "https://getpelican.com/")
+    (home-page "https://blog.getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
        #:tests? #f))
