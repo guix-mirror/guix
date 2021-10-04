@@ -26,15 +26,14 @@
 (define-public pv
   (package
     (name "pv")
-    (version "1.6.6")
+    (version "1.6.20")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://www.ivarch.com/programs/sources/pv-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "1wbk14xh9rfypiwyy68ssl8dliyji30ly70qki1y2xx3ywszk3k0"))))
+       (method url-fetch)
+       (uri (string-append "https://www.ivarch.com/programs/sources/pv-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "00y6zla8h653sn4axgqz7rr0x79vfwl62a7gn6lzn607zwg9acg8"))))
     (build-system gnu-build-system)
     (home-page "https://www.ivarch.com/programs/pv.shtml")
     (synopsis "Pipeline progress indicator")
