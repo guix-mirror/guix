@@ -300,11 +300,12 @@
                                          "/lib/girepository-1.0"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'embed-growisofs
+         (add-before 'configure 'embed-growisofs-reference
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "plugins/growisofs/burn-growisofs.c"
-               (("\"growisofs") (string-append "\"" (which "growisofs"))))
-             #t)))))
+             (let ((dvd+rw-tools (assoc-ref inputs "dvd+rw-tools")))
+               (substitute* "plugins/growisofs/burn-growisofs.c"
+                 (("(\")(growisofs)" _ prefix command)
+                  (string-append prefix dvd+rw-tools "/bin/" command)))))))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
