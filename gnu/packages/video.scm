@@ -5014,6 +5014,8 @@ on supporting video-on-demand and live encoding on Intel Xeon processors.")
        (sha256
         (base32 "1zkgnj2sfvckix360wwk1v5s43g69snm45m0drnzyv7hgf5g7q1q"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "Scan ATSC/DVB-C/DVB-S/DVB-T channels")
     (description
      "This is a small command line utility used to perform frequency scans for
