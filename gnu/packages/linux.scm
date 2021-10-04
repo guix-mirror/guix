@@ -2930,23 +2930,7 @@ Linux-based operating systems.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'patch-stuff
-           (lambda _
-             ;; Fix "field ‘ip6’ has incomplete type" errors.
-             (substitute* "libbridge/libbridge.h"
-               (("#include <linux/if_bridge.h>")
-                "#include <linux/in6.h>\n#include <linux/if_bridge.h>"))
-
-             ;; Ensure that the entire build fails if one of the
-             ;; sub-Makefiles fails.
-             (substitute* "Makefile.in"
-               (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
-                "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
-
-             #t)))
-       #:tests? #f))                              ; no 'check' target
+     '(#:tests? #f))                    ; no 'check' target
 
     (home-page "https://wiki.linuxfoundation.org/networking/bridge")
     (synopsis "Manipulate Ethernet bridges")
