@@ -3025,14 +3025,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.91")
+    (version "7.92")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
+                "18bifn67kz2wxkbnfwcrin2xrhc6qf4p2bvxfqb2a2vbi8pryix5"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3043,8 +3043,7 @@ done with the @code{auditctl} utility.")
                               "libpcap"
                               "libpcre"
                               ;; Remove pre-compiled binares.
-                              "mswin32"))
-                  #t))))
+                              "mswin32"))))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
@@ -3066,8 +3065,7 @@ done with the @code{auditctl} utility.")
            (lambda _
              (substitute* "Makefile"
                ;; Do not attempt to build lua.
-               (("build-dnet build-lua") "build-dnet"))
-             #t))
+               (("build-dnet build-lua") "build-dnet"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (define (make out . args)
@@ -3090,8 +3088,7 @@ done with the @code{auditctl} utility.")
                (make ndiff "install-ndiff")
                (wrap-program (string-append ndiff "/bin/ndiff")
                  `("PYTHONPATH" prefix
-                   (,(python-path ndiff)))))
-             #t))
+                   (,(python-path ndiff)))))))
          ;; These are the tests that do not require network access.
          (replace 'check
            (lambda _ (invoke "make"
@@ -3108,7 +3105,7 @@ tool.  It is also useful for tasks such as network inventory, managing service
 upgrade schedules, and monitoring host or service uptime.  It also provides an
 advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
-    ;; See <https://github.com/nmap/nmap/issues/2199#issuecomment-792048244>.
+    ;; See <https://github.com/nmap/nmap/issues/2199#issuecomment-894812634>.
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
     (license (list license:nmap license:bsd-3))))
