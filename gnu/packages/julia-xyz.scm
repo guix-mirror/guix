@@ -2407,6 +2407,28 @@ and printing JSON documents.")
 focus on speed and slick struct mapping.")
     (license license:expat)))
 
+(define-public julia-latexstrings
+  (package
+    (name "julia-latexstrings")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/stevengj/LaTeXStrings.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "117z27krcf8fydgp6mb0pgn75r4gng9qs7v90qb4bqzsry3faadp"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
+    (home-page "https://github.com/stevengj/LaTeXStrings.jl")
+    (synopsis "Input and display of LaTeX equation strings")
+    (description "This is a small package to make it easier to type LaTeX
+equations in string literals in the Julia language.")
+    (license license:expat)))
+
 (define-public julia-lazyarrays
   (package
     (name "julia-lazyarrays")
