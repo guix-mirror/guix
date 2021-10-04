@@ -898,7 +898,9 @@ Ledger Nano as a hardware SSH/GPG agent.")
        (sha256
         (base32 "1mblx4favmw4nf7k9rfl00ivv77kgdiwghyz4xv5cp0v410kjaqc"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (arguments
+     `(#:tests? #f))        ; No test suite.
+    (inputs
      `(("python-tkinter" ,python "tk")))
     (home-page "https://github.com/rendaw/trezor-gpg-pinentry-tk")
     (synopsis "GPG pinentry program for use with @code{trezor-agent}")
