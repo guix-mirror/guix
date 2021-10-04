@@ -17,12 +17,12 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu home-services xdg)
+(define-module (gnu home services xdg)
   #:use-module (gnu services configuration)
-  #:use-module (gnu home-services configuration)
+  #:use-module (gnu home services configuration)
   #:use-module (gnu home-services)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu home-services utils)
+  #:use-module (gnu home services utils)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix i18n)

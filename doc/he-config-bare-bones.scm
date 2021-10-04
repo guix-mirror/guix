@@ -1,6 +1,6 @@
 (use-modules (gnu home)
              (gnu home-services)
-             (gnu home-services shells)
+             (gnu home services shells)
              (gnu services)
              (gnu packages admin)
              (guix gexp))

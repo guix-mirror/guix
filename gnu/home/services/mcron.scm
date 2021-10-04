@@ -17,11 +17,11 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu home-services mcron)
+(define-module (gnu home services mcron)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu home-services)
-  #:use-module (gnu home-services shepherd)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu home services shepherd)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)

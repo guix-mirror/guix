@@ -512,10 +512,10 @@ environment, and its configuration file, when available.")))
 
 (define %service-type-path
   ;; Search path for service types.
-  (make-parameter `((,%guix-home-root-directory . "gnu/home-services"))))
+  (make-parameter `((,%guix-home-root-directory . "gnu/home/services"))))
 
 (define (all-home-service-modules)
-  "Return the default set of home-service modules."
+  "Return the default set of `home service' modules."
   (cons (resolve-interface '(gnu home-services))
         (all-modules (%service-type-path)
                      #:warn warn-about-load-error)))

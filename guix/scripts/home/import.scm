@@ -41,7 +41,7 @@
   (let ((rc (string-append (getenv "HOME") "/.bashrc"))
         (profile (string-append (getenv "HOME") "/.bash_profile"))
         (logout (string-append (getenv "HOME") "/.bash_logout")))
-    `((gnu home-services bash)
+    `((gnu home services bash)
       (service home-bash-service-type
                  (home-bash-configuration
                   ,@(if (file-exists? rc)

@@ -17,10 +17,10 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu home-services shells)
+(define-module (gnu home services shells)
   #:use-module (gnu services configuration)
-  #:use-module (gnu home-services configuration)
-  #:use-module (gnu home-services utils)
+  #:use-module (gnu home services configuration)
+  #:use-module (gnu home services utils)
   #:use-module (gnu home-services)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages bash)

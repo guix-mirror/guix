@@ -35553,9 +35553,9 @@ services)}.
 
 @node Essential Home Services
 @subsection Essential Home Services
-There are a few essential services defined in @code{(gnu
-home-services)}, they are mostly for internal use and are required to
-build a home environment, but some of them will be useful for the end
+There are a few essential home services defined in
+@code{(gnu services)}, they are mostly for internal use and are required
+to build a home environment, but some of them will be useful for the end
 user.
 
 @cindex environment variables
@@ -35808,7 +35808,7 @@ for example).
 @cindex mcron
 @cindex scheduling jobs
 
-The @code{(gnu home-services mcron)} module provides an interface to
+The @code{(gnu home services mcron)} module provides an interface to
 GNU@tie{}mcron, a daemon to run jobs at scheduled times (@pxref{Top,,,
 mcron, GNU@tie{}mcron}).  The information about system's mcron is
 applicable here (@pxref{Scheduled Job Execution}), the only difference

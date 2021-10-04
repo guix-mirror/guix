@@ -17,7 +17,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu home-services fontutils)
+(define-module (gnu home services fontutils)
   #:use-module (gnu home-services)
   #:use-module (gnu packages fontutils)
   #:use-module (guix gexp)
