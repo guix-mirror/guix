@@ -3968,6 +3968,31 @@ strings.")
 Stack Overflow, Super User, and other StackExchange sites.")
       (license license:gpl3+))))
 
+(define-public emacs-skempo
+  (package
+    (name "emacs-skempo")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xFA25E/skempo")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0na465f27p6n64sf0pj0aqdi384m1wy3hxcc2d6a67hs39rkyvi9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-parent-mode" ,emacs-parent-mode)))
+    (home-page "https://github.com/xFA25E/skempo")
+    (synopsis "Enhancements for skeleton/tempo + abbrev")
+    (description
+     "Skempo is an attempt to improve Emacs built-in Skeleton and Tempo
+templates.  It tries to make a unified syntax for template definitions.  It
+also adds tags and marks support for Skeleton, and Abbrev support for Tempo.")
+    (license license:gpl3+)))
+
 (define-public emacs-toc-org
   (package
     (name "emacs-toc-org")
