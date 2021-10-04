@@ -729,6 +729,49 @@ provides a macro that lets you use the latest syntax in a backwards-compatible
 way.")
     (license license:expat)))
 
+(define-public julia-configurations
+  (package
+    (name "julia-configurations")
+    (version "0.16.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/Roger-luo/Configurations.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1b23p0zk8dx2sf01cnw177mqci7qd81b9s32ixz9clsh0r0icl1b"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("option.toml") "test/option.toml"))
+             #t))
+         (add-after 'unpack 'dont-use-exproniconlite
+           (lambda _
+             (substitute* '("Project.toml"
+                            "src/Configurations.jl"
+                            "test/runtests.jl")
+               (("ExproniconLite") "Expronicon"))
+             (substitute* "Project.toml"
+               (("55351af7-c7e9-48d6-89ff-24e801d99491")
+                "6b7a57c9-7cc1-4fdf-b7f5-e857abae3636"))
+             #t)))))
+    (propagated-inputs
+     `(("julia-crayons" ,julia-crayons)
+       ("julia-expronicon" ,julia-expronicon)
+       ("julia-orderedcollections" ,julia-orderedcollections)))
+    (home-page "https://configurations.rogerluo.dev/stable/")
+    (synopsis "Tools for options and configurations in Julia")
+    (description "@code{Configurations.jl} provides a macro @code{@@option} to
+let you define @code{structs} to represent options/configurations, and serialize
+between different option/configuration file formats such as @code{TOML}.")
+    (license license:expat)))
+
 (define-public julia-constructionbase
   (package
     (name "julia-constructionbase")
