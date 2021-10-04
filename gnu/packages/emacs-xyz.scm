@@ -15325,6 +15325,29 @@ proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
       (license license:gpl3+))))
 
+(define-public emacs-taxy
+  (package
+    (name "emacs-taxy")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/taxy-" version ".tar"))
+       (sha256
+        (base32
+         "00pc6lh35gj8vzcsn17fyazb9jsc4m6nr7cvb32w02isadv8qd3m"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-magit" ,emacs-magit)))
+    (home-page "https://github.com/alphapapa/taxy.el")
+    (synopsis "Programmable taxonomical grouping for arbitrary objects")
+    (description
+     "Taxy provides a programmable way to classify arbitrary objects into
+a hierarchical taxonomy.  Allows you to automatically put things in nested
+groups.")
+    (license license:gpl3+)))
+
 (define-public emacs-emojify
   (package
     (name "emacs-emojify")
