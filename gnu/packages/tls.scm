@@ -57,6 +57,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages libbsd)
@@ -143,13 +144,33 @@ in intelligent transportation networks.")
        (base32 "1dn6br4v033d3gp2max9lsr3y4q0nj6iyr1yq3kzi8ym7lal13wa"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(,@(if (hurd-target?)
+             `(("autoconf" ,autoconf)
+               ("automake" ,automake)
+               ("gettext" ,gettext-minimal) ;for autopoint
+               ("libtool" ,libtool))
+             '())
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libffi" ,libffi)
+       ,@(if (hurd-target?)
+             `(("libbsd" ,libbsd)
+               ("hurd-patch" ,(search-patch "p11-kit-hurd.patch")))
+             '())
        ("libtasn1" ,libtasn1)))
     (arguments
      `(#:configure-flags '("--without-trust-paths")
        #:phases (modify-phases %standard-phases
+                  ,@(if (hurd-target?)
+                        '((add-after 'unpack 'apply-hurd-patch
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              (let ((patch (assoc-ref inputs "hurd-patch")))
+                                (invoke "patch" "-p1" "--batch" "-i"
+                                        patch))))
+                          (replace 'bootstrap
+                            (lambda _
+                              (invoke "autoreconf" "-fiv"))))
+                        '())
                   (add-before 'check 'prepare-tests
                     (lambda _
                       ;; "test-runtime" expects XDG_RUNTIME_DIR to be set up
