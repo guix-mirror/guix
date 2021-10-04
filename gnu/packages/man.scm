@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,10 +52,9 @@
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append "https://sourceforge.net/projects/xmltoman/files/"
-                       "xmltoman/xmltoman-" version ".tar.gz/xmltoman-"
-                       version ".tar.gz/download"))
+       (uri (string-append "mirror://sourceforge/xmltoman/xmltoman/"
+                           "xmltoman-" version ".tar.gz/"
+                           "xmltoman-" version ".tar.gz"))
        (sha256
         (base32 "1c0lvzr7kdy63wbn1jv6s126ds7add3pxqb0vlxd3v5a2sir91wl"))))
     (build-system gnu-build-system)
