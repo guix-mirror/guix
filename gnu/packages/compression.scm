@@ -2512,7 +2512,7 @@ possibly untrusted extraction shell script.")
                (base32
                 "090kksxrlqnsdc76fzz2j2ajc98mhmfwyn163ca2ia9niqmlpcm0"))))
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "BINDIR=" %output "/bin")
                           (string-append "MANDIR=" %output "/share/man/man1"))
        #:phases (modify-phases %standard-phases
