@@ -6477,14 +6477,14 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/crawl/crawl/releases/download/"
                            version "/stone_soup-" version "-nodeps.tar.xz"))
        (sha256
-        (base32 "0hzkzpqmydxm1zjkdm7k4w3hldsqin3pwkj7jmfj4jijkr0zg9nq"))
+        (base32 "0nkhyhrrma8gmwxp15j84cn1k2yvyq7ar9rd0j2qjjlv2kdis5z2"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
