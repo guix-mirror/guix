@@ -1046,8 +1046,8 @@ WireGuard was added to Linux 5.6.")
          (delete 'configure)            ; no configure script
          (add-after 'install 'install-contrib-docs
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc "/share/doc/wireguard-tools"))
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/wireguard-tools")))
                (copy-recursively "contrib/" doc))))
          (add-after 'install 'wrap-wg-quick
            (lambda* (#:key inputs outputs #:allow-other-keys)
