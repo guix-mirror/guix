@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
@@ -68,6 +68,7 @@
 
 (define-module (gnu packages xdisorg)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -83,6 +84,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -2379,6 +2381,50 @@ binary to setuid-binaries:
     (synopsis "Command-line copy/paste utilities for Wayland")
     (description "Wl-clipboard is a set of command-line copy/paste utilities for
 Wayland.")
+    (license license:gpl3+)))
+
+(define-public wl-clipboard-x11
+  (package
+    (name "wl-clipboard-x11")
+    (version "5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brunelli/wl-clipboard-x11")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y7jv7rps0sdzmm859wn2l8q4pg2x35smcrm7mbfxn5vrga0bslb"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("src/" "bin/")
+         ("man/" "man/man1"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out          (assoc-ref outputs "out"))
+                   (wl-clipboard (assoc-ref inputs "wl-clipboard")))
+               (wrap-program (string-append out "/bin/wl-clipboard-x11")
+                `("PATH" prefix (,(string-append wl-clipboard "/bin")))))
+             #t))
+         (add-after 'wrap-binary 'symlink-utilities
+           ;; As seen in the Makefile.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (symlink "wl-clipboard-x11" (string-append bin "xclip"))
+               (symlink "wl-clipboard-x11" (string-append bin "xsel")))
+             #t)))))
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("wl-clipboard" ,wl-clipboard)))
+    (home-page "https://github.com/brunelli/wl-clipboard-x11")
+    (synopsis "Use wl-clipboard as a drop-in replacement to X11 clipboard tools")
+    (description "This package provides a wrapper script around
+@code{x11-clipboard} to use it as a clipboard on X11 also.  It also contains
+helper scripts for @code{xclip} and @code{xsel} to assist with the transition.")
     (license license:gpl3+)))
 
 (define-public autocutsel
