@@ -457,7 +457,7 @@ ME as far as possible (it only edits ME firmware image files).")
 (define-public uefitool
   (package
     (name "uefitool")
-    (version "0.27.0")
+    (version "0.28.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -465,7 +465,7 @@ ME as far as possible (it only edits ME firmware image files).")
                      (commit version)))
               (sha256
                (base32
-                "1i1p823qld927p4f1wcphqcnivb9mq7fi5xmzibxc3g9zzgnyc2h"))
+                "1n2hd2dysi5bv2iyq40phh1jxc48gdwzs414vfbxvcharcwapnja"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -477,8 +477,7 @@ ME as far as possible (it only edits ME firmware image files).")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "UEFITool" (string-append (assoc-ref outputs "out")
-                                                     "/bin"))
-             #t)))))
+                                                     "/bin")))))))
     (inputs
      `(("qtbase" ,qtbase-5)))
     (home-page "https://github.com/LongSoft/UEFITool/")
