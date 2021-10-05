@@ -5515,7 +5515,7 @@ monad, as well as a typeclass abstracting their common operations, and
 a set of wrappers to use the hash tables in the IO monad.")
     (license license:bsd-3)))
 
-(define-public ghc-haskeline-0.8
+(define-public ghc-haskeline
   (package
     (name "ghc-haskeline")
     (version "0.8.0.0")
@@ -11106,7 +11106,7 @@ inspired by libtre.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-haskeline" ,ghc-haskeline-0.8)))
+       ("ghc-haskeline" ,ghc-haskeline)))
     (home-page "https://github.com/sdiehl/repline")
     (synopsis "Haskeline wrapper for GHCi-like REPL interfaces")
     (description
