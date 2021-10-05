@@ -5358,7 +5358,7 @@ configuration.")
 (define-public emacs-smart-mode-line
   (package
     (name "emacs-smart-mode-line")
-    (version "2.13")
+    (version "2.14")
     (source
      (origin
        (method git-fetch)
@@ -5367,7 +5367,7 @@ configuration.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "164b697xm1rwcggv37dymhf3npbyh2bs59z8b6m5x35lb4c3lf8b"))))
+        (base32 "1h5w5lrgrmhpaqwppg5msylh7z78mvwy9mm8xiiv8w4wxvncxxl2"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
