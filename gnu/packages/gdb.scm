@@ -52,7 +52,9 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0aag1c0fw875pvhjg1qp7x8pf6gf92bjv5gcic5716scacyj58da"))))
+               "0aag1c0fw875pvhjg1qp7x8pf6gf92bjv5gcic5716scacyj58da"))
+             (patches
+              (search-patches "gdb-hurd.patch"))))
 
     (build-system gnu-build-system)
     (arguments
