@@ -6119,7 +6119,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "368")
+    (version "369")
     (source
      (origin
        (method url-fetch)
@@ -6129,7 +6129,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
              (string-append "ftp://ftp.invisible-island.net/xterm/"
                             "xterm-" version ".tgz")))
        (sha256
-        (base32 "04p7db3j3n5dk1vvlas4231rh6jgr4qi6ppvpbq9xd5n62cidx9g"))))
+        (base32 "09jffsd46qsg6vfxlljds9pljwx9h4kh06kl94hkv2b4s146mvbi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
