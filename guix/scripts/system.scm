@@ -253,7 +253,7 @@ the ownership of '~a' may be incorrect!~%")
           (install-bootloader local-eval bootloader bootcfg
                               #:target target)
           (return
-           (info (G_ "bootloader successfully installed on '~a'~%")
+           (info (G_ "bootloader successfully installed on~{ ~a~}~%")
                  (bootloader-configuration-targets bootloader))))))))
 
 
