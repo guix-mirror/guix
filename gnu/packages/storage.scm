@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +65,9 @@
                (base32
                 "0lmdri415hqczc9565s5m5568pnj97ipqxgnw6085kps0flwq5zh"))
               (patches
-               (search-patches "ceph-disable-cpu-optimizations.patch"))
+               (search-patches
+                "ceph-disable-cpu-optimizations.patch"
+                "ceph-fix-snappy-breaking-change.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
