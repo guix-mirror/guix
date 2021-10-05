@@ -4291,7 +4291,7 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
 (define-public sbcl-hunchentoot
   (package
     (name "sbcl-hunchentoot")
-    (version "1.2.38")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -4300,7 +4300,7 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "hunchentoot" version))
        (sha256
-        (base32 "1anpcad7w045m4rsjs1f3xdhjwx5cppq1h0vlb3q7dz81fi3i6yq"))))
+        (base32 "1z0m45lp6rv59g69l44gj3q3d2bmjlhqzpii0vgkniam21dcimy9"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("sbcl-cl-who" ,sbcl-cl-who)
