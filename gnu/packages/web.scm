@@ -5895,6 +5895,7 @@ on the fly.")
        ("curl" ,curl)
        ("egrep" ,grep)
        ("lsof" ,lsof)
+       ("procps" ,procps)
        ("python" ,python)))
     (inputs
      `(("libev" ,libev)
