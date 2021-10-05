@@ -9545,31 +9545,28 @@ asynchronously, with Counsel and Ivy.  Simply call
       (license license:gpl3+))))
 
 (define-public emacs-counsel-projectile
-  ;; Use a recent commit in order to fix recent breakage with Ivy.
-  (let ((commit "06b03c1080d3ccc3fa9b9c41b1ccbcf13f058e4b")
-        (revision "0"))
-    (package
-      (name "emacs-counsel-projectile")
-      (version (git-version "0.3.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ericdanan/counsel-projectile")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "10afil6grwxj1x8fxd3ar7ikw3s3hzrkjsjin8wzchbz04389l7s"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-counsel" ,emacs-counsel)
-         ("emacs-projectile" ,emacs-projectile)))
-      (home-page "https://github.com/ericdanan/counsel-projectile")
-      (synopsis "Enhance Projectile with Ivy")
-      (description
-       "This package uses Ivy to provide additional actions for Projectile
+  (package
+    (name "emacs-counsel-projectile")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ericdanan/counsel-projectile")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vp39r5njfzchkqv9g0w77whazp070anh9gmbkp3z4n3xxbik27f"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-counsel" ,emacs-counsel)
+       ("emacs-projectile" ,emacs-projectile)))
+    (home-page "https://github.com/ericdanan/counsel-projectile")
+    (synopsis "Enhance Projectile with Ivy")
+    (description
+     "This package uses Ivy to provide additional actions for Projectile
 commands and replacements for existing functions.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-qml-mode
   (package
