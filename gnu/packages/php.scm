@@ -69,6 +69,7 @@
               (sha256
                (base32
                 "1s5xjy1cchlg0vfxic73wy2wip8spfjr094hzzyc76plsbbqq1wf"))
+              (patches (search-patches "php-bug-74093-test.patch"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
