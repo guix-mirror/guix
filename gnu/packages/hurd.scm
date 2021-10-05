@@ -508,16 +508,18 @@ exec ${system}/rc \"$@\"
                (copy-file "unifont"
                           (string-append datadir "/vga-system.bdf"))
                #t))))
-       #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                              %output "/lib")
-                          "--disable-ncursesw"
-                          "--without-libbz2"
-                          "--without-libz"
-                          "--without-parted"
-                          ;; This is needed to pass the configure check for
-                          ;; clnt_create
-                          "ac_func_search_save_LIBS=-ltirpc"
-                          "ac_cv_search_clnt_create=false")))
+       #:configure-flags
+       ,#~(list (string-append "LDFLAGS=-Wl,-rpath="
+                               #$output "/lib")
+                "--disable-ncursesw"
+                "--without-libbz2"
+                "--without-libz"
+                "--without-parted"
+                ;; This is needed to pass the configure check for
+                ;; clnt_create
+                "ac_func_search_save_LIBS=-ltirpc"
+                "ac_cv_search_clnt_create=false"
+                "CFLAGS=-fcommon")))
     (build-system gnu-build-system)
     (inputs
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
