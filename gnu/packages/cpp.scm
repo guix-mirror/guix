@@ -144,7 +144,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
 (define-public libzen
   (package
     (name "libzen")
-    (version "0.4.38")
+    (version "0.4.39")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -155,7 +155,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
                                   "libzen_" version ".tar.bz2"))
               (sha256
                (base32
-                "1nkygc17sndznpcf71fdrhwpm8z9a3hc9csqlafwswh49axhfkjr"))))
+                "1rwaxmid9iv65n0y6xlcyxxydsvihjni9ldxpg6pbqz43amp49xx"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -167,8 +167,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
        (modify-phases %standard-phases
          (add-after 'unpack 'pre-configure
            (lambda _
-             (chdir "Project/GNU/Library")
-             #t)))))
+             (chdir "Project/GNU/Library"))))))
     (home-page "https://github.com/MediaArea/ZenLib")
     (synopsis "C++ utility library")
     (description "ZenLib is a C++ utility library.  It includes classes for handling
