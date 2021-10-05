@@ -125,7 +125,7 @@ ANSI escape codes to another format.")
 (define-public julia-aqua
   (package
     (name "julia-aqua")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method git-fetch)
@@ -134,7 +134,7 @@ ANSI escape codes to another format.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0zcvrwnyhh2kr4d2xv7ps8dh7byw78dx6yb1m9m4dblgscn5kypb"))))
+         (base32 "1g0kyzcdykgs247j72jpc2qqall696jwgb3hnn4cxmbi8bkf7wpk"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaTesting/Aqua.jl")
     (synopsis "Automated quality assurance for Julia packages")
