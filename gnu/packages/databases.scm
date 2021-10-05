@@ -2221,19 +2221,18 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "6.2.4")
+    (version "6.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0vp1d9mlfsppry3nsj9f7bmh9wjgsy3jggp24sac1hhgl43c8cms"))
+                "1ariw5x33hmmm3d5al0j3307l5kf3vhmn78wpyaz67hia1x8nasv"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled jemalloc, as the package will use the libc one
-               '(begin (delete-file-recursively "deps/jemalloc")
-                       #t))))
+               '(begin (delete-file-recursively "deps/jemalloc")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("procps" ,procps)               ; for tests
@@ -2248,8 +2247,7 @@ similar to BerkeleyDB, LevelDB, etc.")
                (("^TCLSH=.*")
                 (string-append "TCLSH="
                                (assoc-ref inputs "tcl")
-                               "/bin/tclsh")))
-             #t))
+                               "/bin/tclsh")))))
          (add-after 'unpack 'adjust-tests
            (lambda _
              ;; Disable failing tests
@@ -2257,8 +2255,7 @@ similar to BerkeleyDB, LevelDB, etc.")
                (("integration/failover") "")
                (("integration/replication-4") "")
                (("integration/replication-psync") "")
-               (("integration/replication[^-]") ""))
-             #t)))
+               (("integration/replication[^-]") "")))))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
                       "LDFLAGS=-ldl"
