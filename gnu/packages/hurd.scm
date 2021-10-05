@@ -587,7 +587,7 @@ implementing them.")
                            "LINK_PROGRAM=i586-pc-gnu-gcc")
                      (list "CC=gcc")))
          #:configure-flags
-         (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+         ,#~(list (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib"))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
