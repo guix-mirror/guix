@@ -47,6 +47,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -324,6 +325,49 @@ for the IRCv3 protocol.")
     (description
      "ircII is a terminal based IRC and ICB client for UNIX systems.")
     (license license:bsd-3)))
+
+(define-public catgirl
+  (package
+    (name "catgirl")
+    (version "1.9a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://git.causal.agency/catgirl/snapshot/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pci8crcgm33zb58y7ky2aydzyqsirj8ri8ik1zdlz6npadbjj9h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          ,(string-append "CC=" (cc-for-target)))))
+    (native-inputs
+     `(("universal-ctags" ,universal-ctags)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libressl" ,libressl)
+       ("ncurses" ,ncurses)))
+    (home-page "https://git.causal.agency/catgirl")
+    (synopsis "TLS-only terminal IRC client")
+    (description
+     "@command{catgirl} is a TLS-only terminal IRC client.
+
+Notable features include:
+@itemize
+@item Tab complete: most recently seen or mentioned nicks are completed first.
+  Commas are inserted between multiple nicks.
+@item Prompt: the prompt clearly shows whether input will be interpreted as a
+command or sent as a message.
+@item Split scroll: keeps the latest messages in view while scrolling.
+@item URL detection: recent URLs from a particular user or matching a
+substring can be opened or copied.
+@item Nick coloring: color generation based on usernames remains stable across
+nick changes.  Mentions of users in messages are colored.
+@item Topic diffing: the modified portion of a channel topic change is
+highlighted.
+@end itemize")
+    (license license:gpl3+)))
 
 (define-public ii
   (package
