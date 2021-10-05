@@ -12467,7 +12467,8 @@ datasets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pb9f6b0yk9p4cdwiym8r190q1bcdiwvc7i2s6rw54qgi8r3g6pj"))))
+         "0pb9f6b0yk9p4cdwiym8r190q1bcdiwvc7i2s6rw54qgi8r3g6pj"))
+       (patches (search-patches "ngless-unliftio.patch"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
