@@ -29558,6 +29558,28 @@ to the @url{https://multitran.com} online dictionary.")
 for detecting and improve non-idiomatic Clojure source code.")
     (license license:gpl3+)))
 
+(define-public emacs-mint-mode
+  (package
+    (name "emacs-mint-mode")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/creatorrr/emacs-mint-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v8mp1k24lzvc0mh9l4k3fwzr4sr87f5p9ahpy7263pcbvcy11vl"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.txt$")))
+    (home-page "https://github.com/creatorrr/emacs-mint-mode")
+    (synopsis "Major mode for Mint language")
+    (description
+     "Mint mode provides syntax highlighting, basic keyword auto-completion,
+and format on save for Mint programming language.")
+    (license license:gpl3+)))
+
 (define-public emacs-seeing-is-believing
   (let ((version "1.2.0") ; from .el file
         (commit "fbbe246c0fda87bb26227bb826eebadb418a220f")
