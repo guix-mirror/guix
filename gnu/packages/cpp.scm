@@ -689,7 +689,7 @@ code and retrieving their output.")
 (define-public sobjectizer
   (package
     (name "sobjectizer")
-    (version "5.6.1")
+    (version "5.7.2.6")
     (source
      (origin
        (method git-fetch)
@@ -697,7 +697,7 @@ code and retrieving their output.")
              (url "https://github.com/Stiffstream/sobjectizer")
              (commit (string-append "v." version))))
        (sha256
-        (base32 "0jfai7sqxnnjkms38krm7mssj5l79nb3pllkbyj4j581a7l5j6l5"))
+        (base32 "0n6smpjkkkw0xab8wcpy3p0dpw2v9sxgwl6azl3am6abmv4mff12"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
