@@ -166,7 +166,7 @@ human.")
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
-       ("quazip" ,quazip)               ; XC_KEESHARE
+       ("quazip" ,quazip-0)             ; XC_KEESHARE
        ("readline" ,readline)
        ("yubikey-personalization" ,yubikey-personalization) ; XC_YUBIKEY
        ("zlib" ,zlib)))

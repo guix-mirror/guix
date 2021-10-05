@@ -906,7 +906,7 @@ to set X desktop background.")
        ("libtiff" ,libtiff)
        ("opencv" ,opencv)
        ("python" ,python-wrapper)
-       ("quazip" ,quazip)
+       ("quazip" ,quazip-0)
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (native-inputs

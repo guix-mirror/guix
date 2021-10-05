@@ -2310,7 +2310,7 @@ libraries by around 50%--70%, thus reducing disk space, network load times,
 download times, and other distribution and storage costs.")
     (license license:gpl2+)))
 
-(define-public quazip
+(define-public quazip-0
   (package
     (name "quazip")
     (version "0.9.1")
@@ -2346,6 +2346,21 @@ reading from and writing to ZIP archives. ")
     ;; Project is distributed under LGPL, but "quazip/z*" "quazip/unzip.*" are
     ;; distributed under zlib terms.
     (license (list license:lgpl2.1+ license:zlib))))
+
+(define-public quazip
+  (package
+    (inherit quazip-0)
+    (name "quazip")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stachenov/quazip")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06srglrj6jvy5ngmidlgx03i0d5w91yhi7sf846wql00v8rvhc5h"))))))
 
 (define-public zchunk
   (package

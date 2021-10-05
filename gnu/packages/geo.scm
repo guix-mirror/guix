@@ -1700,7 +1700,7 @@ using the dataset of topographical information collected by
        ("qtlocation" ,qtlocation)
        ("qtwebchannel" ,qtwebchannel)
        ("qtwebengine" ,qtwebengine)
-       ("quazip" ,quazip)
+       ("quazip" ,quazip-0)
        ("routino" ,routino)
        ("sqlite" ,sqlite)                      ; See wrap phase
        ("zlib" ,zlib)))
