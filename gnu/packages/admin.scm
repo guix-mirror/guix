@@ -4218,7 +4218,7 @@ Logitech Unifying Receiver.")
   (package
     (name "lynis")
     ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
-    (version "3.0.5")
+    (version "3.0.6")
     (source
      (origin
        (method git-fetch)
@@ -4227,15 +4227,14 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11kl54hbvjl7q2i1jz8a726vlkdmknvbp4zac3j4fgljg27qp410"))
+        (base32 "1a1n8alcq6zil1rwk9940cg3x2nz3igcxfad99505pdh7ccz9324"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove proprietary plugins. As of now, all plugins supplied with
            ;; lynis are proprietary. In the future, if free plugins are
            ;; provided, whitelist them from deletion.
-           (for-each delete-file (find-files "plugins"))
-           #t))))
+           (for-each delete-file (find-files "plugins"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; For tests
@@ -4244,10 +4243,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "99f79c4deb4cb2221d7fccfe82baf58c0a55b9e7")))
+                 (commit "1c4e5f60a03e29a1525ca9ec17c793461058253d")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32 "1nc2rhzj6l08d2mnjrzkm4mxla1mjkddcxl8n05c1kdz9ycn6cpl"))))))
+            (base32 "060k8k1q4c7nvrv3cwscxq8md2v75q3nrwwim1hgfw20divw3npy"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -4258,8 +4257,7 @@ Logitech Unifying Receiver.")
                 (string-append (assoc-ref outputs "out") "/share/lynis")))
              (substitute* "include/functions"
                (("/usr/local/etc/lynis")
-                (string-append (assoc-ref outputs "out") "/etc/lynis")))
-             #t))
+                (string-append (assoc-ref outputs "out") "/etc/lynis")))))
          (delete 'build)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4270,8 +4268,7 @@ Logitech Unifying Receiver.")
                 (lambda (dir)
                   (copy-recursively dir (string-append out "/share/lynis/" dir)))
                 (list "db" "include" "plugins"))
-               (install-file "lynis.8" (string-append out "/share/man/man8"))
-               #t)))
+               (install-file "lynis.8" (string-append out "/share/man/man8")))))
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "lynis-sdk") "../lynis-sdk")
