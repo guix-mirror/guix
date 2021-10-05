@@ -82,6 +82,7 @@
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -2508,18 +2509,42 @@ procedure calls (RPCs).")
                 "0sldyib85v5lh3qp9af0jgvf304pwdmjd0y7rknfwliykgjvgqsm"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; FIXME: many tests fail with:
-       ;;    […]
-       ;;    test -e $OVS_RUNDIR/ovs-vswitchd.pid
-       ;;    ovs-appctl -t ovs-vswitchd exit
-       ;;    hard failure
-       #:tests? #f
-       #:configure-flags
+     '(#:configure-flags
        '("--enable-shared"
          "--localstatedir=/var"
          "--with-dbdir=/var/lib/openvswitch")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'use-absolute-/bin/sh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash-minimal")))
+               (substitute* "ovsdb/ovsdb-server.c"
+                 (("/bin/sh") (string-append bash "/bin/sh"))))))
+         (add-before 'check 'adjust-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash-minimal"))
+                    (/bin/sh (string-append bash "/bin/sh")))
+               (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                 (substitute* (find-files "tests" ".*(run|testsuite)$")
+                   (("#! /bin/sh")
+                    (string-append "#! " /bin/sh))
+
+                   ;; The tests use 'kill -0' to check whether a test has
+                   ;; completed, but it does not work in the build container
+                   ;; because zombies are not reaped automatically (PID 1 is
+                   ;; the builder script).  Change to something that handles
+                   ;; undead processes.
+                   (("kill -0")
+                    "kill-0")))
+               (mkdir "/tmp/bin")
+               (call-with-output-file "/tmp/bin/kill-0"
+                 (lambda (port)
+                   (format port "#!~a
+ps --no-header -p $1 -o state= | grep -qv '^Z$'"
+                           /bin/sh)))
+               (chmod "/tmp/bin/kill-0" #o755)
+               (setenv "PATH"
+                       (string-append "/tmp/bin:" (getenv "PATH"))))))
          (replace 'install
            (lambda _
              (invoke "make"
@@ -2534,9 +2559,12 @@ procedure calls (RPCs).")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ;; for testing
+       ("bash" ,bash)                   ;for 'compgen'
+       ("procps" ,procps)
        ("util-linux" ,util-linux)))
     (inputs
-     `(("libcap-ng" ,libcap-ng)
+     `(("bash-minimal" ,bash-minimal)
+       ("libcap-ng" ,libcap-ng)
        ("openssl" ,openssl)))
     (synopsis "Virtual network switch")
     (home-page "https://www.openvswitch.org/")
