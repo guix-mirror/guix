@@ -68,7 +68,7 @@
        ("ghc-pretty-simple" ,ghc-pretty-simple)
        ("ghc-profunctors" ,ghc-profunctors)
        ("ghc-pretty-simple" ,ghc-pretty-simple)
-       ("ghc-repline" ,ghc-repline-0.3)
+       ("ghc-repline" ,ghc-repline)
        ("ghc-serialise" ,ghc-serialise)
        ("ghc-scientific" ,ghc-scientific)
        ("ghc-text-manipulate" ,ghc-text-manipulate)
