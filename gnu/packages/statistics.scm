@@ -3531,7 +3531,7 @@ using the multicore functionality of the parallel package.")
                              ((url hash dir)
                               (let* ((input (string-append "js:" (basename url)))
                                      (source (assoc-ref inputs input))
-                                     (target (string-append dir "/"
+                                     (target (string-append dir "/js/"
                                                             (basename url ".js")
                                                             ".min.js")))
                                 (mkdir-p dir)
