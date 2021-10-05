@@ -111,7 +111,8 @@ and import their menus over DBus.")
         (base32 "04bcbln3qlilxsyh5hrwdrv7x4pfv2lkwdwa98bxfismd15am22n"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-tests")))
+     '(#:configure-flags '("--enable-tests"
+                           "--disable-static")))
     (native-inputs
      ;; For testing.
      `(("perl" ,perl)))
