@@ -4061,7 +4061,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
 (define-public sequeler
   (package
     (name "sequeler")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4070,7 +4070,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q1vzc3likpiwfh6blkyiz0wr0aarj9xrm8gbi7m3p1wslkpah7c"))))
+                "0biggmsn8k7j6pdrwk29whl56qlfgvf5d9vjpgz4nyqih56wgh9j"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -4081,8 +4081,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
            (lambda _
              (substitute* "build-aux/meson_post_install.py"
                (("gtk-update-icon-cache") "true")
-               (("update-desktop-database") "true"))
-             #t)))))
+               (("update-desktop-database") "true")))))))
     (native-inputs
      `(;("appstream-glib" ,appstream-glib)  ; validation fails for lack of network
        ("gettext-minimal" ,gettext-minimal)
