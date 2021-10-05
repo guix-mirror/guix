@@ -921,16 +921,16 @@ process, passing on the arguments as command line arguments.")
 (define-public emacs-magit-annex
   (package
     (name "emacs-magit-annex")
-    (version "1.8.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/magit/magit-annex")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0ak4chfn95p2vj3y0wiyimj609a4jfzrfpsc1kn0is1jv3dlkl6c"))))
+    (version "1.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magit/magit-annex")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1amr2c08mq1nnn6k66mgz4rzyni4np7gxm96g4qyla2cbfbachgk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("magit" ,emacs-magit)
