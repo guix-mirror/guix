@@ -10644,7 +10644,8 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "05al5dacfp1vf1x3cq20jhd6w4xj5vaxslzaka6yrpg0av8sh3k3"))))
+                "05al5dacfp1vf1x3cq20jhd6w4xj5vaxslzaka6yrpg0av8sh3k3"))
+              (patches (search-patches "pigx-bsseq-no-citeproc.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; TODO: tests currently require 12+GB of RAM.  See
@@ -10652,6 +10653,9 @@ in an easily configurable manner.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+             (invoke "autoreconf" "-vif")))
          (add-before 'check 'set-timezone
            ;; The readr package is picky about timezones.
            (lambda* (#:key inputs #:allow-other-keys)
@@ -10660,7 +10664,9 @@ in an easily configurable manner.")
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo")))))))
     (native-inputs
-     `(("tzdata" ,tzdata)))
+     `(("tzdata" ,tzdata)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
     (inputs
      `(("coreutils" ,coreutils)
        ("sed" ,sed)
