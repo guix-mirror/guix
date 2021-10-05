@@ -236,7 +236,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/emacs-geiser/geiser.git")
+             (url "https://gitlab.com/emacs-geiser/geiser")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
