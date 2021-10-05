@@ -185,6 +185,9 @@ communication, encryption, decryption, signatures, etc.")
              (base32
               "03skgv013v0y9hxh6j143xdwynb5cmbmbdylvvgfsjz38889477m"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (synopsis "Message Digest functions from BSD systems")
     (description
      "The currently provided message digest algorithms are:
