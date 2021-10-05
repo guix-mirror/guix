@@ -2032,14 +2032,14 @@ parallel computing platforms.  It also supports serial execution.")
 (define-public librepcb
   (package
     (name "librepcb")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.librepcb.org/releases/"
                            version "/librepcb-" version "-source.zip"))
        (sha256
-        (base32 "1b5dkanz3q0y5ag80w0l85hn7axrachb5m9zvyv4zvzrfy09wa88"))))
+        (base32 "0smp1p7wnrj0vh4rmz1cr2krfawc2lzx0pbzmgyay7xdp6jxympr"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase-5)
