@@ -1600,6 +1600,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/picprog-non-intel-support.patch		\
   %D%/packages/patches/pidgin-add-search-path.patch		\
   %D%/packages/patches/pigx-bsseq-no-citeproc.patch		\
+  %D%/packages/patches/pigx-sars-cov2-ww-no-citeproc.patch	\
   %D%/packages/patches/pinball-system-ltdl.patch		\
   %D%/packages/patches/pingus-boost-headers.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\

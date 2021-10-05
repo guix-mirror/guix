@@ -10783,8 +10783,18 @@ based methods.")
                                   "/pigx_sars-cov2-ww-" version ".tar.gz"))
               (sha256
                (base32
-                "1hhdbwsnl0d37lrmisw5hr630xr8s41qvxflm05anh11rj8n22yw"))))
+                "1hhdbwsnl0d37lrmisw5hr630xr8s41qvxflm05anh11rj8n22yw"))
+              (patches (search-patches "pigx-sars-cov2-ww-no-citeproc.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)))
     (inputs
      `(("bash-minimal" ,bash-minimal)
        ("bwa" ,bwa)
