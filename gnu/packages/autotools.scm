@@ -444,6 +444,20 @@ intuitive format and then Automake works with Autoconf to produce a robust
 Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
 
+(define-public automake-1.16.5
+  (package
+    (inherit automake)
+    (version "1.16.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/automake/automake-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+                "0sdl32qxdy7m06iggmkkvf7j520rmmgbsjzbm7fgnxwxdp6mh7gh"))
+             (patches
+              (search-patches "automake-skip-amhello-tests.patch"))))))
+
 (define-public libtool
   (package
     (name "libtool")
