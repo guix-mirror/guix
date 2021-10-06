@@ -567,7 +567,7 @@ color scales for graphics.")
 (define-public julia-colorschemes
   (package
     (name "julia-colorschemes")
-    (version "3.13.0")
+    (version "3.15.0")
     (source
       (origin
         (method git-fetch)
@@ -576,7 +576,7 @@ color scales for graphics.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "13gy1njxlkfnxmpj2z6aj1bzbzn7jipaxr9fgkv41yiy0xjhqiyh"))))
+         (base32 "0kpjhmqd5cj8dh8bmh9b5g6bscyp7h23hzpr2s93pnrp57q1wvhq"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-colors" ,julia-colors)
