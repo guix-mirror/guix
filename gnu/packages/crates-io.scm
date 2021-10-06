@@ -5454,6 +5454,27 @@ behave like a set of bitflags.")
 declaring and working with fixed size bitmaps in Rust.")
     (license license:mpl2.0)))
 
+(define-public rust-bitpacking-0.8
+  (package
+    (name "rust-bitpacking")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitpacking" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mw2xbpkw9zhfq5lir6bgkalhhfqb5p7xwx5yimc0ry1ffnd5ix8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t #:cargo-inputs (("rust-crunchy" ,rust-crunchy-0.2))))
+    (home-page "https://crates.io/crates/bitpacking")
+    (synopsis "Fast integer compression/decompression via SIMD bit-packing")
+    (description
+     "This crate provides fast integer compression and decompression via SIMD
+bit-packing.  It is a port of simdcomp C library to Rust.")
+    (license license:expat)))
+
 (define-public rust-bitreader-0.3
   (package
     (name "rust-bitreader")
