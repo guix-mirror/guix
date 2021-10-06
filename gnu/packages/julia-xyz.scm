@@ -2634,7 +2634,7 @@ resolving them into absolute units.")
 (define-public julia-missings
   (package
     (name "julia-missings")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
       (origin
         (method git-fetch)
@@ -2643,7 +2643,7 @@ resolving them into absolute units.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "131ma44yvswvj85jdjhm37frzfz46cc60lwj65a9jcmgc77dshsm"))))
+         (base32 "1k481rm5lahmjyh34j177d4n10svgr0wm7ps5m3ar3xx6nr26ad5"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-dataapi" ,julia-dataapi)))
