@@ -2185,7 +2185,7 @@ module.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.46.2")
+    (version "1.46.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2194,7 +2194,7 @@ module.")
                    "e2fsprogs-" version ".tar.xz"))
              (sha256
               (base32
-               "0s216nn0lv7s278v933a44fv1ibi900c94743gpp2kn9jlr0kai3"))))
+               "04wp77fg842dhribgn0xvbd77idh0n7a839ga4bwy78v7i9l445i"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux "lib")))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -2236,8 +2236,7 @@ module.")
                 "INSTALL_SYMLINK = sh"))
              (substitute* (find-files "." "^Makefile.in$")
                (("#!/bin/sh")
-                (string-append "#!" (which "sh"))))
-             #t))
+                (string-append "#!" (which "sh"))))))
            (add-after 'install 'install-libs
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -2252,8 +2251,7 @@ module.")
                  (let ((archives (find-files lib "\\.a$")))
                    (for-each (lambda (file)
                                (chmod file #o666))
-                             archives))
-                 #t))))))
+                             archives))))))))
     (home-page "http://e2fsprogs.sourceforge.net/")
     (synopsis "Creating and checking ext2/ext3/ext4 file systems")
     (description
