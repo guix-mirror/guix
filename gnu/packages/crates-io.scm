@@ -33985,6 +33985,33 @@ synchronization primitives.")
 file and the generated @file{.rs} file.")
     (license license:asl2.0)))
 
+(define-public rust-parquet-format-async-temp-0.2
+  (package
+    (name "rust-parquet-format-async-temp")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parquet-format-async-temp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0i7mn4x64d8g6d046y9kpb55dz8v0z67cz7lhgncxs9zr3ww5aq3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-integer-encoding" ,rust-integer-encoding-3)
+        ("rust-ordered-float" ,rust-ordered-float-1))))
+    (home-page "https://github.com/sunchao/parquet-format-rs")
+    (synopsis "Temporary crate containing thrift library + parquet definitions")
+    (description
+     "This is a temporary crate containing thrift library and parquet
+definitions compiled to support read+write async.")
+    (license license:asl2.0)))
+
 (define-public rust-parse-zoneinfo-0.3
   (package
     (name "rust-parse-zoneinfo")
