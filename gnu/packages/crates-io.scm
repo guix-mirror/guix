@@ -25311,8 +25311,36 @@ requires non-const function calls to be computed.")
 sending emails from Rust applications.")
     (license license:expat)))
 
+(define-public rust-lexical-core-0.8
+  (package
+    (name "rust-lexical-core")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lexical-core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1152ll9xa7v4jz2mjvz0048gy32yg39mzgjaps89h0any7c2cfba"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lexical-parse-float" ,rust-lexical-parse-float-0.8)
+        ("rust-lexical-parse-integer" ,rust-lexical-parse-integer-0.8)
+        ("rust-lexical-util" ,rust-lexical-util-0.8)
+        ("rust-lexical-write-float" ,rust-lexical-write-float-0.8)
+        ("rust-lexical-write-integer" ,rust-lexical-write-integer-0.8))))
+    (home-page
+     "https://github.com/Alexhuszagh/rust-lexical/tree/master/lexical-core")
+    (synopsis "Lexical, to- and from-string conversion routines")
+    (description
+     "This crate provides lexical, to- and from-string conversion routines.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lexical-core-0.7
   (package
+    (inherit rust-lexical-core-0.8)
     (name "rust-lexical-core")
     (version "0.7.6")
     (source
@@ -25323,7 +25351,6 @@ sending emails from Rust applications.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1zjzab1fnaw4kj6ixyrskp4dyz761gdcab07m4bkvlk1l4mcc1v6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-arrayvec" ,rust-arrayvec-0.5)
@@ -25336,14 +25363,7 @@ sending emails from Rust applications.")
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.4)
         ("rust-proptest" ,rust-proptest-0.10)
-        ("rust-quickcheck" ,rust-quickcheck-1))))
-    (home-page
-     "https://github.com/Alexhuszagh/rust-lexical/tree/master/lexical-core")
-    (synopsis
-     "Lexical, to- and from-string conversion routines")
-    (description
-     "Lexical, to- and from-string conversion routines.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-quickcheck" ,rust-quickcheck-1))))))
 
 (define-public rust-lexical-core-0.4
   (package
