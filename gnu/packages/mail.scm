@@ -1921,11 +1921,7 @@ facilities for checking incoming mail.")
        ("icu4c" ,icu4c)
        ("libsodium" ,libsodium)         ; extra password algorithms
        ("libstemmer" ,libstemmer)
-       ;; FIXME: The 'test-backtrace' tests fail on arm when using glibc's
-       ;; backtrace_symbol() function so fallback to using libunwind.
-       ,@(if (target-arm?)
-          `(("libunwind" ,libunwind))
-          '())
+       ("libunwind" ,libunwind)
        ("linux-pam" ,linux-pam)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
