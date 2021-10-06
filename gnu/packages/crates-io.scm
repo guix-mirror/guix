@@ -21146,6 +21146,26 @@ the template engine that renders the official Rust website")
      "This package provides a Rust implementation of VG handle graph.")
     (license license:expat)))
 
+(define-public rust-hash-hasher-2
+  (package
+    (name "rust-hash-hasher")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hash_hasher" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "034cd4m3znwff3cd1i54c40944y999jz086d70rwpl0jfl01swkl"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Fraser999/Hash-Hasher.git")
+    (synopsis "Hasher designed to work with already-hashed or hash-like data")
+    (description
+     "This package provides a hasher which is designed to work with
+already-hashed or hash-like data.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-hash32-0.1
   (package
     (name "rust-hash32")
