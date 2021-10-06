@@ -48044,6 +48044,29 @@ UTF-8.")
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.13))))))
 
+(define-public rust-streaming-iterator-0.1
+  (package
+    (name "rust-streaming-iterator")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "streaming-iterator" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xc1gyq137b020m29g85zdhbbdrksdmhf3dq4ri4fjlrfz0kacih"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/sfackler/streaming-iterator")
+    (synopsis "Streaming iterators")
+    (description "The iterator APIs in the Rust standard library do not allow
+elements to be yielded which borrow from the iterator itself.  That means, for
+example, that the @code{std::io::Lines} iterator must allocate a new
+@code{String} for each line rather than reusing an internal buffer.  The
+@code{StreamingIterator} trait instead provides access to elements being
+iterated over only by reference rather than by value.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-streaming-stats-0.2
   (package
     (name "rust-streaming-stats")
