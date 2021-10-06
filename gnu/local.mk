@@ -1603,6 +1603,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pigx-chipseq-no-citeproc.patch		\
   %D%/packages/patches/pigx-rnaseq-no-citeproc.patch		\
   %D%/packages/patches/pigx-sars-cov2-ww-no-citeproc.patch	\
+  %D%/packages/patches/pigx-scrnaseq-no-citeproc.patch		\
   %D%/packages/patches/pinball-system-ltdl.patch		\
   %D%/packages/patches/pingus-boost-headers.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\

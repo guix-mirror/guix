@@ -10732,8 +10732,18 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1h5mcxzwj3cidlkvy9ly5wmi48vwfsjf8dxjfirknqxr9a92hwlx"))))
+                "1h5mcxzwj3cidlkvy9ly5wmi48vwfsjf8dxjfirknqxr9a92hwlx"))
+              (patches (search-patches "pigx-scrnaseq-no-citeproc.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)))
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
