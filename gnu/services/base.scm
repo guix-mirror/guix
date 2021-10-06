@@ -53,6 +53,7 @@
   #:use-module (gnu packages bash)
   #:use-module ((gnu packages base)
                 #:select (coreutils glibc glibc-utf8-locales))
+  #:autoload   (gnu packages guile-xyz) (guile-netlink)
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (gnu packages linux)
@@ -2375,6 +2376,66 @@ Linux @dfn{kernel mode setting} (KMS).")))
     (($ <static-networking> interface ip netmask gateway provision
                             requirement name-servers)
      (let ((loopback? (and provision (memq 'loopback provision))))
+       (define set-up-via-ioctl
+         #~(let* ((addr     (inet-pton AF_INET #$ip))
+                  (sockaddr (make-socket-address AF_INET addr 0))
+                  (mask     (and #$netmask (inet-pton AF_INET #$netmask)))
+                  (maskaddr (and mask
+                                 (make-socket-address AF_INET mask 0)))
+                  (gateway  (and #$gateway
+                                 (inet-pton AF_INET #$gateway)))
+                  (gatewayaddr (and gateway
+                                    (make-socket-address AF_INET
+                                                         gateway 0))))
+             (configure-network-interface #$interface sockaddr
+                                          (logior IFF_UP
+                                                  #$(if loopback?
+                                                        #~IFF_LOOPBACK
+                                                        0))
+                                          #:netmask maskaddr)
+             (when gateway
+               (let ((sock (socket AF_INET SOCK_DGRAM 0)))
+                 (add-network-route/gateway sock gatewayaddr)
+                 (close-port sock)))))
+
+       (define tear-down-via-ioctl
+         #~(let ((sock (socket AF_INET SOCK_STREAM 0)))
+             (when #$gateway
+               (delete-network-route sock
+                                     (make-socket-address AF_INET
+                                                          INADDR_ANY 0)))
+             (set-network-interface-flags sock #$interface 0)
+             (close-port sock)
+             #f))
+
+       (define set-up-via-netlink
+         (with-extensions (list guile-netlink)
+           #~(let ((ip #$(if netmask
+                             #~(ip+netmask->cidr #$ip #$netmask)
+                             ip)))
+               (addr-add #$interface ip)
+               (when #$gateway
+                 (route-add "default" #:device #$interface
+                            #:via #$gateway))
+               (link-set #$interface #:up #t))))
+
+       (define tear-down-via-netlink
+         (with-extensions (list guile-netlink)
+           #~(begin
+               (link-set #$interface #:down #t)
+               (when #$gateway
+                 (route-del "default" #:device #$interface))
+               (addr-del #$interface #$ip)
+               #f)))
+
+       (define helpers
+         #~(define (ip+netmask->cidr ip netmask)
+             ;; Return the CIDR notation (a string) for IP and NETMASK, two
+             ;; IPv4 address strings.
+             (let* ((netmask (inet-pton AF_INET netmask))
+                    (bits    (logcount netmask)))
+               (string-append ip "/" (number->string bits)))))
+
        (shepherd-service
 
         (documentation
@@ -2386,38 +2447,19 @@ Linux @dfn{kernel mode setting} (KMS).")))
 
         (start #~(lambda _
                    ;; Return #t if successfully started.
-                   (let* ((addr     (inet-pton AF_INET #$ip))
-                          (sockaddr (make-socket-address AF_INET addr 0))
-                          (mask     (and #$netmask
-                                         (inet-pton AF_INET #$netmask)))
-                          (maskaddr (and mask
-                                         (make-socket-address AF_INET
-                                                              mask 0)))
-                          (gateway  (and #$gateway
-                                         (inet-pton AF_INET #$gateway)))
-                          (gatewayaddr (and gateway
-                                            (make-socket-address AF_INET
-                                                                 gateway 0))))
-                     (configure-network-interface #$interface sockaddr
-                                                  (logior IFF_UP
-                                                          #$(if loopback?
-                                                                #~IFF_LOOPBACK
-                                                                0))
-                                                  #:netmask maskaddr)
-                     (when gateway
-                       (let ((sock (socket AF_INET SOCK_DGRAM 0)))
-                         (add-network-route/gateway sock gatewayaddr)
-                         (close-port sock))))))
+                   #$helpers
+                   (if (string-contains %host-type "-linux")
+                       #$set-up-via-netlink
+                       #$set-up-via-ioctl)))
         (stop #~(lambda _
                   ;; Return #f is successfully stopped.
-                  (let ((sock (socket AF_INET SOCK_STREAM 0)))
-                    (when #$gateway
-                      (delete-network-route sock
-                                            (make-socket-address
-                                             AF_INET INADDR_ANY 0)))
-                    (set-network-interface-flags sock #$interface 0)
-                    (close-port sock)
-                    #f)))
+                  (if (string-contains %host-type "-linux")
+                      #$tear-down-via-netlink
+                      #$tear-down-via-ioctl)))
+        (modules `((ip addr)
+                   (ip link)
+                   (ip route)
+                   ,@%default-modules))
         (respawn? #f))))))
 
 (define (static-networking-etc-files interfaces)
