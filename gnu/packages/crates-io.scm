@@ -25508,8 +25508,33 @@ sending emails from Rust applications.")
      "This crate provides efficient formatting of integers to strings.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lexical-6
+  (package
+    (name "rust-lexical")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lexical" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1y8v2s8g2hjinwf5hbm1ncbazw9q4qbp111q2mwacq6hi0grhkn3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lexical-core" ,rust-lexical-core-0.8))))
+    (home-page "https://github.com/Alexhuszagh/rust-lexical")
+    (synopsis "Lexical, to- and from-string conversion routines")
+    (description
+     "Lexical is high-performance numeric conversion routines for use in
+a no_std environment.  This does not depend on any standard library features,
+nor a system allocator.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lexical-5
   (package
+    (inherit rust-lexical-6)
     (name "rust-lexical")
     (version "5.2.2")
     (source
@@ -25519,7 +25544,6 @@ sending emails from Rust applications.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1r8lsi523h53kbb99xgv31jabwhcp4rzqd4hfazfhcjffh5aj17l"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -25528,13 +25552,7 @@ sending emails from Rust applications.")
         ("rust-rand" ,rust-rand-0.4)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
-        ("rust-toml" ,rust-toml-0.5))))
-    (home-page "https://github.com/Alexhuszagh/rust-lexical")
-    (synopsis "Lexical, to- and from-string conversion routines")
-    (description
-     "Lexical provides routines to convert numbers to and from decimal
-strings.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-toml" ,rust-toml-0.5))))))
 
 (define-public rust-libc-0.2
   (package
