@@ -3679,14 +3679,14 @@ notation.")
 (define-public rust-async-stream-impl-0.3
   (package
     (name "rust-async-stream-impl")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "async-stream-impl" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0w0aif9aw103b5wrm1svkqdh7aaihjywa21819d8m3lzzj78nm53"))))
+        (base32 "024k57iwmmhzvbzacxlkssh45cqlnb8xjlvlsp60jm6fsb4di3k4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags '("--release" "--"
