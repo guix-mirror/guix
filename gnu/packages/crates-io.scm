@@ -43394,6 +43394,36 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-scraper-0.12
+  (package
+    (name "rust-scraper")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "scraper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04icx88wdrlz1qv0dz1zc0inlfq34ajwdpih854jw368j2kjmq28"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cssparser" ,rust-cssparser-0.27)
+        ("rust-ego-tree" ,rust-ego-tree-0.6)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ("rust-html5ever" ,rust-html5ever-0.25)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-selectors" ,rust-selectors-0.22)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-tendril" ,rust-tendril-0.4))))
+    (home-page "https://github.com/programble/scraper")
+    (synopsis "HTML parsing and querying with CSS selectors")
+    (description
+     "Scraper provides an interface to Servo's html5ever and selectors crates,
+for browser-grade parsing and querying.")
+    (license license:isc)))
+
 (define-public rust-scratch-1
   (package
     (name "rust-scratch")
