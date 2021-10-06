@@ -25417,6 +25417,30 @@ sending emails from Rust applications.")
     (description "This package provides shared utilities for lexical crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lexical-write-float-0.8
+  (package
+    (name "rust-lexical-write-float")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lexical-write-float" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xn5dpdmld2nvj7jvz3xrvjjbrnsh4jhymjimax7labvija8clcb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lexical-util" ,rust-lexical-util-0.8)
+        ("rust-lexical-write-integer" ,rust-lexical-write-integer-0.8)
+        ("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://github.com/Alexhuszagh/rust-lexical")
+    (synopsis "Efficient formatting of floats to strings")
+    (description
+     "This crate provides efficient formatting of floats to strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lexical-write-integer-0.8
   (package
     (name "rust-lexical-write-integer")
