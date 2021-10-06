@@ -1387,7 +1387,7 @@ working with filesystem paths in Julia.")
 (define-public julia-fillarrays
   (package
     (name "julia-fillarrays")
-    (version "0.12.1")
+    (version "0.12.6")
     (source
      (origin
        (method git-fetch)
@@ -1396,7 +1396,7 @@ working with filesystem paths in Julia.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1va8vvcxbxcy5xp487hdqfp0ps3m8q0819xrxygsf5135azp3qrh"))))
+        (base32 "1sx96pzrgyh8k7x2w8vmyi6cazlmp7rg1n7wbl47qfzqjggka6kz"))))
     (build-system julia-build-system)
     (inputs                             ;required by tests
      `(("julia-staticarrays" ,julia-staticarrays)))
