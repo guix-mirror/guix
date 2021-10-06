@@ -1246,7 +1246,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.5.6")
+    (version "0.5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/mousepad/"
@@ -1254,7 +1254,7 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "03rmjraxb6a3w7gknmf6mdzkfc0m8shs1vkb2chvv28xn1irhma2"))))
+                "1s5x0d7jy6aps7zdyd5qnvqbnz64l6a0barp81wrxq2261s1alqh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
@@ -1269,8 +1269,7 @@ of data to either CD/DVD/BD.")
               (wrap-program (string-append out "/bin/mousepad")
                 ;; For language-specs.
                 `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
-                                                              "/share")))))
-             #t)))))
+                                                              "/share"))))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin") ; for glib-compile-schemas.
