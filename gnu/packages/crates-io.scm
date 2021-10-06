@@ -36136,8 +36136,38 @@ applications.")
         ("rust-rayon" ,rust-rayon-1)
         ("rust-regex" ,rust-regex-1))))))
 
+(define-public rust-polars-lazy-0.16
+  (package
+    (name "rust-polars-lazy")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polars-lazy" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01bjsk880dvigyqx7aj3f8zvxpk9gl14k3s40w3dv3aanhdzq7wx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ahash" ,rust-ahash-0.7)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-polars-arrow" ,rust-polars-arrow-0.16)
+        ("rust-polars-core" ,rust-polars-core-0.16)
+        ("rust-polars-io" ,rust-polars-io-0.16)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/ritchie46/polars")
+    (synopsis "Lazy query engine for the Polars DataFrame library")
+    (description
+     "This crate provides a lazy query engine for the Polars DataFrame
+library.")
+    (license license:expat)))
+
 (define-public rust-polars-lazy-0.15
   (package
+    (inherit rust-polars-lazy-0.16)
     (name "rust-polars-lazy")
     (version "0.15.1")
     (source
@@ -36147,7 +36177,6 @@ applications.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0xh3a0gjsisx62zwjmawxg9giin7bwmh7z7y4cc2d3ygy8nk19jh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -36157,13 +36186,7 @@ applications.")
         ("rust-polars-core" ,rust-polars-core-0.15)
         ("rust-polars-io" ,rust-polars-io-0.15)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-regex" ,rust-regex-1))))
-    (home-page "https://github.com/ritchie46/polars")
-    (synopsis "Lazy query engine for the Polars DataFrame library")
-    (description
-     "This crate provides a lazy query engine for the Polars DataFrame
-library.")
-    (license license:expat)))
+        ("rust-regex" ,rust-regex-1))))))
 
 (define-public rust-polars-lazy-0.14
   (package
