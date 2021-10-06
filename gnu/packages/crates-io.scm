@@ -48266,19 +48266,19 @@ as defined in RFC 3454.")
 (define-public rust-strip-ansi-escapes-0.1
   (package
     (name "rust-strip-ansi-escapes")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "strip-ansi-escapes" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vmc6cwxsvp02b17b6x42mnnnn5vlc1dqbcqc2a71yms59p6fqwx"))))
+        (base32 "1n36ly9vxb1wr5q76i7995xr7c0pb1pc8g7a3a3n47vwrwwvn701"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-vte" ,rust-vte-0.3))))
+       (("rust-vte" ,rust-vte-0.10))))
     (home-page "https://github.com/luser/strip-ansi-escapes")
     (synopsis "Strip ANSI escape sequences from byte streams")
     (description
