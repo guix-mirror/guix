@@ -4748,7 +4748,7 @@ is attributed to Albert Einstein.")
 (define-public powwow
   (package
     (name "powwow")
-    (version "1.2.22")
+    (version "1.2.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4756,7 +4756,7 @@ is attributed to Albert Einstein.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "12i11b8zxg8vdb9d6ims8qy2lmwwr42rcqbwq3vsa1x94s51bcbp"))))
+                "1wkl6j91pp40aps2hhnsv0bndgq49smfffws4hqcn7847bpnwwm6"))))
     (inputs
      `(("ncurses" ,ncurses)))
     (build-system gnu-build-system)
