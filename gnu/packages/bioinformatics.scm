@@ -10489,7 +10489,8 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1ja3bda1appxrzbfy7wp7khy30mm7lic8xbq3gkbpc5bld3as9cm"))))
+                "1ja3bda1appxrzbfy7wp7khy30mm7lic8xbq3gkbpc5bld3as9cm"))
+              (patches (search-patches "pigx-rnaseq-no-citeproc.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -10502,6 +10503,9 @@ once.  This package provides tools to perform Drop-seq analyses.")
              (substitute* "Makefile.in"
                (("^  tests/test_multiqc/test.sh") "")
                (("^  test.sh") ""))))
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+             (invoke "autoreconf" "-vif")))
          (add-before 'check 'set-timezone
            ;; The readr package is picky about timezones.
            (lambda* (#:key inputs #:allow-other-keys)
@@ -10545,7 +10549,9 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("python-deeptools" ,python-deeptools)
        ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
-     `(("tzdata" ,tzdata)))
+     `(("tzdata" ,tzdata)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
     (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for RNA sequencing experiments")
     (description "PiGX RNAseq is an analysis pipeline for preprocessing and
