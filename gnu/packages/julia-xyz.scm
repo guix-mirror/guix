@@ -617,7 +617,7 @@ with.")
 (define-public julia-colorvectorspace
   (package
     (name "julia-colorvectorspace")
-    (version "0.9.5")
+    (version "0.9.7")
     (source
       (origin
         (method git-fetch)
@@ -626,7 +626,7 @@ with.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1gx4k1bvf6lkzxphnvpkw857ihrkifhb68yvsj889k9pf1vda3fq"))))
+         (base32 "02gk7f5g5wjxdasbjf8bvv1m7clksh7mw1xmygjdirjz1q0d6dwi"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-colortypes" ,julia-colortypes)
