@@ -3651,23 +3651,25 @@ interfaces you are used to, but in an async version and ready for Rust's
 (define-public rust-async-stream-0.3
   (package
     (name "rust-async-stream")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "async-stream" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0p19qn5igblb86d35lda72q8vimk2iw8hk7r07wjj5y0rdqdyw1n"))))
+        (base32 "0986b72jksg4lndw76py9glry3snc29bbqrna874wl5jwgkp84qp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:cargo-test-flags '("--release" "--"
+                            "--skip=test")
+       #:cargo-inputs
        (("rust-async-stream-impl" ,rust-async-stream-impl-0.3)
         ("rust-futures-core" ,rust-futures-core-0.3))
        #:cargo-development-inputs
        (("rust-futures-util" ,rust-futures-util-0.3)
-        ("rust-tokio" ,rust-tokio-0.2)
-        ("rust-tokio-test" ,rust-tokio-test-0.2)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-test" ,rust-tokio-test-0.4)
         ("rust-trybuild" ,rust-trybuild-1))))
     (home-page "https://github.com/tokio-rs/async-stream")
     (synopsis "Asynchronous streams using async & await notation")
@@ -3699,7 +3701,7 @@ notation.")
        #:cargo-development-inputs
        (("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-futures-util" ,rust-futures-util-0.3)
-        ("rust-tokio" ,rust-tokio-0.2))))
+        ("rust-tokio" ,rust-tokio-1))))
     (home-page "https://github.com/tokio-rs/async-stream")
     (synopsis "Proc macros for async-stream crate")
     (description
