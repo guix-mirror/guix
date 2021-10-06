@@ -34012,6 +34012,38 @@ file and the generated @file{.rs} file.")
 definitions compiled to support read+write async.")
     (license license:asl2.0)))
 
+(define-public rust-parquet2-0.4
+  (package
+    (name "rust-parquet2")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parquet2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rsmrjy0r8q56gygycc5j0kgdbvrazh6xg6z8vcdyhn8r1v8yxbk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-stream" ,rust-async-stream-0.3)
+        ("rust-bitpacking" ,rust-bitpacking-0.8)
+        ("rust-brotli" ,rust-brotli-3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-lz4" ,rust-lz4-1)
+        ("rust-parquet-format-async-temp" ,rust-parquet-format-async-temp-0.2)
+        ("rust-snap" ,rust-snap-1)
+        ("rust-streaming-iterator" ,rust-streaming-iterator-0.1)
+        ("rust-zstd" ,rust-zstd-0.9))))
+    (home-page "https://crates.io/crates/parquet2")
+    (synopsis "Safe implementation of Parquet IO")
+    (description
+     "Parquet2 is a re-write of the official Parquet crate with performance,
+parallelism and safety in mind.")
+    (license license:asl2.0)))
+
 (define-public rust-parse-zoneinfo-0.3
   (package
     (name "rust-parse-zoneinfo")
