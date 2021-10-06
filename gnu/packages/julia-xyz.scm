@@ -3080,7 +3080,7 @@ plotting components.")
 (define-public julia-pooledarrays
   (package
     (name "julia-pooledarrays")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
       (origin
         (method git-fetch)
@@ -3089,7 +3089,7 @@ plotting components.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0ihvhzkxdw4qf0i6sbrickhdcwkmlin9zyixxn9xvgzm8nc0iwqy"))))
+         (base32 "0qdwvf1p5z6z0q4s4hn85ysd8wq47zy6hlzddc5ijvhk86ccqlrr"))))
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-dataapi" ,julia-dataapi)))
