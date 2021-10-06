@@ -454,6 +454,25 @@ preserve existing comment in unserialization/serialization steps, making
 it a convenient format to store user input files.")
     (license license:expat)))
 
+;; XXX: TODO(core-updates): Remove this package and apply the patch to the
+;; jsoncpp package.  This patch fixes the package version declared in the
+;; pkg-config file.
+(define-public jsoncpp-with-pkg-version
+  (package
+    (inherit jsoncpp)
+    (name "jsoncpp")
+    (version "1.9.4")
+    (home-page "https://github.com/open-source-parsers/jsoncpp")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qnx5y6c90fphl9mj9d20j2dfgy6s5yr5l0xnzid0vh71zrp6jwv"))
+              (patches
+               (search-patches "jsoncpp-pkg-config-version.patch"))))))
+
 ;; Tensorflow does not build with jsoncpp 1.8.x.  It is built with commit
 ;; 4356d9bba191e1e16ce7a92073cbf3e63564e973, which lies between version 1.7.2
 ;; and 1.7.3.

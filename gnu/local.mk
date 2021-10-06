@@ -1267,6 +1267,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/json-c-CVE-2020-12762.patch		\
   %D%/packages/patches/json-c-0.13-CVE-2020-12762.patch	\
   %D%/packages/patches/json-c-0.12-CVE-2020-12762.patch	\
+  %D%/packages/patches/jsoncpp-pkg-config-version.patch		\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jamvm-1.5.1-aarch64-support.patch	\
   %D%/packages/patches/jamvm-1.5.1-armv7-support.patch	\
