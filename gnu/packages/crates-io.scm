@@ -23635,8 +23635,34 @@ data efficiently.")
 that works on WASM too.")
     (license license:bsd-3)))
 
+(define-public rust-integer-encoding-3
+  (package
+    (name "rust-integer-encoding")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "integer-encoding" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f0mk7d694g2sz4my5zh7i5w4kijx5y16x6dip7fv0pazx013hch"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://github.com/dermesser/integer-encoding-rs")
+    (synopsis "Encoding and decoding integers to and from bytestrings")
+    (description
+     "This crate provides encoding and decoding of integers to and from
+bytestring representations.")
+    (license license:expat)))
+
 (define-public rust-integer-encoding-1
   (package
+    (inherit rust-integer-encoding-3)
     (name "rust-integer-encoding")
     (version "1.2.2")
     (source
@@ -23646,19 +23672,12 @@ that works on WASM too.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1c032xhif5d6a8nc4cak60g5ylwd6p9569122m5hm67brx2l5yhb"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-async-trait" ,rust-async-trait-0.1)
         ("rust-futures-util" ,rust-futures-util-0.3)
-        ("rust-tokio" ,rust-tokio-0.2))))
-    (home-page "https://github.com/dermesser/integer-encoding-rs")
-    (synopsis "Encoding and decoding integers to and from bytestrings")
-    (description
-     "This crate provides encoding and decoding of integers to and from
-bytestring representations.")
-    (license license:expat)))
+        ("rust-tokio" ,rust-tokio-0.2))))))
 
 (define-public rust-interpolate-name-0.2
   (package
