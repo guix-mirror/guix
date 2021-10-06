@@ -10567,10 +10567,16 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0c6npx35sszycf059w1x1k4k9hq1qqxny0i4p57q1188czr4561h"))))
+                "0c6npx35sszycf059w1x1k4k9hq1qqxny0i4p57q1188czr4561h"))
+              (patches (search-patches "pigx-chipseq-no-citeproc.patch"))))
     (build-system gnu-build-system)
-    ;; parts of the tests rely on access to the network
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:tests? #f ; parts of the tests rely on access to the network
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
     (inputs
      `(("grep" ,grep)
        ("coreutils" ,coreutils)
@@ -10621,7 +10627,9 @@ expression report comparing samples in an easily configurable manner.")
        ("bedtools" ,bedtools)
        ("kentutils" ,kentutils)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for ChIP sequencing experiments")
     (description "PiGX ChIPseq is an analysis pipeline for preprocessing, peak
