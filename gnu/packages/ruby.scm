@@ -8722,6 +8722,8 @@ application.")
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f))               ; test suite tries to connect to google.com
+    (inputs
+     `(("openssl" ,openssl)))
     (native-inputs
      `(("ruby-rake-compiler" ,ruby-rake-compiler)))
     (synopsis "Single-threaded network event framework for Ruby")
