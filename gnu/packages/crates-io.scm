@@ -48095,6 +48095,30 @@ UTF-8.")
      "This package provides a streebog (GOST R 34.11-2012) hash function.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-strength-reduce-0.2
+  (package
+    (name "rust-strength-reduce")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strength_reduce" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m12phq654mfxpmh2h5akqkag5ha6nlhjc2bp9jwarr5r1qjzzx3"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "http://github.com/ejmahler/strength_reduce")
+    (synopsis "Faster integer division and modulus operations")
+    (description "Strength_reduce implements integer division and modulo via
+@dfn{arithmetic strength reduction}.  Modern processors can do multiplication
+and shifts much faster than division, and arithmetic strength reduction is an
+algorithm to transform divisions into multiplications and shifts.  Compilers
+already perform this optimization for divisors that are known at compile time;
+this library enables this optimization for divisors that are only known at
+runtime.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-string-0.2
   (package
     (name "rust-string")
