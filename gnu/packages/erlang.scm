@@ -301,6 +301,26 @@ Mozilla's canonical set.")
 printing extending the io:format syntax to add colours.")
     (license license:expat)))
 
+(define-public erlang-covertool
+  (package
+    (name "erlang-covertool")
+    (version "2.0.4")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "covertool" version))
+       (sha256
+        (base32 "10krv66nabzrgkz4k3gfp7zx1x9030vnkhc0n1f1chwzwf4sa6nx"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/covertool/covertool")
+    (synopsis "Convert Erlang cover data into Cobertura XML reports")
+    (description "This package provides a build tool and plugin to convert
+exported Erlang cover data sets into Cobertura XML reports, which can then be
+feed to the Jenkins Cobertura plug-in.
+
+On @emph{hex.pm}, this plugin was previously called @code{rebar_covertool}.")
+    (license license:bsd-2)))
+
 (define-public erlang-cth-readable
   (package
     (name "erlang-cth-readable")
