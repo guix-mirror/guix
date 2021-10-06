@@ -15346,6 +15346,24 @@ signing, and verification in pure Rust.")
      "Levenshtein edit distance between strings, a measure for similarity.")
     (license license:asl2.0)))
 
+(define-public rust-ego-tree-0.6
+  (package
+    (name "rust-ego-tree")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ego-tree" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "149mkc6j7bx653s39rpnsnpl5dvd1rj18czcil57w54k868a8s1s"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/programble/ego-tree")
+    (synopsis "Vec-backed ID-tree")
+    (description "Ego Tree provides a vec-backed ID-tree.")
+    (license license:isc)))
+
 (define-public rust-either-1
   (package
     (name "rust-either")
