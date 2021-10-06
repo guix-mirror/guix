@@ -11500,8 +11500,31 @@ terminals.")
         ("rust-serde" ,rust-serde-1)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-crossterm-winapi-0.8
+  (package
+    (name "rust-crossterm-winapi")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossterm_winapi" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01q57jwnlicqxa2igg5nig3916kf5w6sqgbxk40q6hr2frh6cs9s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/crossterm-rs/crossterm-winapi")
+    (synopsis "Basic simple abstractions around common WinAPI calls")
+    (description
+     "This package is a WinAPI wrapper that provides some basic simple
+abstractions around common WinAPI calls.")
+    (license license:expat)))
+
 (define-public rust-crossterm-winapi-0.7
   (package
+    (inherit rust-crossterm-winapi-0.8)
     (name "rust-crossterm-winapi")
     (version "0.7.0")
     (source
@@ -11511,17 +11534,10 @@ terminals.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1fa047zz228qyqbcjdss64j0n01p4adr29yh9w24lgjdrr59da0d"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/crossterm-rs/crossterm-winapi")
-    (synopsis "Basic simple abstractions around common WinAPI calls")
-    (description
-     "This package is a WinAPI wrapper that provides some basic simple
-abstractions around common WinAPI calls.")
-    (license license:expat)))
+       (("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-crossterm-winapi-0.6
   (package
