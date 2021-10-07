@@ -272,7 +272,9 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0v9m0bazhj48kwc8x3gkxg5c3kcvknvqfjlq22z6pm2h2r2nln6v"))))
+                "0v9m0bazhj48kwc8x3gkxg5c3kcvknvqfjlq22z6pm2h2r2nln6v"))
+              (patches (search-patches
+                        "meson-allow-dirs-outside-of-prefix.patch"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs and patching many
