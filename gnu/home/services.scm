@@ -286,8 +286,13 @@ will be put in @file{~/.guix-home/files}.")))
        ;; XDG_RUNTIME_DIR dissapears on logout, that means such trick
        ;; allows to launch on-first-login script on first login only
        ;; after complete logout/reboot.
-       (when (not (file-exists? flag-file-path))
-         (begin #$@gexps (touch flag-file-path))))))
+       (if (file-exists? xdg-runtime-dir)
+           (unless (file-exists? flag-file-path)
+             (begin #$@gexps (touch flag-file-path)))
+           (display "XDG_RUNTIME_DIR doesn't exists, on-first-login script
+won't execute anything.  You can check if xdg runtime directory exists,
+XDG_RUNTIME_DIR variable is set to apropriate value and manually execute the
+script by running '$HOME/.guix-home/on-first-login'")))))
 
 (define (on-first-login-script-entry m-on-first-login)
   "Return, as a monadic value, an entry for the on-first-login script
