@@ -108,5 +108,5 @@ an empty directory if ORIGIN could not be disassembled."
   (manifest
    (list (manifest-entry
            (name "disarchive-collection")
-           (version (length origins))
+           (version (number->string (length origins)))
            (item (disarchive-collection origins))))))
