@@ -2840,13 +2840,13 @@ interface to interact with these types.")
          (base32 "16vn5w5274kcywh1xp0zqjk5q10xrk125aznz5av6wifwrvghk8s"))))
     (build-system julia-build-system)
     (arguments
-     `(#:tests? #f      ; Test suite not updated for ChainRulesTestUtils-1.0.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'drop-cuda-support
+         (add-after 'unpack 'skip-cuda-tests
            (lambda _
              (substitute* "test/runtests.jl"
-               (("using CUDA") ""))
+               (("using CUDA") "")
+               (("&& CUDA\\.functional\\(\\)") ""))
              (setenv "NNLIB_TEST_CUDA" "false"))))))
     (propagated-inputs
      `(("julia-adapt" ,julia-adapt)
