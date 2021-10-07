@@ -204,11 +204,12 @@ implementation with no external dependencies.")
     (package
       (name "sbcl-golden-utils")
       (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/mfiano/mfiano-utils")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://git.mfiano.net/mfiano/golden-utils")
+               (url home-page)
                (commit commit)))
          (file-name (git-file-name "golden-utils" version))
          (sha256
@@ -216,7 +217,6 @@ implementation with no external dependencies.")
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
-      (home-page "https://git.mfiano.net/mfiano/golden-utils")
       (synopsis "Common Lisp utility library")
       (description
        "This is a Common Lisp library providing various utilities.")
