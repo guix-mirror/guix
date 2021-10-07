@@ -657,8 +657,10 @@ Portuguese, Spanish and Italian.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
-                           "fet-" version ".tar.bz2"))
+       (uri (let ((directory "https://www.lalescu.ro/liviu/fet/download/")
+                  (base (string-append "fet-" version ".tar.bz2")))
+              (list (string-append directory base)
+                    (string-append directory "old/" base))))
        (sha256
         (base32 "16m20vbhv8i7saxqb731bhds1f86d6x1f935j3ivg357805fqzll"))))
     (build-system gnu-build-system)
