@@ -9,7 +9,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -179,7 +179,7 @@ shared NFS home directories.")
 (define glib
   (package
     (name "glib")
-    (version "2.68.3")
+    (version "2.70.0")
     (source
      (origin
        (method url-fetch)
@@ -188,7 +188,7 @@ shared NFS home directories.")
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "0f1iprj7v0b5wn9njj39dkl25g6filfs7i4ybk20jq821k1a7qg7"))
+        (base32 "0hh7hk02fkm1bn48k4z8f3kgv9qbni5z22gizd567fn527w7s390"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
@@ -196,12 +196,12 @@ shared NFS home directories.")
        (snippet
         '(begin
            (substitute* "tests/spawn-test.c"
-             (("/bin/sh") "sh"))
-           #t))))
+             (("/bin/sh") "sh"))))))
     (build-system meson-build-system)
     (outputs '("out"                    ;libraries, locales, etc
                "static"                 ;static libraries
-               "bin"))                  ;executables; depends on Python
+               "bin"                    ;executables; depends on Python
+               "debug"))
     (arguments
      `(#:disallowed-references
        (,tzdata-for-tests
@@ -212,9 +212,12 @@ shared NFS home directories.")
                    `(,(this-package-native-input "python")
                      ,(this-package-native-input "python-wrapper")))
               '()))
-       #:configure-flags '("--default-library=both"
-                           "-Dman=true"
-                           "-Dselinux=disabled")
+       #:configure-flags (list "--default-library=both"
+                               "-Dman=false"
+                               "-Dselinux=disabled"
+                               (string-append "--bindir="
+                                              (assoc-ref %outputs "bin")
+                                              "/bin"))
        #:phases
        (modify-phases %standard-phases
          ;; Needed to pass the test phase on slower ARM and i686 machines.
@@ -225,6 +228,9 @@ shared NFS home directories.")
                 (string-append first " = " second "0")))))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
+             (substitute* "gio/tests/meson.build"
+               ((".*'testfilemonitor'.*") ;marked as flaky
+                ""))
              (with-directory-excursion "glib/tests"
                (substitute* '("unix.c" "utils.c")
                  (("[ \t]*g_test_add_func.*;") "")))
@@ -242,8 +248,7 @@ shared NFS home directories.")
                         (string-append "//" all "\n"))
                        (("^  g_assert_cmpfloat \\(elapsed, ==.*" all)
                         (string-append "//" all "\n"))))
-                   '())
-             #t))
+                   '())))
          ;; Python references are not being patched in patch-phase of build,
          ;; despite using python-wrapper as input. So we patch them manually.
          ;;
@@ -271,27 +276,19 @@ shared NFS home directories.")
                                              "share/zoneinfo"))
              ;; Some tests want write access there.
              (setenv "HOME" (getcwd))
-             (setenv "XDG_CACHE_HOME" (getcwd))
-             #t))
+             (setenv "XDG_CACHE_HOME" (getcwd))))
          (add-after 'install 'move-static-libraries
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (static (assoc-ref outputs "static")))
                (mkdir-p (string-append static "/lib"))
-               (for-each (lambda (file)
-                           (link file (string-append static "/lib/"
-                                                     (basename file)))
-                           (delete-file file))
-                         (find-files (string-append out "/lib") "\\.a$")))))
-         ;; Meson does not permit the bindir to be outside of prefix.
-         (add-after 'install 'move-bin
+               (for-each (lambda (a)
+                           (rename-file a (string-append static "/lib/"
+                                                         (basename a))))
+                         (find-files out "\\.a$")))))
+         (add-after 'install 'patch-pkg-config-files
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (assoc-ref outputs "bin")))
-               (mkdir-p bin)
-               (rename-file
-                (string-append out "/bin")
-                (string-append bin "/bin"))
+             (let ((out (assoc-ref outputs "out")))
                ;; Do not refer to "bindir", which points to "${prefix}/bin".
                ;; We don't patch "bindir" to point to "$bin/bin", because that
                ;; would create a reference cycle between the "out" and "bin"
@@ -300,20 +297,18 @@ shared NFS home directories.")
                    (list
                     (string-append out "/lib/pkgconfig/gio-2.0.pc")
                     (string-append out "/lib/pkgconfig/glib-2.0.pc"))
-                 (("bindir=\\$\\{prefix\\}/bin") "")
-                 (("=\\$\\{bindir\\}/") "="))
-               #t))))))
+                 (("^bindir=.*")
+                  "")
+                 (("=\\$\\{bindir\\}/")
+                  "="))))))))
     (native-inputs
-     `(("docbook-xsl" ,docbook-xsl)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
        ("m4" ,m4)                       ; for installing m4 macros
        ("perl" ,perl)                   ; needed by GIO tests
        ("pkg-config" ,pkg-config)
        ("python" ,python)               ; For 'patch-python-references
        ("python-wrapper" ,python-wrapper)
-       ("tzdata" ,tzdata-for-tests)     ; for tests/gdatetime.c
-       ("xmllint" ,libxml2)
-       ("xsltproc" ,libxslt)))
+       ("tzdata" ,tzdata-for-tests)))   ; for tests/gdatetime.c
     (inputs
      `(("bash-completion" ,bash-completion)
        ;; "python", "python-wrapper" and "bash-minimal"
@@ -326,10 +321,10 @@ shared NFS home directories.")
        ("dbus" ,dbus)
        ("libelf" ,libelf)))
     (propagated-inputs
-     `(("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
-       ("pcre" ,pcre)   ; in the Requires.private field of glib-2.0.pc
+     `(("libffi" ,libffi)    ; in the Requires.private field of gobject-2.0.pc
+       ("pcre" ,pcre)        ; in the Requires.private field of glib-2.0.pc
        ("util-linux" ,util-linux "lib") ;for libmount
-       ("zlib" ,zlib))) ; in the Requires.private field of glib-2.0.pc
+       ("zlib" ,zlib)))         ; in the Requires.private field of glib-2.0.pc
     (native-search-paths
      ;; This variable is not really "owned" by GLib, but several related
      ;; packages refer to it: gobject-introspection's tools use it as a search
@@ -350,25 +345,28 @@ libraries and applications written in C.  It provides the core object system
 used in GNOME, the main loop implementation, and a large set of utility
 functions for strings and common data structures.")
     (home-page "https://wiki.gnome.org/Projects/GLib")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties '((hidden? . #t)))))
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
   ;; which in turn depends on glib.
   (package/inherit glib
-    ;; (properties (alist-delete 'hidden? (package-properties glib)))
-    (properties '((hidden? . #t)))
+    (properties (alist-delete 'hidden? (package-properties glib)))
     (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
     (native-inputs
      `(("docbook-xml-4.2" ,docbook-xml-4.2)
        ("docbook-xml-4.5" ,docbook-xml)
-       ("gtk-doc" ,gtk-doc)             ; for the doc
+       ("docbook-xsl" ,docbook-xsl)
+       ("gtk-doc" ,gtk-doc)
        ("libxml2" ,libxml2)
+       ("xsltproc" ,libxslt)
        ,@(package-native-inputs glib)))
     (arguments
      (substitute-keyword-arguments (package-arguments glib)
        ((#:configure-flags flags ''())
-        `(cons "-Dgtk_doc=true" ,flags))
+        `(cons "-Dgtk_doc=true"
+               (delete "-Dman=false" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'patch-docbook-xml
@@ -380,8 +378,7 @@ functions for strings and common data structures.")
                                    "/xml/dtd/docbook/"))
                    (("http://www.oasis-open.org/docbook/xml/4\\.2/")
                     (string-append (assoc-ref inputs "docbook-xml-4.2")
-                                   "/xml/dtd/docbook/"))))
-               #t))
+                                   "/xml/dtd/docbook/"))))))
            (add-after 'install 'move-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -390,8 +387,7 @@ functions for strings and common data structures.")
                  (mkdir-p (string-append doc "/share"))
                  (rename-file
                   (string-append out html)
-                  (string-append doc html))
-                 #t)))))))))
+                  (string-append doc html)))))))))))
 
 (define (python-extension-suffix python triplet)
   "Determine the suffix for C extensions for PYTHON when compiled
