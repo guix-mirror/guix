@@ -1409,6 +1409,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lirc-reproducible-build.patch		\
   %D%/packages/patches/llhttp-bootstrap-CVE-2020-8287.patch	\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
+  %D%/packages/patches/llvm-3.6-fix-build-with-gcc-10.patch	\
   %D%/packages/patches/llvm-9-fix-bitcast-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-lpad-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-scev-miscompilation.patch	\

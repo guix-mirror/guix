@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -841,6 +842,8 @@ of programming tools as well as libraries with equivalent functionality.")
      (origin
        (method url-fetch)
        (uri (llvm-uri "llvm" version))
+       (patches
+        (search-patches "llvm-3.6-fix-build-with-gcc-10.patch"))
        (sha256
         (base32
          "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))))
