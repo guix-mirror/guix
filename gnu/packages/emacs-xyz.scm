@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -10396,7 +10396,12 @@ maximizes flexibility (at the expense of conciseness).")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/technomancy/find-file-in-project")
-                    (commit version)))
+
+                    ;; The "6.1.2" tag was modified in place, initially
+                    ;; pointing to 756f616f77f3829de07821480e229c587c1afec0
+                    ;; and then change to the subsequent commit,
+                    ;; 52274e6001545bdf45c6477ba21bfaa8eca04755.
+                    (commit "756f616f77f3829de07821480e229c587c1afec0")))
               (file-name (git-file-name name version))
               (sha256
                (base32
