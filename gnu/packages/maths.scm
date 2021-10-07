@@ -5776,7 +5776,7 @@ reduction.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0db9wgy9spwm76mgfisnifrlg69y9cadjgxjr4gdwzfgg6wgqf6d"))))
+                "1xgx3cd57vc7gbjic24j1q2za6j3ybz6nk4afvvpbwsf33xnlf4v"))))
     (inputs
      `(("boost" ,boost)
        ("glu" ,glu)
