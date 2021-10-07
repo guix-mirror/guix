@@ -29560,3 +29560,29 @@ current region or entire buffer.")
 It includes syntax highlighting, automatic indentation, and imenu integration.
 Unlike Emacs' generic ASM mode, it understands NASM-specific syntax.")
     (license license:unlicense)))
+
+(define-public emacs-global-tags
+  (let ((commit "06db25d91cc8bfb5e24e02adc04de1226c7e742d")
+        (revision "0"))
+    (package
+      (name "emacs-global-tags")
+      (version (git-version "0.7" revision commit))
+      (home-page "https://git.launchpad.net/global-tags.el/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1q30cbqq0h1gfwlcbnx9s930li7w7a0y8sx2ivbvvyyc2j5gsk4j"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)
+         ("ht" ,emacs-ht)))
+      (synopsis "Testeable Emacs Lisp API that wraps around GNU Global")
+      (description "This package provides a testeable Emacs Lisp API that
+wraps GNU Global calls and integration to editor using this API with
+project.el and xref.el.")
+      (license license:gpl3+))))
