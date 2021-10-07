@@ -4808,12 +4808,12 @@ workstations as well as consumer software such as music players.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "1.3.0")
+    (version "1.3.0")                     ;marked unmaintained as of Oct. 2021
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/iurie-sw/redkite")
+             (url "https://github.com/free-sm/redkite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
