@@ -173,6 +173,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
@@ -10440,12 +10441,21 @@ This package is part of the KDE games module.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/mjresource.py"
+               (("'share', 'kmahjongglib'" all)
+                (string-append "'" (assoc-ref inputs "libkmahjongg")
+                               "/share', 'kmahjongglib'")))))
+         (add-after 'qt-wrap 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/kajongg")
-                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
-               #t))))))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("GUIX_PYTHONPATH" ":" prefix
+                               (,(getenv "GUIX_PYTHONPATH")))))
+                         (list (string-append out "/bin/kajongg")
+                               (string-append out "/bin/kajonggserver")))))))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ;("perl" ,perl)
@@ -10459,6 +10469,7 @@ This package is part of the KDE games module.")
        ("python" ,python)
        ("python-twisted" ,python-twisted)
        ("python-pyqt" ,python-pyqt)
+       ("python-zope-interface" ,python-zope-interface)
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)))
     (home-page "https://games.kde.org/")
