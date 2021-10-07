@@ -17942,7 +17942,11 @@ Common Lisp based on the hash array-mapped trie data structure.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/mdbergmann/cl-gserver")
-             (commit version)))
+
+             ;; The "1.8.0" tag must have been moved from
+             ;; c83d92a66102faa514b546029a9bd2078b95dc0f to
+             ;; 90832f02f0556463e332cd055c3c1be58f323aea, 22 commits later!
+             (commit "c83d92a66102faa514b546029a9bd2078b95dc0f")))
        (file-name (git-file-name "cl-gserver" version))
        (sha256
         (base32 "1bfz7z8v417dvsp1jz76ir3ihcs8g7zis2d56xx1dpzqzjd95g7z"))))
