@@ -2828,7 +2828,7 @@ interface to interact with these types.")
 (define-public julia-nnlib
   (package
     (name "julia-nnlib")
-    (version "0.7.25")
+    (version "0.7.29")
     (source
       (origin
         (method git-fetch)
@@ -2837,7 +2837,7 @@ interface to interact with these types.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0vp4kcn9ivkhmqgkyvnabcdqi6pv7ghbmjc1llkwv1kzhylyf86p"))))
+         (base32 "16vn5w5274kcywh1xp0zqjk5q10xrk125aznz5av6wifwrvghk8s"))))
     (build-system julia-build-system)
     (arguments
      `(#:tests? #f      ; Test suite not updated for ChainRulesTestUtils-1.0.
