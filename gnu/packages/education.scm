@@ -653,14 +653,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "6.0.4")
+    (version "6.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "16yajwbvm2ain1p2h81qfm8pbrdp70zljck67j9yijwyr6xqdj2a"))))
+        (base32 "16m20vbhv8i7saxqb731bhds1f86d6x1f935j3ivg357805fqzll"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -671,8 +671,7 @@ Portuguese, Spanish and Italian.")
                                 "src/src.pro"
                                 "src/src-cl.pro"
                                 "src/interface/fet.cpp")
-               (("/usr") (assoc-ref outputs "out")))
-             #t))
+               (("/usr") (assoc-ref outputs "out")))))
          (replace 'configure
            (lambda _ (invoke "qmake" "fet.pro"))))))
     (inputs
