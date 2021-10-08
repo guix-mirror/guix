@@ -1685,7 +1685,7 @@ display a clock or apply image manipulation techniques to the background image."
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
      (origin
        (method git-fetch)
@@ -1694,7 +1694,7 @@ display a clock or apply image manipulation techniques to the background image."
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17cn4d3dx92v40jd9vl41smp8hh3gf5chd1j2f7l1lrpfpnllg5x"))))
+        (base32 "109a49f064ma5js2d7maribmfalswbmmhq2fraa7hfz5pf2jxs2w"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
               ("fmt" ,fmt)
@@ -1705,6 +1705,7 @@ display a clock or apply image manipulation techniques to the background image."
               ("libinput" ,libinput)
               ("libmpdclent" ,libmpdclient)
               ("libnl" ,libnl)
+              ("libxml2" ,libxml2)
               ("pulseaudio" ,pulseaudio)
               ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
