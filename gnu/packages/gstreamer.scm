@@ -902,16 +902,15 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.18.4")
+    (version "1.18.5")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
-       (patches (search-patches "gst-plugins-ugly-fix-out-of-bound-reads.patch"))
        (sha256
-        (base32 "0g6i4db1883q3j0l2gdv46fcqwiiaw63n6mhvsfcms1i1p7g1391"))))
+        (base32 "1nb6kz3gbn8r0sld6xkm16qpgyb2bvhafb7sff9rgagqk0z80cnz"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
@@ -928,8 +927,7 @@ par compared to the rest.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t)))))
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
