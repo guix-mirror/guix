@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2021 pineapples <guixuser6392@protonmail.com>
 ;;; Copyright © 2021 Robby Zambito <contact@robbyzambito.me>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2240,48 +2241,44 @@ fallback to generic Systray support if none of those are available.")
     (license license:lgpl2.1+)))
 
 (define-public libportal
-  (let ((commit "bff3289")
-        (revision "1"))
-    (package
-      (name "libportal")
-      (version (git-version "0.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/flatpak/libportal")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "104b91qircr1i9jkmm6f725awywky52aimrki303kiaadn2v8b5i"))))
-      (build-system meson-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'move-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (doc (assoc-ref outputs "doc"))
-                     (html "/share/gtk-doc"))
-                 (copy-recursively (string-append out html)
-                                   (string-append doc html))
-                 (delete-file-recursively (string-append out html))
-                 #t))))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("gtk-doc" ,gtk-doc/stable)
-         ("docbook-xsl" ,docbook-xsl)
-         ("docbook-xml" ,docbook-xml)
-         ("libxml2" ,libxml2)
-         ("glib:bin" ,glib "bin")))
-      (propagated-inputs
-       `(("glib" ,glib)))
-      (outputs '("out" "doc"))
-      (home-page "https://github.com/flatpak/libportal")
-      (synopsis "Flatpak portal library")
-      (description
-       "libportal provides GIO-style async APIs for most Flatpak portals.")
-      (license license:lgpl2.1+))))
+  (package
+   (name "libportal")
+   (version "0.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://github.com/flatpak/libportal/releases/download/"
+                                version "/libportal-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0a7gmhyf0b58xy335jyf524g1fyc2id4r88anhvg47430w4zbm9w"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+                     (add-after 'install 'move-doc
+                                (lambda* (#:key outputs #:allow-other-keys)
+                                         (let ((out (assoc-ref outputs "out"))
+                                               (doc (assoc-ref outputs "doc"))
+                                               (html "/share/gtk-doc"))
+                                           (copy-recursively (string-append out html)
+                                                             (string-append doc html))
+                                           (delete-file-recursively (string-append out html))
+                                           #t))))))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("gtk-doc" ,gtk-doc/stable)
+      ("docbook-xsl" ,docbook-xsl)
+      ("docbook-xml" ,docbook-xml)
+      ("libxml2" ,libxml2)
+      ("glib:bin" ,glib "bin")))
+   (propagated-inputs
+    `(("glib" ,glib)))
+   (outputs '("out" "doc"))
+   (home-page "https://github.com/flatpak/libportal")
+   (synopsis "Flatpak portal library")
+   (description
+    "libportal provides GIO-style async APIs for most Flatpak portals.")
+   (license license:lgpl2.1+)))
 
 (define-public xdg-desktop-portal
   (package
