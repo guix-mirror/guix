@@ -5,7 +5,6 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +46,7 @@
 (define-public zxing-cpp
   (package
     (name "zxing-cpp")
-    (version "1.2.0")
+    (version "1.0.8")
     (source
      (origin
        (method git-fetch)
@@ -57,14 +56,32 @@
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gjj9c7h634rrmmgzbc7cxjqsxdq0paj6113k02ncjm1s9abk7ik"))))
+        (base32 "011sq8wcjfxbnd8sj6bf2fgkamlp8gj6q835g61c952npvwsnl71"))))
+    (native-inputs
+     `(("googletest-source" ,(package-source googletest))))
     (build-system cmake-build-system)
     (arguments
-     ;; The test suite build system is written in a way that required external
-     ;; libraries such as googletest, fmt and others are to be fetched from
-     ;; the network (see: https://github.com/nu-book/zxing-cpp/issues/260).
-     `(#:tests? #f
-       #:configure-flags '("-DBUILD_BLACKBOX_TESTS=OFF")))
+     `(#:out-of-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           ;; Copy the googletest sources to where the CMake build expects them.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((source (assoc-ref inputs "googletest-source"))
+                   (target "test/unit/googletest-src"))
+               (mkdir-p target)
+               (copy-recursively source target)
+               ;; Disable downloading via ExternalProject.
+               (substitute* "test/unit/CMakeLists.txt.in"
+                (("ExternalProject_Add\\(") "message("))
+               #t)))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "test/unit"
+               (invoke "cmake" ".")
+               (invoke "make")
+               (invoke "./ZXingUnitTest"))
+             #t)))))
     (synopsis "C++ port of ZXing")
     (description "ZXing-CPP is a barcode scanning library.")
     (home-page "https://github.com/nu-book/zxing-cpp")

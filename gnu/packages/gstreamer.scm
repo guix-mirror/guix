@@ -10,7 +10,6 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +43,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
@@ -411,7 +409,7 @@ arrays of data.")
 (define-public gstreamer-docs
   (package
     (name "gstreamer-docs")
-    (version "1.19.2")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -419,7 +417,7 @@ arrays of data.")
                     "/gstreamer-docs-" version ".tar.xz"))
               (sha256
                (base32
-                "1isrp3c9gm59br9vbidd1sgqdjgl1ka2p269bqxmh5dcn4f2gz6a"))))
+                "07hrgn11ll16yahyyh5684k8ms1j9npsyb8lj0skwbapin4czshm"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -437,7 +435,8 @@ arrays of data.")
              (invoke (string-append tar "/bin/tar") "-xvf" source
                      "--strip-components=3"
                      (string-append ,name "-" ,version
-                                    "/devhelp/books/GStreamer")))))))
+                                    "/devhelp/books/GStreamer")))
+           #t))))
     (native-inputs
      `(("tar" ,tar)
        ("xz" ,xz)))
@@ -467,12 +466,13 @@ the GStreamer multimedia framework.")
           (("'CK_DEFAULT_TIMEOUT', '[0-9]*'")
            "'CK_DEFAULT_TIMEOUT', '600'")
           (("timeout ?: .*\\)")
-           "timeout: 90 * 60)"))))))
+           "timeout: 90 * 60)"))
+        #t))))
 
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.19.2")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
@@ -481,13 +481,26 @@ the GStreamer multimedia framework.")
              version ".tar.xz"))
        (sha256
         (base32
-         "03bfgsxd3njkaa5vm99hi36b4n98ywand60h3p18jlqyjfjpnnvf"))))
+         "1igv9l4hm21kp1jmlwlagzs7ly1vaxv1sbda29q8247372dwkvls"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         ,@%common-gstreamer-phases)))
+         ,@%common-gstreamer-phases
+         ;; FIXME: Since switching to the meson-build-system, two tests
+         ;; started failing on i686.  See
+         ;; <https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/499>.
+         ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                          (%current-system)))
+               `((add-after 'unpack 'disable-some-tests
+                   (lambda _
+                     (substitute* "tests/check/gst/gstsystemclock.c"
+                       (("tcase_add_test \\(tc_chain, test_stress_cleanup_unschedule.*")
+                        "")
+                       (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
+                        ""))
+                     #t)))
+               '()))))
     (propagated-inputs
      ;; In gstreamer-1.0.pc:
      ;;   Requires: glib-2.0, gobject-2.0
@@ -532,15 +545,16 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.19.2")
+    (version "1.18.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gstreamer.freedesktop.org/src/" name "/"
                           name "-" version ".tar.xz"))
+      (patches (search-patches "gst-plugins-base-fix-id3v2-invalid-read.patch"))
       (sha256
        (base32
-        "04x5666vgg89dd9psxmnr99dszk8ykkc9dclg2ln2sq07kyh9qyd"))))
+        "08w3ivbc6n4vdds2ap6q7l8zdk9if8417nznyqidf0adm0lk5r99"))))
     (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
@@ -583,14 +597,14 @@ This package provides the core library and elements.")
        ("gettext" ,gettext-minimal)
        ("xorg-server" ,xorg-server-for-tests)))
     (arguments
-     `(#:meson ,meson-0.55
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
          (add-before 'configure 'patch
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -601,7 +615,8 @@ This package provides the core library and elements.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
@@ -612,7 +627,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.19.2")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
@@ -620,12 +635,14 @@ for the GStreamer multimedia library.")
         (string-append
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
+       (patches (search-patches "gst-plugins-good-fix-test.patch"
+                                "gst-plugins-good-CVE-2021-3497.patch"
+                                "gst-plugins-good-CVE-2021-3498.patch"))
        (sha256
-        (base32 "0bjfipap6wc3w28hgf817hc6jvjbblkjil42a356vg242412xsab"))))
+        (base32 "1c1rpq709cy8maaykyn1n0kckj9c6fl3mhvixkk6xmdwkcx0xrdn"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
@@ -639,7 +656,8 @@ for the GStreamer multimedia library.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -702,14 +720,15 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.19.2")
+    (version "1.18.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
+              (patches (search-patches "gst-plugins-bad-fix-overflow.patch"))
               (sha256
                (base32
-                "0y895s0jpfdpdqh2n55ki6gzvji5228v7z541if2xjgjka5gk0jk"))
+                "0py8k4pbalm9mxkpjbjxis0gp7g74wg5g4yax5q8rccmany0ds3l"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -718,7 +737,6 @@ model to base your own plug-in on, here it is.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dsctp-internal-usrsctp=disabled")
-       #:meson ,meson-0.55
        #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
@@ -756,7 +774,8 @@ model to base your own plug-in on, here it is.")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/932
                  ((".*elements/curlhttpsrc\\.c.*") "")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
-                 ((".*elements/dtls\\.c.*") "")))))
+                 ((".*elements/dtls\\.c.*") ""))
+               #t)))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -767,7 +786,8 @@ model to base your own plug-in on, here it is.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
     (propagated-inputs
      `(("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)))
@@ -890,19 +910,19 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.19.2")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
+       (patches (search-patches "gst-plugins-ugly-fix-out-of-bound-reads.patch"))
        (sha256
-        (base32 "1pwz68qg40018ai655fdrjn5clmn0gp2b7dik0jzwx0fzbwzr87j"))))
+        (base32 "0g6i4db1883q3j0l2gdv46fcqwiiaw63n6mhvsfcms1i1p7g1391"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
@@ -916,7 +936,8 @@ par compared to the rest.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -949,17 +970,18 @@ think twice about shipping them.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.19.2")
-    (source (origin
-              (method url-fetch)
-              (uri(string-append
-                   "https://gstreamer.freedesktop.org/src/" name "/"
-                   name "-" version ".tar.xz"))
-              (sha256
-               (base32 "0rv4vxrqvlc8lm1afcg934k961gysx94xshmb5jv4xpwjkl8akzw"))))
+    (version "1.18.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://gstreamer.freedesktop.org/src/" name "/"
+         name "-" version ".tar.xz"))
+       (patches (search-patches "gst-libav-64channels-stack-corruption.patch"))
+       (sha256
+        (base32 "15n3x3vhshqa3icw93g4vqmqd46122anzqvfxwn6q8famlxlcjil"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:meson ,meson-0.55))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -979,7 +1001,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.19.2")
+    (version "1.18.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -987,12 +1009,11 @@ decoders, muxers, and demuxers provided by FFmpeg.")
                     "gst-editing-services-" version ".tar.xz"))
               (sha256
                (base32
-                "007rd6vn9ly6djzgb8hilgj8rgdy2530w72vps0d0631fxckxh4g"))))
+                "010xg960qsh5dwmf0y9l1q13h0cymmrgapzla2zsw66ylxqbi1s6"))))
     (build-system meson-build-system)
     (arguments
      ;; FIXME: 16/22 failing tests.
-     `(#:meson ,meson-0.55
-       #:tests? #f
+     `(#:tests? #f
        #:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases (modify-phases %standard-phases
                   ,@%common-gstreamer-phases)))
@@ -1052,7 +1073,7 @@ given, also pass them to the build system instead of the ones used by PKG."
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.19.2")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1060,11 +1081,10 @@ given, also pass them to the build system instead of the ones used by PKG."
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "1y5wkp0nzqks8q5dbqi0491yv2yia4jz3bwh7sa2v8whkg46v3c7"))))
+                "171qxzndii7ynn9ag3a12h9vyydxzwy1j4ip3cb8hgim1dv0z7g1"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:modules ((guix build meson-build-system)
+     `(#:modules ((guix build meson-build-system)
                   (guix build utils)
                   ((guix build python-build-system) #:prefix python:))
        #:imported-modules (,@%meson-build-system-modules
