@@ -3951,15 +3951,16 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/supertuxkart/SuperTuxKart/"
+       (uri (string-append "https://github.com/supertuxkart/stk-code/"
+                           "releases/download/"
                            version "/SuperTuxKart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "0dvx56hmy6wdhl7m9dw8zc1n3jqfp05gnxl6zs1rbfdyzl5dybh5"))
+         "1z9z13zarv28h4jrmjna5hr6m9266pm7c2kgiwhqls01k06ypazf"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -3969,17 +3970,18 @@ This game is based on the GPL version of the famous game TuxRacer.")
            ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
            ;; FIXME: try to unbundle angelscript, libmcpp and libraqm
            (for-each delete-file-recursively
-                     '("lib/glew"
-                       "lib/wiiuse"
-                       "lib/enet"))
+                     '("lib/dnsc"
+                       "lib/enet"
+                       "lib/mojoal"
+                       "lib/wiiuse"))
            #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags
        (list "-DUSE_WIIUSE=0"
-             "-DUSE_SYSTEM_GLEW=TRUE"
              "-DUSE_SYSTEM_ENET=TRUE"
+             "-DUSE_CRYPTO_OPENSSL=TRUE"
              ;; In order to use the system ENet library, IPv6 support (added in
              ;; SuperTuxKart version 1.1) must be disabled.
              "-DUSE_IPV6=FALSE"
@@ -3997,6 +3999,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("sdl2" ,sdl2)
+       ("sqlite" ,sqlite)
        ("zlib" ,zlib)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
