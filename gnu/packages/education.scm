@@ -977,6 +977,9 @@ TuxMath and TuxType.")
        ;; Unbundle fonts.
        (snippet
         `(begin
+           ;; Remove duplicate definition.
+           (substitute* "src/menu_lan.c"
+             (("lan_player_type.*MAX_CLIENTS\\];") ""))
            (for-each delete-file (find-files "data/fonts" "\\.ttf$"))
            #t))))
     (build-system gnu-build-system)
