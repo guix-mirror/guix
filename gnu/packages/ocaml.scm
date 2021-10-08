@@ -6762,6 +6762,7 @@ and SVG file output.")
          "13770mp6adjjbx63zsbh6506dqxz241chw8c3y403sxpw45hnaw6"))))
     (build-system dune-build-system)
     (arguments `(#:tests? #f))          ; no tests
+    (properties '((upstream-name . "ocaml-version")))
     (home-page
      "https://github.com/ocurrent/ocaml-version")
     (synopsis
