@@ -7,13 +7,13 @@ the distro-specific stuff and removes the hard-coded FHS directory names
 to make sure Clang also works on foreign distros.
 
 diff --git a/lib/Driver/Distro.cpp b/lib/Driver/Distro.cpp
-index 2c4d44f..0493b0a 100644
+index 396d0bee..90e06613 100644
 --- a/lib/Driver/Distro.cpp
 +++ b/lib/Driver/Distro.cpp
-@@ -18,6 +18,10 @@ using namespace clang::driver;
+@@ -19,6 +19,10 @@ using namespace clang::driver;
  using namespace clang;
  
- static Distro::DistroType DetectDistro(vfs::FileSystem &VFS) {
+ static Distro::DistroType DetectDistro(llvm::vfs::FileSystem &VFS) {
 +  // The compiler should always behave the same, even when used via Guix on a
 +  // foreign distro.
 +  return Distro::UnknownDistro;
@@ -22,10 +22,10 @@ index 2c4d44f..0493b0a 100644
        VFS.getBufferForFile("/etc/lsb-release");
    if (File) {
 diff --git a/lib/Driver/ToolChains/Cuda.cpp b/lib/Driver/ToolChains/Cuda.cpp
-index 7fb4ae4..cb21344 100644
+index 57b8d434..57339f1a 100644
 --- a/lib/Driver/ToolChains/Cuda.cpp
 +++ b/lib/Driver/ToolChains/Cuda.cpp
-@@ -66,6 +66,9 @@ CudaInstallationDetector::CudaInstallationDetector(
+@@ -68,6 +68,9 @@ CudaInstallationDetector::CudaInstallationDetector(
      const Driver &D, const llvm::Triple &HostTriple,
      const llvm::opt::ArgList &Args)
      : D(D) {
@@ -36,10 +36,10 @@ index 7fb4ae4..cb21344 100644
      std::string Path;
      bool StrictChecking;
 diff --git a/lib/Driver/ToolChains/Linux.cpp b/lib/Driver/ToolChains/Linux.cpp
-index f8f3623..36dc722 100644
+index 65ab9b2d..5ed28e0a 100644
 --- a/lib/Driver/ToolChains/Linux.cpp
 +++ b/lib/Driver/ToolChains/Linux.cpp
-@@ -225,7 +225,9 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -233,7 +233,9 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
    PPaths.push_back(Twine(GCCInstallation.getParentLibPath() + "/../" +
                           GCCInstallation.getTriple().str() + "/bin")
                         .str());
@@ -49,8 +49,8 @@ index f8f3623..36dc722 100644
 +#if 0
    Distro Distro(D.getVFS());
  
-   if (Distro.IsAlpineLinux()) {
-@@ -284,6 +286,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+   if (Distro.IsAlpineLinux() || Triple.isAndroid()) {
+@@ -304,6 +306,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
  
    if (IsAndroid || Distro.IsOpenSUSE())
      ExtraOpts.push_back("--enable-new-dtags");
@@ -58,7 +58,7 @@ index f8f3623..36dc722 100644
  
    // The selection of paths to try here is designed to match the patterns which
    // the GCC driver itself uses, as this is part of the GCC-compatible driver.
-@@ -348,6 +351,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -366,6 +369,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
      }
    }
  
@@ -66,7 +66,7 @@ index f8f3623..36dc722 100644
    // Similar to the logic for GCC above, if we currently running Clang inside
    // of the requested system root, add its parent library paths to
    // those searched.
-@@ -393,6 +397,8 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -411,6 +415,8 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
    // Try walking via the GCC triple path in case of biarch or multiarch GCC
    // installations with strange symlinks.
    if (GCCInstallation.isValid()) {
@@ -75,7 +75,7 @@ index f8f3623..36dc722 100644
      addPathIfExists(D,
                      SysRoot + "/usr/lib/" + GCCInstallation.getTriple().str() +
                          "/../../" + OSLibDir,
-@@ -428,9 +434,14 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -446,9 +452,14 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
    // directory ('Dir' below) or the ResourceDir.
    if (StringRef(D.Dir).startswith(SysRoot))
      addPathIfExists(D, D.Dir + "/../lib", Paths);
@@ -91,4 +91,4 @@ index f8f3623..36dc722 100644
 +  addPathIfExists(D, GCCInstallation.getParentLibPath(), Paths);
  }
  
- bool Linux::HasNativeLLVMSupport() const { return true; }
+ ToolChain::CXXStdlibType Linux::GetDefaultCXXStdlibType() const {
