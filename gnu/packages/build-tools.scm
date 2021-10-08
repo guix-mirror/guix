@@ -103,7 +103,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "3.0.4")
+    (version "3.0.16")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -114,7 +114,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                         "bear-disable-preinstall-tests.patch"))
               (sha256
                (base32
-                "15r22sbk5bibrhf54lf0shiqw1gnsik24fr5as96w3hnj6iahgwn"))))
+                "01giv11nhjp4pvw8ssf8bxf503pabwnwnvfzmrxyxixnairwmykg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
