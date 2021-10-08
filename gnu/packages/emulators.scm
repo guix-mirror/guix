@@ -1524,14 +1524,14 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.2.0")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://downloads.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
-        (base32 "11vknasm5dna2vqr6gk343qynh7nhsq3kf60zayarn1vb5z6as8l"))))
+        (base32 "08ynw1cmld41p4bwrw84gb1nv229va70i91qiqsjr3c2jnqy8zml"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;require "git"
@@ -1558,6 +1558,8 @@ multi-system game/emulator system.")
        ("fluidsynth" ,fluidsynth)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
+       ("glew" ,glew)
+       ("giflib" ,giflib)
        ("liba52" ,liba52)
        ("libflac" ,flac)
        ("libjpeg-turbo" ,libjpeg-turbo)
