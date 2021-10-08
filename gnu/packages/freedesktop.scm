@@ -2342,16 +2342,15 @@ and others.")
 (define-public xdg-desktop-portal-gtk
   (package
     (name "xdg-desktop-portal-gtk")
-    (version "1.7.1")
+    (version "1.10.0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/flatpak/xdg-desktop-portal-gtk")
-                     (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/flatpak/xdg-desktop-portal-gtk/releases/download/"
+                    version "/xdg-desktop-portal-gtk-" version ".tar.xz"))
               (sha256
                (base32
-                "183iha9dxmvprn99ymgz17jx1lyn1fj5jyj6ghxl716zn9mxmird"))))
+                "0nlbnd6qvs92fanrmmn123vy0y2ml0v3ndxyk5x0cpfbnmxpa2f8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -2362,7 +2361,16 @@ and others.")
              (for-each (lambda (po)
                          (chmod po #o666))
                        (find-files "po" "\\.po$"))
-             #t)))))
+             #t)))
+       ;; Enable Gnome portal backends
+       #:configure-flags
+       (list
+        "--enable-appchooser"
+        "--enable-wallpaper"
+        "--enable-screenshot"
+        "--enable-screencast"
+        "--enable-background"
+        "--enable-settings")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
