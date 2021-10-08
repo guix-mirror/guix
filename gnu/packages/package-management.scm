@@ -1565,6 +1565,16 @@ cp -r /tmp/locale/*/en_US.*")))
               (("/bin/kill") (which "kill"))
               (("/usr/bin/python3") (which "python3")))
             #t))
+        (add-after 'unpack 'p11-kit-fix
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((p11-path (string-append (assoc-ref inputs "p11-kit-next")
+                                           "/bin/p11-kit")))
+              (substitute* "session-helper/flatpak-session-helper.c"
+                (("\"p11-kit\",")
+                 (string-append "\"" p11-path "\","))
+                (("if \\(g_find_program_in_path \\(\"p11-kit\"\\)\\)")
+                 (string-append "if (g_find_program_in_path (\""
+                                p11-path "\"))"))))))
         ;; Many tests fail for unknown reasons, so we just run a few basic
         ;; tests.
         (replace 'check
@@ -1603,6 +1613,7 @@ cp -r /tmp/locale/*/en_US.*")))
       ("libsoup" ,libsoup)
       ("libxau" ,libxau)
       ("libxml2" ,libxml2)
+      ("p11-kit-next" ,p11-kit-next)
       ("util-linux" ,util-linux)
       ("xdg-dbus-proxy" ,xdg-dbus-proxy)))
    (home-page "https://flatpak.org")
