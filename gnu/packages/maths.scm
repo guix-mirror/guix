@@ -6970,14 +6970,14 @@ of C, Java, or Ada programs.")
 (define-public frama-c
   (package
     (name "frama-c")
-    (version "22.0")
+    (version "23.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://frama-c.com/download/frama-c-"
-                                  version "-Titanium.tar.gz"))
+                                  version "-Vanadium.tar.gz"))
               (sha256
                (base32
-                "1mq1fijka95ydrla486yr4w6wdl9l7vmp512s1q00b0p6lmfwmkh"))))
+                "1rgkq9sg436smw005ag0j6y3xryhjn18a07m5wjfrfp0s1438nnj"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; no test target in Makefile
