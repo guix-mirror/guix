@@ -2376,7 +2376,6 @@ and others.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("xdg-desktop-portal" ,xdg-desktop-portal)
        ("glib:bin" ,glib "bin")
        ("which" ,which)
        ("gettext" ,gettext-minimal)))
@@ -2386,10 +2385,8 @@ and others.")
        ("fontconfig" ,fontconfig)
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "XDG_DESKTOP_PORTAL_DIR")
-            (files '("share/xdg-desktop-portal/portals")))))
+    (propagated-inputs
+     `(("xdg-desktop-portal" ,xdg-desktop-portal)))
     (home-page "https://github.com/flatpak/xdg-desktop-portal-gtk")
     (synopsis "GTK implementation of xdg-desktop-portal")
     (description
