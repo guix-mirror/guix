@@ -543,21 +543,22 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.18.4")
+    (version "1.18.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gstreamer.freedesktop.org/src/" name "/"
                           name "-" version ".tar.xz"))
-      (patches (search-patches "gst-plugins-base-fix-id3v2-invalid-read.patch"))
       (sha256
        (base32
-        "08w3ivbc6n4vdds2ap6q7l8zdk9if8417nznyqidf0adm0lk5r99"))))
+        "18vg8kk7p2p8za8zaqg0v7z6898yw5a3b12vvl7xn02pb3s7l2wn"))))
     (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
        ("gstreamer" ,gstreamer)    ;required by gstreamer-plugins-base-1.0.pc
-
+       ;; wayland-client.h is referred to in
+       ;; include/gstreamer-1.0/gst/gl/wayland/gstgldisplay_wayland.h
+       ("wayland" ,wayland)
        ;; XXX: Do not enable Orc optimizations on ARM systems because
        ;; it leads to two test failures.
        ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/issues/683
@@ -585,8 +586,7 @@ This package provides the core library and elements.")
        ("libpng" ,libpng)
        ("libvisual" ,libvisual)
        ("mesa" ,mesa)
-       ("wayland-protocols" ,wayland-protocols)
-       ("wayland" ,wayland)))
+       ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")
