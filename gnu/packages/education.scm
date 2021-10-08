@@ -921,8 +921,13 @@ endless.  For example:
        (file-name (git-file-name name version))
        (sha256
         (base32 "13q02xpmps9qg8zrzzy2gzv4a6afgi28lxk4z242j780v0gphchp"))
-       (patches
-        (search-patches "t4k-common-libpng16.patch"))))
+       (patches (search-patches "t4k-common-libpng16.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (substitute* "src/t4k_common.h"
+             (("char wrapped_lines") "extern char wrapped_lines"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;FIXME: cannot find how to run tests
