@@ -716,15 +716,14 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.18.4")
+    (version "1.18.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
-              (patches (search-patches "gst-plugins-bad-fix-overflow.patch"))
               (sha256
                (base32
-                "0py8k4pbalm9mxkpjbjxis0gp7g74wg5g4yax5q8rccmany0ds3l"))
+                "13k7mm2wmsbhd04a20v9lj4afpf0w33ambpwlrw8bl7hjhxr4r51"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -745,8 +744,7 @@ model to base your own plug-in on, here it is.")
                    (lambda _
                      (substitute* "tests/check/meson.build"
                        (("\\[\\['elements/asfmux\\.c'\\]\\],")
-                        ""))
-                     #t)))
+                        "")))))
                '())
          (add-after 'unpack 'adjust-tests
            (lambda* (#:key native-inputs inputs #:allow-other-keys)
@@ -770,8 +768,7 @@ model to base your own plug-in on, here it is.")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/932
                  ((".*elements/curlhttpsrc\\.c.*") "")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
-                 ((".*elements/dtls\\.c.*") ""))
-               #t)))
+                 ((".*elements/dtls\\.c.*") "")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -782,8 +779,7 @@ model to base your own plug-in on, here it is.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t)))))
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (propagated-inputs
      `(("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)))
