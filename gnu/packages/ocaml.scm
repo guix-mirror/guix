@@ -1385,33 +1385,25 @@ other XUnit testing frameworks.")
 (define-public camlzip
   (package
     (name "camlzip")
-    (version "1.0.6")
+    (version "1.11")
     (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri name version 1616))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/xavierleroy/camlzip")
+                     (commit (string-append
+                               "rel"
+                               (string-join (string-split version #\.) "")))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m6gyjw46w3qnhxfsyqyag42znl5lwargks7w7rfchr9jzwpff68"))))
+                "16jnn3czxnvyjngnz167x5kw097k7izdqvkix8qvgvhdmgvqm89b"))))
     (build-system ocaml-build-system)
     (inputs
      `(("zlib" ,zlib)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'install 'install-camlzip
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dir (string-append out "/lib/ocaml/site-lib/camlzip")))
-               (mkdir-p dir)
-               (call-with-output-file (string-append dir "/META")
-                 (lambda (port)
-                   (format port "version=\"1.06\"\n")
-                   (format port "requires=\"unix\"\n")
-                   (format port "archive(byte)=\"zip.cma\"\n")
-                   (format port "archive(native)=\"zip.cmxa\"\n")
-                   (format port "archive(native,plugin)=\"zip.cmxs\"\n")
-                   (format port "directory=\"../zip\"\n")))))))
+         (delete 'configure))
        #:install-target "install-findlib"
        #:make-flags
        (list "all" "allopt"
