@@ -466,13 +466,12 @@ the GStreamer multimedia framework.")
           (("'CK_DEFAULT_TIMEOUT', '[0-9]*'")
            "'CK_DEFAULT_TIMEOUT', '600'")
           (("timeout ?: .*\\)")
-           "timeout: 90 * 60)"))
-        #t))))
+           "timeout: 90 * 60)"))))))
 
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.18.4")
+    (version "1.18.5")
     (source
      (origin
        (method url-fetch)
@@ -481,7 +480,7 @@ the GStreamer multimedia framework.")
              version ".tar.xz"))
        (sha256
         (base32
-         "1igv9l4hm21kp1jmlwlagzs7ly1vaxv1sbda29q8247372dwkvls"))))
+         "02p8my6dzmm4rvd93s3qnh8w5bm9bh4f7gdydbsvnn9llqr251jm"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -498,8 +497,7 @@ the GStreamer multimedia framework.")
                        (("tcase_add_test \\(tc_chain, test_stress_cleanup_unschedule.*")
                         "")
                        (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
-                        ""))
-                     #t)))
+                        "")))))
                '()))))
     (propagated-inputs
      ;; In gstreamer-1.0.pc:
