@@ -244,6 +244,29 @@ Ce recours à Software Heritage fonctionne aussi pour les autres clones Git que
 Guix peut faire, comme lorsqu'on utilise @option{--with-commit} et les options
 de transformation de paquet similaires.")))
 
+ (entry (commit "db4681a4c17d282a661552f2f57e5c453d02e414")
+        (title
+         (en "@code{gdm-service-type} now supports Wayland")
+         (fr "@code{gdm-service-type} prend maintenant en charge Wayland"))
+        (body
+         (en "@code{gdm-service-type} has been updated to support being launched
+as a Wayland client, and to launch Wayland sessions. The @code{wayland?} boolean
+field in @code{gdm-configuration} controls whether GDM starts in Wayland or X
+mode. See @command{info \"(guix) X Window\"} for more information.
+
+Wayland mode for GDM will soon become the default in Guix, so if your
+hardware doesn't support Wayland (Nvidia users are the most concerned here),
+please consider disabling it now.")
+         (fr "@code{gdm-service-type} a été mis à jour et peut maintenant être
+lancé comme client Wayland, ainsi que lancer des sessions Wayland. Le champ
+booléen @code{wayland?} de @code{gdm-configuration} contrôle le mode dans lequel
+GDM est lancé (Wayland ou X). Pour plus d'informations, voir
+@command{info \"(guix) X Window\"} (en anglais).
+
+GDM sera bientôt lancé en mode Wayland par défaut sur Guix, donc si votre matériel
+ne le prend pas en charge (les utilisateur·ices de cartes Nvidia sont les plus
+concerné·es), merci de le désactiver dès maintenant.")))
+
  (entry (commit "f23803af2018a148fb088f2516d79c20d6bf95f0")
         (title
          (en "Input labels can now be omitted in package definitions"))
