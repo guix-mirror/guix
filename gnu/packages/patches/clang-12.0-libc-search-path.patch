@@ -7,25 +7,25 @@ the distro-specific stuff and removes the hard-coded FHS directory names
 to make sure Clang also works on foreign distros.
 
 diff --git a/lib/Driver/Distro.cpp b/lib/Driver/Distro.cpp
-index 4d58ad1a..6f638eca 100644
+index ee4fe841..f0313bbe 100644
 --- a/lib/Driver/Distro.cpp
 +++ b/lib/Driver/Distro.cpp
-@@ -21,6 +21,10 @@ using namespace clang;
+@@ -93,6 +93,10 @@ static Distro::DistroType DetectLsbRelease(llvm::vfs::FileSystem &VFS) {
+ }
  
- static Distro::DistroType DetectDistro(llvm::vfs::FileSystem &VFS,
-                                        const llvm::Triple &TargetOrHost) {
+ static Distro::DistroType DetectDistro(llvm::vfs::FileSystem &VFS) {
 +  // The compiler should always behave the same, even when used via Guix on a
 +  // foreign distro.
 +  return Distro::UnknownDistro;
 +
-   // If we don't target Linux, no need to check the distro. This saves a few
-   // OS calls.
-   if (!TargetOrHost.isOSLinux())
+   Distro::DistroType Version = Distro::UnknownDistro;
+ 
+   // Newer freedesktop.org's compilant systemd-based systems
 diff --git a/lib/Driver/ToolChains/Cuda.cpp b/lib/Driver/ToolChains/Cuda.cpp
-index 110a0bca..42b9f7b7 100644
+index d14776c5..88bc3ccd 100644
 --- a/lib/Driver/ToolChains/Cuda.cpp
 +++ b/lib/Driver/ToolChains/Cuda.cpp
-@@ -67,6 +67,9 @@ CudaInstallationDetector::CudaInstallationDetector(
+@@ -119,6 +119,9 @@ CudaInstallationDetector::CudaInstallationDetector(
      const Driver &D, const llvm::Triple &HostTriple,
      const llvm::opt::ArgList &Args)
      : D(D) {
@@ -36,10 +36,10 @@ index 110a0bca..42b9f7b7 100644
      std::string Path;
      bool StrictChecking;
 diff --git a/lib/Driver/ToolChains/Linux.cpp b/lib/Driver/ToolChains/Linux.cpp
-index 18035047..ace8f443 100644
+index 9663a739..107f96d6 100644
 --- a/lib/Driver/ToolChains/Linux.cpp
 +++ b/lib/Driver/ToolChains/Linux.cpp
-@@ -219,6 +219,9 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -223,6 +223,9 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
  
    Generic_GCC::PushPPaths(PPaths);
  
@@ -49,7 +49,7 @@ index 18035047..ace8f443 100644
    Distro Distro(D.getVFS(), Triple);
  
    if (Distro.IsAlpineLinux() || Triple.isAndroid()) {
-@@ -284,6 +287,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -288,6 +291,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
  
    if (IsAndroid || Distro.IsOpenSUSE())
      ExtraOpts.push_back("--enable-new-dtags");
@@ -57,7 +57,7 @@ index 18035047..ace8f443 100644
  
    // The selection of paths to try here is designed to match the patterns which
    // the GCC driver itself uses, as this is part of the GCC-compatible driver.
-@@ -297,6 +301,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -301,6 +305,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
  
    Generic_GCC::AddMultilibPaths(D, SysRoot, OSLibDir, MultiarchTriple, Paths);
  
@@ -65,7 +65,7 @@ index 18035047..ace8f443 100644
    // Similar to the logic for GCC above, if we currently running Clang inside
    // of the requested system root, add its parent library paths to
    // those searched.
-@@ -348,9 +353,14 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+@@ -352,9 +357,14 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
    // directory ('Dir' below) or the ResourceDir.
    if (StringRef(D.Dir).startswith(SysRoot))
      addPathIfExists(D, D.Dir + "/../lib", Paths);
