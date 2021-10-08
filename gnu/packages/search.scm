@@ -339,14 +339,14 @@ conflict with slocate compatibility.")
 (define-public plocate
   (package
     (name "plocate")
-    (version "1.1.11")
+    (version "1.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://plocate.sesse.net/download/"
                            "plocate-" version ".tar.gz"))
        (sha256
-        (base32 "0kwfp3hwf9dbakf3h378qrhl0jd1spxxrs4snmgb5jsbdijwd777"))))
+        (base32 "1damwm8kqf797kgr1cify521i6icz5khc5brq16m6nlg26nja7d1"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
