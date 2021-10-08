@@ -359,7 +359,6 @@ the expected fields of an <origin> object."
                         ("git-fetch" (@ (guix git-download) git-fetch))
                         ("svn-fetch" (@ (guix svn-download) svn-fetch))
                         ("hg-fetch"  (@ (guix hg-download) hg-fetch))
-                        ("hexpm-fetch" (@ (guix hexpm-download) hexpm-fetch))
                         (_ #f)))
               (uri (assoc-ref orig "uri"))
               (sha256 sha))))))
