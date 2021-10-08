@@ -6719,22 +6719,16 @@ convenience functions for vectors and matrices.")
 (define-public ocaml-cairo2
   (package
     (name "ocaml-cairo2")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/Chris00/ocaml-cairo")
                     (commit version)))
               (file-name (git-file-name name version))
-              (patches
-               (search-patches
-                ;; NOTE: This patch will be obsolete on the
-                ;; next tagged release. Remove it at that
-                ;; point.
-                "ocaml-cairo2-caml_ba_array-fix.patch"))
               (sha256
                (base32
-                "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
+                "04rp5y1rlq1pw592yywhvqd5x7csmyi9ad4f32g99nakb10s4nhx"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "tests"))
