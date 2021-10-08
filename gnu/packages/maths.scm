@@ -5776,6 +5776,65 @@ as equations, scalars, vectors, and matrices.")
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
     (license license:expat)))
 
+(define-public ocaml-z3
+  (package
+    (inherit z3)
+    (name "ocaml-z3")
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build python-build-system) #:select (site-packages))
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:tests? #f; no ml tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "OCAMLFIND_LDCONF" "ignore")
+               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
+               (mkdir-p (string-append out "/lib/ocaml/site-lib"))
+               (substitute* "scripts/mk_util.py"
+                 (("LIBZ3 = LIBZ3")
+                  (string-append "LIBZ3 = LIBZ3 + ' -dllpath " out "/lib'"))
+                 ;; Do not build z3 again, use the library passed as input
+                 ;; instead
+                 (("z3linkdep,") "\"\",")
+                 (("z3linkdep)") "\"\")"))
+               (invoke "python" "scripts/mk_make.py"))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure"
+                     "--ml"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+         (add-after 'configure 'change-directory
+           (lambda _
+             (chdir "build")
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "make" "ml")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "ocamlfind" "install" "-destdir"
+                     (string-append (assoc-ref outputs "out") "/lib/ocaml/site-lib")
+                     "z3" "api/ml/META" "api/ml/z3enums.mli" "api/ml/z3enums.cmi"
+                     "api/ml/z3enums.cmx" "api/ml/z3native.mli"
+                     "api/ml/z3native.cmi" "api/ml/z3native.cmx"
+                     "../src/api/ml/z3.mli" "api/ml/z3.cmi" "api/ml/z3.cmx"
+                     "api/ml/libz3ml.a" "api/ml/z3ml.a" "api/ml/z3ml.cma"
+                     "api/ml/z3ml.cmxa" "api/ml/z3ml.cmxs" "api/ml/dllz3ml.so"))))))
+    (native-inputs
+     `(("which" ,which)
+       ("python" ,python-wrapper)
+       ("ocaml" ,ocaml)
+       ("ocaml-findlib" ,ocaml-findlib)))
+    (propagated-inputs
+     `(("ocaml-zarith" ,ocaml-zarith)))
+    (inputs
+     `(("z3" ,z3)))))
+
 (define-public elpa
   (package
     (name "elpa")
