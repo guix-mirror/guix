@@ -2283,16 +2283,15 @@ fallback to generic Systray support if none of those are available.")
 (define-public xdg-desktop-portal
   (package
     (name "xdg-desktop-portal")
-    (version "1.8.1")
+    (version "1.10.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/flatpak/xdg-desktop-portal")
-                     (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/flatpak/xdg-desktop-portal/releases/download/"
+                    version "/xdg-desktop-portal-" version ".tar.xz"))
               (sha256
                (base32
-                "0pq0kmvzk56my396vh97pzw4wizwmlmzvv2kr2xv047x3044mr5n"))))
+                "199lqr2plsy9qqnxx5a381ml8ygcbz4nkjla5pvljjcrwzlqsygd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
