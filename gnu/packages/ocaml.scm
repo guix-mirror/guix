@@ -7265,7 +7265,7 @@ Parsers are backtracking by default and support unbounded lookahead.")
 (define-public ocaml-graphics
   (package
     (name "ocaml-graphics")
-    (version "5.1.1")
+    (version "5.1.2")
     (home-page "https://github.com/ocaml/graphics")
     (source
      (origin
@@ -7276,7 +7276,7 @@ Parsers are backtracking by default and support unbounded lookahead.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14w07ydji2nbdk366nfp2pzs9484xp9vqv63n345id13v48z8bfi"))))
+         "1q20f8y6ijxbvzik2ns4yl3w54q5z8kd0pby8i8c64a04hvly08m"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("libx11" ,libx11)))
