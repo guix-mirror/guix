@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -164,6 +165,18 @@ in such a way that they are discoverable.  It also solves problems with
 coordinating the use of PKCS#11 by different components or libraries
 living in the same process.")
     (license license:bsd-3)))
+
+(define-public p11-kit-next
+  (package
+    (inherit p11-kit)
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
+                           "download/" version "/p11-kit-" version ".tar.xz"))
+       (sha256
+        (base32 "11f6saclxsclc1f3lbavzw8kikws4cr3mfd1avly8dgnhh2i9rl1"))))))
 
 (define-public gnutls
   (package
