@@ -962,7 +962,7 @@ itself."
     (scheme-node "guix-home"
                  `((gnu home)
                    (gnu home-services)
-                   ,@(scheme-modules* source "gnu/home-services"))
+                   ,@(scheme-modules* source "gnu/home/services"))
                  (list *core-package-modules* *package-modules*
                        *extra-modules* *core-modules* *system-modules*)
                  #:extensions dependencies
