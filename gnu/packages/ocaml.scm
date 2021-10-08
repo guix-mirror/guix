@@ -2537,14 +2537,14 @@ file system and is independent from any system library.")
 (define-public ocaml-bos
   (package
     (name "ocaml-bos")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/bos/releases/"
                                   "bos-" version ".tbz"))
               (sha256
                 (base32
-                  "1s10iqx8rgnxr5n93lf4blwirjf8nlm272yg5sipr7lsr35v49wc"))))
+                  "0dwg7lpaq30rvwc5z1gij36fn9xavvpah1bj8ph9gmhhddw2xmnq"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
