@@ -6903,17 +6903,21 @@ numeric differences and differences in numeric formats.")
 (define-public why3
   (package
     (name "why3")
-    (version "1.3.3")
+    (version "1.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
-                                  "/38367/why3-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.inria.fr/why3/why3")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n0a2nn1gnk0zg339lh698g4wpk7m8m1vyi2yvifd5adqvk4milw"))))
+                "0pfsiddnk26f384wbazfpgzh1n1ibf3xq101q74mxvczi7z0a791"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("coq" ,coq)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("coq" ,coq)
        ("ocaml" ,ocaml)
        ("which" ,which)))
     (propagated-inputs
@@ -6929,10 +6933,12 @@ numeric differences and differences in numeric formats.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-configure
+         (add-before 'configure 'bootstrap
            (lambda _
+             (invoke "./autogen.sh")
              (setenv "CONFIG_SHELL" (which "sh"))
              (substitute* "configure"
+               (("#! /bin/sh") (string-append "#!" (which "sh")))
                ;; find ocaml-num in the correct directory
                (("\\$DIR/nums.cma") "$DIR/num.cma")
                (("\\$DIR/num.cmi") "$DIR/core/num.cmi"))
