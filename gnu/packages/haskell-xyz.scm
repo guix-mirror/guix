@@ -1851,9 +1851,6 @@ parser isolation, and labeled blocks for better error messages.")
         (base32
          "1rw6y2insgljbi5l1nwqwv9v865sswjly9rvwipd8zajkgks7aks"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("1" "1z6nxw2g9vgsjq0g159sk8mwj68lwzxzi5iv5ynha0h85jcqxszy")))
     (inputs
      `(("ghc-semigroups" ,ghc-semigroups)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
