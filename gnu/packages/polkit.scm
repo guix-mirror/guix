@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nss)
@@ -44,8 +46,7 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "0.116")
-    (replacement polkit/fixed)
+    (version "0.120")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -53,7 +54,7 @@
                    name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1c9lbpndh5zis22f154vjrhnqw65z8s85nrgl42v738yf6g0q5w8"))
+               "00zfg9b9ivkcj2jcf5b92cpvvyljz8cmfwj86lkvy5rihnd5jypf"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -62,36 +63,21 @@
                  (substitute* "test/Makefile.in"
                    (("SUBDIRS = mocklibc . polkit polkitbackend")
                     "SUBDIRS = mocklibc . polkit"))
-                 (substitute* "configure"
-                   ;; Replace libsystemd-login with libelogind.
-                   (("libsystemd-login") "libelogind")
-                   ;; Skip the sanity check that the current system runs
-                   ;; systemd.
-                   (("test ! -d /sys/fs/cgroup/systemd/") "false"))
-                 (substitute* "src/polkit/polkitunixsession-systemd.c"
-                   (("systemd") "elogind"))
-                 (substitute* "src/polkitbackend/polkitbackendsessionmonitor-systemd.c"
-                   (("systemd") "elogind"))
-                 (substitute* "src/polkitbackend/polkitbackendjsauthority.cpp"
-                   (("systemd") "elogind"))
-
                  ;; Guix System's polkit service stores actions under
                  ;; /etc/polkit-1/actions.
                  (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
                    (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
                     "PACKAGE_SYSCONF_DIR \"/polkit-1/actions\""))
-
                  ;; Set the setuid helper's real location.
                  (substitute* "src/polkitagent/polkitagentsession.c"
                    (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
-                    "\"/run/setuid-programs/polkit-agent-helper-1\""))
-                 #t))))
+                    "\"/run/setuid-programs/polkit-agent-helper-1\""))))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
        ("linux-pam" ,linux-pam)
        ("elogind" ,elogind)
-       ("mozjs" ,mozjs-60)
+       ("mozjs" ,mozjs-78)
        ("nspr" ,nspr)))
     (propagated-inputs
      `(("glib" ,glib))) ; required by polkit-gobject-1.pc
@@ -99,7 +85,9 @@
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin") ; for glib-mkenums
        ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("gobject-introspection" ,gobject-introspection)
+       ("libxslt" ,libxslt) ; for man page generation
+       ("docbook-xsl" ,docbook-xsl))) ; for man page generation
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--enable-man-pages"
@@ -118,8 +106,15 @@
                 (("@INTROSPECTION_GIRDIR@")
                  (string-append out "/share/gir-1.0/"))
                 (("@INTROSPECTION_TYPELIBDIR@")
-                 (string-append out "/lib/girepository-1.0/")))
-              #t)))
+                 (string-append out "/lib/girepository-1.0/"))))))
+         (add-after 'unpack 'fix-manpage-generation
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* '("docs/man/Makefile.am" "docs/man/Makefile.in")
+                 (("http://docbook.sourceforge.net/release/xsl/current")
+                  xsldoc)))))
          (replace
           'install
           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
@@ -131,8 +126,7 @@
                            (string-append "sysconfdir=" out "/etc")
                            (string-append "polkit_actiondir="
                                           out "/share/polkit-1/actions")
-                           make-flags)
-             #t))))))
+                           make-flags)))))))
     (home-page "https://www.freedesktop.org/wiki/Software/polkit/")
     (synopsis "Authorization API for privilege management")
     (description "Polkit is an application-level toolkit for defining and
@@ -141,13 +135,6 @@ privileged processes.  It is a framework for centralizing the decision
 making process with respect to granting access to privileged operations
 for unprivileged applications.")
     (license lgpl2.0+)))
-
-(define polkit/fixed
-  (package
-    (inherit polkit)
-    (source (origin
-              (inherit (package-source polkit))
-              (patches (search-patches "polkit-CVE-2021-3560.patch"))))))
 
 (define-public polkit-qt
   (package
