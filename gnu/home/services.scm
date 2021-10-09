@@ -508,7 +508,8 @@ environment, and its configuration file, when available.")))
 
 (define %guix-home-root-directory
   ;; Absolute file name of the module hierarchy.
-  (parent-directory (dirname (search-path %load-path "gnu/home/services.scm"))))
+  (parent-directory
+   (dirname (dirname (search-path %load-path "gnu/home/services.scm")))))
 
 (define %service-type-path
   ;; Search path for service types.
