@@ -186,11 +186,11 @@ of a larger interface.")
                 "0fbh2ss1dy3sba4xjmfm4vxxjmx9a6rzgba9ycjygchbm957y3ag"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55
-       #:configure-flags
-       (list "-Denable-gir=false")))
+     `(#:meson ,meson-0.55))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (propagated-inputs
      ;; Propagated to satisfy ‘babl.pc’.
      `(("lcms" ,lcms)))
