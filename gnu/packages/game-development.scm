@@ -92,6 +92,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
@@ -2031,28 +2032,30 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "199y4kc28va6klfs19h998sfh7vx9spnrvjw7p92i47q5a7jdcp6"))))
+                "1k2dml2z57lnc36wrmwhh7avnpczxgxnshlfhpbk174vg6v609n0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (propagated-inputs
      `(("guile-opengl" ,guile3.0-opengl)
-       ("guile-sdl2" ,guile3.0-sdl2)))
+       ("guile-sdl2" ,guile-sdl2)))
     (inputs
      `(("freetype" ,freetype)
-       ("guile" ,guile-3.0)
+       ("guile" ,guile-3.0-latest)
        ("libvorbis" ,libvorbis)
        ("mpg123" ,mpg123)
-       ("openal" ,openal)))
+       ("openal" ,openal)
+       ("readline" ,readline)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("guile" ,guile-3.0-latest)
+       ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (home-page "https://dthompson.us/projects/chickadee.html")
     (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")
