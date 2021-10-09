@@ -73,7 +73,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.2689")
+    (version "8.2.3487")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -82,7 +82,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0l0hkr8cw7fdsfc5zzcxx3q1wmv9k3hrgalvffq0l69lviqdgh0p"))))
+               "1s09jvr1vv9zjk352vbfidfy5fidbf83kz2vk0kk6zv24j1yck24"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -98,6 +98,7 @@
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
                             "src/testdir/test_popupwin.vim"
+                            "src/testdir/test_shell.vim"
                             "src/testdir/test_system.vim"
                             "src/testdir/test_terminal.vim"
                             "src/testdir/test_terminal2.vim")
