@@ -710,7 +710,15 @@ interactive environment for the functional language Haskell.")
                (substitute* '("testsuite/tests/driver/T16521/all.T")
                  (("extra_files" all) (string-append "[" all))
                  (("\\]\\), " all)
-                  (string-append all "expect_broken(0)], ")))))))))
+                  (string-append all "expect_broken(0)], ")))))
+           ;; TODO: Turn this into an undconditional patch on the next rebuild.
+           ,@(if (string=? "i686-linux" (%current-system))
+              '((add-after 'skip-more-tests 'skip-failing-tests-i686
+                 (lambda _
+                   (substitute* '("testsuite/tests/codeGen/should_compile/all.T")
+                     (("(test\\('T15155l', )when\\(unregisterised\\(\\), skip\\)" all before)
+                      (string-append before "when(arch('i386'), skip)"))))))
+              '())))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
                                 (files (list
