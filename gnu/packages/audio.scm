@@ -3089,6 +3089,31 @@ for \"realtime\" in the index of the Guix manual to learn how to achieve this
 using Guix System.")
     (license license:gpl2+)))
 
+(define-public libshout-idjc
+  (package
+    (name "libshout-idjc")
+    (version "2.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libshoutidjc.idjc.p"
+                           "/libshout-idjc-" version ".tar.gz"))
+       (sha256
+        (base32 "1r9z8ggxylr2ab0isaljbm574rplnlcb12758j994h54nh2vikwb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("speex" ,speex)))
+    (home-page "http://idjc.sourceforge.net/")
+    (synopsis "Broadcast streaming library with IDJC extensions")
+    (description "This package provides libshout plus IDJC extensions.")
+    ;; GNU Library (not Lesser) General Public License.
+    (license license:lgpl2.0+)))
+
 (define-public raul
   (package
     (name "raul")
