@@ -107,6 +107,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages linphone)
   #:use-module (gnu packages linux)
@@ -1216,6 +1217,40 @@ classes include: dynamics (compressor, limiter), time (delay, chorus,
 flanger), ringmodulator, distortion, filters, pitchshift, oscillators,
 emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
     (license license:gpl3+)))
+
+(define-public libdjinterop
+  (package
+    (name "libdjinterop")
+    (version "0.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xsco/libdjinterop")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16nrqpr90vb9ggmp9j73m0hspd7pmfdhh0g6iyp8vd7kx7g17qnk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; crate_test writes a database file to the source tree.
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files ".")))))))
+    (native-inputs
+     `(("boost" ,boost)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/xsco/libdjinterop")
+    (synopsis "C++ library for access to DJ record libraries")
+    (description
+     "@code{libdjinterop} is a C++ library that allows access to database
+formats used to store information about DJ record libraries.")
+    (license license:lgpl3+)))
 
 (define-public tao
   (package
