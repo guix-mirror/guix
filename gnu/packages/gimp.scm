@@ -40,6 +40,7 @@
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -332,30 +333,36 @@ buffers.")
                    (format port "for dir in '~a'.split(':'):~%" pythonpath)
                    (format port "    site.addsitedir(dir)~%")))))))))
     (inputs
-     `(("babl" ,babl)
+     `(("atk" ,atk)
+       ("babl" ,babl)
+       ("gegl" ,gegl)
+       ("gexiv2" ,gexiv2)
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)
+       ("gtk+" ,gtk+-2)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libmypaint" ,libmypaint)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
-       ("libjpeg" ,libjpeg-turbo)
-       ("atk" ,atk)
-       ("gexiv2" ,gexiv2)
-       ("gtk+" ,gtk+-2)
-       ("libmypaint" ,libmypaint)
        ("mypaint-brushes" ,mypaint-brushes-1.3)
-       ("exif" ,libexif)                ; optional, EXIF + XMP support
-       ("lcms" ,lcms)                   ; optional, color management
-       ("librsvg" ,librsvg)             ; optional, SVG support
-       ("libxcursor" ,libxcursor)       ; optional, Mouse Cursor support
-       ("poppler" ,poppler)             ; optional, PDF support
-       ("poppler-data" ,poppler-data)
-       ("python" ,python-2)             ; optional, Python support
-       ("python2-pygtk" ,python2-pygtk) ; optional, Python support
-       ("gegl" ,gegl)))
+       ("exif" ,libexif)                  ; optional, EXIF + XMP support
+       ("ghostscript" ,ghostscript)       ; optional, EPS + PS support
+       ("lcms" ,lcms)                     ; optional, color management
+       ("libheif" ,libheif)               ; optional, HEIF + AVIF support
+       ("libmng" ,libmng)                 ; optional, MNG support
+       ("librsvg" ,librsvg)               ; optional, SVG support
+       ("libxcursor" ,libxcursor)         ; optional, Mouse Cursor support
+       ("openexr" ,openexr)               ; optional, EXR support
+       ("openjpeg" ,openjpeg)             ; optional, JPEG 2000 support
+       ("poppler" ,poppler)               ; optional, PDF support
+       ("poppler-data" ,poppler-data)     ; optional, PDF support
+       ("python" ,python-2)               ; optional, Python support
+       ("python2-pygtk" ,python2-pygtk))) ; optional, Python support
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-compile-resources and gdbus-codegen
-       ("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources and gdbus-codegen
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.gimp.org")
     (synopsis "GNU Image Manipulation Program")
     (description
