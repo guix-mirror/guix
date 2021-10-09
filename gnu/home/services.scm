@@ -17,7 +17,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu home-services)
+(define-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (guix channels)
   #:use-module (guix monads)
@@ -508,7 +508,7 @@ environment, and its configuration file, when available.")))
 
 (define %guix-home-root-directory
   ;; Absolute file name of the module hierarchy.
-  (parent-directory (dirname (search-path %load-path "gnu/home-services.scm"))))
+  (parent-directory (dirname (search-path %load-path "gnu/home/services.scm"))))
 
 (define %service-type-path
   ;; Search path for service types.
@@ -516,7 +516,7 @@ environment, and its configuration file, when available.")))
 
 (define (all-home-service-modules)
   "Return the default set of `home service' modules."
-  (cons (resolve-interface '(gnu home-services))
+  (cons (resolve-interface '(gnu home services))
         (all-modules (%service-type-path)
                      #:warn warn-about-load-error)))
 

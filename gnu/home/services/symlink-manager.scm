@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu home services symlink-manager)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (guix gexp)
 
   #:export (home-symlink-manager-service-type))

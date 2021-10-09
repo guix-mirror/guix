@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu home services shepherd)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu packages admin)
   #:use-module (gnu services shepherd)
   #:use-module (guix sets)

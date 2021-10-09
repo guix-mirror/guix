@@ -19,7 +19,7 @@
 
 (define-module (gnu home services mcron)
   #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu home services shepherd)
   #:use-module (guix records)

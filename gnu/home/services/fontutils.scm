@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu home services fontutils)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu packages fontutils)
   #:use-module (guix gexp)
 

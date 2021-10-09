@@ -21,7 +21,7 @@
   #:use-module (gnu services configuration)
   #:use-module (gnu home services configuration)
   #:use-module (gnu home services utils)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages bash)
   #:use-module (guix gexp)

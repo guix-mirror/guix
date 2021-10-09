@@ -23,7 +23,7 @@
   #:use-module ((gnu services) #:hide (delete))
   #:use-module (gnu packages)
   #:use-module (gnu home)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (guix channels)
   #:use-module (guix derivations)
   #:use-module (guix ui)

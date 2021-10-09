@@ -74,7 +74,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
   %D%/home.scm					\
-  %D%/home-services.scm			\
+  %D%/home/services.scm			\
   %D%/home/services/symlink-manager.scm		\
   %D%/home/services/fontutils.scm		\
   %D%/home/services/configuration.scm		\
