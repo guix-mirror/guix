@@ -54,6 +54,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages nettle)
@@ -1099,7 +1100,8 @@ This package provides the library for GLib applications.")
     (inputs
      `(("efl" ,efl)
        ("expat" ,expat)
-       ("glib" ,glib)))
+       ("glib" ,glib)
+       ("libunwind" ,libunwind)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
