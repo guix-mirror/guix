@@ -152,11 +152,13 @@ browsers to backend services.")
                               "src/core/lib/gpr/log_posix.cc"
                               "src/core/lib/iomgr/ev_epollex_linux.cc")
                  (("gettid\\(")
-                  "sys_gettid("))
-               #t))))))
+                  "sys_gettid("))))))))
     (native-inputs
-     `(("protobuf" ,protobuf-3.6)
-       ,@(alist-delete "protobuf" (package-native-inputs grpc))))))
+     `(("abseil-cpp" ,abseil-cpp-20200923.3)
+       ("protobuf" ,protobuf-3.6)
+       ,@(fold alist-delete (package-native-inputs grpc)
+               '("abseil-cpp"
+                 "protobuf"))))))
 
 (define-public python-grpcio
   (package

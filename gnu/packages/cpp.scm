@@ -765,7 +765,8 @@ other values of screen objects, by setting their values as the tween starting
 point and then, after each tween step, plugging back the result.")
     (license license:expat)))
 
-(define-public abseil-cpp
+;;; This older LTS release is kept for tensorflow.
+(define-public abseil-cpp-20200923.3
   (package
     (name "abseil-cpp")
     (version "20200923.3")
@@ -811,6 +812,26 @@ point and then, after each tween step, plugging back the result.")
 augment the C++ standard library.  The Abseil library code is collected from
 Google's C++ code base.")
     (license license:asl2.0)))
+
+(define-public abseil-cpp
+  (let ((base abseil-cpp-20200923.3))
+    (package/inherit base
+      (name "abseil-cpp")
+      (version "20210324.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/abseil/abseil-cpp")
+                      (commit version)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0g9rbhk3mwjdfxk7cscd04vm8fphd5flz9yykpgvyy1nwa34zk3x"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags)
+          `(cons* "-DBUILD_TESTING=ON"
+                  (delete "-DABSL_RUN_TESTS=ON" ,flags))))))))
 
 (define-public pegtl
   (package

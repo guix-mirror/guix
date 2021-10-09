@@ -2211,7 +2211,7 @@ advanced research.")
                       (install-file file target-dir)))
                   (find-files "." "\\.h$")))))))))
     (inputs
-     `(("abseil-cpp" ,abseil-cpp)
+     `(("abseil-cpp" ,abseil-cpp-20200923.3)
        ("eigen" ,eigen-for-tensorflow-lite)
        ("flatbuffers" ,flatbuffers)
        ("python" ,python)))
