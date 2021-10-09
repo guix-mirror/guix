@@ -516,6 +516,27 @@ syntax highlighting.  @code{ccls} is derived from @code{cquery} which is not
 maintained anymore.")
     (license license:asl2.0)))
 
+(define-public spscqueue
+  (package
+    (name "spscqueue")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rigtorp/SPSCQueue/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1428cj9x318afvnvnkhg0711iy4czqn86fi7ysgfhw91asa316rc"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/rigtorp/SPSCQueue/")
+    (synopsis "Single producer single consumer queue written in C++11")
+    (description
+     "This package provides a single producer single consumer wait-free and
+lock-free fixed size queue written in C++11.")
+    (license license:expat)))
+
 (define-public gperftools
   (package
     (name "gperftools")
