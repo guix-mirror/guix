@@ -6,7 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2019, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2021 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -75,6 +75,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gps)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages image)
@@ -84,6 +85,7 @@
   #:use-module (gnu packages kde)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -2651,3 +2653,42 @@ becomes a world atlas, while OpenStreetMap takes the user to street level.  It
 supports searching for places of interest, viewing Wikipedia articles,
 creating routes by drag and drop and more.")
       (license license:gpl3))))
+
+(define-public gplates
+  (package
+    (name "gplates")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.earthbyte.org/download/8421/")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0lrcmcxc924ixddii8cyglqlwwxvk7f00g4yzbss5i3fgcbh8n96"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DBoost_NO_BOOST_CMAKE=ON")
+       #:tests? #f)) ;no test target
+    (inputs
+     `(("boost" ,boost)
+       ("cgal" ,cgal)
+       ("gdal" ,gdal)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("gmp" ,gmp)
+       ("mesa" ,mesa)
+       ("mpfr" ,mpfr)
+       ("proj" ,proj)
+       ("python-3" ,python-3)
+       ("python-numpy" ,python-numpy)
+       ("qt" ,qtbase-5)
+       ("qtsvg" ,qtsvg)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ("qwt" ,qwt)
+       ("zlib" ,zlib)))
+    (home-page "https://www.gplates.org")
+    (synopsis "Plate tectonics simulation program")
+    (description "GPlates is a plate tectonics program.  Manipulate
+reconstructions of geological and paleogeographic features through geological
+time.  Interactively visualize vector, raster and volume data.")
+    (license license:gpl2+)))
