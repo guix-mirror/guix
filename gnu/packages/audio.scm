@@ -4060,6 +4060,33 @@ machine-readable ASCII format.")
     (home-page "https://github.com/svend/cuetools")
     (license license:gpl2+)))
 
+(define-public mp3guessenc
+  (package
+    (name "mp3guessenc")
+    (version "0.27.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/mp3guessenc/mp3guessenc-"
+                           (version-major+minor version) "/mp3guessenc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1fa3sbwwn4p2v1749lzy040bfy1xfd574mf2frwgg9ikgk3vlb3c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure phase
+    (home-page "https://mp3guessenc.sourceforge.io")
+    (synopsis "Analyze MPEG layer I/II/III files")
+    (description "mp3guessenc is a command line utility that tries to detect the
+encoder used for an MPEG Layer III (MP3) file, as well as scan any MPEG audio
+file (any layer) and print a lot of useful information.")
+    (license license:lgpl2.1+)))
+
 (define-public shntool
   (package
     (name "shntool")
