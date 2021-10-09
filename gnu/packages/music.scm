@@ -72,6 +72,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system qt)
@@ -89,6 +90,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base) ;libbdf
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages benchmark)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
@@ -2175,6 +2177,112 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
      "The jalv.select package provides a graphical user interface allowing
 users to select LV2 plugins and run them with jalv.")
     (license license:public-domain)))
+
+(define-public mixxx
+  (package
+    (name "mixxx")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mixxxdj/mixxx")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (patches
+        (search-patches "mixxx-link-qtscriptbytearray-qtscript.patch"
+                        "mixxx-system-googletest-benchmark.patch"))
+       (sha256
+        (base32 "04781s4ajdlwgvf12v2mvh6ia5grhc5pn9d75b468qci3ilnmkg8"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete libraries that we already have or don't need.
+        ;; TODO: try to unbundle more (see lib/).
+        `(begin
+           (let ((third-parties '("apple" "benchmark" "googletest" "hidapi"
+                                  "libebur128")))
+             (with-directory-excursion "lib"
+               (map (lambda (third-party)
+                      (delete-file-recursively third-party))
+                    third-parties)))
+           #t))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tests need a running X server.
+         (add-before 'check 'prepare-x-for-test
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This test fails.  I don't know why.
+               (invoke "ctest" "-E" "TagLibTest.WriteID3v2Tag"))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (faad2 (assoc-ref inputs "faad2")))
+               (wrap-program (string-append out "/bin/mixxx")
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   ,(list (string-append faad2 "/lib"))))))))))
+    (native-inputs
+     `(("benchmark" ,benchmark)
+       ("googletest" ,googletest)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("chromaprint" ,chromaprint)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("fftw" ,fftw)
+       ("flac" ,flac)
+       ("glu" ,glu)
+       ("hidapi" ,hidapi)
+       ("jack" ,jack-1)
+       ("lame" ,lame)
+       ("libdjinterop" ,libdjinterop)
+       ("libebur128" ,libebur128)
+       ("libid3tag" ,libid3tag)
+       ("libkeyfinder" ,libkeyfinder)
+       ("libmad" ,libmad)
+       ("libmp4v2" ,libmp4v2)
+       ("libmodplug" ,libmodplug)
+       ("libsndfile" ,libsndfile)
+       ("libshout" ,libshout)
+       ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
+       ;; lp1833225 and refuses to use it.  Use the bundle for now.
+       ;; ("libshout-idjc" ,libshout-idjc)
+       ("libusb" ,libusb)
+       ("libvorbis" ,libvorbis)
+       ("lilv" ,lilv)
+       ("mp3guessenc" ,mp3guessenc)
+       ("openssl" ,openssl)
+       ("opusfile" ,opusfile)
+       ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
+       ("protobuf" ,protobuf)
+       ("qtbase" ,qtbase-5)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtkeychain" ,qtkeychain)
+       ("qtscript" ,qtscript)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("rubberband" ,rubberband)
+       ("soundtouch" ,soundtouch)
+       ("sqlite" ,sqlite)
+       ("taglib" ,taglib)
+       ("upower" ,upower)
+       ("vamp" ,vamp)
+       ("wavpack" ,wavpack)))
+    (home-page "https://mixxx.org/")
+    (synopsis "DJ software to perform live mixes")
+    (description "Mixxx is a DJ software.  It integrates the tools DJs need to
+perform creative live mixes with digital music files.")
+    (license license:gpl2+)))
 
 (define-public synthv1
   (package

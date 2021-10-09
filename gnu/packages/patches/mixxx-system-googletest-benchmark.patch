@@ -1,0 +1,43 @@
+From eb2079d467f8658eea13e2ed86cc69d864632866 Mon Sep 17 00:00:00 2001
+From: Vinicius Monego <monego@posteo.net>
+Date: Wed, 29 Sep 2021 19:07:35 -0300
+Subject: [PATCH] Use system googletest and benchmark.
+
+---
+ CMakeLists.txt | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 10e9b0a..492ccae 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1467,12 +1467,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to
+ # Prevent installation of GoogleTest libraries
+ set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
+ 
+-# Add googletest directly to our build. This adds the following targets:
+-# gtest, gtest_main, gmock and gmock_main
+-add_subdirectory(
+-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
+-  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
+-)
++find_package(GTest CONFIG REQUIRED)
+ 
+ add_executable(mixxx-test
+   src/test/analyserwaveformtest.cpp
+@@ -1582,10 +1577,8 @@ set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+ # Prevent installation of google/benchmark artifacts
+ set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
+ 
+-add_subdirectory(
+-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
+-  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
+-)
++find_package(benchmark CONFIG REQUIRED)
++
+ target_link_libraries(mixxx-test PRIVATE benchmark)
+ 
+ # Test Suite
+-- 
+2.30.2
+

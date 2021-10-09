@@ -1,0 +1,25 @@
+From 7554aefc886d4ebc4b4c139a5cddcab6163cf72f Mon Sep 17 00:00:00 2001
+From: Vinicius Monego <monego@posteo.net>
+Date: Thu, 30 Sep 2021 23:37:29 -0300
+Subject: [PATCH] Link QtScriptByteArray with QtScript.
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 492ccae..05fec08 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2077,7 +2077,7 @@ add_library(QtScriptByteArray STATIC EXCLUDE_FROM_ALL
+   lib/qtscript-bytearray/bytearrayprototype.cpp
+ )
+ set_target_properties(QtScriptByteArray PROPERTIES AUTOMOC ON)
+-target_link_libraries(QtScriptByteArray Qt5::Core)
++target_link_libraries(QtScriptByteArray Qt5::Core Qt5::Script)
+ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/qtscript-bytearray)
+ target_link_libraries(mixxx-lib PRIVATE QtScriptByteArray)
+ 
+-- 
+2.30.2
+

@@ -1492,6 +1492,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/mit-krb5-hurd.patch			\
   %D%/packages/patches/mit-krb5-qualify-short-hostnames.patch	\
+  %D%/packages/patches/mixxx-link-qtscriptbytearray-qtscript.patch	\
+  %D%/packages/patches/mixxx-system-googletest-benchmark.patch	\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mpg321-CVE-2019-14247.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
