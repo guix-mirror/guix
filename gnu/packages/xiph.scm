@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -406,7 +407,16 @@ decoding .opus files.")
                 "02smwc5ah8nb3a67mnkjzqmrzk43j356hgj2a97s9midq40qd38i"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     '(#:configure-flags '("--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-multistream
+           ;; Opus include directory should be passed explicitly:
+           ;; https://github.com/xiph/opusfile/issues/10 however,
+           ;; opus_multistream.h still can't be found by the compiler.
+           (lambda _
+             (substitute* "include/opusfile.h"
+               (("opus_multistream\\.h") "opus/opus_multistream.h")))))))
     ;; Required by opusfile.pc and opusurl.pc.
     (propagated-inputs
      `(("libogg" ,libogg)
