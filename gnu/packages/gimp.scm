@@ -227,8 +227,6 @@ provided, as well as a framework to add new color models and data types.")
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55
-       #:configure-flags
-       (list "-Dintrospection=false")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extend-test-time-outs
@@ -254,9 +252,11 @@ provided, as well as a framework to add new color models and data types.")
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")             ; for gtester
-       ("intltool" ,intltool)))
+     `(("glib" ,glib "bin")             ; for gtester
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (home-page "https://gegl.org")
     (synopsis "Graph based image processing framework")
     (description "GEGL (Generic Graphics Library) provides infrastructure to
