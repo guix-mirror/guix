@@ -2521,24 +2521,26 @@ with image data, text data, and sequence data.")
              (delete-file "keras/backend/theano_backend.py")
              (delete-file "keras/backend/cntk_backend.py")
              (delete-file "tests/keras/backend/backend_test.py")
-
              ;; FIXME: This doesn't work because Tensorflow is missing the
              ;; coder ops library.
-             (delete-file "tests/keras/test_callbacks.py")
-             #t))
+             (delete-file "tests/keras/test_callbacks.py")))
          (replace 'check
-           (lambda _
-             ;; These tests attempt to download data files from the internet.
-             (delete-file "tests/integration_tests/test_datasets.py")
-             (delete-file "tests/integration_tests/imagenet_utils_test.py")
-             ;; Backport https://github.com/keras-team/keras/pull/12479.
-             (substitute* "tests/keras/engine/test_topology.py"
-               (("np.ones\\(\\(3, 2\\)\\)")
-                "1."))
-             (invoke "python" "-m" "pytest"
-                     ;; The following test fail only in the build container;
-                     ;; skip it.
-                     "-k" "not test_selu"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; These tests attempt to download data files from the internet.
+               (delete-file "tests/integration_tests/test_datasets.py")
+               (delete-file "tests/integration_tests/imagenet_utils_test.py")
+               ;; Backport https://github.com/keras-team/keras/pull/12479.
+               (substitute* "tests/keras/engine/test_topology.py"
+                 (("np.ones\\(\\(3, 2\\)\\)")
+                  "1."))
+               (invoke "python" "-m" "pytest" "tests"
+                       "-p" "no:pep8"
+                       ;; FIXME: python-build-system lacks PARALLEL-TESTS?
+                       "-n" (number->string (parallel-job-count))
+                       ;; The following test fail only in the build container;
+                       ;; skip it.
+                       "-k" "not test_selu")))))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-keras-applications" ,python-keras-applications)
@@ -2565,7 +2567,6 @@ with image data, text data, and sequence data.")
 and capable of running on top of TensorFlow.  It was developed with a focus on
 enabling fast experimentation.  Use Keras if you need a deep learning library
 that:
-
 @itemize
 @item Allows for easy and fast prototyping (through user friendliness,
   modularity, and extensibility).
