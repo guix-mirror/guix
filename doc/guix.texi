@@ -35904,7 +35904,7 @@ regular expressions, sorted by relevance:
 @example
 $ guix home search shell
 name: home-shell-profile
-location: gnu/home-services/shells.scm:73:2
+location: gnu/home/services/shells.scm:73:2
 extends: home-files
 description: Create `~/.profile', which is used for environment initialization
 + of POSIX compatible login shells.  Can be extended with a list of strings or
@@ -35912,20 +35912,20 @@ description: Create `~/.profile', which is used for environment initialization
 relevance: 6
 
 name: home-zsh-plugin-manager
-location: gnu/home-services/shellutils.scm:28:2
+location: gnu/home/services/shellutils.scm:28:2
 extends: home-zsh home-profile
 description: Install plugins in profile and configure Zsh to load them.
 relevance: 1
 
 name: home-zsh-direnv
-location: gnu/home-services/shellutils.scm:69:2
+location: gnu/home/services/shellutils.scm:69:2
 extends: home-profile home-zsh
 description: Enables `direnv' for `zsh'.  Adds hook to `.zshrc' and installs a
 + package in the profile.
 relevance: 1
 
 name: home-zsh-autosuggestions
-location: gnu/home-services/shellutils.scm:43:2
+location: gnu/home/services/shellutils.scm:43:2
 extends: home-zsh-plugin-manager home-zsh
 description: Enables Fish-like fast/unobtrusive autosuggestions for `zsh' and
 + sets reasonable default values for some plugin's variables to improve perfomance
@@ -35934,13 +35934,13 @@ description: Enables Fish-like fast/unobtrusive autosuggestions for `zsh' and
 relevance: 1
 
 name: home-zsh
-location: gnu/home-services/shells.scm:236:2
+location: gnu/home/services/shells.scm:236:2
 extends: home-files home-profile
 description: Install and configure Zsh.
 relevance: 1
 
 name: home-bash
-location: gnu/home-services/shells.scm:388:2
+location: gnu/home/services/shells.scm:388:2
 extends: home-files home-profile
 description: Install and configure Bash.
 relevance: 1
