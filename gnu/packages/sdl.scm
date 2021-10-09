@@ -638,7 +638,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("sdl2" ,sdl2)
@@ -653,12 +653,15 @@ The bindings are written in pure Scheme using Guile's foreign function
 interface.")
     (license lgpl3+)))
 
-(define-public guile3.0-sdl2
+(define-public guile2.2-sdl2
   (package/inherit guile-sdl2
-    (name "guile3.0-sdl2")
+    (name "guile2.2-sdl2")
     (native-inputs
-     `(("guile" ,guile-3.0)
+     `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))))
+
+(define-public guile3.0-sdl2
+  (deprecated-package "guile3.0-sdl2" guile-sdl2))
 
 (define-public sdl2-cs
   (let ((commit "1a3556441e1394eb0b5d46aeb514b8d1090b93f8"))
