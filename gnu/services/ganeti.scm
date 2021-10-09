@@ -612,7 +612,11 @@ provide the collected information through a HTTP interface.")))
             (documentation "Run the Ganeti metadata daemon.")
             (provision '(ganeti-metad))
             (requirement '(user-processes networking))
+
+            ;; This service is started on demand.
+            (auto-start? #f)
             (respawn? #f)
+
             (start #~(make-forkexec-constructor
                       (list #$(file-append ganeti "/sbin/ganeti-metad")
                             #$(string-append "--port=" (number->string port))
