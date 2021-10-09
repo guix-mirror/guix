@@ -778,11 +778,8 @@ point and then, after each tween step, plugging back the result.")
               (sha256
                (base32
                 "1p4djhm1f011ficbjjxx3n8428p8481p20j4glpaawnpsi362hkl"))
-              ;; Remove after next googletest release and update.
               (patches
-               (search-patches
-                "abseil-cpp-fix-gtest.patch"
-                "abseil-cpp-fix-strerror_test.patch"))))
+               (search-patches "abseil-cpp-fix-strerror_test.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
