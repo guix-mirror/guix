@@ -42,26 +42,21 @@
 (define-public drbd-utils
   (package
     (name "drbd-utils")
-    (version "9.15.1")
+    (version "9.19.0")
     (source (origin
               (method url-fetch)
-              ;; Older releases are moved to /archive.  List it first because in
-              ;; practice this URL will be the most current (e.g. time-machine).
-              (uri (list (string-append "https://www.linbit.com/downloads/drbd"
-                                        "/utils/archive/drbd-utils-" version
-                                        ".tar.gz")
-                         (string-append "https://www.linbit.com/downloads/drbd"
+              (uri (list (string-append "https://pkg.linbit.com/downloads/drbd"
                                         "/utils/drbd-utils-" version ".tar.gz")))
               (sha256
                (base32
-                "1q92bwnprqkkj9iy6fxcybcfpxvvjw5clis0igrbxqnq869kwp1i"))
+                "1bbw91hil55d2047r2bdhx2daxc1wqysra2qqm77iy1hcvnvy9rq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* "scripts/global_common.conf"
                     ;; Do not participate in usage count survey by default.
-                    (("usage-count: yes")
-                     "usage-count: no"))
+                    (("usage-count yes")
+                     "usage-count no"))
                   (substitute* "scripts/Makefile.in"
                     ;; Install the Pacemaker resource agents to the libdir,
                     ;; regardless of what the OCF specification says...
@@ -86,6 +81,7 @@
                            "--sysconfdir=/etc"
                            "--localstatedir=/var")
        #:test-target "test"
+       #:make-flags '("WANT_DRBD_REPRODUCIBLE_BUILD=yesplease")
        #:phases
        (modify-phases %standard-phases
          (add-after 'patch-generated-file-shebangs 'patch-documentation
