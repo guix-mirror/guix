@@ -3417,6 +3417,31 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; containing gpl2.
     (license license:gpl2)))
 
+(define-public libkeyfinder
+  (package
+    (name "libkeyfinder")
+    (version "2.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mixxxdj/libkeyfinder")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1623kirmxhmvmhx7f8lbzk0f18w2hrhwlkzl8l4aa906lfqffdp2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch" ,catch-framework2)))
+    (inputs
+     `(("fftw" ,fftw)))
+    (home-page "https://mixxxdj.github.io/libkeyfinder/")
+    (synopsis "Musical key detection for digital audio")
+    (description
+     "@code{libkeyfinder} is a small C++11 library for estimating the musical
+key of digital audio.")
+    (license license:gpl3+)))
+
 (define-public wavpack
   (package
     (name "wavpack")
