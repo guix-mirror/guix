@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,102 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu services shepherd)
   #:use-module (ice-9 match)
-  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor %test-iptables
-                        %test-ipfs))
+  #:export (%test-static-networking
+            %test-inetd
+            %test-openvswitch
+            %test-dhcpd
+            %test-tor
+            %test-iptables
+            %test-ipfs))
+
+
+;;;
+;;; Static networking.
+;;;
+
+(define (run-static-networking-test vm)
+  (define test
+    (with-imported-modules '((gnu build marionette)
+                             (guix build syscalls))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (guix build syscalls)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette
+             '(#$vm "-nic" "user,model=virtio-net-pci")))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "static-networking")
+
+          (test-assert "service is up"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'networking))
+             marionette))
+
+          (test-assert "network interfaces"
+            (marionette-eval
+             '(begin
+                (use-modules (guix build syscalls))
+                (network-interface-names))
+             marionette))
+
+          (test-equal "address of eth0"
+            "10.0.2.15"
+            (marionette-eval
+             '(let* ((sock (socket AF_INET SOCK_STREAM 0))
+                     (addr (network-interface-address sock "eth0")))
+                (close-port sock)
+                (inet-ntop (sockaddr:fam addr) (sockaddr:addr addr)))
+             marionette))
+
+          (test-equal "netmask of eth0"
+            "255.255.255.0"
+            (marionette-eval
+             '(let* ((sock (socket AF_INET SOCK_STREAM 0))
+                     (mask (network-interface-netmask sock "eth0")))
+                (close-port sock)
+                (inet-ntop (sockaddr:fam mask) (sockaddr:addr mask)))
+             marionette))
+
+          (test-equal "eth0 is up"
+            IFF_UP
+            (marionette-eval
+             '(let* ((sock  (socket AF_INET SOCK_STREAM 0))
+                     (flags (network-interface-flags sock "eth0")))
+                (logand flags IFF_UP))
+             marionette))
+
+          (test-end)
+
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "static-networking" test))
+
+(define %test-static-networking
+  (system-test
+   (name "static-networking")
+   (description "Test the 'static-networking' service.")
+   (value
+    (let ((os (marionette-operating-system
+               (simple-operating-system
+                (static-networking-service "eth0" "10.0.2.15"
+                                           #:netmask "255.255.255.0"
+                                           #:gateway "10.0.2.2"
+                                           #:name-servers '("10.0.2.2")))
+               #:imported-modules '((gnu services herd)
+                                    (guix combinators)))))
+      (run-static-networking-test (virtual-machine os))))))
+
+
+;;;
+;;; Inetd.
+;;;
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
