@@ -268,66 +268,78 @@ Android, and ChromeOS.")
     (license license:lgpl2.1+)))
 
 (define-public libnice
-  (package
-    (name "libnice")
-    (version "0.1.18")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://libnice.freedesktop.org/releases/"
-                       name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1x3kj9b3dy9m2h6j96wgywfamas1j8k2ca43k5v82kmml9dx5asy"))))
-    (build-system meson-build-system)
-    (outputs '("out" "doc"))
-    (arguments
-     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
-       #:configure-flags
-       (list
-        "-Dgtk_doc=enabled")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-test
-           (lambda _
-             (substitute* "tests/meson.build"
-               ;; ‘test-set-port-range.c:66:main: assertion failed:
-               ;; (nice_agent_gather_candidates (agent, stream1))’
-               (("'test-set-port-range'") "#"))
-             #t))
-         (add-after 'install 'move-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share"))
-               (rename-file
-                (string-append out "/share/gtk-doc")
-                (string-append doc "/share/gtk-doc"))
-               #t))))))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("graphviz" ,graphviz)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("libnsl" ,libnsl)))
-    (propagated-inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)
-       ("gnutls" ,gnutls)))
-    (synopsis "GLib ICE implementation")
-    (description "LibNice is a library that implements the Interactive
+  ;; The latest release is old and randomly fails tests with GStreamer 1.18.5,
+  ;; such as: "test-bind: ../libnice-0.1.18/stun/tests/test-bind.c:234:
+  ;; bad_responses: Assertion `len >= 20' failed"
+  (let ((revision "0")
+        (commit "47a96334448838c43d7e72f4ef51b317befbfae1"))
+    (package
+      (name "libnice")
+      (version (git-version "0.1.18" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.freedesktop.org/libnice/libnice")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "19ypjazslmsb9vqs2wyyzvi72h5jbn16dbng7pxh485djdrmgcg4"))))
+      (build-system meson-build-system)
+      (outputs '("out" "doc"))
+      (arguments
+       `(#:glib-or-gtk? #t           ; To wrap binaries and/or compile schemas
+         #:configure-flags
+         (list
+          "-Dgtk_doc=enabled")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'disable-failing-test
+             (lambda _
+               (substitute* "tests/meson.build"
+                 ;; ‘test-set-port-range.c:66:main: assertion failed:
+                 ;; (nice_agent_gather_candidates (agent, stream1))’
+                 (("'test-set-port-range'" all)
+                  (string-append "# " all)))
+               (substitute* "stun/tests/meson.build"
+                 ;; test-bind.c:234: bad_responses: Assertion `len >= 20'
+                 ;; failed (see:
+                 ;; https://gitlab.freedesktop.org/libnice/libnice/-/issues/150).
+                 (("'bind', ")
+                  ""))))
+           (add-after 'install 'move-docs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (assoc-ref outputs "doc")))
+                 (mkdir-p (string-append doc "/share"))
+                 (rename-file
+                  (string-append out "/share/gtk-doc")
+                  (string-append doc "/share/gtk-doc"))))))))
+      (native-inputs
+       `(("glib:bin" ,glib "bin")
+         ("gobject-introspection" ,gobject-introspection)
+         ("graphviz" ,graphviz)
+         ("gtk-doc" ,gtk-doc/stable)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("gstreamer" ,gstreamer)
+         ("gst-plugins-base" ,gst-plugins-base)
+         ("libnsl" ,libnsl)))
+      (propagated-inputs
+       `(("glib" ,glib)
+         ("glib-networking" ,glib-networking)
+         ("gnutls" ,gnutls)))
+      (synopsis "GLib ICE implementation")
+      (description "LibNice is a library that implements the Interactive
 Connectivity Establishment (ICE) standard (RFC 5245 & RFC 8445).  It provides a
 GLib-based library, libnice, as well as GStreamer elements to use it.")
-    (home-page "https://libnice.freedesktop.org/")
-    (license
-     ;; This project is dual-licensed.
-     (list
-      license:lgpl2.1+
-      license:mpl1.1))))
+      (home-page "https://libnice.freedesktop.org/")
+      (license
+       ;; This project is dual-licensed.
+       (list
+        license:lgpl2.1+
+        license:mpl1.1)))))
 
 (define-public rtmpdump
   ;; There are no tags in the repository, and the project is unlikely to
