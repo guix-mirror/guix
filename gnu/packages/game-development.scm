@@ -560,7 +560,7 @@ clone.")
 (define-public tsukundere
   (package
     (name "tsukundere")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -569,7 +569,7 @@ clone.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05y3nj8vpn40hfr2y29p8pa9hhpzibhbvfzpm0dlphjh9crq3ii4"))))
+                "11glghnff27rqh2s34g51afg93g3f5ryfz9mkyb7qj35ngl8vw5f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match)
@@ -599,7 +599,7 @@ clone.")
                          ((label . pkg)
                           (and (string-prefix? "guile-" label) pkg)))
                        inputs))))
-               (substitute* "bin/tsukundere"
+               (substitute* "tsukundere.scm"
                  (("exec guile (.*)" _ args)
                   (string-append
                    (format #f "export GUILE_LOAD_PATH=\"~@?\"~%"
@@ -615,11 +615,14 @@ clone.")
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("guile" ,guile-3.0)
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs
      `(("guile-sdl2" ,guile3.0-sdl2)
-       ("guile" ,guile-3.0)))
+       ("guile" ,guile-3.0)
+       ("pango" ,pango)
+       ("sdl2" ,sdl2)))
     (home-page "https://gitlab.com/lilyp/tsukundere")
     (synopsis "Visual novel engine")
     (description "Tsukundere is a game engine geared heavily towards the
