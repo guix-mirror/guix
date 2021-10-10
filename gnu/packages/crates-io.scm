@@ -36508,8 +36508,29 @@ implementation.")
     (description "This package provides a quick csv reader and decoder in Rust.")
     (license license:expat)))
 
+(define-public rust-quick-error-2
+  (package
+    (name "rust-quick-error")
+    (version "2.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quick-error" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "18z6r2rcjvvf8cn92xjhm2qc3jpd1ljvcbf12zv0k9p565gmb4x9"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tailhook/quick-error")
+    (synopsis "Macro which makes error types pleasant to write")
+    (description "This crate provides a macro which makes error types pleasant
+to write.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-quick-error-1
   (package
+    (inherit rust-quick-error-2)
     (name "rust-quick-error")
     (version "1.2.3")
     (source
@@ -36519,14 +36540,7 @@ implementation.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/tailhook/quick-error")
-    (synopsis "Macro which makes error types pleasant to write")
-    (description "This crate provides a macro which makes error types pleasant
-to write.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51"))))))
 
 (define-public rust-quick-xml-0.22
   (package
