@@ -57828,7 +57828,12 @@ non-cryptographic hashing algorithm and random number generator.")
        (uri (crate-uri "x86" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0sas98yzn549f5lxswqra2rjdfjxh24f3ndw5dfsnwnm9rlsr1i7"))))
+        (base32 "0sas98yzn549f5lxswqra2rjdfjxh24f3ndw5dfsnwnm9rlsr1i7"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Cargo.toml"
+             (("8\\.0") "8"))))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
