@@ -27625,6 +27625,23 @@ file's MIME type by its extension.")
         ("rust-phf-codegen" ,rust-phf-codegen-0.7)
         ("rust-unicase" ,rust-unicase-1))))))
 
+(define-public rust-minimal-lexical-0.1
+  (package
+    (name "rust-minimal-lexical")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "minimal-lexical" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0xynhr97vyv5n5lls41dl7bfa3ba122lix9mqij1l7yprl6n6r4w"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Alexhuszagh/minimal-lexical")
+    (synopsis "Fast float parsing conversion routines.")
+    (description "Fast float parsing conversion routines.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-miniz-oxide-0.4
   (package
     (name "rust-miniz-oxide")
