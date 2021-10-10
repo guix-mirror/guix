@@ -602,6 +602,9 @@ clone.")
                (substitute* "tsukundere.scm"
                  (("exec guile (.*)" _ args)
                   (string-append
+                   ;; XXX: Prevent Guile-SDL2 from blowing up by not knowing
+                   ;;      where the SDL2 libaries are.
+                   "unset LD_LIBRARY_PATH\n"
                    (format #f "export GUILE_LOAD_PATH=\"~@?\"~%"
                            "~{~a~^:~}" (map scm pkgs))
                    (format #f "export GUILE_LOAD_COMPILED_PATH=\"~@?\"~%"
