@@ -40,6 +40,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 François J. <francois-oss@avalenn.eu>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1157,13 +1158,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "3.1.0")
+    (version "3.1.24")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "1jzllsy9lwc9yibccgv7h9naxisazx2n3zmpy21c8n5xhysw69p4"))))
+                "1rarp97cpjnhi106k2yhb7kygdyflmlgq0icxv3ggzl4wvszv0yz"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
@@ -1174,12 +1175,12 @@ allowing to handle large objects with a small memory footprint.")
                         (("git_exec_name = \"git\"")
                          (string-append "git_exec_name = \""
                                         (assoc-ref inputs "git")
-                                        "/bin/git\"")))
-                      #t)))))
+                                        "/bin/git\""))))))))
     (inputs
      `(("git" ,git)))
     (propagated-inputs
-     `(("python-gitdb" ,python-gitdb)))
+     `(("python-gitdb" ,python-gitdb)
+       ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
      `(("python-ddt" ,python-ddt)
        ("python-nose" ,python-nose)))
