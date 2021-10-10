@@ -16562,20 +16562,24 @@ floats.")
 (define-public rust-fastrand-1
   (package
     (name "rust-fastrand")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "fastrand" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1qvz1i7g5mb2hcsaawrvxx88b8vwrsr85qr98ffmrkj5fh2sypya"))))
+        (base32 "0birvh29m4x6nwjdyrmiyiypw9l52bmvk15ksdw96hjs50yyv55k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-instant" ,rust-instant-0.1))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.7))))
+       (("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-instant" ,rust-instant-0.1)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3)
+        ("rust-wyhash" ,rust-wyhash-0.5))))
     (home-page "https://github.com/stjepang/fastrand")
     (synopsis "Simple and fast random number generator")
     (description
