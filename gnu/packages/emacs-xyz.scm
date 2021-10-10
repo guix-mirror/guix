@@ -4213,7 +4213,7 @@ the URL for a commit.  URLs are added to the kill ring.")
 (define-public emacs-apheleia
   (package
     (name "emacs-apheleia")
-    (version "1.0")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -4222,7 +4222,7 @@ the URL for a commit.  URLs are added to the kill ring.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04pls7zahy4jfkikv6fvd9vfpm4glhyanmmkx79hgi9pwdv966rf"))))
+        (base32 "0f2dqid4h0psdyx3p18c7xn7nf8zr6y4qq98yvyjfbwq5lcjk4rn"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/raxod502/apheleia")
     (synopsis "Reformat buffer stably")
