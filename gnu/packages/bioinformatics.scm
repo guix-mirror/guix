@@ -22,6 +22,7 @@
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2363,7 +2364,13 @@ databases.")
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
                          (find-files out "\\.gz$"))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'disable-nondeterministic-test
+           (lambda _
+             ;; This test fails/succeeds non-deterministically.
+             (substitute* "clipper/test/test_call_peak.py"
+               (("test_get_FDR_cutoff_mean") "_test_get_FDR_cutoff_mean"))
+             #t)))))
     (inputs
      `(("htseq" ,htseq)
        ("python-pybedtools" ,python-pybedtools)
