@@ -312,14 +312,14 @@ See also: megacmd, the official tool set by MEGA.")
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.7.6.3261")
+    (version "2.9.0.5150")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/ownCloud/stable/"
                            version "/source/ownCloud-" version ".tar.xz"))
        (sha256
-        (base32 "19jjlhbzhy4v5h1wj5a87ismxq2p7avb2bb4lfbh2rvl01r432vy"))
+        (base32 "0nf68x840p30yng4fh1nlyiqg40z0rkcv0lskpz8dd4pj1iw5jjs"))
        (patches (search-patches "owncloud-disable-updatecheck.patch"))))
     ;; TODO: unbundle qprogessindicator, qlockedfile, qtokenizer and
     ;; qtsingleapplication which have not yet been packaged, but all are
