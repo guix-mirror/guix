@@ -23805,16 +23805,16 @@ processes for Emacs")
 (define-public emacs-treemacs
   (package
     (name "emacs-treemacs")
-    (version "2.9.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Alexander-Miller/treemacs")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1c75b4ni8mxf58b6z9n9f7mij54aial0pbsnp390wcry57z2c77l"))))
+    (version "2.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Alexander-Miller/treemacs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14f40q3zi79j9ss2m5i0s1kv16b3a9kqy2hn5vk4ig9w9dkg8jk5"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ace-window" ,emacs-ace-window)
