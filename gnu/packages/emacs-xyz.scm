@@ -24554,25 +24554,24 @@ Lisp functions that call themselves in tail position.")
       (license license:gpl3+))))
 
 (define-public emacs-equake
-  (let ((commit "7eddc025ee61b83029363e22219af228b8c20681")
-        (revision "2"))
+  ;; Upstream provides no tagged releases, but the commit below matches an
+  ;; exact release.
+  (let ((commit "4d6ef75a4d91ded22caad220909518ccb67b7b87"))
     (package
       (name "emacs-equake")
-      (version (git-version "0.85" revision commit))
+      (version "0.985")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://gitlab.com/emacsomancer/equake/")
+               (url "https://gitlab.com/emacsomancer/equake")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1c55pbqak3d02sw6z1139baxzy401b90g0gxzcc3j6sgplz6sc6w"))))
+          (base32 "11xfr71y78idcn461p4pz7b0k01nhz15cyl97bjqq6ii5xhbhvdx"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
-         ("emacs-tco-el" ,emacs-tco-el)))
+       `(("emacs-dash" ,emacs-dash)))
       (home-page "https://gitlab.com/emacsomancer/equake/")
       (synopsis "Drop-down console for @code{Eshell} and terminal emulators")
       (description "This package provides a Quake-style drop-down console
