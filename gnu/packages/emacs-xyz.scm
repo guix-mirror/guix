@@ -153,6 +153,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages java)
@@ -28387,6 +28388,13 @@ snippets for Emacs.")
                            (rename-file f (basename f)))
                          el-files))
              #t))
+         (add-after 'move-source-files 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (make-file-writable "org-roam-graph.el")
+             (emacs-substitute-variables "org-roam-graph.el"
+               ("org-roam-graph-executable"
+                (string-append (assoc-ref inputs "graphviz")
+                               "/bin/dot")))))
          (add-after 'install 'install-image
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -28399,6 +28407,8 @@ snippets for Emacs.")
                  (invoke "makeinfo" "-o" "org-roam.info" "org-roam.texi")
                  (install-file "org-roam.info"
                                (string-append out "/share/info")))))))))
+       (inputs
+        `(("graphviz" ,graphviz)))
        (native-inputs
         `(("texinfo" ,texinfo)))
        (propagated-inputs
