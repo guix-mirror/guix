@@ -2685,6 +2685,58 @@ support for high performance Telegram Bot creation.")
     (home-page "https://source.puri.sm/Librem5/purple-mm-sms")
     (license license:gpl2+)))
 
+(define-public purple-lurch
+  (package
+    (name "purple-lurch")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url "https://github.com/gkdr/lurch")
+                       (commit (string-append "v" version))))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Submodules
+           (delete-file-recursively "lib")))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1ipd9gwh04wbqv6c10yxi02lc2yjsr02hwjycgxhl4r9x8b33psd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("^PURPLE_PLUGIN_DIR = .*")
+                           (string-append "PURPLE_PLUGIN_DIR = " out
+                                          "/lib/purple-2\n")))
+                        (setenv "CC" "gcc")))))
+       #:parallel-tests? #f))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("axc" ,axc)
+              ("glib" ,glib)
+              ("libgcrypt" ,libgcrypt)
+              ("libomemo" ,libomemo)
+              ("libsignal-protocol-c" ,libsignal-protocol-c)
+              ("libxml2" ,libxml2)
+              ("minixml" ,minixml)
+              ("pidgin" ,pidgin)
+              ("sqlite" ,sqlite)))
+    (synopsis "OMEMO Encryption for libpurple")
+    (description "Purple-lurch plugin adds end-to-end encryption support
+through the Double Ratchet (Axolotl) algorithm, to @code{libpurple}
+applications using @acronym{XMPP, Extensible Messaging and Presence Protocol},
+through its standard XEP-0384: @acronym{OMEMO, OMEMO Multi-End Message and
+Object Encryption} Encryption.  It provides confidentiality, (weak) forward
+secrecy, break-in recovery, authentication, integrity, deniability, and
+asynchronicity.")
+    (home-page "https://github.com/gkdr/lurch")
+    (license license:gpl3+)))
+
 (define-public chatty
  (package
    (name "chatty")
