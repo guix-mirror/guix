@@ -5286,8 +5286,8 @@ behave like a set of bitflags.")
      `(#:cargo-inputs
        (("rust-typenum" ,rust-typenum-1))
        #:cargo-development-inputs
-       (("rust-proptest", rust-proptest-0.9)
-        ("rust-proptest-derive", rust-proptest-derive-0.1))))
+       (("rust-proptest" ,rust-proptest-0.9)
+        ("rust-proptest-derive" ,rust-proptest-derive-0.1))))
     (home-page "https://github.com/bodil/bitmaps")
     (synopsis "Fixed size compact boolean array in Rust")
     (description "This crate provides a convenient and efficient way of
