@@ -35925,8 +35925,45 @@ transfer).
 This library mimics the Git way of showing progress.")
     (license license:gpl2+)))
 
+(define-public rust-proptest-1
+  (package
+    (name "rust-proptest")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proptest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rdhjnf0xma5rmsq04d31n2vq1pgbm42pjc6jn3jsj8qgz09q38y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bit-set" ,rust-bit-set-0.5)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-quick-error" ,rust-quick-error-2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.3)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-rusty-fork" ,rust-rusty-fork-0.3)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-x86" ,rust-x86-0.33))
+       #:cargo-development-inputs
+       (("rust-regex" ,rust-regex-1))))
+    (home-page "https://altsysrq.github.io/proptest-book/proptest/index.html")
+    (synopsis "Hypothesis-like property-based testing and shrinking")
+    (description
+     "The @code{proptest} crate provides most of Proptest’s functionality,
+including most strategies and the testing framework itself.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proptest-0.10
   (package
+    (inherit rust-proptest-1)
     (name "rust-proptest")
     (version "0.10.1")
     (source
@@ -35936,7 +35973,6 @@ This library mimics the Git way of showing progress.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0vv4cvwn1v7h0zjajmhznll554a2ri8dqw26xql3q49r246cirhj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -35954,13 +35990,7 @@ This library mimics the Git way of showing progress.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-x86" ,rust-x86-0.33))
        #:cargo-development-inputs
-       (("rust-regex" ,rust-regex-1))))
-    (home-page "https://altsysrq.github.io/proptest-book/proptest/index.html")
-    (synopsis "Hypothesis-like property-based testing and shrinking")
-    (description
-     "The @code{proptest} crate provides most of Proptest’s functionality,
-including most strategies and the testing framework itself.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-regex" ,rust-regex-1))))))
 
 (define-public rust-proptest-0.9
   (package
