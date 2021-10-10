@@ -564,7 +564,7 @@ clone.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitlab.com/leoprikler/tsukundere")
+                    (url "https://gitlab.com/lilyp/tsukundere")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -620,7 +620,7 @@ clone.")
     (inputs
      `(("guile-sdl2" ,guile3.0-sdl2)
        ("guile" ,guile-3.0)))
-    (home-page "https://gitlab.com/leoprikler/tsukundere")
+    (home-page "https://gitlab.com/lilyp/tsukundere")
     (synopsis "Visual novel engine")
     (description "Tsukundere is a game engine geared heavily towards the
 development of visual novels, written on top of Guile-SDL2.  It is still
