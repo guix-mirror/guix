@@ -544,6 +544,47 @@ messaging environments.  It can be used with messaging software to provide
 end-to-end encryption.")
   (license license:gpl3+)))
 
+(define-public axc
+  (package
+    (name "axc")
+    (version "0.3.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gkdr/axc")
+             (commit (string-append "v" version))))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Submodules
+           (delete-file-recursively "lib")))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "05sv7l6lk0xk4wb2bspc2sdpygrb1f0szzi82a1kyfm0fjz887b3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (setenv "PREFIX" out)))))
+       #:parallel-tests? #f))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("glib" ,glib)
+              ("libgcrypt" ,libgcrypt)
+              ("libsignal-protocol-c" ,libsignal-protocol-c)
+              ("sqlite" ,sqlite)))
+    (synopsis "Client library for libsignal-protocol-c")
+    (description "This is a client library for @code{libsignal-protocol-c}.
+It implements the necessary interfaces using @code{libgcrypt} and
+@code{sqlite}.")
+    (home-page "https://github.com/gkdr/axc")
+    (license license:gpl3)))                  ;GPLv3-only, per license headers
+
 (define-public bitlbee
   (package
     (name "bitlbee")
