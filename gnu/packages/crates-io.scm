@@ -37685,8 +37685,35 @@ generator based on timing jitter.")
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1))))))
 
+(define-public rust-rand-xorshift-0.3
+  (package
+    (name "rust-rand-xorshift")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_xorshift" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13vcag7gmqspzyabfl1gr9ykvxd2142q2agrj8dkyjmfqmgg4nyj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1))))
+    (home-page "https://crates.io/crates/rand-xorshift")
+    (synopsis "Xorshift random number generator")
+    (description
+     "Xorshift random number generator.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-xorshift-0.2
   (package
+    (inherit rust-rand-xorshift-0.3)
     (name "rust-rand-xorshift")
     (version "0.2.0")
     (source
@@ -37698,18 +37725,12 @@ generator based on timing jitter.")
        (sha256
         (base32
          "1a6wy76lc5fimm1n9n8fzhp4cfjwfwxh4hx63bg3vlh1d2w1dm3p"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1))))
-    (home-page "https://crates.io/crates/rand-xorshift")
-    (synopsis "Xorshift random number generator")
-    (description
-     "Xorshift random number generator.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-bincode" ,rust-bincode-1))))))
 
 (define-public rust-rand-xorshift-0.1
   (package
