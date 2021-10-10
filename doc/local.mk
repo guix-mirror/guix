@@ -97,44 +97,29 @@ PO4A_PARAMS += -k 0 # produce an output even if the translation is not complete
 PO4A_PARAMS += -f texinfo # texinfo format
 
 # When a change to guix.texi occurs, it is not translated immediately.
-# Because @pxref and @xref commands are reference to a section by name, they
+# Because @pxref and @xref commands are references to sections by name, they
 # should be translated. If a modification adds a reference to a section, this
 # reference is not translated, which means it references a section that does not
 # exist.
-# This command loops through the translated files looking for references. For
-# each of these references, it tries to find the translation and replaces the
-# reference name, even in untranslated strings.
-# The last sed is a multiline sed because some references span multiple lines.
 define xref_command
-cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
-        tr -d '\012' | sed 's|\(@p\?x\?ref\)|\n\1|g' | egrep '@p?x?ref' | \
-        sed 's|^.*@p\?x\?ref{\([^,}]*\).*$$|\1|g' | sort | uniq | while read e; do \
-    if [ -n "$$e" ]; then \
-      line=$$(grep -n "^msgid \"$$e\"" "$<" | cut -f1 --delimiter=":") ;\
-      ((line++)) ;\
-      if [ "$$line" != "1" ]; then \
-	translation=$$(head -n "$$line" "$<" | tail -1 | grep msgstr | sed 's|msgstr "\([^"]*\)"|\1|') ;\
-	if [ "$$translation" != "" ]; then \
-	      sed "N;s@\(p\?x\?ref\){$$(echo $$e | sed 's| |[\\n ]|g')\(,\|}\)@\1{$$translation\2@g;P;D" -i "$@.tmp" ;\
-	fi ;\
-      fi ;\
-   fi ;\
-done
+$(top_srcdir)/pre-inst-env $(GUILE) --no-auto-compile	\
+  "$(top_srcdir)/build-aux/convert-xref.scm"		\
+  $@.tmp $<
 endef
 
-$(srcdir)/%D%/guix.%.texi: po/doc/guix-manual.%.po $(srcdir)/%D%/contributing.%.texi
+$(srcdir)/%D%/guix.%.texi: po/doc/guix-manual.%.po $(srcdir)/%D%/contributing.%.texi guix/build/po.go
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
 	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
-$(srcdir)/%D%/guix-cookbook.%.texi: po/doc/guix-cookbook.%.po
+$(srcdir)/%D%/guix-cookbook.%.texi: po/doc/guix-cookbook.%.po guix/build/po.go
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix-cookbook.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix-cookbook\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
 	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
-$(srcdir)/%D%/contributing.%.texi: po/doc/guix-manual.%.po
+$(srcdir)/%D%/contributing.%.texi: po/doc/guix-manual.%.po guix/build/po.go
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$<" -l "$@.tmp"
 	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
