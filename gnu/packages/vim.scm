@@ -475,7 +475,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "3.3")
+    (version "3.4")
     (source
       (origin
         (method git-fetch)
@@ -485,13 +485,14 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1ybmy2dk9zsmd3kyyj40qn20gzgd16n5p77sjxp8bspx3zb7km5y"))))
+          "0vgyp0rabrxjy9mpdnf221vjk3q38pls7az884gvnjjzdly18xmp"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("ftdetect" "share/vim/vimfiles/")
+         ("ftplugin" "share/vim/vimfiles/")
          ("plugin" "share/vim/vimfiles/")
          ("syntax" "share/vim/vimfiles/"))))
     (home-page "https://github.com/tpope/vim-fugitive")
