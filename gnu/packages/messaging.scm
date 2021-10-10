@@ -585,6 +585,41 @@ It implements the necessary interfaces using @code{libgcrypt} and
     (home-page "https://github.com/gkdr/axc")
     (license license:gpl3)))                  ;GPLv3-only, per license headers
 
+(define-public libomemo
+  (package
+    (name "libomemo")
+    (version "0.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gkdr/libomemo")
+             (commit (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1q3vyj8zk3vm0a4v6w8qya5dhk2yw04bga8799a0zl6907nf122k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (setenv "PREFIX" out)))))
+       #:parallel-tests? #f))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("glib" ,glib)
+              ("libgcrypt" ,libgcrypt)
+              ("minixml" ,minixml)
+              ("sqlite" ,sqlite)))
+    (synopsis "OMEMO C library")
+    (description "This library implements @acronym{OMEMO, OMEMO Multi-End
+Message and Object Encryption} of XMPP (XEP-0384) in C.")
+    (home-page "https://github.com/gkdr/libomemo")
+    (license license:expat)))
+
 (define-public bitlbee
   (package
     (name "bitlbee")
