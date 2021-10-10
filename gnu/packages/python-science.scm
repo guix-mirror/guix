@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -329,13 +330,13 @@ of the SGP4 satellite tracking algorithm.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "1.3.0")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1qi2cv450m05dwccx3p1s373k5b4ncvwi74plnms2pidrz4ycm65"))))
+        (base32 "1pq1nwj2kysy2g3p18wjb1xn8vk1jhcyisxilsnkwyd99aqqqb17"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
