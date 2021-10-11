@@ -524,6 +524,7 @@ firmware blobs.  You can
               (file-name (git-file-name name version))
               (patches (search-patches "ganeti-shepherd-support.patch"
                                        "ganeti-shepherd-master-failover.patch"
+                                       "ganeti-haskell-compat.patch"
                                        "ganeti-haskell-pythondir.patch"
                                        "ganeti-disable-version-symlinks.patch"
                                        "ganeti-preserve-PYTHONPATH.patch"))))
@@ -573,6 +574,14 @@ firmware blobs.  You can
                             ,(system->qemu-target (%current-system))))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-version-constraints
+           (lambda _
+             ;; Loosen version constraints for compatibility with Stackage 18.10.
+             (substitute* "cabal/ganeti.template.cabal"
+               (("(.*base64-bytestring.*) < 1\\.1" _ match)
+                (string-append match " < 1.2"))
+               (("(.*QuickCheck.*) < 2\\.14" _ match)
+                (string-append match " < 2.15")))))
          (add-after 'unpack 'create-vcs-version
            (lambda _
              ;; If we are building from a git checkout, we need to create a

@@ -1064,6 +1064,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fxdiv-system-libraries.patch		\
   %D%/packages/patches/gajim-honour-GAJIM_PLUGIN_PATH.patch	\
   %D%/packages/patches/ganeti-disable-version-symlinks.patch	\
+  %D%/packages/patches/ganeti-haskell-compat.patch		\
   %D%/packages/patches/ganeti-haskell-pythondir.patch		\
   %D%/packages/patches/ganeti-preserve-PYTHONPATH.patch		\
   %D%/packages/patches/ganeti-shepherd-master-failover.patch	\

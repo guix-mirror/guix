@@ -1,0 +1,18 @@
+Adjust to type change of TupE in Template Haskell 2.16.
+
+diff --git a/src/Ganeti/THH/Types.hs b/src/Ganeti/THH/Types.hs
+--- a/src/Ganeti/THH/Types.hs
++++ b/src/Ganeti/THH/Types.hs
+@@ -123,4 +123,11 @@ curryN n = do
+   f <- newName "f"
+   ps <- replicateM n (newName "x")
+   return $ LamE (VarP f : map VarP ps)
+-             (AppE (VarE f) (TupE $ map VarE ps))
++             (AppE (VarE f) (nonUnaryTupE $ map VarE ps))
++  where
++    nonUnaryTupE :: [Exp] -> Exp
++    nonUnaryTupE es = TupE $
++#if MIN_VERSION_template_haskell(2,16,0)
++                            map Just
++#endif
++                            es
