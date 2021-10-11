@@ -5967,6 +5967,32 @@ The package provides additional NTFS tools.")
                   ((" -static") " -all-static"))))
             (delete 'install-link))))))))
 
+(define-public ntfsfix/static
+  (package
+    (name "ntfsfix-static")
+    (version (package-version ntfs-3g/static))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((ntfs-3g (assoc-ref %build-inputs "ntfs-3g"))
+                (out     (assoc-ref %outputs "out"))
+                (bin     (string-append out "/bin")))
+           (install-file (string-append ntfs-3g "/bin/ntfsfix") bin)
+           (with-directory-excursion bin
+             (remove-store-references "ntfsfix"))))))
+    (inputs
+     `(("ntfs-3g" ,ntfs-3g/static)))
+    (home-page (package-home-page ntfs-3g/static))
+    (synopsis "Statically linked @command{ntfsfix} from ntfs-3g")
+    (description
+     "This package provides a statically linked @command{ntfsfix} taken
+from the ntfs-3g package.  It is meant to be used in initrds.")
+    (license (package-license ntfs-3g/static))))
+
 (define-public rdma-core
   (package
     (name "rdma-core")
