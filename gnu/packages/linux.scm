@@ -5947,6 +5947,26 @@ commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
 The package provides additional NTFS tools.")
     (license license:gpl2+)))
 
+(define-public ntfs-3g/static
+  (static-package
+   (package
+     (inherit ntfs-3g)
+     (name "ntfs-3g-static")
+     (arguments
+      (substitute-keyword-arguments (package-arguments ntfs-3g)
+        ((#:configure-flags flags)
+         `(append ,flags
+                  (list "--enable-really-static"
+                        ;; The FUSE driver isn't currently used by our initrd.
+                        "--disable-ntfs-3g")))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'make-really-static-really-static
+              (lambda _
+                (substitute* "ntfsprogs/Makefile.in"
+                  ((" -static") " -all-static"))))
+            (delete 'install-link))))))))
+
 (define-public rdma-core
   (package
     (name "rdma-core")
