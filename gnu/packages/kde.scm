@@ -219,7 +219,7 @@ browser for easy news reading.")
     (license license:gpl2+)))
 
 (define-public kdenlive
-  (let ((version "21.08.1"))
+  (let ((version "21.08.2"))
     (package
       (name "kdenlive")
       (version version)
@@ -231,7 +231,7 @@ browser for easy news reading.")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
-          (base32 "1fvy2aa86pn4crk8lgxjh1kdn2lxzi66krnrr9m91mp89mmc760k"))))
+          (base32 "1l78xjdf1bmj3s8kysaqqgh67mb3vrc96rsdnp0i4awlyfsh89d7"))))
       (build-system qt-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -269,7 +269,10 @@ browser for easy news reading.")
          ("qtwebkit" ,qtwebkit)
          ("shared-mime-info" ,shared-mime-info)))
       (arguments
-       `(#:tests? #f                    ;TODO needs X
+       ;; XXX: there is a single test that spawns other tests and
+       ;; 1/3 tests failed and 1/327 assertions failed.  It seems
+       ;; that individual tests can't be skipped.
+       `(#:tests? #f
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-executable
