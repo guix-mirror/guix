@@ -511,8 +511,6 @@ firmware blobs.  You can
 (define-public ganeti
   (package
     (name "ganeti")
-    ;; Note: we use a pre-release for Python 3 compatibility as well as many
-    ;; other fixes.
     (version "3.0.1")
     (source (origin
               (method git-fetch)
@@ -536,6 +534,9 @@ firmware blobs.  You can
        #:modules (,@%gnu-build-system-modules
                   ((guix build haskell-build-system) #:prefix haskell:)
                   ((guix build python-build-system) #:select (python-version))
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (ice-9 match)
                   (ice-9 rdelim))
 
        ;; The default test target includes a lot of checks that are only really
@@ -590,8 +591,7 @@ firmware blobs.  You can
              (unless (file-exists? "vcs-version")
                (call-with-output-file "vcs-version"
                  (lambda (port)
-                   (format port "v~a~%" ,version))))
-             #t))
+                   (format port "v~a~%" ,version))))))
          (add-after 'unpack 'patch-absolute-file-names
            (lambda _
              (substitute* '("lib/utils/process.py"
@@ -617,8 +617,7 @@ firmware blobs.  You can
                (("ndisc6") (which "ndisc6"))
                (("fping") (which "fping"))
                (("grep") (which "grep"))
-               (("ip addr") (string-append (which "ip") " addr")))
-             #t))
+               (("ip addr") (string-append (which "ip") " addr")))))
          (add-after 'unpack 'override-builtin-PATH
            (lambda _
              ;; Ganeti runs OS install scripts and similar with a built-in
@@ -626,8 +625,7 @@ firmware blobs.  You can
              (substitute* "src/Ganeti/Constants.hs"
                (("/sbin:/bin:/usr/sbin:/usr/bin")
                 "/run/setuid-programs:/run/current-system/profile/sbin:\
-/run/current-system/profile/bin"))
-             #t))
+/run/current-system/profile/bin"))))
          (add-after 'bootstrap 'patch-sphinx-version-detection
            (lambda _
              ;; The build system runs 'sphinx-build --version' to verify that
@@ -635,8 +633,7 @@ firmware blobs.  You can
              ;; .sphinx-build-real executable name created by the Sphinx wrapper.
              (substitute* "configure"
                (("\\$SPHINX --version 2>&1")
-                "$SPHINX --version 2>&1 | sed 's/.sphinx-build-real/sphinx-build/g'"))
-             #t))
+                "$SPHINX --version 2>&1 | sed 's/.sphinx-build-real/sphinx-build/g'"))))
 
          ;; The build system invokes Cabal and GHC, which do not work with
          ;; GHC_PACKAGE_PATH: <https://github.com/haskell/cabal/issues/3728>.
@@ -650,13 +647,11 @@ firmware blobs.  You can
                (("\\$\\(CABAL\\)")
                 "$(CABAL) --package-db=../package.conf.d")
                (("\\$\\(GHC\\)")
-                "$(GHC) -package-db=../package.conf.d"))
-             #t))
+                "$(GHC) -package-db=../package.conf.d"))))
          (add-after 'configure 'make-ghc-use-shared-libraries
            (lambda _
              (substitute* "Makefile"
-               (("HFLAGS =") "HFLAGS = -dynamic -fPIC"))
-             #t))
+               (("HFLAGS =") "HFLAGS = -dynamic -fPIC"))))
          (add-after 'configure 'fix-installation-directories
            (lambda _
              (substitute* "Makefile"
@@ -666,8 +661,7 @@ firmware blobs.  You can
                ;; Similarly, do not attempt to install the sample ifup scripts
                ;; to /etc/ganeti.
                (("\\$\\(DESTDIR\\)\\$\\(ifupdir\\)")
-                "$(DESTDIR)${prefix}$(ifupdir)"))
-             #t))
+                "$(DESTDIR)${prefix}$(ifupdir)"))))
          (add-before 'build 'adjust-tests
            (lambda _
              ;; Disable tests that can not run.  Do it early to prevent
@@ -692,15 +686,13 @@ firmware blobs.  You can
              ;; the Python interpreter, which does not work very well for us.
              (substitute* "Makefile"
                (("PYTHONPATH=")
-                (string-append "PYTHONPATH=" (getenv "PYTHONPATH") ":")))
-             #t))
+                (string-append "PYTHONPATH=" (getenv "PYTHONPATH") ":")))))
          (add-after 'build 'build-bash-completions
            (lambda _
              (let ((orig-pythonpath (getenv "PYTHONPATH")))
                (setenv "PYTHONPATH" (string-append ".:" orig-pythonpath))
                (invoke "./autotools/build-bash-completion")
-               (setenv "PYTHONPATH" orig-pythonpath)
-               #t)))
+               (setenv "PYTHONPATH" orig-pythonpath))))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Set TZDIR so that time zones are found.
@@ -738,15 +730,14 @@ firmware blobs.  You can
                (for-each (lambda (file)
                            (symlink "../../src/htools" file))
                          '("hspace" "hscan" "hinfo" "hbal" "hroller"
-                           "hcheck" "hail" "hsqueeze")))
-             #t))
+                           "hcheck" "hail" "hsqueeze")))))
          (add-after 'install 'install-bash-completions
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (compdir (string-append out "/etc/bash_completion.d")))
                (mkdir-p compdir)
                (copy-file "doc/examples/bash_completion"
-                             (string-append compdir "/ganeti"))
+                          (string-append compdir "/ganeti"))
                ;; The one file contains completions for many different
                ;; executables.  Create symlinks for found completions.
                (with-directory-excursion compdir
@@ -765,11 +756,10 @@ firmware blobs.  You can
                                       ;; Note that 'burnin' is listed with the
                                       ;; absolute file name, which is why we
                                       ;; run everything through 'basename'.
-                                      (cons (basename (car (reverse (string-split
-                                                                     line #\ ))))
-                                            progs))
-                                (loop (read-line port) progs))))))))
-               #t)))
+                                      (match (string-split line #\ )
+                                        ((commands ... prog)
+                                         (cons (basename prog) progs))))
+                                (loop (read-line port) progs)))))))))))
          ;; Wrap all executables with PYTHONPATH.  We can't borrow the phase
          ;; from python-build-system because we also need to wrap the scripts
          ;; in $out/lib/ganeti such as "node-daemon-setup".
@@ -792,7 +782,7 @@ firmware blobs.  You can
                             (or (string-contains shebang "/bin/bash")
                                 (string-contains shebang "/bin/sh")))))))
 
-               (define (wrap? file)
+               (define* (wrap? file #:rest _)
                  ;; Do not wrap shell scripts because some are meant to be
                  ;; sourced, which breaks if they are wrapped.  We do wrap
                  ;; the Haskell executables because some call out to Python
@@ -804,10 +794,9 @@ firmware blobs.  You can
                (for-each (lambda (file)
                            (wrap-program file
                              `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
-                         (filter wrap?
-                                 (append (find-files (string-append lib "/ganeti"))
-                                         (find-files sbin))))
-               #t))))))
+                         (append-map (cut find-files <> wrap?)
+                                     (list (string-append lib "/ganeti")
+                                           sbin)))))))))
     (native-inputs
      `(("haskell" ,ghc)
        ("cabal" ,cabal-install)
