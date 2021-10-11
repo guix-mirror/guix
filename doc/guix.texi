@@ -30224,7 +30224,7 @@ It takes a @code{ganeti-luxid-configuration} object.
 @end defvr
 
 @deftp {Data Type} ganeti-luxid-configuration
-This is the configuration for the @code{ganeti-wconfd} service.
+This is the configuration for the @code{ganeti-luxid} service.
 
 @table @asis
 @item @code{ganeti} (default: @code{ganeti})
