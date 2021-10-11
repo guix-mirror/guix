@@ -35888,7 +35888,7 @@ guix home @var{options}@dots{} @var{action} @var{file}
 
 @var{file} must be the name of a file containing a
 @code{home-environment} declaration.  @var{action} specifies how the
-home environment is instantiated, but there are few auxuliary actions
+home environment is instantiated, but there are few auxiliary actions
 which don't instantiate it.  Currently the following values are
 supported:
 
