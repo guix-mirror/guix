@@ -849,7 +849,7 @@ variants.")
 (define-public markets
   (package
     (name "markets")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
       (origin
         (method git-fetch)
@@ -859,7 +859,7 @@ variants.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0nk1bs7i6b7r90g5qwd3s2m462vk3kvza0drq7rzb5sdaiz9ccnz"))))
+          "0sfdmz7cp8i2bymippp8jyxsidxjn69v9cqm40q77j81kfm84bfv"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
