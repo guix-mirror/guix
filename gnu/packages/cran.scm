@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
 ;;; Copyright © 2021 Marcel Schilling <marcel.schilling@uni-luebeck.de>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +105,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages uglifyjs)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -2084,7 +2086,7 @@ previewing themes in real time.")
        ("js-strftime" ,js-strftime)
        ("js-highlight" ,js-highlight)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("uglify-js" ,node-uglify-js)
        ("gfortran" ,gfortran)
        ("js-bootstrap-accessibility"
         ,(origin
