@@ -1253,3 +1253,33 @@ additions:
 @item HTML entities: @code{&copy;}
 @end itemize")
     (license license:vim)))
+
+(define-public vim-tagbar
+  (package
+    (name "vim-tagbar")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/preservim/tagbar")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fqfs8msmr6d4kpvxqp14sdjvp5fj52q5w5kz71myzcd4kqzmirp"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("syntax" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/preservim/tagbar")
+    (synopsis "Vim plugin that displays tags in a window, ordered by scope")
+    (description
+     "Tagbar is a Vim plugin that provides an easy way to browse the tags of
+the current file and get an overview of its structure.  It does this by creating
+a sidebar that displays the ctags-generated tags of the current file, ordered
+by their scope.  This means that for example methods in C++ are displayed under
+the class they are defined in.")
+    (license license:vim)))
