@@ -87,6 +87,7 @@ Otherwise assume that there is no password for root."
           (use-modules (gnu build marionette)
                        (guix build syscalls)
                        (srfi srfi-1)
+                       (srfi srfi-19)
                        (srfi srfi-26)
                        (srfi srfi-64)
                        (ice-9 match))
@@ -195,6 +196,16 @@ info --version")
               (lset= eq?
                      (pk 'services services)
                      '(root #$@(operating-system-shepherd-service-names os)))))
+
+          (test-equal "libc honors /etc/localtime"
+            -7200          ;CEST = GMT+2
+            ;; Assume OS is configured to have a CEST timezone.
+            (let* ((sept-2021 (time-second
+                               (date->time-utc
+                                (make-date 0 0 00 12 01 09 2021 7200)))))
+              (marionette-eval
+               `(tm:gmtoff (localtime ,sept-2021))
+               marionette)))
 
           (test-equal "/var/log/messages is not world-readable"
             #o640                                ;<https://bugs.gnu.org/40405>

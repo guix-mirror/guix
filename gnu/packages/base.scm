@@ -775,11 +775,6 @@ the store.")
                   '("--disable-werror")
                   '()))
 
-      ;; Arrange so that /etc/rpc & co. go to $out/etc.
-      #:make-flags (list (string-append "sysconfdir="
-                                        (assoc-ref %outputs "out")
-                                        "/etc"))
-
       #:tests? #f                                 ; XXX
       #:phases (modify-phases %standard-phases
                  (add-before
@@ -793,8 +788,7 @@ the store.")
                            (bash (or (assoc-ref inputs "static-bash")
                                      (assoc-ref native-inputs "static-bash"))))
                       ;; Install the rpc data base file under `$out/etc/rpc'.
-                      ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
-                      (substitute* "sunrpc/Makefile"
+                      (substitute* "inet/Makefile"
                         (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
                          (string-append out "/etc/rpc" suffix "\n"))
                         (("^install-others =.*$")
@@ -950,11 +944,24 @@ with the Linux kernel.")
                         "glibc-2.31-hurd-clock_gettime_monotonic.patch"
                         "glibc-hurd-signal-sa-siginfo.patch"
                         "glibc-hurd-mach-print.patch"
-                        "glibc-hurd-gettyent.patch"))))))
+                        "glibc-hurd-gettyent.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'set-etc-rpc-installation-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Install the rpc data base file under `$out/etc/rpc'.
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "sunrpc/Makefile"
+                   (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
+                    (string-append out "/etc/rpc" suffix "\n"))
+                   (("^install-others =.*$")
+                    (string-append "install-others = " out "/etc/rpc\n"))))))))))))
 
 (define-public glibc-2.30
   (package
-    (inherit glibc)
+    (inherit glibc-2.31)
     (version "2.30")
     (native-inputs
      ;; This fails with a build error in libc-tls.c when using GCC 10.  Use an
