@@ -149,7 +149,7 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "6.0.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
@@ -157,9 +157,8 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1f9hz8rf12jm8baa7kda34yl4hyl0xh0c4ap03krfjx23i3img47"))
+         "15iw7982g6vc4jy1l9kk1z9sl5bm1bdbwr74y7nvwjs1nffhig7f"))
        (patches (search-patches "qemu-CVE-2021-20203.patch"
-                                "qemu-meson-compat.patch"
                                 "qemu-sphinx-compat.patch"
                                 "qemu-build-info-manual.patch"))
        (modules '((guix build utils)))
@@ -218,12 +217,10 @@
              ;; Ensure the executables created by these source files reference
              ;; /bin/sh from the store so they work inside the build container.
              (substitute* '("block/cloop.c" "migration/exec.c"
-                            "net/tap.c" "tests/qtest/libqtest.c")
+                            "net/tap.c" "tests/qtest/libqtest.c"
+                            "tests/qtest/vhost-user-blk-test.c")
                (("/bin/sh") (which "sh")))
-             (substitute* "Makefile"
-               (("SHELL = /usr/bin/env bash -o pipefail")
-                "SHELL = bash -o pipefail"))
-             (substitute* "tests/qemu-iotests/check"
+             (substitute* "tests/qemu-iotests/testenv.py"
                (("#!/usr/bin/env python3")
                 (string-append "#!" (which "python3"))))))
          (add-before 'configure 'fix-optionrom-makefile
@@ -345,6 +342,7 @@ exec smbd $@")))
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
                      ("python-sphinx" ,python-sphinx)
+                     ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
                      ("texinfo" ,texinfo)
                      ;; The following static libraries are required to build
                      ;; the static output of QEMU.
