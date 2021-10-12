@@ -1920,8 +1920,10 @@ conforming to a given API or contract.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "zope-testrunner" "--test-path=src"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "zope-testrunner" "--test-path=src")
+                 (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-zope-testrunner" ,python-zope-testrunner-bootstrap)))
     (propagated-inputs
