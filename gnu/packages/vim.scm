@@ -1219,3 +1219,37 @@ text object.  The signs are always up to date and the plugin never saves your
 buffer.")
       (home-page "https://github.com/airblade/vim-gitgutter")
       (license license:expat))))
+
+(define-public vim-characterize
+  (package
+    (name "vim-characterize")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tpope/vim-characterize")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ppsbsd696ih40d9f76mdl9sd9y7p2pvm65qmvq4b2zhkv4xbpxz"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/tpope/vim-characterize")
+    (synopsis "Vim plugin for showing Unicode character metadata")
+    (description
+     "In Vim, pressing @code{ga} on a character reveals its representation in
+decimal, octal, and hex.  Characterize.vim modernizes this with the following
+additions:
+@itemize
+@item Unicode character names: @code{U+00A9 COPYRIGHT SYMBOL}
+@item Vim digraphs (type after @code{<C-K>} to insert the character):
+@code{Co}, @code{cO}
+@item Emoji codes: @code{:copyright:}
+@item HTML entities: @code{&copy;}
+@end itemize")
+    (license license:vim)))
