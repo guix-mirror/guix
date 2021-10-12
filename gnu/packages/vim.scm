@@ -1069,3 +1069,32 @@ your code every time you make a change.  @code{Vim-slime} is an attempt at
 getting some of these features into Vim.  It works with any REPL and isn't tied
 to Lisp.")
       (license license:expat))))
+
+(define-public vim-paredit
+  ;; The last tagged version is from August 2013.
+  (let ((commit "97d51d099523b37bb35cbcf3564cbfb46e66e4ec")
+        (revision "1"))
+    (package
+      (name "vim-paredit")
+      (version (git-version "0.9.11" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/kovisoft/paredit")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "07d5s20r0ssd7rir45vy0fqlci44gha1a81rcilgar227f3nw328"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan
+         '(("doc" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (home-page "https://github.com/kovisoft/paredit")
+      (synopsis "Vim plugin for structured editing of Lisp S-expressions")
+      (description
+       "Paredit performs structured editing of Lisp S-expressions in Vim.
+@code{Paredit.vim} is similar to @code{paredit.el} for Emacs.")
+      ;; License listed in plugin/paredit.vim.
+      (license license:public-domain))))
