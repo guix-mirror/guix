@@ -1550,7 +1550,7 @@ Dropbox API v2.")
        ("python-keyrings.alt" ,python-keyrings.alt)
        ("python-privy" ,python-privy)
        ("python-userspacefs" ,python-userspacefs)))
-  (home-page "https://github.com/rianhunter/dbxfs")
+  (home-page "https://thelig.ht/code/dbxfs/")
   (synopsis "User-space file system for Dropbox")
   (description
    "@code{dbxfs} allows you to mount your Dropbox folder as if it were a
