@@ -2538,9 +2538,14 @@ with image data, text data, and sequence data.")
                        "-p" "no:pep8"
                        ;; FIXME: python-build-system lacks PARALLEL-TESTS?
                        "-n" (number->string (parallel-job-count))
-                       ;; The following test fail only in the build container;
-                       ;; skip it.
-                       "-k" "not test_selu")))))))
+                       "-k"
+                       (string-append
+                        ;; The following test fails only in the build
+                        ;; container; skip it.
+                        "not test_selu "
+                        ;; The following test was found flaky and removed in
+                        ;; recent versions.
+                        "and not test_stateful_metrics"))))))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-keras-applications" ,python-keras-applications)
