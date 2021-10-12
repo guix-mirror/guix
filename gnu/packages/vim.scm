@@ -391,26 +391,26 @@ trouble using them, because you do not have to remember each snippet name.")
     (license license:expat))))
 
 (define-public vim-scheme
-  (let ((commit "93827987c10f2d5dc519166a761f219204926d5f")
-        (revision "1"))
+  (let ((commit "99af6befee8bc7d289a523064336474ae063cee3")
+        (revision "2"))
     (package
       (name "vim-scheme")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "http://git.foldling.org/vim-scheme.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "1ynjr1109dxgj0lz261gmzz3wf5ap1m6j6hnvl3lcyv66a4y8pjv"))))
+           "0w9hnsxg92f1wd83rra0ss07zla7p2r44whr9rqs70hc0xm8ygd6"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan
-         '(("after" "share/vim/vimfiles/")
-           ("ftplugin" "share/vim/vimfiles/")
+         '(("ftplugin" "share/vim/vimfiles/")
+           ("indent" "share/vim/vimfiles/")
            ("syntax" "share/vim/vimfiles/"))))
       (synopsis "Scheme syntax for Vim")
       (description
