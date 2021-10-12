@@ -8320,15 +8320,15 @@ usage and information about running processes.")
 (define-public gnome-bluetooth
   (package
     (name "gnome-bluetooth")
-    (version "3.34.2")
+    (version "3.34.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gnome-bluetooth/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "gnome-bluetooth-" version ".tar.xz"))
               (sha256
                (base32
-                "0lmjvb49vgr4jjplrisv6pi29jsn1q42715i6c5a0p9ad3gawyyv"))))
+                "1a9ynlwwkb3wpg293ym517vmrkk63y809mmcv9a21k5yr199x53c"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
@@ -9388,23 +9388,22 @@ Features:
 (define-public gsound
   (package
     (name "gsound")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gsound/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "gsound-" version ".tar.xz"))
               (sha256
                (base32
-                "0lwfwx2c99qrp08pfaj59pks5dphsnxjgrxyadz065d8xqqgza5v"))))
-    (build-system glib-or-gtk-build-system)
+                "06l80xgykj7x1kqkjvcq06pwj2rmca458zvs053qc55x3sg06bfa"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
        ("vala" ,vala)))
-    (inputs
-     `(("glib" ,glib)
-       ("libcanberra" ,libcanberra)))
+    (propagated-inputs
+     `(("libcanberra" ,libcanberra)))   ; in Requires.private of gsound.pc
     (home-page "https://wiki.gnome.org/Projects/GSound")
     (synopsis "GObject wrapper for libcanberra")
     (description
