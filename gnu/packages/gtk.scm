@@ -916,7 +916,8 @@ is part of the GNOME accessibility project.")
                 "1nn6kks1zyvb5xikr9y2k7r9bwjy1g4b0m0s66532bclymbwfamc"))
               (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
                                        "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
-                                       "gtk2-theme-paths.patch"))))
+                                       "gtk2-theme-paths.patch"
+                                       "gtk2-fix-builder-test.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin" "doc" "debug"))
     (propagated-inputs

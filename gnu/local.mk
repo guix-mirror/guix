@@ -1233,6 +1233,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-email-fix-tests.patch		\
   %D%/packages/patches/guile-ssh-fix-test-suite.patch		\
   %D%/packages/patches/guile-ssh-read-error.patch		\
+  %D%/packages/patches/gtk2-fix-builder-test.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
