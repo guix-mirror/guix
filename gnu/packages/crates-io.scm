@@ -49393,17 +49393,17 @@ error type and utilities.")
        #:cargo-inputs
        (("rust-anyhow" ,rust-anyhow-1))))))
 
-(define-public rust-tectonic-geturl-0.2
+(define-public rust-tectonic-geturl-0.3
   (package
     (name "rust-tectonic-geturl")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic_geturl" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0rwndw6ixwpflrhcvn5mcshpk6gd3b1ihghp6xxsr3dgw59ad1z2"))))
+        (base32 "0ifgqhqipb2mpd80crzc40nlri4iv5dxhf7kja8wqaqrpgw364vr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -49412,7 +49412,7 @@ error type and utilities.")
         ("rust-curl" ,rust-curl-0.4)
         ("rust-reqwest" ,rust-reqwest-0.11)
         ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
-        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.1))))
+        ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.2))))
     (home-page
      "https://tectonic-typesetting.github.io/")
     (synopsis "Interface for HTTP GETs and byte-range requests")
