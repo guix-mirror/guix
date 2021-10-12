@@ -31,7 +31,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
-;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
 ;;; Copyright © 2021 Marcel Schilling <marcel.schilling@uni-luebeck.de>
 ;;;
@@ -904,6 +904,27 @@ functions which can speed up workflow.")
      "This package provides an implementation of heatmaps that offers more
 control over dimensions and appearance.")
     (license license:gpl2+)))
+
+(define-public r-pnwcolors
+  (package
+    (name "r-pnwcolors")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PNWColors" version))
+       (sha256
+        (base32
+         "1phplnclkficfv8s6wsyrckk4ixzbayiy5iix6dddg40485l9nyj"))))
+    (properties `((upstream-name . "PNWColors")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jakelawlor/PNWColors")
+    (synopsis "Color palettes for data visualizations")
+    (description
+     "This package provides color palettes.  They are checked for colorblind
+accessibility from hue, saturation, and lightness value scaling using the
+Chroma.js Color Palette Helper.  See @url{https://gka.github.io/palettes}.")
+    (license license:cc0)))
 
 (define-public r-ecp
   (package
