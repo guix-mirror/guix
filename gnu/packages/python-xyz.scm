@@ -25424,14 +25424,14 @@ and delegating behavior.")
 (define-public python-lazr-config
   (package
     (name "python-lazr-config")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lazr.config" version))
         (sha256
          (base32
-          "11xpddgyhyj7sf27wbmrq5lnqk21wnprx3ajycgwlxjamh6sgffd"))))
+          "1qdbrzl61q7cjhbnxvw9y3frcr935y7diwy15xrwcv9ynvw76jmp"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
