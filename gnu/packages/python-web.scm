@@ -2293,9 +2293,10 @@ security policies on Python objects.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "python" "setup.py" "test"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "python" "setup.py" "test")
+                 (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-persistent" ,python-persistent)
        ("python-zope-configuration" ,python-zope-configuration-bootstrap)
