@@ -293,14 +293,14 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "6.3.0")
+    (version "6.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
-                           "download/372/aqbanking-" version ".tar.gz"))
+                           "download/386/aqbanking-" version ".tar.gz"))
        (sha256
-        (base32 "1k2mhdnk0jc0inq1hmp74m3y7azxrjm8r07x5k1pp4ic0yi5vs50"))))
+        (base32 "061l7qja7x557650kphbg1gzxc52a7557nibgdhv5jwqf8pv8ym9"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's
