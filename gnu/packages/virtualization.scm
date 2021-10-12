@@ -159,7 +159,6 @@
         (base32
          "15iw7982g6vc4jy1l9kk1z9sl5bm1bdbwr74y7nvwjs1nffhig7f"))
        (patches (search-patches "qemu-CVE-2021-20203.patch"
-                                "qemu-sphinx-compat.patch"
                                 "qemu-build-info-manual.patch"))
        (modules '((guix build utils)))
        (snippet
