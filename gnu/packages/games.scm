@@ -45,6 +45,7 @@
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
@@ -53,7 +54,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
-;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020, 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
@@ -63,7 +64,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
-;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -971,7 +972,7 @@ want what you have.")
           ;; Strip image URLs as they point towards non-free web services
           '(substitute* "cockatrice/src/settings/downloadsettings.cpp"
              (("downloadURLs.append\\(\".*\"\\);") "")))))
-      (build-system cmake-build-system)
+      (build-system qt-build-system)
       (arguments
        `(#:configure-flags '("-DWITH_SERVER=1"
                              "-DWITH_CLIENT=1"
@@ -1000,7 +1001,7 @@ allows users to brew while offline.")
 (define-public corsix-th
   (package
     (name "corsix-th")
-    (version "0.65")
+    (version "0.65.1")
     (source
      (origin
        (method git-fetch)
@@ -1009,7 +1010,7 @@ allows users to brew while offline.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hp7da7b73dpn1h22rw3h8w6aaj9azn18qnp3ap3lrlqhj4fzcb3"))))
+        (base32 "0hw92ln9jm9v55drmbfqjng58yshgwfpv7fqynryrg3gvg8zhbvh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1132,6 +1133,34 @@ tired of cows, a variety of other ASCII-art messengers are available.")
 regular @command{cat}, but it also adds terminal escape codes between
 characters and lines resulting in a rainbow effect.")
       (license license:wtfpl2))))
+
+(define-public falltergeist
+  (package
+    (name "falltergeist")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/falltergeist/falltergeist")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05cg58i2g32wbmrvmdsicic8xs83gld3qr1p7r4lnlckcl1l7dy4"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests provided
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("sdl" ,(sdl-union (list sdl2
+                                       sdl2-image
+                                       sdl2-mixer)))
+              ("glew" ,glew)
+              ("glm" ,glm)))
+    (home-page "https://falltergeist.org/")
+    (synopsis "Fallout 2 game engine")
+    (description "This package provides the Fallout 2 game engine.  Game data
+should be placed in @file{~/.local/share/falltergeist}.")
+    (license license:gpl3+)))
 
 (define-public foobillard++
   ;; Even though this latest revision is old already, stable release is
@@ -1459,6 +1488,48 @@ automata.  The following features are available:
 @item Auto fit option to keep patterns within the view.
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public joycond
+  (let ((commit "f9a66914622514c13997c2bf7ec20fa98e9dfc1d")
+        (revision "1"))
+    (package
+      (name "joycond")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/DanielOgorchock/joycond")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "07z86yp27vxc0b44jgvf1vpa69rh3wdvd1xbzcsrj3f32743pv5a"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ;no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-bin-location
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "CMakeLists.txt"
+                   (("/lib/udev/rules.d")
+                    (string-append out "/lib/udev/rules.d"))
+                   (("/etc/systemd/system")
+                    (string-append out "/etc/systemd/system"))
+                   (("/etc/modules-load.d")
+                    (string-append out "/etc/modules-load.d"))
+                   (("/usr/bin")
+                    (string-append out "/bin")))))))))
+      (native-inputs `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("eudev" ,eudev)
+         ("libevdev" ,libevdev)))
+      (home-page "https://github.com/DanielOgorchock/joycond")
+      (synopsis "Joy-Con controller daemon")
+      (description "This package provides a userspace daemon for the Nintendo
+Joy-Con controllers.")
+      (license license:gpl3))))
 
 (define-public julius
   (package
@@ -3869,15 +3940,16 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/supertuxkart/SuperTuxKart/"
+       (uri (string-append "https://github.com/supertuxkart/stk-code/"
+                           "releases/download/"
                            version "/SuperTuxKart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "0dvx56hmy6wdhl7m9dw8zc1n3jqfp05gnxl6zs1rbfdyzl5dybh5"))
+         "1z9z13zarv28h4jrmjna5hr6m9266pm7c2kgiwhqls01k06ypazf"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -3887,17 +3959,18 @@ This game is based on the GPL version of the famous game TuxRacer.")
            ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
            ;; FIXME: try to unbundle angelscript, libmcpp and libraqm
            (for-each delete-file-recursively
-                     '("lib/glew"
-                       "lib/wiiuse"
-                       "lib/enet"))
+                     '("lib/dnsc"
+                       "lib/enet"
+                       "lib/mojoal"
+                       "lib/wiiuse"))
            #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags
        (list "-DUSE_WIIUSE=0"
-             "-DUSE_SYSTEM_GLEW=TRUE"
              "-DUSE_SYSTEM_ENET=TRUE"
+             "-DUSE_CRYPTO_OPENSSL=TRUE"
              ;; In order to use the system ENet library, IPv6 support (added in
              ;; SuperTuxKart version 1.1) must be disabled.
              "-DUSE_IPV6=FALSE"
@@ -3915,6 +3988,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("sdl2" ,sdl2)
+       ("sqlite" ,sqlite)
        ("zlib" ,zlib)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
@@ -4708,7 +4782,7 @@ is attributed to Albert Einstein.")
 (define-public powwow
   (package
     (name "powwow")
-    (version "1.2.22")
+    (version "1.2.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4716,7 +4790,7 @@ is attributed to Albert Einstein.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "12i11b8zxg8vdb9d6ims8qy2lmwwr42rcqbwq3vsa1x94s51bcbp"))))
+                "1wkl6j91pp40aps2hhnsv0bndgq49smfffws4hqcn7847bpnwwm6"))))
     (inputs
      `(("ncurses" ,ncurses)))
     (build-system gnu-build-system)
@@ -6435,14 +6509,14 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.27.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/crawl/crawl/releases/download/"
                            version "/stone_soup-" version "-nodeps.tar.xz"))
        (sha256
-        (base32 "0hzkzpqmydxm1zjkdm7k4w3hldsqin3pwkj7jmfj4jijkr0zg9nq"))
+        (base32 "0nkhyhrrma8gmwxp15j84cn1k2yvyq7ar9rd0j2qjjlv2kdis5z2"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -9300,6 +9374,7 @@ play with up to four players simultaneously.  It has network support.")
               (method url-fetch)
               (uri (string-append "https://www.hedgewars.org/download/releases/"
                                   "hedgewars-src-" version ".tar.bz2"))
+              (patches (search-patches "hedgewars-network-bsd.patch"))
               (sha256
                (base32
                 "0nqm9w02m0xkndlsj6ys3wr0ik8zc14zgilq7k6fwjrf3zk385i1"))))
@@ -9986,21 +10061,21 @@ win.")
 (define-public freeorion
   (package
     (name "freeorion")
-    (version "0.4.10")
+    (version "0.4.10.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/freeorion/freeorion/releases/"
-                           "download/v" version "/FreeOrion_v" version
-                           "_2020-07-10.f3d403e_Source.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/freeorion/freeorion")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "12xspixrkx6mmmsdqjha0hg02r4y73pk229l0wjq9s0yp8nb8ap7"))
+        (base32 "12fhwa3cs6lvdbdhina310qk2g7zcphldsh7ibsbxn8d1m731xlk"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; There are some bundled fonts.
-           (for-each delete-file-recursively '("default/data/fonts"))
-           #t))))
+           (for-each delete-file-recursively '("default/data/fonts"))))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test
@@ -12478,6 +12553,62 @@ wreckage.  You're stranded on a desert island and have to survive.  In order to
 do so you need to explore the island, find food, build a shelter and try to
 get attention, so you get found.")
       (license license:cc-by4.0))))
+
+(define-public sdlpop
+  (package
+    (name "sdlpop")
+    (version "1.22")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/NagyD/SDLPoP")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yy5r1r0hv0xggk8qd8bwk2zy7abpv89nikq4flqgi53fc5q9xl7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests provided
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'prepare-build
+           ;; Set correct environment for SDL.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL2:"
+                                    (or (getenv "CPATH") "")))))
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (opt (string-append out "/opt/sdlpop"))
+                    (app (string-append out "/usr/share/applications"))
+                    (template "src/SDLPoP.desktop.template"))
+               (chdir "..")
+               (install-file "prince" bin)
+               (substitute* template (("\\$ROOT") out))
+               (install-file template app)
+               (rename-file (string-append app "/SDLPoP.desktop.template")
+                            (string-append app "/SDLPoP.desktop"))
+               (install-file "SDLPoP.ini" opt)
+               (copy-recursively "data" (string-append bin "/data"))
+               (copy-recursively "doc" opt)
+               (copy-recursively "mods" opt)))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("sdl" ,(sdl-union (list sdl2
+                                       sdl2-image
+                                       sdl2-mixer)))))
+    (synopsis "Port of Prince of Persia game")
+    (description "This package provides port of Prince of Persia, based on the
+disassembly of the DOS version, extended with new features.")
+    (home-page "https://github.com/NagyD/SDLPoP")
+    (license license:gpl3+)))
 
 (define-public fheroes2
   (package

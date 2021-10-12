@@ -57,10 +57,12 @@ its API, and related concepts.
 @c TRANSLATORS: You can replace the following paragraph with information on
 @c how to join your own translation team and how to report issues with the
 @c translation.
-If you would like to translate this document in your native language, consider
-joining
+This manual is also available in French (@pxref{Top,,, guix-cookbook.fr,
+Livre de recettes de GNU Guix}) and German (@pxref{Top,,,
+guix-cookbook.de, GNU-Guix-Kochbuch}).  If you would like to translate
+this document in your native language, consider joining
 @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook,
-Weblate}.
+Weblate} (@pxref{Translating Guix,,, guix, GNU Guix reference manual}).
 
 @menu
 * Scheme tutorials::            Meet your new favorite language!

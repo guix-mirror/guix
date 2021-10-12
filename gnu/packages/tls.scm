@@ -1112,10 +1112,10 @@ coding footprint.")
             (separator #f)
             (files '("etc/ssl/certs/ca-certificates.crt")))))
     (home-page "https://dehydrated.io/")
-    (synopsis "Let's Encrypt/ACME client implemented as a shell script")
-    (description "Dehydrated is a client for signing certificates with an
-ACME-server (currently only provided by Let's Encrypt) implemented as a
-relatively simple Bash script.")
+    (synopsis "ACME client implemented as a shell script")
+    (description "Dehydrated is a client for obtaining certificates from an
+ACME server (such as Let's Encrypt) implemented as a relatively simple Bash
+script.")
     (license license:expat)))
 
 (define-public go-github-com-certifi-gocertifi
@@ -1180,7 +1180,7 @@ compatibility is also supported.")
 (define-public wolfssl
   (package
     (name "wolfssl")
-    (version "4.8.0")
+    (version "4.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1189,7 +1189,7 @@ compatibility is also supported.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w9gs9cq2yhj5s3diz3x1l15pgrc1pbm00jccizvcjyibmwyyf2h"))))
+                "0w5pd40j6h4j2f0b7c2n1n979y9qk8aln3ss2gb0jfsid1hrmx5k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

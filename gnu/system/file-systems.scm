@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Google LLC
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,8 @@
             file-system-mount?
             file-system-mount-may-fail?
             file-system-check?
+            file-system-skip-check-if-clean?
+            file-system-repair
             file-system-create-mount-point?
             file-system-dependencies
             file-system-location
@@ -123,6 +126,10 @@
                     (default #f))
   (check?           file-system-check?            ; Boolean
                     (default #t))
+  (skip-check-if-clean? file-system-skip-check-if-clean? ; Boolean
+                        (default #t))
+  (repair           file-system-repair            ; symbol or #f
+                    (default 'preen))
   (create-mount-point? file-system-create-mount-point? ; Boolean
                        (default #f))
   (dependencies     file-system-dependencies      ; list of <file-system>
@@ -318,19 +325,22 @@ store--e.g., if FS is the root file system."
 initrd code."
   (match fs
     (($ <file-system> device mount-point type flags options mount?
-                      mount-may-fail? needed-for-boot? check?)
+                      mount-may-fail? needed-for-boot?
+                      check? skip-check-if-clean? repair)
      ;; Note: Add new fields towards the end for compatibility.
      (list (cond ((uuid? device)
                   `(uuid ,(uuid-type device) ,(uuid-bytevector device)))
                  ((file-system-label? device)
                   `(file-system-label ,(file-system-label->string device)))
                  (else device))
-           mount-point type flags options mount-may-fail? check?))))
+           mount-point type flags options mount-may-fail?
+           check? skip-check-if-clean? repair))))
 
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."
   (match sexp
-    ((device mount-point type flags options mount-may-fail? check?
+    ((device mount-point type flags options mount-may-fail?
+             check? skip-check-if-clean? repair
              _ ...)                               ;placeholder for new fields
      (file-system
        (device (match device
@@ -343,7 +353,9 @@ initrd code."
        (mount-point mount-point) (type type)
        (flags flags) (options options)
        (mount-may-fail? mount-may-fail?)
-       (check? check?)))))
+       (check? check?)
+       (skip-check-if-clean? skip-check-if-clean?)
+       (repair repair)))))
 
 (define (specification->file-system-mapping spec writable?)
   "Read the SPEC and return the corresponding <file-system-mapping>.  SPEC is

@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
@@ -51,7 +53,8 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages pkg-config))
 
 (define-public xapian
   (package
@@ -331,6 +334,35 @@ most of the file system, which makes it faster and does not trash the system
 caches as much.  The locate(1) utility is intended to be completely compatible
 with slocate, and attempts to be compatible to GNU locate when it does not
 conflict with slocate compatibility.")
+    (license gpl2)))
+
+(define-public plocate
+  (package
+    (name "plocate")
+    (version "1.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://plocate.sesse.net/download/"
+                           "plocate-" version ".tar.gz"))
+       (sha256
+        (base32 "1damwm8kqf797kgr1cify521i6icz5khc5brq16m6nlg26nja7d1"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append
+         "--sharedstatedir=" (assoc-ref %outputs "out") "/var"))))
+    (inputs
+     `(("liburing" ,liburing)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://plocate.sesse.net/")
+    (synopsis "Faster locate")
+    (description "Plocate is a @code{locate} based on posting lists,
+completely replacing @command{mlocate} with a faster and smaller index.  It is
+suitable as a default locate on your system.")
     (license gpl2)))
 
 (define-public swish-e

@@ -37,7 +37,7 @@
 (define-public agda
   (package
     (name "agda")
-    (version "2.6.0.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
@@ -46,7 +46,7 @@
              version ".tar.gz"))
        (sha256
         (base32
-         "1s600ry1qwizr3ynyj05rvlx7jdcw9a1viyc0ycjamm5sjf8mf3v"))))
+         "159hznnsxg7hlp80r1wqizyd7gwgnq0j13cm4d27cns0ganslb07"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -54,23 +54,22 @@
        ("ghc-async" ,ghc-async)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-boxes" ,ghc-boxes)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-hash" ,ghc-data-hash)
-       ("ghc-edisoncore" ,ghc-edisoncore)
        ("ghc-edit-distance" ,ghc-edit-distance)
        ("ghc-equivalence" ,ghc-equivalence)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-filemanip" ,ghc-filemanip)
-       ("ghc-geniplate-mirror" ,ghc-geniplate-mirror)
        ("ghc-gitrev" ,ghc-gitrev)
        ("ghc-happy" ,ghc-happy)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-hashtables" ,ghc-hashtables)
-       ("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-murmur-hash" ,ghc-murmur-hash)
-       ("ghc-uri-encode" ,ghc-uri-encode)
+       ("ghc-parallel" ,ghc-parallel)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-split" ,ghc-split)
        ("ghc-strict" ,ghc-strict)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-uri-encode" ,ghc-uri-encode)
        ("ghc-zlib" ,ghc-zlib)))
     (arguments
      `(#:modules ((guix build haskell-build-system)
@@ -84,41 +83,6 @@
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))
              #t))
-         ;; FIXME: This is a copy of the standard configure phase with a tiny
-         ;; difference: this package needs the -package-db flag to be passed
-         ;; to "runhaskell" in addition to the "configure" action, because
-         ;; Setup.hs depends on filemanip.  Without this option the Setup.hs
-         ;; file cannot be evaluated.  The haskell-build-system should be
-         ;; changed to pass "-package-db" to "runhaskell" in any case.
-         (replace 'configure
-           (lambda* (#:key outputs inputs tests? (configure-flags '())
-                     #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (name-version (strip-store-file-name out))
-                    (ghc-path (getenv "GHC_PACKAGE_PATH"))
-                    (params
-                     `(,(string-append "--prefix=" out)
-                       ,(string-append "--libdir=" out "/lib")
-                       ,(string-append "--docdir=" out
-                                       "/share/doc/" name-version)
-                       "--libsubdir=$compiler/$pkg-$version"
-                       "--package-db=../package.conf.d"
-                       "--global"
-                       ,@(if tests?
-                             '("--enable-tests")
-                             '())
-                       ;; Build and link with shared libraries
-                       "--enable-shared"
-                       "--enable-executable-dynamic"
-                       "--ghc-option=-fPIC"
-                       ,(string-append "--ghc-option=-optl=-Wl,-rpath=" out
-                                       "/lib/$compiler/$pkg-$version")
-                       ,@configure-flags)))
-               (unsetenv "GHC_PACKAGE_PATH")
-               (apply invoke "runhaskell" "-package-db=../package.conf.d"
-                      "Setup.hs" "configure" params)
-               (setenv "GHC_PACKAGE_PATH" ghc-path)
-               #t)))
          (add-after 'compile 'agda-compile
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

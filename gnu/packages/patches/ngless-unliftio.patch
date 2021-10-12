@@ -1,0 +1,66 @@
+From 919565adc1216b9d3108b3043e8d307292b37393 Mon Sep 17 00:00:00 2001
+From: Luis Pedro Coelho <luis@luispedro.org>
+Date: Fri, 7 May 2021 11:42:56 +0800
+Subject: [PATCH] BLD Update to LTS-17.10
+
+- Updates the GHC version
+- Requires `extra-deps` for `diagrams` package
+- Simplifies code for NGLessIO monad as UnliftIO can now be auto-derived
+---
+ NGLess/NGLess/NGError.hs |  8 ++------
+ stack.yaml               | 11 ++++++++---
+ 2 files changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/NGLess/NGLess/NGError.hs b/NGLess/NGLess/NGError.hs
+index a22e557f..c7eddf5b 100644
+--- a/NGLess/NGLess/NGError.hs
++++ b/NGLess/NGLess/NGError.hs
+@@ -50,7 +50,8 @@ type NGLess = Either NGError
+ 
+ newtype NGLessIO a = NGLessIO { unwrapNGLessIO :: ResourceT IO a }
+                         deriving (Functor, Applicative, Monad, MonadIO,
+-                        MonadResource, MonadThrow, MonadCatch, MonadMask)
++                        MonadResource, MonadThrow, MonadCatch, MonadMask,
++                        MonadUnliftIO)
+ 
+ 
+ instance MonadError NGError NGLessIO where
+@@ -62,11 +63,6 @@ instance PrimMonad NGLessIO where
+     primitive act = NGLessIO (primitive act)
+     {-# INLINE primitive #-}
+ 
+-instance MonadUnliftIO NGLessIO where
+-    askUnliftIO = NGLessIO $ do
+-        u <- askUnliftIO
+-        return $ UnliftIO (\(NGLessIO act) -> unliftIO u act)
+-
+ instance MonadFail NGLessIO where
+     fail err = throwShouldNotOccur err
+ 
+diff --git a/stack.yaml b/stack.yaml
+index 051d973d..11b65887 100644
+--- a/stack.yaml
++++ b/stack.yaml
+@@ -1,14 +1,19 @@
+ # For more information, see: https://github.com/commercialhaskell/stack/blob/release/doc/yaml_configuration.md
+ 
+-resolver: lts-14.20
++resolver: lts-17.10
+ compiler-check: newer-minor
+ 
+ # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
+ extra-deps:
+   - git: "https://github.com/ngless-toolkit/interval-to-int"
+     commit: "78289f6b48d41f7cc48169520ec9b77b050a0029"
+-
+-
++  - diagrams-core-1.4.2@sha256:47de45658e8a805b7cb7f535e7b093daf7e861604fa3c70e25bd4ef481bf1571,2997
++  - diagrams-lib-1.4.3@sha256:04f77778d4b550d3c8e54440800685f88467bef91075e82e009a8a6f45c51033,8232
++  - diagrams-svg-1.4.3@sha256:36708b0b4cf35507ccf689f1a25f6f81b8f41c2c4c2900793de820f66d4e241c,3181
++  - active-0.2.0.14@sha256:e618aba4a7881eb85dc1585e0a01230af6b4fbab6693931e4a5d0d3a5b184406,1823
++  - dual-tree-0.2.2.1@sha256:9ff31e461d873ae74ba51d93b454c0c4094726d7cb78a0c454394c965e83539d,2830
++  - monoid-extras-0.5.1@sha256:438dbfd7b4dce47d8f0ca577f56caf94bd1e21391afa545cad09fe7cf2e5793d,2333
++  - svg-builder-0.1.1@sha256:22de54d326a6b6912e461e1302edb9108b02aac0b6a6368fcdc3c4a224d487fd,1440
+ allow-newer: true
+ 
+ # Override default flag values for local packages and extra-deps

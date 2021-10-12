@@ -252,16 +252,16 @@ whose behaviour is inconsistent across *NIX flavours.")
 (define-public libhx
   (package
     (name "libhx")
-    (version "3.25")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/libhx/libHX/"
+       (uri (string-append "https://inai.de/files/libhx/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32 "12avn16f8aqb0cq6jplz0sv7rh6f07m85dwc8dasnnwsvijwbpbj"))))
+        (base32 "1f4rmarym1j368cbxhqzyvdn5dk4bh8951s19ffqwql16anqsgfr"))))
     (build-system gnu-build-system)
-    (home-page "http://libhx.sourceforge.net")
+    (home-page "https://inai.de/projects/libhx/")
     (synopsis "C library with common data structures and functions")
     (description
      "This is a C library (with some C++ bindings available) that provides data
@@ -388,7 +388,7 @@ any other grammar rules.")
 (define-public sparse
   (package
     (name "sparse")
-    (version "0.6.3")
+    (version "0.6.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -396,7 +396,7 @@ any other grammar rules.")
                               "sparse-"  version ".tar.xz"))
               (sha256
                (base32
-                "16d8c4dhipjzjf8z4z7pix1pdpqydz0v4r7i345f5s09hjnxpxnl"))))
+                "0z1qds52144nvsdnl82r3zs3vax618v920jmffyyssmwj54qpcka"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -406,8 +406,7 @@ any other grammar rules.")
                   (add-after 'unpack 'patch-cgcc
                     (lambda _
                       (substitute* "cgcc"
-                        (("'cc'") (string-append "'" (which "gcc") "'")))
-                      #t)))))
+                        (("'cc'") (string-append "'" (which "gcc") "'"))))))))
     (synopsis "Semantic C parser for Linux development")
     (description
      "Sparse is a semantic parser for C and is required for Linux development.

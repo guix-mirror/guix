@@ -93,6 +93,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -503,7 +504,7 @@ fully fledged Spatial SQL capabilities.")
 (define-public proj
   (package
     (name "proj")
-    (version "6.3.1")
+    (version "7.2.1")
     (source
      (origin
        (method url-fetch)
@@ -511,22 +512,28 @@ fully fledged Spatial SQL capabilities.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1y46ij32j9b4x1kjnnlykcwk3kkjwkg44sfc1ziwm3a3g0ki3q3d"))))
-    (build-system gnu-build-system)
+         "050apzdn0isxpsblys1shrl9ccli5vd32kgswlgx1imrbwpg915k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DUSE_EXTERNAL_GTEST=ON")))
     (inputs
-     `(("sqlite" ,sqlite)))
+     `(("curl" ,curl)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("sqlite" ,sqlite)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://proj.org/")
     (synopsis "Coordinate transformation software")
     (description
      "Proj is a generic coordinate transformation software that transforms
-geospatial coordinates from one coordinate reference system (CRS) to another.
-This includes cartographic projections as well as geodetic transformations.
-PROJ includes command line applications for easy conversion of coordinates
-from text files or directly from user input.  In addition, proj also exposes
-an application programming interface that lets developers use the
-functionality of proj in their own software.")
+geospatial coordinates from one @acronym{CRS, coordinate reference system}
+to another.  This includes cartographic projections as well as geodetic
+transformations.  Proj includes command line applications for easy
+conversion of coordinates from text files or directly from user input.
+In addition, Proj also exposes an application programming interface that
+lets developers use the functionality of Proj in their own software.")
     (license (list license:expat
                    ;; src/projections/patterson.cpp
                    license:asl2.0
@@ -582,6 +589,144 @@ projections.")
                    (license:non-copyleft "http://www.epsg.org/TermsOfUse")
                    ;; cmake/*
                    license:boost1.0))))
+
+(define-public python-pyproj
+  (package
+    (name "python-pyproj")
+    (version "3.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyproj" version))
+        (sha256
+          (base32
+            "0xrqpy708qlyd7nqjra0dl7nvkqzaj9w0v7wq4j5pxazha9n14sa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-proj-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((proj (assoc-ref inputs "proj")))
+               (setenv "PROJ_DIR" proj)
+               (substitute* "pyproj/datadir.py"
+                 (("(internal_datadir = ).*$" all var)
+                  (string-append var "Path(\"" proj "/share/proj\")\n")))))))))
+    (inputs
+      `(("proj" ,proj)))
+    (propagated-inputs
+      `(("python-certifi" ,python-certifi)))
+    (native-inputs
+      `(("python-cython" ,python-cython)
+        ("python-numpy" ,python-numpy)
+        ("python-pandas" ,python-pandas)
+        ("python-pytest" ,python-pytest)
+        ("python-xarray" ,python-xarray)))
+    (home-page "https://github.com/pyproj4/pyproj")
+    (synopsis
+      "Python interface to PROJ")
+    (description
+      "This package provides a Python interface to PROJ, a cartographic
+projections and coordinate transformations library.")
+    (license license:expat)))
+
+(define-public python-fiona
+  (package
+    (name "python-fiona")
+    (version "1.8.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Fiona" version))
+        (sha256
+          (base32
+            "0fql7i7dg1xpbadmk8d26dwp91v7faixxc4wq14zg0kvhp9041d7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-local-fiona
+           (lambda _
+             ; This would otherwise interfere with finding the installed
+             ; fiona when running tests.
+             (delete-file-recursively "fiona")))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (when tests?
+               (invoke "pytest" "-m" "not network and not wheel")))))))
+    (inputs
+      `(("gdal" ,gdal)))
+    (propagated-inputs
+      `(("python-attrs" ,python-attrs)
+        ("python-certifi" ,python-certifi)
+        ("python-click" ,python-click)
+        ("python-click-plugins" ,python-click-plugins)
+        ("python-cligj" ,python-cligj)
+        ("python-munch" ,python-munch)
+        ("python-setuptools" ,python-setuptools)
+        ("python-six" ,python-six)
+        ("python-pytz" ,python-pytz)))
+    (native-inputs
+      `(("gdal" ,gdal) ; for gdal-config
+        ("python-boto3" ,python-boto3)
+        ("python-cython" ,python-cython)
+        ("python-pytest" ,python-pytest)
+        ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/Toblerity/Fiona")
+    (synopsis
+      "Fiona reads and writes spatial data files")
+    (description
+      "Fiona is GDAL’s neat and nimble vector API for Python programmers.
+Fiona is designed to be simple and dependable.  It focuses on reading
+and writing data in standard Python IO style and relies upon familiar
+Python types and protocols such as files, dictionaries, mappings, and
+iterators instead of classes specific to OGR.  Fiona can read and write
+real-world data using multi-layered GIS formats and zipped virtual file
+systems and integrates readily with other Python GIS packages such as
+pyproj, Rtree, and Shapely.")
+    (license license:bsd-3)))
+
+(define-public python-geopandas
+  (package
+    (name "python-geopandas")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "geopandas" version))
+        (sha256
+          (base32
+            "02k389zyyjv51gd09c92vlr83sv46awdq0066jgh5i24vjs2m5v3"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"
+                       ; Disable test that fails with
+                       ; NotImplementedError in pandas.
+                       "-k" "not test_fillna_no_op_returns_copy"
+                       ; Disable tests that require internet access.
+                       "-m" "not web")))))))
+    (propagated-inputs
+      `(("python-fiona" ,python-fiona)
+        ("python-pandas" ,python-pandas)
+        ("python-pyproj" ,python-pyproj)
+        ("python-shapely" ,python-shapely)))
+    (native-inputs
+      `(("python-pytest" ,python-pytest)))
+    (home-page "http://geopandas.org")
+    (synopsis "Geographic pandas extensions")
+    (description "The goal of GeoPandas is to make working with
+geospatial data in Python easier.  It combines the capabilities of
+Pandas and Shapely, providing geospatial operations in Pandas and a
+high-level interface to multiple geometries to Shapely.  GeoPandas
+enables you to easily do operations in Python that would otherwise
+require a spatial database such as PostGIS.")
+    (license license:bsd-3)))
 
 (define-public mapnik
   (package
@@ -1259,7 +1404,7 @@ map display.  Downloads map data from a number of websites, including
        ("libnova" ,libnova)
        ("libpng" ,libpng)
        ("openjpeg" ,openjpeg)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("qtbase" ,qtbase-5)
        ("zlib" ,zlib)))
     (native-search-paths
@@ -1514,14 +1659,17 @@ to the OSM opening hours specification.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
                    (share-directories '("applications" "icons" "man" "menu"
-                                        "metainfo" "mime" "pixmaps")))
+                                        "metainfo" "mime" "pixmaps"))
+                   (desktop "org.openstreetmap.josm.desktop"))
                (for-each (lambda (directory)
                            (copy-recursively (string-append
                                               "native/linux/tested/usr/share/"
                                               directory)
                                              (string-append
                                               out "/share/" directory)))
-                         share-directories))
+                         share-directories)
+               (substitute* (string-append out "/share/applications/" desktop)
+                 (("josm-MainApplication") "josm-gui-MainApplication")))
              #t))
          (add-after 'install 'install-bin
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -1687,7 +1835,7 @@ using the dataset of topographical information collected by
        ("qtlocation" ,qtlocation)
        ("qtwebchannel" ,qtwebchannel)
        ("qtwebengine" ,qtwebengine)
-       ("quazip" ,quazip)
+       ("quazip" ,quazip-0)
        ("routino" ,routino)
        ("sqlite" ,sqlite)                      ; See wrap phase
        ("zlib" ,zlib)))
@@ -1926,7 +2074,7 @@ track your position right from your laptop.")
          ("openblas" ,openblas)
          ("perl" ,perl)
          ("postgresql" ,postgresql)
-         ("proj.4" ,proj.4)
+         ("proj" ,proj)
          ("python" ,python)
          ("python-dateutil" ,python-dateutil)
          ("python-numpy" ,python-numpy)
@@ -1981,7 +2129,7 @@ track your position right from your laptop.")
                        "--with-netcdf"
                        "--with-postgres"
                        (string-append "--with-proj-share="
-                                      (assoc-ref inputs "proj.4")
+                                      (assoc-ref inputs "proj")
                                       "/share/proj")
                        "--with-pthread"
                        "--with-readline"

@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,13 +87,13 @@ an LDAP server.")
 (define-public synapse
   (package
     (name "synapse")
-    (version "1.29.0")
+    (version "1.44.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "matrix-synapse" version))
               (sha256
                (base32
-                "0if2yhpz8psg0661401mvxznldbfhk2j9rhbs25jdaqm9jsv6907"))))
+                "1lgi1a4ksz4z78yb84bi29x4y080bx1dadib2wznvmwsfif0azx0"))))
     (build-system python-build-system)
     ;; TODO Run tests with ‘PYTHONPATH=. trial3 tests’.
     (propagated-inputs

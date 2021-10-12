@@ -2282,6 +2282,135 @@ learning models.  This package provides the \"lite\" variant for mobile
 devices.")
     (license license:asl2.0)))
 
+(define-public dmlc-core
+  (package
+    (name "dmlc-core")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmlc/dmlc-core")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x4ad1jhn84fywlk031fmv1kxyiscclmrqn9hhj8gz0mh7z9vcrh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DGOOGLE_TEST=ON")))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("python" ,python-wrapper)))
+    (home-page "https://github.com/dmlc/dmlc-core")
+    (synopsis "Common bricks library for machine learning")
+    (description
+     "DMLC-Core is the backbone library to support all DMLC projects,
+offers the bricks to build efficient and scalable distributed machine
+learning libraries.")
+    (license license:asl2.0)))
+
+(define-public xgboost
+  (package
+    (name "xgboost")
+    (version "1.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmlc/xgboost")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (patches (search-patches "xgboost-use-system-dmlc-core.patch"))
+       (sha256
+        (base32 "00liz816ahk9zj3jv3m2fqwlf6xxfbgvpmpl72iklx32vl192w5d"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DGOOGLE_TEST=ON")))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("dmlc-core" ,dmlc-core)))
+    (home-page "https://xgboost.ai/")
+    (synopsis "Gradient boosting (GBDT, GBRT or GBM) library")
+    (description
+     "XGBoost is an optimized distributed gradient boosting library designed
+to be highly efficient, flexible and portable.  It implements machine learning
+algorithms under the Gradient Boosting framework.  XGBoost provides a parallel
+tree boosting (also known as GBDT, GBM) that solve many data science problems
+in a fast and accurate way.")
+    (license license:asl2.0)))
+
+(define-public python-xgboost
+  (package
+    (inherit xgboost)
+    (name "python-xgboost")
+    (source (package-source xgboost))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Move python-package content to parent directory to silence
+             ;; some warnings about files not being found if we chdir.
+             (rename-file "python-package/xgboost" "xgboost")
+             (rename-file "python-package/README.rst" "README.rst")
+             (rename-file "python-package/setup.cfg" "setup.cfg")
+             (rename-file "python-package/setup.py" "setup.py")
+             ;; Skip rebuilding libxgboost.so.
+             (substitute* "setup.py"
+               (("ext_modules=\\[CMakeExtension\\('libxgboost'\\)\\],") "")
+               (("'install_lib': InstallLib,") ""))))
+         (add-after 'install 'install-version-and-libxgboost
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pylib (string-append out "/lib/python"
+                                          ,(version-major+minor
+                                            (package-version python))
+                                          "/site-packages"))
+                    (xgbdir (string-append pylib "/xgboost"))
+                    (version-file (string-append xgbdir "/VERSION"))
+                    (libxgboost (string-append (assoc-ref inputs "xgboost")
+                                               "/lib/libxgboost.so")))
+               (with-output-to-file version-file
+                 (lambda ()
+                   (display ,(package-version xgboost))))
+               (mkdir-p (string-append xgbdir "/lib"))
+               (symlink libxgboost (string-append xgbdir "/lib"
+                                                  "/libxgboost.so")))))
+         (replace 'check
+           ;; Python-specific tests are located in tests/python.
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests/python"
+                       ;; FIXME: CLI tests fail with PermissionError.
+                       "--ignore" "tests/python/test_cli.py" "-k"
+                       (string-append
+                        "not test_cli_regression_demo"
+                        ;; The tests below open a network connection.
+                        " and not test_model_compatibility"
+                        " and not test_get_group"
+                        " and not test_cv_no_shuffle"
+                        " and not test_cv"
+                        " and not test_training"
+                        ;; FIXME: May pass in the next version.
+                        " and not test_pandas"
+                        ;; "'['./runexp.sh']' returned non-zero exit status 1"
+                        " and not test_cli_binary_classification"))))))))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)
+       ("python-scikit-learn" ,python-scikit-learn)))
+    (inputs
+     `(("xgboost" ,xgboost)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (synopsis "Python interface for the XGBoost library")))
+
 (define-public python-iml
   (package
     (name "python-iml")
@@ -2511,6 +2640,57 @@ technique that can be used for visualisation similarly to t-SNE, but also for
 general non-linear dimension reduction.")
     (license license:bsd-3)))
 
+(define-public nnpack
+  (let ((version "0.0")
+        (commit "c07e3a0400713d546e0dea2d5466dd22ea389c73")
+        (revision "1"))
+    (package
+      (name "nnpack")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/Maratyszcza/NNPACK")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0s0kk3a35w3yzf0q447p72350sbsh4qhg6vm3y2djbj4xpg7jc8v"))
+                (patches (search-patches "nnpack-system-libraries.patch"))))
+      (build-system cmake-build-system)
+      ;; XXX: The test suite runs but it's very expensive, and on x86_64 CPUs
+      ;; that lack the right ISA extensions, tests fail with:
+      ;;
+      ;; Expected equality of these values:
+      ;;   nnp_status_success
+      ;;     Which is: 0
+      ;;   status
+      ;;     Which is: 51
+      ;;
+      ;; where 51 is 'nnp_status_unsupported_hardware'.
+      (arguments '(#:tests? #f))
+      (synopsis "Acceleration package for neural network computations")
+      (description
+       "NNPACK is an acceleration package for neural network computations.
+NNPACK aims to provide high-performance implementations of convnet layers for
+multi-core CPUs.
+
+NNPACK is not intended to be directly used by machine learning researchers;
+instead it provides low-level performance primitives leveraged in leading deep
+learning frameworks, such as PyTorch, Caffe2, MXNet, tiny-dnn, Caffe, Torch,
+and Darknet.")
+      (inputs
+       `(("cpuinfo" ,cpuinfo)
+         ("fp16" ,fp16)
+         ("fxdiv" ,fxdiv)
+         ("psimd" ,psimd)
+         ("pthreadpool" ,pthreadpool)
+         ("googletest" ,googletest)))
+      (native-inputs
+       `(("python" ,python)
+         ("python-peachpy" ,python-peachpy)
+         ("python-six" ,python-six)))
+      (license license:bsd-2))))
+
 (define-public xnnpack
   ;; There's currently no tag on this repo.
   (let ((version "0.0")
@@ -2589,7 +2769,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
                               ;; needs these.
                               ;; "FP16" "FXdiv" "gemmlowp" "psimd"
 
-                              "gloo" "googletest" "ios-cmake"
+                              "gloo" "googletest" "ios-cmake" "NNPACK"
                               "onnx" "protobuf" "pthreadpool"
                               "pybind11" "python-enum" "python-peachpy"
                               "python-six" "tbb" "XNNPACK" "zstd"))
@@ -2654,6 +2834,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
        ("googletest" ,googletest)
        ("googlebenchmark" ,googlebenchmark)
        ("gloo" ,gloo)
+       ("nnpack" ,nnpack)
        ("openblas" ,openblas)
        ("openmpi" ,openmpi)
        ("pthreadpool" ,pthreadpool)
@@ -2667,7 +2848,6 @@ TensorFlow.js, PyTorch, and MediaPipe.")
        ("python-numpy" ,python-numpy)
        ("python-pyyaml" ,python-pyyaml)
        ("python-cffi" ,python-cffi)
-       ("python-peachpy" ,python-peachpy)
        ("python-typing-extensions" ,python-typing-extensions)
        ("python-future" ,python-future)
        ("python-six" ,python-six)

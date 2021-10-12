@@ -20,7 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;; Copyright © 2018 Tonton <tonton@riseup.net>
+;;; Copyright © 2018, 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
@@ -31,7 +31,6 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019, 2020, 2021 Brice Waegeneire <brice@waegenei.re>
-;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
@@ -86,6 +85,7 @@
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -832,14 +832,14 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public ndisc6
   (package
     (name "ndisc6")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.remlab.net/files/ndisc6/ndisc6-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "07swyar1hl83zxmd7fqwb2q0c0slvrswkcfp3nz5lknrk15dmcdb"))))
+                "0lgkbnnll8nrr7h63ywd42sg8fiv6jhhymd7rnml8a3yqjgjz4rn"))))
     (build-system gnu-build-system)
     (home-page "https://www.remlab.net/ndisc6/")
     (synopsis "IPv6 diagnostic tools")
@@ -1472,14 +1472,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.8")
+    (version "3.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "09fpvfj4m7glisj6p4zb8wylkrjkqqw69xnwnz4ah410zs6zm9sq"))))
+        (base32 "084nv4fbgpxsf6b6cfi6cinn8l3wsbn0g8lsd7p2aifjkf15wln6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1748,14 +1748,14 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public squid
   (package
     (name "squid")
-    (version "4.15")
+    (version "4.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
                            version ".tar.xz"))
        (sha256
-        (base32 "09aaz0hi7q4s5jalgl5i5fakmgzv5akf03gnajlah498mgjs94xn"))))
+        (base32 "0qxswdv90lmbxpb47hnqhjv32q0c8j7qkja6wpd0473wfn8yh03y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2505,7 +2505,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.13.3")
+    (version "2.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2513,21 +2513,45 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1wc5zspy9aln7di7m9a1qy4lv3h05gmhgd1nffhb9nxdcxqgnpgp"))))
+                "0sldyib85v5lh3qp9af0jgvf304pwdmjd0y7rknfwliykgjvgqsm"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; FIXME: many tests fail with:
-       ;;    […]
-       ;;    test -e $OVS_RUNDIR/ovs-vswitchd.pid
-       ;;    ovs-appctl -t ovs-vswitchd exit
-       ;;    hard failure
-       #:tests? #f
-       #:configure-flags
+     '(#:configure-flags
        '("--enable-shared"
          "--localstatedir=/var"
          "--with-dbdir=/var/lib/openvswitch")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'use-absolute-/bin/sh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash-minimal")))
+               (substitute* "ovsdb/ovsdb-server.c"
+                 (("/bin/sh") (string-append bash "/bin/sh"))))))
+         (add-before 'check 'adjust-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash-minimal"))
+                    (/bin/sh (string-append bash "/bin/sh")))
+               (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                 (substitute* (find-files "tests" ".*(run|testsuite)$")
+                   (("#! /bin/sh")
+                    (string-append "#! " /bin/sh))
+
+                   ;; The tests use 'kill -0' to check whether a test has
+                   ;; completed, but it does not work in the build container
+                   ;; because zombies are not reaped automatically (PID 1 is
+                   ;; the builder script).  Change to something that handles
+                   ;; undead processes.
+                   (("kill -0")
+                    "kill-0")))
+               (mkdir "/tmp/bin")
+               (call-with-output-file "/tmp/bin/kill-0"
+                 (lambda (port)
+                   (format port "#!~a
+ps --no-header -p $1 -o state= | grep -qv '^Z$'"
+                           /bin/sh)))
+               (chmod "/tmp/bin/kill-0" #o755)
+               (setenv "PATH"
+                       (string-append "/tmp/bin:" (getenv "PATH"))))))
          (replace 'install
            (lambda _
              (invoke "make"
@@ -2542,9 +2566,12 @@ procedure calls (RPCs).")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ;; for testing
+       ("bash" ,bash)                   ;for 'compgen'
+       ("procps" ,procps)
        ("util-linux" ,util-linux)))
     (inputs
-     `(("libcap-ng" ,libcap-ng)
+     `(("bash-minimal" ,bash-minimal)
+       ("libcap-ng" ,libcap-ng)
        ("openssl" ,openssl)))
     (synopsis "Virtual network switch")
     (home-page "https://www.openvswitch.org/")
@@ -3656,14 +3683,14 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
 (define-public batctl
   (package
    (name "batctl")
-   (version "2020.4")
+   (version "2021.3")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32 "05rrpfbpdhxn5zgdps849qls2ifis6a94cjryb60d4y1nc2n0d7w"))))
+      (base32 "087w8xxxpqxs5cz4aj4l9wzbh0ga8163nh7qy44ld2lgqbplnbzj"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs

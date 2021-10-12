@@ -483,14 +483,14 @@ output), and Binutils.")
 (define-public llvm-12
   (package
     (name "llvm")
-    (version "12.0.0")
+    (version "12.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "0l4b79gwfvxild974aigcq1yigypjsk2j5p59syhl6ksd744gp29"))))
+        "1pzx9zrmd7r3481sbhwvkms68fwhffpp4mmz45dgrkjpyl2q96kx"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -562,22 +562,20 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public clang-runtime-12
   (clang-runtime-from-llvm
    llvm-12
-   "0d444qihq9jhqnfv003cr704v363va72zl6qaw2algj1c85cva45"))
+   "1950rg294izdwkaasi7yjrmadc9mzdd5paf0q63jjcq2m3rdbj5l"))
 
 (define-public clang-12
   (clang-from-llvm llvm-12 clang-runtime-12
-                   "1vd9rhhrd8ghdg111lac7w8by71y9l14yh5zxfijsm6lj4p4avp2"
-                   #:patches '("clang-11.0-libc-search-path.patch")
+                   "0px4gl27az6cdz6adds89qzdwb1cqpjsfvrldbz9qvpmphrj34bf"
+                   #:patches '("clang-12.0-libc-search-path.patch")
                    #:tools-extra
                    (origin
                      (method url-fetch)
                      (uri (llvm-uri "clang-tools-extra"
                                     (package-version llvm-12)))
-                     (patches
-                      (search-patches "clang-12-tools-extra-directory.patch"))
                      (sha256
                       (base32
-                       "0p3dzr0qa7mar83y66xa5m5apynf6ia0lsdsq6axwnm64ysy0hdd")))))
+                       "1r9a4fdz9ci58b5z2inwvm4z4cdp6scrivnaw05dggkxz7yrwrb5")))))
 
 (define-public clang-toolchain-12
   (make-clang-toolchain clang-12))
@@ -699,7 +697,7 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public clang-8
   (clang-from-llvm llvm-8 clang-runtime-8
                    "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
-                   #:patches '("clang-7.0-libc-search-path.patch")))
+                   #:patches '("clang-8.0-libc-search-path.patch")))
 
 (define-public clang-toolchain-8
   (make-clang-toolchain clang-8))
@@ -937,19 +935,51 @@ of programming tools as well as libraries with equivalent functionality.")
                   ,@(package-properties llvm-12)))))
 
 
+
+(define-public libunwind-headers
+  (package
+    (name "libunwind-headers")
+    (version "12.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-uri "libunwind" version))
+              (sha256
+               (base32
+                "192ww6n81lj2mb9pj4043z79jp3cf58a9c2qrxjwm5c3a64n1shb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases (modify-phases (map (lambda (phase)
+                                      (assq phase %standard-phases))
+                                    '(set-paths unpack))
+                  (add-after 'unpack 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (mkdir out)
+                        (copy-recursively "include"
+                                          (string-append out "/include"))))))))
+    (home-page "https://clang.llvm.org/docs/Toolchain.html")
+    (synopsis "LLVM libunwind header files")
+    (description
+     "This package contains header files for the LLVM C++ unwinding library.")
+    (license license:asl2.0)))          ;with LLVM exceptions
+
 (define-public lld
   (package
     (name "lld")
-    (version "11.0.0")
+    (version "12.0.1")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "lld" version))
               (sha256
                (base32
-                "077xyh7sij6mhp4dc4kdcmp9whrpz332fa12rwxnzp3wgd5bxrzg"))))
+                "0qg3fgc7wj34hdkqn21y03zcmsdd01szhhm1hfki63iifrm3y2v9"))))
     (build-system cmake-build-system)
+    (native-inputs
+     ;; Note: check <https://bugs.llvm.org/show_bug.cgi?id=49228> to see
+     ;; whether this is still necessary.
+     `(("libunwind-headers" ,libunwind-headers)))
     (inputs
-     `(("llvm" ,llvm-11)))
+     `(("llvm" ,llvm-12)))
     (arguments
      `(#:build-type "Release"
        ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
@@ -964,13 +994,13 @@ components which highly leverage existing libraries in the larger LLVM Project."
 (define-public lldb
   (package
     (name "lldb")
-    (version "11.0.0")
+    (version "12.0.1")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "lldb" version))
               (sha256
                (base32
-                "0wic9lyb2la9bkzdc13szkm4f793w1mddp50xvh237iraygw0w45"))))
+                "0g3pj1m3chafavpr35r9fynm85y2hdyla6klj0h28khxs2613i78"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_CXX_COMPILER=clang++")))
@@ -978,8 +1008,8 @@ components which highly leverage existing libraries in the larger LLVM Project."
      `(("pkg-config" ,pkg-config)
        ("swig" ,swig)))
     (inputs
-     `(("clang" ,clang-11)
-       ("llvm" ,llvm-11)
+     `(("clang" ,clang-12)
+       ("llvm" ,llvm-12)
 
        ;; Optional (but recommended) inputs.
        ("curses" ,ncurses)

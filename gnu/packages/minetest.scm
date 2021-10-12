@@ -6,7 +6,7 @@
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
-;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020, 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; This file is part of GNU Guix.
 ;;;

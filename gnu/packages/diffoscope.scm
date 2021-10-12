@@ -72,16 +72,18 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "177")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "02np9dq7jnq48lcmz4k1hvwc6xiqgjhrwr1vsbsfw8rxnp9vs0a5"))))
+    (version "186")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qlll5jn76ci5jy915v2kvyngfyycwylxpbdylffzaninvdy3dav"))
+       (patches
+        (search-patches "diffoscope-fix-test_item3_deflate_llvm_bitcode.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -89,8 +91,7 @@
                   ;; bug in berkeley-db file type detection.
                   (add-after 'unpack 'remove-berkeley-test
                     (lambda _
-                      (delete-file "tests/comparators/test_berkeley_db.py")
-                      #t))
+                      (delete-file "tests/comparators/test_berkeley_db.py")))
                   (add-after 'unpack 'embed-tool-references
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "diffoscope/comparators/utils/compare.py"
@@ -106,27 +107,37 @@
                         (("\\['stat',")
                          (string-append "['" (which "stat") "',"))
                         (("\\['getfacl',")
-                         (string-append "['" (which "getfacl") "',")))
-                      #t))
+                         (string-append "['" (which "getfacl") "',")))))
                   (add-after 'build 'build-man-page
                     (lambda* (#:key (make-flags '()) #:allow-other-keys)
                       (apply invoke "make" "-C" "doc" make-flags)))
                   (add-before 'check 'writable-test-data
                     (lambda _
                       ;; Tests may need write access to tests directory.
-                      (for-each make-file-writable (find-files "tests"))
-                      #t))
+                      (for-each make-file-writable (find-files "tests"))))
+                  (add-before 'check 'fix-failing-test
+                    (lambda _
+                      ;; There is no user name mapping in the build environment.
+                      ;; Pytest made it so much harder than should be necessary,
+                      ;; so I'm leaving… this here in case I ever need it again:
+                      ;; (substitute* "tests/comparators/test_squashfs.py"
+                      ;;   (("^def test_symlink_root.*" match)     ; no, I don't
+                      ;;    (string-append                         ; know Python
+                      ;;     match "\n    raise ValueError("       ; why do you
+                      ;;     "differences_root[1].unified_diff)\n"))) ; ask
+                      (substitute* "tests/data/squashfs_root_expected_diff"
+                        (("root/root")
+                         '"0/0      "))))
                   (add-before 'check 'delete-failing-test
+                    ;; Please add new tests to fix-failing-test and not here ;-)
                     (lambda _
                       ;; This requires /sbin to be in $PATH.
-                      (delete-file "tests/test_tools.py")
-                      #t))
+                      (delete-file "tests/test_tools.py")))
                   (add-after 'install 'install-man-page
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (man (string-append out "/share/man/man1")))
-                        (install-file "doc/diffoscope.1" man)
-                        #t))))))
+                        (install-file "doc/diffoscope.1" man)))))))
     (inputs `(("rpm" ,rpm)              ;for rpm-python
               ("python-debian" ,python-debian)
               ("python-libarchive-c" ,python-libarchive-c)

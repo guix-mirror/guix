@@ -1,9 +1,9 @@
 # htmlxref.cnf - reference file for free Texinfo manuals on the web.
 # Modified by Ludovic Courtès <ludo@gnu.org> for the GNU Guix manual.
 
-htmlxrefversion=2020-01-11.22; # UTC
+htmlxrefversion=2021-09-24.23; # UTC
 
-# Copyright 2010, 2011, 2012, 2013, 2014, 2015, 2019, 2020 Free Software Foundation, Inc.
+# Copyright 2010-2020 Free Software Foundation, Inc.
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -110,6 +110,10 @@ cpio		node	${GS}/cpio/manual/html_node/
 
 cssc		node	${GS}/cssc/manual/
 
+CUIRASS = ${GS}/guix/cuirass/manual
+ cuirass	mono	${CUIRASS}/cuirass.html
+ cuirass	node	${CUIRASS}/html_node/
+
 CVS = ${GS}/trans-coord/manual
 cvs            mono    ${CVS}/cvs/cvs.html
 cvs            node    ${CVS}/cvs/html_node/
@@ -117,6 +121,8 @@ cvs            node    ${CVS}/cvs/html_node/
 ddd		mono	${GS}/ddd/manual/html_mono/ddd.html
 
 ddrescue	mono	${GS}/ddrescue/manual/ddrescue_manual.html
+
+dejagnu         node    ${GS}/dejagnu/manual/
 
 DICO = https://puszcza.gnu.org.ua/software/dico/manual
 dico		mono	${DICO}/dico.html
@@ -126,6 +132,9 @@ dico		node	${DICO}/html_node/
 
 diffutils	mono	${GS}/diffutils/manual/diffutils
 diffutils	node	${GS}/diffutils/manual/html_node/
+
+dmd		mono	${GS}/dmd/manual/dmd
+dmd		node	${GS}/dmd/manual/html_node/
 
 ed		mono	${GS}/ed/manual/ed_manual.html
 
@@ -180,6 +189,9 @@ emacs		node	${EMACS}/html_node/emacs/
  #
  idlwave	mono	${EMACS}/html_mono/idlwave.html
  idlwave	node	${EMACS}/html_node/idlwave/
+ #
+ info   	mono	${EMACS}/html_mono/info.html
+ info   	node	${EMACS}/html_node/info/
  #
  message	mono	${EMACS}/html_mono/message.html
  message	node	${EMACS}/html_node/message/
@@ -259,7 +271,7 @@ gcc		node	${GCC}/gcc/
  gcj		node	${GCC}/gcj/
  gfortran	node	${GCC}/gfortran/
  gnat_rm	node	${GCC}/gnat_rm/
- gnat_ugn_unw	node	${GCC}/gnat_ugn_unw/
+ gnat_ugn	node	${GCC}/gnat_ugn/
  libgomp	node	${GCC}/libgomp/
  libstdc++	node	${GCC}/libstdc++/
  #
@@ -287,6 +299,11 @@ gettext		mono	${GS}/gettext/manual/gettext.html
 gettext		node	${GS}/gettext/manual/html_node/
 
 gforth		node	https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/
+
+# Also found at:
+# https://mirrors.edge.kernel.org/pub/software/scm/git/docs/user-manual.html
+# https://git.github.io/htmldocs/user-manual.html
+git		mono	https://git-scm.com/docs/user-manual
 
 global		mono	${GS}/global/manual/global.html
 
@@ -335,8 +352,8 @@ GNUSTANDARDS = ${G}/prep
  standards	mono	${GNUSTANDARDS}/standards/standards.html
  standards	node	${GNUSTANDARDS}/standards/html_node/
 
-gnutls		mono	http://gnutls.org/manual/gnutls.html
-gnutls		node	http://gnutls.org/manual/html_node/
+gnutls		mono	${GS}/gnutls/manual/gnutls.html
+gnutls		node	${GS}/gnutls/manual/html_node/
 
 gnutls-guile	mono	http://gnutls.org/manual/gnutls-guile.html
 gnutls-guile	node	http://gnutls.org/manual/gnutls-guile/
@@ -397,18 +414,27 @@ guile-gtk	node	${GS}/guile-gtk/docs/guile-gtk/
 guile-rpc	mono	${GS}/guile-rpc/manual/guile-rpc.html
 guile-rpc	node	${GS}/guile-rpc/manual/html_node/
 
-guix.de		mono	${GS}/guix/manual/de/guix.de.html
-guix.de		node	${GS}/guix/manual/de/html_node/
-guix.es		mono	${GS}/guix/manual/es/guix.es.html
-guix.es		node	${GS}/guix/manual/es/html_node/
-guix.fr		mono	${GS}/guix/manual/fr/guix.fr.html
-guix.fr		node	${GS}/guix/manual/fr/html_node/
-guix.ru		mono	${GS}/guix/manual/ru/guix.ru.html
-guix.ru		node	${GS}/guix/manual/ru/html_node/
-guix.zh_CN	mono	${GS}/guix/manual/zh-cn/guix.zh_CN.html
-guix.zh_CN	node	${GS}/guix/manual/zh-cn/html_node/
-guix		mono	${GS}/guix/manual/en/guix.html
-guix		node	${GS}/guix/manual/en/html_node/
+GUIX = ${GS}/guix/manual
+ guix.de	mono	${GUIX}/de/guix.de.html
+ guix.de	node	${GUIX}/de/html_node/
+ guix.es	mono	${GUIX}/es/guix.es.html
+ guix.es	node	${GUIX}/es/html_node/
+ guix.fr	mono	${GUIX}/fr/guix.fr.html
+ guix.fr	node	${GUIX}/fr/html_node/
+ guix.ru	mono	${GUIX}/ru/guix.ru.html
+ guix.ru	node	${GUIX}/ru/html_node/
+ guix.zh_CN	mono	${GUIX}/zh-cn/guix.zh_CN.html
+ guix.zh_CN	node	${GUIX}/zh-cn/html_node/
+ guix		mono	${GUIX}/en/guix.html
+ guix		node	${GUIX}/en/html_node/
+
+GUIX_COOKBOOK = ${GS}/guix/cookbook
+ guix-cookbook.de	mono	${GUIX_COOKBOOK}/de/guix-cookbook.html
+ guix-cookbook.de	node    ${GUIX_COOKBOOK}/de/html_node/
+ guix-cookbook.fr	mono    ${GUIX_COOKBOOK}/fr/guix-cookbook.html
+ guix-cookbook.fr	node    ${GUIX_COOKBOOK}/fr/html_node/
+ guix-cookbook		mono    ${GUIX_COOKBOOK}/en/guix-cookbook.html
+ guix-cookbook		node	${GUIX_COOKBOOK}/en/html_node/
 
 gv		mono	${GS}/gv/manual/gv.html
 gv		node	${GS}/gv/manual/html_node/
@@ -503,18 +529,21 @@ mcron		node	${GS}/mcron/manual/html_node/
 mdk		mono	${GS}/mdk/manual/mdk.html
 mdk		node	${GS}/mdk/manual/html_node/
 
-METAEXCHANGE = http://ftp.gwdg.de/pub/gnu2/iwfmdh/doc/texinfo
+METAEXCHANGE = https://ftp.gwdg.de/pub/gnu2/iwfmdh/doc/texinfo
  iwf_mh		node	${METAEXCHANGE}/iwf_mh.html
  scantest	node	${METAEXCHANGE}/scantest.html
 
 mes		mono	${GS}/mes/manual/mes.html
 mes		node	${GS}/mes/manual/html_node/
 
-MIT_SCHEME = ${GS}/mit-scheme/documentation
+MIT_SCHEME = ${GS}/mit-scheme/documentation/stable
+ mit-scheme-ref	  mono	${MIT_SCHEME}/mit-scheme-ref.html
  mit-scheme-ref	  node	${MIT_SCHEME}/mit-scheme-ref/
+ mit-scheme-user  mono	${MIT_SCHEME}/mit-scheme-user.html
  mit-scheme-user  node	${MIT_SCHEME}/mit-scheme-user/
+ sos		  mono	${MIT_SCHEME}/mit-scheme-sos.html
  sos		  node	${MIT_SCHEME}/mit-scheme-sos/
- mit-scheme-imail node	${MIT_SCHEME}/mit-scheme-imail/
+ mit-scheme-imail mono	${MIT_SCHEME}/mit-scheme-imail.html
 
 moe		mono	${GS}/moe/manual/moe_manual.html
 
@@ -572,7 +601,7 @@ R = https://cran.r-project.org/doc/manuals
 rcs		mono	${GS}/rcs/manual/rcs.html
 rcs		node	${GS}/rcs/manual/html_node/
 
-READLINE = http://cnswww.cns.cwru.edu/php/chet/readline
+READLINE = https://tiswww.cwru.edu/php/chet/readline
 readline        mono    ${READLINE}/readline.html
  rluserman      mono    ${READLINE}/rluserman.html
  history        mono    ${READLINE}/history.html
@@ -629,7 +658,7 @@ swbis		mono	${GS}/swbis/manual.html
 tar		mono	${GS}/tar/manual/tar.html
 tar		chapter	${GS}/tar/manual/html_chapter/
 tar		section	${GS}/tar/manual/html_section/
-tar		node	${GS}/autoconf/manual/html_node/
+tar		node	${GS}/tar/manual/html_node/
 
 teseq		mono	${GS}/teseq/teseq.html
 teseq		node	${GS}/teseq/html_node/
@@ -637,9 +666,6 @@ teseq		node	${GS}/teseq/html_node/
 TEXINFO = ${GS}/texinfo/manual
 texinfo		mono	${TEXINFO}/texinfo/texinfo.html
 texinfo		node	${TEXINFO}/texinfo/html_node/
- #
- info		mono	${TEXINFO}/info/info.html
- info		node	${TEXINFO}/info/html_node/
  #
  info-stnd	mono	${TEXINFO}/info-stnd/info-stnd.html
  info-stnd	node	${TEXINFO}/info-stnd/html_node/

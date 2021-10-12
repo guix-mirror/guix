@@ -30,14 +30,14 @@
 (define-public dhall
   (package
     (name "dhall")
-    (version "1.32.0")
+    (version "1.39.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/dhall/dhall-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1imj0bh5365pdizvjbw2wqz0g9hakigf1zm4fr6379qdchxpp90p"))))
+        (base32 "1by2d84fbckspczddl4npfsf89q6nprmbg0i5g8yr1psp0fpl4ab"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -58,15 +58,17 @@
        ("ghc-lens-family-core" ,ghc-lens-family-core)
        ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-memory" ,ghc-memory)
+       ("ghc-mmorph" ,ghc-mmorph)
        ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-parsers" ,ghc-parsers)
        ("ghc-parser-combinators" ,ghc-parser-combinators)
-       ("ghc-prettyprinter" ,ghc-prettyprinter-1.6)
+       ("ghc-prettyprinter" ,ghc-prettyprinter)
        ("ghc-prettyprinter-ansi-terminal" ,ghc-prettyprinter-ansi-terminal)
        ("ghc-pretty-simple" ,ghc-pretty-simple)
        ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-repline" ,ghc-repline-0.3)
+       ("ghc-pretty-simple" ,ghc-pretty-simple)
+       ("ghc-repline" ,ghc-repline)
        ("ghc-serialise" ,ghc-serialise)
        ("ghc-scientific" ,ghc-scientific)
        ("ghc-text-manipulate" ,ghc-text-manipulate)
@@ -91,6 +93,7 @@
        ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-silver" ,ghc-tasty-silver)
        ("ghc-turtle" ,ghc-turtle)
        ("ghc-mockery" ,ghc-mockery)
        ("ghc-doctest" ,ghc-doctest)))
@@ -102,8 +105,7 @@
              (with-directory-excursion "dhall-lang/tests"
                (for-each
                 delete-file
-                '("import/failure/referentiallyInsane.dhall"
-                  "import/success/customHeadersA.dhall"
+                '("import/success/customHeadersA.dhall"
                   "import/success/noHeaderForwardingA.dhall"
                   "import/success/unit/RemoteAsTextA.dhall"
                   "import/success/unit/SimpleRemoteA.dhall"

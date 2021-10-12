@@ -9,6 +9,7 @@
 ;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
+;;; Copyright © 2021 Kaelyn Takata <kaelyn.alexi@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -415,8 +416,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "6c42566c6204bb5dcd6af3b97257e548b9d2db67")
-        (revision "9"))
+  (let ((commit "37850436dd7dfbe67738749c4d4a2506ffff1ec3")
+        (revision "11"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -428,7 +429,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0xagz0k3li10ydma55mnld0nb2pyfx90vsdvgjflgnx6jw3cq4dq"))))
+          (base32 "040vgxrimahmfs9rhlggfwg0bzl7h9j2ksx3563rh63asjwlhnhi"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -1173,7 +1174,7 @@ with the included @command{xfstests-check} helper.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.1.0")
+    (version "2.1.1")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -1182,7 +1183,7 @@ with the included @command{xfstests-check} helper.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0kzkggwznp4m3503f2m4lcinbl99jg50j4asrwfpfk1862vdrgb0"))))
+           (base32 "1zsc0zkz5cci6pxc0kwzn3xg72qv2fq65phb768y5dgk1784hkxx"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -1276,8 +1277,7 @@ with the included @command{xfstests-check} helper.")
                (substitute* '("Makefile.am" "Makefile.in")
                  (("\\$\\(prefix)/src") (string-append src "/src")))
                (substitute* (find-files "udev/rules.d/" ".rules.in$")
-                 (("/sbin/modprobe") (string-append kmod "/bin/modprobe"))))
-             #t))
+                 (("/sbin/modprobe") (string-append kmod "/bin/modprobe"))))))
          (replace 'build
            (lambda _ (invoke "make")))
          (replace 'install
@@ -1292,8 +1292,8 @@ with the included @command{xfstests-check} helper.")
                        (string-append "INSTALL_MOD_PATH=" moddir)
                        "INSTALL_MOD_STRIP=1")
                (install-file "contrib/bash_completion.d/zfs"
-                             (string-append out "/share/bash-completion/completions"))
-               #t))))))
+                             (string-append out
+                                            "/share/bash-completion/completions"))))))))
     (native-inputs
      `(("attr" ,attr)
        ("kmod" ,kmod)

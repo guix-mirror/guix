@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 ;;
 ;; Code:
 
-;; Copied from make-linux-libre's "configure" phase.
+;; Similar to make-linux-libre's "configure" phase.
 (define* (configure #:key inputs target arch #:allow-other-keys)
   (setenv "KCONFIG_NOTIMESTAMP" "1")
   (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -42,23 +43,28 @@
   (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
   (when target
+    ;; TODO? (setenv "EXTRA_VERSION" ,extra-version)
+    ;; TODO? kernel ".config".
     (setenv "CROSS_COMPILE" (string-append target "-"))
     (format #t "`CROSS_COMPILE' set to `~a'~%"
-               (getenv "CROSS_COMPILE")))
-  ; TODO: (setenv "EXTRA_VERSION" ,extra-version)
-  ; TODO: kernel ".config".
-  #t)
+            (getenv "CROSS_COMPILE"))))
 
-(define* (build #:key inputs make-flags (source-directory ".") #:allow-other-keys)
+(define* (build #:key (make-flags '()) (parallel-build? #t)
+                (source-directory ".")
+                inputs
+                #:allow-other-keys)
   (apply invoke "make" "-C"
          (string-append (assoc-ref inputs "linux-module-builder")
                         "/lib/modules/build")
-         (string-append "M=" (getcwd) "/" source-directory)
-         (or make-flags '())))
+         (string-append "M=" (canonicalize-path source-directory))
+         `(,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '())
+           ,@make-flags)))
 
-;; This block was copied from make-linux-libre--only took the "modules_install"
-;; part.
-(define* (install #:key make-flags (source-directory ".")
+;; Similar to the "modules_install" part of make-linux-libre.
+(define* (install #:key (make-flags '()) (parallel-build? #t)
+                  (source-directory ".")
                   inputs native-inputs outputs
                   #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
@@ -68,7 +74,7 @@
     (apply invoke "make" "-C"
             (string-append (assoc-ref inputs "linux-module-builder")
                            "/lib/modules/build")
-            (string-append "M=" (getcwd) "/" source-directory)
+            (string-append "M=" (canonicalize-path source-directory))
             ;; Disable depmod because the Guix system's module directory
             ;; is an union of potentially multiple packages.  It is not
             ;; possible to use depmod to usefully calculate a dependency
@@ -79,7 +85,10 @@
             (string-append "INSTALL_MOD_PATH=" out)
             "INSTALL_MOD_STRIP=1"
             "modules_install"
-            (or make-flags '()))))
+         `(,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '())
+           ,@make-flags))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

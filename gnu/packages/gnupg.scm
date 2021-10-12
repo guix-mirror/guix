@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -591,32 +591,33 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.4.4")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "03pvjyp6q9pr8qa22i38az06ddzhvzy5kj192hxa3gbhnchg1nj5"))))
+         "1isazrg2h126xg3vvk4wrhx8k8yfsg5sxybvfa99phj235mzaq90"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (substitute* "test_gnupg.py"
-               ;; Unsure why this test fails.
-               (("'test_search_keys'") "True")
-               (("def test_search_keys") "def disabled__search_keys"))
-             (setenv "USERNAME" "guixbuilder")
-             ;; The doctests are extremely slow and sometimes time out,
-             ;; so we disable them.
-             (invoke "python"
-                     "test_gnupg.py" "--no-doctests"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (substitute* "test_gnupg.py"
+                 ;; Unsure why this test fails.
+                 (("'test_search_keys'") "True")
+                 (("def test_search_keys") "def disabled__search_keys"))
+               (setenv "USERNAME" "guixbuilder")
+               ;; The doctests are extremely slow and sometimes time out,
+               ;; so we disable them.
+               (invoke "python"
+                       "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
-     `(("gnupg" ,gnupg-1)))
-    (home-page "https://packages.python.org/python-gnupg/index.html")
+     `(("gnupg" ,gnupg)))
+    (home-page "https://pythonhosted.org/python-gnupg/index.html")
     (synopsis "Wrapper for the GNU Privacy Guard")
     (description
       "This module allows easy access to GnuPG’s key management, encryption

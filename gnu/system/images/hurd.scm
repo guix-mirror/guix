@@ -23,6 +23,7 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu image)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu platforms hurd)
   #:use-module (gnu services)
   #:use-module (gnu services ssh)
   #:use-module (gnu system)
@@ -75,7 +76,6 @@
 (define hurd-disk-image
   (image
    (format 'disk-image)
-   (target "i586-pc-gnu")
    (partitions
     (list (partition
            (size 'guess)
@@ -103,13 +103,15 @@
 (define hurd-barebones-disk-image
   (image
    (inherit
-    (os->image hurd-barebones-os #:type hurd-image-type))
+    (os+platform->image hurd-barebones-os hurd
+                        #:type hurd-image-type))
    (name 'hurd-barebones-disk-image)))
 
 (define hurd-barebones-qcow2-image
   (image
    (inherit
-    (os->image hurd-barebones-os #:type hurd-qcow2-image-type))
+    (os+platform->image hurd-barebones-os hurd
+                        #:type hurd-qcow2-image-type))
    (name 'hurd-barebones.qcow2)))
 
 ;; Return the default image.

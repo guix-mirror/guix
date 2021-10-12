@@ -99,7 +99,7 @@ replace (
 
 ")
 
-(define fixture-go-mod-unparseable
+(define fixture-go-mod-unparsable
   "module my/thing
 go 1.12 // avoid feature X
 require other/thing v1.0.2
@@ -263,7 +263,7 @@ require github.com/kr/pretty v0.2.1
       (with (module-path "good/thing") (version "v1.4.5"))))
   (parse-go.mod fixture-go-mod-simple))
 
-(test-equal "parse-go.mod: comments and unparseable lines"
+(test-equal "parse-go.mod: comments and unparsable lines"
   `((module (module-path "my/thing"))
     (go (version "1.12") (comment "avoid feature X"))
     (require (module-path "other/thing") (version "v1.0.2"))
@@ -274,7 +274,7 @@ require github.com/kr/pretty v0.2.1
       (with (module-path "good/thing") (version "v1.4.5")))
     (comment "Unparseable")
     (unknown "bad/thing [v1.4.5, v1.9.7] => good/thing v2.0.0"))
-  (parse-go.mod fixture-go-mod-unparseable))
+  (parse-go.mod fixture-go-mod-unparsable))
 
 (test-equal "parse-go.mod: retract"
   `((retract (version "v0.9.1"))

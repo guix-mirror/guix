@@ -992,9 +992,12 @@ keyword parameters for procedures that take more than four parameters.
 Development is done using the Git distributed version control system.
 Thus, access to the repository is not strictly necessary.  We welcome
 contributions in the form of patches as produced by @code{git
-format-patch} sent to the @email{guix-patches@@gnu.org} mailing list.
-Seasoned Guix developers may also want to look at the section on commit
-access (@pxref{Commit Access}).
+format-patch} sent to the @email{guix-patches@@gnu.org} mailing list
+(@pxref{submitting patches,, Submitting patches to a project, git, Git
+User Manual}).  Contributors are encouraged to take a moment to set some
+Git repository options (@pxref{Configuring Git}) first, which can
+improve the readability of patches.  Seasoned Guix developers may also
+want to look at the section on commit access (@pxref{Commit Access}).
 
 This mailing list is backed by a Debbugs instance, which allows us to
 keep track of submissions (@pxref{Tracking Bugs and Patches}).  Each
@@ -1011,6 +1014,12 @@ Before submitting a patch that adds or modifies a package definition,
 please run through this check list:
 
 @enumerate
+@cindex @code{git format-patch}
+@cindex @code{git-format-patch}
+@item
+We recommend to use the command @code{git format-patch --base} to
+include the commit where your patch applies.
+
 @item
 If the authors of the packaged software provide a cryptographic
 signature for the release tarball, make an effort to verify the
@@ -1205,11 +1214,46 @@ should not be delayed.
 When a bug is resolved, please close the thread by sending an email to
 @email{@var{NNN}-done@@debbugs.gnu.org}.
 
+@node Configuring Git
+@subsection Configuring Git
+@cindex git configuration
+@cindex @code{git format-patch}
+@cindex @code{git send-email}
+
+If you have not done so already, you may wish to set a name and email
+that will be associated with your commits (@pxref{telling git your name,
+, Telling Git your name, git, Git User Manual}).  If you wish to use a
+different name or email just for commits in this respository, you can
+use @command{git config --local}, or edit @file{.git/config} in the
+repository instead of @file{~/.gitconfig}.
+
+We provide some default settings in @file{etc/git/gitconfig} which
+modify how patches are generated, making them easier to read and apply.
+These settings can be applied by manually copying them to
+@file{.git/config} in your checkout, or by telling Git to include the
+whole file:
+
+@example
+git config --local include.path ../etc/git/gitconfig
+@end example
+
+From then on, any changes to @file{etc/git/gitconfig} would
+automatically take effect.
+
+Since the first patch in a series must be sent separately
+(@pxref{Sending a Patch Series}), it can also be helpful to tell
+@command{git format-patch} to handle the e-mail threading instead of
+@command{git send-email}:
+
+@example
+git config --local format.thread shallow
+git config --local sendemail.thread no
+@end example
+
 @unnumberedsubsec Sending a Patch Series
 @anchor{Sending a Patch Series}
 @cindex patch series
 @cindex @code{git send-email}
-@cindex @code{git-send-email}
 
 When sending a patch series (e.g., using @code{git send-email}), please
 first send one message to @email{guix-patches@@gnu.org}, and then send

@@ -1,0 +1,85 @@
+From 89a87cf666eb8b27190c779e72d0d76eadc1bc14 Mon Sep 17 00:00:00 2001
+From: Niklas Larsson <niklas@mm.st>
+Date: Sat, 6 Jun 2020 15:29:45 +0200
+Subject: [PATCH] Fix to unblock haskeline-0.8
+
+---
+Taken from <https://github.com/idris-lang/Idris-dev/pull/4871>
+
+ idris.cabal         |  2 +-
+ src/Idris/Output.hs |  8 --------
+ src/Idris/REPL.hs   | 12 +++++-------
+ 3 files changed, 6 insertions(+), 16 deletions(-)
+
+diff --git a/idris.cabal b/idris.cabal
+index 38359019a9..bc9e265023 100644
+--- a/idris.cabal
++++ b/idris.cabal
+@@ -336,7 +336,7 @@ Library
+                 , directory >= 1.2.2.0 && < 1.2.3.0 || > 1.2.3.0
+                 , filepath < 1.5
+                 , fingertree >= 0.1.4.1 && < 0.2
+-                , haskeline >= 0.7 && < 0.8
++                , haskeline >= 0.8 && < 0.9
+                 , ieee754 >= 0.7 && < 0.9
+                 , megaparsec >= 7.0.4 && < 9
+                 , mtl >= 2.1 && < 2.3
+diff --git a/src/Idris/Output.hs b/src/Idris/Output.hs
+index 70b4d48a30..6b5d59948c 100644
+--- a/src/Idris/Output.hs
++++ b/src/Idris/Output.hs
+@@ -37,21 +37,13 @@ import Prelude hiding ((<$>))
+ #endif
+ 
+ import Control.Arrow (first)
+-import Control.Monad.Trans.Except (ExceptT(ExceptT), runExceptT)
+ import Data.List (intersperse, nub)
+ import Data.Maybe (fromJust, fromMaybe, isJust, listToMaybe)
+ import qualified Data.Set as S
+-import System.Console.Haskeline.MonadException (MonadException(controlIO),
+-                                                RunIO(RunIO))
+ import System.FilePath (replaceExtension)
+ import System.IO (Handle, hPutStr, hPutStrLn)
+ import System.IO.Error (tryIOError)
+ 
+-instance MonadException m => MonadException (ExceptT Err m) where
+-    controlIO f = ExceptT $ controlIO $ \(RunIO run) -> let
+-                    run' = RunIO (fmap ExceptT . run . runExceptT)
+-                    in fmap runExceptT $ f run'
+-
+ pshow :: IState -> Err -> String
+ pshow ist err = displayDecorated (consoleDecorate ist) .
+                 renderPretty 1.0 80 .
+diff --git a/src/Idris/REPL.hs b/src/Idris/REPL.hs
+index 05587d9672..5e0dc21089 100644
+--- a/src/Idris/REPL.hs
++++ b/src/Idris/REPL.hs
+@@ -122,23 +122,21 @@ repl orig mods efile
+                              (if colour && not isWindows
+                                 then colourisePrompt theme str
+                                 else str) ++ " "
+-        x <- H.catch (H.withInterrupt $ getInputLine prompt)
+-                     (ctrlC (return $ Just ""))
++        x <- H.handleInterrupt (ctrlC (return $ Just "")) (H.withInterrupt $ getInputLine prompt)
+         case x of
+             Nothing -> do lift $ when (not quiet) (iputStrLn "Bye bye")
+                           return ()
+             Just input -> -- H.catch
+-                do ms <- H.catch (H.withInterrupt $ lift $ processInput input orig mods efile)
+-                                 (ctrlC (return (Just mods)))
++                do ms <- H.handleInterrupt (ctrlC (return (Just mods))) (H.withInterrupt $ lift $ processInput input orig mods efile)
+                    case ms of
+                         Just mods -> let efile' = fromMaybe efile (listToMaybe mods)
+                                      in repl orig mods efile'
+                         Nothing -> return ()
+ --                             ctrlC)
+ --       ctrlC
+-   where ctrlC :: InputT Idris a -> SomeException -> InputT Idris a
+-         ctrlC act e = do lift $ iputStrLn (show e)
+-                          act -- repl orig mods
++   where ctrlC :: InputT Idris a -> InputT Idris a
++         ctrlC act = do lift $ iputStrLn "Interrupted"
++                        act -- repl orig mods
+ 
+          showMVs c thm [] = ""
+          showMVs c thm ms = "Holes: " ++

@@ -47,7 +47,9 @@
               (sha256
                (base32
                 "1pachwc6msw3n1mz2z1r1w6h518w9gbhdvbaa5vi1qp3cn3wm6q4"))
-              (patches (search-patches "idris-disable-test.patch"))))
+              (patches (search-patches "idris-disable-test.patch"
+                                       "idris-build-with-haskeline-0.8.patch"
+                                       "idris-build-with-megaparsec-9.patch"))))
     (build-system haskell-build-system)
     (native-inputs                      ;For tests
      `(("perl" ,perl)
@@ -97,12 +99,11 @@
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))
              #t))
-         (add-after 'unpack 'update-constraints
+         (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "idris.cabal"
-               (("ansi-terminal < 0\\.9") "ansi-terminal < 0.10")
-               (("cheapskate >= 0\\.1\\.1\\.2 && < 0\\.2") "cheapskate >= 0.1.1.1 && < 0.2"))
-             #t))
+               (("(aeson|ansi-terminal|haskeline|megaparsec|optparse-applicative)\\s+[^,]+" all dep)
+                dep))))
          (add-before 'configure 'set-cc-command
            (lambda _
              (setenv "CC" "gcc")

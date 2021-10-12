@@ -23,7 +23,7 @@
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
@@ -154,13 +154,13 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
     (native-inputs
      `(("python-nose" ,python-nose)))
     (propagated-inputs
-     `(("python-py-bcrypt" ,python-py-bcrypt)))
+     `(("python-bcrypt" ,python-bcrypt)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-PYTHON_EGG_CACHE
            ;; Some tests require access to "$HOME/.cython".
-           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp"))))))
     (home-page "https://bitbucket.org/ecollins/passlib")
     (synopsis "Comprehensive password hashing framework")
     (description
@@ -170,41 +170,6 @@ as a framework for managing existing password hashes.  It's designed to be
 useful for a wide range of tasks, from verifying a hash found in /etc/shadow,
 to providing full-strength password hashing for multi-user application.")
     (license license:bsd-3)))
-
-(define-public python2-passlib
-  (package-with-python2 python-passlib))
-
-(define-public python-py-bcrypt
-  (package
-    (name "python-py-bcrypt")
-    (version "0.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "py-bcrypt" version))
-       (sha256
-        (base32
-         "0y6smdggwi5s72v6p1nn53dg6w05hna3d264cq6kas0lap73p8az"))))
-    (build-system python-build-system)
-    (home-page "https://code.google.com/p/py-bcrypt")
-    (synopsis
-     "Bcrypt password hashing and key derivation")
-    (description
-     "A python wrapper of OpenBSD's Blowfish password hashing code.  This
-system hashes passwords using a version of Bruce Schneier's Blowfish block
-cipher with modifications designed to raise the cost of off-line password
-cracking and frustrate fast hardware implementation.  The computation cost of
-the algorithm is parametrised, so it can be increased as computers get faster.
-The intent is to make a compromise of a password database less likely to
-result in an attacker gaining knowledge of the plaintext passwords (e.g. using
-John the Ripper).")
-    ;; "sha2.c" is under BSD-3;
-    ;; "blowfish.c" and "bcrypt.c" are under BSD-4;
-    ;; the rest is under ISC.
-    (license (list license:isc license:bsd-3 license:bsd-4))))
-
-(define-public python2-py-bcrypt
-  (package-with-python2 python-py-bcrypt))
 
 (define-public python-pyblake2
   (package

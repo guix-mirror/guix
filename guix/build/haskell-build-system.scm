@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,13 +64,14 @@
                      ((file-exists? "Setup.lhs")
                       "Setup.lhs")
                      (else
-                      #f))))
+                      #f)))
+        (pkgdb (string-append "-package-db=" %tmp-db-dir)))
     (if setup-file
         (begin
           (format #t "running \"runhaskell Setup.hs\" with command ~s \
 and parameters ~s~%"
                   command params)
-          (apply invoke "runhaskell" setup-file command params))
+          (apply invoke "runhaskell" pkgdb setup-file command params))
         (error "no Setup.hs nor Setup.lhs found"))))
 
 (define* (configure #:key outputs inputs tests? (configure-flags '())
@@ -141,17 +143,6 @@ and parameters ~s~%"
                 (find-files lib "\\.a$"))))
   #t)
 
-(define (grep rx port)
-  "Given a regular-expression RX including a group, read from PORT until the
-first match and return the content of the group."
-  (let ((line (read-line port)))
-    (if (eof-object? line)
-        #f
-        (let ((rx-result (regexp-exec rx line)))
-          (if rx-result
-              (match:substring rx-result 1)
-              (grep rx port))))))
-
 (define* (setup-compiler #:key system inputs outputs #:allow-other-keys)
   "Setup the compiler environment."
   (let* ((haskell (assoc-ref inputs "haskell"))
@@ -173,15 +164,8 @@ first match and return the content of the group."
   "Generate the GHC package database."
   (let* ((haskell  (assoc-ref inputs "haskell"))
          (name-version (strip-store-file-name haskell))
-         (input-dirs (match inputs
-                       (((_ . dir) ...)
-                        dir)
-                       (_ '())))
          ;; Silence 'find-files' (see 'evaluate-search-paths')
-         (conf-dirs (with-null-error-port
-                     (search-path-as-list
-                      `(,(string-append "lib/" name-version))
-                      input-dirs #:pattern ".*\\.conf.d$")))
+         (conf-dirs (search-path-as-string->list (getenv "GHC_PACKAGE_PATH")))
          (conf-files (append-map (cut find-files <> "\\.conf$") conf-dirs)))
     (mkdir-p %tmp-db-dir)
     (for-each (lambda (file)
@@ -233,6 +217,8 @@ given Haskell package."
          (if (not (vhash-assoc id seen))
              (let ((dep-conf  (string-append src  "/" id ".conf"))
                    (dep-conf* (string-append dest "/" id ".conf")))
+               (when (not (file-exists? dep-conf))
+                   (error (format #f "File ~a does not exist. This usually means the dependency ~a is missing. Was checking conf-file ~a." dep-conf id conf-file)))
                (copy-file dep-conf dep-conf*) ;XXX: maybe symlink instead?
                (loop (vhash-cons id #t seen)
                      (append lst (conf-depends dep-conf))))
@@ -241,12 +227,13 @@ given Haskell package."
   (let* ((out (assoc-ref outputs "out"))
          (doc (assoc-ref outputs "doc"))
          (haskell  (assoc-ref inputs "haskell"))
-         (name-verion (strip-store-file-name haskell))
+         (name-version (strip-store-file-name haskell))
+         (version (last (string-split name-version #\-)))
          (lib (string-append (or (assoc-ref outputs "lib") out) "/lib"))
          (config-dir (string-append lib
-                                    "/" name-verion
+                                    "/ghc-" version
                                     "/" name ".conf.d"))
-         (id-rx (make-regexp "^id: *(.*)$"))
+         (id-rx (make-regexp "^id:[ \n\t]+([^ \t\n]+)$" regexp/newline))
          (config-file (string-append out "/" name ".conf"))
          (params
           (list (string-append "--gen-pkg-config=" config-file))))
@@ -254,8 +241,15 @@ given Haskell package."
     ;; The conf file is created only when there is a library to register.
     (when (file-exists? config-file)
       (mkdir-p config-dir)
-      (let ((config-file-name+id
-             (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+      (let* ((contents (call-with-input-file config-file read-string))
+             (config-file-name+id (match:substring (first (list-matches id-rx contents)) 1)))
+
+        (when (or
+                (and
+                  (string? config-file-name+id)
+                  (string-null? config-file-name+id))
+                (not config-file-name+id))
+          (error (format #f "The package id for ~a is empty. This is a bug." config-file)))
 
         ;; Remove reference to "doc" output from "lib" (or "out") by rewriting the
         ;; "haddock-interfaces" field and removing the optional "haddock-html"

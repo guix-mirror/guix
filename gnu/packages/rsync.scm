@@ -87,16 +87,16 @@ files in the destination.")
       (list "--without-included-zlib"
             "--without-included-popt"
             ;; Avoid these dependencies for now.
-            "--disable-lz4"
-            "--disable-openssl"
-            "--disable-zstd")))
+            "--disable-openssl")))
    (native-inputs
     `(("perl" ,perl)))
    (inputs
     `(("acl" ,acl)
+      ("lz4" ,lz4)
       ("popt" ,popt)
       ("xxhash" ,xxhash)
-      ("zlib" ,zlib)))
+      ("zlib" ,zlib)
+      ("zstd:lib" ,zstd "lib")))
    (synopsis "Remote (and local) file copying tool")
    (description
     "Rsync is a fast and versatile file copying tool.  It can copy locally,

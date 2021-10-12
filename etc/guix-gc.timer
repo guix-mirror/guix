@@ -1,0 +1,15 @@
+# This is a "timer unit file" for the systemd init system to trigger
+# 'guix-gc.service' periodically.  Drop it in /etc/systemd/system or similar
+# together with 'guix-gc.service' to set it up.
+
+[Unit]
+Description=Discard unused Guix store items
+
+[Timer]
+OnCalendar=weekly
+AccuracySec=1h
+Persistent=true
+RandomizedDelaySec=6000
+
+[Install]
+WantedBy=timers.target

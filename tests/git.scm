@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,5 +161,32 @@
               (commit-relation merge branch1)
               (commit-relation master1 merge)
               (commit-relation merge master1))))))
+
+(unless (which (git-command)) (test-skip 1))
+(test-equal "remote-refs"
+  '("refs/heads/develop" "refs/heads/master"
+    "refs/tags/v1.0" "refs/tags/v1.1")
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "First commit")
+        (tag "v1.0" "release-1.0")
+        (branch "develop")
+        (checkout "develop")
+        (add "b.txt" "B")
+        (commit "Second commit")
+        (tag "v1.1" "release-1.1"))
+    (remote-refs directory)))
+
+(unless (which (git-command)) (test-skip 1))
+(test-equal "remote-refs: only tags"
+ '("refs/tags/v1.0" "refs/tags/v1.1")
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "First commit")
+        (tag "v1.0" "Release 1.0")
+        (add "b.txt" "B")
+        (commit "Second commit")
+        (tag "v1.1" "Release 1.1"))
+    (remote-refs directory #:tags? #t)))
 
 (test-end "git")

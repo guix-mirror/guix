@@ -1,0 +1,33 @@
+diff -Naur pigx_scrnaseq-1.1.7/configure.ac pigx_scrnaseq-1.1.7.patched/configure.ac
+--- pigx_scrnaseq-1.1.7/configure.ac	2020-03-17 14:37:46.000000000 +0100
++++ pigx_scrnaseq-1.1.7.patched/configure.ac	2021-10-06 13:55:49.779271317 +0200
+@@ -43,7 +43,6 @@
+ find_or_override_prog([GNUBASH],         [bash])
+ find_or_override_prog([SNAKEMAKE],       [snakemake])
+ find_or_override_prog([PANDOC],          [pandoc])
+-find_or_override_prog([PANDOC_CITEPROC], [pandoc-citeproc])
+ find_or_override_prog([FASTQC],          [fastqc])
+ find_or_override_prog([STAR],            [STAR])
+ find_or_override_prog([SAMTOOLS],        [samtools])
+diff -Naur pigx_scrnaseq-1.1.7/Makefile.in pigx_scrnaseq-1.1.7.patched/Makefile.in
+--- pigx_scrnaseq-1.1.7/Makefile.in	2020-11-30 16:55:48.000000000 +0100
++++ pigx_scrnaseq-1.1.7.patched/Makefile.in	2021-10-06 13:55:52.224340194 +0200
+@@ -395,7 +395,6 @@
+ PACKAGE_URL = @PACKAGE_URL@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PANDOC = @PANDOC@
+-PANDOC_CITEPROC = @PANDOC_CITEPROC@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
+ PERL = @PERL@
+ PYTHON = @PYTHON@
+diff -Naur pigx_scrnaseq-1.1.7/pigx-scrnaseq.in pigx_scrnaseq-1.1.7.patched/pigx-scrnaseq.in
+--- pigx_scrnaseq-1.1.7/pigx-scrnaseq.in	2020-11-30 16:08:55.000000000 +0100
++++ pigx_scrnaseq-1.1.7.patched/pigx-scrnaseq.in	2021-10-06 13:55:47.889218079 +0200
+@@ -274,7 +274,6 @@
+     if path.exists(bin): shutil.rmtree(bin)
+     os.makedirs(bin, exist_ok=True)
+     os.symlink('@PANDOC@', path.join(bin, "pandoc"))
+-    os.symlink('@PANDOC_CITEPROC@', path.join(bin, "pandoc-citeproc"))
+     os.symlink('@RSCRIPT@', path.join(bin, "Rscript"))
+     os.environ['PATH'] = path.abspath(bin) + ":" + os.environ['PATH']
+     os.environ['PIGX_PATH'] = path.abspath(bin) + ":" + os.environ['PATH']

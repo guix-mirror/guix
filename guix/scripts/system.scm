@@ -64,6 +64,7 @@
                  (device-module-aliases matching-modules)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu image)
+  #:use-module (gnu platform)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -253,7 +254,7 @@ the ownership of '~a' may be incorrect!~%")
           (install-bootloader local-eval bootloader bootcfg
                               #:target target)
           (return
-           (info (G_ "bootloader successfully installed on '~a'~%")
+           (info (G_ "bootloader successfully installed on~{ ~a~}~%")
                  (bootloader-configuration-targets bootloader))))))))
 
 
@@ -1212,13 +1213,11 @@ resulting from command-line parsing."
                             (base-image (if (operating-system? obj)
                                             (os->image obj
                                                        #:type image-type)
-                                            obj))
-                            (base-target (image-target base-image)))
+                                            obj)))
                         (image
                          (inherit (if label
                                       (image-with-label base-image label)
                                       base-image))
-                         (target (or base-target target))
                          (size image-size)
                          (volatile-root? volatile?))))
          (os          (image-operating-system image))

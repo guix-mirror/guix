@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,10 +26,12 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module ((guix utils) #:select (source-properties->location))
-  #:use-module ((guix diagnostics) #:select (location-file))
+  #:use-module ((guix diagnostics) #:select (formatted-message location-file))
   #:use-module ((guix modules) #:select (file-name->module-name))
+  #:use-module (guix i18n)
   #:autoload   (texinfo) (texi-fragment->stexi)
   #:autoload   (texinfo serialize) (stexi->texi)
+  #:use-module (ice-9 curried-definitions)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
@@ -56,7 +59,20 @@
             generate-documentation
             configuration->documentation
             empty-serializer
-            serialize-package))
+            serialize-package
+
+            filter-configuration-fields
+
+            interpose
+            list-of
+
+            list-of-strings?
+            alist?
+            serialize-file-like
+            text-config?
+            serialize-text-config
+            generic-serialize-alist-entry
+            generic-serialize-alist))
 
 ;;; Commentary:
 ;;;
@@ -323,3 +339,73 @@ Texinfo documentation of its fields."
                                                   '-fields))))
     (display (generate-documentation `((,configuration-symbol ,fields-getter))
                                      configuration-symbol))))
+
+(define* (filter-configuration-fields configuration-fields fields
+                                      #:optional negate?)
+  "Retrieve the fields listed in FIELDS from CONFIGURATION-FIELDS.
+If NEGATE? is @code{#t}, retrieve all fields except FIELDS."
+  (filter (lambda (field)
+            (let ((member? (member (configuration-field-name field) fields)))
+              (if (not negate?) member? (not member?))))
+          configuration-fields))
+
+
+(define* (interpose ls  #:optional (delimiter "\n") (grammar 'infix))
+  "Same as @code{string-join}, but without join and string, returns an
+DELIMITER interposed LS.  Support 'infix and 'suffix GRAMMAR values."
+  (when (not (member grammar '(infix suffix)))
+    (raise
+     (formatted-message
+      (G_ "The GRAMMAR value must be 'infix or 'suffix, but ~a provided.")
+      grammar)))
+  (fold-right (lambda (e acc)
+                (cons #~(begin
+                          (use-modules (ice-9 rdelim))
+                          (with-fluids ((%default-port-encoding "UTF-8"))
+                            (with-input-from-file #$e read-string)))
+                      (if (and (null? acc) (eq? grammar 'infix))
+                          acc
+                          (cons delimiter acc))))
+              '() ls))
+
+(define (list-of pred?)
+  "Return a procedure that takes a list and check if all the elements of
+the list result in @code{#t} when applying PRED? on them."
+    (lambda (x)
+      (if (list? x)
+          (every pred? x)
+          #f)))
+
+
+(define list-of-strings?
+  (list-of string?))
+
+(define alist? list?)
+
+(define serialize-file-like empty-serializer)
+
+(define (text-config? config)
+  (list-of file-like?))
+(define (serialize-text-config field-name val)
+  #~(string-append #$@(interpose val "\n" 'suffix)))
+
+(define ((generic-serialize-alist-entry serialize-field) entry)
+  "Apply the SERIALIZE-FIELD procedure on the field and value of ENTRY."
+  (match entry
+    ((field . val) (serialize-field field val))))
+
+(define (generic-serialize-alist combine serialize-field fields)
+  "Generate a configuration from an association list FIELDS.
+
+SERIALIZE-FIELD is a procedure that takes two arguments, it will be
+applied on the fields and values of FIELDS using the
+@code{generic-serialize-alist-entry} procedure.
+
+COMBINE is a procedure that takes one or more arguments and combines
+all the alist entries into one value, @code{string-append} or
+@code{append} are usually good candidates for this.
+
+See the @code{serialize-alist} procedure in `@code{(gnu home services
+version-control}' for an example usage.)}"
+  (apply combine
+         (map (generic-serialize-alist-entry serialize-field) fields)))

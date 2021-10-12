@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,9 @@
             UMOUNT_NOFOLLOW
 
             restart-on-EINTR
+
+            device-number
+            device-number->major+minor
 
             mount?
             mount-device-number
@@ -450,6 +454,29 @@ the returned procedure is called."
 
 
 ;;;
+;;; Block devices.
+;;;
+
+;; Convert between major:minor pairs and packed ‘device number’ representation.
+;; XXX These aren't syscalls, but if you squint very hard they are part of the
+;; FFI or however you want to justify me not finding a better fit… :-)
+(define (device-number major minor)     ; see glibc's <sys/sysmacros.h>
+  "Return the device number for the device with MAJOR and MINOR, for use as
+the last argument of `mknod'."
+  (logior (ash (logand #x00000fff major) 8)
+          (ash (logand #xfffff000 major) 32)
+               (logand #x000000ff minor)
+          (ash (logand #xffffff00 minor) 12)))
+
+(define (device-number->major+minor device)     ; see glibc's <sys/sysmacros.h>
+  "Return two values: the major and minor device numbers that make up DEVICE."
+  (values (logior (ash (logand #x00000000000fff00 device) -8)
+                  (ash (logand #xfffff00000000000 device) -32))
+          (logior      (logand #x00000000000000ff device)
+                  (ash (logand #x00000ffffff00000 device) -12))))
+
+
+;;;
 ;;; File systems.
 ;;;
 
@@ -628,7 +655,7 @@ current process."
   (define (string->device-number str)
     (match (string-split str #\:)
       (((= string->number major) (= string->number minor))
-       (+ (* major 256) minor))))
+       (device-number major minor))))
 
   (call-with-input-file "/proc/self/mountinfo"
     (lambda (port)

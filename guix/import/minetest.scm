@@ -25,6 +25,8 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module ((guix packages) #:prefix package:)
+  #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (guix ui)
   #:use-module (guix i18n)
@@ -36,15 +38,19 @@
   #:use-module (json)
   #:use-module (guix base32)
   #:use-module (guix git)
+  #:use-module ((guix git-download) #:prefix download:)
   #:use-module (guix store)
   #:export (%default-sort-key
             %contentdb-api
             json->package
             contentdb-fetch
             elaborate-contentdb-name
+            minetest-package?
+            latest-minetest-release
             minetest->guix-package
             minetest-recursive-import
-            sort-packages))
+            sort-packages
+            %minetest-updater))
 
 ;; The ContentDB API is documented at
 ;; <https://content.minetest.net>.
@@ -203,7 +209,7 @@ raise an exception."
         (match correctly-named
           ((one) (package-keys-full-name one))
           ((too . many)
-           (warning (G_ "~a is ambigious, presuming ~a (other options include: ~a)~%")
+           (warning (G_ "~a is ambiguous, presuming ~a (other options include: ~a)~%")
                     name (package-keys-full-name too)
                     (map package-keys-full-name many))
            (package-keys-full-name too))
@@ -256,7 +262,7 @@ and possibly some other packages as well, or #f on failure."
                                    (order "desc"))
   "Search ContentDB for Q (a string).  Sort by SORT, in ascending order
 if ORDER is \"asc\" or descending order if ORDER is \"desc\".  TYPE must
-be \"mod\", \"game\" or \"txp\", restricting thes search results to
+be \"mod\", \"game\" or \"txp\", restricting the search results to
 respectively mods, games and texture packs.  Limit to at most LIMIT
 results.  The return value is a list of <package-keys> records."
   ;; XXX does Guile have something for constructing (and, when necessary,
@@ -337,6 +343,25 @@ official Minetest forum and the Git repository (if any)."
       (and=> (package-forums package) topic->url-sexp)
       (package-repository package)))
 
+(define (release-version release)
+  "Guess the version of RELEASE from the release title."
+  (define title (release-title release))
+  (if (string-prefix? "v" title)
+      ;; Remove "v" prefix from release titles like ‘v1.0.1’.
+      (substring title 1)
+      title))
+
+(define (version-style version)
+  "Determine the kind of version number VERSION is -- a date, or a conventional
+conventional version number."
+  (define dots? (->bool (string-index version #\.)))
+  (define hyphens? (->bool (string-index version #\-)))
+  (match (cons dots? hyphens?)
+    ((#true . #false) 'regular) ; something like "0.1"
+    ((#false . #false) 'regular) ; single component version number
+    ((#true . #true) 'regular) ; result of 'git-version'
+    ((#false . #true) 'date))) ; something like "2021-01-25"
+
 ;; If the default sort key is changed, make sure to modify 'show-help'
 ;; in (guix scripts import minetest) appropriately as well.
 (define %default-sort-key "score")
@@ -371,7 +396,11 @@ official Minetest forum and the Git repository (if any)."
 DEPENDENCIES as a list of AUTHOR/NAME strings."
   (define dependency-list
     (assoc-ref dependencies author/name))
-  (filter-map
+  ;; A mod can have multiple dependencies implemented by the same mod,
+  ;; so remove duplicate mod names.
+  (define (filter-deduplicate-map f list)
+    (delete-duplicates (filter-map f list)))
+  (filter-deduplicate-map
    (lambda (dependency)
      (and (not (dependency-optional? dependency))
           (not (builtin-mod? (dependency-name dependency)))
@@ -432,7 +461,7 @@ list of AUTHOR/NAME strings."
   (define important-upstream-dependencies
     (important-dependencies dependencies author/name #:sort sort))
   (values (make-minetest-sexp author/name
-                              (release-title release) ; version
+                              (release-version release)
                               (package-repository package)
                               (release-commit release)
                               important-upstream-dependencies
@@ -454,3 +483,37 @@ list of AUTHOR/NAME strings."
   (recursive-import author/name
                     #:repo->guix-package minetest->guix-package*
                     #:guix-name contentdb->package-name))
+
+(define (minetest-package? pkg)
+  "Is PKG a Minetest mod on ContentDB?"
+  (and (string-prefix? "minetest-" (package:package-name pkg))
+       (assq-ref (package:package-properties pkg) 'upstream-name)))
+
+(define (latest-minetest-release pkg)
+  "Return an <upstream-source> for the latest release of the package PKG,
+or #false if the latest release couldn't be determined."
+  (define author/name
+    (assq-ref (package:package-properties pkg) 'upstream-name))
+  (define contentdb-package (contentdb-fetch author/name)) ; TODO warn if #f?
+  (define release (latest-release author/name))
+  (define source (package:package-source pkg))
+  (and contentdb-package release
+       (release-commit release) ; not always set
+       ;; Only continue if both the old and new version number are both
+       ;; dates or regular version numbers, as two different styles confuses
+       ;; the logic for determining which version is newer.
+       (eq? (version-style (release-version release))
+            (version-style (package:package-version pkg)))
+       (upstream-source
+        (package (package:package-name pkg))
+        (version (release-version release))
+        (urls (list (download:git-reference
+                     (url (package-repository contentdb-package))
+                     (commit (release-commit release))))))))
+
+(define %minetest-updater
+  (upstream-updater
+    (name 'minetest)
+    (description "Updater for Minetest packages on ContentDB")
+    (pred minetest-package?)
+    (latest latest-minetest-release)))

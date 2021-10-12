@@ -814,7 +814,8 @@ of PROVENANCE-SERVICE-TYPE to its services."
         dosfstools
         btrfs-progs
         f2fs-tools
-        jfsutils))
+        jfsutils
+        xfsprogs))
 
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything

@@ -33,7 +33,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
-;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
@@ -43,6 +43,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Thomas Albers Raviola <thomas@thomaslabs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1319,50 +1320,6 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
 interface.  It is implemented as a frontend to @code{klick}.")
     (license license:gpl2+)))
 
-(define-public libgme
-  (package
-    (name "libgme")
-    (version "0.6.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
-                                  "downloads/game-music-emu-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "07857vdkak306d9s5g6fhmjyxk7vijzjhkmqb15s7ihfxx9lx8xb"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f))                    ; no check target
-    (home-page "https://bitbucket.org/mpyne/game-music-emu")
-    (synopsis "Video game music file playback library")
-    (description
-     "Game-music-emu is a collection of video game music file emulators that
-support the following formats and systems:
-@table @code
-@item AY
-ZX Spectrum/Asmtrad CPC
-@item GBS
-Nintendo Game Boy
-@item GYM
-Sega Genesis/Mega Drive
-@item HES
-NEC TurboGrafx-16/PC Engine
-@item KSS
-MSX Home Computer/other Z80 systems (doesn't support FM sound)
-@item NSF/NSFE
-Nintendo NES/Famicom (with VRC 6, Namco 106, and FME-7 sound)
-@item SAP
-Atari systems using POKEY sound chip
-@item SPC
-Super Nintendo/Super Famicom
-@item VGM/VGZ
-Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
-@end table")
-    (license (list license:lgpl2.1+
-                   ;; demo and player directories are under the Expat license
-                   license:expat))))
-
 (define-public lingot
   (package
     (name "lingot")
@@ -1562,7 +1519,7 @@ Guile.")
 (define-public abjad
   (package
     (name "abjad")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -1572,7 +1529,7 @@ Guile.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dzf5v7pawbzkb4qxp4s5z4r3gibkk705pag83yvgzkx6fd6jf2g"))))
+         "0s63vk9fifp0im9c31kb9ck39mbaxhrls993d8fvg0nkg41z1jnz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1617,7 +1574,7 @@ typographic detail of symbols on the page.")
 (define-public abjad-ext-rmakers
   (package
     (name "abjad-ext-rmakers")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -1627,7 +1584,7 @@ typographic detail of symbols on the page.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03nry8lzh3s81yq4lw8y6j63m7zdsl20q7rvx9cfmp3rmbvlaycs"))))
+         "0wma9vzn42h1rhbzh2dwjsrzjhsi1yqdgn6wx1dfk78vaki6prd8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1650,7 +1607,7 @@ typographic detail of symbols on the page.")
     (propagated-inputs
      `(("abjad" ,abjad)))
     (home-page "https://abjad.github.io")
-    (synopsis "Abjad rhythm-maker exension package")
+    (synopsis "Abjad rhythm-maker extension package")
     (description
      "@code{abjad-ext-rmakers} includes a collection of classes for creating and
 and manipulating rhythms such as accelerandi, taleas, and more.")
@@ -1659,7 +1616,7 @@ and manipulating rhythms such as accelerandi, taleas, and more.")
 (define-public abjad-ext-nauert
   (package
     (name "abjad-ext-nauert")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method git-fetch)
@@ -1669,7 +1626,7 @@ and manipulating rhythms such as accelerandi, taleas, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07vgfjh32vmf652lcl2vrbzr0h6nld00qbgwbf9i1kk3xwhvklc9"))))
+         "05hr2lr6myzi493k8vc19cqzraxxnbdwlckwbnras19l5g5ns38x"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2344,38 +2301,43 @@ special variant of additive synthesis.")
 (define-public amsynth
   (package
     (name "amsynth")
-    (version "1.7.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/amsynth/amsynth/releases/"
                            "download/release-" version
-                           "/amsynth-" version ".tar.bz2"))
+                           "/amsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "1882pfcmf3rqg3vd4qflzkppcv158d748i603spqjbxqi8z7x7w0"))))
+         "0lhp7fymm2fids02y43cy422jzmdiraszll1mk3gzlbfwg33ds1i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/GUI/editor_pane.c"
-               (("/usr/bin/unzip") (which "unzip")))
-             (substitute* "src/GUI/GUI.cc"
-               (("/usr/bin/which") (which "which")))
+               (("/usr/bin/unzip")
+                (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
+             (substitute* "src/GUI/MainMenu.cpp"
+               (("/usr/bin/which")
+                (string-append (assoc-ref inputs "which") "/bin/which")))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("gtk+" ,gtk+-2)
-       ("gtkmm" ,gtkmm-2)
        ("jack" ,jack-1)
-       ("lash" ,lash)
        ("libsndfile" ,libsndfile)
        ("lv2" ,lv2)
        ;; External commands invoked at run time.
        ("unzip" ,unzip)
        ("which" ,which)))
+    (propagated-inputs
+     ;; avoid runtime error:
+     ;; GLib-GIO-ERROR **: 22:14:48.344: Settings schema
+     ;;   'org.gnome.desktop.interface' is not installed
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))

@@ -1,0 +1,33 @@
+diff -Naur pigx_rnaseq-0.0.19/configure.ac pigx_rnaseq-0.0.19.patched/configure.ac
+--- pigx_rnaseq-0.0.19/configure.ac	2021-07-23 14:01:00.304391428 +0200
++++ pigx_rnaseq-0.0.19.patched/configure.ac	2021-10-06 13:51:29.512960106 +0200
+@@ -38,7 +38,6 @@
+ find_or_override_prog([GNUBASH],         [bash])
+ find_or_override_prog([SNAKEMAKE],       [snakemake])
+ find_or_override_prog([PANDOC],          [pandoc])
+-find_or_override_prog([PANDOC_CITEPROC], [pandoc-citeproc])
+ find_or_override_prog([STAR],            [STAR])
+ find_or_override_prog([HISAT2],          [hisat2])
+ find_or_override_prog([HISAT2_BUILD],    [hisat2-build])
+diff -Naur pigx_rnaseq-0.0.19/Makefile.in pigx_rnaseq-0.0.19.patched/Makefile.in
+--- pigx_rnaseq-0.0.19/Makefile.in	2021-08-13 13:40:10.402922844 +0200
++++ pigx_rnaseq-0.0.19.patched/Makefile.in	2021-10-06 13:51:04.052247524 +0200
+@@ -410,7 +410,6 @@
+ PACKAGE_URL = @PACKAGE_URL@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PANDOC = @PANDOC@
+-PANDOC_CITEPROC = @PANDOC_CITEPROC@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
+ PYTHON = @PYTHON@
+ PYTHONPATH = @PYTHONPATH@
+diff -Naur pigx_rnaseq-0.0.19/pigx-common/common/pigx-runner.in pigx_rnaseq-0.0.19.patched/pigx-common/common/pigx-runner.in
+--- pigx_rnaseq-0.0.19/pigx-common/common/pigx-runner.in	2021-08-13 13:27:50.494352532 +0200
++++ pigx_rnaseq-0.0.19.patched/pigx-common/common/pigx-runner.in	2021-10-06 13:51:38.798220108 +0200
+@@ -379,7 +379,6 @@
+     if path.exists(bin): shutil.rmtree(bin)
+     os.makedirs(bin, exist_ok=True)
+     os.symlink('@PANDOC@', path.join(bin, "pandoc"))
+-    os.symlink('@PANDOC_CITEPROC@', path.join(bin, "pandoc-citeproc"))
+     os.symlink('@RSCRIPT@', path.join(bin, "Rscript"))
+     os.environ['PATH'] = path.abspath(bin) + ":" + os.environ['PATH']
+     os.environ['PIGX_PATH'] = path.abspath(bin) + ":" + os.environ['PATH']

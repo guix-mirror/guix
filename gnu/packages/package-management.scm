@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,8 +49,10 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
@@ -75,6 +78,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages perl)
@@ -97,6 +101,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages version-control)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -140,8 +145,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.3.0")
-        (commit "6243ad3812f8c689599a19f0e8b9719ba14461f2")
-        (revision 5))
+        (commit "f743f2046be2c5a338ab871ae8666d8f6de7440b")
+        (revision 9))
     (package
       (name "guix")
 
@@ -157,7 +162,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0i3sgk2w2yjy9ip47vk0h17afk16yl5ih3p3q75083kgjzyjdm3d"))
+                  "0sk8vhvivh3r4jws2gyq02wdvwz2qds53b0vc4k04dx8vwidmid9"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1039,6 +1044,164 @@ written entirely in Python.")
 (define-public python-conda
   (deprecated-package "python-conda" conda))
 
+(define-public conan
+  (package
+    (name "conan")
+    (version "1.40.2")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI archive
+       (uri (git-reference
+             (url "https://github.com/conan-io/conan")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hp8qs54l4cw043f1kycjwgdr7f388lsyxqcbzfaayr6xg1d3dw0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "conans/requirements.txt"
+               (("node-semver==0.6.1")
+                "node-semver>=0.6.1"))))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref inputs "coreutils")))
+               ;; It seems that PATH is manipulated, as printenv is not found
+               ;; during tests.  Patch in its exact location.
+               (substitute* "conan/tools/env/environment.py"
+                 (("printenv")
+                  (string-append coreutils "/bin/printenv")))
+               (substitute* "conans/client/envvars/environment.py"
+                 (("#!/usr/bin/env")
+                  (string-append "#!" coreutils "/bin/env"))))))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (replace 'check
+           (lambda* (#:key tests? outputs #:allow-other-keys)
+             (define system ,(or (%current-target-system)
+                                 (%current-system)))
+             (when tests?
+               (setenv "PATH" (string-append (getenv "PATH") ":"
+                                             (assoc-ref outputs "out") "/bin"))
+               (invoke "python" "-m" "pytest"
+                       "-n" "auto"      ;parallelize tests
+                       "-m" "not slow and not tool_svn"
+                       ;; Disable problematic tests.
+                       "-k"
+                       (string-append
+                        ;; These tests rely on networking.
+                        "not shallow_clone_remote "
+                        "and not remote_build "
+                        "and not download_retries_errors "
+                        "and not ftp "
+                        "and not build_local_different_folders "
+                        ;; These expect CMake available at fixed versions.
+                        "and not custom_cmake "
+                        "and not default_cmake "
+                        "and not bazel " ;bazel is not packaged
+                        ;; Guix sets PKG_CONFIG_PATH itself, which is not
+                        ;; expected by the following test.
+                        "and not pkg_config_path "
+                        "and not compare " ;caused by newer node-semver?
+                        ;; Guix is not currently a supported package manager.
+                        "and not system_package_tool "
+                        ;; These expect GCC 5 to be available.
+                        "and not test_reuse "
+                        "and not test_install "
+                        ;; The installed configure script trips on the /bin/sh
+                        ;; shebang.  We'd have to patch it in the Python code.
+                        "and not test_autotools "
+                        "and not test_use_build_virtualenv "
+                        ;; This test is architecture-dependent.
+                        "and not test_toolchain_linux "
+                        ;; This one fails for unknown reasons (see:
+                        ;; https://github.com/conan-io/conan/issues/9671).
+                        "and not test_build "
+                        (if (not (string-prefix? "x86_64" system))
+                            ;; These tests either assume the machine is
+                            ;; x86_64, or require a cross-compiler to target
+                            ;; it.
+                            (string-append
+                             "and not cpp_package "
+                             "and not exclude_code_analysis "
+                             "and not cmakedeps_multi "
+                             "and not locally_build_linux "
+                             "and not custom_configuration "
+                             "and not package_from_system "
+                             "and not cross_build_command "
+                             "and not test_package "
+                             "and not test_deleted_os "
+                             "and not test_same ")
+                            "")
+                        (if (not (or (string-prefix? "x86_64" system)
+                                     (string-prefix? "i686" system)))
+                            ;; These tests either assume the machine is i686,
+                            ;; or require a cross-compiler to target it.
+                            (string-append
+                             "and not vcvars_raises_when_not_found "
+                             "and not conditional_generators "
+                             "and not test_folders "
+                             "and not settings_as_a_dict_conanfile ")
+                            "")))))))))
+    (propagated-inputs
+     `(("python-bottle" ,python-bottle)
+       ("python-colorama" ,python-colorama)
+       ("python-dateutil" ,python-dateutil)
+       ("python-distro" ,python-distro)
+       ("python-fasteners" ,python-fasteners)
+       ("python-future" ,python-future)
+       ("python-jinja2" ,python-jinja2)
+       ("python-node-semver" ,python-node-semver)
+       ("python-patch-ng" ,python-patch-ng)
+       ("python-pluginbase" ,python-pluginbase)
+       ("python-pygments" ,python-pygments)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-tqdm" ,python-tqdm)
+       ("python-urllib3" ,python-urllib3)))
+    (inputs
+     `(("coreutils" ,coreutils)))       ;for printenv
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cmake" ,cmake)                 ;requires cmake >= 3.17
+       ("git" ,git-minimal)
+       ("meson" ,meson-0.55)
+       ("ninja",ninja)
+       ("pkg-config" ,pkg-config)
+       ("python-bottle" ,python-bottle)
+       ("python-mock" ,python-mock)
+       ("python-parameterized" ,python-parameterized)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-webtest" ,python-webtest)
+       ("which" ,which)))
+    (home-page "https://conan.io")
+    (synopsis "Decentralized C/C++ package manager")
+    (description "Conan is a package manager for C and C++ developers that
+boasts the following features:
+@itemize
+@item
+It is fully decentralized.  Users can host their packages on their own private
+servers.
+@item
+It can create, upload and download binaries for any configuration and
+platform, including cross-compiled ones.
+@item
+It integrates with any build system, including CMake, Makefiles, Meson, etc.
+@item
+It is extensible; its Python-based recipes, together with extensions points
+allow for great power and flexibility.
+@end itemize")
+    (license license:expat)))
+
 (define-public gwl
   (package
     (name "gwl")
@@ -1085,8 +1248,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "c2f0c5b36f8294bb4c699806f9e8c576ae9b9f90")
-        (revision "33"))
+  (let ((commit "76d129dc19cc0e14441ae3a74bbc44e3be570b21")
+        (revision "34"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1097,7 +1260,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0nlh1cyvpbsfy9pk22xmgx0vb625j7qgv79y527q91c9fjn7g37v"))
+                  "1f624vlk58cznx4383vkhkw61lplv25nqy3qhclsawbm5bih7wcj"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments

@@ -1,0 +1,205 @@
+This patch allows us to use our copy of the dependencies instead
+of downloading them and rebuilding them.  It also builds a shared
+library.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5ecd2df..aaa67d1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,7 +12,7 @@ SET_PROPERTY(CACHE NNPACK_BACKEND PROPERTY STRINGS auto psimd scalar)
+ OPTION(NNPACK_CONVOLUTION_ONLY "Build only NNPACK functions for convolutional layer" OFF)
+ OPTION(NNPACK_INFERENCE_ONLY "Build only NNPACK functions for inference" OFF)
+ OPTION(NNPACK_CUSTOM_THREADPOOL "Build NNPACK for custom thread pool" OFF)
+-SET(NNPACK_LIBRARY_TYPE "default" CACHE STRING "Type of library (shared, static, or default) to build")
++SET(NNPACK_LIBRARY_TYPE "shared" CACHE STRING "Type of library (shared, static, or default) to build")
+ SET_PROPERTY(CACHE NNPACK_LIBRARY_TYPE PROPERTY STRINGS default static shared)
+ OPTION(NNPACK_BUILD_TESTS "Build NNPACK unit tests" ON)
+ 
+@@ -123,7 +123,7 @@ SET(CONFU_DEPENDENCIES_BINARY_DIR ${CMAKE_BINARY_DIR}/deps
+   CACHE PATH "Confu-style dependencies binary directory")
+ 
+ IF(NNPACK_BACKEND STREQUAL "x86-64")
+-  IF(NOT DEFINED PYTHON_SIX_SOURCE_DIR)
++  IF(FALSE)
+     MESSAGE(STATUS "Downloading six (Python package) to ${CONFU_DEPENDENCIES_SOURCE_DIR}/six (define PYTHON_SIX_SOURCE_DIR to avoid it)")
+     CONFIGURE_FILE(cmake/DownloadSix.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/six-download/CMakeLists.txt")
+     EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -133,7 +133,7 @@ IF(NNPACK_BACKEND STREQUAL "x86-64")
+     SET(PYTHON_SIX_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/six" CACHE STRING "six (Python package) source directory")
+   ENDIF()
+ 
+-  IF(NOT DEFINED PYTHON_ENUM_SOURCE_DIR)
++  IF(FALSE)
+     IF(${PYTHON_VERSION_STRING} VERSION_LESS 3.4)
+       # ---[ Python < 3.4 does not natively support enums, and needs a polyfill
+       MESSAGE(STATUS "Downloading enum (Python package) to ${CONFU_DEPENDENCIES_SOURCE_DIR}/enum (define PYTHON_ENUM_SOURCE_DIR to avoid it)")
+@@ -148,7 +148,7 @@ IF(NNPACK_BACKEND STREQUAL "x86-64")
+     ENDIF()
+   ENDIF()
+ 
+-  IF(NOT DEFINED PYTHON_PEACHPY_SOURCE_DIR)
++  IF(FALSE)
+     # ---[ PeachPy requires Opcodes for installation
+     IF(NOT DEFINED PYTHON_OPCODES_SOURCE_DIR)
+       MESSAGE(STATUS "Downloading opcodes (Python package) to ${CONFU_DEPENDENCIES_SOURCE_DIR}/opcodes (define PYTHON_OPCODES_SOURCE_DIR to avoid it)")
+@@ -169,15 +169,9 @@ IF(NNPACK_BACKEND STREQUAL "x86-64")
+     SET(PYTHON_PEACHPY_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/peachpy" CACHE STRING "PeachPy (Python package) source directory")
+   ENDIF()
+ 
+-  IF(${PYTHON_VERSION_STRING} VERSION_LESS 3.4)
+-    # ---[ Python < 3.4 does not natively support enums, and needs a polyfill
+-    SET(PEACHPY_PYTHONPATH "${PYTHON_SIX_SOURCE_DIR}:${PYTHON_ENUM_SOURCE_DIR}:${PYTHON_PEACHPY_SOURCE_DIR}")
+-  ELSE()
+-    SET(PEACHPY_PYTHONPATH "${PYTHON_SIX_SOURCE_DIR}:${PYTHON_PEACHPY_SOURCE_DIR}")
+-  ENDIF()
+ ENDIF()
+ 
+-IF(NOT DEFINED CPUINFO_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading cpuinfo to ${CONFU_DEPENDENCIES_SOURCE_DIR}/cpuinfo (define CPUINFO_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadCpuinfo.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/cpuinfo-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -187,7 +181,7 @@ IF(NOT DEFINED CPUINFO_SOURCE_DIR)
+   SET(CPUINFO_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/cpuinfo" CACHE STRING "cpuinfo source directory")
+ ENDIF()
+ 
+-IF(NOT DEFINED FP16_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading FP16 to ${CONFU_DEPENDENCIES_SOURCE_DIR}/fp16 (define FP16_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadFP16.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/fp16-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -197,7 +191,7 @@ IF(NOT DEFINED FP16_SOURCE_DIR)
+   SET(FP16_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/fp16" CACHE STRING "FP16 source directory")
+ ENDIF()
+ 
+-IF(NOT DEFINED FXDIV_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading FXdiv to ${CONFU_DEPENDENCIES_SOURCE_DIR}/fxdiv (define FXDIV_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadFXdiv.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/fxdiv-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -207,7 +201,7 @@ IF(NOT DEFINED FXDIV_SOURCE_DIR)
+   SET(FXDIV_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/fxdiv" CACHE STRING "FXdiv source directory")
+ ENDIF()
+ 
+-IF(NOT DEFINED PSIMD_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading PSimd to ${CONFU_DEPENDENCIES_SOURCE_DIR}/psimd (define PSIMD_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadPSimd.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/psimd-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -217,7 +211,7 @@ IF(NOT DEFINED PSIMD_SOURCE_DIR)
+   SET(PSIMD_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/psimd" CACHE STRING "PSimd source directory")
+ ENDIF()
+ 
+-IF(NOT DEFINED PTHREADPOOL_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading pthreadpool to ${CONFU_DEPENDENCIES_SOURCE_DIR}/pthreadpool (define PTHREADPOOL_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadPThreadPool.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/pthreadpool-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -227,7 +221,7 @@ IF(NOT DEFINED PTHREADPOOL_SOURCE_DIR)
+   SET(PTHREADPOOL_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/pthreadpool" CACHE STRING "pthreadpool source directory")
+ ENDIF()
+ 
+-IF(NNPACK_BUILD_TESTS AND NOT DEFINED GOOGLETEST_SOURCE_DIR)
++IF(FALSE)
+   MESSAGE(STATUS "Downloading Google Test to ${CONFU_DEPENDENCIES_SOURCE_DIR}/googletest (define GOOGLETEST_SOURCE_DIR to avoid it)")
+   CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest-download/CMakeLists.txt")
+   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+@@ -237,6 +231,7 @@ IF(NNPACK_BUILD_TESTS AND NOT DEFINED GOOGLETEST_SOURCE_DIR)
+   SET(GOOGLETEST_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/googletest" CACHE STRING "Google Test source directory")
+ ENDIF()
+ 
++
+ # ---[ NNPACK library
+ SET(NNPACK_INIT_SRCS src/init.c)
+ SET(NNPACK_LAYER_SRCS src/convolution-inference.c)
+@@ -427,8 +422,7 @@ IF(NNPACK_BACKEND STREQUAL "x86-64")
+       FILE(MAKE_DIRECTORY ${obj_dir})
+       ADD_CUSTOM_COMMAND(
+         OUTPUT ${obj}
+-        COMMAND "PYTHONPATH=${PEACHPY_PYTHONPATH}"
+-          ${PYTHON_EXECUTABLE} -m peachpy.x86_64
++        COMMAND ${PYTHON_EXECUTABLE} -m peachpy.x86_64
+             -mabi=sysv -g4 -mimage-format=${PEACHPY_IMAGE_FORMAT}
+             "-I${PROJECT_SOURCE_DIR}/src" "-I${PROJECT_SOURCE_DIR}/src/x86_64-fma" "-I${FP16_SOURCE_DIR}/include"
+             -o ${obj} "${PROJECT_SOURCE_DIR}/${src}"
+@@ -495,63 +489,10 @@ ADD_LIBRARY(nnpack_reference_layers STATIC ${NNPACK_REFERENCE_LAYERS_SRCS})
+ NNPACK_TARGET_ENABLE_C99(nnpack_reference_layers)
+ TARGET_INCLUDE_DIRECTORIES(nnpack_reference_layers PUBLIC include)
+ 
+-# ---[ Configure cpuinfo
+-IF(NOT TARGET cpuinfo)
+-  SET(CPUINFO_BUILD_TOOLS OFF CACHE BOOL "")
+-  SET(CPUINFO_BUILD_UNIT_TESTS OFF CACHE BOOL "")
+-  SET(CPUINFO_BUILD_MOCK_TESTS OFF CACHE BOOL "")
+-  SET(CPUINFO_BUILD_BENCHMARKS OFF CACHE BOOL "")
+-  ADD_SUBDIRECTORY(
+-    "${CPUINFO_SOURCE_DIR}"
+-    "${CONFU_DEPENDENCIES_BINARY_DIR}/cpuinfo")
+-ENDIF()
+-TARGET_LINK_LIBRARIES(nnpack PRIVATE cpuinfo)
+-
+-# ---[ Configure pthreadpool
+-IF(NOT TARGET pthreadpool)
+-  SET(PTHREADPOOL_BUILD_TESTS OFF CACHE BOOL "")
+-  SET(PTHREADPOOL_BUILD_BENCHMARKS OFF CACHE BOOL "")
+-  ADD_SUBDIRECTORY(
+-    "${PTHREADPOOL_SOURCE_DIR}"
+-    "${CONFU_DEPENDENCIES_BINARY_DIR}/pthreadpool")
+-ENDIF()
+-IF(NNPACK_CUSTOM_THREADPOOL)
+-  # Depend on pthreadpool interface, but not on implementation.
+-  # This is used when NNPACK user (e.g. Caffe2) provides its own threadpool implementation.
+-  TARGET_LINK_LIBRARIES(nnpack PUBLIC pthreadpool_interface)
+-ELSE()
+-  TARGET_LINK_LIBRARIES(nnpack PUBLIC pthreadpool)
+-ENDIF()
+-TARGET_LINK_LIBRARIES(nnpack_reference_layers PUBLIC pthreadpool)
++TARGET_LINK_LIBRARIES(nnpack PUBLIC cpuinfo)
+ 
+-# ---[ Configure FXdiv
+-IF(NOT TARGET fxdiv)
+-  SET(FXDIV_BUILD_TESTS OFF CACHE BOOL "")
+-  SET(FXDIV_BUILD_BENCHMARKS OFF CACHE BOOL "")
+-  ADD_SUBDIRECTORY(
+-    "${FXDIV_SOURCE_DIR}"
+-    "${CONFU_DEPENDENCIES_BINARY_DIR}/fxdiv")
+-ENDIF()
+-TARGET_LINK_LIBRARIES(nnpack PRIVATE fxdiv)
+-
+-# ---[ Configure psimd
+-IF(NOT TARGET psimd)
+-  ADD_SUBDIRECTORY(
+-    "${PSIMD_SOURCE_DIR}"
+-    "${CONFU_DEPENDENCIES_BINARY_DIR}/psimd")
+-ENDIF()
+-TARGET_LINK_LIBRARIES(nnpack PRIVATE psimd)
+-
+-# ---[ Configure FP16
+-IF(NOT TARGET fp16)
+-  SET(FP16_BUILD_TESTS OFF CACHE BOOL "")
+-  SET(FP16_BUILD_BENCHMARKS OFF CACHE BOOL "")
+-  ADD_SUBDIRECTORY(
+-    "${FP16_SOURCE_DIR}"
+-    "${CONFU_DEPENDENCIES_BINARY_DIR}/fp16")
+-ENDIF()
+-TARGET_LINK_LIBRARIES(nnpack PRIVATE fp16)
+-TARGET_LINK_LIBRARIES(nnpack_reference_layers PUBLIC fp16)
++TARGET_LINK_LIBRARIES(nnpack PUBLIC pthreadpool)
++TARGET_LINK_LIBRARIES(nnpack_reference_layers PUBLIC pthreadpool)
+ 
+ INSTALL(TARGETS nnpack
+     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+@@ -560,13 +501,6 @@ INSTALL(TARGETS nnpack
+ 
+ IF(NNPACK_BUILD_TESTS)
+   # ---[ Build google test
+-  IF(NOT TARGET gtest)
+-    SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+-    ADD_SUBDIRECTORY(
+-      "${GOOGLETEST_SOURCE_DIR}"
+-      "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest")
+-  ENDIF()
+-
+   ADD_EXECUTABLE(convolution-inference-smoketest test/convolution-inference/smoke.cc)
+   NNPACK_TARGET_ENABLE_CXX11(convolution-inference-smoketest)
+   TARGET_INCLUDE_DIRECTORIES(convolution-inference-smoketest PRIVATE test)

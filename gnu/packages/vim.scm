@@ -73,7 +73,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.2689")
+    (version "8.2.3487")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -82,7 +82,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0l0hkr8cw7fdsfc5zzcxx3q1wmv9k3hrgalvffq0l69lviqdgh0p"))))
+               "1s09jvr1vv9zjk352vbfidfy5fidbf83kz2vk0kk6zv24j1yck24"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -98,6 +98,7 @@
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
                             "src/testdir/test_popupwin.vim"
+                            "src/testdir/test_shell.vim"
                             "src/testdir/test_system.vim"
                             "src/testdir/test_terminal.vim"
                             "src/testdir/test_terminal2.vim")
@@ -473,7 +474,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "3.3")
+    (version "3.4")
     (source
       (origin
         (method git-fetch)
@@ -483,13 +484,14 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1ybmy2dk9zsmd3kyyj40qn20gzgd16n5p77sjxp8bspx3zb7km5y"))))
+          "0vgyp0rabrxjy9mpdnf221vjk3q38pls7az884gvnjjzdly18xmp"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("ftdetect" "share/vim/vimfiles/")
+         ("ftplugin" "share/vim/vimfiles/")
          ("plugin" "share/vim/vimfiles/")
          ("syntax" "share/vim/vimfiles/"))))
     (home-page "https://github.com/tpope/vim-fugitive")
@@ -795,7 +797,7 @@ and support for fonts with ligatures.")
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.11")
+    (version "0.12")
     (source
       (origin
         (method url-fetch)
@@ -806,7 +808,7 @@ and support for fonts with ligatures.")
                               "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "0rqyd424y0g5b5basw2ybb60r9gar4f40d1xgzr3c2dsy4jpwvyh"))))
+          "1h5j4y704nciyzg3aaav8sl3r5h9mpwq8f28cj65nnxk6a7n3a9k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-build-timestamp")

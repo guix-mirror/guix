@@ -81,6 +81,70 @@ contains the archive keys used for that.")
     (license (list license:public-domain ; the keys
                    license:gpl2+)))) ; see debian/copyright
 
+(define-public debian-ports-archive-keyring
+  (package
+    (name "debian-ports-archive-keyring")
+    (version "2020.02.02")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://debian/pool/main/d"
+                            "/debian-ports-archive-keyring"
+                            "/debian-ports-archive-keyring_" version ".tar.xz"))
+        (sha256
+         (base32
+          "0746zfc3n4f77wlrd9a9a6r4mahz2cx5wdd9izg65vmn5qwamgza"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f              ; No test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)    ; No configure script.
+         (replace 'build
+           (lambda _
+             ;; gpg options derived from the debian/rules file.
+             (let ((gpg-options (list "--no-options" "--no-default-keyring"
+                                      "--no-auto-check-trustdb" "--no-keyring"
+                                      "--import-options" "import-export"
+                                      "--import")))
+               (with-output-to-file "debian-ports-archive-keyring.gpg"
+                 (lambda _
+                   (apply invoke "gpg"
+                          (append gpg-options (find-files "active-keys")))))
+               (with-output-to-file "debian-ports-archive-keyring-removed.gpg"
+                 (lambda _
+                   (apply invoke "gpg"
+                          (append gpg-options (find-files "removed-keys")))))
+               (mkdir "trusted.gpg")
+               (for-each
+                 (lambda (key)
+                   (with-output-to-file
+                     (string-append "trusted.gpg/" (basename key ".key") ".gpg")
+                     (lambda _
+                       (apply invoke "gpg" (append gpg-options (list key))))))
+                 (find-files "active-keys"))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apt (string-append out "/etc/apt/trusted.gpg.d/"))
+                    (key (string-append out "/share/keyrings/")))
+               (install-file "debian-ports-archive-keyring.gpg" key)
+               (install-file "debian-ports-archive-keyring-removed.gpg" key)
+               (for-each (lambda (file)
+                           (install-file file apt))
+                         (find-files "trusted.gpg" "\\.gpg$")))
+             #t)))))
+    (native-inputs
+     `(("gnupg" ,gnupg)))
+    (home-page "https://tracker.debian.org/pkg/debian-ports-archive-keyring")
+    (synopsis "GnuPG archive keys of the Debian ports archive")
+    (description
+     "The Debian ports-archive digitally signs its Release files.  This package
+contains the archive keys used for that.")
+    ;; "The keys in the keyrings don't fall under any copyright."
+    (license license:public-domain)))
+
 (define-public ubuntu-keyring
   (package
     (name "ubuntu-keyring")

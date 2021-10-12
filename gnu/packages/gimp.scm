@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -49,11 +52,13 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
 
@@ -168,7 +173,7 @@ of a larger interface.")
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.86")
+    (version "0.1.88")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -182,14 +187,16 @@ of a larger interface.")
                                         "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "1w68h81kqkqnziixrx21qs0gfv2z79651h19sxn226xdb58mjgqb"))))
+                "0fbh2ss1dy3sba4xjmfm4vxxjmx9a6rzgba9ycjygchbm957y3ag"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        (list "-Denable-gir=false"
              "-Dwith-docs=false")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (propagated-inputs
      ;; Propagated to satisfy ‘babl.pc’.
      `(("lcms" ,lcms)))
@@ -208,7 +215,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.30")
+    (version "0.4.32")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -222,7 +229,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "1pd8xkx70k0fsi1hrzrmaify7112wjmxzk0p6bi6js89yhn7h4n1"))))
+                "18cg566lplw7y7dn5v05pal24vxbfiic6097a40gnxdgkxmkr3k6"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -240,23 +247,37 @@ provided, as well as a framework to add new color models and data types.")
                 (string-append match "0")))
              (substitute* (find-files "tests" "^meson\\.build$")
                (("timeout ?: [0-9]+" match)
-                (string-append match "0")))
-             #t)))))
+                (string-append match "0"))))))))
     ;; These are propagated to satisfy 'gegl-0.4.pc'.
     (propagated-inputs
      `(("babl" ,babl)
        ("glib" ,glib)
        ("json-glib" ,json-glib)))
     (inputs
+     ;; All inputs except libjpeg and libpng are optional.
      `(("cairo" ,cairo)
-       ("pango" ,pango)
-       ("libpng" ,libpng)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gexiv2" ,gexiv2)
+       ("jasper" ,jasper)
        ("libjpeg" ,libjpeg-turbo)
-       ("libraw" ,libraw)))
+       ("libnsgif" ,libnsgif)
+       ("libpng" ,libpng)
+       ("libraw" ,libraw)
+       ("librsvg" ,librsvg)
+       ("libspiro" ,libspiro)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("maxflow" ,maxflow)
+       ("openexr" ,openexr)
+       ("pango" ,pango)
+       ("poppler" ,poppler)
+       ("sdl2" ,sdl2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")             ; for gtester
-       ("intltool" ,intltool)))
+     `(("glib" ,glib "bin")             ; for gtester
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (home-page "https://gegl.org")
     (synopsis "Graph based image processing framework")
     (description "GEGL (Generic Graphics Library) provides infrastructure to
@@ -269,7 +290,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.24")
+    (version "2.10.28")
     (source
      (origin
        (method url-fetch)
@@ -277,7 +298,7 @@ buffers.")
                            (version-major+minor version)
                            "/gimp-" version ".tar.bz2"))
        (sha256
-        (base32 "17lq6ns5qhspd171zqh76yf98xnn5n0hcl7hbhbx63cc6ribf6xx"))))
+        (base32 "09l80zxcnydbpm3nn64qw48klnvp0mgbaamazqkg1d8szwnc4kag"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
@@ -315,30 +336,36 @@ buffers.")
                    (format port "for dir in '~a'.split(':'):~%" pythonpath)
                    (format port "    site.addsitedir(dir)~%")))))))))
     (inputs
-     `(("babl" ,babl)
+     `(("atk" ,atk)
+       ("babl" ,babl)
+       ("gegl" ,gegl)
+       ("gexiv2" ,gexiv2)
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)
+       ("gtk+" ,gtk+-2)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libmypaint" ,libmypaint)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
-       ("libjpeg" ,libjpeg-turbo)
-       ("atk" ,atk)
-       ("gexiv2" ,gexiv2)
-       ("gtk+" ,gtk+-2)
-       ("libmypaint" ,libmypaint)
        ("mypaint-brushes" ,mypaint-brushes-1.3)
-       ("exif" ,libexif)                ; optional, EXIF + XMP support
-       ("lcms" ,lcms)                   ; optional, color management
-       ("librsvg" ,librsvg)             ; optional, SVG support
-       ("libxcursor" ,libxcursor)       ; optional, Mouse Cursor support
-       ("poppler" ,poppler)             ; optional, PDF support
-       ("poppler-data" ,poppler-data)
-       ("python" ,python-2)             ; optional, Python support
-       ("python2-pygtk" ,python2-pygtk) ; optional, Python support
-       ("gegl" ,gegl)))
+       ("exif" ,libexif)                  ; optional, EXIF + XMP support
+       ("ghostscript" ,ghostscript)       ; optional, EPS + PS support
+       ("lcms" ,lcms)                     ; optional, color management
+       ("libheif" ,libheif)               ; optional, HEIF + AVIF support
+       ("libmng" ,libmng)                 ; optional, MNG support
+       ("librsvg" ,librsvg)               ; optional, SVG support
+       ("libxcursor" ,libxcursor)         ; optional, Mouse Cursor support
+       ("openexr" ,openexr)               ; optional, EXR support
+       ("openjpeg" ,openjpeg)             ; optional, JPEG 2000 support
+       ("poppler" ,poppler)               ; optional, PDF support
+       ("poppler-data" ,poppler-data)     ; optional, PDF support
+       ("python" ,python-2)               ; optional, Python support
+       ("python2-pygtk" ,python2-pygtk))) ; optional, Python support
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-compile-resources and gdbus-codegen
-       ("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources and gdbus-codegen
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.gimp.org")
     (synopsis "GNU Image Manipulation Program")
     (description

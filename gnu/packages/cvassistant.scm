@@ -70,7 +70,7 @@
            (lambda _ (invoke "qmake"))))))
     (inputs
      `(("qtbase" ,qtbase-5)
-       ("quazip" ,quazip)
+       ("quazip" ,quazip-0)
        ("zlib" ,zlib)))
     (home-page "https://cvassistant.sourceforge.io/")
     (synopsis "Job application organizer")

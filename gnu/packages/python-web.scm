@@ -2808,7 +2808,6 @@ supports url redirection and retries, and also gzip and deflate decoding.")
                       (base32
                        "1x0slqrv6kixkbcdnxbglvjliwhc1payavxjvk8fvbqjrnasd4r3"))))))
 
-
 (define-public python2-urllib3
   (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
     (package/inherit
@@ -6228,7 +6227,7 @@ communicate with Microsoft Azure Storage services.")
     (home-page "https://github.com/scrapy/w3lib")
     (synopsis "Python library of web-related functions")
     (description
-     "This is a Python library of web-related functions, such as: remove comments,
-or tags from HTML snippets, extract base url from HTML snippets, translate entites
-on HTML strings, among other things.")
+     "This is a Python library of web-related functions, such as: remove
+comments, or tags from HTML snippets, extract base url from HTML snippets,
+translate entities on HTML strings, among other things.")
     (license license:bsd-3)))

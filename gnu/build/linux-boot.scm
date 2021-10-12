@@ -25,6 +25,7 @@
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -44,7 +45,6 @@
             make-static-device-nodes
             configure-qemu-networking
 
-            device-number
             boot-system))
 
 ;;; Commentary:
@@ -134,14 +134,9 @@ succeeds.  Return nothing otherwise.  The kernel logs any details to dmesg."
            ;; is found on the command line; our canonicalize-device-spec gives
            ;; up after 20 seconds.  We could emulate the former by looping…
            (device (canonicalize-device-spec spec))
-           (rdev (stat:rdev (stat device)))
-           ;; For backwards compatibility, device numbering is a baroque affair.
-           ;; This is the full 64-bit scheme used by glibc's <sys/sysmacros.h>.
-           (major (logior (ash (logand #x00000000000fff00 rdev) -8)
-                          (ash (logand #xfffff00000000000 rdev) -32)))
-           (minor (logior      (logand #x00000000000000ff rdev)
-                          (ash (logand #x00000ffffff00000 rdev) -12))))
-      (format #f "~a:~a" major minor)))
+           (rdev (stat:rdev (stat device))))
+      (let-values (((major minor) (device-number->major+minor rdev)))
+        (format #f "~a:~a" major minor))))
 
   ;; Write the resume DEVICE to this magic file, using the MAJOR:MINOR device
   ;; numbers if possible.  The kernel will immediately try to resume from it.
@@ -392,11 +387,6 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 
     (logand (network-interface-flags sock interface) IFF_UP)))
 
-(define (device-number major minor)
-  "Return the device number for the device with MAJOR and MINOR, for use as
-the last argument of `mknod'."
-  (+ (* major 256) minor))
-
 (define (pidof program)
   "Return the PID of the first presumed instance of PROGRAM."
   (let ((program (basename program)))
@@ -408,12 +398,17 @@ the last argument of `mknod'."
 
 (define* (mount-root-file-system root type
                                  #:key volatile-root? (flags 0) options
-                                 check?)
+                                 check? skip-check-if-clean? repair)
   "Mount the root file system of type TYPE at device ROOT. If VOLATILE-ROOT? is
 true, mount ROOT read-only and make it an overlay with a writable tmpfs using
 the kernel built-in overlayfs. FLAGS and OPTIONS indicates the options to use
 to mount ROOT, and behave the same as for the `mount' procedure.
-If CHECK? is true, first run ROOT's fsck tool (if any) non-interactively."
+
+If CHECK? is true, first run ROOT's fsck tool (if any) non-interactively.
+If SKIP-CHECK-IF-CLEAN? is true, ask fsck to return immediately if ROOT is
+marked as clean.  If REPAIR is true, fsck may write to ROOT to perform repairs.
+If REPAIR is also 'PREEN, ask fsck to perform only those repairs that it
+considers safe."
 
   (if volatile-root?
       (begin
@@ -435,7 +430,7 @@ If CHECK? is true, first run ROOT's fsck tool (if any) non-interactively."
                "lowerdir=/real-root,upperdir=/rw-root/upper,workdir=/rw-root/work"))
       (begin
         (when check?
-          (check-file-system root type))
+          (check-file-system root type (not skip-check-if-clean?) repair))
         (mount root "/root" type flags options)))
 
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
@@ -536,21 +531,36 @@ upon error."
       (mount-essential-file-systems)
       (let* ((args    (linux-command-line))
              (to-load (find-long-option "--load" args))
-             (root-fs (find root-mount-point? mounts))
-             (root-fs-type (or (and=> root-fs file-system-type)
-                               "ext4"))
-             (root-fs-device (and=> root-fs file-system-device))
-             (root-fs-flags (mount-flags->bit-mask
-                             (or (and=> root-fs file-system-flags)
-                                 '())))
-             (root-options (if root-fs
-                               (file-system-options root-fs)
-                               #f))
-             ;; --root takes precedence over the 'device' field of the root
-             ;; <file-system> record.
-             (root-device (or (and=> (find-long-option "--root" args)
-                                     device-string->file-system-device)
-                              root-fs-device)))
+             ;; If present, ‘--root’ on the kernel command line takes precedence
+             ;; over the ‘device’ field of the root <file-system> record.
+             (root-device (and=> (find-long-option "--root" args)
+                                 device-string->file-system-device))
+             (root-fs (or (find root-mount-point? mounts)
+                          ;; Fall back to fictitious defaults.
+                          (file-system (device (or root-device "/dev/root"))
+                                       (mount-point "/")
+                                       (type "ext4"))))
+             (fsck.mode (find-long-option "fsck.mode" args)))
+
+        (define (check? fs)
+          (match fsck.mode
+            ("skip"  #f)
+            ("force" #t)
+            (_ (file-system-check? fs)))) ; assume "auto"
+
+        (define (skip-check-if-clean? fs)
+          (match fsck.mode
+            ("force" #f)
+            (_ (file-system-skip-check-if-clean? fs))))
+
+        (define (repair fs)
+          (let ((arg (find-long-option "fsck.repair" args)))
+            (if arg
+                (match arg
+                  ("no"  #f)
+                  ("yes" #t)
+                  (_ 'preen))
+                (file-system-repair fs))))
 
         (when (member "--repl" args)
           (start-repl))
@@ -606,17 +616,24 @@ upon error."
 
         (if root-device
             (mount-root-file-system (canonicalize-device-spec root-device)
-                                    root-fs-type
+                                    (file-system-type root-fs)
                                     #:volatile-root? volatile-root?
-                                    #:flags root-fs-flags
-                                    #:options root-options
-                                    #:check? (if root-fs
-                                                 (file-system-check? root-fs)
-                                                 #t))
+                                    #:flags (mount-flags->bit-mask
+                                             (file-system-flags root-fs))
+                                    #:options (file-system-options root-fs)
+                                    #:check? (check? root-fs)
+                                    #:skip-check-if-clean?
+                                    (skip-check-if-clean? root-fs)
+                                    #:repair (repair root-fs))
             (mount "none" "/root" "tmpfs"))
 
-        ;; Mount the specified file systems.
-        (for-each mount-file-system
+        ;; Mount the specified non-root file systems.
+        (for-each (lambda (fs)
+                    (mount-file-system fs
+                                       #:check? (check? fs)
+                                       #:skip-check-if-clean?
+                                       (skip-check-if-clean? fs)
+                                       #:repair (repair fs)))
                   (remove root-mount-point? mounts))
 
         (setenv "EXT2FS_NO_MTAB_OK" #f)

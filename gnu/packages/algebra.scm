@@ -343,7 +343,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.7.0-31")
+    (version "1.7.0-37")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "19vjyijlm3hb758h6nk70k41zw9wrbg6vwfx4r4rgvrb1myy5kpl"))))
+        (base32 "1mzqf7r40ppmzixf4s6sjk76y0wpcf6xp7hklzrn2l1910ld61pz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -431,13 +431,13 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.6.3")
+   (version "2.8.1")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "http://flintlib.org/flint-" version ".tar.gz"))
       (sha256
-       (base32 "1qrf6hzbbmg7mhkhbb0bab8z2xpdnba5cj4kmmf72lzs0457a6nf"))))
+       (base32 "0zj2zgn3cbb08pxhfq38i62pgjfbb6938l70am7dnixqgixdmzgd"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
@@ -485,7 +485,7 @@ fast arithmetic.")
 (define-public arb
   (package
     (name "arb")
-    (version "2.18.1")
+    (version "2.21.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -494,7 +494,7 @@ fast arithmetic.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15fx3dcbzgwddw9p1nysmx0dbh058afv5m8cj5pdjkcmcl7kw7z9"))))
+                "0c7q8bbm2izh0j0342v0dkgg1lgd6f0fn3i9x9x80brjjhg65q7b"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("flint" ,flint)))               ; flint.h is included by arf.h
@@ -609,7 +609,7 @@ matrices, and polynomials over the integers and over finite fields.")
 (define-public singular
   (package
    (name "singular")
-   (version "4.1.3p2")
+   (version "4.2.1")
    (source
     (origin
       (method url-fetch)
@@ -618,12 +618,13 @@ matrices, and polynomials over the integers and over finite fields.")
                       "Singular/SOURCES/"
                       (string-join
                        (string-split
-                        (string-trim-right version #\p
-                                           0 (1- (string-length version)))
+                        (let ((index (string-index version #\p)))
+                          (if index (string-take version index)
+                                    version))
                         #\.) "-")
                       "/singular-" version ".tar.gz"))
              (sha256 (base32
-                      "1524yrni7gh0hir5ckridq671q5s6avfjdsdyahj51kzdl3wcypf"))))
+                      "13gy1gdng8zijwlr1fn5sixw53z0zf9czzlg0vh1dcc59zw6v998"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("doxygen" ,doxygen)

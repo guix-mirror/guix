@@ -18,6 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix cpio)
+  #:use-module ((guix build syscalls) #:select (device-number
+                                                device-number->major+minor))
   #:use-module ((guix build utils) #:select (dump-port))
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -129,8 +131,8 @@
                            (nlink 1) (mtime 0) (size 0)
                            (dev 0) (rdev 0) (name-size 0))
   "Return a new cpio file header."
-  (let-values (((major minor)   (device->major+minor dev))
-               ((rmajor rminor) (device->major+minor rdev)))
+  (let-values (((major minor)   (device-number->major+minor dev))
+               ((rmajor rminor) (device-number->major+minor rdev)))
     (%make-cpio-header MAGIC
                        inode mode uid gid
                        nlink mtime
@@ -153,21 +155,6 @@ denotes, similar to 'stat:type'."
           ((= C_ISCHR fmt) 'char-special)
           (else
            (error "unsupported file type" mode)))))
-
-(define (device-number major minor)     ; see glibc's <sys/sysmacros.h>
-  "Return the device number for the device with MAJOR and MINOR, for use as
-the last argument of `mknod'."
-  (logior (ash (logand #x00000fff major) 8)
-          (ash (logand #xfffff000 major) 32)
-               (logand #x000000ff minor)
-          (ash (logand #xffffff00 minor) 12)))
-
-(define (device->major+minor device)     ; see glibc's <sys/sysmacros.h>
-  "Return two values: the major and minor device numbers that make up DEVICE."
-  (values (logior (ash (logand #x00000000000fff00 device) -8)
-                  (ash (logand #xfffff00000000000 device) -32))
-          (logior      (logand #x00000000000000ff device)
-                  (ash (logand #x00000ffffff00000 device) -12))))
 
 (define* (file->cpio-header file #:optional (file-name file)
                             #:key (stat lstat))

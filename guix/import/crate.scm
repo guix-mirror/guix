@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -79,7 +79,10 @@
   (number        crate-version-number "num")      ;string
   (download-path crate-version-download-path "dl_path") ;string
   (readme-path   crate-version-readme-path "readme_path") ;string
-  (license       crate-version-license "license") ;string
+  (license       crate-version-license "license"  ;string | #f
+                 (match-lambda
+                   ('null #f)
+                   ((? string? str) str)))
   (links         crate-version-links))            ;alist
 
 ;; Crate dependency.  Each dependency (each edge in the graph) is annotated as
@@ -198,6 +201,7 @@ and LICENSE."
                    (description ,(beautify-description description))
                    (license ,(match license
                                (() #f)
+                               (#f #f)
                                ((license) license)
                                (_ `(list ,@license)))))))
          (close-port port)

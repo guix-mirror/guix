@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,6 +159,7 @@
                              (phases '%standard-phases)
                              (outputs '("out"))
                              (make-flags ''())
+                             (parallel-build? #t)
                              (system (%current-system))
                              (source-directory ".")
                              (guile #f)
@@ -184,6 +186,7 @@
                               #:tests? #$tests?
                               #:outputs #$(outputs->gexp outputs)
                               #:make-flags #$make-flags
+                              #:parallel-build? #$parallel-build?
                               #:inputs #$(input-tuples->gexp inputs)))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
@@ -201,6 +204,7 @@
           (guile #f)
           (outputs '("out"))
           (make-flags ''())
+          (parallel-build? #t)
           (search-paths '())
           (native-search-paths '())
           (tests? #f)

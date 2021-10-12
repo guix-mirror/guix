@@ -1,0 +1,48 @@
+From c641825c64e42627a2c9cac969b371ed532e0b57 Mon Sep 17 00:00:00 2001
+From: Ryan Sundberg <ryan@arctype.co>
+Date: Mon, 4 Oct 2021 20:12:25 -0700
+Subject: [PATCH] Zend/tests/bug74093.phpt: Fix failing test case
+
+This test case fails (on non-Windows hosts, where it is enabled) due
+to mismatching output in the error log language. This fixes the
+expectation, and also rewrites the test procedure in a more stable
+fashion.
+
+The objective of the test case is to run a program that exceeds
+the max_execution_time and verify that the process was aborted. The
+previous implementation tested this using a loop on array_intersect with
+large enough inputs to "probably" take enough time to trigger
+max_execution_time to abort it. With faster CPUs, over time this test
+can become flaky. Instead we simply spin a loop until enough
+wall clock time has passed to check our assertion.
+---
+ Zend/tests/bug74093.phpt | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Zend/tests/bug74093.phpt b/Zend/tests/bug74093.phpt
+index 7f20285805..32eb445ddc 100644
+--- a/Zend/tests/bug74093.phpt
++++ b/Zend/tests/bug74093.phpt
+@@ -1,5 +1,5 @@
+ --TEST--
+-Bug #74093 (Maximum execution time of n+2 seconds exceed not written in error_log)
++Bug #74093 (Maximum execution time exceeded not written in error_log)
+ --SKIPIF--
+ <?php
+ if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
+@@ -12,9 +12,9 @@ max_execution_time=1
+ hard_timeout=1
+ --FILE--
+ <?php
+-$a1 = range(1, 1000000);
+-$a2 = range(100000, 1999999);
+-array_intersect($a1, $a2);
++$start = time();
++while (time() - $start < 5);
++die("Failed to interrupt execution");
+ ?>
+ --EXPECTF--
+-Fatal error: Maximum execution time of 1+1 seconds exceeded %s
++Fatal error: Maximum execution time of 1 second exceeded in %s
+--
+2.31.1

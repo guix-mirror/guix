@@ -21,7 +21,7 @@
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -6137,7 +6137,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "368")
+    (version "369")
     (source
      (origin
        (method url-fetch)
@@ -6147,7 +6147,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
              (string-append "ftp://ftp.invisible-island.net/xterm/"
                             "xterm-" version ".tgz")))
        (sha256
-        (base32 "04p7db3j3n5dk1vvlas4231rh6jgr4qi6ppvpbq9xd5n62cidx9g"))))
+        (base32 "09jffsd46qsg6vfxlljds9pljwx9h4kh06kl94hkv2b4s146mvbi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6343,14 +6343,14 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.2.1")
+    (version "4.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0gqdcw5cfk919jk8g0g4xjxbsvr5j9gskn8q3cmrz388pvfvm8x7"))
+        (base32 "0nky9j07zq8d5ifx568dima7a0jgs8kwhcqbg8p6gsxlgq5zdw96"))
        (patches (search-patches "xpra-4.2-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
@@ -6710,7 +6710,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.203")
+    (version "1.205")
     (source
      (origin
        (method git-fetch)
@@ -6718,7 +6718,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "1bavb8h4j1za2h7mxr109imicjmh7fp4099lvzfgavhjr3l3vsab"))
+        (base32 "0sf560s14firyvzpgww79ydzc6p3jvjkbvsi8zsr5m3hr833w0ba"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

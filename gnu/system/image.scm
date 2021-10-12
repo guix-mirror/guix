@@ -31,6 +31,7 @@
   #:use-module (gnu bootloader)
   #:use-module (gnu bootloader grub)
   #:use-module (gnu image)
+  #:use-module (gnu platform)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu system)
@@ -66,16 +67,14 @@
 
             efi-disk-image
             iso9660-image
-            arm32-disk-image
-            arm64-disk-image
+            raw-with-offset-disk-image
 
             image-with-os
             efi-raw-image-type
             qcow2-image-type
             iso-image-type
             uncompressed-iso-image-type
-            arm32-image-type
-            arm64-image-type
+            raw-with-offset-image-type
 
             image-with-label
             system-image
@@ -128,10 +127,9 @@
            (label "GUIX_IMAGE")
            (flags '(boot)))))))
 
-(define* (arm32-disk-image #:optional (offset root-offset))
+(define* (raw-with-offset-disk-image #:optional (offset root-offset))
   (image
    (format 'disk-image)
-   (target "arm-linux-gnueabihf")
    (partitions
     (list (partition
            (inherit root-partition)
@@ -139,11 +137,6 @@
    ;; FIXME: Deleting and creating "/var/run" and "/tmp" on the overlayfs
    ;; fails.
    (volatile-root? #f)))
-
-(define* (arm64-disk-image #:optional (offset root-offset))
-  (image
-   (inherit (arm32-disk-image offset))
-   (target "aarch64-linux-gnu")))
 
 
 ;;;
@@ -186,15 +179,10 @@ set to the given OS."
                   (compression? #f))
                  <>))))
 
-(define arm32-image-type
+(define raw-with-offset-image-type
   (image-type
-   (name 'arm32-raw)
-   (constructor (cut image-with-os (arm32-disk-image) <>))))
-
-(define arm64-image-type
-  (image-type
-   (name 'arm64-raw)
-   (constructor (cut image-with-os (arm64-disk-image) <>))))
+   (name 'raw-with-offset)
+   (constructor (cut image-with-os (raw-with-offset-disk-image) <>))))
 
 
 ;;
@@ -615,7 +603,30 @@ it can be used for bootloading."
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
   (define substitutable? (image-substitutable? image))
-  (define target (image-target image))
+  (define platform (image-platform image))
+
+  ;; The image platform definition may provide the appropriate "system"
+  ;; architecture for the image.  If we are already running on this system,
+  ;; the image can be built natively.  If we are running on a different
+  ;; system, then we need to cross-compile, using the "target" provided by the
+  ;; image definition.
+  (define system (and=> platform platform-system))
+  (define target (cond
+                  ;; No defined platform, let's use the user defined
+                  ;; system/target parameters.
+                  ((not platform)
+                   (%current-target-system))
+                  ;; The current system is the same as the platform system, no
+                  ;; need to cross-compile.
+                  ((and system
+                        (string=? system (%current-system)))
+                   #f)
+                  ;; If there is a user defined target let's override the
+                  ;; platform target. Otherwise, we can cross-compile to the
+                  ;; platform target.
+                  (else
+                   (or (%current-target-system)
+                       (and=> platform platform-target)))))
 
   (with-parameters ((%current-target-system target))
     (let* ((os (operating-system-for-image image))

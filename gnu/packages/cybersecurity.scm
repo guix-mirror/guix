@@ -35,13 +35,13 @@
 (define-public ropgadget
   (package
     (name "ropgadget")
-    (version "6.5")
+    (version "6.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ROPGadget" version))
        (sha256
-        (base32 "0p4h8xi27xcicz8sq6xi40hbj99mcsnnla6ar2r17vqapbr5c3jc"))))
+        (base32 "08ms7x4af07970ij9899l75sghnxsa7xyx73gkn6gv0l05p1hqfw"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-capstone" ,python-capstone)))

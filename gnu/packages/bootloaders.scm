@@ -616,6 +616,7 @@ def test_ctrl_c"))
                            "tools/mkenvimage"
                            "tools/dumpimage"
                            "tools/mkimage"
+                           "tools/kwboot"
                            "tools/proftool"
                            "tools/fdtgrep"
                            "tools/env/fw_printenv"
@@ -1070,14 +1071,14 @@ tools, and more.")
 (define-public os-prober
   (package
     (name "os-prober")
-    (version "1.78")
+    (version "1.79")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://debian/pool/main/o/os-prober/os-prober_"
                            version ".tar.xz"))
        (sha256
-        (base32 "1sahk72blsrlirly4xlwa8jfxrpwagyn7b81p92q2s9m218rz43f"))))
+        (base32 "1vhhk0bl2j4910513gn5h3z8nsaavyv3c8764bim2klc0xyk3rmb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)

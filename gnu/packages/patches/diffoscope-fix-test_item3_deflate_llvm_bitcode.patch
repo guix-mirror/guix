@@ -1,0 +1,28 @@
+From b7eeac09eb068083bdee1a3aa062d1e52a2fa61a Mon Sep 17 00:00:00 2001
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Mon, 4 Oct 2021 21:03:43 +0200
+Subject: [PATCH] gnu: diffoscope: Fix test_item3_deflate_llvm_bitcode.
+
+Taken verbatim from Nixpkgs[0].
+
+[0]: https://github.com/NixOS/nixpkgs/blob/589e03f109092a3ba97781fd0533110bf78a3f97/pkgs/tools/misc/diffoscope/fix-tests.patch
+---
+ tests/comparators/test_rlib.py | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/tests/comparators/test_rlib.py b/tests/comparators/test_rlib.py
+index 8d201ab..05960aa 100644
+--- a/tests/comparators/test_rlib.py
++++ b/tests/comparators/test_rlib.py
+@@ -81,9 +81,6 @@ def rlib_dis_expected_diff():
+     if actual_ver >= "7.0":
+         diff_file = "rlib_llvm_dis_expected_diff_7"
+ 
+-    if actual_ver >= "10.0":
+-        diff_file = "rlib_llvm_dis_expected_diff_10"
+-
+     return get_data(diff_file)
+ 
+ 
+--
+2.33.0

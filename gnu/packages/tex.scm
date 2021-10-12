@@ -3500,7 +3500,7 @@ an independent schedule.")
     (description
      "This bundle holds prototype implementations of concepts for a LaTeX
 designer interface, to be used with the experimental LaTeX kernel as
-programming tools and kernel sup­port.  Packages provided in this release are:
+programming tools and kernel support.  Packages provided in this release are:
 
 @enumerate
 @item l3keys2e, which makes the facilities of the kernel module l3keys

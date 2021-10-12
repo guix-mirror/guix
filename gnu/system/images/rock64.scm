@@ -21,6 +21,7 @@
   #:use-module (gnu bootloader u-boot)
   #:use-module (gnu image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu platforms arm)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services networking)
@@ -53,12 +54,15 @@
 (define rock64-image-type
   (image-type
    (name 'rock64-raw)
-   (constructor (cut image-with-os (arm64-disk-image (expt 2 24)) <>))))
+   (constructor (cut image-with-os
+                     (raw-with-offset-disk-image (expt 2 24))
+                     <>))))
 
 (define rock64-barebones-raw-image
   (image
    (inherit
-    (os->image rock64-barebones-os #:type rock64-image-type))
+    (os+platform->image rock64-barebones-os aarch64-linux
+                        #:type rock64-image-type))
    (name 'rock64-barebones-raw-image)))
 
 rock64-barebones-raw-image

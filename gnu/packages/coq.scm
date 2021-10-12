@@ -79,6 +79,7 @@
     (arguments
      `(#:package "coq"
        #:test-target "test-suite"))
+    (properties '((upstream-name . "coq"))) ; for inherited packages
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description

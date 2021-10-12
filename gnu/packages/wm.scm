@@ -708,13 +708,16 @@ desktop environment.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-data-default"          ,ghc-data-default)
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-semigroups"            ,ghc-semigroups)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
        ("ghc-x11"                   ,ghc-x11)))
     (arguments
-     `(#:phases
+     `(#:cabal-revision
+       ("1" "0yqh96qqphllr0zyz5j93cij5w2qvf39xxnrb52pz0qz3pywz9wd")
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'install 'install-xsession
@@ -745,14 +748,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.34")
+    (version "0.39")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://hackage/package/xmobar/"
+              (uri (string-append "https://hackage.haskell.org/package/xmobar/"
                                   "xmobar-" version ".tar.gz"))
               (sha256
                (base32
-                "0x09xbz7y9ay0046j1xpr9jjk5jqivqi06vm3q6mhcrgc4y922rx"))))
+                "1k1n3ff0ikdmfq0mi8r2vpqg1iq6hsw1drvxps6k98rvvn87pws6"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
@@ -767,6 +770,7 @@ tiled on several screens.")
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-iwlib" ,ghc-iwlib)
        ("ghc-libmpd" ,ghc-libmpd)
+       ("ghc-netlink" ,ghc-netlink)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-parsec-numbers" ,ghc-parsec-numbers)
        ("ghc-regex-compat" ,ghc-regex-compat)
@@ -828,6 +832,9 @@ particular, it displays commonly-chosen options before uncommon ones.")
        (sha256
         (base32 "1pddgkvnbww28wykncc7j0yb0lv15bk7xnnhdcbrwkxzw66w6wmd"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0vimkby2gq6sgzxzbvz67caba609xqlv2ii2gi8a1cjrnn6ib011")))
     (propagated-inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-random" ,ghc-random)
@@ -1122,14 +1129,14 @@ dynamic and extensible using the Lua programming language.")
 (define-public menumaker
   (package
     (name "menumaker")
-    (version "0.99.12")
+    (version "0.99.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/menumaker/"
                            "menumaker-" version ".tar.gz"))
        (sha256
-        (base32 "034v5204bsgkzzk6zfa5ia63q95gln47f7hwf96yvad5hrhmd8z3"))))
+        (base32 "0hbn8bid43725njqcfklvan3n4hwpfx8nq8xkkdwkmpd37kfq594"))))
     (build-system gnu-build-system)
     (inputs
      `(("python" ,python)))
@@ -1609,6 +1616,38 @@ modules for building a Wayland compositor.")
     (synopsis "Screen locking utility for Wayland compositors")
     (description "Swaylock is a screen locking utility for Wayland compositors.")
     (license license:expat))) ; MIT license
+
+(define-public swaylock-effects
+  ;; Latest release is from November 2020, but doesn't support disabling SSE.
+  (let ((commit "5cb9579faaf5662b111f5722311b701eff1c1d00")
+        (revision "1"))
+    (package
+      (inherit swaylock)
+      (name "swaylock-effects")
+      (version (git-version "1.6-3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mortie/swaylock-effects")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "036dkhfqgk7g9vbr5pxgrs66h5fz0rwdsc67i1w51aa9v01r35ca"))))
+      (arguments
+       `(#:configure-flags '("-Dsse=false")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-meson
+             (lambda _
+               (substitute* "meson.build"
+                 (("'-mtune=native',") "")))))))
+      (synopsis "Screen locking utility for Wayland compositors with effects")
+      (description "@code{Swaylock-effects} is a fork of swaylock with additional
+features, such as the ability to take a screenshot as the background image,
+display a clock or apply image manipulation techniques to the background image.")
+      (home-page "https://github.com/mortie/swaylock-effects"))))
 
 (define-public swaybg
   (package

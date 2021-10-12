@@ -414,7 +414,7 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "2.4.0")
+    (version "2.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -423,7 +423,7 @@ internet.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0syl2ywddgqz29h43d6rc7waf3hp2yc14yhnrvdsja2bg8wrv6sb"))))
+                "1gswpjm4jacfxmgglbf8hxi3yzsag4drk4q943p0wkmv21zj8l78"))))
     (native-inputs
      `(("psmisc" ,psmisc)               ;some tests require 'killall'
        ("procps" ,procps)))
@@ -637,7 +637,7 @@ address of one of the participants.")
     (inputs
      `(("avahi" ,avahi)
        ("boost" ,boost)
-       ("libsndfile" ,libsndfile)
+       ("libsndfile" ,libsndfile/fixed)
        ("libxi" ,libxi)
        ("mesa" ,mesa) ; avoid bundled
        ("openssl" ,openssl)

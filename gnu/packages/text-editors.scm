@@ -281,10 +281,10 @@ Rust.")
     (inputs
      `(("clang" ,clang)))
     (home-page "https://github.com/justinbarclay/parinfer-rust")
-    (synopsis "Infer parantheses for Clojure, Lisp and Scheme")
+    (synopsis "Infer parentheses for Clojure, Lisp and Scheme")
     (description
      "Parinfer is a plugin for Kakoune, Vim, Neovim and Emacs that infers
-paretheses and indentation.  This library can be called from other editors that
+parentheses and indentation.  This library can be called from other editors that
 can load dynamic libraries.")
     (license license:expat)))
 
@@ -971,14 +971,14 @@ and multiple fonts.")
 (define-public geany
   (package
     (name "geany")
-    (version "1.37.1")
+    (version "1.38")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.geany.org/"
                            "geany-" version ".tar.bz2"))
        (sha256
-        (base32 "060sachn33xpx3a609f09y97qq5ky17gvv686zbvrn618ij7bi8q"))))
+        (base32 "0inmmb9wra2w99pfv6p64d66s2zrhafc8drhwmga7gj89mp1gzxb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

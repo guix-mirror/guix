@@ -21,6 +21,7 @@
   #:use-module (gnu bootloader u-boot)
   #:use-module (gnu image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu platforms arm)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu system)
@@ -58,13 +59,14 @@
   (image-type
    (name 'pinebook-pro-raw)
    (constructor (cut image-with-os
-                     (arm64-disk-image (* 9 (expt 2 20))) ;9MiB
+                     (raw-with-offset-disk-image (* 9 (expt 2 20))) ;9MiB
                      <>))))
 
 (define pinebook-pro-barebones-raw-image
   (image
    (inherit
-    (os->image pinebook-pro-barebones-os #:type pinebook-pro-image-type))
+    (os+platform->image pinebook-pro-barebones-os aarch64-linux
+                        #:type pinebook-pro-image-type))
    (name 'pinebook-pro-barebones-raw-image)))
 
 ;; Return the default image.

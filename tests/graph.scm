@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +93,25 @@ edges."
                      (map edge->tuple
                           (list p3 p3 p2)
                           (list p2 p1 p1))))))))
+
+(test-assert "package DAG, limited depth"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (let* ((p1 (dummy-package "p1"))
+           (p2 (dummy-package "p2" (inputs `(("p1" ,p1)))))
+           (p3 (dummy-package "p3" (inputs `(("p1" ,p1)))))
+           (p4 (dummy-package "p4" (inputs `(("p2" ,p2) ("p3" ,p3))))))
+      (run-with-store %store
+        (export-graph (list p4) 'port
+                      #:max-depth 1
+                      #:node-type %package-node-type
+                      #:backend backend))
+      ;; We should see nothing more than these 3 packages.
+      (let-values (((nodes edges) (nodes+edges)))
+        (and (equal? nodes (map package->tuple (list p4 p2 p3)))
+             (equal? edges
+                     (map edge->tuple
+                          (list p4 p4)
+                          (list p2 p3))))))))
 
 (test-assert "reverse package DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))

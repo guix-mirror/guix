@@ -151,21 +151,21 @@ management, extensions such as advertisement blocker and colorful tabs.")
 (define-public links
   (package
     (name "links")
-    (version "2.23")
+    (version "2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   "links-" version ".tar.bz2"))
               (sha256
                (base32
-                "0idcwryfbf6ds5x2fx1k21m459qz5mrz3hw4a6ziiz91yl1d4q36"))))
+                "0b6x97xi8i4pag2scba02c0h95cm3sia58q99zppk0lfd448bmrd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The tarball uses a very old version of autconf. It doesn't
+             ;; The tarball uses a very old version of autoconf. It doesn't
              ;; understand extra flags like `--enable-fast-install', so
              ;; we need to invoke it with just what it understands.
              (let ((out (assoc-ref outputs "out")))
@@ -176,8 +176,7 @@ management, extensions such as advertisement blocker and colorful tabs.")
                (setenv "CONFIG_SHELL" (which "bash"))
                (invoke "./configure"
                        (string-append "--prefix=" out)
-                       "--enable-graphics")
-               #t))))))
+                       "--enable-graphics")))))))
     (native-inputs `(("linux-libre-headers" ,linux-libre-headers)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("gpm" ,gpm)
@@ -576,18 +575,16 @@ driven and does not detract you from your daily work.")
 (define-public nyxt
   (package
     (name "nyxt")
-    (version "2.1.1")
+    (version "2.2.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
-             ;; (url "https://source.atlas.engineer/public/nyxt")
              (url "https://github.com/atlas-engineer/nyxt")
              (commit version)))
        (sha256
         (base32
-         "0kzm05swhyb197cjfd3iglf60b997sx7v95yxzyq483jxqbcxm0r"))
+         "0l8x32fsvk2gbymcda1yc0ggnsymjazqd58vmi05ifiiv7jwxyjw"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -636,31 +633,36 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-base64" ,sbcl-cl-base64)
        ("cl-calispel" ,sbcl-calispel)
        ("cl-containers" ,sbcl-cl-containers)
        ("cl-css" ,sbcl-cl-css)
        ("cl-custom-hash-table" ,sbcl-custom-hash-table)
        ("cl-html-diff" ,sbcl-cl-html-diff)
        ("cl-json" ,sbcl-cl-json)
-       ("cl-markup" ,sbcl-cl-markup)
        ("cl-ppcre" ,sbcl-cl-ppcre)
        ("cl-prevalence" ,sbcl-cl-prevalence)
+       ("cl-qrencode" ,sbcl-cl-qrencode)
        ("closer-mop" ,sbcl-closer-mop)
        ("cluffer" ,sbcl-cluffer)
        ("dexador" ,sbcl-dexador)
        ("enchant" ,sbcl-enchant)
+       ("flexi-streams" ,cl-flexi-streams)
        ("fset" ,sbcl-fset)
        ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
        ("iolib" ,sbcl-iolib)
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)
+       ("lparallel" ,sbcl-lparallel)
        ("mk-string-metrics" ,sbcl-mk-string-metrics)
        ("moptilities" ,sbcl-moptilities)
        ("named-readtables" ,sbcl-named-readtables)
        ("parenscript" ,sbcl-parenscript)
        ("plump" ,sbcl-plump)
+       ("clss" ,sbcl-clss)
        ("quri" ,sbcl-quri)
        ("serapeum" ,sbcl-serapeum)
+       ("spinneret" ,sbcl-spinneret)
        ("str" ,sbcl-cl-str)
        ("swank" ,sbcl-slime-swank)
        ("trivia" ,sbcl-trivia)
@@ -882,14 +884,14 @@ interface.")
 (define-public telescope
   (package
     (name "telescope")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/omar-polo/telescope/releases/download/"
                            version "/telescope-" version ".tar.gz"))
        (sha256
-        (base32 "1fgv7gg2lwrjcihq6mkraqm10a6a7h430ikrjpcwfcpv1gvj8ckz"))))
+        (base32 "0phvwhxvm63y68cyvzw5dk60yjzfv6bpxf5c4bl08daj3ia48fbk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -909,6 +911,8 @@ interface.")
   (package
     (name "av-98")
     (version "1.0.1")
+    (properties
+     '((upstream-name . "AV-98")))
     (source
      (origin
        (method url-fetch)

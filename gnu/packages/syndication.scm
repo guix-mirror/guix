@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
@@ -67,7 +67,7 @@
 (define-public cawbird
   (package
     (name "cawbird")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -76,7 +76,7 @@
              (commit (string-append "v"version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lmrgcj1ky1vhzynl36k6ba3ws089x4qdrnkjk3lbr334kicx9na"))))
+        (base32 "17575cp5qcgsqf37y3xqg3vr6l2j8bbbkmy2c1l185rxghfacida"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -110,8 +110,7 @@
                (setenv "XDG_DATA_DIRS"
                        (string-append (getenv "XDG_DATA_DIRS")
                                       ":" (assoc-ref outputs "out") "/share"))
-               (invoke "meson" "test"))
-             #t))
+               (invoke "meson" "test"))))
          (add-after 'glib-or-gtk-wrap 'wrap-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -120,8 +119,7 @@
                     (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                (wrap-program (string-append bin "cawbird")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-             #t)))))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -220,14 +218,14 @@ cards.")
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.24")
+    (version "2.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://newsboat.org/releases/" version
                            "/newsboat-" version ".tar.xz"))
        (sha256
-        (base32 "1yvggkb29qykxlvrysb6yyf5piwsvzv0zla8jn2ihmm2rj40chk2"))))
+        (base32 "0zh1lqgsfhz8cmn6ajvcrfbn9iq2ls3adi2g17syzj8xiwvspaj1"))))
     (build-system cargo-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -250,25 +248,25 @@ cards.")
        #:install-source? #f
        #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bitflags" ,rust-bitflags-1.3)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-curl-sys" ,rust-curl-sys-0.4)
         ("rust-cxx" ,rust-cxx-1)
+        ("rust-fastrand" ,rust-fastrand-1)
         ("rust-gettext-rs" ,rust-gettext-rs-0.7)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-natord" ,rust-natord-1)
-        ("rust-nom" ,rust-nom-6)
+        ("rust-nom" ,rust-nom-7)
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
-        ("rust-rand" ,rust-rand-0.8)
         ("rust-url" ,rust-url-2)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-xdg" ,rust-xdg-2))
        #:cargo-development-inputs
        (("rust-cxx-build" ,rust-cxx-build-1)
         ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-proptest" ,rust-proptest-1)
         ("rust-section-testing" ,rust-section-testing-0.0))
        #:phases
        (modify-phases %standard-phases

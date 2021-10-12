@@ -1,0 +1,33 @@
+diff -Naur pigx_chipseq-0.0.53/configure.ac pigx_chipseq-0.0.53.patched/configure.ac
+--- pigx_chipseq-0.0.53/configure.ac	2021-09-28 11:14:12.000000000 +0200
++++ pigx_chipseq-0.0.53.patched/configure.ac	2021-10-07 14:48:53.034054327 +0200
+@@ -52,7 +52,6 @@
+ find_or_override_prog([MACS2],           [macs2])
+ find_or_override_prog([SNAKEMAKE],       [snakemake])
+ find_or_override_prog([PANDOC],          [pandoc])
+-find_or_override_prog([PANDOC_CITEPROC], [pandoc-citeproc])
+ find_or_override_prog([FASTQC],          [fastqc])
+ find_or_override_prog([BOWTIE2],         [bowtie2])
+ find_or_override_prog([BOWTIE2_BUILD],   [bowtie2-build])
+diff -Naur pigx_chipseq-0.0.53/Makefile.in pigx_chipseq-0.0.53.patched/Makefile.in
+--- pigx_chipseq-0.0.53/Makefile.in	2021-09-28 11:55:05.000000000 +0200
++++ pigx_chipseq-0.0.53.patched/Makefile.in	2021-10-07 14:48:37.195577143 +0200
+@@ -407,7 +407,6 @@
+ PACKAGE_URL = @PACKAGE_URL@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PANDOC = @PANDOC@
+-PANDOC_CITEPROC = @PANDOC_CITEPROC@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
+ PERL = @PERL@
+ PYTHON = @PYTHON@
+diff -Naur pigx_chipseq-0.0.53/pigx-common/common/pigx-runner.in pigx_chipseq-0.0.53.patched/pigx-common/common/pigx-runner.in
+--- pigx_chipseq-0.0.53/pigx-common/common/pigx-runner.in	2021-09-27 18:16:42.000000000 +0200
++++ pigx_chipseq-0.0.53.patched/pigx-common/common/pigx-runner.in	2021-10-07 14:48:44.200788218 +0200
+@@ -379,7 +379,6 @@
+     if path.exists(bin): shutil.rmtree(bin)
+     os.makedirs(bin, exist_ok=True)
+     os.symlink('@PANDOC@', path.join(bin, "pandoc"))
+-    os.symlink('@PANDOC_CITEPROC@', path.join(bin, "pandoc-citeproc"))
+     os.symlink('@RSCRIPT@', path.join(bin, "Rscript"))
+     os.environ['PATH'] = path.abspath(bin) + ":" + os.environ['PATH']
+     os.environ['PIGX_PATH'] = path.abspath(bin) + ":" + os.environ['PATH']

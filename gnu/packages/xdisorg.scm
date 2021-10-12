@@ -13,7 +13,6 @@
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -809,7 +808,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "7.5")
+    (version "7.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -818,7 +817,7 @@ of the screen selected by mouse.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k8xxb4rj2fylr4vj16yvsf73cyywliz9cy78pl4ibmi03jhg837"))))
+                "1xaka98vka5kh3wmby68ifwi6rp0985dj13fgs96bw8a1z3m1l1d"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
@@ -2872,7 +2871,7 @@ and execute @file{.desktop} files of the Application type.")
 (define-public sx
   (package
     (name "sx")
-    (version "2.1.6")
+    (version "2.1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2881,7 +2880,7 @@ and execute @file{.desktop} files of the Application type.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0p24ghp1ygvyc2hv81byhxax7491yhcc5priq5ldv07nzl7akagc"))))
+                "0xv15m30nhcknasqiybj5wwf7l91q4a4jf6xind8x5x00c6br6nl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -2890,9 +2889,13 @@ and execute @file{.desktop} files of the Application type.")
          (list (string-append "PREFIX=" out)))
        #:phases
        (modify-phases %standard-phases
-         ;; no configure script
-         (delete 'configure))))
-    (propagated-inputs
+         (add-after 'unpack 'refer-to-xauth
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "sx"
+               (("\\bxauth\\b" command)
+                (string-append (assoc-ref inputs "xauth") "/bin/" command)))))
+         (delete 'configure))))         ; no configure script
+    (inputs
      `(("xauth" ,xauth)))
     (home-page "https://github.com/Earnestly/sx")
     (synopsis "Start an xorg server")

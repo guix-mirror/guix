@@ -107,19 +107,25 @@ name and the exception key and arguments."
   (define prefix-len
     (string-length directory))
 
-  (filter-map (lambda (file)
-                (let* ((relative (string-drop file prefix-len))
-                       (module   (file-name->module-name relative)))
-                  (catch #t
-                    (lambda ()
-                      (resolve-interface module))
-                    (lambda args
-                      ;; Report the error, but keep going.
-                      (warn file module args)
-                      #f))))
-              (scheme-files (if sub-directory
-                                (string-append directory "/" sub-directory)
-                                directory))))
+  ;; Hide Guile warnings such as "source file [...] newer than compiled" when
+  ;; loading user code, unless we're hacking on Guix proper.  See
+  ;; <https://issues.guix.gnu.org/43747>.
+  (parameterize ((current-warning-port (if (getenv "GUIX_UNINSTALLED")
+                                           (current-warning-port)
+                                           (%make-void-port "w"))))
+    (filter-map (lambda (file)
+                  (let* ((relative (string-drop file prefix-len))
+                         (module   (file-name->module-name relative)))
+                    (catch #t
+                      (lambda ()
+                        (resolve-interface module))
+                      (lambda args
+                        ;; Report the error, but keep going.
+                        (warn file module args)
+                        #f))))
+                (scheme-files (if sub-directory
+                                  (string-append directory "/" sub-directory)
+                                  directory)))))
 
 (define* (scheme-modules* directory #:optional sub-directory)
   "Return the list of module names found under SUB-DIRECTORY in DIRECTORY.

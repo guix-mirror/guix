@@ -6,7 +6,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
-;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -150,7 +150,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
 (define-public libzen
   (package
     (name "libzen")
-    (version "0.4.38")
+    (version "0.4.39")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -161,7 +161,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
                                   "libzen_" version ".tar.bz2"))
               (sha256
                (base32
-                "1nkygc17sndznpcf71fdrhwpm8z9a3hc9csqlafwswh49axhfkjr"))))
+                "1rwaxmid9iv65n0y6xlcyxxydsvihjni9ldxpg6pbqz43amp49xx"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -173,8 +173,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
        (modify-phases %standard-phases
          (add-after 'unpack 'pre-configure
            (lambda _
-             (chdir "Project/GNU/Library")
-             #t)))))
+             (chdir "Project/GNU/Library"))))))
     (home-page "https://github.com/MediaArea/ZenLib")
     (synopsis "C++ utility library")
     (description "ZenLib is a C++ utility library.  It includes classes for handling
@@ -840,7 +839,7 @@ standard GNU style syntax for options.")
 (define-public folly
   (package
     (name "folly")
-    (version "2021.04.26.00")
+    (version "2021.10.04.00")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -849,7 +848,7 @@ standard GNU style syntax for options.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s3jb02qjl9f4gfj01pa01cilkfpc4p0gbpn6bg5vcicyj76garg"))))
+                "1h7apl42idymqra0xgw7s5ys3dxrqd8gq0f99g048k4g5fxl64s9"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests must be explicitly enabled
@@ -1034,7 +1033,7 @@ feature set with a simple and intuitive interface.")
 (define-public caf
   (package
     (name "caf")
-    (version "0.18.0")
+    (version "0.18.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1043,7 +1042,7 @@ feature set with a simple and intuitive interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c3spd6vm1h9qhlk5c4fdwi6nbqx5vwz2zvv6qp0rj1hx6xpq3cx"))))
+                "04b4kjisb5wzq6pilh8xzbxn7qcjgppl8k65hfv0zi0ja8fyp1xk"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -1058,8 +1057,8 @@ computation.")
     (license license:bsd-3)))
 
 (define-public pcg-cpp
-  (let ((commit "5b5cac8d61339e810c5dbb4692d868a1d7ca1b2d")
-        (revision "1"))
+  (let ((commit "ffd522e7188bef30a00c74dc7eb9de5faff90092")
+        (revision "2"))
     (package
       (name "pcg-cpp")
       (version (git-version "0.98.1" revision commit))
@@ -1071,7 +1070,7 @@ computation.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1s9dcd4iydlc1xj9m6f7c52nlyx99klk043sk7arqy6kp7gdaa33"))))
+                  "0yxyqaphcc38zilpwpmssrl8ly1v6dimscqk2f4rcv1h22dinnqx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"

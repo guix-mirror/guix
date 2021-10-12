@@ -31,7 +31,7 @@
 ;;; Copyright © 2020, 2021 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
-;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
@@ -255,6 +255,33 @@ frameworks, session management, URL-remapping for RESTful, page caching, and
 more.")
     (home-page "https://www.gnu.org/software/artanis/")
     (license (list license:gpl3+ license:lgpl3+)))) ;dual license
+
+;; There are no releases yet of this package.
+(define-public guile-pipe
+  (let ((commit "0746ec38d19d844dff0c6f62f209b2b6c8d8872e")
+        (revision "0"))
+    (package
+      (name "guile-pipe")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joshwalters/guile-pipe")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "038gwrhfywgs8372q478wn4623lhcmkknfj4p8yaa93bykfc0fml"))))
+      (build-system guile-build-system)
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (home-page "https://github.com/joshwalters/guile-pipe")
+      (synopsis "Guile pipe macros for functional chaining")
+      (description
+       "This package provides macros for functional chaining in Guile, similar
+to UNIX pipes (@code{|}), Clojure's threading macros (@code{->} and
+@code{->>}).")
+      (license license:gpl3+))))
 
 (define-public guile-f-scm
   (package
@@ -1491,143 +1518,152 @@ library}.")
 (define-public guile-dbi
   (package
     (name "guile-dbi")
-    (version "2.1.6")
+    (version "2.1.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://example.org") ;only hosted on Software Heritage
-                    (commit "e19b019e9683faf66c3f385b20fcc112e65f8c6e")))
+                    (url "https://github.com/opencog/guile-dbi")
+                    (commit (string-append "guile-dbi-" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09ys5hj7gnj5w1iv1m194j06jk6b8sdhc8j6hcv3bprq1428kyxw"))))
+                "123m4j82bi60s1v95pjh4djb7bh6zdwmljbpyg7zq8ni2gyal7lw"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:configure-flags
        (list (string-append
-              "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
-       #:make-flags
-       (list (string-append
-              "LDFLAGS=-Wl,-rpath=" %output "/lib:"
-              (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib" ":"
-              (assoc-ref %build-inputs "guile-dbd-postgresql") "/lib"))
+              "--with-guile-site-dir=" %output "/share/guile/site/"
+              (target-guile-effective-version (assoc-ref %build-inputs "guile"))))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             ;; The upstream Git repository contains all the code, so change
+             ;; to the directory specific to guile-dbi.
+             (chdir "guile-dbi")))
          (add-after 'install 'patch-extension-path
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (dbi.scm (string-append
-                              out "/share/guile/site/2.2/dbi/dbi.scm"))
-                    (ext     (string-append out "/lib/libguile-dbi")))
-               (substitute* dbi.scm (("libguile-dbi") ext))
-               #t))))))
-    (inputs
-     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3)
-       ("guile-dbd-postgresql" ,guile-dbd-postgresql))) ; only shared library, no scheme files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dbi.scm (string-append out "/share/guile/site/"
+                                            (target-guile-effective-version
+                                             (assoc-ref inputs "guile"))
+                                            "/dbi/dbi.scm"))
+                    (ext (string-append out "/lib/libguile-dbi")))
+               (substitute* dbi.scm (("libguile-dbi") ext))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
-    (home-page "https://web.archive.org/web/20160328232717/http://home.gna.org/guile-dbi/guile-dbi.html")
+    (home-page "https://github.com/opencog/guile-dbi")
     (description
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  Database programming with guile-dbi is generic in that the same
 programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
-    (license license:gpl2+)))
-
-(define guile-dbi-bootstrap
-  (package
-    (inherit guile-dbi)
-    (name "guile-dbi-bootstrap")
-    (inputs '())
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-dbi)
-       ((#:make-flags _) '(list))))))
+    (license license:gpl2+)
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_DBD_PATH")
+            (files '("lib")))))))
 
 (define-public guile-dbd-sqlite3
   (package
+    (inherit guile-dbi)
     (name "guile-dbd-sqlite3")
-    (version "2.1.6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://example.org") ;only hosted on Software Heritage
-                    (commit "0758c615e9e85ad76d153d5dc6179881f1f50089")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1rwf3z6ib6nkhfnk2nw8p6fqirdx2pparcrlmsm0i2ii62plpqhb"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("guile-dbi-bootstrap" ,guile-dbi-bootstrap))) ; only required for headers
-    (inputs
-     `(("sqlite" ,sqlite)
-       ("zlib" ,(@ (gnu packages compression) zlib))))
-    (synopsis "Guile DBI driver for SQLite")
-    ;; Unofficial home-page.
-    ;; Added by b9cbfa52f71505de8447fefabd97f16d0a9cbde6 (2016-06)
-    (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
-    (description
-     "guile-dbi is a library for Guile that provides a convenient interface to
-SQL databases.  This package implements the interface for SQLite.")
-    (license license:gpl2+)))
-
-(define-public guile-dbd-postgresql
-  (let ((commit "e97589b6b018b206c901e4cc24db463407a4036b")
-        (revision 0))
-    (package
-      (name "guile-dbd-postgresql")
-      (version (string-append
-                "2.1.6-" (number->string revision) "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/opencog/guile-dbi")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0n1gv9a0kdys10a4qmnrwvg5sydwb03880asri4gqdchcj3fimni"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'chdir
              (lambda _
                ;; The upstream Git repository contains all the code, so change
-               ;; to the relevant directory.
-               (chdir "guile-dbd-postgresql")
-               #t))
-           (add-after 'chdir 'patch-src/Makefile.am
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/Makefile.am"
-                 (("/usr/include")
-                  (string-append (assoc-ref inputs "postgresql") "/include")))
-               #t))
-           (add-after 'patch-src/Makefile.am 'patch-src
+               ;; to the directory specific to guile-dbd-sqlite3.
+               (chdir "guile-dbd-sqlite3")))
+           (delete 'patch-extension-path)))))
+    (inputs
+     `(("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("guile-dbi" ,guile-dbi)         ; only required for headers
+       ("pkg-config" ,pkg-config)
+       ,@(package-native-inputs guile-dbi)))
+    (synopsis "Guile DBI driver for SQLite")
+    (description
+     "guile-dbi is a library for Guile that provides a convenient interface to
+SQL databases.  This package implements the interface for SQLite.")))
+
+(define-public guile-dbd-postgresql
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbd-postgresql")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'chdir
+             (lambda _
+               ;; The upstream Git repository contains all the code, so change
+               ;; to the directory specific to guile-dbd-mysql.
+               (chdir "guile-dbd-postgresql")))
+           (add-after 'chdir 'patch-src
              (lambda _
                (substitute* "src/guile-dbd-postgresql.c"
-                 (("postgresql/libpq-fe\\.h") "libpq-fe.h"))
-               #t)))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("automake" ,automake)
-         ("autoconf" ,autoconf)
-         ("perl" ,perl)
-         ("libtool" ,libtool)
-         ("guile-dbi-bootstrap" ,guile-dbi-bootstrap)))
-      (inputs
-       `(("postgresql" ,postgresql)
-         ("zlib" ,zlib)))
-      (synopsis "Guile DBI driver for PostgreSQL")
-      (home-page
-       "https://github.com/opencog/guile-dbi/tree/master/guile-dbd-postgresql")
-      (description
-       "@code{guile-dbi} is a library for Guile that provides a convenient
+                 (("postgresql/libpq-fe\\.h") "libpq-fe.h"))))
+           (delete 'patch-extension-path)))))
+    (inputs
+     `(("postgresql" ,postgresql)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("guile-dbi" ,guile-dbi)         ; only required for headers
+       ,@(package-native-inputs guile-dbi)))
+    (synopsis "Guile DBI driver for PostgreSQL")
+    (description
+     "@code{guile-dbi} is a library for Guile that provides a convenient
 interface to SQL databases.  This package implements the interface for
-PostgreSQL.")
-      (license license:gpl2+))))
+PostgreSQL.")))
+
+(define-public guile-dbd-mysql
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbd-mysql")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'chdir
+             (lambda _
+               ;; The upstream Git repository contains all the code, so change
+               ;; to the directory specific to guile-dbd-mysql.
+               (chdir "guile-dbd-mysql")))
+           (add-after 'chdir 'patch-src
+             (lambda _
+               (substitute* "configure.ac"
+                 (("mariadbclient") "mariadb"))
+               (substitute* "src/guile-dbd-mysql.c"
+                 (("<mariadb/") "<mysql/"))))
+           (delete 'patch-extension-path)))))
+    (inputs
+     `(("mariadb" ,mariadb "dev")
+       ("mariadb" ,mariadb "lib")
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("guile-dbi" ,guile-dbi)         ; only required for headers
+       ,@(package-native-inputs guile-dbi)))
+    (synopsis "Guile DBI driver for MySQL")
+    (description "@code{guile-dbi} is a library for Guile that provides a
+convenient interface to SQL databases.  This package implements the interface
+for MySQL.")
+    (license license:gpl2+)))
 
 (define-public guile-config
   (package

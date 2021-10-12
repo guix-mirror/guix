@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -329,13 +330,13 @@ of the SGP4 satellite tracking algorithm.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "1.3.0")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1qi2cv450m05dwccx3p1s373k5b4ncvwi74plnms2pidrz4ycm65"))))
+        (base32 "1pq1nwj2kysy2g3p18wjb1xn8vk1jhcyisxilsnkwyd99aqqqb17"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -453,8 +454,61 @@ doing practical, real world data analysis in Python.")
                     ;; from <https://github.com/pandas-dev/pandas/pull/29294>.
                     (substitute* "pandas/io/parsers.py"
                       (("if 'NULL byte' in msg:")
-                       "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
-                    #t)))))))
+                       "if 'NULL byte' in msg or 'line contains NUL' in msg:"))))))
+      (arguments
+       `(#:modules ((guix build utils)
+                    (guix build python-build-system)
+                    (ice-9 ftw)
+                    (srfi srfi-26))
+         #:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-which
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((which (assoc-ref inputs "which")))
+                 (substitute* "pandas/io/clipboard/__init__.py"
+                   (("^CHECK_CMD = .*")
+                    (string-append "CHECK_CMD = \"" which "\"\n"))))))
+           (replace 'check
+             (lambda _
+               (let ((build-directory
+                      (string-append
+                       (getcwd) "/build/"
+                       (car (scandir "build"
+                                     (cut string-prefix? "lib." <>))))))
+                 ;; Disable the "strict data files" option which causes
+                 ;; the build to error out if required data files are
+                 ;; not available (as is the case with PyPI archives).
+                 (substitute* "setup.cfg"
+                   (("addopts = --strict-data-files") "addopts = "))
+                 (with-directory-excursion build-directory
+                   ;; Delete tests that require "moto" which is not yet
+                   ;; in Guix.
+                   (for-each delete-file
+                             '("pandas/tests/io/conftest.py"
+                               "pandas/tests/io/json/test_compression.py"
+                               "pandas/tests/io/parser/test_network.py"
+                               "pandas/tests/io/test_parquet.py"))
+                   (invoke "pytest" "-vv" "pandas" "--skip-slow"
+                           "--skip-network" "-k"
+                           ;; XXX: Due to the deleted tests above.
+                           "not test_read_s3_jsonl"))))))))
+      (propagated-inputs
+       `(("python-numpy" ,python2-numpy)
+         ("python-openpyxl" ,python2-openpyxl)
+         ("python-pytz" ,python2-pytz)
+         ("python-dateutil" ,python2-dateutil)
+         ("python-xlrd" ,python2-xlrd)))
+      (inputs
+       `(("which" ,which)))
+      (native-inputs
+       `(("python-cython" ,python2-cython)
+         ("python-beautifulsoup4" ,python2-beautifulsoup4)
+         ("python-lxml" ,python2-lxml)
+         ("python-html5lib" ,python2-html5lib)
+         ("python-nose" ,python2-nose)
+         ("python-pytest" ,python2-pytest)
+         ("python-pytest-mock" ,python2-pytest-mock))))))
 
 (define-public python-pyflow
   (package
@@ -846,7 +900,7 @@ and more
 (define-public python-distributed
   (package
     (name "python-distributed")
-    (version "2021.07.1")
+    (version "2021.09.1")
     (source
      (origin
        ;; The test files are not included in the archive on pypi
@@ -857,7 +911,7 @@ and more
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i55zf3k55sqjxnwlzsyj3h3v1588fn54ng4mj3dfiqzh3nlj0dg"))))
+         "05djzza3f72nw1i1c9qyamgaf93pbf6jxx0migpp1wvvfl0v2j9z"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -886,9 +940,11 @@ and more
                        "-m" "not slow and not gpu and not ipython and not avoid_ci"
                        "-k"
                        ;; TODO: These tests fail for unknown reasons:
-                       ;; Assertion error.
                        (string-append
-                        "not test_version_option"
+                        ;; TimeoutExpired
+                        "not test_text"
+                        ;; AssertionError
+                        " and not test_version_option"
                         ;; "The 'distributed' distribution was not found"
                         " and not test_register_backend_entrypoint"
                         ;; "AttributeError: module 'distributed.dashboard' has no attribute 'scheduler'"

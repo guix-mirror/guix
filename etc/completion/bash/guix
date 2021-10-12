@@ -32,7 +32,7 @@ _guix_complete_command ()
                                      | grep '^    ' \
 				     | sed '-es/^ *\([a-z-]\+\).*$/\1/g')"
     fi
-    COMPREPLY=($(compgen -W "$_guix_commands" -- "$word_at_point"))
+    COMPREPLY+=($(compgen -W "$_guix_commands" -- "$word_at_point"))
 }
 
 _guix_complete_subcommand ()
@@ -41,7 +41,7 @@ _guix_complete_subcommand ()
     local subcommands="$(${COMP_WORDS[0]} $command --help 2> /dev/null \
                          | grep '^   [a-z]' \
                          | sed -e's/^ \+\([a-z-]\+\).*$/\1/g')"
-    COMPREPLY=($(compgen -W "$subcommands" -- "${COMP_WORDS[$COMP_CWORD]}"))
+    COMPREPLY+=($(compgen -W "$subcommands" -- "${COMP_WORDS[$COMP_CWORD]}"))
 }
 
 _guix_complete_available_package ()
@@ -54,7 +54,7 @@ _guix_complete_available_package ()
 	_guix_available_packages="$(${COMP_WORDS[0]} package -A 2> /dev/null \
                                     | cut -f1)"
     fi
-    COMPREPLY=($(compgen -W "$_guix_available_packages" -- "$prefix"))
+    COMPREPLY+=($(compgen -W "$_guix_available_packages" -- "$prefix"))
 }
 
 _guix_complete_installed_package ()
@@ -64,7 +64,7 @@ _guix_complete_installed_package ()
     local prefix="$1"
     local packages="$(${COMP_WORDS[0]} package -I "^$prefix" 2> /dev/null \
                       | cut -f1)"
-    COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
+    COMPREPLY+=($(compgen -W "$packages" -- "$prefix"))
 }
 
 _guix_complete_option ()
@@ -79,7 +79,7 @@ _guix_complete_option ()
                             | grep '^  \+-' \
                             | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
     compopt -o nospace
-    COMPREPLY=($(compgen -W "$options" -- "$2"))
+    COMPREPLY+=($(compgen -W "$options" -- "$2"))
 }
 
 _guix_is_option ()
@@ -171,10 +171,22 @@ _guix_complete_file ()
     COMPREPLY=()
 }
 
+_guix_complete_available_package_or_store_file ()
+{
+    _guix_complete_available_package "$@"
+
+    # The current _guix_complete_file implementation doesn't compose (append to
+    # COMPREPLY), so we suggest file names only if no package names matched.
+    if [[ -z "$COMPREPLY" ]]
+    then
+	_guix_complete_file # TODO: restrict to store files
+    fi
+}
+
 _guix_complete_pid ()
 {
     local pids="$(cd /proc; echo [0-9]*)"
-    COMPREPLY=($(compgen -W "$pids" -- "$1"))
+    COMPREPLY+=($(compgen -W "$pids" -- "$1"))
 }
 
 _guix_complete ()
@@ -237,15 +249,7 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif [[ "$command" = "remove" ]]
-	    then
-                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
-                then
-                    _guix_complete_file
-		else
-		    _guix_complete_installed_package "$word_at_point"
-		fi
-	    elif [[ "$command" = "upgrade" ]]
+	    elif [[ "$command" = "upgrade" || "$command" = "remove" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
                 then
@@ -259,7 +263,7 @@ _guix_complete ()
                 then
                     _guix_complete_file
 		else
-		    _guix_complete_available_package "$word_at_point"
+		    _guix_complete_available_package_or_store_file "$word_at_point"
                 fi
 	    elif [[ "$command" = "environment" ]]
 	    then
@@ -272,13 +276,16 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
-	    elif [[ "$command" = "download" ]]
+	    elif [[ "$command" = "download" || "$command" = "gc" || "$command" = "hash" ]]
 	    then
-		 _guix_complete_file
+		_guix_complete_file
+	    elif [[ "$command" = "size" ]]
+	    then
+		_guix_complete_available_package_or_store_file "$word_at_point"
 	    elif [[ "$command" = "system" ]]
 	    then
-		case $COMP_CWORD in
-		    2) _guix_complete_subcommand;;
+		case $((COMP_CWORD - command_index)) in
+		    1) _guix_complete_subcommand;;
 		    *) _guix_complete_file;; # TODO: restrict to *.scm
 		esac
             elif [[ "$command" = "pull" ]]
@@ -297,22 +304,21 @@ _guix_complete ()
                 fi
 	    elif [[ "$command" = "container" ]]
 	    then
-		case $COMP_CWORD in
-		    2) _guix_complete_subcommand;;
-		    3) _guix_complete_pid "$word_at_point";;
+		case $((COMP_CWORD - command_index)) in
+		    1) _guix_complete_subcommand;;
+		    2) _guix_complete_pid "$word_at_point";;
 		    *) _guix_complete_file;;
 		esac
 	    elif [[ "$command" = "import" ]]
 	    then
 		_guix_complete_subcommand
-	    elif [[ "$command" = "hash" || "$command" = "gc" ]]
-	    then
-		_guix_complete_file
             elif [[ "$command" = "weather" ]]
             then
                 if _guix_is_dash_m
                 then
                     _guix_complete_file
+		else
+		    _guix_complete_available_package "$word_at_point"
                 fi
 	    else
 		_guix_complete_available_package "$word_at_point"

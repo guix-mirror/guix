@@ -645,7 +645,7 @@ console.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.5")
+    (version "3.1.0")
     (source
      (origin
        (method git-fetch)
@@ -653,7 +653,7 @@ console.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "10lp6cbfvigzp6pq5nwj3s3l4vs7cv92krz2r08nwrz8vl6rqdzp"))
+        (base32 "1ngvidaka6xbfb3l4zxmlksk2ms93fy3sb76w7917kjgn9mh53zz"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -1687,7 +1687,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.8")
+    (version "1.9.8p2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1697,12 +1697,11 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1rlln9nb3lvg4qlkp0c9qxjflx36rf16mflg0sps2kl0k7lmswzi"))
+                "0b8gd15l2g22w4fhhz0gzmq5c8370klanmy2c1p3px6yly6qnfwy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (delete-file-recursively "lib/zlib")
-                  #t))))
+                  (delete-file-recursively "lib/zlib")))))
     (build-system gnu-build-system)
     (outputs (list "out"))
     (arguments
@@ -1755,8 +1754,7 @@ system administrator.")
              ;; not the task of the build system, and fails.
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
-                (string-append match "\ndisabled-" match)))
-             #t)))
+                (string-append match "\ndisabled-" match))))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
@@ -2161,15 +2159,15 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20210730")
+    (version "20210930")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://acpica.org/sites/acpica/files/acpica-unix-"
+                    "https://acpica.org/sites/acpica/files/acpica-unix2-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1pmm977nyl3bs71ipzcl4dh30qm8x9wm2p2ml0m62rl62kai832a"))))
+                "06wsrl1118sl9z76p9sh53zvzv5hpm82qks896d8slx5dgnzrrll"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2218,15 +2216,18 @@ utilization, temperature and power.")
 (define-public stress
   (package
     (name "stress")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://debian/pool/main/s/stress/stress_"
                                   version ".orig.tar.gz"))
               (sha256
                (base32
-                "0nw210jajk38m3y7h8s130ps2qsbz7j75wab07hi2r3hlz14yzh5"))))
+                "09shpd85g8dvpiw0mnwykss676g0s7lbi8ab37xjinb5lfff960p"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (home-page "https://packages.debian.org/sid/stress")
     (synopsis "Impose load on and stress test a computer system")
     (description
@@ -2244,7 +2245,7 @@ system is under heavy load.")
 (define-public detox
   (package
     (name "detox")
-    (version "1.4.2")
+    (version "1.4.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2253,7 +2254,7 @@ system is under heavy load.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q16dvjbry573j4ayh9dwskdh1dxx8dk4rj94w6f2dcv4ww37is1"))))
+                "116bgpbkh3c96h6vq0880rmnpb5kbnnlvvkpsrcib6928bj8lfvi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3039,14 +3040,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.91")
+    (version "7.92")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
+                "18bifn67kz2wxkbnfwcrin2xrhc6qf4p2bvxfqb2a2vbi8pryix5"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3057,8 +3058,7 @@ done with the @code{auditctl} utility.")
                               "libpcap"
                               "libpcre"
                               ;; Remove pre-compiled binares.
-                              "mswin32"))
-                  #t))))
+                              "mswin32"))))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
@@ -3080,8 +3080,7 @@ done with the @code{auditctl} utility.")
            (lambda _
              (substitute* "Makefile"
                ;; Do not attempt to build lua.
-               (("build-dnet build-lua") "build-dnet"))
-             #t))
+               (("build-dnet build-lua") "build-dnet"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (define (make out . args)
@@ -3104,8 +3103,7 @@ done with the @code{auditctl} utility.")
                (make ndiff "install-ndiff")
                (wrap-program (string-append ndiff "/bin/ndiff")
                  `("GUIX_PYTHONPATH" prefix
-                   (,(python-path ndiff)))))
-             #t))
+                   (,(python-path ndiff)))))))
          ;; These are the tests that do not require network access.
          (replace 'check
            (lambda _ (invoke "make"
@@ -3122,7 +3120,7 @@ tool.  It is also useful for tasks such as network inventory, managing service
 upgrade schedules, and monitoring host or service uptime.  It also provides an
 advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
-    ;; See <https://github.com/nmap/nmap/issues/2199#issuecomment-792048244>.
+    ;; See <https://github.com/nmap/nmap/issues/2199#issuecomment-894812634>.
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
     (license (list license:nmap license:bsd-3))))
@@ -4234,7 +4232,7 @@ Logitech Unifying Receiver.")
   (package
     (name "lynis")
     ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
-    (version "3.0.5")
+    (version "3.0.6")
     (source
      (origin
        (method git-fetch)
@@ -4243,15 +4241,14 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11kl54hbvjl7q2i1jz8a726vlkdmknvbp4zac3j4fgljg27qp410"))
+        (base32 "1a1n8alcq6zil1rwk9940cg3x2nz3igcxfad99505pdh7ccz9324"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove proprietary plugins. As of now, all plugins supplied with
            ;; lynis are proprietary. In the future, if free plugins are
            ;; provided, whitelist them from deletion.
-           (for-each delete-file (find-files "plugins"))
-           #t))))
+           (for-each delete-file (find-files "plugins"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; For tests
@@ -4260,10 +4257,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "99f79c4deb4cb2221d7fccfe82baf58c0a55b9e7")))
+                 (commit "1c4e5f60a03e29a1525ca9ec17c793461058253d")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32 "1nc2rhzj6l08d2mnjrzkm4mxla1mjkddcxl8n05c1kdz9ycn6cpl"))))))
+            (base32 "060k8k1q4c7nvrv3cwscxq8md2v75q3nrwwim1hgfw20divw3npy"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -4274,8 +4271,7 @@ Logitech Unifying Receiver.")
                 (string-append (assoc-ref outputs "out") "/share/lynis")))
              (substitute* "include/functions"
                (("/usr/local/etc/lynis")
-                (string-append (assoc-ref outputs "out") "/etc/lynis")))
-             #t))
+                (string-append (assoc-ref outputs "out") "/etc/lynis")))))
          (delete 'build)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4286,8 +4282,7 @@ Logitech Unifying Receiver.")
                 (lambda (dir)
                   (copy-recursively dir (string-append out "/share/lynis/" dir)))
                 (list "db" "include" "plugins"))
-               (install-file "lynis.8" (string-append out "/share/man/man8"))
-               #t)))
+               (install-file "lynis.8" (string-append out "/share/man/man8")))))
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "lynis-sdk") "../lynis-sdk")
@@ -4430,7 +4425,7 @@ file-types for easier parsing in scripts.")
 (define-public jtbl
   (package
     (name "jtbl")
-    (version "1.1.6")
+    (version "1.1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4439,7 +4434,7 @@ file-types for easier parsing in scripts.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zzd7rd63xva50f22d1rfja4r302aizrafarhwm67vv181swvdya"))))
+                "19i21fqz2m40cds9pb17brjxkczqagmx2f7mfb0xdvbygaply5wz"))))
     (build-system python-build-system)
     (inputs
      `(("python-tabulate" ,python-tabulate)))

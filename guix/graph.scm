@@ -337,11 +337,12 @@ nodeArray.push(nodes[\"~a\"]);~%"
 
 (define* (export-graph sinks port
                        #:key
-                       reverse-edges? node-type
+                       reverse-edges? node-type (max-depth +inf.0)
                        (backend %graphviz-backend))
   "Write to PORT the representation of the DAG with the given SINKS, using the
 given BACKEND.  Use NODE-TYPE to traverse the DAG.  When REVERSE-EDGES? is
-true, draw reverse arrows."
+true, draw reverse arrows.  Do not represent nodes whose distance to one of
+the SINKS is greater than MAX-DEPTH."
   (match backend
     (($ <graph-backend> _ _ emit-prologue emit-epilogue emit-node emit-edge)
      (emit-prologue (node-type-name node-type) port)
@@ -349,6 +350,7 @@ true, draw reverse arrows."
      (match node-type
        (($ <node-type> node-identifier node-label node-edges)
         (let loop ((nodes   sinks)
+                   (depths  (make-list (length sinks) 0))
                    (visited (set)))
           (match nodes
             (()
@@ -356,20 +358,29 @@ true, draw reverse arrows."
                (emit-epilogue port)
                (store-return #t)))
             ((head . tail)
-             (mlet %store-monad ((id (node-identifier head)))
-               (if (set-contains? visited id)
-                   (loop tail visited)
-                   (mlet* %store-monad ((dependencies (node-edges head))
-                                        (ids          (mapm %store-monad
-                                                            node-identifier
-                                                            dependencies)))
-                     (emit-node id (node-label head) port)
-                     (for-each (lambda (dependency dependency-id)
-                                 (if reverse-edges?
-                                     (emit-edge dependency-id id port)
-                                     (emit-edge id dependency-id port)))
-                               dependencies ids)
-                     (loop (append dependencies tail)
-                           (set-insert id visited)))))))))))))
+             (match depths
+               ((depth . depths)
+                (mlet %store-monad ((id (node-identifier head)))
+                  (if (set-contains? visited id)
+                      (loop tail depths visited)
+                      (mlet* %store-monad ((dependencies
+                                            (if (= depth max-depth)
+                                                (return '())
+                                                (node-edges head)))
+                                           (ids
+                                            (mapm %store-monad
+                                                  node-identifier
+                                                  dependencies)))
+                        (emit-node id (node-label head) port)
+                        (for-each (lambda (dependency dependency-id)
+                                    (if reverse-edges?
+                                        (emit-edge dependency-id id port)
+                                        (emit-edge id dependency-id port)))
+                                  dependencies ids)
+                        (loop (append dependencies tail)
+                              (append (make-list (length dependencies)
+                                                 (+ 1 depth))
+                                  depths)
+                              (set-insert id visited)))))))))))))))
 
 ;;; graph.scm ends here

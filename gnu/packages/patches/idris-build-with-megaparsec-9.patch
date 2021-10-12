@@ -1,0 +1,27 @@
+From 6ea9bc913877d765048d7cdb7fc5aec60b196fac Mon Sep 17 00:00:00 2001
+From: Felix Yan <felixonmars@archlinux.org>
+Date: Wed, 16 Dec 2020 21:48:32 +0800
+Subject: [PATCH] Fix compatibility with megaparsec 9
+
+---
+Taken from <https://github.com/idris-lang/Idris-dev/pull/4892>
+
+ src/Idris/Parser/Stack.hs | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/Idris/Parser/Stack.hs b/src/Idris/Parser/Stack.hs
+index fb7b611440..879786f4d2 100644
+--- a/src/Idris/Parser/Stack.hs
++++ b/src/Idris/Parser/Stack.hs
+@@ -84,7 +84,11 @@ instance Message ParseError where
+       (pos, _) = P.reachOffsetNoLine (parseErrorOffset err) (parseErrorPosState err)
+ #endif
+   messageText = PP.text . init . P.parseErrorTextPretty . parseError
++#if MIN_VERSION_megaparsec(9,0,0)
++  messageSource err = sline
++#else
+   messageSource err = Just sline
++#endif
+     where
+ #if MIN_VERSION_megaparsec(8,0,0)
+       (sline, _) = P.reachOffset (parseErrorOffset err) (parseErrorPosState err)

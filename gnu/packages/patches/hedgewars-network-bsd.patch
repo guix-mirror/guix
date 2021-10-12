@@ -1,0 +1,150 @@
+From f813f3d5b63bb5be1b5e0b44930e77656c547aad Mon Sep 17 00:00:00 2001
+From: Jens Petersen <none@none>
+Date: Wed, 8 Jul 2020 17:02:45 +0300
+Subject: [PATCH] update server network
+
+---
+ gameServer/Actions.hs                | 2 +-
+ gameServer/CMakeLists.txt            | 3 ++-
+ gameServer/ClientIO.hs               | 4 ++--
+ gameServer/CoreTypes.hs              | 2 +-
+ gameServer/OfficialServer/checker.hs | 5 ++---
+ gameServer/Utils.hs                  | 6 +-----
+ gameServer/hedgewars-server.cabal    | 3 ++-
+ gameServer/hedgewars-server.hs       | 5 +++--
+ 8 files changed, 14 insertions(+), 16 deletions(-)
+
+diff --git a/gameServer/Actions.hs b/gameServer/Actions.hs
+index 125d6ea832..c42d17b9a9 100644
+--- a/gameServer/Actions.hs
++++ b/gameServer/Actions.hs
+@@ -709,7 +709,7 @@ processAction RestartServer = do
+         args <- gets (runArgs . serverInfo)
+         io $ do
+             noticeM "Core" "Closing listening socket"
+-            sClose sock
++            close sock
+             noticeM "Core" "Spawning new server"
+             _ <- createProcess (proc "./hedgewars-server" args)
+             return ()
+diff --git a/gameServer/CMakeLists.txt b/gameServer/CMakeLists.txt
+index 5f2c882563..e71650c70c 100644
+--- a/gameServer/CMakeLists.txt
++++ b/gameServer/CMakeLists.txt
+@@ -9,7 +9,8 @@ check_haskell_package_exists(base "Control.Exception" mask 1)
+ check_haskell_package_exists(containers "Data.Map" size 1)
+ check_haskell_package_exists(vector "Data.Vector" length 1)
+ check_haskell_package_exists(bytestring "Data.ByteString" pack 1)
+-check_haskell_package_exists(network "Network.BSD" getHostName 0)
++check_haskell_package_exists(network "Network.Socket" defaultHints 0)
++check_haskell_package_exists(network-bsd "Network.BSD" getHostName 0)
+ check_haskell_package_exists(time "Data.Time" getCurrentTime 0)
+ check_haskell_package_exists(mtl "Control.Monad.State" fix 1)
+ check_haskell_package_exists(sandi "Codec.Binary.Base64" encode 1)
+diff --git a/gameServer/ClientIO.hs b/gameServer/ClientIO.hs
+index 46dd40ed9f..0c97bde932 100644
+--- a/gameServer/ClientIO.hs
++++ b/gameServer/ClientIO.hs
+@@ -23,7 +23,7 @@ import qualified Control.Exception as Exception
+ import Control.Monad.State
+ import Control.Concurrent.Chan
+ import Control.Concurrent
+-import Network
++import Network.Socket hiding (recv)
+ import Network.Socket.ByteString
+ import qualified Data.ByteString.Char8 as B
+ ----------------
+@@ -90,7 +90,7 @@ clientSendLoop s tId chan ci = do
+             sendAll s $ B.unlines answer `B.snoc` '\n'
+ 
+     if isQuit answer then
+-        sClose s
++        close s
+         else
+         clientSendLoop s tId chan ci
+ 
+diff --git a/gameServer/CoreTypes.hs b/gameServer/CoreTypes.hs
+index f547df483a..72f35807e3 100644
+--- a/gameServer/CoreTypes.hs
++++ b/gameServer/CoreTypes.hs
+@@ -23,7 +23,7 @@ import Control.Concurrent
+ import Data.Word
+ import qualified Data.Map as Map
+ import Data.Time
+-import Network
++import Network.Socket
+ import Data.Function
+ import Data.ByteString.Char8 as B
+ import Data.Unique
+diff --git a/gameServer/OfficialServer/checker.hs b/gameServer/OfficialServer/checker.hs
+index 37df3208b9..b4ecb8fc57 100644
+--- a/gameServer/OfficialServer/checker.hs
++++ b/gameServer/OfficialServer/checker.hs
+@@ -28,8 +28,7 @@ import System.Directory
+ import Control.Monad.State
+ import Control.Concurrent.Chan
+ import Control.Concurrent
+-import Network
+-import Network.BSD
++import Network.BSD hiding (recv)
+ import Network.Socket hiding (recv, sClose)
+ import Network.Socket.ByteString
+ import qualified Data.ByteString.Char8 as B
+@@ -207,7 +206,7 @@ main = withSocketsDo . forever $ do
+ 
+     Exception.bracket
+         setupConnection
+-        (\s -> noticeM "Core" "Shutting down" >> sClose s)
++        (\s -> noticeM "Core" "Shutting down" >> close s)
+         (session login password (d ++ "/.hedgewars") exeFullname dataPrefix)
+     where
+         setupConnection = do
+diff --git a/gameServer/Utils.hs b/gameServer/Utils.hs
+index 3d81b7f7c6..9fd80c01ba 100644
+--- a/gameServer/Utils.hs
++++ b/gameServer/Utils.hs
+@@ -41,11 +41,7 @@ import CoreTypes
+ 
+ 
+ sockAddr2String :: SockAddr -> IO B.ByteString
+-sockAddr2String (SockAddrInet _ hostAddr) = liftM B.pack $ inet_ntoa hostAddr
+-sockAddr2String (SockAddrInet6 _ _ (a, b, c, d) _) =
+-    return $ B.pack $ (foldr1 (.)
+-        $ List.intersperse (':':)
+-        $ concatMap (\n -> (\(a0, a1) -> [showHex a0, showHex a1]) $ divMod n 65536) [a, b, c, d]) []
++sockAddr2String = liftM (B.pack . fromJust . fst) . getNameInfo [] True False
+ 
+ maybeRead :: Read a => String -> Maybe a
+ maybeRead s = case reads s of
+diff --git a/gameServer/hedgewars-server.cabal b/gameServer/hedgewars-server.cabal
+index 3c7f2418c9..9f764fd997 100644
+--- a/gameServer/hedgewars-server.cabal
++++ b/gameServer/hedgewars-server.cabal
+@@ -57,7 +57,8 @@ Executable checker
+     containers,
+     vector,
+     bytestring,
+-    network >= 2.3 && < 3.0,
++    network >= 2.3,
++    network-bsd,
+     mtl >= 2,
+     sandi,
+     hslogger,
+diff --git a/gameServer/hedgewars-server.hs b/gameServer/hedgewars-server.hs
+index e47ae2891d..7e6ab8fa38 100644
+--- a/gameServer/hedgewars-server.hs
++++ b/gameServer/hedgewars-server.hs
+@@ -50,10 +50,11 @@ server si = do
+     proto <- getProtocolNumber "tcp"
+     E.bracket
+         (socket AF_INET Stream proto)
+-        sClose
++        close
+         (\sock -> do
+             setSocketOption sock ReuseAddr 1
+-            bindSocket sock (SockAddrInet (listenPort si) iNADDR_ANY)
++            iNADDR_ANY <- addrAddress . head <$> getAddrInfo Nothing (Just "0") (Just (show (listenPort si)))
++            bind sock iNADDR_ANY
+             listen sock maxListenQueue
+             startServer si{serverSocket = Just sock}
+         )

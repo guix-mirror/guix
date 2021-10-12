@@ -15,13 +15,14 @@
 ;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020, 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
+;;; Copyright © 2020-2021 James Smith <jsubuntuxp@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages game-development)
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
@@ -90,6 +92,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
@@ -99,6 +102,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -447,10 +451,71 @@ GUI toolkit, lighting and physics frameworks and @code{Tiled} TMX format
 support.")
     (license license:gpl3+)))
 
+(define-public slade
+  (package
+    (name "slade")
+    (version "3.1.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sirjuddington/SLADE")
+             (commit version)))
+       (sha256 (base32 "009yc5m6y074wfalvwbrnv2zsmaf9yhbi8hzgs973di0zqnqv011"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "-DWX_GTK3=ON" "-DNO_WEBVIEW=ON"
+             (string-append "-DWITH_WXPATH="
+                            (assoc-ref %build-inputs "wxwidgets") "/bin")
+             (string-append "-DwxWidgets_LIBRARIES="
+                            (assoc-ref %build-inputs "wxwidgets") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'reset-slade.pk3-timestamps
+           ;; This is neccessary to make slade reproducible due to
+           ;; <https://bugs.gnu.org/44741>.  TODO: Remove on next core update
+           ;; cycle.
+           (lambda _
+             (invoke "find" "../source/dist/res" "-exec" "touch"
+                     "--no-dereference" "-t" "197001010000.00" "{}"
+                     "+")))
+         (add-after 'install 'wrap-with-x11-gdk-backend
+           ;; Set GDK_BACKEND to x11 to prevent crash on Wayland.
+           ;; See https://github.com/sirjuddington/SLADE/issues/1097 for details.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program
+                 (string-append (assoc-ref outputs "out")
+                                "/bin/slade")
+               '("GDK_BACKEND" = ("x11"))))))
+       #:tests? #f)) ;; No test suite.
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("curl" ,curl)
+       ("fluidsynth" ,fluidsynth)
+       ("freeimage" ,freeimage)
+       ("ftgl" ,ftgl)
+       ("glew" ,glew)
+       ("gtk+" ,gtk+)
+       ("sfml" ,sfml)
+       ("wxwidgets" ,wxwidgets-3.1)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://slade.mancubus.net")
+    (synopsis "Doom game data editor")
+    (description "SLADE3 is a modern editor for Doom-engine based games and
+source ports.  It has the ability to view, modify, and write many different game-
+specific formats, and even convert between some of them, or from/to other generic
+formats such as PNG.")
+    (license license:gpl2+)))
+
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.5.0")
+    (version "1.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -459,7 +524,7 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1prajkx1xpp3csa0xpkrn3c2cnzvmwzxgrqb9d3gqszp3sllr2dg"))))
+                "1ifxh3sv6gz32gahgi7ba0ivcw5mfgwnrw6iycpav150w9xla43i"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase-5)
@@ -495,16 +560,16 @@ clone.")
 (define-public tsukundere
   (package
     (name "tsukundere")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitlab.com/leoprikler/tsukundere")
+                    (url "https://gitlab.com/lilyp/tsukundere")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05y3nj8vpn40hfr2y29p8pa9hhpzibhbvfzpm0dlphjh9crq3ii4"))))
+                "11glghnff27rqh2s34g51afg93g3f5ryfz9mkyb7qj35ngl8vw5f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match)
@@ -534,9 +599,12 @@ clone.")
                          ((label . pkg)
                           (and (string-prefix? "guile-" label) pkg)))
                        inputs))))
-               (substitute* "bin/tsukundere"
+               (substitute* "tsukundere.scm"
                  (("exec guile (.*)" _ args)
                   (string-append
+                   ;; XXX: Prevent Guile-SDL2 from blowing up by not knowing
+                   ;;      where the SDL2 libaries are.
+                   "unset LD_LIBRARY_PATH\n"
                    (format #f "export GUILE_LOAD_PATH=\"~@?\"~%"
                            "~{~a~^:~}" (map scm pkgs))
                    (format #f "export GUILE_LOAD_COMPILED_PATH=\"~@?\"~%"
@@ -550,12 +618,15 @@ clone.")
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("guile" ,guile-3.0)
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs
      `(("guile-sdl2" ,guile3.0-sdl2)
-       ("guile" ,guile-3.0)))
-    (home-page "https://gitlab.com/leoprikler/tsukundere")
+       ("guile" ,guile-3.0)
+       ("pango" ,pango)
+       ("sdl2" ,sdl2)))
+    (home-page "https://gitlab.com/lilyp/tsukundere")
     (synopsis "Visual novel engine")
     (description "Tsukundere is a game engine geared heavily towards the
 development of visual novels, written on top of Guile-SDL2.  It is still
@@ -758,35 +829,39 @@ programming language.")
     (license license:zlib)))
 
 (define-public love-nuklear
-  (let ((version "v2.6")
-        (commit "fef4e00a602efb16c57ae962850b6e7a01f7a29a"))
-    (package
-      (name "love-nuklear")
-      (version (git-version version "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/keharriso/love-nuklear/")
-                      (commit commit)
-                      (recursive? #t)))
-                ;; NOTE: the HEAD of the Nuklear git-submodule is at commit
-                ;; "adc52d710fe3c87194b99f540c53e82eb75c2521" of Oct 1 2019
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "15qmy8mfwkxy2x9rmxs6f9cyvjvwwj6yf78bs863xmc56dmjzzbn"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:build-type "Release"
-         #:tests? #f))
-      (inputs
-       `(("luajit" ,luajit)))
-      (synopsis "Lightweight immediate mode GUI for LÖVE games")
-      (description "LÖVE is a Lua framework for making 2D games.  Nuklear
+  (package
+    (name "love-nuklear")
+    (version "2.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/keharriso/love-nuklear/")
+                    (commit (string-append "v" version))
+                    (recursive? #t)))
+              ;; NOTE: the HEAD of the Nuklear git-submodule is at commit
+              ;; "adc52d710fe3c87194b99f540c53e82eb75c2521" of Oct 1 2019
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "090xp5c975155hd1pa7bdssdlawvygs5s6icdkwbyc8il5kg5kgv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:build-type "Release"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION .") "DESTINATION lib/love")))))))
+    (inputs
+     `(("luajit" ,luajit)))
+    (synopsis "Lightweight immediate mode GUI for LÖVE games")
+    (description "LÖVE is a Lua framework for making 2D games.  Nuklear
 is a minimal state immediate mode graphical user interface toolkit.  This
 package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
-      (home-page "https://github.com/keharriso/love-nuklear/")
-      (license license:expat))))
+    (home-page "https://github.com/keharriso/love-nuklear/")
+    (license license:expat)))
 
 (define-public allegro-4
   (package
@@ -830,7 +905,7 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.5.0")
+    (version "5.2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
@@ -838,7 +913,7 @@ etc.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06dpkfnac8w3pq36834nn2iij3ajz6prladqd0w92lq39aiqv5jr"))))
+                "034pmbmbq6jagpp4lhnyjqmf8gcz5fx74d9rknrm7d4wv4cv7qy1"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; there are no tests
     (inputs
@@ -846,7 +921,7 @@ etc.")
      `(("flac" ,flac)
        ("freetype" ,freetype)
        ("glu" ,glu)
-       ("gtk" ,gtk+-2)
+       ("gtk" ,gtk+)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
@@ -1959,28 +2034,30 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "199y4kc28va6klfs19h998sfh7vx9spnrvjw7p92i47q5a7jdcp6"))))
+                "1k2dml2z57lnc36wrmwhh7avnpczxgxnshlfhpbk174vg6v609n0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (propagated-inputs
      `(("guile-opengl" ,guile3.0-opengl)
-       ("guile-sdl2" ,guile3.0-sdl2)))
+       ("guile-sdl2" ,guile-sdl2)))
     (inputs
      `(("freetype" ,freetype)
-       ("guile" ,guile-3.0)
+       ("guile" ,guile-3.0-latest)
        ("libvorbis" ,libvorbis)
        ("mpg123" ,mpg123)
-       ("openal" ,openal)))
+       ("openal" ,openal)
+       ("readline" ,readline)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("guile" ,guile-3.0-latest)
+       ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (home-page "https://dthompson.us/projects/chickadee.html")
     (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")

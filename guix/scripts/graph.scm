@@ -500,6 +500,10 @@ package modules, while attempting to retain user package modules."
                  (lambda (opt name arg result)
                    (alist-cons 'backend (lookup-backend arg)
                                result)))
+         (option '(#\M "max-depth") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'max-depth (string->number* arg)
+                               result)))
          (option '("list-backends") #f #f
                  (lambda (opt name arg result)
                    (list-backends)
@@ -538,6 +542,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   (display (G_ "
       --list-types       list the available graph types"))
   (display (G_ "
+      --max-depth=DEPTH  limit to nodes within distance DEPTH"))
+  (display (G_ "
       --path             display the shortest path between the given nodes"))
   (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
@@ -559,6 +565,7 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
 (define %default-options
   `((node-type . ,%package-node-type)
     (backend   . ,%graphviz-backend)
+    (max-depth . +inf.0)
     (system    . ,(%current-system))))
 
 
@@ -582,6 +589,7 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
 
     (with-store store
       (let* ((transform (options->transformation opts))
+             (max-depth (assoc-ref opts 'max-depth))
              (items     (filter-map (match-lambda
                                       (('argument . (? store-path? item))
                                        item)
@@ -613,7 +621,8 @@ nodes (given ~a)~%")
                 (export-graph (concatenate nodes)
                               (current-output-port)
                               #:node-type type
-                              #:backend backend)))
+                              #:backend backend
+                              #:max-depth max-depth)))
           #:system (assq-ref opts 'system)))))
   #t)
 

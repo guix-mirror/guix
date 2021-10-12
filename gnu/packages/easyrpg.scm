@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -106,7 +106,7 @@ It can read and write LCF and XML files.")
        ("sdl2-mixer" ,sdl2-mixer)
        ("sdl2" ,sdl2)
        ("speexdsp" ,speexdsp)
-       ;; ("wildmidi" ,wildmidi)      ; TODO: package it
+       ("wildmidi" ,wildmidi)
        ("zlib" ,zlib)))
     (home-page "https://easyrpg.org/")
     (synopsis "Play RPG Maker 2000 and 2003 games")

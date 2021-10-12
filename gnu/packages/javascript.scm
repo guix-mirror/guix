@@ -26,8 +26,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages uglifyjs)
   #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -163,14 +163,14 @@ context menu in TypeScript.")
                 (cond
                  ((string-match "\\.js$" file)
                   (mkdir-p (dirname installed))
-                  (let ((minified (open-pipe* OPEN_READ "uglify-js" file)))
+                  (let ((minified (open-pipe* OPEN_READ "uglifyjs" file)))
                     (call-with-output-file installed
                       (lambda (port)
                         (dump-port minified port)))
 
                     (let ((exit (close-pipe minified)))
                       (unless (zero? exit)
-                        (error "dear, uglify-js failed" exit)))))
+                        (error "dear, uglifyjs failed" exit)))))
                  (else
                   (install-file file (dirname installed))))))
             (find-files "."))
@@ -179,7 +179,7 @@ context menu in TypeScript.")
     (native-inputs
      `(("font-mathjax" ,font-mathjax)
        ("glibc-utf8-locales" ,glibc-utf8-locales)
-       ("uglify-js" ,uglify-js)
+       ("uglifyjs" ,node-uglify-js)
        ,@(package-native-inputs font-mathjax)))
     (synopsis "JavaScript display engine for LaTeX, MathML, and AsciiMath")
     (description "MathJax is a JavaScript display engine for LaTeX, MathML,
@@ -527,8 +527,7 @@ means that these shams cause many ES5 methods to silently fail.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-uglification
-           ;; Remove "export" keyword which prevents the file from being
-           ;; uglified by uglify-js.  Moreover, that keyword is not present in
+           ;; Remove "export" keyword. That keyword is not present in
            ;; the minified version of the library some projects are using,
            ;; e.g.,
            ;; <https://github.com/jmoenig/Snap--Build-Your-Own-Blocks/blob/master/FileSaver.min.js>

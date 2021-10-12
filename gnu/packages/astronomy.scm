@@ -96,6 +96,71 @@ in FITS files.")
     (license (license:non-copyleft "file://License.txt"
                           "See License.txt in the distribution."))))
 
+(define-public python-fitsio
+  (package
+    (name "python-fitsio")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fitsio" version))
+       (sha256
+        (base32 "1llql2i6xr9lkdl81jx5nvz80kspamvira90546y32ldy551hq1l"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove the bundled cfitsio
+        `(begin
+           (delete-file-recursively "cfitsio3490")
+           (substitute* "MANIFEST.in"
+             (("recursive-include cfitsio3490.*$\n") ""))
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-cfitsio
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((cfitsio (assoc-ref inputs "cfitsio"))
+                    (includedir (string-append "\"" cfitsio "/include\""))
+                    (libdir (string-append "\"" cfitsio "/lib\"")))
+               ;; Use Guix' cfitsio instead of the bundled one
+               (substitute* "setup.py"
+                 (("self.use_system_fitsio = False") "pass")
+                 (("self.system_fitsio_includedir = None") "pass")
+                 (("self.system_fitsio_libdir = None") "pass")
+                 (("self.use_system_fitsio") "True")
+                 (("self.system_fitsio_includedir") includedir)
+                 (("self.system_fitsio_libdir") libdir)))))
+         (add-after 'unpack 'skip-bzip2-test
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The bzip2 test fails because Guix' cfitsio
+             ;; is built without bzip2 support.
+             (substitute* "fitsio/test.py"
+               (("'SKIP_BZIP_TEST' in os.environ") "True")))))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("cfitsio" ,cfitsio)))
+    (home-page "https://github.com/esheldon/fitsio")
+    (synopsis
+     "Python library to read from and write to FITS files")
+    (description
+     "This package provides a Python library for reading from and writing
+to @acronym{FITS, Flexible Image Transport System} files using the
+CFITSIO library.  Among other things, it can
+
+@itemize
+@item read and write image, binary, and ascii table extensions;
+
+@item read arbitrary subsets of tables in a lazy manner;
+
+@item query the rows and columns of a table;
+
+@item read and write header keywords;
+
+@item read and write Gzip files.
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public qfits
   (package
     (name "qfits")
@@ -228,7 +293,7 @@ astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
@@ -236,7 +301,7 @@ astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "1jjr3ixxbpsr5m4s7ahh12ymcnlvjzwcp02ya16b1lvzrz1wmhy4"))))
+         "07xr0r5dmjpnrz7ylf7k3vmjjna2jafi16lfvkqwxj9fyssmz207"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))

@@ -231,6 +231,7 @@ inferior to MAX-SIZE, #f otherwise."
     ((fat32) "fat32")
     ((jfs)   "jfs")
     ((ntfs)  "ntfs")
+    ((xfs)   "xfs")
     ((swap)  "linux-swap")))
 
 (define (user-fs-type->mount-type fs-type)
@@ -241,7 +242,8 @@ inferior to MAX-SIZE, #f otherwise."
     ((fat16) "vfat")
     ((fat32) "vfat")
     ((jfs)   "jfs")
-    ((ntfs)  "ntfs")))
+    ((ntfs)  "ntfs")
+    ((xfs)   "xfs")))
 
 (define (partition-filesystem-user-type partition)
   "Return the filesystem type of PARTITION, to be stored in the FS-TYPE field
@@ -256,6 +258,7 @@ of <user-partition> record."
             ((string=? name "fat32") 'fat32)
             ((string=? name "jfs") 'jfs)
             ((string=? name "ntfs") 'ntfs)
+            ((string=? name "xfs") 'xfs)
             ((or (string=? name "swsusp")
                  (string=? name "linux-swap(v0)")
                  (string=? name "linux-swap(v1)"))
@@ -895,7 +898,7 @@ partition."
                 (format #f "Unable to create partition ~a~%" name)))))))))
 
 (define (force-user-partitions-formatting user-partitions)
-  "Set the NEED-FORMATING? fields to #t on all <user-partition> records of
+  "Set the NEED-FORMATTING? fields to #t on all <user-partition> records of
 USER-PARTITIONS list and return the updated list."
   (map (lambda (p)
          (user-partition
@@ -1125,6 +1128,11 @@ bit bucket."
   (with-null-output-ports
    (invoke "mkfs.ntfs" "-F" "-f" partition)))
 
+(define (create-xfs-file-system partition)
+  "Create an XFS file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.xfs" "-f" partition)))
+
 (define (create-swap-partition partition)
   "Set up swap area on PARTITION file-name."
   (with-null-output-ports
@@ -1169,7 +1177,7 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
 
 (define (format-user-partitions user-partitions)
   "Format the <user-partition> records in USER-PARTITIONS list with
-NEED-FORMATING? field set to #t."
+NEED-FORMATTING? field set to #t."
   (for-each
    (lambda (user-partition)
      (let* ((need-formatting?
@@ -1206,6 +1214,10 @@ NEED-FORMATING? field set to #t."
           (and need-formatting?
                (not (eq? type 'extended))
                (create-ntfs-file-system file-name)))
+         ((xfs)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-xfs-file-system file-name)))
          ((swap)
           (create-swap-partition file-name))
          (else

@@ -522,7 +522,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.21")
+    (version "6.4.22")
     (source
      (origin
        (method url-fetch)
@@ -530,7 +530,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "07cxr5137hvrk8jfgn4wd6sq9361c3d40w8krnjxm8fpmwf9qiba"))))
+        (base32 "111cc6zfmb53f2a844iiyp3j2symcg8xd4m2kwb04mj3b6yihs6c"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -557,7 +557,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.1.1")
+    (version "2.1.3")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -567,7 +567,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0jjjvqkqmpj55v111p1a1i2ry7mpd1bpphn1bhvlr18rgw7xdrja"))
+               "0z74slnq3y9wr1xr07jigz4n8dgxhk9qb0787sd0j6wj9g4rqxgg"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1175,7 +1175,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.6.5")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -1183,7 +1183,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0irqr1z1ljmij2vbj8dr8w9mbfalzikxr4s6340jjwmkmhaslh2h"))))
+                "1da3ykqnba3axggxyzsh3kjhy0rbdfdh9pnwprbzww56y8h3vka2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1353,14 +1353,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.32.2")
+    (version "0.33.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1myylb19hj5nb1vriqng252vfjwwkgbi3gxj93pi2q1fzyw7w2lf"))))
+                "1bic1f2va136aygfy53bsgziwiidcpb7qf1v05mlza2jmgv94j14"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1740,14 +1740,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.15")
+    (version "1.8.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "1klrj2a77671xb6xa0a0iyszhjb7swxhmzpzd4qdybmzkrixqr92"))))
+        (base32 "1n271yr83grpki9szdirnk6wb5rcc319f0gmfabyw3fzyf4msjy0"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1790,7 +1790,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.94.2")
+    (version "4.95")
     (source
      (origin
        (method url-fetch)
@@ -1804,7 +1804,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "0x4j698gsawm8a3bz531pf1k6izyxfvry4hj5wb0aqphi7y62605"))))
+        (base32 "0rzi0kc3qiiaw8vnv5qrpwdvvh4sr5chns026xy99spjzx9vd76c"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -1821,7 +1821,7 @@ delivery.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; We'd use #:make-flags but the top-level Makefile calls others
@@ -1863,8 +1863,7 @@ delivery.")
                  (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
                  (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
                  (("'xzcat'") (string-append "'" xz "/bin/xzcat'"))
-                 (("'lzma'") (string-append "'" xz "/bin/lzma'"))))
-             #t))
+                 (("'lzma'") (string-append "'" xz "/bin/lzma'"))))))
          (add-before 'build 'fix-sh-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("scripts/lookups-Makefile" "scripts/reversion")
@@ -1873,8 +1872,7 @@ delivery.")
                (("\\| /bin/sh") "| sh"))
              (let ((bash (assoc-ref inputs "bash")))
                (substitute* '("scripts/Configure-eximon")
-                 (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
-             #t))
+                 (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))))
          (add-before 'build 'build-reproducibly
            (lambda _
              ;; The ‘compilation number’ is incremented for every build from the
@@ -1883,7 +1881,7 @@ delivery.")
              (substitute* "src/version.c"
                (("#include \"cnumber.h\"") "1")))))
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "INSTALL_ARG=-no_chown")
        ;; No 'check' target.  There is a test suite in test/, which assumes that
        ;; certain build options were (not) used and that it can freely ‘sudo’.
@@ -2831,14 +2829,14 @@ easily (one at a time).")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.13")
+    (version "1.4.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1hbx69d6ivbvjajrcp54fdb3g1ms4ydj0ybf3bfhlravqrk88jdk"))))
+        (base32 "046wbglvry54id9wik6c020fs09piv3gig3z0nh5nmyhsxjw4i18"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
@@ -3874,14 +3872,14 @@ killed threads.")
 (define-public pan
   (package
     (name "pan")
-    (version "0.146")
+    (version "0.147")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pan.rebelbase.com/download/releases/"
                            version "/source/" name "-" version ".tar.bz2"))
        (sha256
-        (base32 "17agd27sn4a7nahvkpg0w39kv74njgdrrygs74bbvpaj8rk2hb55"))))
+        (base32 "0960siaf0r6m18kv0d8aqpf36x2xbsfcvk07kswlany7jbxrhylr"))))
     (arguments
      `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
                            "--enable-libnotify" "--enable-manual"
@@ -4572,6 +4570,6 @@ streams, data files or other data streams, and to sort, filter, or alter the
 incoming files or data streams according to the user's wildest desires.
 Criteria for categorization of data can be via a host of methods, including
 regexes, approximate regexes, a Hidden Markov Model, Orthogonal Sparse
-Bigrams, WINNOW, Correllation, KNN/Hyperspace, or Bit Entropy (or by other
+Bigrams, WINNOW, Correlation, KNN/Hyperspace, or Bit Entropy (or by other
 means--it's all programmable).")
     (license license:gpl3)))

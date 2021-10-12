@@ -645,20 +645,29 @@ delete it when leaving the dynamic extent of this call."
       (lambda ()
         (false-if-exception (delete-file-recursively tmp-dir))))))
 
-(define* (swh-download-directory id output
-                                 #:key (log-port (current-error-port)))
-  "Download from Software Heritage the directory with the given ID, and
-unpack it to OUTPUT.  Return #t on success and #f on failure"
+(define* (swh-download-archive swhid output
+                               #:key
+                               (archive-type 'flat)
+                               (log-port (current-error-port)))
+  "Download from Software Heritage the directory or revision with the given
+SWID, in the ARCHIVE-TYPE format (one of 'flat or 'git-bare), and unpack it to
+OUTPUT.  Return #t on success and #f on failure."
   (call-with-temporary-directory
    (lambda (directory)
-     (match (vault-fetch id 'directory #:log-port log-port)
+     (match (vault-fetch swhid
+                         #:archive-type archive-type
+                         #:log-port log-port)
        (#f
         (format log-port
-                "SWH: directory ~a could not be fetched from the vault~%"
-                id)
+                "SWH: object ~a could not be fetched from the vault~%"
+                swhid)
         #f)
        ((? port? input)
-        (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
+        (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory
+                               (match archive-type
+                                 ('flat "-xzvf")     ;gzipped
+                                 ('git-bare "-xvf")) ;uncompressed
+                               "-")))
           (dump-port input tar)
           (close-port input)
           (let ((status (close-pipe tar)))
@@ -672,6 +681,14 @@ unpack it to OUTPUT.  Return #t on success and #f on failure"
                                #:log (%make-void-port "w"))
              #t))))))))
 
+(define* (swh-download-directory id output
+                                 #:key (log-port (current-error-port)))
+  "Download from Software Heritage the directory with the given ID, and
+unpack it to OUTPUT.  Return #t on success and #f on failure."
+  (swh-download-archive (string-append "swh:1:dir:" id) output
+                        #:archive-type 'flat
+                        #:log-port log-port))
+
 (define (commit-id? reference)
   "Return true if REFERENCE is likely a commit ID, false otherwise---e.g., if
 it is a tag name.  This is based on a simple heuristic so use with care!"
@@ -679,8 +696,11 @@ it is a tag name.  This is based on a simple heuristic so use with care!"
        (string-every char-set:hex-digit reference)))
 
 (define* (swh-download url reference output
-                       #:key (log-port (current-error-port)))
-  "Download from Software Heritage a checkout of the Git tag or commit
+                       #:key
+                       (archive-type 'flat)
+                       (log-port (current-error-port)))
+  "Download from Software Heritage a checkout (if ARCHIVE-TYPE is 'flat) or a
+full Git repository (if ARCHIVE-TYPE is 'git-bare) of the Git tag or commit
 REFERENCE originating from URL, and unpack it in OUTPUT.  Return #t on success
 and #f on failure.
 
@@ -694,8 +714,16 @@ wait until it becomes available, which could take several minutes."
      (format log-port "SWH: found revision ~a with directory at '~a'~%"
              (revision-id revision)
              (swh-url (revision-directory-url revision)))
-     (swh-download-directory (revision-directory revision) output
-                             #:log-port log-port))
+     (swh-download-archive (match archive-type
+                             ('flat
+                              (string-append
+                               "swh:1:dir:" (revision-directory revision)))
+                             ('git-bare
+                              (string-append
+                               "swh:1:rev:" (revision-id revision))))
+                           output
+                           #:archive-type archive-type
+                           #:log-port log-port))
     (#f
      (format log-port
              "SWH: revision ~s originating from ~a could not be found~%"

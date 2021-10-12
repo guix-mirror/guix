@@ -189,7 +189,7 @@ storage system.")
 (define-public libxfce4ui
   (package
     (name "libxfce4ui")
-    (version "4.16.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -197,7 +197,7 @@ storage system.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1anfj3n28abv9kbcpybs7q3k5g3c3d0r4xf4hyfqms2b9zlwj1lb"))))
+                "1xl52pjh7xi67qpv8800xrizf28r0bh1jm21va6hggznbap4csfr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -224,7 +224,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public catfish
   (package
     (name "catfish")
-    (version "4.16.1")
+    (version "4.16.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -232,7 +232,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
                                   "/catfish-" version ".tar.bz2"))
               (sha256
                (base32
-                "0md6ypirr97ch7x8qliwzixzwj6zzd68ivb2dzj90hm2lcn7wc8h"))))
+                "1nng7mklrfihgppyxldpssdscl1dzb5z6hyx10akk089s5i9mag9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -574,7 +574,7 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.5.2")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -582,7 +582,7 @@ keys for controlling the audio volume.")
                            "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
                            "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
        (sha256
-        (base32 "05f53ycbszvw23g76pbdszfnqfk4f8w4imwfgljj140wzl50gxx6"))))
+        (base32 "0rnlhcfsbjj0n8m84jgqihp783hrkjdjfapqr7ia53mr0fjgcw9j"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -781,7 +781,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "4.16.8")                            ;stable version = even minor
+    (version "4.16.10")                           ;stable version = even minor
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -789,7 +789,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "159ircj0mahx54fqsr3l3ynk690zlpc6ar5pnyhhpk90s8la5303"))))
+                "14lwi4ax0wj77980kkfhdf18b97339b17y8qc8gl2365mgswh1gi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1245,7 +1245,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.5.6")
+    (version "0.5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/mousepad/"
@@ -1253,7 +1253,7 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "03rmjraxb6a3w7gknmf6mdzkfc0m8shs1vkb2chvv28xn1irhma2"))))
+                "1s5x0d7jy6aps7zdyd5qnvqbnz64l6a0barp81wrxq2261s1alqh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
@@ -1268,8 +1268,7 @@ of data to either CD/DVD/BD.")
               (wrap-program (string-append out "/bin/mousepad")
                 ;; For language-specs.
                 `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
-                                                              "/share")))))
-             #t)))))
+                                                              "/share"))))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin") ; for glib-compile-schemas.

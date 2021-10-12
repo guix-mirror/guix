@@ -2,6 +2,8 @@
 ;;; Copyright © 2017 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Xinglu Chem <public@yoctocell.xyz>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +22,8 @@
 
 (define-module (guix import stackage)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 regex)
+  #:use-module (json)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (guix import json)
@@ -31,6 +32,8 @@
   #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix upstream)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:export (%stackage-url
             stackage->guix-package
             stackage-recursive-import
@@ -44,15 +47,31 @@
 (define %stackage-url
   (make-parameter "https://www.stackage.org"))
 
-;; Latest LTS version compatible with GHC 8.6.5.
-(define %default-lts-version "14.27")
+;; Latest LTS version compatible with current GHC.
+(define %default-lts-version "18.10")
 
-(define (lts-info-packages lts-info)
-  "Returns the alist of packages contained in LTS-INFO."
-  (or (assoc-ref lts-info "packages") '()))
+(define-json-mapping <stackage-lts> make-stackage-lts
+  stackage-lts?
+  json->stackage-lts
+  (snapshot    stackage-lts-snapshot "snapshot" json->snapshot)
+  (packages    stackage-lts-packages "packages"
+               (lambda (vector)
+                 (map json->stackage-package (vector->list vector)))))
 
-(define (leave-with-message fmt . args)
-  (raise (condition (&message (message (apply format #f fmt args))))))
+(define-json-mapping <snapshot> make-snapshot
+  stackage-snapshot?
+  json->snapshot
+  (name        snapshot-name)
+  (ghc-version snapshot-ghc-version)
+  (compiler    snapshot-compiler))
+
+(define-json-mapping <stackage-package> make-stackage-package
+  stackage-package?
+  json->stackage-package
+  (origin      stackage-package-origin)
+  (name        stackage-package-name)
+  (version     stackage-package-version)
+  (synopsis    stackage-package-synopsis))
 
 (define stackage-lts-info-fetch
   ;; "Retrieve the information about the LTS Stackage release VERSION."
@@ -62,21 +81,15 @@
                                 "/lts-" (if (string-null? version)
                                             %default-lts-version
                                             version)))
-            (lts-info (json-fetch url)))
-       (if lts-info
-           (reverse lts-info)
-           (leave-with-message "LTS release version not found: ~a" version))))))
+            (lts-info (and=> (json-fetch url) json->stackage-lts)))
+       (or lts-info
+           (raise (formatted-message (G_ "LTS release version not found: ~a")
+                                     version)))))))
 
-(define (stackage-package-name pkg-info)
-  (assoc-ref pkg-info "name"))
-
-(define (stackage-package-version pkg-info)
-  (assoc-ref pkg-info "version"))
-
-(define (lts-package-version pkgs-info name)
-  "Return the version of the package with upstream NAME included in PKGS-INFO."
+(define (lts-package-version packages name)
+  "Return the version of the package with upstream NAME included in PACKAGES."
   (let ((pkg (find (lambda (pkg) (string=? (stackage-package-name pkg) name))
-                   (vector->list pkgs-info))))
+                   packages)))
     (stackage-package-version pkg)))
 
 
@@ -93,21 +106,22 @@
              #:key
              (include-test-dependencies? #t)
              (lts-version %default-lts-version)
-             (packages-info
-              (lts-info-packages
+             (packages
+              (stackage-lts-packages
                (stackage-lts-info-fetch lts-version))))
      "Fetch Cabal file for PACKAGE-NAME from hackage.haskell.org.  The retrieved
 version corresponds to the version of PACKAGE-NAME specified in the LTS-VERSION
 release at stackage.org.  Return the `package' S-expression corresponding to
 that package, or #f on failure.  PACKAGES-INFO is the alist with the packages
 included in the Stackage LTS release."
-     (let* ((version (lts-package-version packages-info package-name))
+     (let* ((version (lts-package-version packages package-name))
             (name-version (hackage-name-version package-name version)))
        (if name-version
            (hackage->guix-package name-version
                                   #:include-test-dependencies?
                                   include-test-dependencies?)
-           (leave-with-message "~a: Stackage package not found" package-name))))))
+           (raise (formatted-message (G_ "~a: Stackage package not found")
+                                     package-name)))))))
 
 (define (stackage-recursive-import package-name . args)
   (recursive-import package-name
@@ -121,31 +135,46 @@ included in the Stackage LTS release."
 ;;;
 
 (define latest-lts-release
-  (let ((pkgs-info
-        (mlambda () (lts-info-packages
-                     (stackage-lts-info-fetch %default-lts-version)))))
-    (lambda* (package)
+  (let ((packages
+         (mlambda ()
+           (stackage-lts-packages
+            (stackage-lts-info-fetch %default-lts-version)))))
+    (lambda* (pkg)
       "Return an <upstream-source> for the latest Stackage LTS release of
 PACKAGE or #f if the package is not included in the Stackage LTS release."
-      (let* ((hackage-name (guix-package->hackage-name package))
-             (version (lts-package-version (pkgs-info) hackage-name))
+      (let* ((hackage-name (guix-package->hackage-name pkg))
+             (version (lts-package-version (packages) hackage-name))
              (name-version (hackage-name-version hackage-name version)))
         (match (and=> name-version hackage-fetch)
-          (#f (format (current-error-port)
-                      "warning: failed to parse ~a~%"
-                      (hackage-cabal-url hackage-name))
-              #f)
+          (#f
+           (warning (G_ "failed to parse ~a~%")
+                    (hackage-cabal-url hackage-name))
+           #f)
           (_ (let ((url (hackage-source-url hackage-name version)))
                (upstream-source
-                (package (package-name package))
+                (package (package-name pkg))
                 (version version)
-                (urls (list url))))))))))
+                (urls (list url))
+                (input-changes
+                 (changed-inputs
+                  pkg
+                  (stackage->guix-package hackage-name #:packages (packages))))))))))))
+
+(define (stackage-lts-package? package)
+  "Return whether PACKAGE is available on the default Stackage LTS release."
+  (and (hackage-package? package)
+       (let ((packages (stackage-lts-packages
+                        (stackage-lts-info-fetch %default-lts-version)))
+             (hackage-name (guix-package->hackage-name package)))
+         (find (lambda (package)
+                 (string=? (stackage-package-name package) hackage-name))
+               packages))))
 
 (define %stackage-updater
   (upstream-updater
    (name 'stackage)
    (description "Updater for Stackage LTS packages")
-   (pred hackage-package?)
+   (pred stackage-lts-package?)
    (latest latest-lts-release)))
 
 ;;; stackage.scm ends here

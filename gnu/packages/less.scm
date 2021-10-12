@@ -59,7 +59,7 @@ text editors.")
 (define-public lesspipe
   (package
     (name "lesspipe")
-    (version "1.86")
+    (version "1.89")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -68,7 +68,7 @@ text editors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14qsfwvsqn6r0najpfh5p68by4jwlg2hj4250cfi1hx3j9i5nhgn"))))
+                "0lxf0m4bgwhpwmwa5q2vklk31yhiaz049kpm4n2hqiyb5mlpa94a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests

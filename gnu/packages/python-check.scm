@@ -88,6 +88,43 @@ data in a standard way.")
 interfaces with pytest.")
     (license license:expat)))
 
+(define-public python-pytest-csv
+  (package
+    (name "python-pytest-csv")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI archive
+       (uri (git-reference
+             (url "https://github.com/nicoulaj/pytest-csv")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17518f2fn5l98lyk9p8r7215c1whi61imzrh6ahrmcksr8w0zz04"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-xdist" ,python-pytest-xdist-next)
+       ("python-tabulate" ,python-tabulate)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest-6)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/nicoulaj/pytest-csv")
+    (synopsis "CSV reporter for Pytest")
+    (description "This packages provides a plugin for Pytest that enables a
+CSV output mode for Pytest.  It can be enabled via the @option{--csv} option
+it adds to the Pytest command line interface (CLI).")
+    (license license:gpl3+)))
+
 (define-public python-testfixtures
   (package
     (name "python-testfixtures")
@@ -381,6 +418,35 @@ are too large to conveniently hard-code them in the tests.")
 advanced doctest support and enables the testing of reStructuredText files.")
     (license license:bsd-3)))
 
+(define-public python-pytest-exploratory
+  (package
+    (name "python-pytest-exploratory")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest_exploratory" version))
+       (sha256
+        (base32 "159rcqv6wrdqdlag1gz39n6fk58232hbxshan043ljgpp1qfs6xk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests")))))))
+    (propagated-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/nokia/pytest-exploratory")
+    (synopsis "Interactive console for Pytest")
+    (description "This Pytest plugin provides an IPython extension that allows
+for interactively selecting and running Pytest tests.")
+    (license license:expat)))
+
 (define-public python-pytest-filter-subpackage
   (package
     (name "python-pytest-filter-subpackage")
@@ -515,6 +581,35 @@ were inadvertently left open at the end of a unit test.")
 developers to control unit tests that require access to data from the
 internet.")
     (license license:bsd-3)))
+
+(define-public python-pytest-repeat
+  (package
+    (name "python-pytest-repeat")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-repeat" version))
+       (sha256
+        (base32 "0nxdbghjz6v4xidl5ky9wlx6z4has3vygj5r7va5ccdb8nbjilsw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/pytest-dev/pytest-repeat")
+    (synopsis "Pytest plugin for repeating tests")
+    (description "@code{pytest-repeat} is a plugin for Pytest that makes it
+enables repeating a single test, or multiple tests, a specific number of
+times.")
+    (license license:mpl2.0)))
 
 (define-public python-pytest-mpl
   (package
@@ -1344,7 +1439,7 @@ supported by the MyPy typechecker.")
 (define-public python-mypy
   (package
     (name "python-mypy")
-    (version "0.790")
+    (version "0.910")
     (source
      (origin
        ;; Because of https://github.com/python/mypy/issues/9584, the
@@ -1361,14 +1456,15 @@ supported by the MyPy typechecker.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zq3lpdf9hphcklk40wz444h8w3dkhwa12mqba5j9lmg11klnhz7"))))
+         "16ryn9d48ilcs3yrkrm9ynx36qnv0gkdkc4sbafpagcqgr2f0mrg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "mypyc"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "mypyc")))))))
     (native-inputs
      `(("python-attrs" ,python-attrs)
        ("python-flake8" ,python-flake8)
@@ -1384,6 +1480,7 @@ supported by the MyPy typechecker.")
        ("python-virtualenv" ,python-virtualenv)))
     (propagated-inputs
      `(("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-toml" ,python-toml)
        ("python-typing-extensions" ,python-typing-extensions)
        ("python-typed-ast" ,python-typed-ast)))
     (home-page "http://www.mypy-lang.org/")

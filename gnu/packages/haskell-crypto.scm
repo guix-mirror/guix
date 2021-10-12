@@ -37,7 +37,7 @@
 (define-public ghc-asn1-types
   (package
     (name "ghc-asn1-types")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -45,7 +45,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "162lacdl9jr42pdhaj9hxqlba6hjxm6g866anna74q6v3cvw5ssp"))))
+                "1a119qxhxhr0yn37r26dkydm6g5kykdkx98ghb59i4ipa6i95vkq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
@@ -214,7 +214,7 @@ that hides the C implementation.")
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("4" "0gzaibjkipijwj9m9l6wrhfk5s3kdvfbhdl7cl1373cjfs41v0m3")
+       ("6" "191nvffcrlyvr5dq99bbdxxl2qx44bla9adkhklyknf7ipqdd4yj")
        #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
     (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
                      ("ghc-puremd5" ,ghc-puremd5)
@@ -242,7 +242,7 @@ that hides the C implementation.")
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("4" "0qb2wasfc4dpf6f9ahvhlv8njb3p3p9iwblg4032ssi95cg85718")
+       ("6" "10rpxrmqgwihmplczglwxf5q3l13z9j3kvi065z884y4dymmnkgc")
        #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
     (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
                      ("ghc-sha" ,ghc-sha)
@@ -263,7 +263,7 @@ the C implementation.")
 (define-public ghc-cryptohash-sha256
   (package
     (name "ghc-cryptohash-sha256")
-    (version "0.11.101.0")
+    (version "0.11.102.0")
     (source
      (origin
        (method url-fetch)
@@ -272,19 +272,18 @@ the C implementation.")
                            "cryptohash-sha256-" version ".tar.gz"))
        (sha256
         (base32
-         "1p85vajcgw9hmq8zsz9krzx0vxh7aggwbg5w9ws8w97avcsn8xaj"))))
+         "0685s4hfighzywvvn05cfff5bl2xz3wq0pfncv6zca4iba3ykmla"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("3" "1arhz4y792kx439s2zv9x291gvvl2zxcfx9sq0nxsjlz7c3hpyp1")
-       #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
-    (inputs
-     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)))
+       ("1" "0v5ppc7r2lxbk49h1kwj4b5vyb1dw2fnppykvp5m9rm0p3vhlykr")
+       #:tests? #f)) ; TODO: tasty ==1.1.*
     (native-inputs
-     `(("ghc-sha" ,ghc-sha)
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-sha" ,ghc-sha)
        ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)))
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://github.com/hvr/cryptohash-sha1")
     (synopsis "SHA-256 implementation for Haskell")
     (description "This Haskell package provides an incremental and
@@ -299,7 +298,7 @@ the C implementation.")
 (define-public ghc-cryptonite
   (package
     (name "ghc-cryptonite")
-    (version "0.25")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -307,7 +306,7 @@ the C implementation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "131wbbdr5yavs5k1ah9sz6fqx1ffyvaxf66pwjzsfc47mwc1mgl9"))))
+                "13xhp3hshb8x06bw37kp16c9jpjmgfn06nkj9drz745fv8f04fnq"))))
     (build-system haskell-build-system)
     ;; FIXME: tests are broken.
     ;; See https://github.com/haskell-crypto/cryptonite/issues/260
@@ -334,7 +333,7 @@ generators, and more.")
 (define-public ghc-digest
   (package
     (name "ghc-digest")
-    (version "0.0.1.2")
+    (version "0.0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -344,7 +343,7 @@ generators, and more.")
              ".tar.gz"))
        (sha256
         (base32
-         "04gy2zp8yzvv7j9bdfvmfzcz3sqyqa6rwslqcn4vyair2vmif5v4"))))
+         "1l5383l5pvp018rj3vabrppnzcqrr2g0dvgvmsrbjdn02wzab5jm"))))
     (build-system haskell-build-system)
     (arguments
      `(#:extra-directories ("zlib")))
@@ -363,7 +362,7 @@ are implemented as FFI bindings to efficient code from zlib.")
 (define-public ghc-entropy
   (package
     (name "ghc-entropy")
-    (version "0.4.1.5")
+    (version "0.4.1.6")
     (source
      (origin
        (method url-fetch)
@@ -371,7 +370,7 @@ are implemented as FFI bindings to efficient code from zlib.")
                            "entropy-" version "/"
                            "entropy-" version ".tar.gz"))
        (sha256
-        (base32 "0szf8hi1pi8g0kxnkcymh65gk1b0niyl1nnkckzdqyar87qal0jm"))))
+        (base32 "0qmzz0zgad13zl0kjrxz6cxg8ckn2w8saas2a2j72vbafpzmkixd"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/TomMD/entropy")
     (synopsis "Provides platform independent entropy source for Haskell")
@@ -726,7 +725,7 @@ percent.
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("2" "1cq6h3jqkb1kvd9fjfhsllg5gq78sdiyf2gy9862xhlbv6wil19f")
+       ("3" "1yidh86ymzwmp2b449pwim6vvfcs1qgkkncbixw1zmb7wj6v167v")
        ;; We omit these test suites because they require old versions of
        ;; packages and packages we do not have.
        #:configure-flags
@@ -743,14 +742,14 @@ guidelines.")
 (define-public ghc-tls
   (package
     (name "ghc-tls")
-    (version "1.4.1")
+    (version "1.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "tls/tls-" version ".tar.gz"))
               (sha256
                (base32
-                "1y083724mym28n6xfaz7pcc7zqxdhjpaxpbvzxfbs25qq2px3smv"))))
+                "0j1rxxq5lzs584nk19610mk7mmsqqkgfxw2qj74ibb1zsk7baj4a"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
@@ -785,7 +784,7 @@ extensions.")
 (define-public ghc-hsopenssl
   (package
     (name "ghc-hsopenssl")
-    (version "0.11.4.17")
+    (version "0.11.7.1")
     (source
      (origin
        (method url-fetch)
@@ -793,7 +792,7 @@ extensions.")
                            "HsOpenSSL/HsOpenSSL-" version ".tar.gz"))
        (sha256
         (base32
-         "0qivl9clmybfglwxqp2sq308rv4ia4rhwshcsc8b029bvpp0mpsi"))))
+         "1vkcs0crifjpgr1rxkbzkwyhl4zg84m5bfxkp095mgry557gqzm8"))))
     (build-system haskell-build-system)
     (arguments
      `(#:extra-directories ("openssl")))
@@ -815,7 +814,7 @@ implementation of SSL.")
 (define-public ghc-openssl-streams
   (package
     (name "ghc-openssl-streams")
-    (version "1.2.2.0")
+    (version "1.2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -824,7 +823,7 @@ implementation of SSL.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0rplym6ayydkpr7x9mw3l13p0vzzfzzxw244d7sd3jcvaxpv0rmr"))))
+         "10pnnpzgb5xr811kc9qdk7h2cgn6hk2yiyhnzz8f8p0fjzc0pwjm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hsopenssl" ,ghc-hsopenssl)

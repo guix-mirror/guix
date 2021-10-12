@@ -1,0 +1,70 @@
+commit 0854f21baa167da1ad19618daa331b1a46cbee07
+Author: Satoshi Imai <satoshi.imai@gmail.com>
+Date:   Tue Jun 15 03:46:57 2021 +0900
+
+    Fix to make it works with the current SBCL
+
+diff --git a/api.lisp b/api.lisp
+index 2d8c29b..aed38be 100644
+--- a/api.lisp
++++ b/api.lisp
+@@ -8,8 +8,8 @@
+ (defun startup-python ()
+   (.initialize)
+   (initialize-modules)
+-  #+(and sbcl unix); python will fail sbcl's sigpipe-handler.
+-  (sb-unix::enable-interrupt sb-unix::sigpipe #'sb-unix::sigpipe-handler)
++  ;; #+(and sbcl unix); python will fail sbcl's sigpipe-handler.
++  ;; (sb-unix::enable-interrupt sb-unix::sigpipe #'sb-unix::sigpipe-handler)
+   )
+ 
+ (defun shutdown-python ()
+@@ -35,8 +35,9 @@
+   (let ((cpython-initialized? (.is-initialized)))
+     (unless cpython-initialized?
+       (.initialize)
+-      #+(and sbcl unix); python will fail sbcl's sigpipe-handler.
+-      (sb-unix::enable-interrupt sb-unix::sigpipe #'sb-unix::sigpipe-handler))
++      ;; #+(and sbcl unix); python will fail sbcl's sigpipe-handler.
++      ;; (sb-unix::enable-interrupt sb-unix::sigpipe #'sb-unix::sigpipe-handler)
++      )
+     (unwind-protect
+          (funcall thunk)
+       (unless cpython-initialized?
+diff --git a/ffi-conditions.lisp b/ffi-conditions.lisp
+index ac03e80..ba1da33 100644
+--- a/ffi-conditions.lisp
++++ b/ffi-conditions.lisp
+@@ -3,8 +3,9 @@
+ ;; Python must have been initialized for our macroexpansions to work.
+ (eval-when (:compile-toplevel :load-toplevel)
+   (.initialize)
+-  #+(and sbcl unix); python will fail sbcl's sigpipe-handler.
+-  (sb-unix::enable-interrupt sb-unix::sigpipe #'sb-unix::sigpipe-handler))
++  ;; #+(and sbcl unix); python will fail sbcl's sigpipe-handler.
++  ;; (sb-unix::enable-interrupt sb-unix::sigpipe #'sb-unix::sigpipe-handler)
++  )
+ 
+ (defpyexception "BaseException" (python-condition)
+     (("args" :initarg :args)))
+diff --git a/grovel-include-dir.lisp b/grovel-include-dir.lisp
+index 6583084..62e07f3 100644
+--- a/grovel-include-dir.lisp
++++ b/grovel-include-dir.lisp
+@@ -23,13 +23,15 @@
+       (or (and (uiop:file-exists-p env-value) (cl:list env-value))
+           (error "DLL for PYTHON3 not correctly pointed to by BB_PYTHON3_DYLIB: ~A" env-value)))))
+ 
++(defvar *detected-library* nil)
++
+ (defun detect-python ()
+   (setf *detected-library* nil)
+   (or
+    (let ((env-value (uiop:getenv "BB_PYTHON3_INCLUDE_DIR")))
+      (when env-value
+        (or (uiop:directory-exists-p env-value)
+-           (error "BB_PYTHON3_INCLUDE_DIR is set, but does not point to an actual directory: %a" env-value))))
++           (error "BB_PYTHON3_INCLUDE_DIR is set, but does not point to an actual directory: ~A" env-value))))
+    (when *miniconda3*
+      (let ((path (if (pathnamep *miniconda3*)
+                      *miniconda3*

@@ -471,7 +471,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.6.0")
+    (version "3.6.1")
     (source
      (origin
        (method url-fetch)
@@ -479,7 +479,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "0f8aqwkgw4gs97b5i4ygiqk5zilwq7ax7zwdd31r72zk98cd1g46"))))
+        (base32 "051dwhdqa9q3zyrvr78g0cfzl1zhaagfvgx9axa9895q0g0wggx2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBINARY_PACKAGE_BUILD=On"
@@ -492,19 +492,7 @@ photographic equipment.")
              (substitute* "./src/common/dlopencl.c"
                (("\"libOpenCL\"")
                 (string-append "\"" (assoc-ref inputs "opencl-icd-loader")
-                               "/lib/libOpenCL.so\"")))
-             #t))
-         ;; The use of inline is wrong and darktable cannot compile its kernels
-         ;; with ROCm. See upstream commit
-         ;; https://github.com/darktable-org/darktable/commit/f0d8710f5ef34eb7e33b4064e022ebf3057b9e53
-         (add-after 'unpack 'opencl-inline
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; This is a feature of OpenCL 1.2 and later.
-             (substitute* "data/kernels/CMakeLists.txt"
-               (("CL1\\.1") "CL1.2"))
-             (substitute* (find-files "data/kernels" "\\.(cl|h)$")
-               (("inline") "static inline"))
-             #t))
+                               "/lib/libOpenCL.so\"")))))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Rawspeed fails to build with GCC due to OpenMP error:
@@ -514,8 +502,7 @@ photographic equipment.")
              ;; it to the Clang dir. We fix this by patching CMakeLists.txt.
              (substitute* "CMakeLists.txt"
                (("\\$\\{LLVM_INSTALL_PREFIX\\}")
-                (assoc-ref %build-inputs "clang")))
-             #t))
+                (assoc-ref %build-inputs "clang")))))
          (add-before 'configure 'set-LDFLAGS-and-CPATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -535,8 +522,7 @@ photographic equipment.")
                ;; For GtkFileChooserDialog.
                `("GSETTINGS_SCHEMA_DIR" =
                  (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas"))))
-             #t)))))
+                                  "/share/glib-2.0/schemas")))))))))
     (native-inputs
      `(("clang" ,clang-11)
        ("cmocka" ,cmocka)
@@ -595,7 +581,7 @@ developer.  It manages your digital negatives in a database, lets you view
 them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     ;; See src/is_supported_platform.h for supported platforms.
-    (supported-systems '("x86_64-linux" "aarch64-linux"))
+    (supported-systems '("x86_64-linux" "aarch64-linux" "powerpc64le-linux"))
     (license (list license:gpl3+ ;; Darktable itself.
                    license:lgpl2.1+)))) ;; Rawspeed library.
 

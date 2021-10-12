@@ -44,7 +44,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019, 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020, 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
@@ -64,6 +64,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
+;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -284,7 +285,7 @@
 (define-public brasero
   (package
     (name "brasero")
-    (version "3.12.2")
+    (version "3.12.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/brasero/"
@@ -292,7 +293,7 @@
                                  "brasero-" version ".tar.xz"))
              (sha256
               (base32
-               "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
+               "05gabybkl7xfinwx97i4scp9hic0dlxj7gh03dyj0hd16fp9wx47"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list
@@ -304,11 +305,12 @@
                                          "/lib/girepository-1.0"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'embed-growisofs
+         (add-before 'configure 'embed-growisofs-reference
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "plugins/growisofs/burn-growisofs.c"
-               (("\"growisofs") (string-append "\"" (which "growisofs"))))
-             #t)))))
+             (let ((dvd+rw-tools (assoc-ref inputs "dvd+rw-tools")))
+               (substitute* "plugins/growisofs/burn-growisofs.c"
+                 (("(\")(growisofs)" _ prefix command)
+                  (string-append prefix dvd+rw-tools "/bin/" command)))))))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
@@ -10972,7 +10974,7 @@ functionality.")
 (define-public gthumb
   (package
     (name "gthumb")
-    (version "3.10.3")
+    (version "3.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gthumb/"
@@ -10980,7 +10982,7 @@ functionality.")
                                   "gthumb-" version ".tar.xz"))
               (sha256
                (base32
-                "04n2sgasc03kiczyzkq362pjilj12hq2r5qj07lynqr9rivkzdys"))))
+                "0grqiq6v26z8avl7mj24xy4i9bl1niwpqhqw6rblprl40c1zrvrx"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -10993,23 +10995,27 @@ functionality.")
                             (assoc-ref %outputs "out")
                             "/lib/gthumb/extensions"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
        ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
-       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("intltool" ,intltool)
-       ("itstool" ,itstool)))
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("exiv2" ,exiv2)
-       ("gtk" ,gtk+)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gstreamer" ,gstreamer)
-       ("clutter" ,clutter)
+     `(("clutter" ,clutter)
        ("clutter-gst" ,clutter-gst)
        ("clutter-gtk" ,clutter-gtk)
+       ("colord" ,colord)
+       ("exiv2" ,exiv2)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("gtk" ,gtk+)
+       ("libheif" ,libheif)
        ("libjpeg" ,libjpeg-turbo)
+       ("libraw" ,libraw)
+       ("librsvg" ,librsvg)
        ("libtiff" ,libtiff)
-       ("libraw" ,libraw)))
+       ("libwebp" ,libwebp)))
     (home-page "https://wiki.gnome.org/Apps/Gthumb")
     (synopsis "GNOME image viewer and browser")
     (description "GThumb is an image viewer, browser, organizer, editor and
@@ -12237,7 +12243,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.31.0")
+    (version "0.35.0")
     (source
      (origin
        (method git-fetch)
@@ -12247,7 +12253,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vldcjq24y4xxg8dzlyhfpqxbqn5g160lz1lmmkp7g9im2zrxh52"))))
+         "19axlz34zg4ijfc1z0y2xp6ayi5hvgvqdp4wprkp0wjrkfn7dkq7"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -12540,3 +12546,32 @@ Document Analysis and Recognition program.")
 applications scaling from desktop workstations to mobile phones.  It is the
 successor of @code{libhandy} for GTK4.")
       (license license:lgpl2.1+))))
+
+(define-public gnome-power-manager
+  (package
+    (name "gnome-power-manager")
+    (version "3.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0drfn3wcc8l4n07qwv6p0rw2dwcd00hwzda282q62l6sasks2b2g"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("upower" ,upower)
+       ("gtk+" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin")
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-power-manager")
+    (synopsis "Power management daemon for the GNOME desktop")
+    (description "@code{gnome-power-manager} is a tool for viewing present and
+historical battery usage and related statistics.")
+    (license license:gpl2)))

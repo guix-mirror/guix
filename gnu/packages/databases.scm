@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
@@ -36,7 +36,6 @@
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -53,6 +52,7 @@
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +90,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -489,14 +490,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.6.9")
+    (version "1.6.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1lcjy1b9krnb2gk72qd1fvivlfiyfvknfi3wngyvyk9ifzijr9nm"))))
+        (base32 "0ii3z2mhjrimc6mv5z5x6bwp1s2bbzppja4m3pnmd5zgh9gs74gj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -695,6 +696,29 @@ auto-completion and syntax highlighting.")
                        (for-each delete-file
                                  (find-files (string-append out "/bin")
                                              "_embedded$"))
+                       #t)))
+                  (add-after
+                   'install 'wrap-mysql_helpers
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (bin (string-append out "/bin"))
+                            (awk (assoc-ref inputs "gawk"))
+                            (coreutils (assoc-ref inputs "coreutils"))
+                            (grep (assoc-ref inputs "grep"))
+                            (ps (assoc-ref inputs "procps"))
+                            (sed (assoc-ref inputs "sed")))
+                       (wrap-program (string-append bin "/mysql_config")
+                         `("PATH" ":" suffix
+                           (,(string-append awk "/bin")
+                            ,(string-append coreutils "/bin")
+                            ,(string-append sed "/bin"))))
+                       (wrap-program (string-append bin "/mysqld_safe")
+                         `("PATH" ":" suffix
+                           (,(string-append awk "/bin")
+                            ,(string-append coreutils "/bin")
+                            ,(string-append grep "/bin")
+                            ,(string-append ps "/bin")
+                            ,(string-append sed "/bin"))))
                        #t))))))
     (native-inputs
      `(("bison" ,bison)
@@ -702,11 +726,16 @@ auto-completion and syntax highlighting.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost-for-mysql)
+       ("coreutils" ,coreutils)
+       ("gawk" ,gawk)
+       ("grep" ,grep)
        ("libaio" ,libaio)
        ("libtirpc" ,libtirpc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
+       ("procps" ,procps)
        ("rpcsvc-proto" ,rpcsvc-proto) ; rpcgen
+       ("sed" ,sed)
        ("zlib" ,zlib)))
     (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
@@ -2173,19 +2202,18 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "6.2.4")
+    (version "6.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0vp1d9mlfsppry3nsj9f7bmh9wjgsy3jggp24sac1hhgl43c8cms"))
+                "1ariw5x33hmmm3d5al0j3307l5kf3vhmn78wpyaz67hia1x8nasv"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled jemalloc, as the package will use the libc one
-               '(begin (delete-file-recursively "deps/jemalloc")
-                       #t))))
+               '(begin (delete-file-recursively "deps/jemalloc")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("procps" ,procps)               ; for tests
@@ -2200,8 +2228,7 @@ similar to BerkeleyDB, LevelDB, etc.")
                (("^TCLSH=.*")
                 (string-append "TCLSH="
                                (assoc-ref inputs "tcl")
-                               "/bin/tclsh")))
-             #t))
+                               "/bin/tclsh")))))
          (add-after 'unpack 'adjust-tests
            (lambda _
              ;; Disable failing tests
@@ -2209,8 +2236,7 @@ similar to BerkeleyDB, LevelDB, etc.")
                (("integration/failover") "")
                (("integration/replication-4") "")
                (("integration/replication-psync") "")
-               (("integration/replication[^-]") ""))
-             #t)))
+               (("integration/replication[^-]") "")))))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
                       "LDFLAGS=-ldl"
@@ -4016,7 +4042,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
 (define-public sequeler
   (package
     (name "sequeler")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4025,7 +4051,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q1vzc3likpiwfh6blkyiz0wr0aarj9xrm8gbi7m3p1wslkpah7c"))))
+                "0biggmsn8k7j6pdrwk29whl56qlfgvf5d9vjpgz4nyqih56wgh9j"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -4036,8 +4062,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
            (lambda _
              (substitute* "build-aux/meson_post_install.py"
                (("gtk-update-icon-cache") "true")
-               (("update-desktop-database") "true"))
-             #t)))))
+               (("update-desktop-database") "true")))))))
     (native-inputs
      `(;("appstream-glib" ,appstream-glib)  ; validation fails for lack of network
        ("gettext-minimal" ,gettext-minimal)

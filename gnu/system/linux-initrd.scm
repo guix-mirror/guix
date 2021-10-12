@@ -210,6 +210,16 @@ upon error."
              (open source targets)))
          mapped-devices))
 
+  (define file-system-scan-commands
+    ;; File systems like btrfs need help to assemble multi-device file systems
+    ;; but do not use manually-specified <mapped-devices>.
+    (let ((file-system-types (map file-system-type file-systems)))
+      (if (member "btrfs" file-system-types)
+          ;; Ignore errors: if the system manages to boot anyway, the better.
+          #~((system* (string-append #$btrfs-progs/static "/bin/btrfs")
+                      "device" "scan"))
+          #~())))
+
   (define kodir
     (flat-linux-module-directory linux linux-modules))
 
@@ -245,7 +255,8 @@ upon error."
                         (map spec->file-system
                              '#$(map file-system->spec file-systems))
                         #:pre-mount (lambda ()
-                                      (and #$@device-mapping-commands))
+                                      (and #$@device-mapping-commands
+                                           #$@file-system-scan-commands))
                         #:linux-modules '#$linux-modules
                         #:linux-module-directory '#$kodir
                         #:keymap-file #+(and=> keyboard-layout
@@ -269,7 +280,7 @@ FILE-SYSTEMS."
           (list fatfsck/static)
           '())
     ,@(if (find (file-system-type-predicate "bcachefs") file-systems)
-          (list bcachefs-tools/static)
+          (list bcachefs/static)
           '())
     ,@(if (find (file-system-type-predicate "btrfs") file-systems)
           (list btrfs-progs/static)
@@ -279,6 +290,9 @@ FILE-SYSTEMS."
           '())
     ,@(if (find (file-system-type-predicate "f2fs") file-systems)
           (list f2fs-fsck/static)
+          '())
+    ,@(if (find (file-system-type-predicate "xfs") file-systems)
+          (list xfs_repair/static)
           '())))
 
 (define-syntax vhash                              ;TODO: factorize
@@ -311,6 +325,7 @@ FILE-SYSTEMS."
                     ("iso9660" => '("isofs"))
                     ("jfs" => '("jfs"))
                     ("f2fs" => '("f2fs" "crc32_generic"))
+                    ("xfs" => '("xfs"))
                     (else '())))
 
 (define (file-system-modules file-systems)

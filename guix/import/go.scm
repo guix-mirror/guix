@@ -474,13 +474,13 @@ Optionally include a VERSION string to append to the name."
 because goproxy servers don't currently provide all the information needed to
 build a package."
   (define (go-import->module-meta content-text)
-    (match (string-split content-text #\space)
+    (match (string-tokenize content-text char-set:graphic)
       ((root-path vcs repo-url)
        (make-module-meta root-path (string->symbol vcs)
                          (strip-.git-suffix/maybe repo-url)))))
   ;; <meta name="go-import" content="import-prefix vcs repo-root">
   (let* ((meta-data (http-fetch* (format #f "https://~a?go-get=1" module-path)))
-         (select (sxpath `(// head (meta (@ (equal? (name "go-import"))))
+         (select (sxpath `(// (meta (@ (equal? (name "go-import"))))
                               // content))))
     (match (select (html->sxml meta-data #:strict? #t))
       (() #f)                           ;nothing selected
@@ -612,6 +612,8 @@ hint: use one of the following available versions ~a\n"
          (dependencies (if pin-versions?
                            dependencies+versions
                            (map car dependencies+versions)))
+         (module-path-sans-suffix
+          (match:prefix (string-match "([\\./]v[0-9]+)?$" module-path)))
          (guix-name (go-module->guix-package-name module-path))
          (root-module-path (module-path->repository-root module-path))
          ;; The VCS type and URL are not included in goproxy information. For
@@ -619,7 +621,7 @@ hint: use one of the following available versions ~a\n"
          (meta-data (fetch-module-meta-data root-module-path))
          (vcs-type (module-meta-vcs meta-data))
          (vcs-repo-url (module-meta-data-repo-url meta-data goproxy))
-         (synopsis (go-package-synopsis root-module-path))
+         (synopsis (go-package-synopsis module-path))
          (description (go-package-description module-path))
          (licenses (go-package-licenses module-path)))
     (values
@@ -630,7 +632,10 @@ hint: use one of the following available versions ~a\n"
          ,(vcs->origin vcs-type vcs-repo-url version*))
         (build-system go-build-system)
         (arguments
-         '(#:import-path ,root-module-path))
+         '(#:import-path ,module-path
+           ,@(if (string=? module-path-sans-suffix root-module-path)
+                 '()
+                 `(#:unpack-path ,root-module-path))))
         ,@(maybe-propagated-inputs
            (map (match-lambda
                   ((name version)

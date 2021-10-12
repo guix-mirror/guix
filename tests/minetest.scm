@@ -17,10 +17,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-minetest)
+  #:use-module (guix build-system minetest)
+  #:use-module (guix upstream)
   #:use-module (guix memoization)
   #:use-module (guix import minetest)
   #:use-module (guix import utils)
   #:use-module (guix tests)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
+  #:use-module ((gnu packages minetest)
+                #:select (minetest minetest-technic))
+  #:use-module ((gnu packages base)
+                #:select (hello))
   #:use-module (json)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -33,6 +41,10 @@
 
 (define* (make-package-sexp #:key
                             (guix-name "minetest-foo")
+                            ;; This is not a proper version number but
+                            ;; ContentDB often does not include version
+                            ;; numbers.
+                            (version "2021-07-25")
                             (home-page "https://example.org/foo")
                             (repo "https://example.org/foo.git")
                             (synopsis "synopsis")
@@ -44,9 +56,7 @@
                             #:allow-other-keys)
   `(package
      (name ,guix-name)
-     ;; This is not a proper version number but ContentDB does not include
-     ;; version numbers.
-     (version "2021-07-25")
+     (version ,version)
      (source
       (origin
         (method git-fetch)
@@ -106,14 +116,14 @@
                              author "/" name "/download/"))
     ("website" . ,website)))
 
-(define* (make-releases-json #:key (commit #f) (title "") #:allow-other-keys)
+(define* (make-releases-json #:key (commit #f) (title "2021-07-25") #:allow-other-keys)
   `#((("commit" . ,commit)
       ("downloads" . 469)
       ("id" . 8614)
       ("max_minetest_version" . null)
       ("min_minetest_version" . null)
       ("release_date" . "2021-07-25T01:10:23.207584")
-      ("title" . "2021-07-25"))))
+      ("title" . ,title))))
 
 (define* (make-dependencies-json #:key (author "Author")
                                  (name "foo")
@@ -247,14 +257,14 @@ during a dynamic extent where that package is available on ContentDB."
               #:guix-name "minetest-foo-bar"
               #:upstream-name "Author/foo_bar")
 
-(test-equal "elaborate names, unambigious"
+(test-equal "elaborate names, unambiguous"
   "Jeija/mesecons"
   (call-with-packages
    (cut elaborate-contentdb-name "mesecons")
    '(#:name "mesecons" #:author "Jeija")
    '(#:name "something" #:author "else")))
 
-(test-equal "elaborate name, ambigious (highest score)"
+(test-equal "elaborate name, ambiguous (highest score)"
   "Jeija/mesecons"
   (call-with-packages
    ;; #:sort "score" is the default
@@ -264,7 +274,7 @@ during a dynamic extent where that package is available on ContentDB."
    '(#:name "mesecons" #:author "Jeija" #:score 999)))
 
 
-(test-equal "elaborate name, ambigious (most downloads)"
+(test-equal "elaborate name, ambiguous (most downloads)"
   "Jeija/mesecons"
   (call-with-packages
    (cut elaborate-contentdb-name "mesecons" #:sort "downloads")
@@ -293,9 +303,20 @@ during a dynamic extent where that package is available on ContentDB."
               #:repo 'null)
 
 
+;; Determining the version number
+
+(test-package "conventional version number" #:version "1.2.3" #:title "1.2.3")
+;; See e.g. orwell/basic_trains
+(test-package "v-prefixed version number" #:version "1.2.3" #:title "v1.2.3")
+;; Many mods on ContentDB use dates as release titles.  In that case, the date
+;; will have to do.
+(test-package "dates as version number"
+              #:version "2021-01-01" #:title "2021-01-01")
+
+
 
 ;; Dependencies
-(test-package* "minetest->guix-package, unambigious dependency"
+(test-package* "minetest->guix-package, unambiguous dependency"
   (list #:requirements '(("mesecons" #f
                           ("Jeija/mesecons"
                            "some-modpack/containing-mese")))
@@ -303,7 +324,7 @@ during a dynamic extent where that package is available on ContentDB."
   (list #:author "Jeija" #:name "mesecons")
   (list #:author "some-modpack" #:name "containing-mese" #:type "modpack"))
 
-(test-package* "minetest->guix-package, ambigious dependency (highest score)"
+(test-package* "minetest->guix-package, ambiguous dependency (highest score)"
   (list #:name "frobnicate"
         #:guix-name "minetest-frobnicate"
         #:upstream-name "Author/frobnicate"
@@ -314,7 +335,7 @@ during a dynamic extent where that package is available on ContentDB."
   (list #:author "Author" #:name "foo" #:score 0)
   (list #:author "Author" #:name "bar" #:score 9999))
 
-(test-package* "minetest->guix-package, ambigious dependency (most downloads)"
+(test-package* "minetest->guix-package, ambiguous dependency (most downloads)"
   (list #:name "frobnicate"
         #:guix-name "minetest-frobnicate"
         #:upstream-name "Author/frobnicate"
@@ -330,6 +351,16 @@ during a dynamic extent where that package is available on ContentDB."
                                 ("Jeija/mesecons"
                                  "some-modpack/containing-mese")))
               #:inputs '())
+
+;; See e.g. 'orwell/basic_trains'
+(test-package* "minetest->guix-package, multiple dependencies implemented by one mod"
+  (list #:name "frobnicate"
+        #:guix-name "minetest-frobnicate"
+        #:upstream-name "Author/frobnicate"
+        #:requirements '(("frob" #f ("Author/frob"))
+                         ("frob_x" #f ("Author/frob")))
+        #:inputs '("minetest-frob"))
+  (list #:author "Author" #:name "frob"))
 
 
 ;; License
@@ -352,4 +383,120 @@ during a dynamic extent where that package is available on ContentDB."
     (list z y x)
     (sort-packages (list x y z))))
 
+
+
+;; Update detection
+(define (upstream-source->sexp upstream-source)
+  (define urls (upstream-source-urls upstream-source))
+  (unless (= 1 (length urls))
+    (error "only a single URL is expected"))
+  (define url (first urls))
+  `(,(upstream-source-package upstream-source)
+    ,(upstream-source-version upstream-source)
+    ,(git-reference-url url)
+    ,(git-reference-commit url)))
+
+(define* (expected-sexp #:key
+                        (repo "https://example.org/foo.git")
+                        (guix-name "minetest-foo")
+                        (new-version "0.8")
+                        (commit "44941798d222901b8f381b3210957d880b90a2fc")
+                        #:allow-other-keys)
+  `(,guix-name ,new-version ,repo ,commit))
+
+(define* (example-package #:key
+                          (source 'auto)
+                          (repo "https://example.org/foo.git")
+                          (old-version "0.8")
+                          (commit "44941798d222901b8f381b3210957d880b90a2fc")
+                          #:allow-other-keys)
+  (package
+    (name "minetest-foo")
+    (version old-version)
+    (source
+     (if (eq? source 'auto)
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url repo)
+                 (commit commit #;"808f9ffbd3106da4c92d2367b118b98196c9e81e")))
+           (sha256 #f) ; not important for the following tests
+           (file-name (git-file-name name version)))
+         source))
+    (build-system minetest-mod-build-system)
+    (license #f)
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (properties '((upstream-name . "Author/foo")))))
+
+(define-syntax-rule (test-release test-case . arguments)
+  (test-equal test-case
+    (expected-sexp . arguments)
+    (and=>
+     (call-with-packages
+      (cut latest-minetest-release (example-package . arguments))
+      (list . arguments))
+     upstream-source->sexp)))
+
+(define-syntax-rule (test-no-release test-case . arguments)
+  (test-equal test-case
+    #f
+    (call-with-packages
+     (cut latest-minetest-release (example-package . arguments))
+     (list . arguments))))
+
+(test-release "same version"
+  #:old-version "0.8" #:title "0.8" #:new-version "0.8"
+  #:commit "44941798d222901b8f381b3210957d880b90a2fc")
+
+(test-release "new version (dotted)"
+  #:old-version "0.8" #:title "0.9.0" #:new-version "0.9.0"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+(test-release "new version (date)"
+  #:old-version "2014-11-17" #:title "2015-11-04"
+  #:new-version "2015-11-04"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+(test-release "new version (git -> dotted)"
+  #:old-version
+  (git-version "0.8" "1" "90422555f114d3af35e7cc4b5b6d59a5c226adc4")
+  #:title "0.9.0" #:new-version "0.9.0"
+  #:commit "90422555f114d3af35e7cc4b5b6d59a5c226adc4")
+
+;; There might actually be a new release, but guix cannot compare dates
+;; with regular version numbers.
+(test-no-release "dotted -> date"
+  #:old-version "0.8" #:title "2015-11-04"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+(test-no-release "date -> dotted"
+  #:old-version "2014-11-07" #:title "0.8"
+  #:commit "c8855b991880897b2658dc90164e29c96e2aeb3a")
+
+;; Don't let "guix refresh -t minetest" tell there are new versions
+;; if Guix has insufficient information to actually perform the update,
+;; when using --with-latest or "guix refresh -u".
+(test-no-release "no commit information, no new release"
+  #:old-version "0.8" #:title "0.9.0" #:new-version "0.9.0"
+  #:commit #false)
+
+(test-assert "minetest is not a minetest mod"
+  (not (minetest-package? minetest)))
+(test-assert "GNU hello is not a minetest mod"
+  (not (minetest-package? hello)))
+(test-assert "technic is a minetest mod"
+  (minetest-package? minetest-technic))
+(test-assert "upstream-name is required"
+  (not (minetest-package?
+        (package (inherit minetest-technic)
+                 (properties '())))))
+
 (test-end "minetest")
+
+;;; Local Variables:
+;;; eval: (put 'test-package* 'scheme-indent-function 1)
+;;; eval: (put 'test-release 'scheme-indent-function 1)
+;;; eval: (put 'test-no-release 'scheme-indent-function 1)
+;;; End:

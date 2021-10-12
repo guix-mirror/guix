@@ -302,6 +302,50 @@ Linux kernel.")
     (home-page "https://github.com/tinyalsa/tinyalsa")
     (license (license:non-copyleft "file:///NOTICE"))))
 
+(define-public libgme
+  (package
+    (name "libgme")
+    (version "0.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
+                                  "downloads/game-music-emu-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "07857vdkak306d9s5g6fhmjyxk7vijzjhkmqb15s7ihfxx9lx8xb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; no check target
+    (home-page "https://bitbucket.org/mpyne/game-music-emu")
+    (synopsis "Video game music file playback library")
+    (description
+     "Game-music-emu is a collection of video game music file emulators that
+support the following formats and systems:
+@table @code
+@item AY
+ZX Spectrum/Asmtrad CPC
+@item GBS
+Nintendo Game Boy
+@item GYM
+Sega Genesis/Mega Drive
+@item HES
+NEC TurboGrafx-16/PC Engine
+@item KSS
+MSX Home Computer/other Z80 systems (doesn't support FM sound)
+@item NSF/NSFE
+Nintendo NES/Famicom (with VRC 6, Namco 106, and FME-7 sound)
+@item SAP
+Atari systems using POKEY sound chip
+@item SPC
+Super Nintendo/Super Famicom
+@item VGM/VGZ
+Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
+@end table")
+    (license (list license:lgpl2.1+
+                   ;; demo and player directories are under the Expat license
+                   license:expat))))
+
 (define-public libopenmpt
   (package
     (name "libopenmpt")
@@ -4578,7 +4622,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "21.07")
+    (version "21.10")
     (source
      (origin
        (method git-fetch)
@@ -4587,7 +4631,7 @@ library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0v76pvsna7dx8nb53s7x2vfpws27wi3p34l7af5niqvyh0gl4mzr"))))
+        (base32 "0l9bicg8v1shsyq9k48zh4wv5kwfs6lfjmm9blzd13xrgmhd07w2"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DGSTREAMER=ON")))
@@ -4765,12 +4809,12 @@ workstations as well as consumer software such as music players.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "1.3.0")
+    (version "1.3.0")                     ;marked unmaintained as of Oct. 2021
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/iurie-sw/redkite")
+             (url "https://github.com/free-sm/redkite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -15,6 +15,7 @@
 # Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+# Copyright © 2021 Andrew Tropin <andrew@trop.in>
 #
 # This file is part of GNU Guix.
 #
@@ -95,6 +96,7 @@ MODULES =					\
   guix/discovery.scm				\
   guix/android-repo-download.scm		\
   guix/bzr-download.scm            		\
+  guix/extracting-download.scm			\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/swh.scm					\
@@ -254,6 +256,7 @@ MODULES =					\
   guix/import/egg.scm   			\
   guix/import/elpa.scm   			\
   guix/import/gem.scm				\
+  guix/import/git.scm                           \
   guix/import/github.scm   			\
   guix/import/gnome.scm				\
   guix/import/gnu.scm				\
@@ -295,6 +298,8 @@ MODULES =					\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/system/reconfigure.scm		\
+  guix/scripts/home.scm			\
+  guix/scripts/home/import.scm			\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/crate.scm			\
@@ -375,10 +380,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.14-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.14-x86_64.conf	\
-  gnu/packages/aux-files/linux-libre/5.13-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.13-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.13-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.13-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-i686.conf	\
@@ -476,6 +477,7 @@ SCM_TESTS =					\
   tests/graph.scm				\
   tests/gremlin.scm				\
   tests/hackage.scm				\
+  tests/import-git.scm				\
   tests/import-utils.scm			\
   tests/inferior.scm				\
   tests/lint.scm				\
@@ -549,6 +551,7 @@ SH_TESTS =					\
   tests/guix-package-aliases.sh			\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\
+  tests/guix-home.sh				\
   tests/guix-archive.sh				\
   tests/guix-authenticate.sh			\
   tests/guix-environment.sh			\

@@ -101,17 +101,18 @@ and import their menus over DBus.")
 (define-public libstatgrab
   (package
     (name "libstatgrab")
-    (version "0.92")
+    (version "0.92.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://ftp.i-scream.org/pub/i-scream/libstatgrab/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "15m1sl990l85ijf8pnc6hdfha6fqyiq74mijrzm3xz4zzxm91wav"))))
+        (base32 "04bcbln3qlilxsyh5hrwdrv7x4pfv2lkwdwa98bxfismd15am22n"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-tests")))
+     '(#:configure-flags '("--enable-tests"
+                           "--disable-static")))
     (native-inputs
      ;; For testing.
      `(("perl" ,perl)))

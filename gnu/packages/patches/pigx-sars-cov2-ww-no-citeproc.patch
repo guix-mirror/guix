@@ -1,0 +1,33 @@
+diff -Naur pigx_sars-cov2-ww-0.0.3/configure.ac pigx_sars-cov2-ww-0.0.3.patched/configure.ac
+--- pigx_sars-cov2-ww-0.0.3/configure.ac	2021-06-10 10:12:00.552889984 +0200
++++ pigx_sars-cov2-ww-0.0.3.patched/configure.ac	2021-10-05 14:52:32.318695129 +0200
+@@ -50,7 +50,6 @@
+ find_or_override_prog([MULTIQC],         [multiqc])
+ find_or_override_prog([WGET],            [wget])
+ find_or_override_prog([PANDOC],          [pandoc])
+-find_or_override_prog([PANDOC_CITEPROC], [pandoc-citeproc])
+ 
+ AC_ARG_ENABLE([r-packages-check],
+   AS_HELP_STRING([--disable-r-packages-check], [Do not check any R packages.]),
+diff -Naur pigx_sars-cov2-ww-0.0.3/Makefile.in pigx_sars-cov2-ww-0.0.3.patched/Makefile.in
+--- pigx_sars-cov2-ww-0.0.3/Makefile.in	2021-08-05 16:33:59.164123383 +0200
++++ pigx_sars-cov2-ww-0.0.3.patched/Makefile.in	2021-10-05 14:52:41.272958547 +0200
+@@ -402,7 +402,6 @@
+ PACKAGE_URL = @PACKAGE_URL@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PANDOC = @PANDOC@
+-PANDOC_CITEPROC = @PANDOC_CITEPROC@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
+ PRINSEQ = @PRINSEQ@
+ PYTHON = @PYTHON@
+diff -Naur pigx_sars-cov2-ww-0.0.3/pigx-common/common/pigx-runner.in pigx_sars-cov2-ww-0.0.3.patched/pigx-common/common/pigx-runner.in
+--- pigx_sars-cov2-ww-0.0.3/pigx-common/common/pigx-runner.in	2021-07-30 11:10:17.913115902 +0200
++++ pigx_sars-cov2-ww-0.0.3.patched/pigx-common/common/pigx-runner.in	2021-10-05 14:52:23.602438714 +0200
+@@ -379,7 +379,6 @@
+     if path.exists(bin): shutil.rmtree(bin)
+     os.makedirs(bin, exist_ok=True)
+     os.symlink('@PANDOC@', path.join(bin, "pandoc"))
+-    os.symlink('@PANDOC_CITEPROC@', path.join(bin, "pandoc-citeproc"))
+     os.symlink('@RSCRIPT@', path.join(bin, "Rscript"))
+     os.environ['PATH'] = path.abspath(bin) + ":" + os.environ['PATH']
+     os.environ['PIGX_PATH'] = path.abspath(bin) + ":" + os.environ['PATH']

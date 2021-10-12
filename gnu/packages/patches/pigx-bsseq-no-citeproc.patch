@@ -1,0 +1,33 @@
+diff -Naur pigx_bsseq-0.1.5/configure.ac pigx_bsseq-0.1.5.patched/configure.ac
+--- pigx_bsseq-0.1.5/configure.ac	2021-06-08 15:28:08.000000000 +0200
++++ pigx_bsseq-0.1.5.patched/configure.ac	2021-10-05 14:43:56.806529137 +0200
+@@ -38,7 +38,6 @@
+ find_or_override_prog([GNUBASH],         [bash])
+ find_or_override_prog([SNAKEMAKE],       [snakemake])
+ find_or_override_prog([PANDOC],          [pandoc])
+-find_or_override_prog([PANDOC_CITEPROC], [pandoc-citeproc])
+ find_or_override_prog([FASTQC],          [fastqc])
+ find_or_override_prog([MULTIQC],         [multiqc])
+ find_or_override_prog([TRIMGALORE],      [trim_galore])
+diff -Naur pigx_bsseq-0.1.5/Makefile.in pigx_bsseq-0.1.5.patched/Makefile.in
+--- pigx_bsseq-0.1.5/Makefile.in	2021-06-08 16:17:03.000000000 +0200
++++ pigx_bsseq-0.1.5.patched/Makefile.in	2021-10-05 14:43:34.635876855 +0200
+@@ -408,7 +408,6 @@
+ PACKAGE_URL = @PACKAGE_URL@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PANDOC = @PANDOC@
+-PANDOC_CITEPROC = @PANDOC_CITEPROC@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
+ PYTHON = @PYTHON@
+ PYTHONPATH = @PYTHONPATH@
+diff -Naur pigx_bsseq-0.1.5/pigx-common/common/pigx-runner.in pigx_bsseq-0.1.5.patched/pigx-common/common/pigx-runner.in
+--- pigx_bsseq-0.1.5/pigx-common/common/pigx-runner.in	2021-06-08 10:14:29.000000000 +0200
++++ pigx_bsseq-0.1.5.patched/pigx-common/common/pigx-runner.in	2021-10-05 14:43:44.296161069 +0200
+@@ -375,7 +375,6 @@
+     if path.exists(bin): shutil.rmtree(bin)
+     os.makedirs(bin, exist_ok=True)
+     os.symlink('@PANDOC@', path.join(bin, "pandoc"))
+-    os.symlink('@PANDOC_CITEPROC@', path.join(bin, "pandoc-citeproc"))
+     os.symlink('@RSCRIPT@', path.join(bin, "Rscript"))
+     os.environ['PATH'] = path.abspath(bin) + ":" + os.environ['PATH']
+     os.environ['PIGX_PATH'] = path.abspath(bin) + ":" + os.environ['PATH']
