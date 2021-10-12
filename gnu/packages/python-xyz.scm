@@ -6874,7 +6874,7 @@ def customize_build(EXTENSIONS, OPTIONS):
     (inputs
       `(("c-blosc" ,c-blosc)
         ("giflib" ,giflib)
-        ("google-brotli" ,google-brotli)
+        ("brotli" ,brotli)
         ("libjpeg-turbo" ,libjpeg-turbo)
         ("libpng" ,libpng)
         ("libtiff" ,libtiff)

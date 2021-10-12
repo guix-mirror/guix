@@ -685,7 +685,7 @@ source files.")
              (lambda* (#:key native-inputs inputs #:allow-other-keys)
                (let* ((inputs        (or native-inputs inputs))
                       (c-ares        (assoc-ref inputs "c-ares"))
-                      (google-brotli (assoc-ref inputs "google-brotli"))
+                      (brotli        (assoc-ref inputs "brotli"))
                       (icu4c         (assoc-ref inputs "icu4c"))
                       (nghttp2       (assoc-ref inputs "nghttp2"))
                       (openssl       (assoc-ref inputs "openssl"))
@@ -704,7 +704,7 @@ source files.")
                     (string-append target
                                    "'ldflags': ['-Wl,-rpath="
                                    c-ares "/lib:"
-                                   google-brotli "/lib:"
+                                   brotli "/lib:"
                                    icu4c "/lib:"
                                    nghttp2 "/lib:"
                                    openssl "/lib:"
@@ -821,7 +821,7 @@ source files.")
     (native-inputs
      `(;; Runtime dependencies for binaries used as a bootstrap.
        ("c-ares" ,c-ares)
-       ("google-brotli" ,google-brotli)
+       ("brotli" ,brotli)
        ("icu4c" ,icu4c-67)
        ("libuv" ,libuv-for-node)
        ("nghttp2" ,nghttp2 "lib")
@@ -840,7 +840,7 @@ source files.")
        ("icu4c" ,icu4c-67)
        ("libuv" ,libuv-for-node)
        ("llhttp" ,llhttp-bootstrap)
-       ("google-brotli" ,google-brotli)
+       ("brotli" ,brotli)
        ("nghttp2" ,nghttp2 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))))

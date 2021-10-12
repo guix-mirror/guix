@@ -4872,7 +4872,7 @@ libxml to ease remote use of the RESTful API.")
        ("httpd" ,httpd)))
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all of these (except where otherwise noted)
-     `(("brotli" ,google-brotli)
+     `(("brotli" ,brotli)
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)       ; for GIO runtime modules
        ("libpsl" ,libpsl)

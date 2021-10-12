@@ -2169,9 +2169,9 @@ single-member files which can't be decompressed in parallel.")
 non-Windows systems without running the actual installer using wine.")
    (license license:zlib)))
 
-(define-public google-brotli
+(define-public brotli
   (package
-    (name "google-brotli")
+    (name "brotli")
     (version "1.0.9")
     (source
      (origin
@@ -2222,20 +2222,19 @@ with @code{deflate} but offers more dense compression.
 The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (license license:expat)))
 
-(define-public brotli
-  ;; We used to provide an older version under the name "brotli".
-  (deprecated-package "brotli" google-brotli))
+(define-public google-brotli
+  (deprecated-package "google-brotli" brotli))
 
 (define-public python-google-brotli
   (package
-    (inherit google-brotli)
+    (inherit brotli)
     (name "python-google-brotli")
     (build-system python-build-system)
     (arguments '())
-    (synopsis "Python interface to google-brotli")
-    (description "@code{python-google-brotli} provides a Python interface to
-@code{google-brotli}, an implementation of the Brotli lossless compression
-algorithm.")))
+    (synopsis "Python interface to Brotli")
+    (description "This package provides a Python interface to the @code{brotli}
+package, an implementation of the Brotli lossless compression algorithm.")))
+
 
 (define-public ucl
   (package
