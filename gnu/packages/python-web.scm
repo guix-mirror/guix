@@ -1934,13 +1934,26 @@ conforming to a given API or contract.")
 that have uses outside of the Zope framework.")
     (license license:zpl2.1)))
 
-(define-public python-zope-exceptions-bootstrap
+(define (python-zope-bootstrap-package orig)
   (package
-    (inherit python-zope-exceptions)
-    (arguments `(#:tests? #f))
+    (inherit orig)
+    (name (string-append (package-name orig) "-bootstrap"))
+    (arguments
+     (if (null? (package-arguments orig))
+         `(#:tests? #f
+           #:phases (modify-phases %standard-phases
+                      (delete 'sanity-check)))
+         (substitute-keyword-arguments (package-arguments orig)
+           ((#:tests? _ #f) #f)
+           ((#:phases phases '%standard-phases)
+            `(modify-phases ,phases
+               (delete 'sanity-check))))))
     (propagated-inputs `())
     (native-inputs `())
     (properties `((hidden? . #t)))))
+
+(define-public python-zope-exceptions-bootstrap
+  (python-zope-bootstrap-package python-zope-exceptions))
 
 (define-public python2-zope-exceptions
   (package-with-python2 python-zope-exceptions))
@@ -1994,8 +2007,7 @@ tests.")
 
 (define-public python-zope-testrunner-bootstrap
   (package
-    (inherit python-zope-testrunner)
-    (arguments `(#:tests? #f))
+    (inherit (python-zope-bootstrap-package python-zope-testrunner))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-zope-exceptions" ,python-zope-exceptions-bootstrap)))
@@ -2093,11 +2105,7 @@ Markup Language.")
     (license license:zpl2.1)))
 
 (define-public python-zope-configuration-bootstrap
-  (package
-    (inherit python-zope-configuration)
-    (arguments `(#:tests? #f))
-    (native-inputs `())
-    (properties `((hidden? . #t)))))
+  (python-zope-bootstrap-package python-zope-configuration))
 
 (define-public python2-zope-configuration
   (package-with-python2 python-zope-configuration))
@@ -2160,11 +2168,7 @@ brokering, etc.) for which the proxy is responsible.")
     (license license:zpl2.1)))
 
 (define-public python-zope-proxy-bootstrap
-  (package
-    (inherit python-zope-proxy)
-    (arguments `(#:tests? #f))
-    (native-inputs `())
-    (properties `((hidden? . #t)))))
+  (python-zope-bootstrap-package python-zope-proxy))
 
 (define-public python2-zope-proxy
   (package-with-python2 python-zope-proxy))
@@ -2221,11 +2225,7 @@ Zope3, which are are special objects that have a structural location.")
     (license license:zpl2.1)))
 
 (define-public python-zope-location-bootstrap
-  (package
-    (inherit python-zope-location)
-    (arguments `(#:tests? #f))
-    (native-inputs `())
-    (properties `((hidden? . #t)))))
+  (python-zope-bootstrap-package python-zope-location))
 
 (define-public python2-zope-location
   (package-with-python2 python-zope-location))
@@ -2264,15 +2264,12 @@ security policies on Python objects.")
 
 (define-public python-zope-security-bootstrap
   (package
-    (inherit python-zope-security)
-    (arguments `(#:tests? #f))
+    (inherit (python-zope-bootstrap-package python-zope-security))
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
        ("python-zope-interface" ,python-zope-interface)
        ("python-zope-proxy" ,python-zope-proxy-bootstrap)
-       ("python-zope-schema" ,python-zope-schema)))
-    (native-inputs `())
-    (properties `((hidden? . #t)))))
+       ("python-zope-schema" ,python-zope-schema)))))
 
 (define-public python2-zope-security
   (package-with-python2 python-zope-security))
@@ -2320,11 +2317,7 @@ facilities for defining, registering and looking up components.")
     (license license:zpl2.1)))
 
 (define-public python-zope-component-bootstrap
-  (package
-    (inherit python-zope-component)
-    (arguments `(#:tests? #f))
-    (native-inputs `())
-    (properties `((hidden? . #t)))))
+  (python-zope-bootstrap-package python-zope-component))
 
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
