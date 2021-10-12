@@ -1124,3 +1124,40 @@ to Lisp.")
 quotes, XML tags, and more.  The plugin provides mappings to easily delete,
 change and add such surroundings in pairs.")
     (license license:vim)))
+
+(define-public vim-ctrlp
+  (package
+    (name "vim-ctrlp")
+    (version "1.81")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/ctrlpvim/ctrlp.vim")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n68hg59h4rjn0ziqbsh5pr03l3kr98zk54659ny6vq107af1w96"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://ctrlpvim.github.io/ctrlp.vim/")
+    (synopsis "Fuzzy file, buffer, mru, tag, etc. finder for Vim")
+    (description
+     "CtrlP features:
+@itemize
+@item Written in pure Vimscript for MacVim, gVim and Vim 7.0+.
+@item Full support for Vim's regexp as search patterns.
+@item Built-in @acronym{Most Recently Used, MRU} files monitoring and search.
+@item Built-in project's root finder.
+@item Open multiple files at once.
+@item Create new files and directories.
+@item Execute Ex commands on an opening file (jump to a line, to a string or do
+anything).
+@item Optional cross-session caching and history allow for fast initialization.
+@item Mappings and usage conform to Vim's conventions.
+@end itemize")
+    (license license:vim)))
