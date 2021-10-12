@@ -4752,31 +4752,6 @@ also contains the libsysfs library.")
     ;; The rest is mostly gpl2, with a few files indicating gpl2+.
     (license (list license:gpl2 license:gpl2+ license:lgpl2.1+))))
 
-(define-public sysfsutils-1
-  (package
-    (inherit sysfsutils)
-    (version "1.3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "mirror://sourceforge/linux-diag/sysfsutils/sysfsutils-" version
-         "/sysfsutils-" version ".tar.gz"))
-       (sha256
-        (base32 "0kdhs07fm8263pxwd5blwn2x211cg4fk63fyf9ijcdkvzmwxrqq3"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "Makefile.in"
-             (("includedir = /usr/include/sysfs")
-              "includedir = @includedir@"))
-           (substitute* "configure"
-             (("includedir='(\\$\\{prefix\\}/include)'" all orig)
-              (string-append "includedir='" orig "/sysfs'")))
-           #t))))
-    (synopsis "System utilities based on Linux sysfs (version 1.x)")))
-
 (define-public cpufrequtils
   (package
     (name "cpufrequtils")
