@@ -1098,3 +1098,29 @@ to Lisp.")
 @code{Paredit.vim} is similar to @code{paredit.el} for Emacs.")
       ;; License listed in plugin/paredit.vim.
       (license license:public-domain))))
+
+(define-public vim-surround
+  (package
+    (name "vim-surround")
+    (version "2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tpope/vim-surround")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b0bd5m5lv1p4d299mrwjfs2gk0zqwyaqdaid9hs9yqlxnr8s5nf"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/tpope/vim-surround")
+    (synopsis "Vim plugin for easy quoting and parenthesizing")
+    (description
+     "Surround.vim is all about \"surroundings\": parentheses, brackets,
+quotes, XML tags, and more.  The plugin provides mappings to easily delete,
+change and add such surroundings in pairs.")
+    (license license:vim)))
