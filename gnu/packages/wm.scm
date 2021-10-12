@@ -81,7 +81,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages build-tools) ;for meson-0.55
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)

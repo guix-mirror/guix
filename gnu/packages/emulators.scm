@@ -415,7 +415,7 @@ older games.")
         (base32 "07jwmmm1bhfxavlhl854cj8l5iy5hqx5hpwkkjbcwqg7yh9jfs2x"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.55 #:configure-flags
+     `(#:configure-flags
        ;; These both try to git clone subprojects.
        (list "-Dunit_tests=disabled"     ; gtest
              "-Duse_mt32emu=false")))    ; mt32emu

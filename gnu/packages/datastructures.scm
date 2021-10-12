@@ -25,7 +25,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages build-tools)   ;for meson-0.55
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)

@@ -1173,7 +1173,7 @@ written entirely in Python.")
        ("automake" ,automake)
        ("cmake" ,cmake)                 ;requires cmake >= 3.17
        ("git" ,git-minimal)
-       ("meson" ,meson-0.55)
+       ("meson" ,meson)
        ("ninja",ninja)
        ("pkg-config" ,pkg-config)
        ("python-bottle" ,python-bottle)
