@@ -11633,7 +11633,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
 (define-public apostrophe
   (package
     (name "apostrophe")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11642,7 +11642,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qzy3zhi18wf42m034s8kcmx9gl05j620x3hf6rnycq2fvy7g4gz"))))
+                "06yfiflmj3ip7ppcz41nb3xpgb5ggw5h74w0v87yaqqkq7qh31lp"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11686,10 +11686,11 @@ GTK+.  It integrates well with the GNOME desktop environment.")
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (home-page "https://gitlab.gnome.org/somas/apostrophe")
     (synopsis "Markdown editor written in Python with GTK+")
-    (description "Apostrophe is a GTK+ based distraction free Markdown editor.
+    (description "Apostrophe is a GTK+ based distraction-free Markdown editor.
 It uses pandoc as back-end for parsing Markdown.")
     (license license:gpl3)))
 
