@@ -704,14 +704,14 @@ of the project is to be runnable on untrusted networks without crashing.")
 (define-public tectonic
   (package
     (name "tectonic")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tectonic" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0rjkfmbam81anpdqs2qafcmd5bf7y898c8a7iqqqwkbl1hfw4sqs"))))
+        (base32 "0hzyqpjxya6g1ifb3hvjvj0zl2aigx898pz7h5pl46z50jp2pdc8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:rust ,rust-1.52
@@ -731,14 +731,14 @@ of the project is to be runnable on untrusted networks without crashing.")
         ("rust-serde" ,rust-serde-1)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-structopt" ,rust-structopt-0.3)
-        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.2)
-        ("rust-tectonic-bundles" ,rust-tectonic-bundles-0.1)
+        ("rust-tectonic-bridge-core" ,rust-tectonic-bridge-core-0.3)
+        ("rust-tectonic-bundles" ,rust-tectonic-bundles-0.2)
         ("rust-tectonic-docmodel" ,rust-tectonic-docmodel-0.1)
         ("rust-tectonic-engine-bibtex" ,rust-tectonic-engine-bibtex-0.1)
         ("rust-tectonic-engine-xdvipdfmx" ,rust-tectonic-engine-xdvipdfmx-0.1)
         ("rust-tectonic-engine-xetex" ,rust-tectonic-engine-xetex-0.1)
         ("rust-tectonic-errors" ,rust-tectonic-errors-0.2)
-        ("rust-tectonic-geturl" ,rust-tectonic-geturl-0.2)
+        ("rust-tectonic-geturl" ,rust-tectonic-geturl-0.3)
         ("rust-tectonic-io-base" ,rust-tectonic-io-base-0.3)
         ("rust-tectonic-status-base" ,rust-tectonic-status-base-0.2)
         ("rust-tectonic-xdv" ,rust-tectonic-xdv-0.1)
