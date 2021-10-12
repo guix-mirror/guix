@@ -2225,16 +2225,18 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
 (define-public google-brotli
   (deprecated-package "google-brotli" brotli))
 
-(define-public python-google-brotli
+(define-public python-brotli
   (package
     (inherit brotli)
-    (name "python-google-brotli")
+    (name "python-brotli")
     (build-system python-build-system)
     (arguments '())
     (synopsis "Python interface to Brotli")
     (description "This package provides a Python interface to the @code{brotli}
 package, an implementation of the Brotli lossless compression algorithm.")))
 
+(define-public python-google-brotli
+  (deprecated-package "python-google-brotli" python-brotli))
 
 (define-public ucl
   (package

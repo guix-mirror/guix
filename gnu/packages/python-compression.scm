@@ -261,26 +261,6 @@ the LZ4 frame format.")
 (define-public python2-lzstring
   (package-with-python2 python-lzstring))
 
-(define-public python-brotli
-  (package
-    (name "python-brotli")
-    (version "1.0.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "Brotli" version ".zip"))
-        (sha256
-         (base32
-          "0f4433s4wv9masc303kkb1s0a09x81xwr8pdvj0kyxzdl05826sd"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (home-page "https://github.com/google/brotli")
-    (synopsis "Python bindings for the Brotli compression library")
-    (description
-     "This package provides python bindings for the Brotli compression library.")
-    (license license:asl2.0)))
-
 (define-public bitshuffle
   (package
     (name "bitshuffle")
