@@ -1,0 +1,80 @@
+From a08eabc6e5a3e0a9c7a15ca15ff7d450ecb6db88 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Tue, 12 Oct 2021 17:32:43 +0200
+Subject: [PATCH] io: fix a use-after-free in conjunction with HX_realpath
+
+HX_readlink(&x, ...) forgot to set x to nullptr upon error, which
+trips up subsequent calls to HX_readlink with the very same x.
+
+Fixes: v3.26-1-g97f4be2
+---
+ src/io.c          |  8 ++++++--
+ src/tc-realpath.c | 10 ++++++++++
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/io.c b/src/io.c
+index 95d6fd6..14078fc 100644
+--- a/src/io.c
++++ b/src/io.c
+@@ -316,8 +316,10 @@ EXPORT_SYMBOL int HX_readlink(hxmc_t **target, const char *path)
+ 		ssize_t ret = readlink(path, *target, linkbuf_size);
+ 		if (ret < 0) {
+ 			int saved_errno = errno;
+-			if (allocate)
++			if (allocate) {
+ 				HXmc_free(*target);
++				*target = nullptr;
++			}
+ 			return -(errno = saved_errno);
+ 		}
+ 		if (static_cast(size_t, ret) < linkbuf_size) {
+@@ -327,8 +329,10 @@ EXPORT_SYMBOL int HX_readlink(hxmc_t **target, const char *path)
+ 		linkbuf_size *= 2;
+ 		if (HXmc_setlen(target, linkbuf_size) == NULL) {
+ 			int saved_errno = errno;
+-			if (allocate)
++			if (allocate) {
+ 				HXmc_free(*target);
++				*target = nullptr;
++			}
+ 			return -(errno = saved_errno);
+ 		}
+ 	}
+diff --git a/src/tc-realpath.c b/src/tc-realpath.c
+index 5dd9aa2..c2ef15a 100644
+--- a/src/tc-realpath.c
++++ b/src/tc-realpath.c
+@@ -11,6 +11,7 @@
+ #include <stdlib.h>
+ #include <libHX/io.h>
+ #include <libHX/option.h>
++#include <libHX/string.h>
+ 
+ static unsigned int rp_flags;
+ static unsigned int rp_absolute;
+@@ -42,6 +43,14 @@ static bool rp_get_options(int *argc, const char ***argv)
+ 	return true;
+ }
+ 
++static void t_1(void)
++{
++	hxmc_t *tmp = HXmc_strinit("");
++	/* two components, so that HX_readlink gets called twice */
++	HX_realpath(&tmp, "/dev/tty", HX_REALPATH_DEFAULT);
++	HXmc_free(tmp);
++}
++
+ int main(int argc, const char **argv)
+ {
+ 	hxmc_t *res;
+@@ -49,6 +58,7 @@ int main(int argc, const char **argv)
+ 
+ 	if (!rp_get_options(&argc, &argv))
+ 		return EXIT_FAILURE;
++	t_1();
+ 
+ 	res = NULL;
+ 	while (--argc > 0) {
+-- 
+2.33.0
+
