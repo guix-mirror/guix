@@ -2927,7 +2927,7 @@ overlay below or above the point.  Corfu can be considered the minimalistic
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
-    (version "2.1.0")
+    (version "2.2.0")
     (source
      (origin
        (method git-fetch)
@@ -2936,7 +2936,7 @@ overlay below or above the point.  Corfu can be considered the minimalistic
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xkqn4604k2imas6azy1www56br8ls4iv9a44pxcd8h94j1fp44d"))))
+        (base32 "0cf5npgksl9a03mnfdhfdhlf46gr9qz9adjxz3dbckq9b1vl0dfc"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
