@@ -1188,3 +1188,34 @@ anything).
 whereby several completion methods are attempted one after another until a
 result is returned.")
     (license license:expat)))
+
+(define-public vim-gitgutter
+  (let ((commit "256702dd1432894b3607d3de6cd660863b331818")
+        (revision "1"))
+    (package
+      (name "vim-gitgutter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/airblade/vim-gitgutter")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zpa7cs59a8sq0k3frlf9flpf30jcn239yrpmv40r7nqvxzglbpl"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan
+         '(("autoload" "share/vim/vimfiles/")
+           ("doc" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (synopsis "Vim plugin which shows a git diff in the sign column")
+      (description
+       "A Vim plugin which shows a git diff in the sign column.  It shows which
+lines have been added, modified, or removed.  You can also preview, stage, and
+undo individual hunks; and stage partial hunks.  The plugin also provides a hunk
+text object.  The signs are always up to date and the plugin never saves your
+buffer.")
+      (home-page "https://github.com/airblade/vim-gitgutter")
+      (license license:expat))))
