@@ -1992,7 +1992,15 @@ forms, HTTP servers, regular expressions, and more.")
          "0jyyf1dcz156q95x2y7yw2v420q2xn3cff0c5aci7hmdmcbn0gc7"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
+     '(#:tests? #f                    ;FIXME: Tests can't find zope.interface.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-problematic-test
+           (lambda _
+             ;; This test contains invalid syntax, which breaks bytecode
+             ;; compilation.  For simplicity just remove it.
+             (delete-file
+              "src/zope/testrunner/tests/testrunner-ex/sample2/badsyntax.py"))))))
     (native-inputs
      `(("python-zope-testing" ,python-zope-testing)))
     (propagated-inputs
