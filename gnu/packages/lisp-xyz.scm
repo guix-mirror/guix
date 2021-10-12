@@ -27,6 +27,7 @@
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
 ;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18841,3 +18842,33 @@ formats within this framework.")
 
 (define-public cl-feeder
   (sbcl-package->cl-source-package sbcl-feeder))
+
+(define-public sbcl-terminfo
+  (let ((commit "b8b2e3ed786bfcf9f1aa4a264cee2e93135080f5")
+        (revision "1"))
+    (package
+      (name "sbcl-terminfo")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/npatrick04/terminfo")
+               (commit commit)))
+         (file-name (git-file-name "terminfo" version))
+         (sha256
+          (base32 "1nmin9rr6f75xdhxysba66xa1dh62fh27w9ad1cvmj0062armf6b"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Terminfo database front end in Common Lisp")
+      (home-page "https://github.com/npatrick04/terminfo")
+      (description
+        "This is a terminfo database front end in Common Lisp.  The package
+provides a method for determining which capabilities a terminal
+(e.g. \"xterm\") has and methods to compile or put commands to a stream.")
+      (license license:expat))))
+
+(define-public cl-terminfo
+  (sbcl-package->cl-source-package sbcl-terminfo))
+
+(define-public ecl-terminfo
+  (sbcl-package->ecl-package sbcl-terminfo))
