@@ -4780,22 +4780,37 @@ also contains the libsysfs library.")
 (define-public cpufrequtils
   (package
     (name "cpufrequtils")
-    (version "0.3")
+    (version "008")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kernel.org/linux/utils/kernel/cpufreq/"
                            "cpufrequtils-" version ".tar.gz"))
        (sha256
-        (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
-       (patches (search-patches "cpufrequtils-fix-aclocal.patch"))))
+        (base32 "0xjs8j44hh0cz6qpig1n0iw8xjpr6s5qmcmwh965ngapxgarr7af"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("sysfsutils" ,sysfsutils-1)))
     (arguments
-     '(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                         (assoc-ref %outputs "out") "/lib"))))
-    (home-page "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/")
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "PROC=false"             ; obsoleted by sysfs in Linux 2.6(!)
+               (string-append "CC=" ,(cc-for-target))
+               (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
+               "INSTALL=install"
+               (string-append "bindir=" out "/bin")
+               (string-append "sbindir=" out "/sbin")
+               (string-append "mandir=" out "/share/man")
+               (string-append "includedir=" out "/include")
+               (string-append "libdir=" out "/lib")
+               (string-append "localedir=" out "/share/locale")
+               (string-append "docdir=" out "/share/doc/" ,name)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page
+     "http://ftp.be.debian.org/pub/linux/utils/kernel/cpufreq/cpufrequtils.html")
     (synopsis "Utilities to get and set CPU frequency on Linux")
     (description
      "The cpufrequtils suite contains utilities to retrieve CPU frequency

@@ -954,7 +954,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
   %D%/packages/patches/coreutils-ls.patch			\
-  %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cpuinfo-system-libraries.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
