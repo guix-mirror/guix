@@ -1068,6 +1068,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ganeti-preserve-PYTHONPATH.patch		\
   %D%/packages/patches/ganeti-shepherd-master-failover.patch	\
   %D%/packages/patches/ganeti-shepherd-support.patch		\
+  %D%/packages/patches/ganeti-sphinx-compat.patch		\
   %D%/packages/patches/gash-utils-ls-test.patch			\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\

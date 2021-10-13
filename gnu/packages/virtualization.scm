@@ -519,6 +519,7 @@ firmware blobs.  You can
               (file-name (git-file-name name version))
               (patches (search-patches "ganeti-shepherd-support.patch"
                                        "ganeti-shepherd-master-failover.patch"
+                                       "ganeti-sphinx-compat.patch"
                                        "ganeti-haskell-compat.patch"
                                        "ganeti-haskell-pythondir.patch"
                                        "ganeti-disable-version-symlinks.patch"
