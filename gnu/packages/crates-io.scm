@@ -26151,6 +26151,44 @@ file.
 @end itemize")
     (license license:gpl2+)))
 
+;; https://github.com/jnqnfe/pulse-binding-rust/blob/c788a8069f455f864d2ba5f0aa5f62e6648dfd26/pulse-sys/build.rs
+;; fix location of pulseaudio
+(define-public rust-libpulse-binding-2
+  (package
+    (name "rust-libpulse-binding")
+    (version "2.23.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libpulse-binding" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qx85j489mmad9cvw5k71271l3qy4s8a5qq8a9wac6cfi4viz5fv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libpulse-sys" ,rust-libpulse-sys-1)
+        ("rust-num-derive" ,rust-num-derive-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/jnqnfe/pulse-binding-rust")
+    (synopsis "Binding for the PulseAudio libpulse library")
+    (description
+     "This package provides a Rust language binding for the PulseAudio libpulse
+library.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-libpulse-sys-1
   (package
