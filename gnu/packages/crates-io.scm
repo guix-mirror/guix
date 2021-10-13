@@ -46,6 +46,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-gtk)
   #:use-module (gnu packages crypto)
@@ -10723,6 +10724,32 @@ to the @code{is_x86_feature_detected!} macro.")
      "This package provides a lightweight @code{no-std} compatible alternative
 to @code{is_x86_feature_detected}.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-cpuprofiler-0.0
+  (package
+    (name "rust-cpuprofiler")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cpuprofiler" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0az588yyl9r13w4k7xfdh5ckfaq52fwpjry2q2hblazxpjflgy23"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (inputs
+     `(("gperftools" ,gperftools)))
+    (home-page "https://github.com/AtheMathmo/cpuprofiler")
+    (synopsis "Bindings to Google's cpu profiler")
+    (description "This package provides bindings to Google's cpu profiler.")
+    (license license:bsd-2)))
 
 (define-public rust-crates-index-0.13
   (package
