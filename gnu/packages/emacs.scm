@@ -136,6 +136,12 @@
                             "lisp/progmodes/sh-script.el")
                (("\"/bin/sh\"")
                 (format #f "~s" (which "sh"))))
+             ;; match ".gvfs-fuse-daemon-real" and ".gvfsd-fuse-real"
+             ;; respectively when looking for GVFS processes.
+             (substitute* "lisp/net/tramp-gvfs.el"
+               (("\\(tramp-compat-process-running-p \"(.*)\"\\)" all process)
+                (format #f "(or ~a (tramp-compat-process-running-p ~s))"
+                        all (string-append "." process "-real"))))
              #t))
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
