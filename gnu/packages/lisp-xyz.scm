@@ -19032,3 +19032,43 @@ For a YAML parser and emitter using this, check out cl-yaml.")
 
 (define-public ecl-cl-libyaml
   (sbcl-package->ecl-package sbcl-cl-libyaml))
+
+(define-public sbcl-cl-yaml
+  (let ((commit "c3202be9a753c51f3bc79538a5a498a8865192aa")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-yaml")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/cl-yaml")
+               (commit commit)))
+         (file-name (git-file-name "cl-yaml" version))
+         (sha256
+          (base32 "1izjg0v6rf7dh069bbnnr67l30lsqj86wdk7y9ggbgiwh6v9j185"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-libyaml" ,sbcl-cl-libyaml)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("parse-number" ,sbcl-parse-number)))
+      (native-inputs
+       `(("cl-fad" ,sbcl-cl-fad)
+         ("fiveam" ,sbcl-fiveam)
+         ("generic-comparability" ,sbcl-generic-comparability)
+         ("trivial-benchmark" ,sbcl-trivial-benchmark)
+         ("yason" ,sbcl-yason)))
+      (home-page "https://github.com/eudoxia0/cl-yaml")
+      (synopsis "YAML parser for Common Lisp")
+      (description
+        "This is a YAML parser and emitter for Common Lisp built on top of
+libyaml.")
+      (license license:expat))))
+
+(define-public cl-yaml
+  (sbcl-package->cl-source-package sbcl-cl-yaml))
+
+(define-public ecl-cl-yaml
+  (sbcl-package->ecl-package sbcl-cl-yaml))
