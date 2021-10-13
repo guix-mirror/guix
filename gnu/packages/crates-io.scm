@@ -64,6 +64,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages rust-apps)
@@ -26149,6 +26150,39 @@ file.
 @item Information about file moves, additions and deletions.
 @end itemize")
     (license license:gpl2+)))
+
+
+(define-public rust-libpulse-sys-1
+  (package
+    (name "rust-libpulse-sys")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libpulse-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10msfr8f951v86ag0fl2bsm4a3siq2r7hz9bqhhg7i234s1yj5yg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-num-derive" ,rust-num-derive-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/jnqnfe/pulse-binding-rust")
+    (synopsis "FFI bindings for the PulseAudio")
+    (description
+     "This package provides FFI bindings for the PulseAudio libpulse system
+library.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-libsqlite3-sys-0.22
   (package
