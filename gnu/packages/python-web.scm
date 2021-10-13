@@ -6049,6 +6049,23 @@ over IMAP:
 @end itemize")
     (license license:asl2.0)))
 
+(define-public python-giturlparse
+  (package
+    (name "python-giturlparse")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "giturlparse" version))
+        (sha256
+         (base32 "0dxk7sqy8ibaqdl6jzxd0ac1p7shzp4p9f3lhkd7qw9h3llsp595"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/nephila/giturlparse")
+    (synopsis "Git URL parsing module")
+    (description "This package provides a git URL parsing module which supports
+parsing and rewriting of remote git URLs from various hosting providers.")
+    (license license:asl2.0)))
+
 (define-public python-hstspreload
   (package
     (name "python-hstspreload")
