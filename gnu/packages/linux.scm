@@ -7827,68 +7827,78 @@ the superuser to make device nodes.")
 (define-public fakeroot
   (package
     (name "fakeroot")
-    (version "1.25.3")
-    (source (origin
-              ;; There are no tags in the repository, so take this snapshot.
-              (method url-fetch)
-              (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
-                                  "fakeroot/fakeroot_" version ".orig.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v4m3v1bdqvblwj3vqsb3mllgbci6dsgsydq6765nzvz6n1kd44f"))))
+    (version "1.26")
+    (source
+     (origin
+       ;; There are no tags in the repository, so take this snapshot.
+       (method url-fetch)
+       (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
+                           "fakeroot/fakeroot_" version ".orig.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sg8inv1zzp4h9ncbbmxip3svd11sd86j22cvxrjwnf5zn7mf2j8"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)))
+       (snippet
+        `(begin
+           ;; Delete pregenerated man page translations, but not the originals.
+           (with-directory-excursion "doc"
+             (for-each (lambda (language)
+                         (for-each delete-file
+                                   (find-files language "\\.[0-9]$")))
+                       (scandir "."
+                                (lambda (file)
+                                  (and (not (string-prefix? "." file))
+                                       (eq? 'directory
+                                            (stat:type (lstat file))))))))))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile.am
+           (lambda _
+             (substitute* "Makefile.am"
+               (("/bin/sh") (which "sh")))))
+         (add-after 'unpack 'patch-script
+           (lambda*  (#:key inputs #:allow-other-keys)
+             (substitute* "scripts/fakeroot.in"
+               (("getopt")
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin/getopt"))
+               (("sed")
+                (string-append (assoc-ref inputs "sed")
+                               "/bin/sed"))
+               (("cut")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/cut")) )))
          (replace 'bootstrap
            (lambda _
              ;; The "preroll" script takes care of Autoconf and also
              ;; prepares the translated manuals.
              (invoke "sh" "./preroll")))
-        (add-after 'configure 'patch-Makefile
-          (lambda _
-            ;; Note: The root of the problem is already in "Makefile.am".
-            (substitute* "Makefile"
-             (("/bin/sh") (which "sh")))
-            #t))
-        (add-after 'unpack 'patch-script
-          (lambda*  (#:key inputs #:allow-other-keys)
-            (substitute* "scripts/fakeroot.in"
-             (("getopt")
-              (string-append (assoc-ref inputs "util-linux")
-                             "/bin/getopt"))
-             (("sed")
-              (string-append (assoc-ref inputs "sed")
-                             "/bin/sed"))
-             (("cut")
-              (string-append (assoc-ref inputs "coreutils")
-                             "/bin/cut")) )
-            #t))
-        (add-before 'configure 'setenv
-          (lambda _
-            (setenv "LIBS" "-lacl")
-            #t))
-        (add-before 'check 'prepare-check
-          (lambda _
-            (setenv "SHELL" (which "bash"))
-            (setenv "VERBOSE" "1")
-            (substitute* "test/t.touchinstall"
-             ;; We don't have the name of the root user, so use ID=0.
-             (("grep root") "grep \"\\<0\\>\""))
-            (substitute* "test/tartest"
-             ;; We don't have the name of the root group, so use ID=0.
-             (("ROOTGROUP=root") "ROOTGROUP=0")
-             ;; We don't have the name of the daemon user, so use IDs.
-             (("daemon:sys") "1:3")
-             (("daemon:") "1:"))
-            ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
-            (substitute* "test/compare-tar"
-             (("tar -tvf") "tar --numeric-owner -tvf"))
-            #t)))))
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "LIBS" "-lacl")))
+         (add-before 'check 'prepare-check
+           (lambda _
+             (setenv "SHELL" (which "bash"))
+             (setenv "VERBOSE" "1")
+             (substitute* "test/t.touchinstall"
+               ;; We don't have the name of the root user, so use ID=0.
+               (("grep root") "grep \"\\<0\\>\""))
+             (substitute* "test/tartest"
+               ;; We don't have the name of the root group, so use ID=0.
+               (("ROOTGROUP=root") "ROOTGROUP=0")
+               ;; We don't have the name of the daemon user, so use IDs.
+               (("daemon:sys") "1:3")
+               (("daemon:") "1:"))
+             ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
+             (substitute* "test/compare-tar"
+               (("tar -tvf") "tar --numeric-owner -tvf")))))))
     (native-inputs
      `(;; For bootstrapping the package.
-       ("autoconf" ,autoconf)
+       ("autoconf" ,autoconf-2.71)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("gettext" ,gettext-minimal)
