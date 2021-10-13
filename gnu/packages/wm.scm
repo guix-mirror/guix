@@ -1467,7 +1467,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method git-fetch)
@@ -1476,7 +1476,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01plhbnsp5yg18arz0v8fr0pr9l4w4pdzwkg9px486qdvb3s1vgy"))))
+        (base32 "1sshp3lvlkl1i670kxhwsb4xzxl8raz6769kqvgmxzcb63ns9ay1"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
@@ -1497,6 +1497,7 @@ functionality to display information about the most commonly used services.")
        ("libxkbcommon" ,libxkbcommon)
        ("mesa" ,mesa)
        ("pixman" ,pixman)
+       ("seatd" ,seatd)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ("xcb-util-errors" ,xcb-util-errors)
