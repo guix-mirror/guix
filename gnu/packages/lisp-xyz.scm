@@ -87,6 +87,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -18986,3 +18987,48 @@ the CDR-8 standard.")
 
 (define-public ecl-generic-comparability
   (sbcl-package->ecl-package sbcl-generic-comparability))
+
+(define-public sbcl-cl-libyaml
+  (let ((commit "a7fe9f68bddfd00b7ca467b65b3b41b276336843")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-libyaml")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/cl-libyaml")
+               (commit commit)))
+         (file-name (git-file-name "cl-libyaml" version))
+         (sha256
+          (base32
+           "06pvmackyhq03rjmihpx6w63m6cy8wx78ll5xpwwvd85bgrqq817"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("libyaml" ,libyaml)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/library.lisp"
+                 (("libyaml.so")
+                  (string-append (assoc-ref inputs "libyaml")
+                                 "/lib/libyaml.so"))))))))
+      (home-page "https://github.com/eudoxia0/cl-libyaml")
+      (synopsis "Libyaml bindings for Common Lisp")
+      (description
+        "This is a binding to the libyaml library.  It's not meant as
+a full library for YAML, just a bare binding with a couple of utility macros.
+For a YAML parser and emitter using this, check out cl-yaml.")
+      (license license:expat))))
+
+(define-public cl-libyaml
+  (sbcl-package->cl-source-package sbcl-cl-libyaml))
+
+(define-public ecl-cl-libyaml
+  (sbcl-package->ecl-package sbcl-cl-libyaml))
