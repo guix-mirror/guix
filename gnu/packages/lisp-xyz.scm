@@ -18872,3 +18872,34 @@ provides a method for determining which capabilities a terminal
 
 (define-public ecl-terminfo
   (sbcl-package->ecl-package sbcl-terminfo))
+
+(define-public sbcl-conium
+  (let ((commit "089adfd8759ec7973bb6f67b98d7a246e67aeb05")
+        (revision "1"))
+    (package
+      (name "sbcl-conium")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/conium")
+               (commit commit)))
+         (file-name (git-file-name "conium" version))
+         (sha256
+          (base32 "0y31za8xr8734p2pf8mrw1jd1fksh2d4y1p12wwjyn8hxxsvsx1w"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (home-page "https://github.com/sharplispers/conium")
+      (synopsis "Portability library for debugger- and compiler-related tasks")
+      (description
+       "Conium is a portability library for debugger- and compiler-related
+tasks in Common Lisp.  It is fork of SWANK-BACKEND.")
+      (license license:public-domain))))
+
+(define-public cl-conium
+  (sbcl-package->cl-source-package sbcl-conium))
+
+(define-public ecl-conium
+  (sbcl-package->ecl-package sbcl-conium))
