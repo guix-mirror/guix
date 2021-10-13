@@ -15,6 +15,7 @@
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 lu hui <luhuins@163.com>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -936,3 +937,32 @@ extensions over the standard utility.")
       (description "amalgamate.py aims to make it easy to use SQLite-style C
 source and header amalgamation in projects.")
       (license license:bsd-3))))
+
+(define-public cscope
+  (package
+    (name "cscope")
+    (version "15.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/cscope/cscope/"
+                           "v" version "/cscope-" version ".tar.gz"))
+       (sha256
+        (base32 "0ngiv4aj3rr35k3q3wjx0y19gh7i1ydqa0cqip6sjwd8fph5ll65"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:configure-flags
+       ;; Specify the correct ncurses directory to prevent incorrect fallback
+       ;; on SysV curses.
+       (list (string-append "--with-ncurses="
+                            (assoc-ref %build-inputs "ncurses")))))
+    (home-page "http://cscope.sourceforge.net")
+    (synopsis "Tool for browsing source code")
+    (description
+     "Cscope is a text screen based source browsing tool. Although it is
+primarily designed to search C code (including lex and yacc files), it can
+also be used for C++ code.
+
+Using cscope, you can easily search for where symbols are used and defined.")
+    (license license:bsd-3)))
