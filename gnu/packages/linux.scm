@@ -7854,7 +7854,9 @@ the superuser to make device nodes.")
                                             (stat:type (lstat file))))))))))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-Makefile.am
            (lambda _
