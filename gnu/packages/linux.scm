@@ -7915,14 +7915,17 @@ the superuser to make device nodes.")
        ("util-linux" ,util-linux)
        ("sed" ,sed)
        ("coreutils" ,coreutils)))
-    (synopsis "Provides a fake root environment")
-    (description "@command{fakeroot} runs a command in an environment where
-it appears to have root privileges for file manipulation. This is useful
-for allowing users to create archives (tar, ar, .deb etc.) with files in
-them with root permissions/ownership. Without fakeroot one would have to
-have root privileges to create the constituent files of the archives with
-the correct permissions and ownership, and then pack them up, or one would
-have to construct the archives directly, without using the archiver.")
+    (synopsis "Run commands in an environment with fake root privileges")
+    (description
+     "@command{fakeroot} runs a command in an environment where it appears to
+have root privileges for file manipulation.  This is useful for allowing users
+to create archives (@file{tar}, @file{ar}, @file{deb}, etc.)  with files in
+them with root permissions and/or ownership.
+
+Without fakeroot, one would have to have root privileges to create the
+constituent files of the archives with the correct permissions and ownership,
+and then pack them up, or one would have to construct the archives directly,
+without using the archiver.")
     (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
     (license license:gpl3+)))
 
