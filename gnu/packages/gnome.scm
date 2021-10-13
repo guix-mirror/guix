@@ -8336,6 +8336,8 @@ usage and information about running processes.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)
        ("xmllint" ,libxml2)))
     (propagated-inputs
      ;; gnome-bluetooth-1.0.pc refers to all these.
