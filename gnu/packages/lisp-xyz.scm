@@ -19072,3 +19072,37 @@ libyaml.")
 
 (define-public ecl-cl-yaml
   (sbcl-package->ecl-package sbcl-cl-yaml))
+
+(define-public sbcl-linedit
+  (let ((commit "0561c97dfca2f5854fcc66558a567a9875ddcb8f")
+        (revision "1"))
+    (package
+      (name "sbcl-linedit")
+      (version (git-version "0.17.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/linedit")
+               (commit commit)))
+         (file-name (git-file-name "cl-linedit" version))
+         (sha256
+          (base32 "0hhh7xn6q12rviayfihg1ym6x6csa0pdjgb88ykqbrz2rs3pgpz5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("osicat" ,sbcl-osicat)
+         ("terminfo" ,sbcl-terminfo)))
+      (home-page "https://github.com/sharplispers/linedit")
+      (synopsis "Readline-style line-editor for Common Lisp")
+      (description
+       "Linedit is a readline-style library written in Common Lisp that
+provides customizable line-editing for Common Lisp programs.")
+      (license license:expat))))
+
+(define-public cl-linedit
+  (sbcl-package->cl-source-package sbcl-linedit))
+
+(define-public ecl-linedit
+  (sbcl-package->ecl-package sbcl-linedit))
