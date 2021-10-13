@@ -85,6 +85,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
@@ -18903,3 +18904,49 @@ tasks in Common Lisp.  It is fork of SWANK-BACKEND.")
 
 (define-public ecl-conium
   (sbcl-package->ecl-package sbcl-conium))
+
+(define-public sbcl-cl-readline
+  (let ((commit "8438c9ebd92ccc95ebab9cc9cbe6c72d44fccc58")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-readline")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vindarel/cl-readline")
+               (commit commit)))
+         (file-name (git-file-name "cl-readline" version))
+         (sha256
+          (base32 "14iskvqfw71ssaav483vmqw62lrpznysjs800gjjppxs785p1fa0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("readline" ,readline)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cl-readline.lisp"
+                 (("libreadline.so")
+                  (string-append (assoc-ref inputs "readline")
+                                 "/lib/libreadline.so"))))))))
+      (home-page "https://github.com/vindarel/cl-readline")
+      (synopsis "Common Lisp bindings to the GNU Readline library")
+      (description
+        "The Readline library provides a set of functions for use by
+applications that allow users to edit command lines as they are typed in.
+Both Emacs and vi editing modes are available.  The Readline library includes
+additional functions to maintain a list of previously-entered command lines, to
+recall and perhaps reedit those lines, and perform csh-like history expansion on
+previous commands.")
+      (license license:gpl3+))))
+
+(define-public cl-readline
+  (sbcl-package->cl-source-package sbcl-cl-readline))
+
+(define-public ecl-cl-readline
+  (sbcl-package->ecl-package sbcl-cl-readline))
