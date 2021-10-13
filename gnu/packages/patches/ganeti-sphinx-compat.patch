@@ -1,0 +1,24 @@
+Adjust documentation for Sphinx 4.0.
+
+Discussed upstream at <https://github.com/ganeti/ganeti/pull/1615>.
+
+diff --git a/doc/index.rst b/doc/index.rst
+--- a/doc/index.rst
++++ b/doc/index.rst
+@@ -119,7 +119,6 @@ Draft designs
+    design-hotplug.rst
+    design-internal-shutdown.rst
+    design-kvmd.rst
+-   design-location.rst
+    design-linuxha.rst
+    design-location.rst
+    design-lu-generated-jobs.rst
+diff --git a/lib/build/shell_example_lexer.py b/lib/build/shell_example_lexer.py
+--- a/lib/build/shell_example_lexer.py
++++ b/lib/build/shell_example_lexer.py
+@@ -79,4 +79,4 @@ class ShellExampleLexer(RegexLexer):
+ 
+ 
+ def setup(app):
+-  app.add_lexer("shell-example", ShellExampleLexer())
++  app.add_lexer("shell-example", ShellExampleLexer)

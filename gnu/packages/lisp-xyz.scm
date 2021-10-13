@@ -27,6 +27,7 @@
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
 ;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,7 +85,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -18827,3 +18830,231 @@ formats within this framework.")
 
 (define-public cl-feeder
   (sbcl-package->cl-source-package sbcl-feeder))
+
+(define-public sbcl-terminfo
+  (let ((commit "b8b2e3ed786bfcf9f1aa4a264cee2e93135080f5")
+        (revision "1"))
+    (package
+      (name "sbcl-terminfo")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/npatrick04/terminfo")
+               (commit commit)))
+         (file-name (git-file-name "terminfo" version))
+         (sha256
+          (base32 "1nmin9rr6f75xdhxysba66xa1dh62fh27w9ad1cvmj0062armf6b"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Terminfo database front end in Common Lisp")
+      (home-page "https://github.com/npatrick04/terminfo")
+      (description
+        "This is a terminfo database front end in Common Lisp.  The package
+provides a method for determining which capabilities a terminal
+(e.g. \"xterm\") has and methods to compile or put commands to a stream.")
+      (license license:expat))))
+
+(define-public cl-terminfo
+  (sbcl-package->cl-source-package sbcl-terminfo))
+
+(define-public ecl-terminfo
+  (sbcl-package->ecl-package sbcl-terminfo))
+
+(define-public sbcl-conium
+  (let ((commit "089adfd8759ec7973bb6f67b98d7a246e67aeb05")
+        (revision "1"))
+    (package
+      (name "sbcl-conium")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/conium")
+               (commit commit)))
+         (file-name (git-file-name "conium" version))
+         (sha256
+          (base32 "0y31za8xr8734p2pf8mrw1jd1fksh2d4y1p12wwjyn8hxxsvsx1w"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (home-page "https://github.com/sharplispers/conium")
+      (synopsis "Portability library for debugger- and compiler-related tasks")
+      (description
+       "Conium is a portability library for debugger- and compiler-related
+tasks in Common Lisp.  It is fork of SWANK-BACKEND.")
+      (license license:public-domain))))
+
+(define-public cl-conium
+  (sbcl-package->cl-source-package sbcl-conium))
+
+(define-public ecl-conium
+  (sbcl-package->ecl-package sbcl-conium))
+
+(define-public sbcl-cl-readline
+  (let ((commit "8438c9ebd92ccc95ebab9cc9cbe6c72d44fccc58")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-readline")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vindarel/cl-readline")
+               (commit commit)))
+         (file-name (git-file-name "cl-readline" version))
+         (sha256
+          (base32 "14iskvqfw71ssaav483vmqw62lrpznysjs800gjjppxs785p1fa0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("readline" ,readline)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cl-readline.lisp"
+                 (("libreadline.so")
+                  (string-append (assoc-ref inputs "readline")
+                                 "/lib/libreadline.so"))))))))
+      (home-page "https://github.com/vindarel/cl-readline")
+      (synopsis "Common Lisp bindings to the GNU Readline library")
+      (description
+        "The Readline library provides a set of functions for use by
+applications that allow users to edit command lines as they are typed in.
+Both Emacs and vi editing modes are available.  The Readline library includes
+additional functions to maintain a list of previously-entered command lines, to
+recall and perhaps reedit those lines, and perform csh-like history expansion on
+previous commands.")
+      (license license:gpl3+))))
+
+(define-public cl-readline
+  (sbcl-package->cl-source-package sbcl-cl-readline))
+
+(define-public ecl-cl-readline
+  (sbcl-package->ecl-package sbcl-cl-readline))
+
+(define-public sbcl-generic-comparability
+  (let ((commit "53fc2846319a6eb46b36581e203e1f1542a8acff")
+        (revision "1"))
+    (package
+      (name "sbcl-generic-comparability")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pnathan/generic-comparability")
+               (commit commit)))
+         (file-name (git-file-name "generic-comparability" version))
+         (sha256
+          (base32 "01ma0cwirxarwwmdwflnh8kmysmr2smh5kyvzhb2074ljxg8yq2p"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/pnathan/generic-comparability")
+      (synopsis "Implementation of cdr-8")
+      (description
+        "GENERIC-COMPARABILITY is an implementation of CDR-8 (Generic Equality
+and Comparison for Common Lisp).  CDR-8 provides an interface for the EQUALS
+function, which is defined as a general equality predicate, as well as a set of
+ordering (COMPARE) functions for comparison.  The semantics are described in
+the CDR-8 standard.")
+      (license license:llgpl))))
+
+(define-public cl-generic-comparability
+  (sbcl-package->cl-source-package sbcl-generic-comparability))
+
+(define-public ecl-generic-comparability
+  (sbcl-package->ecl-package sbcl-generic-comparability))
+
+(define-public sbcl-cl-libyaml
+  (let ((commit "a7fe9f68bddfd00b7ca467b65b3b41b276336843")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-libyaml")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/cl-libyaml")
+               (commit commit)))
+         (file-name (git-file-name "cl-libyaml" version))
+         (sha256
+          (base32
+           "06pvmackyhq03rjmihpx6w63m6cy8wx78ll5xpwwvd85bgrqq817"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("libyaml" ,libyaml)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/library.lisp"
+                 (("libyaml.so")
+                  (string-append (assoc-ref inputs "libyaml")
+                                 "/lib/libyaml.so"))))))))
+      (home-page "https://github.com/eudoxia0/cl-libyaml")
+      (synopsis "Libyaml bindings for Common Lisp")
+      (description
+        "This is a binding to the libyaml library.  It's not meant as
+a full library for YAML, just a bare binding with a couple of utility macros.
+For a YAML parser and emitter using this, check out cl-yaml.")
+      (license license:expat))))
+
+(define-public cl-libyaml
+  (sbcl-package->cl-source-package sbcl-cl-libyaml))
+
+(define-public ecl-cl-libyaml
+  (sbcl-package->ecl-package sbcl-cl-libyaml))
+
+(define-public sbcl-cl-yaml
+  (let ((commit "c3202be9a753c51f3bc79538a5a498a8865192aa")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-yaml")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/cl-yaml")
+               (commit commit)))
+         (file-name (git-file-name "cl-yaml" version))
+         (sha256
+          (base32 "1izjg0v6rf7dh069bbnnr67l30lsqj86wdk7y9ggbgiwh6v9j185"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-libyaml" ,sbcl-cl-libyaml)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("parse-number" ,sbcl-parse-number)))
+      (native-inputs
+       `(("cl-fad" ,sbcl-cl-fad)
+         ("fiveam" ,sbcl-fiveam)
+         ("generic-comparability" ,sbcl-generic-comparability)
+         ("trivial-benchmark" ,sbcl-trivial-benchmark)
+         ("yason" ,sbcl-yason)))
+      (home-page "https://github.com/eudoxia0/cl-yaml")
+      (synopsis "YAML parser for Common Lisp")
+      (description
+        "This is a YAML parser and emitter for Common Lisp built on top of
+libyaml.")
+      (license license:expat))))
+
+(define-public cl-yaml
+  (sbcl-package->cl-source-package sbcl-cl-yaml))
+
+(define-public ecl-cl-yaml
+  (sbcl-package->ecl-package sbcl-cl-yaml))

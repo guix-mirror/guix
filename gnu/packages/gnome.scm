@@ -175,7 +175,6 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -4903,7 +4902,7 @@ libxml to ease remote use of the RESTful API.")
        ("httpd" ,httpd)))
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all of these (except where otherwise noted)
-     `(("brotli" ,google-brotli)
+     `(("brotli" ,brotli)
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)       ; for GIO runtime modules
        ("libpsl" ,libpsl)
@@ -8384,9 +8383,9 @@ usage and information about running processes.")
     (version "3.34.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gnome-bluetooth/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "gnome-bluetooth-" version ".tar.xz"))
               (sha256
                (base32
                 "1a9ynlwwkb3wpg293ym517vmrkk63y809mmcv9a21k5yr199x53c"))))
@@ -8397,6 +8396,8 @@ usage and information about running processes.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)
        ("xmllint" ,libxml2)))
     (propagated-inputs
      ;; gnome-bluetooth-1.0.pc refers to all these.
@@ -9500,23 +9501,22 @@ Features:
 (define-public gsound
   (package
     (name "gsound")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gsound/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "gsound-" version ".tar.xz"))
               (sha256
                (base32
-                "0lwfwx2c99qrp08pfaj59pks5dphsnxjgrxyadz065d8xqqgza5v"))))
-    (build-system glib-or-gtk-build-system)
+                "06l80xgykj7x1kqkjvcq06pwj2rmca458zvs053qc55x3sg06bfa"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
        ("vala" ,vala)))
-    (inputs
-     `(("glib" ,glib)
-       ("libcanberra" ,libcanberra)))
+    (propagated-inputs
+     `(("libcanberra" ,libcanberra)))   ; in Requires.private of gsound.pc
     (home-page "https://wiki.gnome.org/Projects/GSound")
     (synopsis "GObject wrapper for libcanberra")
     (description
@@ -11802,7 +11802,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
 (define-public apostrophe
   (package
     (name "apostrophe")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11811,7 +11811,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qzy3zhi18wf42m034s8kcmx9gl05j620x3hf6rnycq2fvy7g4gz"))))
+                "06yfiflmj3ip7ppcz41nb3xpgb5ggw5h74w0v87yaqqkq7qh31lp"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11855,10 +11855,11 @@ GTK+.  It integrates well with the GNOME desktop environment.")
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (home-page "https://gitlab.gnome.org/somas/apostrophe")
     (synopsis "Markdown editor written in Python with GTK+")
-    (description "Apostrophe is a GTK+ based distraction free Markdown editor.
+    (description "Apostrophe is a GTK+ based distraction-free Markdown editor.
 It uses pandoc as back-end for parsing Markdown.")
     (license license:gpl3)))
 

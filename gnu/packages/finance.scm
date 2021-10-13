@@ -1678,25 +1678,30 @@ define financial transaction records in a text file, read them in memory,
 generate a variety of reports from them, and provides a web interface.")
     (license license:gpl2)))
 
-;; The beancount source ships with elisp in a subdirectory
 (define-public emacs-beancount
-  (package
-    (inherit beancount)
-    (name "emacs-beancount")
-    (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #f ;no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'chdir-emacs
-           (lambda _
-             (chdir "editors/emacs")
-             #t)))))
-    (inputs '())
-    (native-inputs '())
-    (synopsis "Emacs mode for beancount")
-    (description
-      "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))
+  ;; Note that upstream has not made any release since this project moved
+  ;; into its own repository (it was originally part of beancount itself)
+  (let ((commit "dbafe6a73d90c1f64d457b356b9dbb43499f70d5")
+        (revision "0"))
+    (package
+      (name "emacs-beancount")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/beancount/beancount-mode")
+               (commit commit)))
+         (sha256
+          (base32
+           "0v9bws2gv5b00x829p7hrcxqgdp7iwxvv1vhfjka81qrw6w1fvjw"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/beancount/beancount-mode")
+      (synopsis "Emacs mode for Beancount")
+      (description
+       "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")
+      (license license:gpl3+))))
 
 (define-public hledger-web
   (package

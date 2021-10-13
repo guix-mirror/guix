@@ -968,13 +968,32 @@ itself."
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
+  (define *core-cli-modules*
+    ;; Core command-line interface modules that do not depend on (gnu system
+    ;; …) or (gnu home …), and not even on *PACKAGE-MODULES*.
+    (scheme-node "guix-cli-core"
+                 (remove (match-lambda
+                           (('guix 'scripts 'system . _) #t)
+                           (('guix 'scripts 'environment) #t)
+                           (('guix 'scripts 'container . _) #t)
+                           (('guix 'scripts 'deploy) #t)
+                           (('guix 'scripts 'home . _) #t)
+                           (('guix 'scripts 'import . _) #t)
+                           (('guix 'pack) #t)
+                           (_ #f))
+                         (scheme-modules* source "guix/scripts"))
+                 (list *core-modules* *extra-modules*
+                       *core-package-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
+
   (define *cli-modules*
     (scheme-node "guix-cli"
                  (append (scheme-modules* source "/guix/scripts")
                          `((gnu ci)))
                  (list *core-modules* *extra-modules*
                        *core-package-modules* *package-modules*
-                       *system-modules* *home-modules*)
+                       *core-cli-modules* *system-modules* *home-modules*)
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
@@ -1020,6 +1039,7 @@ itself."
                                  ;; comes with *CORE-MODULES*.
                                  (list *config*
                                        *cli-modules*
+                                       *core-cli-modules*
                                        *system-test-modules*
                                        *system-modules*
                                        *home-modules*

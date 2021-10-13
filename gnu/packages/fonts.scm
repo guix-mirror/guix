@@ -2050,7 +2050,7 @@ It comes in seven weights and Roman, Italic and Oblique styles.")
        ("harfbuzz" ,harfbuzz "bin")
        ("python" ,python-minimal)
        ("python-fonttools" ,python-fonttools)
-       ("python-google-brotli" ,python-google-brotli)))
+       ("python-brotli" ,python-brotli)))
     (arguments
      `(#:make-flags (list "PY=python3"
                           (string-append "DESTDIR=" %output)

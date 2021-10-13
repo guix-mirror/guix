@@ -313,7 +313,7 @@ work with most software requiring Type 1 fonts.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("brotli" ,google-brotli)))
+     `(("brotli" ,brotli)))
     (synopsis "Libraries and tools for WOFF2 font format")
     (description "WOFF2 provides libraries and tools to handle the Web Open
 Font Format (WOFF).")

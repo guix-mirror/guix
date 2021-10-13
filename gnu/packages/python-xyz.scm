@@ -51,7 +51,7 @@
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018, 2019, 2021 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
@@ -3076,14 +3076,14 @@ code introspection, and logging.")
 (define-public python-pbr-minimal
   (package
     (name "python-pbr-minimal")
-    (version "3.0.1")
+    (version "5.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pbr" version))
        (sha256
         (base32
-         "14fs5acnalnb3h62s7q7av239j541fk0n0z0lawh4h09b1s93s6p"))))
+         "1j8k5d4rdhy5bw5ai1vkjzln2albah94in3vvyvxa0n42fv81baz"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
@@ -6858,7 +6858,7 @@ def customize_build(EXTENSIONS, OPTIONS):
     (inputs
       `(("c-blosc" ,c-blosc)
         ("giflib" ,giflib)
-        ("google-brotli" ,google-brotli)
+        ("brotli" ,brotli)
         ("libjpeg-turbo" ,libjpeg-turbo)
         ("libpng" ,libpng)
         ("libtiff" ,libtiff)
@@ -25382,14 +25382,14 @@ and delegating behavior.")
 (define-public python-lazr-config
   (package
     (name "python-lazr-config")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lazr.config" version))
         (sha256
          (base32
-          "11xpddgyhyj7sf27wbmrq5lnqk21wnprx3ajycgwlxjamh6sgffd"))))
+          "1qdbrzl61q7cjhbnxvw9y3frcr935y7diwy15xrwcv9ynvw76jmp"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

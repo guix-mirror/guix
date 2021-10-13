@@ -3779,7 +3779,7 @@ the SQL language using a syntax that reflects the resulting query.")
     (inputs
      `(("apache-thrift" ,apache-thrift "lib")
        ("boost" ,boost)
-       ("brotli" ,google-brotli)
+       ("brotli" ,brotli)
        ("bzip2" ,bzip2)
        ("double-conversion" ,double-conversion)
        ("gflags" ,gflags)

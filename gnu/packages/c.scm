@@ -4,7 +4,7 @@
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
@@ -259,7 +259,8 @@ whose behaviour is inconsistent across *NIX flavours.")
        (uri (string-append "https://inai.de/files/libhx/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32 "1f4rmarym1j368cbxhqzyvdn5dk4bh8951s19ffqwql16anqsgfr"))))
+        (base32 "1f4rmarym1j368cbxhqzyvdn5dk4bh8951s19ffqwql16anqsgfr"))
+       (patches (search-patches "libhx-fix-double-free-bug.patch"))))
     (build-system gnu-build-system)
     (home-page "https://inai.de/projects/libhx/")
     (synopsis "C library with common data structures and functions")

@@ -4842,14 +4842,14 @@ about ACPI devices.")
 (define-public acpid
   (package
     (name "acpid")
-    (version "2.0.32")
+    (version "2.0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/acpid2/acpid-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0zhmxnhnhg4v1viw82yjr22kram6k5k1ixznhayk8cnw7q5x7lpj"))))
+                "1s6vf8lqwrcqi14k0ww47pk1kifbvxin73ha7mk1njmk7qdzfmh8"))))
     (build-system gnu-build-system)
     (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
@@ -4885,50 +4885,40 @@ also contains the libsysfs library.")
     ;; The rest is mostly gpl2, with a few files indicating gpl2+.
     (license (list license:gpl2 license:gpl2+ license:lgpl2.1+))))
 
-(define-public sysfsutils-1
-  (package
-    (inherit sysfsutils)
-    (version "1.3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "mirror://sourceforge/linux-diag/sysfsutils/sysfsutils-" version
-         "/sysfsutils-" version ".tar.gz"))
-       (sha256
-        (base32 "0kdhs07fm8263pxwd5blwn2x211cg4fk63fyf9ijcdkvzmwxrqq3"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "Makefile.in"
-             (("includedir = /usr/include/sysfs")
-              "includedir = @includedir@"))
-           (substitute* "configure"
-             (("includedir='(\\$\\{prefix\\}/include)'" all orig)
-              (string-append "includedir='" orig "/sysfs'")))
-           #t))))
-    (synopsis "System utilities based on Linux sysfs (version 1.x)")))
-
 (define-public cpufrequtils
   (package
     (name "cpufrequtils")
-    (version "0.3")
+    (version "008")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kernel.org/linux/utils/kernel/cpufreq/"
                            "cpufrequtils-" version ".tar.gz"))
        (sha256
-        (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
-       (patches (search-patches "cpufrequtils-fix-aclocal.patch"))))
+        (base32 "0xjs8j44hh0cz6qpig1n0iw8xjpr6s5qmcmwh965ngapxgarr7af"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("sysfsutils" ,sysfsutils-1)))
     (arguments
-     '(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                         (assoc-ref %outputs "out") "/lib"))))
-    (home-page "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/")
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "PROC=false"             ; obsoleted by sysfs in Linux 2.6(!)
+               (string-append "CC=" ,(cc-for-target))
+               (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
+               "INSTALL=install"
+               (string-append "bindir=" out "/bin")
+               (string-append "sbindir=" out "/sbin")
+               (string-append "mandir=" out "/share/man")
+               (string-append "includedir=" out "/include")
+               (string-append "libdir=" out "/lib")
+               (string-append "localedir=" out "/share/locale")
+               (string-append "docdir=" out "/share/doc/" ,name)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page
+     "http://ftp.be.debian.org/pub/linux/utils/kernel/cpufreq/cpufrequtils.html")
     (synopsis "Utilities to get and set CPU frequency on Linux")
     (description
      "The cpufrequtils suite contains utilities to retrieve CPU frequency
@@ -5478,7 +5468,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.14.1")
+    (version "5.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -5486,7 +5476,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0ny5z3x8rqin0aci9qxpjc6dk5y0c1yvgk7353qnv92wai396jnm"))))
+                "1afpa8izagkr9sn5fqrm6687idiqdkcz08ks2j07972kd0rm5il5"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -6081,6 +6071,52 @@ invocations of itself.")
 commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
 The package provides additional NTFS tools.")
     (license license:gpl2+)))
+
+(define-public ntfs-3g/static
+  (static-package
+   (package
+     (inherit ntfs-3g)
+     (name "ntfs-3g-static")
+     (arguments
+      (substitute-keyword-arguments (package-arguments ntfs-3g)
+        ((#:configure-flags flags)
+         `(append ,flags
+                  (list "--enable-really-static"
+                        ;; The FUSE driver isn't currently used by our initrd.
+                        "--disable-ntfs-3g")))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'make-really-static-really-static
+              (lambda _
+                (substitute* "ntfsprogs/Makefile.in"
+                  ((" -static") " -all-static"))))
+            (delete 'install-link))))))))
+
+(define-public ntfsfix/static
+  (package
+    (name "ntfsfix-static")
+    (version (package-version ntfs-3g/static))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((ntfs-3g (assoc-ref %build-inputs "ntfs-3g"))
+                (out     (assoc-ref %outputs "out"))
+                (bin     (string-append out "/bin")))
+           (install-file (string-append ntfs-3g "/bin/ntfsfix") bin)
+           (with-directory-excursion bin
+             (remove-store-references "ntfsfix"))))))
+    (inputs
+     `(("ntfs-3g" ,ntfs-3g/static)))
+    (home-page (package-home-page ntfs-3g/static))
+    (synopsis "Statically linked @command{ntfsfix} from ntfs-3g")
+    (description
+     "This package provides a statically linked @command{ntfsfix} taken
+from the ntfs-3g package.  It is meant to be used in initrds.")
+    (license (package-license ntfs-3g/static))))
 
 (define-public rdma-core
   (package

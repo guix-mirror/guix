@@ -2680,6 +2680,41 @@ time.")
       (home-page "https://godoc.org/golang.org/x/xerrors")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-mod
+  (let ((commit "0f08993efd8a8ec67e75bcccf86b0e1569b0ab0a")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-mod")
+      (version (git-version "0.5.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://go.googlesource.com/x/mod")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0pl0jc5jvg7hxj4z66zg6kglnq5g7li09f3k9klwvyr4jx5dw88k"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/mod/"
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build))))
+      (home-page "https://golang.org/x/mod")
+      (synopsis "Tools to work directly with Go module mechanics")
+      (description
+       "This repository holds packages for writing tools that work directly
+with Go module mechanics.  That is, it is for direct manipulation of Go modules
+themselves.
+
+The specific case of loading packages should still be done by invoking the
+@command{go} command, which remains the single point of truth for package
+loading algorithms.")
+      (license license:bsd-3))))
+
 (define-public go-github-com-burntsushi-toml
   (package
     (name "go-github-com-burntsushi-toml")

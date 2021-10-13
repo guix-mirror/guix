@@ -149,7 +149,7 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "6.0.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
@@ -157,10 +157,8 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1f9hz8rf12jm8baa7kda34yl4hyl0xh0c4ap03krfjx23i3img47"))
+         "15iw7982g6vc4jy1l9kk1z9sl5bm1bdbwr74y7nvwjs1nffhig7f"))
        (patches (search-patches "qemu-CVE-2021-20203.patch"
-                                "qemu-meson-compat.patch"
-                                "qemu-sphinx-compat.patch"
                                 "qemu-build-info-manual.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -218,12 +216,10 @@
              ;; Ensure the executables created by these source files reference
              ;; /bin/sh from the store so they work inside the build container.
              (substitute* '("block/cloop.c" "migration/exec.c"
-                            "net/tap.c" "tests/qtest/libqtest.c")
+                            "net/tap.c" "tests/qtest/libqtest.c"
+                            "tests/qtest/vhost-user-blk-test.c")
                (("/bin/sh") (which "sh")))
-             (substitute* "Makefile"
-               (("SHELL = /usr/bin/env bash -o pipefail")
-                "SHELL = bash -o pipefail"))
-             (substitute* "tests/qemu-iotests/check"
+             (substitute* "tests/qemu-iotests/testenv.py"
                (("#!/usr/bin/env python3")
                 (string-append "#!" (which "python3"))))))
          (add-before 'configure 'fix-optionrom-makefile
@@ -344,6 +340,7 @@ exec smbd $@")))
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
                      ("python-sphinx" ,python-sphinx)
+                     ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
                      ("texinfo" ,texinfo)
                      ;; The following static libraries are required to build
                      ;; the static output of QEMU.
@@ -510,8 +507,6 @@ firmware blobs.  You can
 (define-public ganeti
   (package
     (name "ganeti")
-    ;; Note: we use a pre-release for Python 3 compatibility as well as many
-    ;; other fixes.
     (version "3.0.1")
     (source (origin
               (method git-fetch)
@@ -523,6 +518,7 @@ firmware blobs.  You can
               (file-name (git-file-name name version))
               (patches (search-patches "ganeti-shepherd-support.patch"
                                        "ganeti-shepherd-master-failover.patch"
+                                       "ganeti-sphinx-compat.patch"
                                        "ganeti-haskell-compat.patch"
                                        "ganeti-haskell-pythondir.patch"
                                        "ganeti-disable-version-symlinks.patch"))))
@@ -533,6 +529,9 @@ firmware blobs.  You can
                            (guix build python-build-system))
        #:modules (,@%gnu-build-system-modules
                   ((guix build haskell-build-system) #:prefix haskell:)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (ice-9 match)
                   (ice-9 rdelim))
 
        ;; The default test target includes a lot of checks that are only really
@@ -716,7 +715,7 @@ firmware blobs.  You can
                     (compdir (string-append out "/etc/bash_completion.d")))
                (mkdir-p compdir)
                (copy-file "doc/examples/bash_completion"
-                             (string-append compdir "/ganeti"))
+                          (string-append compdir "/ganeti"))
                ;; The one file contains completions for many different
                ;; executables.  Create symlinks for found completions.
                (with-directory-excursion compdir
@@ -735,9 +734,9 @@ firmware blobs.  You can
                                       ;; Note that 'burnin' is listed with the
                                       ;; absolute file name, which is why we
                                       ;; run everything through 'basename'.
-                                      (cons (basename (car (reverse (string-split
-                                                                     line #\ ))))
-                                            progs))
+                                      (match (string-split line #\ )
+                                        ((commands ... prog)
+                                         (cons (basename prog) progs))))
                                 (loop (read-line port) progs)))))))))))
          ;; Wrap all executables with GUIX_PYTHONPATH.  We can't borrow
          ;; the phase from python-build-system because we also need to wrap
@@ -756,7 +755,7 @@ firmware blobs.  You can
                             (or (string-contains shebang "/bin/bash")
                                 (string-contains shebang "/bin/sh")))))))
 
-               (define (wrap? file)
+               (define* (wrap? file #:rest _)
                  ;; Do not wrap shell scripts because some are meant to be
                  ;; sourced, which breaks if they are wrapped.  We do wrap
                  ;; the Haskell executables because some call out to Python
@@ -769,9 +768,9 @@ firmware blobs.  You can
                            (wrap-program file
                              `("GUIX_PYTHONPATH" ":" prefix
                                (,(getenv "GUIX_PYTHONPATH")))))
-                         (filter wrap?
-                                 (append (find-files (string-append lib "/ganeti"))
-                                         (find-files sbin))))))))))
+                         (append-map (cut find-files <> wrap?)
+                                     (list (string-append lib "/ganeti")
+                                           sbin)))))))))
     (native-inputs
      `(("haskell" ,ghc)
        ("cabal" ,cabal-install)

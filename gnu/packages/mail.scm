@@ -842,7 +842,7 @@ mailpack.  What can alterMIME do?
 (define-public astroid
   (package
     (name "astroid")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -851,14 +851,13 @@ mailpack.  What can alterMIME do?
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11cxbva9ni98gii59xmbxh4c6idcg3mg0pgdsp1c3j0yg7ix0lj3"))
+        (base32 "17m99llggkg7xg72k8xaf7iipax7sgfhqa2a1qnlylndwa42f57b"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; https://github.com/astroidmail/astroid/pull/685
            (substitute* "tests/test_composed_message.cc"
-             (("\\\\n\\.\\.\\.") "\\n...\\n"))
-           #t))))
+             (("\\\\n\\.\\.\\.") "\\n...\\n"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -877,8 +876,7 @@ mailpack.  What can alterMIME do?
            ;; ValueError: Namespace Astroid not available
            (lambda _
              (substitute* "tests/CMakeLists.txt"
-               ((".*markdown.*") ""))
-             #t))
+               ((".*markdown.*") ""))))
          (replace 'build
            (lambda _
              (invoke "ninja" "-j" (number->string (parallel-job-count)))))
@@ -887,14 +885,12 @@ mailpack.  What can alterMIME do?
              (let ((xorg-server (assoc-ref inputs "xorg-server")))
                (setenv "HOME" (getcwd))
                (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
-               (setenv "DISPLAY" ":1")
-               #t)))
+               (setenv "DISPLAY" ":1"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-               (invoke "ctest" "."))
-             #t))
+               (invoke "ctest" "."))))
          (replace 'install
            (lambda _
              (invoke "ninja" "install")))
@@ -911,8 +907,7 @@ mailpack.  What can alterMIME do?
                                         #f))))
                                inputs)))
                (wrap-program (string-append out "/bin/astroid")
-                 `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
-             #t))
+                 `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap

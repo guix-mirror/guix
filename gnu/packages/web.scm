@@ -4537,14 +4537,14 @@ and updated by RFC 2732.")
 (define-public perl-uri-fetch
   (package
     (name "perl-uri-fetch")
-    (version "0.13")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                                   "URI-Fetch-" version ".tar.gz"))
               (sha256
                (base32
-                "0rw6xiqm70s218aii9id3hf8j3pz6n22xnwd8v9m1ff2bnh63c0d"))))
+                "0355rnw3xbgfwy9fgs6zrjmrsychzmwpkc9jcd9mrbkd9kr3k7rp"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f)) ; Tests require internet connection to succeed
