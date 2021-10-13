@@ -680,7 +680,9 @@ firmware blobs.  You can
                 ""))))
          (add-after 'build 'build-bash-completions
            (lambda _
-             (invoke "python" "-m" "./autotools/build-bash-completion")))
+             (setenv "PYTHONPATH" ".")
+             (invoke "./autotools/build-bash-completion")
+             (unsetenv "PYTHONPATH")))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Set TZDIR so that time zones are found.
