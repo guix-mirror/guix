@@ -18950,3 +18950,39 @@ previous commands.")
 
 (define-public ecl-cl-readline
   (sbcl-package->ecl-package sbcl-cl-readline))
+
+(define-public sbcl-generic-comparability
+  (let ((commit "53fc2846319a6eb46b36581e203e1f1542a8acff")
+        (revision "1"))
+    (package
+      (name "sbcl-generic-comparability")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pnathan/generic-comparability")
+               (commit commit)))
+         (file-name (git-file-name "generic-comparability" version))
+         (sha256
+          (base32 "01ma0cwirxarwwmdwflnh8kmysmr2smh5kyvzhb2074ljxg8yq2p"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/pnathan/generic-comparability")
+      (synopsis "Implementation of cdr-8")
+      (description
+        "GENERIC-COMPARABILITY is an implementation of CDR-8 (Generic Equality
+and Comparison for Common Lisp).  CDR-8 provides an interface for the EQUALS
+function, which is defined as a general equality predicate, as well as a set of
+ordering (COMPARE) functions for comparison.  The semantics are described in
+the CDR-8 standard.")
+      (license license:llgpl))))
+
+(define-public cl-generic-comparability
+  (sbcl-package->cl-source-package sbcl-generic-comparability))
+
+(define-public ecl-generic-comparability
+  (sbcl-package->ecl-package sbcl-generic-comparability))
