@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
@@ -41,12 +44,14 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages tls)
@@ -439,6 +444,78 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
     (description
      "This package provides a command-line benchmarking tool.")
     (license (list license:expat license:asl2.0))))
+
+(define-public i3status-rust
+  (package
+    (name "i3status-rust")
+    (version "0.20.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/greshake/i3status-rust")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (patches (search-patches "i3status-rust-enable-unstable-features.patch"))
+        (sha256
+         (base32 "00gzm3g297s9bfp13vnb623p7dfac3g6cdhz2b3lc6l0kmnnqs1s"))))
+    (build-system cargo-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("dbus" ,dbus)
+       ("pulseaudio" ,pulseaudio)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:features '("pulseaudio" "libpulse-binding")
+       #:install-source? #f
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chrono-tz" ,rust-chrono-tz-0.5)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
+        ("rust-curl" ,rust-curl-0.4)
+        ("rust-dbus" ,rust-dbus-0.9)
+        ("rust-dbus-tree" ,rust-dbus-tree-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-nix" ,rust-nix-0.20)
+        ("rust-nl80211" ,rust-nl80211-0.0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-signal-hook" ,rust-signal-hook-0.3)
+        ("rust-swayipc" ,rust-swayipc-2)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-cpuprofiler" ,rust-cpuprofiler-0.0)
+        ("rust-inotify" ,rust-inotify-0.9)
+        ("rust-libpulse-binding" ,rust-libpulse-binding-2)
+        ("rust-maildir" ,rust-maildir-0.5)
+        ("rust-notmuch" ,rust-notmuch-0.6)
+        ("rust-progress" ,rust-progress-0.2))
+       #:cargo-development-inputs
+       (("rust-assert-fs" ,rust-assert-fs-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-resources-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((resources (string-append %output "/share")))
+               (substitute* "src/util.rs"
+                 (("/usr/share/i3status-rust") resources)))))
+         (add-after 'install 'install-resources
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively "files" (string-append %output "/share"))))
+         (add-after 'unpack 'enable-unstable-features
+           (lambda _
+             (setenv "RUSTC_BOOTSTRAP" "1")
+             #t)))))
+    (home-page "https://github.com/greshake/i3status-rust")
+    (synopsis "i3status, written in pure Rust")
+    (description "@code{i3status-rs} is a feature-rich and resource-friendly
+replacement for i3status, written in pure Rust.  It provides a way to display
+@code{blocks} of system information (time, battery status, volume, etc) on the i3
+bar.  It is also compatible with sway.")
+    (license license:gpl3)))
 
 (define-public ripgrep
   (package
