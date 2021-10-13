@@ -7871,9 +7871,9 @@ the superuser to make device nodes.")
                (("sed")
                 (string-append (assoc-ref inputs "sed")
                                "/bin/sed"))
-               (("cut")
+               (("cat|cut" command)
                 (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cut")) )))
+                               "/bin/" command)) )))
          (replace 'bootstrap
            (lambda _
              ;; The "preroll" script takes care of Autoconf and also
