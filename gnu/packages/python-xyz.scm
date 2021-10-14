@@ -4553,6 +4553,30 @@ interface and by handling all the requirements towards the Robot Framework
 library APIs.")
     (license license:asl2.0)))
 
+(define-public python-robotframework-seleniumlibrary
+  (package
+    (name "python-robotframework-seleniumlibrary")
+    (version "5.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "robotframework-seleniumlibrary" version))
+       (sha256
+        (base32 "1dihrbcid9i7daw2qy6h3xsvwaxzmyip820jw5z11n60qrl006pm"))))
+    (build-system python-build-system)
+    ;; XXX: Tests require ungoogled-chromium, but the chromium module would
+    ;; introduce a cycle if imported here.
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-robotframework-pythonlibcore"
+        ,python-robotframework-pythonlibcore)
+       ("python-selenium" ,python-selenium)))
+    (home-page "https://github.com/robotframework/SeleniumLibrary")
+    (synopsis "Web testing library for Robot Framework")
+    (description "SeleniumLibrary is a web testing library for Robot Framework
+that utilizes the Selenium tool internally.")
+    (license license:asl2.0)))
+
 (define-public python-rstr
   (package
    (name "python-rstr")
