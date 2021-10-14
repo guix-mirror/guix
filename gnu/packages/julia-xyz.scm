@@ -2865,6 +2865,32 @@ expressions involving differing types of units that are then evaluated,
 resolving them into absolute units.")
     (license license:expat)))
 
+(define-public julia-media
+  (package
+    (name "julia-media")
+    (version "0.5.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JunoLab/Media.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "05jq9j3vs8yfj2lwz3sh1vk5rha06xdcikp9s2q3dn316vryy6di"))))
+    (build-system julia-build-system)
+    ;; Package without Project.toml
+    (arguments
+     '(#:julia-package-name "Media"))
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/JunoLab/Media.jl")
+    (synopsis "Unified measure and coordinates types")
+    (description "This package provides a display system which enables the
+user handle multiple input/output devices and decide what media types get
+displayed where.")
+    (license license:expat)))
+
 (define-public julia-missings
   (package
     (name "julia-missings")
