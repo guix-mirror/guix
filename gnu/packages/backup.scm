@@ -114,6 +114,7 @@
        ("mock" ,python-mock)))
     (propagated-inputs
      `(("lockfile" ,python-lockfile)
+       ("pygobject" ,python-pygobject)
        ("urllib3" ,python-urllib3)))
     (inputs
      `(("librsync" ,librsync)
