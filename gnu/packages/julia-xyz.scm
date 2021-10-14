@@ -624,11 +624,11 @@ color scales for graphics.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0n7h70caqv7yd0khjhn90iax62r73mcif8qzkwj5b4q46li1r8ih"))))
-    (arguments
-     '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-fixedpointnumbers" ,julia-fixedpointnumbers)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/JuliaGraphics/ColorTypes.jl")
     (synopsis "Basic color types and constructor")
     (description "This minimalistic package serves as the foundation for
