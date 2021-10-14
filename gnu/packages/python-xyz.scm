@@ -4365,7 +4365,7 @@ ecosystem, but can naturally be used also by other projects.")
 (define-public python-robotframework
   (package
     (name "python-robotframework")
-    (version "3.2.2")
+    (version "4.1.2")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -4375,7 +4375,7 @@ ecosystem, but can naturally be used also by other projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0if0h3myb9m3hgmn1phrhq8pfp89kfqsaq32vmfdjkyjdj7y59ds"))
+        (base32 "0s6lakbd8h1pa4lfdj18sm13gpywszgpcns4hz026a4kam787kby"))
        (patches (search-patches
                  "python-robotframework-source-date-epoch.patch"))))
     (build-system python-build-system)
@@ -4389,23 +4389,24 @@ ecosystem, but can naturally be used also by other projects.")
                         (invoke "invoke" "library-docs" "all")
                         (mkdir-p doc)
                         (copy-recursively "doc/libraries"
-                                          (string-append doc "/libraries"))
-                        #t)))
+                                          (string-append doc "/libraries")))))
                   (replace 'check
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      ;; Some tests require timezone data.  Otherwise, they
-                      ;; look up /etc/localtime, which doesn't exist, and fail
-                      ;; with:
-                      ;;
-                      ;; OverflowError: mktime argument out of range
-                      (setenv "TZDIR"
-                              (string-append (assoc-ref inputs "tzdata")
-                                             "/share/zoneinfo"))
-                      (setenv "TZ" "Europe/Paris")
-
-                      (invoke "python" "utest/run.py"))))))
+                    (lambda* (#:key inputs tests? #:allow-other-keys)
+                      (when tests?
+                        ;; Some tests require timezone data.  Otherwise, they
+                        ;; look up /etc/localtime, which doesn't exist, and
+                        ;; fail with:
+                        ;;
+                        ;; OverflowError: mktime argument out of range
+                        (setenv "TZDIR"
+                                (string-append (assoc-ref inputs "tzdata")
+                                               "/share/zoneinfo"))
+                        (setenv "TZ" "Europe/Paris")
+                        (invoke "python" "utest/run.py")))))))
     (native-inputs
-     `(("python-invoke" ,python-invoke)
+     `(("python-docutils" ,python-docutils)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-invoke" ,python-invoke)
        ("python-rellu" ,python-rellu)
        ("python:tk" ,python "tk")             ;used when building the HTML doc
        ("tzdata" ,tzdata-for-tests)))
