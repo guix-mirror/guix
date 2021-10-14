@@ -402,7 +402,8 @@
 (define %disarchive-mirrors
   ;; TODO: Eventually turn into a procedure that takes a hash algorithm
   ;; (symbol) and hash (bytevector).
-  '("https://disarchive.ngyro.com/"))
+  '("https://disarchive.guix.gnu.org/"
+    "https://disarchive.ngyro.com/"))
 
 (define %disarchive-mirror-file
   (plain-file "disarchive-mirrors" (object->string %disarchive-mirrors)))
