@@ -1773,9 +1773,17 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
            (lambda _
              (substitute* "data/post-install.sh"
                (("gtk-update-icon-cache") "true"))
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Add duplicity to the search path
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/deja-dup")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "duplicity") "/bin")))))))))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+     `(("bash-minimal" ,bash-minimal)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("duplicity" ,duplicity)
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)
