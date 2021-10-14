@@ -806,14 +806,12 @@ for construction of objects.")
         (sha256
          (base32 "15zbkn32v7xlz7559s0r5a0vkwmjwsswxaqpzijly4lky4jnp33d"))))
     (build-system julia-build-system)
-    (arguments
-     `(#:tests? #f))    ; Documenter.jl not packaged yet.
     (propagated-inputs
      `(("julia-staticarrays" ,julia-staticarrays)))
-    ;(native-inputs
-    ; `(("julia-documenter" ,julia-documenter)
-    ;   ("julia-forwarddiff" ,julia-forwarddiff)
-    ;   ("julia-unitful" ,julia-unitful)))
+    (native-inputs
+    `(("julia-documenter" ,julia-documenter)
+      ("julia-forwarddiff" ,julia-forwarddiff)
+      ("julia-unitful" ,julia-unitful)))
     (home-page "https://github.com/JuliaGeometry/CoordinateTransformations.jl")
     (synopsis "Coordinate transformations in Julia")
     (description "@code{CoordinateTransformations} is a Julia package to manage
