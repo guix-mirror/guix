@@ -2461,11 +2461,11 @@ as a string together with the return value.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "11334fcg2slpwcj0raxf457brhf7pxglgxc6cy8q58ggrpxqfqql"))))
-    (arguments
-     '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-macrotools" ,julia-macrotools)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/FluxML/IRTools.jl")
     (synopsis "Simple and flexible IR format")
     (description "This package provides a simple and flexible IR format,
