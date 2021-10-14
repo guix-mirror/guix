@@ -2573,10 +2573,10 @@ This library is no longer supported by its author.")
   (sbcl-package->ecl-package sbcl-cl-colors))
 
 (define-public sbcl-cl-ansi-text
-  (let ((commit "53badf7878f27f22f2d4a2a43e6df458e43acbe9"))
+  (let ((commit "8b129d83c7511b54cdd9d4123825a2d06349b25c"))
     (package
       (name "sbcl-cl-ansi-text")
-      (version (git-version "1.0.0" "1" commit))
+      (version (git-version "2.0.1" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2585,12 +2585,12 @@ This library is no longer supported by its author.")
                (commit commit)))
          (sha256
           (base32
-           "11i27n0dbz5lmygiw65zzr8lx0rac6b6yysqranphn31wls6ja3v"))
+           "0nk7ajqfa937w1iy3zy86jjbw8yffm05cqs4wxkgl97v6kmmya14"))
          (file-name (git-file-name "cl-ansi-text" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
-         ("cl-colors" ,sbcl-cl-colors)))
+         ("cl-colors2" ,sbcl-cl-colors2)))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (synopsis "ANSI terminal color implementation for Common Lisp")
