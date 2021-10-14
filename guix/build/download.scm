@@ -646,6 +646,8 @@ and write the output to FILE."
                                                   #:verify-certificate?
                                                   verify-certificate?
                                                   #:timeout timeout)))
+              (format #t "Retrieving Disarchive spec from ~a ...~%"
+                      (uri->string uri))
               (let ((specification (read port)))
                 (close-port port)
                 specification))))
