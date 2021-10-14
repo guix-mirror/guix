@@ -3123,10 +3123,10 @@ languages like Fortran.")
         (sha256
          (base32 "0ran2vj6ahlzib0g77y7g0jhavy3k9s2mqq23ybpgp9z677wf26h"))))
     (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f))                    ;require Documenter, not packaged yet
     (propagated-inputs
      `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/JuliaArrays/PaddedViews.jl")
     (synopsis "Add virtual padding to the edges of an array")
     (description "@code{PaddedViews} provides a simple wrapper type,
