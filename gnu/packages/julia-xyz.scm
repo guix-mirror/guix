@@ -4123,8 +4123,7 @@ some performance improvements).")
          (base32 "1fwiaxdpx1z9dli3jr8kyraych0jbdiny3qklynf0r13px25r6i7"))))
     (build-system julia-build-system)
     (arguments
-     `(#:tests? #f  ; Documenter.jl not packaged yet
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-doctest
            (lambda _
@@ -4133,9 +4132,9 @@ some performance improvements).")
              #t)))))
     (propagated-inputs
      `(("julia-offsetarrays" ,julia-offsetarrays)))
-    ;(native-inputs
-    ; `(("julia-aqua" ,julia-aqua)
-    ;   ("julia-documenter" ,julia-documenter)))
+    (native-inputs
+    `(("julia-aqua" ,julia-aqua)
+      ("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/JuliaArrays/StackViews.jl")
     (synopsis "No more catcat")
     (description "StackViews provides only one array type: @code{StackView}.
