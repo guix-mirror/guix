@@ -117,7 +117,8 @@
        ("pygobject" ,python-pygobject)
        ("urllib3" ,python-urllib3)))
     (inputs
-     `(("librsync" ,librsync)
+     `(("dbus" ,dbus)                   ; dbus-launch (Gio backend)
+       ("librsync" ,librsync)
        ("lftp" ,lftp)
        ("gnupg" ,gnupg)                 ; gpg executable needed
        ("util-linux" ,util-linux)))     ; for setsid
@@ -130,7 +131,11 @@
              (substitute* "duplicity/gpginterface.py"
                (("self.call = u'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
-
+             (substitute* "duplicity/backends/giobackend.py"
+               (("subprocess.Popen\\(\\[u'dbus-launch'\\]")
+                (string-append "subprocess.Popen([u'"
+                               (assoc-ref inputs "dbus")
+                               "/bin/dbus-launch']")))
              (substitute* '("testing/functional/__init__.py"
                             "testing/overrides/bin/lftp")
                (("/bin/sh") (which "sh")))
