@@ -561,6 +561,38 @@ can be a test-only dependency, allowing it to have potentially heavy
 dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible.")
     (license license:expat)))
 
+(define-public julia-codeczlib
+  (package
+    (name "julia-codeczlib")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaIO/CodecZlib.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xm603nylkwk4bzx66zv1g3syzrvn3jh9spdx7kvcvgszzyrrgh4"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
+    (propagated-inputs
+     `(("julia-zlib-jll" ,julia-zlib-jll)
+       ("julia-transcodingstreams" ,julia-transcodingstreams)))
+    (home-page "https://github.com/JuliaIO/CodecZlib.jl")
+    (synopsis "Zlib codecs for @code{TranscodingStreams.jl}")
+    (description "This package provides zlib codecs for
+@code{TranscodingStreams.jl}.")
+    (license license:expat)))
+
 (define-public julia-colors
   (package
     (name "julia-colors")
