@@ -4458,7 +4458,7 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
 (define-public python-robotframework-sshlibrary
   (package
     (name "python-robotframework-sshlibrary")
-    (version "3.3.0")
+    (version "3.7.0")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -4469,7 +4469,7 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mk6dz2jqqndbx4yji09012q6rmadnqdywi7czvj62b0s07dr3r2"))))
+         "09ak22rh9qa9wlpvhkliyybcp4xafjhxsps28wz0pf0030771xav"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4483,14 +4483,14 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
                (invoke "invoke" "kw-docs" "project-docs")
                (mkdir-p doc)
                (for-each delete-file (find-files "docs" "\\.rst"))
-               (copy-recursively "docs" doc)
-               #t)))
+               (copy-recursively "docs" doc))))
          (replace 'check
-           (lambda _
-             ;; Some tests require an SSH server; we remove them.
-             (delete-file "utest/test_client_api.py")
-             (delete-file "utest/test_scp.py")
-             (invoke "python" "utest/run.py"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some tests require an SSH server; we remove them.
+               (delete-file "utest/test_client_api.py")
+               (delete-file "utest/test_scp.py")
+               (invoke "python" "utest/run.py")))))))
     (propagated-inputs
      `(("python-robotframework" ,python-robotframework)
        ("python-paramiko" ,python-paramiko)
