@@ -4563,6 +4563,34 @@ package.")
 automatic differentiation for its machine learning platform.")
     (license license:expat)))
 
+(define-public julia-transcodingstreams
+  (package
+    (name "julia-transcodingstreams")
+    (version "0.9.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/TranscodingStreams.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1w3klii293caqiclfh28jggv7f53xclm9fr6xmw38brwrn1hjb48"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))                ; Circular dependency with various codecs.
+    (home-page "https://github.com/JuliaIO/TranscodingStreams.jl")
+    (synopsis "Fast I/O transcoding data streams")
+    (description "This package provides tools for transcoding data streams
+which are:
+@itemize
+@item fast: small overhead and specialized methods
+@item consistent: basic I/O operations work as expected
+@item generic: support any I/O objects like files, buffers, pipes, etc.
+@item extensible: easy definition for new codec to transcode data
+@end itemize")
+    (license license:expat)))
+
 (define-public julia-typedtables
   (package
     (name "julia-typedtables")
