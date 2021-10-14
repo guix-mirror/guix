@@ -1743,6 +1743,31 @@ differentiation (AD).")
 arbitrary functions.")
     (license license:expat)))
 
+(define-public julia-functors
+  (package
+    (name "julia-functors")
+    (version "0.2.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/FluxML/Functors.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "03ry1wn1y2jssq65l29bi6q4ki041aa6gl1nd2w6cgl00k2mrxf3"))))
+    (build-system julia-build-system)
+    (home-page "https://fluxml.ai/Functors.jl/stable/")
+    (synopsis "Design pattern for structures as in machine learning")
+    (description "This package provides tools to express a design pattern for
+dealing with large/ nested structures, as in machine learning and
+optimisation.  For large machine learning models it can be cumbersome or
+inefficient to work with parameters as one big, flat vector, and structs help
+in managing complexity; but it is also desirable to easily operate over all
+parameters at once, e.g. for changing precision or applying an optimiser
+update step.")
+    (license license:expat)))
+
 (define-public julia-fuzzycompletions
   (package
     (name "julia-fuzzycompletions")
