@@ -4577,6 +4577,33 @@ library APIs.")
 that utilizes the Selenium tool internally.")
     (license license:asl2.0)))
 
+(define-public python-robotframework-seleniumscreenshots
+  (package
+    (name "python-robotframework-seleniumscreenshots")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "robotframework-seleniumscreenshots" version))
+       (sha256
+        (base32 "05qv323hvjmy62h33ryrjaa9k1hyvp8hq5qnj8j1x3ap2ci3q3s0"))))
+    (build-system python-build-system)
+    (arguments
+    ;; XXX: The tests require a relatively complicated setup configured in
+    ;; their CI with Nix (!).
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-robotframework-seleniumlibrary"
+        ,python-robotframework-seleniumlibrary)))
+    (home-page "https://github.com/MarketSquare/robotframework-seleniumscreenshots")
+    (synopsis "Robot Framework library for annotating and cropping screenshots")
+    (description "The SeleniumScreenshots library for Robot Framework provides
+keywords for annotating and cropping screenshots taken with SeleniumLibrary.
+It is useful for scripting automatically updated screenshots for documentation
+or for visual regression testing purposes.")
+    (license license:bsd-3)))
+
 (define-public python-rstr
   (package
    (name "python-rstr")
