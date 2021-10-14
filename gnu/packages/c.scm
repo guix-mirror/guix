@@ -578,7 +578,7 @@ portability.")
 (define-public aws-checksums
   (package
     (name "aws-checksums")
-    (version "0.1.11")
+    (version "0.1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -587,7 +587,7 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pjs31x3cq9wyw511y00kksz660m8im9zxk30hid8iwlilcbnyvx"))
+                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))
               (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
     (build-system cmake-build-system)
     (arguments
