@@ -35,7 +35,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.12.2")
+    (version "1.12.3")
     (source
      (origin
        (method git-fetch)
@@ -44,7 +44,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rwmwnqxhjcdx9niva9ardx90p1qi4axxh72nw9k15hhlh2jy29x"))
+        (base32 "07fisdx755cgyghwy95gvdds38sh138z56biariml18jjw5mk3r6"))
        (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -56,8 +56,7 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'make-git-checkout-writable
            (lambda _
-             (for-each make-file-writable (find-files "."))
-             #t))
+             (for-each make-file-writable (find-files "."))))
          (add-after 'make-git-checkout-writable 'replace-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -82,8 +81,7 @@
                     "; fi")))
                (substitute* "bin/mix"
                  (("#!/usr/bin/env elixir")
-                  (string-append "#!" out "/bin/elixir"))))
-             #t))
+                  (string-append "#!" out "/bin/elixir"))))))
          (add-before 'build 'make-current
            ;; The Elixir compiler checks whether or not to compile files by
            ;; inspecting their timestamps.  When the timestamp is equal to the
@@ -93,13 +91,11 @@
              (for-each (lambda (file)
                          (let ((recent 1400000000))
                            (utime file recent recent 0 0)))
-                       (find-files "." ".*"))
-             #t))
+                       (find-files "." ".*"))))
          (add-before 'check 'set-home
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Some tests require access to a home directory.
-             (setenv "HOME" "/tmp")
-             #t))
+             (setenv "HOME" "/tmp")))
          (delete 'configure))))
     (inputs
      `(("erlang" ,erlang)
