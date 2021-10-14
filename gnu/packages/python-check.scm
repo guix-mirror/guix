@@ -1415,6 +1415,38 @@ the implementation of that name.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
 
+(define-public python-mockito
+  (package
+    (name "python-mockito")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in pypi archive
+       (uri (git-reference
+             (url "https://github.com/kaste/mockito-python")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fg8jflcf4c929gd4zbcrk73d08waaqjfjmdjrgnv54mzl35pjxl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/kaste/mockito-python")
+    (synopsis "Mocking library for Python")
+    (description "This package provides a Python implementation of the Java
+library of the same name.  It eases monkey patching, for example to stub out
+side effects when unit testing.")
+    (license license:expat)))
+
 (define-public python-mypy-extensions
   (package
     (name "python-mypy-extensions")
