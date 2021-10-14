@@ -49,6 +49,7 @@
 ;;; Copyright © 2021 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2298,14 +2299,14 @@ temperature of the screen.")
 (define-public xsecurelock
   (package
     (name "xsecurelock")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/google/xsecurelock/releases"
                     "/download/v" version "/xsecurelock-" version ".tar.gz"))
               (sha256
-               (base32 "070gknyv0s5hz9hkc6v73m2v7ssyjwgl93b5hd4glayfqxqjbmdp"))))
+               (base32 "0s2q69g1xhvs18q2jhcval5vpa9j0kkrdv02r176vvxvdms7hhc7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
