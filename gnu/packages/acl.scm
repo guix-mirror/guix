@@ -114,18 +114,17 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-tests
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             ;; These tests operate on real files, but our tempfs does not support
-             ;; ACLs
+             ;; These tests operate on real files, but our tmpfs does not support
+             ;; ACLs.
              (substitute* "tests/test_acls.py"
                (("( *)def test_applyto(_extended(_mixed)?)?" match indent)
-                (string-append indent "@pytest.mark.skip(reason=\"guix\")\n" match)))
-             #t))
+                (string-append indent "@pytest.mark.skip(reason=\"guix\")\n"
+                               match)))))
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "tests"))
-               #t)))))
+               (invoke "pytest" "tests")))))))
     (inputs `(("acl" ,acl)))
     (native-inputs `(("python-pytest" ,python-pytest)))
     (home-page "https://pylibacl.k1024.org/")
