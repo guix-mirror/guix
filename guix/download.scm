@@ -472,6 +472,8 @@ download by itself using its own dependencies."
   ;;   - #f, to use the normal download methods, not trying to exercise the
   ;;     fallback mechanism;
   ;;
+  ;;   - 'none, to disable all the fallback mechanisms;
+  ;;
   ;;   - 'content-addressed-mirrors, to purposefully attempt to download from
   ;;     a content-addressed mirror;
   ;;
@@ -517,9 +519,9 @@ name in the store."
             (error "'guix-daemon' is too old, please upgrade" builtins))
 
           (built-in-download (or name file-name)
-                             (if (%download-fallback-test)
-                                 "https://example.org/does-not-exist"
-                                 url)
+                             (match (%download-fallback-test)
+                               ((or #f 'none) url)
+                               (_ "https://example.org/does-not-exist"))
                              #:guile guile
                              #:system system
                              #:hash-algo hash-algo
