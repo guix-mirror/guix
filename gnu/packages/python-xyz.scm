@@ -22598,13 +22598,13 @@ project.")
 (define-public python-trio
   (package
     (name "python-trio")
-    (version "0.17.0")
+    (version "0.19.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trio" version))
        (sha256
-        (base32 "0zcxirpdvvl54pbfkgw7vz984879xwvdygqfpggnam24is2zjp78"))))
+        (base32 "1qgg4zhca81dxc1nlmcr5pl1bclmvdp3niqbyslwxs65bs732pl9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -22623,6 +22623,9 @@ project.")
                      ;; Assertion errors.
                      " and not test_guest_mode_ki"
                      " and not test_run_in_trio_thread_ki"
+                     " and not test_simple_cancel_scope_usage_doesnt_create_cyclic_garbage"
+                     " and not test_nursery_cancel_doesnt_create_cyclic_garbage"
+                     " and not test_locals_destroyed_promptly_on_cancel"
                      ;; These try to raise KeyboardInterrupt which does not work
                      ;; in the build environment.
                      " and not test_ki_self"
@@ -22642,7 +22645,8 @@ project.")
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-trustme" ,python-trustme)))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
+     `(("python-async-generator" ,python-async-generator)
+       ("python-attrs" ,python-attrs)
        ("python-idna" ,python-idna)
        ("python-outcome" ,python-outcome)
        ("python-sniffio" ,python-sniffio)
