@@ -22615,26 +22615,27 @@ project.")
              (setenv "HOME" "/tmp")
              #t))
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv" "-k"
-                     (string-append
-                     ;; This test times out.
-                     "not test_ki_protection_works"
-                     ;; Assertion errors.
-                     " and not test_guest_mode_ki"
-                     " and not test_run_in_trio_thread_ki"
-                     " and not test_simple_cancel_scope_usage_doesnt_create_cyclic_garbage"
-                     " and not test_nursery_cancel_doesnt_create_cyclic_garbage"
-                     " and not test_locals_destroyed_promptly_on_cancel"
-                     ;; These try to raise KeyboardInterrupt which does not work
-                     ;; in the build environment.
-                     " and not test_ki_self"
-                     " and not test_ki_wakes_us_up"
-                     ;; Failure in name resolution.
-                     " and not test_getnameinfo"
-                     " and not test_SocketType_resolve"
-                     ;; OSError: protocol not found.
-                     " and not test_getprotobyname")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "-k"
+                       (string-append
+                         ;; This test times out.
+                         "not test_ki_protection_works"
+                         ;; Assertion errors.
+                         " and not test_guest_mode_ki"
+                         " and not test_run_in_trio_thread_ki"
+                         " and not test_simple_cancel_scope_usage_doesnt_create_cyclic_garbage"
+                         " and not test_nursery_cancel_doesnt_create_cyclic_garbage"
+                         " and not test_locals_destroyed_promptly_on_cancel"
+                         ;; These try to raise KeyboardInterrupt which does not work
+                         ;; in the build environment.
+                         " and not test_ki_self"
+                         " and not test_ki_wakes_us_up"
+                         ;; Failure in name resolution.
+                         " and not test_getnameinfo"
+                         " and not test_SocketType_resolve"
+                         ;; OSError: protocol not found.
+                         " and not test_getprotobyname"))))))))
     (native-inputs
      `(("python-astor" ,python-astor)
        ("python-ipython" ,python-ipython)
