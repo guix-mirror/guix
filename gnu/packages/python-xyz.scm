@@ -269,6 +269,44 @@ asynchronous one follows
 design}.")
     (license license:asl2.0)))
 
+(define-public python-logbook
+  (package
+    (name "python-logbook")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Logbook" version))
+       (sha256
+        (base32 "1s1gyfw621vid7qqvhddq6c3z2895ci4lq3g0r1swvpml2nm9x36"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'cythonize-sources
+           (lambda _
+             (with-directory-excursion "logbook"
+               (invoke "cython" "_speedups.pyx"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Check cython build also
+               (setenv "CYBUILD" "True")
+               (invoke "pytest" "--cov=logbook" "-r" "s" "tests")))))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-google-brotli" ,python-google-brotli)))
+    (home-page "https://github.com/getlogbook/logbook")
+    (synopsis "Logbook is a logging replacement for Python")
+    (description
+     "Logbook is a logging system for Python that replaces the standard
+library’s logging module.  It was designed with both complex and simple
+applications in mind and the idea to make logging fun.")
+    (license license:bsd-3)))
+
 (define-public python-ueberzug
   (package
     (name "python-ueberzug")
