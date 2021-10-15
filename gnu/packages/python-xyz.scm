@@ -109,6 +109,7 @@
 ;;; Copyright © 2021 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
