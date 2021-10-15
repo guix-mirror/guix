@@ -15785,13 +15785,13 @@ parsing UK postcodes.")
 (define-public python-faker
   (package
   (name "python-faker")
-  (version "4.0.2")
+  (version "9.3.1")
   (source (origin
             (method url-fetch)
             (uri (pypi-uri "Faker" version))
             (sha256
              (base32
-              "13qq485ydxmdnqn3xbfv1xfyqbf9qfnfw33v1vw5l6jyy9p8cgrd"))))
+              "0lpfdc4ndvk7chgqrfd2b1my4n54pccq9b645vp9cp5s5ypyknfd"))))
   (build-system python-build-system)
   (arguments
    '(#:phases
@@ -15801,7 +15801,7 @@ parsing UK postcodes.")
   (native-inputs
    `(;; For testing
      ("python-freezegun" ,python-freezegun)
-     ("python-pytest" ,python-pytest)
+     ("python-pytest" ,python-pytest-6)
      ("python-random2" ,python-random2)
      ("python-ukpostcodeparser" ,python-ukpostcodeparser)
      ("python-validators" ,python-validators)))
