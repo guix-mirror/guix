@@ -6587,38 +6587,38 @@ GVFS comes with a set of backends, including trash support, SFTP, SMB, HTTP,
 DAV, and others.")
     (license license:lgpl2.0+)))
 
-(define-public gusb
+(define-public gusb-minimal
   (package
-    (name "gusb")
+    (name "gusb-minimal")
     (version "0.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/hughsie/libgusb")
-                     (commit version)))
+                    (url "https://github.com/hughsie/libgusb")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "0ifhdqhpyxwsg0z9s1anj7cf5pya5qsqyp5ksh9n7mqwa4lrjkl8"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:tests? #f          ;libusb fails to initialize.  Wonder what that is.
+       #:configure-flags
+       (cons "-Ddocs=false"
+             (if ,(%current-target-system)
+                 ;; Introspection data cannot currently be cross-compiled.
+                 '("-Dintrospection=false"
+                   ;; Requires introspection data.
+                   "-Dvapi=false")
+                 '()))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
-       ("vala" ,vala)
-       ("gtk-doc" ,gtk-doc/stable)))
+       ("vala" ,vala)))
     (propagated-inputs
      ;; Both of these are required by gusb.pc.
      `(("glib" ,glib)
        ("libusb" ,libusb)))
-    (arguments
-     `(#:tests? #f ;libusb fails to initialize.  Wonder what that is.
-       #:configure-flags
-       ,(if (%current-target-system)
-            ;; Introspection data cannot currently be cross-compiled.
-            ''("-Dintrospection=false"
-               ;; Requires introspection data.
-               "-Dvapi=false")
-            ''())))
     (home-page "https://github.com/hughsie/libgusb")
     (synopsis "GLib binding for libusb1")
     (description
@@ -6627,6 +6627,18 @@ asynchronous control, bulk and interrupt transfers with proper cancellation
 and integration into a mainloop.  This makes it easy to integrate low level
 USB transfers with your high-level application or system daemon.")
     (license license:lgpl2.1+)))
+
+(define-public gusb
+  (package/inherit gusb-minimal
+    (name "gusb")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gusb-minimal)
+       ((#:configure-flags flags)
+        `(cons "-Ddocs=true"
+               (delete "-Ddocs=false" ,flags)))))
+    (native-inputs
+     (cons `("gtk-doc" ,gtk-doc/stable)
+           (package-native-inputs gusb-minimal)))))
 
 (define-public simple-scan
   (package
