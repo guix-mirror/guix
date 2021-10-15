@@ -873,7 +873,7 @@ into HTTP/2 frames.")
 (define-public python-hpack
   (package
     (name "python-hpack")
-    (version "3.0.0")
+    (version "4.0.0")
     (source
      (origin
        ;; PyPI tarball is missing some files necessary for the tests.
@@ -883,7 +883,7 @@ into HTTP/2 frames.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0w8hkz50a6lzkmgi41ryicm0mh9ca9cx29pm3s0xlpn0vs29xrmd"))))
+        (base32 "11qdayvz5a8zlzdcdm37f2z1fgnl67pz6j8xj2dz5rfa5lds29yq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -892,10 +892,7 @@ into HTTP/2 frames.")
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "test" "-k"
-                       ;; This test will be fixed in the next version. See:
-                       ;; https://github.com/python-hyper/hpack/issues/168.
-                       "not test_get_by_index_out_of_range")))))))
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://hyper.rtfd.org")
