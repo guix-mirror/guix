@@ -3708,7 +3708,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.24.2")
+    (version "2.25")
     (source
      (origin
        (method git-fetch)
@@ -3721,13 +3721,14 @@ operators and scripters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ibwss04j4qbhpd3jcw3d4xjf8jnmb9fi3sz58a99xw3awkfjabd"))
+        (base32 "0z6dp3cpz1dmbxw41ravsx1bxychafp0ij8gvj96mzz7rm9pdnq3"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove pre-built binaries scattered across the source repository.
-           (for-each delete-file (find-files "." "\\.(dll|exe)"))
-           #t))))
+           (for-each delete-file (find-files "." "\\.(dll|exe)"))))
+       (patches
+        (search-patches "alpine-fix-privacy-policy-crash.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3753,14 +3754,12 @@ operators and scripters.")
            ;; ‘/etc/shadow exists in the build environment’.  It does not.
            (lambda _
              (substitute* "configure"
-               (("test -f /etc/shadow") "true"))
-             #t))
+               (("test -f /etc/shadow") "true"))))
          (add-after 'unpack 'make-reproducible
            (lambda _
              ;; This removes time-dependent code to make alpine reproducible.
              (substitute* "pico/blddate.c"
-               (("%02d-%s-%d") "1970-01-01"))
-             #t)))))
+               (("%02d-%s-%d") "1970-01-01")))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
