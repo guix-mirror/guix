@@ -1556,7 +1556,7 @@ Heritage and missing from the Disarchive database")
                          (#f '())
                          (id
                           (list (make-warning package
-                                              (G_ "
+                                              (G_ "\
 Disarchive entry refers to non-existent SWH directory '~a'")
                                               (list id)
                                               #:field 'source)))))))
