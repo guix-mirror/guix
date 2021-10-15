@@ -3697,7 +3697,7 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/HandBrake/HandBrake/"
@@ -3705,7 +3705,7 @@ supported players in addition to this package.")
                                   "HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "1xhq9jjmf854jf7sg4m754hgajnavwwhmjnaikcf2vgjr35ax81r"))
+                "0qgvdpnjjvh9937cr0yry1lkz5fj6x9pz32fx7s80c9fvjvq33lb"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -3718,8 +3718,7 @@ supported players in addition to this package.")
                     ;; (ffmpeg, libvpx, libdvdread, libdvdnav, and libbluray),
                     ;; which would lead to fetching and building of these
                     ;; libraries.  Use our own instead.
-                    (("MODULES \\+= contrib") "# MODULES += contrib"))
-                  #t))))
+                    (("MODULES \\+= contrib") "# MODULES += contrib"))))))
     (build-system  glib-or-gtk-build-system)
     (native-inputs
      `(("automake" ,automake)           ; GUI subpackage must be bootstrapped
@@ -3785,8 +3784,7 @@ supported players in addition to this package.")
          (add-before 'configure 'patch-SHELL
            (lambda _
              (substitute* "gtk/po/Makefile.in.in"
-               (("SHELL = /bin/sh") "SHELL = @SHELL@"))
-             #t))
+               (("SHELL = /bin/sh") "SHELL = @SHELL@"))))
          (add-before 'configure 'relax-reqs
            (lambda _
              (substitute* "make/configure.py"
@@ -3796,8 +3794,7 @@ supported players in addition to this package.")
                ;; and ninja are only needed for contrib/libdav1d, and nasm
                ;; only for libvpx
                (("((cmake|meson|ninja|nasm) *=.*abort=)True" _ &)
-                (string-append & "False")))
-             #t))
+                (string-append & "False")))))
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              ;; 'configure' is not an autoconf-generated script, and
@@ -3808,7 +3805,7 @@ supported players in addition to this package.")
                       (string-append "--prefix=" out)
                       (or configure-flags '())))))
          (add-after 'configure 'chdir-build
-           (lambda _ (chdir "./build") #t)))))
+           (lambda _ (chdir "./build"))))))
     (home-page "https://handbrake.fr")
     (synopsis "Video transcoder")
     (description
