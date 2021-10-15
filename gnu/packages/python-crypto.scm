@@ -924,14 +924,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.9.9")
+    (version "3.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "1i4m74f88qj9ci8rpyzrbk2slmsdj5ipmwdkq6qk24byalm203li"))
+         "1l3a80z3lxcj1q0hzj1d3plavy2d51y4vzcd85zj0zm7yyxrd022"))
        (modules '((guix build utils)))
        (snippet pycryptodome-unbundle-tomcrypt-snippet)))
     (build-system python-build-system)
@@ -990,7 +990,7 @@ PyCryptodome variants, the other being python-pycryptodomex.")
        (method url-fetch)
        (uri (pypi-uri "pycryptodomex" version))
        (sha256
-        (base32 "0lbx4qk3xmwqiidhmkj8qa7bh2lf8bwzg0xjpsh2w5zqjrc7qnvv"))
+        (base32 "0vcd65ylri2a4pdqcc1897jasj7wfmqklj8x3pdynmdvark3d603"))
        (modules '((guix build utils)))
        (snippet pycryptodome-unbundle-tomcrypt-snippet)))
     (description
