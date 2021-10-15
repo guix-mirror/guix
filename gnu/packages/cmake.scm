@@ -8,7 +8,7 @@
 ;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
@@ -130,8 +130,8 @@ using the CMake build system.")
   '(;; This test copies libgcc_s.so.1 from GCC and tries to modify its RPATH,
     ;; but does not cope with the file being read-only.
     "BundleUtilities"
-    ;; This test requires network access.
-    "CTestTestUpload"
+    ;; These tests require network access.
+    "CTestTestUpload" "CMake.FileDownload"
     ;; This test requires 'ldconfig' which is not available in Guix.
     "RunCMake.install"
     ;; This test fails for unknown reason.
@@ -150,7 +150,7 @@ using the CMake build system.")
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.20.2")
+    (version "3.21.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmake.org/files/v"
@@ -158,7 +158,7 @@ using the CMake build system.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "0kjlb7sxbwg8z4027c3jjcmyjh9d36p0r9d4nqxynyaijz5nxkxf"))
+                "0kvrhgbrvm0lv7jshzd4nsvp3d5q1jkgal2d5kj4w4v58bghckfi"))
               (patches (search-patches "cmake-curl-certificates.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -339,15 +339,6 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-minimal)
     (name "cmake")
-    (version "3.21.1")
-    (source (origin
-              (inherit (package-source cmake-bootstrap))
-              (uri (string-append "https://cmake.org/files/v"
-                                  (version-major+minor version)
-                                  "/cmake-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1m7y9j5lafkrfswsg2vkpx2fz6p6fqpp2pcp2dcz5pylf58r3hzs"))))
     (arguments
      (substitute-keyword-arguments (package-arguments cmake-minimal)
        ;; Use cmake-minimal this time.
@@ -380,8 +371,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                                           "/html")))
                  (copy-recursively (string-append out html)
                                    (string-append doc html))
-                 (delete-file-recursively (string-append out html))
-                 #t)))))))
+                 (delete-file-recursively (string-append out html)))))))))
     (inputs
      `(("ncurses" ,ncurses)             ;required for ccmake
        ,@(package-inputs cmake-minimal)))
