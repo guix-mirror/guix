@@ -14639,7 +14639,7 @@ a @url{http://json.org/, JSON} file.")
 (define-public emacs-json-mode
   (package
     (name "emacs-json-mode")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -14648,7 +14648,7 @@ a @url{http://json.org/, JSON} file.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i79lqzdg59vkqwjd3q092xxn9vhxspb1vn4pkis0vfvn46g01jy"))))
+        (base32 "0r0k56q58kb133l9x9nbisz9p2kbphfgw1l4g2xp0pjqsc9wvq8z"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-json-reformat" ,emacs-json-reformat)
