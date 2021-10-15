@@ -49,25 +49,22 @@
     (name "gdb")
     (version "10.2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gdb/gdb-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0aag1c0fw875pvhjg1qp7x8pf6gf92bjv5gcic5716scacyj58da"))
-             (patches
-              (search-patches "gdb-hurd.patch"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0aag1c0fw875pvhjg1qp7x8pf6gf92bjv5gcic5716scacyj58da"))
+              (patches
+               (search-patches "gdb-hurd.patch"))))
 
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
-
        #:out-of-source? #t
-
        #:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
-
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-paths
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -77,34 +74,30 @@
                                        "gdbsupport/pathstuff.cc")
                           (("\"/bin/sh\"")
                            (format #f "~s" sh))))))
-                  (add-after
-                   'configure 'post-configure
-                   (lambda _
-                     (for-each patch-makefile-SHELL
-                               (find-files "." "Makefile\\.in"))
-                     #t))
-                  (add-after
-                   'install 'remove-libs-already-in-binutils
-                   (lambda* (#:key native-inputs inputs outputs
-                             #:allow-other-keys)
-                     ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
-                     ;; However, this leads to collisions when both are
-                     ;; installed, and really is none of its business,
-                     ;; conceptually.  So remove them.
-                     (let* ((binutils (or (assoc-ref inputs "binutils")
-                                          (assoc-ref native-inputs "binutils")))
-                            (out      (assoc-ref outputs "out"))
-                            (files1   (with-directory-excursion binutils
-                                        (append (find-files "lib")
-                                                (find-files "include"))))
-                            (files2   (with-directory-excursion out
-                                        (append (find-files "lib")
-                                                (find-files "include"))))
-                            (common   (lset-intersection string=?
-                                                         files1 files2)))
-                       (with-directory-excursion out
-                         (for-each delete-file common)
-                         #t)))))))
+                  (add-after 'configure 'post-configure
+                    (lambda _
+                      (for-each patch-makefile-SHELL
+                                (find-files "." "Makefile\\.in"))))
+                  (add-after 'install 'remove-libs-already-in-binutils
+                    (lambda* (#:key native-inputs inputs outputs
+                              #:allow-other-keys)
+                      ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
+                      ;; However, this leads to collisions when both are
+                      ;; installed, and really is none of its business,
+                      ;; conceptually.  So remove them.
+                      (let* ((binutils (or (assoc-ref inputs "binutils")
+                                           (assoc-ref native-inputs "binutils")))
+                             (out      (assoc-ref outputs "out"))
+                             (files1   (with-directory-excursion binutils
+                                         (append (find-files "lib")
+                                             (find-files "include"))))
+                             (files2   (with-directory-excursion out
+                                         (append (find-files "lib")
+                                             (find-files "include"))))
+                             (common   (lset-intersection string=?
+                                                          files1 files2)))
+                        (with-directory-excursion out
+                          (for-each delete-file common))))))))
     (inputs
      `(("bash" ,bash)
        ("expat" ,expat)
@@ -123,16 +116,16 @@
        ;; The Hurd needs -lshouldbeinlibc.
        ,@(if (hurd-target?) `(("hurd" ,hurd)) '())))
     (native-inputs
-      `(("texinfo" ,texinfo)
-        ("dejagnu" ,dejagnu)
-        ("pkg-config" ,pkg-config)
-        ,@(if (hurd-target?)
-              ;; When cross-compiling from x86_64-linux, make sure to use a
-              ;; 32-bit MiG because we assume target i586-pc-gnu.
-              `(("mig" ,(if (%current-target-system)
-                            mig/32-bit
-                            mig)))
-              '())))
+     `(("texinfo" ,texinfo)
+       ("dejagnu" ,dejagnu)
+       ("pkg-config" ,pkg-config)
+       ,@(if (hurd-target?)
+             ;; When cross-compiling from x86_64-linux, make sure to use a
+             ;; 32-bit MiG because we assume target i586-pc-gnu.
+             `(("mig" ,(if (%current-target-system)
+                           mig/32-bit
+                           mig)))
+             '())))
     ;; TODO: Add support for the GDB_DEBUG_FILE_DIRECTORY environment
     ;; variable in GDB itself instead of relying on some glue code in
     ;; the Guix-provided .gdbinit file.
@@ -187,8 +180,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
   gdb-10)
 
 (define-public gdb-minimal
-  (package/inherit
-   gdb
-   (name "gdb-minimal")
-   (inputs (fold alist-delete (package-inputs gdb)
-                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
+  (package/inherit gdb
+    (name "gdb-minimal")
+    (inputs (fold alist-delete (package-inputs gdb)
+                  '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
