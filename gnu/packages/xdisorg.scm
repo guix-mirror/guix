@@ -262,7 +262,7 @@ used to further tweak the behaviour of the different profiles.")
 (define-public bemenu
   (package
     (name "bemenu")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method git-fetch)
@@ -271,7 +271,7 @@ used to further tweak the behaviour of the different profiles.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13y4y3i03vdx3zkh4lm67xmigzycf8fxg4fdr5s4x2brr3ya46fv"))))
+        (base32 "03q26n796bjgz9q5pjx396rw5kyrdpn52dqi4v2bglnh7dy0r0jk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
