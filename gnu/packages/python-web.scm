@@ -934,13 +934,13 @@ and that could be anything you want.")
 (define-public python-h2
   (package
     (name "python-h2")
-    (version "3.2.0")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "h2" version))
        (sha256
-        (base32 "051gg30aca26rdxsmr9svwqm06pdz9bv21ch4n0lgi7jsvml2pw7"))))
+        (base32 "1fraip114fm1ha5w37pdc0sk8dn9pb0ck267zrwwpap7zc4clfm8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -949,13 +949,14 @@ and that could be anything you want.")
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "test")))))))
+               (invoke "python" "-m" "pytest" "-vv" "test")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-hypothesis" ,python-hypothesis-6.23)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-hpack" ,python-hpack)
        ("python-hyperframe" ,python-hyperframe)))
-    (home-page "https://github.com/python-hyper/hyper-h2")
+    (home-page "https://github.com/python-hyper/h2")
     (synopsis "HTTP/2 State-Machine based protocol implementation")
     (description
      "This module contains a pure-Python implementation of a HTTP/2 protocol
