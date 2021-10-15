@@ -908,13 +908,13 @@ for use in Python programs that implement HTTP/2.")
 (define-public python-h11
   (package
     (name "python-h11")
-    (version "0.9.0")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "h11" version))
        (sha256
-        (base32 "1qfad70h59hya21vrzz8dqyyaiqhac0anl2dx3s3k80gpskvrm1k"))))
+        (base32 "0hk0nll6qazsambp3kl8cxxsbl4gv5y9252qadyk0jky0sv2q8j7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
