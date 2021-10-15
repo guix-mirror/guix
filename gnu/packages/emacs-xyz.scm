@@ -10883,9 +10883,9 @@ that uses the standard completion function completing-read.")
     (home-page "https://github.com/zkry/yaml.el")
     (synopsis "YAML parser in Elisp")
     (description
-     "@code{yaml.el} is a YAML parser written in Emacs List without
-any external dependencies.  It provides an interface similar to the
-Emacs JSON parsing utility.")
+     "@code{yaml.el} is a YAML parser written in Emacs Lisp without any
+external dependencies.  It provides an interface similar to the Emacs JSON
+parsing utility.")
     (license license:gpl3+)))
 
 (define-public emacs-yaml-mode
