@@ -6139,15 +6139,15 @@ your code non-blocking and speedy.")
     (name "python-socks")
     (version "1.2.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "python-socks" version))
-        (sha256
-         (base32
-          "1n6xb18jy41ybgkmamakg6psp3qididd45qknxiggngaiibz43kx"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-socks" version))
+       (sha256
+        (base32
+         "1n6xb18jy41ybgkmamakg6psp3qididd45qknxiggngaiibz43kx"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f  ; tests not included
+     `(#:tests? #f                      ; tests not included
        #:phases
        (modify-phases %standard-phases
          (replace 'check
