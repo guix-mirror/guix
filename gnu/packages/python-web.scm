@@ -239,14 +239,14 @@ Callback Hell.
 (define-public python-aiohttp-socks
   (package
     (name "python-aiohttp-socks")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp_socks" version))
        (sha256
         (base32
-         "0jmhb0l1w8k1nishij3awd9zv8zbyb5l35a2pdalrqxxasbhbcif"))))
+         "04w010bvi719ifpc3sshav95k10hf9nq8czn9yglkj206yxcypdr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
