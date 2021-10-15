@@ -19202,3 +19202,46 @@ library for Ruby, which is itself based on the Lucene library for Java.")
          ;; Tests fail with "Pathname without a physical namestring" error
          ;; on ECL.
          ((#:tests? _ #f) #f))))))
+
+(define-public sbcl-cl-charms
+  (let ((commit "64aba59d89f85bc5c9402e445873965338a66a02")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-charms")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/HiTECNOLOGYs/cl-charms")
+               (commit commit)))
+         (file-name (git-file-name "cl-charms" version))
+         (sha256
+          (base32 "1jczaypa9dhxr34yyhsxb6lrdnircjx8am4iqkc3shfpjn32q323"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("ncurses" ,ncurses)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/low-level/curses-bindings.lisp"
+                 (("libncursesw.so")
+                  (string-append (assoc-ref inputs "ncurses")
+                                 "/lib/libncursesw.so"))))))))
+      (home-page "https://github.com/HiTECNOLOGYs/cl-charms")
+      (synopsis "Interface to libcurses in Common Lisp")
+      (description
+       "@code{cl-charms} is an interface to libcurses in Common Lisp.  It
+provides both a raw, low-level interface to libcurses via CFFI, and a more
+higher-level lispier interface.")
+      (license license:expat))))
+
+(define-public cl-charms
+  (sbcl-package->cl-source-package sbcl-cl-charms))
+
+(define-public ecl-cl-charms
+  (sbcl-package->ecl-package sbcl-cl-charms))
