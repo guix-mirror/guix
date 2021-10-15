@@ -1005,7 +1005,7 @@ application suites.")
                           gdk-pixbuf+svg
                           gdk-pixbuf))
        ("glib" ,glib)
-       ("libcloudproviders" ,libcloudproviders)
+       ("libcloudproviders" ,libcloudproviders-minimal)
        ("libepoxy" ,libepoxy)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)

@@ -39,7 +39,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
@@ -338,41 +338,28 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
-(define-public libcloudproviders
+;;; Minimal variant, used to break a cycle with Inkscape.
+(define-public libcloudproviders-minimal
   (package
-    (name "libcloudproviders")
+    (name "libcloudproviders-minimal")
     (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "mirror://gnome/sources/" name "/"
-                       (version-major+minor version) "/"
-                       name "-" version ".tar.xz"))
+        (string-append "mirror://gnome/sources/libcloudproviders/"
+                       (version-major+minor version)
+                       "/libcloudproviders-" version ".tar.xz"))
        (sha256
         (base32 "0aars24myf6n8b8hm1n12hsgcm54097kpbpm4ba31zp1l4y22qs7"))))
     (build-system meson-build-system)
-    (outputs '("out" "doc"))
     (arguments
-     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
-       #:configure-flags
-       (list
-        "-Denable-gtk-doc=true")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'move-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share"))
-               (rename-file
-                (string-append out "/share/gtk-doc")
-                (string-append doc "/share/gtk-doc"))
-               #t))))))
+     `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
+       #:configure-flags (list "-Dintrospection=false"
+                               "-Denable-gtk-doc=false"
+                               "-Dvapigen=false")))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
@@ -385,6 +372,31 @@ environments can then provide integrated access to the cloud providers
 services.")
     (home-page "https://csorianognome.wordpress.com/2015/07/07/cloud-providers/")
     (license license:lgpl3+)))
+
+(define-public libcloudproviders
+  (package/inherit libcloudproviders-minimal
+    (name "libcloudproviders")
+    (version "0.3.1")
+    (outputs (cons "doc" (package-outputs libcloudproviders-minimal)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libcloudproviders-minimal)
+       ((#:configure-flags _)
+        '(list "-Denable-gtk-doc=true")) ;false by default
+       ((#:phases phases '%standard-phases)
+        `(modify-phases %standard-phases
+           (add-after 'install 'move-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (assoc-ref outputs "doc")))
+                 (mkdir-p (string-append doc "/share"))
+                 (rename-file
+                  (string-append out "/share/gtk-doc")
+                  (string-append doc "/share/gtk-doc")))))))))
+    (native-inputs
+     (append
+         `(("gobject-introspection" ,gobject-introspection)
+           ("gtk-doc" ,gtk-doc/stable))
+         (package-native-inputs libcloudproviders-minimal)))))
 
 (define-public libgrss
   (package
