@@ -2610,10 +2610,11 @@ named color.")
   (sbcl-package->ecl-package sbcl-cl-ansi-text))
 
 (define-public sbcl-prove
-  (let ((commit "4f9122bd393e63c5c70c1fba23070622317cfaa0"))
+  (let ((commit "5d71f02795b89e36f34e8c7d50e69b67ec6ca2de")
+        (revision "2"))
     (package
       (name "sbcl-prove")
-      (version (git-version "1.0.0" "1" commit))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2621,12 +2622,12 @@ named color.")
                (url "https://github.com/fukamachi/prove")
                (commit commit)))
          (sha256
-          (base32
-           "07sbfw459z8bbjvx1qlmfa8qk2mvbjnnzi2mi0x72blaj8bkl4vc"))
+          (base32 "0ca6ha3zhmckq3ad9lxm6sbg4i0hg3m81xhan4dkxd3x9898jzpc"))
          (file-name (git-file-name "prove" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("cl-colors" ,sbcl-cl-colors)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("cl-ansi-text" ,sbcl-cl-ansi-text)))
       (synopsis "Yet another unit testing framework for Common Lisp")
