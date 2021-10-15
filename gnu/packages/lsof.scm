@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,26 +62,25 @@
                     (string-append "GNU/" (utsname:sysname (uname))
                                    " (GNU Guix)"))
 
-            (invoke "./Configure" "linux")
-            #t))
+            (invoke "./Configure" "linux")))
         (add-after 'configure 'patch-timestamps
           (lambda _
             (substitute* "Makefile"
-              (("`date`") "`date --date=@1`"))
-            #t))
+              (("`date`") "`date --date=@1`"))))
         (add-after 'build 'build-man-page
           (lambda _
             (with-output-to-file "lsof.8"
-              (lambda _ (invoke "soelim" "Lsof.8")))
-            #t))
+              (lambda _ (invoke "soelim" "Lsof.8")))))
         (add-before 'check 'disable-failing-tests
           (lambda _
             (substitute* "tests/Makefile"
               ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
               (("(STDTST=.*) LTsock" _ prefix) prefix)
-              ;; Fails without access to a remote NFS server.
-              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))
-            #t))
+              ;; LTnfs fails without access to a remote NFS server, and LTlock
+              ;; fails when run on a Btrfs file system (see:
+              ;; https://github.com/lsof-org/lsof/issues/152).
+              (("OPTTST=[[:space:]]*LTbigf LTdnlc LTlock LTnfs")
+               "OPTTST = LTbigf LTdnlc"))))
         (replace 'check
           (lambda* (#:key tests? #:allow-other-keys)
             (when tests?
@@ -90,14 +90,12 @@
                 (invoke "./Add2TestDB")
 
                 ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
-                (invoke "make" "standard" "optional")))
-            #t))
+                (invoke "make" "standard" "optional")))))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (install-file "lsof" (string-append out "/bin"))
-              (install-file "lsof.8" (string-append out "/share/man/man8")))
-            #t)))))
+              (install-file "lsof.8" (string-append out "/share/man/man8"))))))))
    (synopsis "Display information about open files")
    (description
     "Lsof stands for LiSt Open Files, and it does just that.
