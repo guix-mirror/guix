@@ -385,8 +385,7 @@ OpenSSL for TARGET."
 (define-public openssl
   (package
     (name "openssl")
-    (version "1.1.1k")
-    (replacement openssl-1.1.1l)
+    (version "1.1.1l")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -399,11 +398,11 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "1rdfzcrxy9y38wqdw5942vmdax9hjhgrprzxm42csal7p5shhal9"))))
+                "1lbblxps2fhmz7bqh058iywh5wxfignbfx1s1kz2fj63b5g3wyhb"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
-               "static"))    ;6.4 MiB of .a files
+               "doc"        ;6.8 MiB of man3 pages and full HTML documentation
+               "static"))   ;6.4 MiB of .a files
     (native-inputs `(("perl" ,perl)))
     (arguments
      `(#:parallel-tests? #f
@@ -428,11 +427,11 @@ OpenSSL for TARGET."
          ;; https://github.com/openssl/openssl/issues/12242
          #$@(if (or (target-arm?)
                     (target-riscv64?))
-              #~((replace 'check
-                   (lambda* (#:key tests? test-target #:allow-other-keys)
-                     (when tests?
-                       (invoke "make" "TESTS=-test_afalg" test-target)))))
-              #~())
+                #~((replace 'check
+                     (lambda* (#:key tests? test-target #:allow-other-keys)
+                       (when tests?
+                         (invoke "make" "TESTS=-test_afalg" test-target)))))
+                #~())
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (let* ((out #$output)
@@ -446,7 +445,7 @@ OpenSSL for TARGET."
                 invoke #$@(if (%current-target-system)
                               #~("./Configure")
                               #~("./config"))
-                "shared"    ;build shared libraries
+                "shared"                ;build shared libraries
                 "--libdir=lib"
 
                 ;; The default for this catch-all directory is
@@ -499,37 +498,18 @@ OpenSSL for TARGET."
     (native-search-paths
      (list (search-path-specification
             (variable "SSL_CERT_DIR")
-            (separator #f)                        ;single entry
+            (separator #f)              ;single entry
             (files '("etc/ssl/certs")))
            (search-path-specification
             (variable "SSL_CERT_FILE")
             (file-type 'regular)
-            (separator #f)                        ;single entry
+            (separator #f)              ;single entry
             (files '("etc/ssl/certs/ca-certificates.crt")))))
     (synopsis "SSL/TLS implementation")
     (description
      "OpenSSL is an implementation of SSL/TLS.")
     (license license:openssl)
     (home-page "https://www.openssl.org/")))
-
-;; Replacement package to fix multiple CVEs.
-(define openssl-1.1.1l
-  (package
-    (inherit openssl)
-    (version "1.1.1l")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/"
-                                        "openssl-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/openssl-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
-              (sha256
-               (base32
-                "1lbblxps2fhmz7bqh058iywh5wxfignbfx1s1kz2fj63b5g3wyhb"))))))
 
 ;; We will not add any new uses of this package. If you add new code that uses
 ;; this package, your change will be reverted!
