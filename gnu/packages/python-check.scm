@@ -709,13 +709,13 @@ in Pytest.")
 (define-public python-pytest-checkdocs
   (package
     (name "python-pytest-checkdocs")
-    (version "1.2.2")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-checkdocs" version))
        (sha256
-        (base32 "0j6j1gvj6x451y3qsx4xbaq9p1w9gg3mwk7n0w80cy8vdyjkngb0"))))
+        (base32 "0m4kn7141i6k8qr8ak3lbmk9vim11xsrlnrggcfwczfrglc6jmia"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
