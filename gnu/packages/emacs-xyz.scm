@@ -10866,6 +10866,28 @@ Emacs completion function instead.")
 that uses the standard completion function completing-read.")
   (license license:gpl3+)))
 
+(define-public emacs-yaml
+  (package
+    (name "emacs-yaml")
+    (version "0.3.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zkry/yaml.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13fjxrr7iyfagbm21p5is5jw1zv56ns2mnac145v8lqli6mrr5gx"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/zkry/yaml.el")
+    (synopsis "YAML parser in Elisp")
+    (description
+     "@code{yaml.el} is a YAML parser written in Emacs List without
+any external dependencies.  It provides an interface similar to the
+Emacs JSON parsing utility.")
+    (license license:gpl3+)))
+
 (define-public emacs-yaml-mode
   (package
     (name "emacs-yaml-mode")
