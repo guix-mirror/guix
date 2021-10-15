@@ -19140,3 +19140,64 @@ diffs, \"context\" format diffs, and \"vdelta\" format binary diffs.")
 
 (define-public ecl-diff
   (sbcl-package->ecl-package sbcl-diff))
+
+(define-public sbcl-montezuma
+  (let ((commit "ee2129eece7065760de4ebbaeffaadcb27644738")
+        (revision "1"))
+    (package
+      (name "sbcl-montezuma")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/montezuma")
+               (commit commit)))
+         (file-name (git-file-name "cl-montezuma" version))
+         (sha256
+          (base32 "0svmvsbsirydk3c1spzfvj8qmkzcs9i69anpfvk1843i62wb7x2c"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; The _darcs directory contains a second copy of
+           ;; montezuma-indexfiles.asd. Remove the directory to
+           ;; prevent build failure caused by .asd files that have
+           ;; the same filename.
+           (add-after 'unpack 'remove-darcs-directory
+             (lambda _
+               (delete-file-recursively
+                "contrib/montezuma-indexfiles/_darcs")))
+           ;; Tests fail with: :FORCE and :FORCE-NOT arguments not
+           ;; allowed in a nested call to ASDF/OPERATE:OPERATE unless
+           ;; identically to toplevel.
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "montezuma.asd"
+                 ((":force t") "")))))))
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("cl-fad" ,sbcl-cl-fad)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (native-inputs
+       `(("trivial-timeout" ,sbcl-trivial-timeout)))
+      (home-page "https://github.com/sharplispers/montezuma")
+      (synopsis "Full-text indexing and search for Common Lisp")
+      (description
+       "Montezuma is a text search engine library for Lisp based on the Ferret
+library for Ruby, which is itself based on the Lucene library for Java.")
+      (license (list license:expat       ; montezuma
+                     license:gpl3+)))))  ; contrib/montezuma-indexfiles
+
+(define-public cl-montezuma
+  (sbcl-package->cl-source-package sbcl-montezuma))
+
+(define-public ecl-montezuma
+  (let ((pkg (sbcl-package->ecl-package sbcl-montezuma)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ;; Tests fail with "Pathname without a physical namestring" error
+         ;; on ECL.
+         ((#:tests? _ #f) #f))))))
