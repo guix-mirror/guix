@@ -229,3 +229,59 @@ homeserver and generally help bootstrap the ecosystem.")
 layer doesn't do any network IO on its own, but on top of that is a full
 fledged batteries-included asyncio layer using aiohttp.")
     (license license:isc)))
+
+(define-public pantalaimon
+  (package
+    (name "pantalaimon")
+    (version "0.10.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/matrix-org/pantalaimon")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "153d8083lj3qqirbv5q1d3igzd61a5kyzfk7xmv29sd3jbs8ysm9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'downgrade-appdirs-requirement
+           (lambda _
+             (substitute* "setup.py"
+               ;; FIXME: Remove this once appdirs is updated.
+               ;; Upgrading python-appdirs requires rebuilting 3000+ packages,
+               ;; when 1.4.4 is a simple maintenance fix from 1.4.3.
+               (("appdirs >= 1.4.4") "appdirs >= 1.4.3"))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "tests")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-faker" ,python-faker)
+       ("python-pytest-aiohttp" ,python-pytest-aiohttp)
+       ("python-aioresponses" ,python-aioresponses)))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-appdirs" ,python-appdirs)
+       ("python-attrs" ,python-attrs)
+       ("python-cachetools" ,python-cachetools)
+       ("python-click" ,python-click)
+       ("python-janus" ,python-janus)
+       ("python-keyring" ,python-keyring)
+       ("python-logbook" ,python-logbook)
+       ("python-matrix-nio" ,python-matrix-nio)
+       ("python-peewee" ,python-peewee)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)))
+    (home-page "https://github.com/matrix-org/pantalaimon")
+    (synopsis "Matrix proxy daemon that adds E2E encryption capabilities")
+    (description
+     "Pantalaimon is an end-to-end encryption aware Matrix reverse proxy
+daemon.  Pantalaimon acts as a good man in the middle that handles the
+encryption for you.  Messages are transparently encrypted and decrypted for
+clients inside of pantalaimon.")
+    (license license:asl2.0)))
