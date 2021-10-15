@@ -426,7 +426,7 @@ return the unaltered list of upstream dependency names."
   "Return the `package' s-expression for a python package with the given NAME,
 VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   (define (maybe-upstream-name name)
-    (if (string-match ".*\\-[0-9]+" (pk name))
+    (if (string-match ".*\\-[0-9]+" name)
         `((properties ,`'(("upstream-name" . ,name))))
         '()))
   
