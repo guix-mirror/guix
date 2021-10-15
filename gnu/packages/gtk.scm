@@ -1028,7 +1028,7 @@ application suites.")
        ("graphene" ,graphene)
        ("harfbuzz" ,harfbuzz)
        ("iso-codes" ,iso-codes)
-       ("json-glib" ,json-glib)
+       ("json-glib" ,json-glib-minimal)
        ("libxml2" ,libxml2)
        ("rest" ,rest)))
     (native-inputs

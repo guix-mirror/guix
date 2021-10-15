@@ -4590,86 +4590,27 @@ is to provide a backend to GSettings on platforms that don't already have
 configuration storage systems.")
     (license license:lgpl2.1+)))
 
-(define-public json-glib
+(define-public json-glib-minimal
   (package
-    (name "json-glib")
+    (name "json-glib-minimal")
     (version "1.6.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/json-glib/"
+                                  (version-major+minor version)
+                                  "/json-glib-" version ".tar.xz"))
               (sha256
                (base32
                 "092g2dyy1hhl0ix9kp33wcab0pg1qicnsv0cj5ms9g9qs336cgd3"))))
     (build-system meson-build-system)
-    (outputs '("out" "doc"))
     (arguments
-     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
-       #:configure-flags
-       (list
-        "-Ddocs=true"
-        "-Dman=true"
-        ,@(if (%current-target-system)
-              ;; If enabled, gtkdoc-scangobj will try to execute a
-              ;; cross-compiled binary.
-              '("-Dgtk_doc=disabled"
-                ;; Trying to build introspection data when cross-compiling
-                ;; causes errors during linking.
-                "-Dintrospection=disabled")
-              '()))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook
-           ;; TODO(core-updates): Use (or native-inputs inputs)
-           ;; unconditionally.
-           (lambda* (#:key ,@(if (%current-target-system)
-                                 '(native-inputs)
-                                 '()) inputs #:allow-other-keys)
-             (with-directory-excursion "doc"
-               (substitute* (find-files "." "\\.xml$")
-                 (("http://www.oasis-open.org/docbook/xml/4\\.3/")
-                  (string-append (assoc-ref ,(if (%current-target-system)
-                                                 '(or native-inputs inputs)
-                                                 'inputs)
-                                            "docbook-xml")
-                                 "/xml/dtd/docbook/")))
-               (substitute* "meson.build"
-                 (("http://docbook.sourceforge.net/release/xsl/current/")
-                  (string-append (assoc-ref ,(if (%current-target-system)
-                                                 '(or native-inputs inputs)
-                                                 'inputs) "docbook-xsl")
-                                 "/xml/xsl/docbook-xsl-1.79.2/"))))
-             #t))
-         ;; When cross-compiling, there are no docs to move.
-         ,(if (%current-target-system)
-              '(add-after 'install 'stub-docs
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; The daemon doesn't like empty output paths.
-                   (mkdir (assoc-ref outputs "doc"))))
-              '(add-after 'install 'move-docs
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (doc (assoc-ref outputs "doc")))
-                     (mkdir-p (string-append doc "/share"))
-                     (rename-file
-                      (string-append out "/share/gtk-doc")
-                      (string-append doc "/share/gtk-doc"))
-                     #t)))))))
+     `(#:glib-or-gtk? #t))           ; To wrap binaries and/or compile schemas
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.3)
-       ("docbook-xsl" ,docbook-xsl)
-       ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")      ;for glib-mkenums and glib-genmarshal
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
-       ("pkg-config" ,pkg-config)
-       ("xsltproc" ,libxslt)))
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")             ;for glib-mkenums and glib-genmarshal
+       ("pkg-config" ,pkg-config)))
     (inputs
-     ;; TODO(core-updates): Make this input unconditional.
-     (if (%current-target-system)
-         `(("bash-minimal" ,bash-minimal))
-         '()))
+     `(("bash-minimal" ,bash-minimal)))
     (propagated-inputs
      `(("glib" ,glib)))                 ;according to json-glib-1.0.pc
     (home-page "https://wiki.gnome.org/Projects/JsonGlib")
@@ -4678,6 +4619,61 @@ configuration storage systems.")
 described by RFC 4627.  It implements a full JSON parser and generator using
 GLib and GObject, and integrates JSON with GLib data types.")
     (license license:lgpl2.1+)))
+
+(define-public json-glib
+  (package/inherit json-glib-minimal
+    (name "json-glib")
+    (outputs (cons "doc" (package-outputs json-glib-minimal)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments json-glib-minimal)
+       ((#:configure-flags _)
+        `(list "-Ddocs=true"
+               "-Dman=true"
+               ,@(if (%current-target-system)
+                     ;; If enabled, gtkdoc-scangobj will try to execute a
+                     ;; cross-compiled binary.
+                     '("-Dgtk_doc=disabled"
+                       ;; Trying to build introspection data when cross-compiling
+                       ;; causes errors during linking.
+                       "-Dintrospection=disabled")
+                     '())))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-docbook
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (with-directory-excursion "doc"
+                 (substitute* (find-files "." "\\.xml$")
+                   (("http://www.oasis-open.org/docbook/xml/4\\.3/")
+                    (string-append (assoc-ref (or native-inputs inputs)
+                                              "docbook-xml")
+                                   "/xml/dtd/docbook/")))
+                 (substitute* "meson.build"
+                   (("http://docbook.sourceforge.net/release/xsl/current/")
+                    (string-append (assoc-ref (or native-inputs inputs)
+                                              "docbook-xsl")
+                                   "/xml/xsl/docbook-xsl-1.79.2/"))))))
+           ;; When cross-compiling, there are no docs to move.
+           ,(if (%current-target-system)
+                '(add-after 'install 'stub-docs
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; The daemon doesn't like empty output paths.
+                     (mkdir (assoc-ref outputs "doc"))))
+                '(add-after 'install 'move-docs
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (doc (assoc-ref outputs "doc")))
+                       (mkdir-p (string-append doc "/share"))
+                       (rename-file
+                        (string-append out "/share/gtk-doc")
+                        (string-append doc "/share/gtk-doc"))))))))))
+    (native-inputs
+     (append
+         `(("docbook-xml" ,docbook-xml-4.3)
+           ("docbook-xsl" ,docbook-xsl)
+           ("gobject-introspection" ,gobject-introspection)
+           ("gtk-doc" ,gtk-doc)
+           ("xsltproc" ,libxslt))
+         (package-native-inputs json-glib-minimal)))))
 
 (define-public libxklavier
   (package
