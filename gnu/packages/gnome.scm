@@ -5203,9 +5203,9 @@ It supports several profiles, multiple tabs and implements several
 keyboard shortcuts.")
     (license license:gpl3+)))
 
-(define-public colord
+(define-public colord-minimal
   (package
-    (name "colord")
+    (name "colord-minimal")
     (version "1.4.5")
     (source
      (origin
@@ -5216,33 +5216,27 @@ keyboard shortcuts.")
         (base32 "05sydi6qqqx1rrqwnga1vbg9srkf89wdcfw5w4p4m7r37m2flx5p"))))
     (build-system meson-build-system)
     (arguments
-     '(;; FIXME: One test fails:
+     '( ;; FIXME: One test fails:
        ;; /colord/icc-store (in lib/colord/colord-self-test-private):
        ;; Incorrect content type for /tmp/colord-vkve/already-exists.icc, got
        ;; application/x-zerosize
        #:tests? #f
        #:glib-or-gtk? #t
-       #:configure-flags (list "-Dlocalstatedir=/var"
-                               ;; No dep on systemd.
-                               "-Dsystemd=false"
-                               ;; Wants to install to global completion dir;
-                               ;; punt.
+       #:configure-flags (list "-Dargyllcms_sensor=false" ;requires spotread
                                "-Dbash_completion=false"
                                "-Ddaemon_user=colord"
+                               "-Ddocs=false"
+                               "-Dlocalstatedir=/var"
+                               "-Dman=false"
                                "-Dsane=true"
-                               "-Dvapi=true"
-                               ;; Requires spotread.
-                               "-Dargyllcms_sensor=false"
-                               ;; TODO: Requires docbook2x.
-                               "-Dman=false")
+                               "-Dsystemd=false") ;no systemd
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-build-system
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "rules/meson.build"
                (("udev.get_pkgconfig_variable\\('udevdir'\\)")
-                (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))
-             #t))
+                (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))))
          (add-before 'configure 'set-sqlite3-file-name
            (lambda* (#:key inputs #:allow-other-keys)
              ;; "colormgr dump" works by invoking the "sqlite3" command.
@@ -5250,13 +5244,10 @@ keyboard shortcuts.")
              (let ((sqlite (assoc-ref inputs "sqlite")))
                (substitute* "client/cd-util.c"
                  (("\"sqlite3\"")
-                  (string-append "\"" sqlite "/bin/sqlite3\"")))
-               #t))))))
+                  (string-append "\"" sqlite "/bin/sqlite3\"")))))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
        ("gettext" ,gettext-minimal)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
@@ -5266,7 +5257,8 @@ keyboard shortcuts.")
        ("udev" ,eudev)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
-       ("gusb" ,gusb)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gusb" ,gusb-minimal)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)
        ("polkit" ,polkit)
@@ -5279,6 +5271,39 @@ keyboard shortcuts.")
 install and generate color profiles to accurately color manage input and
 output devices.")
     (license license:gpl2+)))
+
+(define-public colord
+  (package/inherit colord-minimal
+    (name "colord")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments colord-minimal)
+       ((#:configure-flags flags)
+        `(begin
+           (use-modules (srfi srfi-1))
+           (append '("-Dbash_completion=true"
+                     "-Ddocs=true"
+                     "-Dman=true")
+               (fold delete ,flags '("-Dbash_completion=false"
+                                     "-Ddocs=false"
+                                     "-Dman=false")))))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-bash-completion-dir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "data/meson.build"
+                 (("bash_completion.get_pkgconfig_variable\
+\\('completionsdir'\\)")
+                  (string-append "'" (assoc-ref outputs "out")
+                                 "/etc/bash_completion.d'")))))))))
+    (native-inputs
+     (append
+         `(("bash-completion" ,bash-completion)
+           ("docbook-xsl-ns" ,docbook-xsl-ns)
+           ("gtk-doc" ,gtk-doc/stable)
+           ("libxml2" ,libxml2)         ;for XML_CATALOG_FILES
+           ("libxslt" ,libxslt))
+         (package-native-inputs colord-minimal)))))
 
 (define-public geoclue
   (package

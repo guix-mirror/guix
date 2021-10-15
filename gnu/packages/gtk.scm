@@ -1023,7 +1023,7 @@ application suites.")
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)))
     (inputs
-     `(("colord" ,colord)
+     `(("colord" ,colord-minimal)       ;to prevent a cycle with inkscape
        ("cups" ,cups)
        ("graphene" ,graphene)
        ("harfbuzz" ,harfbuzz)
