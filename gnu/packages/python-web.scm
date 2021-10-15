@@ -844,13 +844,13 @@ follow links and submit forms.  It doesn’t do JavaScript.")
 (define-public python-hyperframe
   (package
     (name "python-hyperframe")
-    (version "5.2.0")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hyperframe" version))
        (sha256
-        (base32 "07xlf44l1cw0ghxx46sbmkgzil8vqv8kxwy42ywikiy35izw3xd9"))))
+        (base32 "055951gyhnjqpa2al52rj34g8yrls9inyn56n7nfkj0x4d300ldf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
