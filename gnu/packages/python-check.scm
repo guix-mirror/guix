@@ -780,16 +780,17 @@ simpler.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-W" "error" "-ra" "-v" "--pyargs"
-                     "pytest_trio" "--verbose" "--cov" "-k"
-                     (string-append
-                       ;; Needs network
-                       "not test_async_yield_fixture_with_nursery"
-                       " and not test_try"
-                       ;; No keyboard interrupt in our build environment.
-                       " and not test_actual_test")))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-W" "error" "-ra" "-v" "--pyargs"
+                       "pytest_trio" "--verbose" "--cov" "-k"
+                       (string-append
+                         ;; Needs network
+                         "not test_async_yield_fixture_with_nursery"
+                         " and not test_try"
+                         ;; No keyboard interrupt in our build environment.
+                         " and not test_actual_test"))))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
