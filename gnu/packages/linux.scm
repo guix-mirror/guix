@@ -1907,16 +1907,14 @@ providing the system administrator with some help in common tasks.")
                          (string-append
                           all "\n"
                           "ts_skip \"setarch tests are unreliable under QEMU\"")))))
-                  ,@(if (target-x86-32?)
-                        `((add-before 'check 'disable-lsns-test
-                            (lambda _
-                              ;; The lsns tests can fail due to ioctl(_, NS_GET_USERNS)
-                              ;; returning ENOTTY, indicating this kernel does not
-                              ;; support user namespaces.  Curiously, this test can fail
-                              ;; on i686 even if the same test passes on x86_64 on the
-                              ;; same machine.  See <https://issues.guix.gnu.org/49933>.
-                              (delete-file "tests/ts/lsns/ioctl_ns"))))
-                        '())
+                  (add-before 'check 'disable-lsns-test
+                    (lambda _
+                      ;; The lsns tests can fail due to ioctl(_, NS_GET_USERNS)
+                      ;; returning ENOTTY, indicating this kernel does not
+                      ;; support user namespaces.  Curiously, this test can fail
+                      ;; on i686 even if the same test passes on x86_64 on the
+                      ;; same machine.  See <https://issues.guix.gnu.org/49933>.
+                      (delete-file "tests/ts/lsns/ioctl_ns")))
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((lib    (assoc-ref outputs "lib"))
