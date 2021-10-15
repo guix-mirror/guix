@@ -69,6 +69,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
@@ -969,6 +970,7 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
     (inputs
      `(("curl" ,curl)
        ("openssl" ,openssl)
+       ("pulseaudio" ,pulseaudio)
        ("zlib" ,zlib)))
     (synopsis "Amazon Web Services SDK for C++")
     (description
