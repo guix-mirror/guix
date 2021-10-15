@@ -768,13 +768,13 @@ simpler.")
 (define-public python-pytest-trio
   (package
     (name "python-pytest-trio")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-trio" version))
        (sha256
-        (base32 "1zm8didm9h5jkqhghl9bvqs7kr7sjci282c7grhk6yhpzn8a9w4v"))))
+        (base32 "0c8cqf9by2884riksrqymqfp2g1d2d798a2zalcw9hmf34c786y0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -783,13 +783,19 @@ simpler.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-W" "error" "-ra" "-v" "--pyargs"
-                     "pytest_trio" "--verbose" "--cov"))))))
+                     "pytest_trio" "--verbose" "--cov" "-k"
+                     (string-append
+                       ;; Needs network
+                       "not test_async_yield_fixture_with_nursery"
+                       " and not test_try"
+                       ;; No keyboard interrupt in our build environment.
+                       " and not test_actual_test")))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)))
     (propagated-inputs
-     `(("python-trio" ,python-trio)))
+      (list python-async-generator python-outcome python-pytest python-trio))
     (home-page "https://github.com/python-trio/pytest-trio")
     (synopsis "Pytest plugin for trio")
     (description
