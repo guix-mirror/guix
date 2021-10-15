@@ -128,8 +128,9 @@
     (inputs `(("acl" ,acl)))
     (native-inputs `(("python-pytest" ,python-pytest)))
     (home-page "https://pylibacl.k1024.org/")
-    (synopsis "POSIX.1e ACLs for python")
-    (description "Python 3.4+ extension module that allows you to manipulate
-the POSIX.1e Access Control Lists present in some OS/file-systems
-combinations.")
+    (synopsis "POSIX.1e @acronym{ACLs, access control lists} for Python")
+    (description
+     "This Python extension module manipulates the POSIX.1e @acronym{ACLs,
+Access Control Lists available on many file systems.  These allow more
+fine-grained access control than traditional user/group permissions.")
     (license lgpl2.1+)))
