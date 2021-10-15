@@ -722,7 +722,8 @@ in Pytest.")
        ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-more-itertools" ,python-more-itertools)))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/jaraco/pytest-checkdocs")
     (synopsis "Check the README when running tests")
     (description
