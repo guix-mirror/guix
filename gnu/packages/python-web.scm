@@ -6139,14 +6139,14 @@ your code non-blocking and speedy.")
 (define-public python-socks
   (package
     (name "python-socks")
-    (version "1.1.2")
+    (version "1.2.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "python-socks" version))
         (sha256
          (base32
-          "06mgv3icsyglv50w3sb71x6cpbskza20pqd93l5xk59x574i6xgs"))))
+          "1n6xb18jy41ybgkmamakg6psp3qididd45qknxiggngaiibz43kx"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ; tests not included
