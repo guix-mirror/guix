@@ -197,10 +197,10 @@ includes lining and old-style numerals, tabular and proportional.  Greek,
 Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
     (license license:cc0)))
 
-(define-public font-cantarell
+(define-public font-abattis-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.301")
+    (version "0.303")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -208,7 +208,7 @@ Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "10sycxscs9kzl451mhygyj2qj8qlny8pamskb86np7izq05dnd9x"))))
+                "11sycxscs9kzl451mhygyj2qj8qlny8pamskb86np7izq05dnd9x"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))   ; for msgfmt

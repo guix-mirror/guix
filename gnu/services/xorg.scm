@@ -879,7 +879,7 @@ the GNOME desktop environment.")
   (debug? gdm-configuration-debug? (default #f))
   (default-user gdm-configuration-default-user (default #f))
   (gnome-shell-assets gdm-configuration-gnome-shell-assets
-                      (default (list adwaita-icon-theme font-cantarell)))
+                      (default (list adwaita-icon-theme font-abattis-cantarell)))
   (xorg-configuration gdm-configuration-xorg
                       (default (xorg-configuration)))
   (x-session gdm-configuration-x-session

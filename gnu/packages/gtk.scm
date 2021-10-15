@@ -331,7 +331,7 @@ applications.")
                  (add-after 'unpack 'disable-cantarell-tests
                    (lambda _
                      (substitute* "tests/meson.build"
-                       ;; XXX FIXME: These tests require "font-cantarell", but
+                       ;; XXX FIXME: These tests require "font-abattis-cantarell", but
                        ;; adding it here would introduce a circular dependency.
                        (("\\[ 'test-harfbuzz'.*") "")
                        (("\\[ 'test-itemize'.*") "")

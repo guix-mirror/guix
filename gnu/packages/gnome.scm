@@ -9242,7 +9242,7 @@ world.")
        ;; Packages not part of GNOME proper but that are needed for a good
        ;; experience.  See <https://bugs.gnu.org/39646>.
        ;; XXX: Find out exactly which ones are needed and why.
-       ("font-cantarell"            ,font-cantarell)
+       ("font-abattis-cantarell"            ,font-abattis-cantarell)
        ("font-dejavu"               ,font-dejavu)
        ("at-spi2-core"              ,at-spi2-core)
        ("dbus"                      ,dbus)
