@@ -4826,7 +4826,7 @@ from the GSettings schemas in gsettings-desktop-schemas.")
     (propagated-inputs
      ;; rest-0.7.pc refers to all these.
      `(("glib"    ,glib)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal)
        ("libxml2" ,libxml2)))
     (home-page "https://www.gtk.org/")
     (synopsis "RESTful web api query library")
