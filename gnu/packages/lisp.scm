@@ -1172,14 +1172,11 @@ including a built-in database engine and a GUI system.")
        (list
          (string-append "DESTDIR=" (assoc-ref %outputs "out"))
          (string-append "PREFIX=")
-         (string-append "CC=" (assoc-ref %build-inputs "gcc")
-                        "/bin/gcc"))
+         (string-append "CC=" ,(cc-for-target)))
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'check
-           (lambda _
-             (invoke "make" "test"))))))
+         (delete 'configure))))
     (home-page "https://janet-lang.org/")
     (synopsis "Functional, imperative and embeddable programming language")
     (description
