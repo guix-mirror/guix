@@ -24215,7 +24215,7 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
 (define-public emacs-forge
   (package
      (name "emacs-forge")
-     (version "0.2.1")
+     (version "0.3.0")
      (source
       (origin
         (method git-fetch)
@@ -24224,8 +24224,7 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0j28vc0q1h36pk0y2nidnlsc2y7n0vpfrd8civiv1zp8z0jwfyc9"))))
+         (base32 "15zm5azgl8gyd91i40a00ih4s2iwg1r8007n2gcfnmi6m4b7s0ak"))))
      (build-system emacs-build-system)
      (native-inputs
       `(("texinfo" ,texinfo)))
@@ -24237,7 +24236,8 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
         ("emacs-let-alist" ,emacs-let-alist)
         ("emacs-magit" ,emacs-magit)
         ("emacs-markdown-mode" ,emacs-markdown-mode)
-        ("emacs-transient" ,emacs-transient)))
+        ("emacs-transient" ,emacs-transient)
+        ("emacs-yaml" ,emacs-yaml)))
      (arguments
       `(#:tests? #f                     ;no tests
         #:phases
