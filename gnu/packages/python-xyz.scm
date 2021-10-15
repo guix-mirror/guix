@@ -10812,13 +10812,13 @@ printing of sub-tables by specifying a row range.")
 (define-public python-curio
   (package
     (name "python-curio")
-    (version "1.2")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "curio" version))
        (sha256
-        (base32 "16wkww6kh511b9bzsfhpvrv0766cc6ssgbzz4lgpjnrzzgx21wwh"))))
+        (base32 "045wwg16qadsalhicbv21p14sj8i4w0l57639j7dmdqbb4p2225g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
