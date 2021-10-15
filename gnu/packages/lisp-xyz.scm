@@ -19106,3 +19106,37 @@ provides customizable line-editing for Common Lisp programs.")
 
 (define-public ecl-linedit
   (sbcl-package->ecl-package sbcl-linedit))
+
+(define-public sbcl-diff
+  (let ((commit "9c84befa598d4e07c3d223242b5b3f83cd94f301")
+        (revision "1"))
+    (package
+      (name "sbcl-diff")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/froydnj/diff")
+               (commit commit)))
+         (file-name (git-file-name "cl-diff" version))
+         (sha256
+          (base32 "1giafck8qfvb688kx5bn9g32rfc12jjywg8vdav36aqbd6lxf5z5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (home-page "https://github.com/froydnj/diff")
+      (synopsis "Common Lisp library for computing differences between files")
+      (description
+        "DIFF is a package for computing various forms of differences between
+blobs of data and then doing neat things with those differences.  Currently diff
+knows how to compute three common forms of differences: \"unified\" format
+diffs, \"context\" format diffs, and \"vdelta\" format binary diffs.")
+      (license license:bsd-3))))
+
+(define-public cl-diff
+  (sbcl-package->cl-source-package sbcl-diff))
+
+(define-public ecl-diff
+  (sbcl-package->ecl-package sbcl-diff))
