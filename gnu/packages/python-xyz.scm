@@ -230,6 +230,45 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-janus
+  (package
+    (name "python-janus")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "janus" version))
+       (sha256
+        (base32 "030xvl2vghi5ispfalhvch1rl6i2jsy5bf1dgjafa7vifppy04j7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "--cov=janus" "--cov=tests")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+    (home-page "https://github.com/aio-libs/janus/")
+    (synopsis
+     "Sync-async queue to interoperate between asyncio tasks and classic threads")
+    (description
+     "Mixed sync-async queue, supposed to be used for communicating between
+classic synchronous (threaded) code and asynchronous (in terms of
+@url{https://docs.python.org/3/library/asyncio.html,asyncio}) one.  Like
+@url{https://en.wikipedia.org/wiki/Janus,Janus god} the queue object from the
+library has two faces: synchronous and asynchronous interface.  Synchronous is
+fully compatible with
+@url{https://docs.python.org/3/library/queue.html,standard queue},
+asynchronous one follows
+@url{https://docs.python.org/3/library/asyncio-queue.html,asyncio queue
+design}.")
+    (license license:asl2.0)))
+
 (define-public python-ueberzug
   (package
     (name "python-ueberzug")
