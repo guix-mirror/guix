@@ -1823,6 +1823,9 @@ provides tight coupling to Guix.")
                      "GUILE_PKG([3.0 2.2 2.0])\n"))
                   #t))))
     (build-system gnu-build-system)
+    ;; XXX: Tests expect 'test-runner-current' to not return #f after
+    ;; 'test-end', which is no longer the case in Guile 3.0.7.
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
