@@ -362,7 +362,7 @@ applications.")
 (define-public pango
   (package
     (name "pango")
-    (version "1.48.9")
+    (version "1.48.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/pango/"
@@ -371,10 +371,10 @@ applications.")
               (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
-                "1akj11n0ycqrm1rvi0fdfldqk7l5zk9vb8sq77009ap57xyna4x9"))))
+                "166wxhsjb6hb0dk7wkkdcmpvasl9n0a0aa64mdgagzfdidwzbq91"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+     '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'disable-cantarell-tests
                     (lambda _
@@ -384,8 +384,7 @@ applications.")
                         (("\\[ 'test-layout'.*") "")
                         (("\\[ 'test-itemize'.*") "")
                         (("\\[ 'test-font'.*") "")
-                        (("\\[ 'test-harfbuzz'.*") ""))
-                      #t)))))
+                        (("\\[ 'test-harfbuzz'.*") "")))))))
     (propagated-inputs
      ;; These are all in Requires or Requires.private of the '.pc' files.
      `(("cairo" ,cairo)
@@ -400,13 +399,10 @@ applications.")
        ("libxft" ,libxft)
        ("libxrender" ,libxrender)))
     (inputs
-     ;; TODO(core-updates): Unconditionally add "bash-minimal"
-     `(,@(if (%current-target-system)
-             `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
-             '())
+     `(("bash-minimal" ,bash-minimal)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("glib" ,glib "bin")             ; glib-mkenums, etc.
+     `(("glib" ,glib "bin")                             ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
        ("help2man" ,help2man)
        ("perl" ,perl)
