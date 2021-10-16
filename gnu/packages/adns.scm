@@ -92,7 +92,7 @@ multiple clients and programs with graphical user interfaces.")
   (package
     (inherit c-ares)
     (name "c-ares")
-    (version "1.17.1")
+    (version "1.17.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -100,7 +100,7 @@ multiple clients and programs with graphical user interfaces.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0h7wjfnk2092glqcp9mqaax7xx0s13m501z1gi0gsjl2vvvd0gfp"))))
+                "0gcincjvpll2qmlc906jx6mfq97s87mgi0zby0753ki0rr2ch0s8"))))
     (arguments
      `(;; FIXME: Some tests require network access
        #:tests? #f))))
