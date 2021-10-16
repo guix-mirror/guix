@@ -3206,6 +3206,9 @@ settings.")
                (base32
                 "0a8fwyxnc5qdxff8sl2sfsbnvgh6pkij4yafiln0fxgg6bal7knj"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Allow compilation with GCC 10.
+     '(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.jpj.net/~trevor/aumix.html")
     (synopsis "Audio mixer for X and the console")
