@@ -2242,16 +2242,16 @@ half of the twentieth century.")
 (define-public font-overpass
   (package
     (name "font-overpass")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/RedHatOfficial/Overpass")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pl7zpwlx0j2xv23ahnpmbb4a5d6ib2cjck5mxqzi3jjk25rk9kb"))))
+        (base32 "1vsp94h7v5sn29hajv2ng94gyx4pqb0xgvn3gf7jp2q80gdv8pkm"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
