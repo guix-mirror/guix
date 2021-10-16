@@ -27565,3 +27565,19 @@ and powerful way to handle real-world data, featuring:
      "This package provides the @code{python-box} Python module.
 It implements advanced Python dictionaries with dot notation access.")
     (license license:expat)))
+
+(define-public python-fields
+  (package
+    (name "python-fields")
+    (version "5.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fields" version))
+        (sha256
+          (base32 "09sppvhhkhkv9zc9g994m53z15v92csxwcf42ggkaknlv01smm1i"))))
+    (build-system python-build-system)
+    (home-page "https://python-fields.readthedocs.io/")
+    (synopsis "Python container class boilerplate killer")
+    (description "Avoid repetetive boilerplate code in Python classes.")
+    (license license:bsd-3)))
