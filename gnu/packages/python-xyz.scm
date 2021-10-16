@@ -27581,3 +27581,25 @@ It implements advanced Python dictionaries with dot notation access.")
     (synopsis "Python container class boilerplate killer")
     (description "Avoid repetetive boilerplate code in Python classes.")
     (license license:bsd-3)))
+
+(define-public python-aspectlib
+  (package
+    (name "python-aspectlib")
+    (version "1.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aspectlib" version))
+        (sha256
+          (base32 "1am4ycf292zbmgz791z393v63w7qrynf8q5p9db2wwf2qj1fqxfj"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-fields" ,python-fields)))
+    (home-page "https://github.com/ionelmc/python-aspectlib")
+    (synopsis
+      "Python monkey-patching and decorators")
+    (description
+      "This package provides an aspect-oriented programming, monkey-patch
+and decorators library.  It is useful when changing behavior in existing
+code is desired.  It includes tools for debugging and testing:
+simple mock/record and a complete capture/replay framework.")
+    (license license:bsd-2)))
