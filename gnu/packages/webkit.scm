@@ -253,10 +253,6 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
                            (assoc-ref %outputs "out") "/lib")
-
-                          ;; XXX TODO: Use libsoup@3.
-                          "-DUSE_SOUP2=ON"
-
                           ;; XXX Adding GStreamer GL support would apparently
                           ;; require adding gst-plugins-bad to the inputs,
                           ;; which might entail a security risk as a result of
@@ -277,8 +273,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
              (let ((store-directory (%store-directory)))
                (substitute*
                    "Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp"
-                 (("@storedir@") store-directory))
-               #t)))
+                 (("@storedir@") store-directory)))))
          (add-after 'unpack 'patch-gtk-doc-scan
            (lambda* (#:key inputs #:allow-other-keys)
              (for-each (lambda (file)
@@ -286,15 +281,13 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                            (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
                             (string-append (assoc-ref inputs "docbook-xml")
                                            "/xml/dtd/docbook/docbookx.dtd"))))
-                       (find-files "Source" "\\.sgml$"))
-             #t))
+                       (find-files "Source" "\\.sgml$"))))
          (add-after 'unpack 'embed-absolute-wpebackend-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((wpebackend-fdo (assoc-ref inputs "wpebackend-fdo")))
                (substitute* "Source/WebKit/UIProcess/glib/WebProcessPoolGLib.cpp"
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
-                  (string-append wpebackend-fdo "/lib/" all)))
-               #t)))
+                  (string-append wpebackend-fdo "/lib/" all))))))
          ,@(if (string-prefix? "x86_64" (or (%current-target-system)
                                             (%current-system)))
                '()
@@ -302,29 +295,15 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                    (lambda _
                      (substitute* "Source/cmake/DetectSSE2.cmake"
                        (("CHECK_FOR_SSE2\\(\\)") ""))))))
-         (add-before 'configure 'prepare-build-environment
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CC" "clang")
-             (setenv "CXX" "clang++")
-             ;; XXX Until we switch back to using GCC,
-             ;; work around <https://bugs.gnu.org/51591>.
-             ,@(if (target-x86-32?)
-                   '((substitute* "Source/WTF/wtf/CheckedArithmetic.h"
-                       (("#define USE_MUL_OVERFLOW 1")
-                        "#define USE_MUL_OVERFLOW 0")))
-                   '())
-             #t))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (doc (assoc-ref outputs "doc")))
                (mkdir-p (string-append doc "/share"))
                (rename-file (string-append out "/share/gtk-doc")
-                            (string-append doc "/share/gtk-doc"))
-               #t))))))
+                            (string-append doc "/share/gtk-doc"))))))))
     (native-inputs
-     `(("clang" ,clang-11)
-       ("bison" ,bison)
+     `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
