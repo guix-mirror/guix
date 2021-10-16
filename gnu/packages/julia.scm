@@ -131,6 +131,8 @@
                        "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
                      '("llvm-7.0-D44650"
                        "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
+                     '("llvm7-symver-jlprefix"
+                       "00ng32x6xhm9czczirn5r1q1mc1myad44fqhi061hwh1vb46dwgm")
                      '("llvm-6.0-DISABLE_ABI_CHECKS"
                        "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
                      '("llvm9-D50010-VNCoercion-ni"
@@ -211,7 +213,8 @@
            ;; "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
            ;; "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
            "-DLLVM_ENABLE_DUMP=ON"
-           "-DLLVM_LINK_LLVM_DYLIB=ON"))))
+           "-DLLVM_LINK_LLVM_DYLIB=ON"
+           "-DLLVM_VERSION_SUFFIX:STRING=jl"))))
     (inputs
      (append
        (package-inputs llvm-11)
@@ -548,7 +551,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                                                               (basename file)))))
                         (find-files (string-append (assoc-ref inputs pkgname)
                                                    "/lib") pred)))))
-               (link "llvm" "libLLVM-11\\.so")
+               (link "llvm" "libLLVM-11jl\\.so")
                (link "utf8proc" "libutf8proc\\.so")
                #t)))
          (add-after 'install 'make-wrapper
