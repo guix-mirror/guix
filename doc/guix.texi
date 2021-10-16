@@ -35700,7 +35700,7 @@ Available @code{home-shell-profile-configuration} fields are:
 @item @code{profile} (default: @code{()}) (type: text-config)
 @code{home-shell-profile} is instantiated automatically by
 @code{home-environment}, DO NOT create this service manually, it can
-only be extended.  @code{profile} is a list of strings or gexps, which
+only be extended.  @code{profile} is a list of file-like objects, which
 will go to @file{~/.profile}.  By default @file{~/.profile} contains the
 initialization code, which have to be evaluated by login shell to make
 home-environment's profile avaliable to the user, but other commands can
@@ -35729,19 +35729,19 @@ Add sane defaults like reading @file{/etc/bashrc}, coloring output for
 Association list of environment variables to set for the Bash session.
 
 @item @code{bash-profile} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.bash_profile}.
+List of file-like objects, which will be added to @file{.bash_profile}.
 Used for executing user's commands at start of login shell (In most
 cases the shell started on tty just after login).  @file{.bash_login}
 won't be ever read, because @file{.bash_profile} always present.
 
 @item @code{bashrc} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.bashrc}.  Used
+List of file-like objects, which will be added to @file{.bashrc}.  Used
 for executing user's commands at start of interactive shell (The shell
 for interactive usage started by typing @code{bash} or by terminal app
 or any other program).
 
 @item @code{bash-logout} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.bash_logout}.
+List of file-like objects, which will be added to @file{.bash_logout}.
 Used for executing user's commands at the exit of login shell.  It won't
 be read in some cases (if the shell terminates by exec'ing another
 process for example).
@@ -35769,30 +35769,30 @@ Shell startup process will continue with
 Association list of environment variables to set for the Zsh session.
 
 @item @code{zshenv} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.zshenv}.  Used
+List of file-like objects, which will be added to @file{.zshenv}.  Used
 for setting user's shell environment variables.  Must not contain
 commands assuming the presence of tty or producing output.  Will be read
 always.  Will be read before any other file in @env{ZDOTDIR}.
 
 @item @code{zprofile} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.zprofile}.  Used
+List of file-like objects, which will be added to @file{.zprofile}.  Used
 for executing user's commands at start of login shell (In most cases the
 shell started on tty just after login).  Will be read before
 @file{.zlogin}.
 
 @item @code{zshrc} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.zshrc}.  Used
+List of file-like objects, which will be added to @file{.zshrc}.  Used
 for executing user's commands at start of interactive shell (The shell
 for interactive usage started by typing @code{zsh} or by terminal app or
 any other program).
 
 @item @code{zlogin} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.zlogin}.  Used
+List of file-like objects, which will be added to @file{.zlogin}.  Used
 for executing user's commands at the end of starting process of login
 shell.
 
 @item @code{zlogout} (default: @code{()}) (type: text-config)
-List of strings or gexps, which will be added to @file{.zlogout}.  Used
+List of file-like objects, which will be added to @file{.zlogout}.  Used
 for executing user's commands at the exit of login shell.  It won't be
 read in some cases (if the shell terminates by exec'ing another process
 for example).

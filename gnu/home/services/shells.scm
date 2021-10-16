@@ -66,7 +66,7 @@
 @code{home-environment}, DO NOT create this service manually, it can
 only be extended.
 
-@code{profile} is a list of strings or gexps, which will go to
+@code{profile} is a list of file-like objects, which will go to
 @file{~/.profile}.  By default @file{~/.profile} contains the
 initialization code, which have to be evaluated by login shell to make
 home-environment's profile avaliable to the user, but other commands
@@ -107,7 +107,7 @@ $HOME_ENVIRONMENT/on-first-login\n"
                 (default-value (home-shell-profile-configuration))
                 (description "Create @file{~/.profile}, which is used
 for environment initialization of POSIX compliant login shells.  This
-service type can be extended with a list of strings or gexps.")))
+service type can be extended with a list of file-like objects.")))
 
 (define (serialize-boolean field-name val) "")
 (define (serialize-posix-env-vars field-name val)
@@ -143,30 +143,30 @@ Shell startup process will continue with
    serialize-posix-env-vars)
   (zshenv
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.zshenv}.
+   "List of file-like objects, which will be added to @file{.zshenv}.
 Used for setting user's shell environment variables.  Must not contain
 commands assuming the presence of tty or producing output.  Will be
 read always.  Will be read before any other file in @env{ZDOTDIR}.")
   (zprofile
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.zprofile}.
+   "List of file-like objects, which will be added to @file{.zprofile}.
 Used for executing user's commands at start of login shell (In most
 cases the shell started on tty just after login).  Will be read before
 @file{.zlogin}.")
   (zshrc
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.zshrc}.
+   "List of file-like objects, which will be added to @file{.zshrc}.
 Used for executing user's commands at start of interactive shell (The
 shell for interactive usage started by typing @code{zsh} or by
 terminal app or any other program).")
   (zlogin
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.zlogin}.
+   "List of file-like objects, which will be added to @file{.zlogin}.
 Used for executing user's commands at the end of starting process of
 login shell.")
   (zlogout
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.zlogout}.
+   "List of file-like objects, which will be added to @file{.zlogout}.
 Used for executing user's commands at the exit of login shell.  It
 won't be read in some cases (if the shell terminates by exec'ing
 another process for example)."))
@@ -244,19 +244,19 @@ source ~/.profile
    "Association list of environment variables to set.")
   (zshrc
    (text-config '())
-   "List of strings or gexps.")
+   "List of file-like objects.")
   (zshenv
    (text-config '())
-   "List of strings or gexps.")
+   "List of file-like objects.")
   (zprofile
    (text-config '())
-   "List of strings or gexps.")
+   "List of file-like objects.")
   (zlogin
    (text-config '())
-   "List of strings or gexps.")
+   "List of file-like objects.")
   (zlogout
    (text-config '())
-   "List of strings or gexps."))
+   "List of file-like objects."))
 
 (define (home-zsh-extensions original-config extension-configs)
   (home-zsh-configuration
@@ -319,19 +319,19 @@ for @code{ls} provided by guix to @file{.bashrc}.")
    serialize-posix-env-vars)
   (bash-profile
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.bash_profile}.
+   "List of file-like objects, which will be added to @file{.bash_profile}.
 Used for executing user's commands at start of login shell (In most
 cases the shell started on tty just after login).  @file{.bash_login}
 won't be ever read, because @file{.bash_profile} always present.")
   (bashrc
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.bashrc}.
+   "List of file-like objects, which will be added to @file{.bashrc}.
 Used for executing user's commands at start of interactive shell (The
 shell for interactive usage started by typing @code{bash} or by
 terminal app or any other program).")
   (bash-logout
    (text-config '())
-   "List of strings or gexps, which will be added to @file{.bash_logout}.
+   "List of file-like objects, which will be added to @file{.bash_logout}.
 Used for executing user's commands at the exit of login shell.  It
 won't be read in some cases (if the shell terminates by exec'ing
 another process for example)."))
@@ -426,13 +426,13 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
    "Association list of environment variables to set.")
   (bash-profile
    (text-config '())
-   "List of strings or gexps.")
+   "List of file-like objects.")
   (bashrc
    (text-config '())
-   "List of strings or gexps.")
+   "List of file-like objects.")
   (bash-logout
    (text-config '())
-   "List of strings or gexps."))
+   "List of file-like objects."))
 
 (define (home-bash-extensions original-config extension-configs)
   (home-bash-configuration
@@ -506,7 +506,7 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
     "The Fish package to use.")
   (config
    (text-config '())
-   "List of strings or gexps, which will be added to
+   "List of file-like objects, which will be added to
 @file{$XDG_CONFIG_HOME/fish/config.fish}.")
   (environment-variables
    (alist '())
@@ -553,7 +553,7 @@ end\n\n")
 (define-configuration/no-serialization home-fish-extension
   (config
    (text-config '())
-   "List of strings or gexps for extending the Fish initialization file.")
+   "List of file-like objects for extending the Fish initialization file.")
   (environment-variables
    (alist '())
    "Association list of environment variables to set.")
