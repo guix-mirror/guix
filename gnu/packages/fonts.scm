@@ -200,18 +200,42 @@ Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
 (define-public font-abattis-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.301")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
-                                  (version-major+minor version)
-                                  "/cantarell-fonts-" version ".tar.xz"))
-              (sha256
-               (base32
-                "10sycxscs9kzl451mhygyj2qj8qlny8pamskb86np7izq05dnd9x"))))
-    (build-system meson-build-system)
+    (version "0.303")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://gitlab.gnome.org/GNOME/cantarell-fonts/-/"
+                           "jobs/1515399/artifacts/download"))
+       (file-name (string-append name "-" version "-static"))
+       (sha256
+        (base32 "1dz551xrrhx6l40j57ksk2alllrihghg4947z1r88dpcq3snpn1s"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-source
+           ;; The actual OTF fonts are prebuilt (building them requires at least
+           ;; the currently unpackaged psautohint and its numerous dependencies;
+           ;; TODO), but unpack the source so that COPYING is installed later.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "tar" "--strip-components=1" "-xvf"
+                     (string-append "build/meson-dist/cantarell-fonts-"
+                                    ,version ".tar.xz"))))
+         (add-after 'unpack 'unpack-variable-font
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((variable-font (assoc-ref inputs "variable-font")))
+               (copy-recursively (string-append variable-font "/prebuilt")
+                                 ".")))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))   ; for msgfmt
+     `(("variable-font"
+        ,(origin
+           (method url-fetch/zipbomb)
+           (uri (string-append "https://gitlab.gnome.org/GNOME/cantarell-fonts/-/"
+                               "jobs/1515398/artifacts/download"))
+           (file-name (string-append name "-" version "-variable"))
+           (sha256
+            (base32 "0z93pbkxidsx3y98rsl2jm2qpvxv5pj0w870xhnsciglw6pc9a9i"))))
+       ("unzip" ,unzip)))
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
     (description "The Cantarell font family is a contemporary Humanist
