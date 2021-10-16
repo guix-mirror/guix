@@ -12291,7 +12291,7 @@ programming and reproducible research.")
 (define-public emacs-org-contrib
   (package
     (name "emacs-org-contrib")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method git-fetch)
@@ -12300,9 +12300,9 @@ programming and reproducible research.")
              (commit (string-append "release_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dn6arrmm0rrm2vi94fj5fjb030ggxf8cvpmi68wr0fh8xm5l1sh"))
+        (base32 "17aca4mc3gbdh6nhlcaa5ymh1yy76nwysrvy9sfcqkzvd5lgagzc"))
        ;; XXX: ob-sclang.el is packaged separately to avoid the dependency on
-       ;; SuperCollider and qtwebengine.  This will be unnecessary in 0.3+
+       ;; SuperCollider and qtwebengine.  This will be unnecessary in 0.4+
        ;; release as the file is going to be removed from the repository.
        (modules '((guix build utils)))
        (snippet '(begin (delete-file "lisp/ob-sclang.el")))))
@@ -12314,7 +12314,7 @@ programming and reproducible research.")
            (lambda _
              (chdir "lisp"))))))
     (propagated-inputs
-     `(("arduino-mode" ,emacs-arduino-mode) ;XXX: remove after 0.3+ release.
+     `(("arduino-mode" ,emacs-arduino-mode) ;XXX: remove after 0.4+ release.
        ("cider" ,emacs-cider)
        ("org" ,emacs-org)))
     (home-page "https://git.sr.ht/~bzg/org-contrib")
