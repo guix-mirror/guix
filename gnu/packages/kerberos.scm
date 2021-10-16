@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -186,8 +186,7 @@ After installation, the system administrator should generate keys using
                   (substitute* "configure"
                     (("User=.*$") "User=Guix\n")
                     (("Host=.*$") "Host=GNU")
-                    (("Date=.*$") "Date=2019\n"))
-                  #t))))
+                    (("Date=.*$") "Date=2019\n"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -252,8 +251,7 @@ After installation, the system administrator should generate keys using
                                (("/bin/sh") (which "sh"))))
                            '((substitute* '("appl/afsutil/pagsh.c"
                                             "tools/Makefile.in")
-                               (("/bin/sh") (which "sh")))
-                             #t))))
+                               (("/bin/sh") (which "sh")))))))
                   (add-before 'check 'pre-check
                     (lambda _
                       ;; For 'getxxyyy-test'.
@@ -263,23 +261,18 @@ After installation, the system administrator should generate keys using
                       ;; FIXME: figure out why 'kdc' tests fail.
                       (with-output-to-file "tests/db/have-db.in"
                         (lambda ()
-                          (format #t "#!~a~%exit 1~%" (which "sh"))))
-                      #t)))
+                          (format #t "#!~a~%exit 1~%" (which "sh")))))))
        ;; Tests fail when run in parallel.
        #:parallel-tests? #f))
     (native-inputs `(("e2fsprogs" ,e2fsprogs)     ;for 'compile_et'
                      ("texinfo" ,texinfo)
                      ("unzip" ,unzip)             ;for tests
-                     ,@(if (%current-target-system)
-                           `(("perl" ,perl))
-                           '())))
+                     ("perl" ,perl)))
     (inputs `(("readline" ,readline)
-              ;; TODO(core-updates): Make this input unconditional.
-              ,@(if (%current-target-system)
-                    `(("bash-minimal" ,bash-minimal))
-                    '())
+              ("bash-minimal" ,bash-minimal)
               ("bdb" ,bdb)
               ("e2fsprogs" ,e2fsprogs)            ;for libcom_err
+              ("mit-krb5" ,mit-krb5)
               ("sqlite" ,sqlite)))
     (home-page "http://www.h5l.org/")
     (synopsis "Kerberos 5 network authentication")
