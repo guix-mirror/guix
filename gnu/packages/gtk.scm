@@ -1039,7 +1039,12 @@ application suites.")
        ("xorg-server" ,xorg-server-for-tests)
        ("xsltproc" ,libxslt)))
     (arguments
-     `(#:disallowed-references (,xorg-server-for-tests)
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
+       #:disallowed-references (,xorg-server-for-tests)
        ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
        ;; to "doc".
        #:configure-flags (list (string-append "--with-html-dir="
@@ -1055,6 +1060,9 @@ application suites.")
                                "--enable-broadway-backend")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'generate-gdk-pixbuf-loaders-cache-file
+           (assoc-ref glib-or-gtk:%standard-phases
+                      'generate-gdk-pixbuf-loaders-cache-file))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              (substitute* "testsuite/gtk/Makefile.in"
@@ -1119,7 +1127,10 @@ application suites.")
     (build-system meson-build-system)
     (outputs '("out" "bin" "doc"))
     (arguments
-     `(#:configure-flags
+     `(#:modules ((guix build utils)
+                  (guix build meson-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
+       #:configure-flags
        (list
         "-Dbroadway-backend=true"      ;for broadway display-backend
         "-Dcloudproviders=enabled"     ;for cloud-providers support
@@ -1133,6 +1144,9 @@ application suites.")
         "-Dman-pages=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'generate-gdk-pixbuf-loaders-cache-file
+           (assoc-ref glib-or-gtk:%standard-phases
+                      'generate-gdk-pixbuf-loaders-cache-file))
          (add-after 'unpack 'patch
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              ;; Correct DTD resources of docbook.
