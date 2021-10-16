@@ -53,14 +53,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.27")
+    (version "3.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "0akaixip86ycbxr13bjff2121rgfbz35fa9l39677wpwzckp4f4d"))))
+                "0ba9cnjrnm3nwcfbhh5x2sycr54j3yn1rqn76kjdyz40f3pdg3qm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -78,16 +78,14 @@
                 ;; in various os.system() calls mixed with *.gnuplot filenames.
                 (("; do gnuplot") (string-append "; do " gnuplot))
                 (("gnuplot mymath") (string-append gnuplot " mymath"))
-                (("gnuplot mygraph") (string-append gnuplot " mygraph")))
-              #t)))
+                (("gnuplot mygraph") (string-append gnuplot " mygraph"))))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The configure script doesn't understand some of the
              ;; GNU options, so we can't use #:configure-flags.
              (let ((out (assoc-ref outputs "out")))
                (invoke "./configure"
-                       (string-append "--prefix=" out))
-               #t)))
+                       (string-append "--prefix=" out)))))
          ;; The main `fio` executable is fairly small and self contained.
          ;; Moving the auxiliary python and gnuplot scripts to a separate
          ;; output saves almost 400 MiB on the closure.
@@ -105,8 +103,7 @@
                            "fiologparser.py"))
                ;; Make sure numpy et.al is found.
                (wrap-program (string-append newbin "/fiologparser_hist.py")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
-               #t))))))
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))))))))
     (outputs '("out" "utils"))
     (inputs
      `(("ceph" ,ceph "lib")
