@@ -4409,6 +4409,19 @@ the GObject type system and has additional code generation routines that make
 targeting the GNOME stack simple.")
     (license license:lgpl2.1+)))
 
+;;; An older variant kept to build libsoup-minimal-2.
+(define-public vala-0.52
+  (package/inherit vala
+    (version "0.52.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/vala/"
+                                  (version-major+minor version) "/"
+                                  "vala-" version ".tar.xz"))
+              (sha256
+               (base32
+                "12y6p8wdjp01vmfhxg2cgh32xnyqq6ivblvrar9clnj6vc867qhx"))))))
+
 (define-public vte
   (package
     (name "vte")
@@ -4825,7 +4838,7 @@ from the GSettings schemas in gsettings-desktop-schemas.")
     (propagated-inputs
      ;; rest-0.7.pc refers to all these.
      `(("glib"    ,glib)
-       ("libsoup" ,libsoup-minimal)
+       ("libsoup" ,libsoup-minimal-2)
        ("libxml2" ,libxml2)))
     (home-page "https://www.gtk.org/")
     (synopsis "RESTful web api query library")
@@ -4839,7 +4852,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup-minimal
   (package
     (name "libsoup-minimal")
-    (version "2.72.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -4847,14 +4860,10 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "11skbyw2pw32178q3h8pi7xqa41b2x4k6q4k9f75zxmh8s23y30p"))))
+                "0ixwj6d0ryvana6lq1fmbbbin0f2wd5n9iv4ynb8nigq21nk233g"))))
     (build-system meson-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build meson-build-system)
-                  (ice-9 popen))
-
-       #:configure-flags '("-Dgtk_doc=false")
+     `(#:configure-flags '("-Dgtk_doc=false")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'adjust-tests
@@ -4872,14 +4881,9 @@ libxml to ease remote use of the RESTful API.")
                ((".*/hsts/superdomain.*") "")
                ((".*/hsts/utf8-address.*") ""))
              (substitute* "tests/hsts-db-test.c"
-               ((".*/hsts-db/subdomains.*") ""))
-
-             ;; FIXME: ssl-test fails, starting with
-             ;; glib-networking 2.68.x.
-             (substitute* "tests/meson.build"
-               (("[ \t]*\\['ssl', true, \\[\\]\\],") "")))))))
+               ((".*/hsts-db/subdomains.*") "")))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
+     `(("glib:bin" ,glib "bin")         ;for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
@@ -4887,25 +4891,54 @@ libxml to ease remote use of the RESTful API.")
        ("vala" ,vala)
        ("php" ,php)
        ("curl" ,curl)
+       ("gnutls" ,gnutls)               ;for 'certtool'
        ("httpd" ,httpd)))
     (propagated-inputs
-     ;; libsoup-2.4.pc refers to all of these (except where otherwise noted)
+     ;; libsoup-3.0.pc refers to all of these (except where otherwise noted)
      `(("brotli" ,brotli)
        ("glib" ,glib)
-       ("glib-networking" ,glib-networking)       ; for GIO runtime modules
+       ("glib-networking" ,glib-networking) ; for GIO runtime modules
        ("libpsl" ,libpsl)
+       ("nghttp2" ,nghttp2)             ;for pkg-config
+       ("nghttp2:lib" ,nghttp2 "lib")
        ("libxml2" ,libxml2)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (inputs
      `(("mit-krb5" ,mit-krb5)
-       ("ntlm_auth" ,samba))) ; For ntlm_auth support
+       ("ntlm_auth" ,samba)))           ; For ntlm_auth support
     (home-page "https://wiki.gnome.org/Projects/libsoup")
     (synopsis "GLib-based HTTP Library")
     (description
      "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects
 and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
+
+;;; An older variant kept to build the 'rest' package.
+(define-public libsoup-minimal-2
+  (package/inherit libsoup-minimal
+    (version "2.72.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/libsoup/"
+                                  (version-major+minor version) "/"
+                                  "libsoup-" version ".tar.xz"))
+              (sha256
+               (base32
+                "11skbyw2pw32178q3h8pi7xqa41b2x4k6q4k9f75zxmh8s23y30p"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libsoup-minimal)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'disable-failing-tests
+             (lambda _
+               ;; Disable the SSL test, failing since 2.68 and resolved in
+               ;; libsoup 3.
+               (substitute* "tests/meson.build"
+                 (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))))))))
+    (native-inputs
+     (cons `("vala" ,vala-0.52)
+           (delete "vala" (package-native-inputs libsoup-minimal))))))
 
 (define-public libsoup
   (package/inherit libsoup-minimal
@@ -5340,7 +5373,7 @@ output devices.")
        ("glib:bin" ,glib "bin")
        ("glib-networking" ,glib-networking)
        ("json-glib" ,json-glib)
-       ("libsoup" ,libsoup)))
+       ("libsoup" ,libsoup-minimal-2)))
     (home-page "https://gitlab.freedesktop.org/geoclue/geoclue/-/wikis/home")
     (synopsis "Geolocation service")
     (description "Geoclue is a D-Bus service that provides location

@@ -206,7 +206,7 @@ endif()~%~%"
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("libgc" ,libgc)
-       ("libsoup" ,libsoup-minimal)
+       ("libsoup" ,libsoup-minimal-2)
        ("libcdr" ,libcdr)
        ("libvisio" ,libvisio)
        ("libwpd" ,libwpd)
