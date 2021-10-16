@@ -2375,7 +2375,7 @@ of devices than RTL-SDR.")
 (define-public gnss-sdr
   (package
     (name "gnss-sdr")
-    (version "0.0.14")
+    (version "0.0.15")
     (source
      (origin
        (method git-fetch)
@@ -2384,7 +2384,7 @@ of devices than RTL-SDR.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kjh9bnf6h9q71bnn8nrwlc80wcnkib97ylzvb102acii4p0fm08"))))
+        (base32 "1m41rnlfr1nrzbg382jfsk5x0by2ym48v3innd2rbc6phd85q223"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -2422,14 +2422,6 @@ of devices than RTL-SDR.")
                             (assoc-ref %build-inputs "googletest-source")))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             ;; Some tests fail to compile when the FILESYSTEM package is
-             ;; available, so we disable it (and the tests will use Boost
-             ;; Filesystem instead).
-             (substitute* "CMakeLists.txt"
-               (("find_package\\(FILESYSTEM COMPONENTS Final Experimental\\)")
-                ""))))
          (add-before 'check 'set-home
            (lambda _
              (setenv "HOME" "/tmp"))))))
