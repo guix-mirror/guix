@@ -150,7 +150,7 @@
              ;; defaults don't match up, breaking test_restart.  Fix it.
              (setenv "TMPDIR" "/tmp")
              #t)))))
-    (home-page "http://duplicity.nongnu.org/index.html")
+    (home-page "https://duplicity.gitlab.io/duplicity-web/")
     (synopsis "Encrypted backup using rsync algorithm")
     (description
      "Duplicity backs up directories by producing encrypted tar-format volumes
