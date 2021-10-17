@@ -23819,7 +23819,7 @@ the syntactic logic to configure and launch jobs in an execution environment.")
 (define-public python-flit
   (package
     (name "python-flit")
-    (version "3.2.0")
+    (version "3.3.0")
     ;; We fetch the sources via git because on pypi the package is split into
     ;; two parts: flit and flit_core; flit_core cannot be built without flit.
     (source (origin
@@ -23830,7 +23830,7 @@ the syntactic logic to configure and launch jobs in an execution environment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fpqxpz5bv2xpv1akmc0c8yfss6sj09wdzxrlf3qw1lp1jhbzpyc"))))
+                "0mvyymw3zqsnip4x4ca6anr5rbx30hcmpqwrnhjwcm7s8mycd01x"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
