@@ -28745,7 +28745,7 @@ and Emacs lisp commands.")
 (define-public emacs-extmap
   (package
     (name "emacs-extmap")
-    (version "1.1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -28754,8 +28754,7 @@ and Emacs lisp commands.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "09kia3mr4si8kn46kyiza9nl669b22vmgc70ng3mqz742lph5siw"))))
+        (base32 "0dl630jl46jz5slpv28l8b745051ghp0g296x5180vl5v88v3hsl"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/doublep/extmap")
     (synopsis "Externally-stored constant mapping for Emacs Lisp")
