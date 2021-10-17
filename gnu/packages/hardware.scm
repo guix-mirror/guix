@@ -7,6 +7,7 @@
 ;;; Copyright © 2021 Denis Carikli <GNUtoo@cyberdimension.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -567,6 +569,32 @@ such as the Turbo Boost ratio and Thermal Design Power (@dfn{TDP}) limits.
 MSR addresses differ (greatly) between processors, and any such modification can
 be dangerous and may void your CPU or system board's warranty.")
     (license license:gpl2)))     ; cpuid.c is gpl2, {rd,wr}msr.c are gpl2+
+
+(define-public openhmd
+  (package
+    (name "openhmd")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenHMD/OpenHMD")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hkpdl4zgycag5k8njvqpx01apxmm8m8pvhlsxgxpqiqy9a38ccg"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:tests? #f)) ; no test target although there is a test folder
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hidapi" ,hidapi)))
+    (home-page "http://www.openhmd.net/")
+    (synopsis "API and drivers for immersive technology")
+    (description "OpenHMD aims to provide an API and drivers for immersive
+technology, such as head mounted displays with built in head tracking.")
+    (license license:boost1.0)))
 
 (define-public wavemon
   (package
