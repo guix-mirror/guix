@@ -18100,12 +18100,12 @@ timestamps and date-time format strings library for Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-org-mind-map
-  (let ((commit "9d6e262bedd94daf9de269f4d56de277275677cb")
-        (revision "1"))
+  ;; XXX: Upstream does not provide any tag.  The commit below corresponds to
+  ;; an exact version bump from the main file.
+  (let ((commit "477701b15cb0c8ed7f021ca76a4cb1a7d9ad6aa5"))
     (package
       (name "emacs-org-mind-map")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version "0.4")
       (source
        (origin
          (method git-fetch)
@@ -18114,8 +18114,7 @@ timestamps and date-time format strings library for Emacs.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0jgkkgq7g64zckrmjib0hvz0qy3ynz5vz13qbmlpf096l3bb65wn"))))
+          (base32 "08sj43py6aid4vpqgsm0v5n94mcmcil0047qjk033492glz6q55c"))))
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)))
       (build-system emacs-build-system)
