@@ -4358,7 +4358,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.52.0")
+    (version "0.54.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4366,7 +4366,7 @@ passwords in the GNOME keyring.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "12y6p8wdjp01vmfhxg2cgh32xnyqq6ivblvrar9clnj6vc867qhx"))))
+                "048k5c6c6y7jyb961krnrb7m0kghr0yrkpnfx3j5ckbx652yfkc8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags '("--enable-coverage")
@@ -4378,8 +4378,7 @@ passwords in the GNOME keyring.")
                (substitute* '("manual.xml" "version.xml.in")
                  (("http://www.oasis-open.org/docbook/xml/4.4/")
                   (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
+                                 "/xml/dtd/docbook/"))))))
          (add-before 'check 'pre-check
            (lambda _
              (setenv "CC" "gcc")
