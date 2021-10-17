@@ -16852,32 +16852,165 @@ This section describes the various network setup services available,
 starting with static network configuration.
 
 @defvr {Scheme Variable} static-networking-service-type
-This is the type for statically-configured network interfaces.
-@c TODO Document <static-networking> data structures.
+This is the type for statically-configured network interfaces.  Its
+value must be a list of @code{static-networking} records.  Each of them
+declares a set of @dfn{addresses}, @dfn{routes}, and @dfn{links}, as
+show below.
+
+@cindex network interface controller (NIC)
+@cindex NIC, networking interface controller
+Here is the simplest configuration, with only one network interface
+controller (NIC) and only IPv4 connectivity:
+
+@example
+;; Static networking for one NIC, IPv4-only.
+(service static-networking-service-type
+         (list (static-networking
+                (addresses
+                 (list (network-address
+                        (device "eno1")
+                        (value "10.0.2.15/24"))))
+                (routes
+                 (list (network-route
+                        (destination "default")
+                        (gateway "10.0.2.2"))))
+                (name-servers '("10.0.2.3")))))
+@end example
+
+The snippet above can be added to the @code{services} field of your
+operating system configuration (@pxref{Using the Configuration System}).
+It will configure your machine to have 10.0.2.15 as its IP address, with
+a 24-bit netmask for the local network---meaning that any 10.0.2.@var{x}
+address is on the local area network (LAN).  Traffic to addresses
+outside the local network is routed @i{via} 10.0.2.2.  Host names are
+resolved by sending domain name system (DNS) queries to 10.0.2.3.
 @end defvr
 
-@deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
-       [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}] @
-       [#:requirement @code{'(udev)}]
-Return a service that starts @var{interface} with address @var{ip}.  If
-@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
-it must be a string specifying the default network gateway.  @var{requirement}
-can be used to declare a dependency on another service before configuring the
-interface.
+@deftp {Data Type} static-networking
+This is the data type representing a static network configuration.
 
-This procedure can be called several times, one for each network
-interface of interest.  Behind the scenes what it does is extend
-@code{static-networking-service-type} with additional network interfaces
-to handle.
-
-For example:
+As an example, here is how you would declare the configuration of a
+machine with a single network interface controller (NIC) available as
+@code{eno1}, and with one IPv4 and one IPv6 address:
 
 @lisp
-(static-networking-service "eno1" "192.168.1.82"
-                           #:gateway "192.168.1.2"
-                           #:name-servers '("192.168.1.2"))
+;; Network configuration for one NIC, IPv4 + IPv6.
+(static-networking
+ (addresses (list (network-address
+                   (device "eno1")
+                   (value "10.0.2.15/24"))
+                  (network-address
+                   (device "eno1")
+                   (value "2001:123:4567:101::1/64"))))
+ (routes (list (network-route
+                (destination "default")
+                (gateway "10.0.2.2"))
+               (network-route
+                (destination "default")
+                (gateway "2020:321:4567:42::1"))))
+ (name-servers '("10.0.2.3")))
 @end lisp
-@end deffn
+
+If you are familiar with the @command{ip} command of the
+@uref{https://wiki.linuxfoundation.org/networking/iproute2,
+@code{iproute2} package} found on Linux-based systems, the declaration
+above is equivalent to typing:
+
+@example
+ip address add 10.0.2.15/24 dev eno1
+ip address add 2001:123:4567:101::1/64 dev eno1
+ip route add default via inet 10.0.2.2
+ip route add default via inet6 2020:321:4567:42::1
+@end example
+
+Run @command{man 8 ip} for more info.  Venerable GNU/Linux users will
+certainly know how to do it with @command{ifconfig} and @command{route},
+but we'll spare you that.
+
+The available fields of this data type are as follows:
+
+@table @asis
+@item @code{addresses}
+@itemx @code{links} (default: @code{'()})
+@itemx @code{routes} (default: @code{'()})
+The list of @code{network-address}, @code{network-link}, and
+@code{network-route} records for this network (see below).
+
+@item @code{name-servers} (default: @code{'()})
+The list of IP addresses (strings) of domain name servers.  These IP
+addresses go to @file{/etc/resolv.conf}.
+
+@item @code{provision} (default: @code{'(networking)})
+If true, this should be a list of symbols for the Shepherd service
+corresponding to this network configuration.
+
+@item @code{requirement} (default @code{'()})
+The list of Shepherd services depended on.
+@end table
+@end deftp
+
+@deftp {Data Type} network-address
+This is the data type representing the IP address of a network
+interface.
+
+@table @code
+@item device
+The name of the network interface for this address---e.g.,
+@code{"eno1"}.
+
+@item value
+The actual IP address and network mask, in
+@uref{https://en.wikipedia.org/wiki/CIDR#CIDR_notation, @acronym{CIDR,
+Classless Inter-Domain Routing} notation}, as a string.
+
+For example, @code{"10.0.2.15/24"} denotes IPv4 address 10.0.2.15 on a
+24-bit sub-network---all 10.0.2.@var{x} addresses are on the same local
+network.
+
+@item ipv6?
+Whether @code{value} denotes an IPv6 address.  By default this is
+automatically determined.
+@end table
+@end deftp
+
+@deftp {Data Type} network-route
+This is the data type representing a network route.
+
+@table @asis
+@item @code{destination}
+The route destination (a string), either an IP address or
+@code{"default"} to denote the default route.
+
+@item @code{source} (default: @code{#f})
+The route source.
+
+@item @code{device} (default: @code{#f})
+The device used for this route---e.g., @code{"eno2"}.
+
+@item @code{ipv6?} (default: auto)
+Whether this is an IPv6 route.  By default this is automatically
+determined based on @code{destination} or @code{gateway}.
+
+@item @code{gateway} (default: @code{#f})
+IP address (a string) through which traffic is routed.
+@end table
+@end deftp
+
+@deftp {Data Type} network-link
+Data type for a network link (@pxref{Link,,, guile-netlink,
+Guile-Netlink Manual}).
+
+@table @code
+@item name
+The name of the link---e.g., @code{"v0p0"}.
+
+@item type
+A symbol denoting the type of the link---e.g., @code{'veth}.
+
+@item arguments
+List of arguments for this type of link.
+@end table
+@end deftp
 
 @cindex DHCP, networking service
 @defvr {Scheme Variable} dhcp-client-service-type
@@ -30442,11 +30575,18 @@ cluster node that supports multiple storage backends, and installs the
                            "ganeti-instance-guix" "ganeti-instance-debootstrap"))
                     %base-packages))
   (services
-   (append (list (static-networking-service "eth0" "192.168.1.201"
-                                            #:netmask "255.255.255.0"
-                                            #:gateway "192.168.1.254"
-                                            #:name-servers '("192.168.1.252"
-                                                             "192.168.1.253"))
+   (append (list (service static-networking-service-type
+                          (list (static-networking
+                                 (addresses
+                                  (list (network-address
+                                         (device "eth0")
+                                         (value "192.168.1.201/24"))))
+                                 (routes
+                                  (list (network-route
+                                         (destination "default")
+                                         (gateway "192.168.1.254"))))
+                                 (name-servers '("192.168.1.252"
+                                                 "192.168.1.253")))))
 
                  ;; Ganeti uses SSH to communicate between nodes.
                  (service openssh-service-type

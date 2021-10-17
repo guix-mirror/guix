@@ -408,10 +408,13 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
 
           ;; Loopback device, needed by OpenSSH notably.
           (service static-networking-service-type
-                   (list (static-networking (interface "lo")
-                                            (ip "127.0.0.1")
-                                            (requirement '())
-                                            (provision '(loopback)))))
+                   (list (static-networking
+                          (addresses
+                           (list (network-address
+                                  (device "lo")
+                                  (value "127.0.0.1"))))
+                          (requirement '())
+                          (provision '(loopback)))))
 
           (service wpa-supplicant-service-type)
           (dbus-service)

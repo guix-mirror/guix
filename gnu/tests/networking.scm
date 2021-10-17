@@ -337,7 +337,7 @@ port 7, and a dict service on port 2628."
                              (srfi srfi-1))
                 (live-service-running
                  (find (lambda (live)
-                         (memq 'networking-ovs0
+                         (memq 'networking
                                (live-service-provision live)))
                        (current-services))))
              marionette))

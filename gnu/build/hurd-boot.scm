@@ -185,13 +185,9 @@ set."
       ("servers/crash-suspend"   ("/hurd/crash" "--suspend"))
       ("servers/password"        ("/hurd/password"))
       ("servers/socket/1"        ("/hurd/pflocal"))
-      ("servers/socket/2"        ("/hurd/pfinet"
-                                  "--interface" "eth0"
-                                  "--address"
-                                  "10.0.2.15" ;the default QEMU guest IP
-                                  "--netmask" "255.255.255.0"
-                                  "--gateway" "10.0.2.2"
-                                  "--ipv6" "/servers/socket/26"))
+      ;; /servers/socket/2 and /26 are created by 'static-networking-service'.
+      ;; XXX: Spawn pfinet without arguments on these nodes so that a DHCP
+      ;; client has someone to talk to?
       ("proc"                    ("/hurd/procfs" "--stat-mode=444"))))
 
   (define devices
