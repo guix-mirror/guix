@@ -52,6 +52,7 @@
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Olivier Dion <olivier.dion@polymtl.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8137,6 +8138,66 @@ user space tracer.  It receives commands from a session daemon, for example to
 enable and disable specific instrumentation points, and writes event records
 to ring buffers shared with a consumer daemon.")
     (license license:lgpl2.1+)))
+
+(define-public lttng-tools
+  (package
+    (name "lttng-tools")
+    (version "2.12.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://lttng.org/files/lttng-tools/"
+                                  "lttng-tools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bgk35423v6z17j1w80m7dcza7gigs1pwyq24sdmgqwg6j2d1zmc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; FIXME - Currently there's a segmentation fault by swig when enabling
+       ;; Python's bindings.  Thus, bindings are disable here.  Replace
+       ;; `disable` by `enable` in #:configure-flags when this is fixed.
+       #:configure-flags '("--disable-python-bindings")
+       ;; FIXME - Tests are disabled for now because one test hangs
+       ;; indefinetely.  Also, parallel testing is not possible because of how
+       ;; the lttng-daemon handles sessions.  Thus, keep parallel testing
+       ;; disabled even after tests are enabled!
+       #:tests? #f
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-environment-variables
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (setenv "LTTNG_HOME" "/tmp"))))))
+    ;; NOTE - Users have to install python-3 in their profile to use the
+    ;; bindings.  We don't put it in the inputs, because the rest of the tools
+    ;; can work without it.
+    (inputs
+     `(("liburcu" ,liburcu)
+       ("popt" ,popt)
+       ("numactl" ,numactl)))
+    (propagated-inputs
+     `(("kmod" ,kmod)
+       ("module-init-tools" ,module-init-tools)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("libpfm4" ,libpfm4)
+       ("python-3" ,python-3)
+       ("swig" ,swig)
+       ("procps" ,procps)
+       ("which" ,which)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("asciidoc" ,asciidoc)
+       ("libxml2" ,libxml2)
+       ("lttng-ust" ,lttng-ust)))
+    (home-page "https://lttng.org/")
+    (synopsis "LTTng userspace tracer libraries")
+    (description "The lttng-tools project provides a session
+daemon @code{lttng-sessiond} that acts as a tracing registry, the @command{lttng} command
+line for tracing control, a @code{lttng-ctl} library for tracing control and a
+@code{lttng-relayd} for network streaming.")
+    (license (list  license:gpl2 license:lgpl2.1))))
 
 (define-public kexec-tools
   (package
