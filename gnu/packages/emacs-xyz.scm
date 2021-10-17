@@ -18078,7 +18078,7 @@ navigate and display hierarchy structures.")
 (define-public emacs-datetime
   (package
     (name "emacs-datetime")
-    (version "0.7")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -18087,7 +18087,7 @@ navigate and display hierarchy structures.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g6qgp6zvrbiaq6yfzqs3bmnry43xspp3ra3hm17x80b6izdsn90"))))
+        (base32 "108zfj5hz9irgksgg48xdvvaa635m6nzclx7xaymylfcvlycskpl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons "^[^/]*\\.extmap$" %default-include)))
