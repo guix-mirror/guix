@@ -18145,12 +18145,12 @@ timestamps and date-time format strings library for Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-itail
-  (let ((commit "6e43c20da03be3b9c6ece93b7dc3495975ec1888")
-        (revision "1"))
+  ;; XXX: Upstream provides no tags.  The commit below corresponds to an exact
+  ;; version bump from main file.
+  (let ((commit "6e43c20da03be3b9c6ece93b7dc3495975ec1888"))
     (package
       (name "emacs-itail")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version "0.0.8")
       (source
        (origin
          (method git-fetch)
@@ -18159,15 +18159,13 @@ timestamps and date-time format strings library for Emacs.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "044nzxh1hq41faxw3lix0wy78vfz304pjcaa5a11dqfz7q3gx5cv"))))
+          (base32 "044nzxh1hq41faxw3lix0wy78vfz304pjcaa5a11dqfz7q3gx5cv"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/re5et/itail")
       (synopsis "Interactive @code{tail} Emacs mode")
-      (description "@code{itail} provides interactive @code{tail} mode
-that allows you to filter the tail with unix pipes and highlight the
-contents of the tailed file.  Works locally or on remote files using
-tramp.")
+      (description "@code{itail} provides interactive @code{tail} mode that
+allows you to filter the tail with Unix pipes and highlight the contents of
+the tailed file.  It works locally or on remote files using Tramp.")
       (license license:gpl3+))))
 
 (define-public emacs-loop
