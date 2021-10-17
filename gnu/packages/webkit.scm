@@ -239,7 +239,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
               (patches (search-patches "webkitgtk-share-store.patch"
                                        "webkitgtk-bind-all-fonts.patch"))))
     (build-system cmake-build-system)
-    (outputs '("out" "doc"))
+    (outputs '("out" "doc" "debug"))
     (arguments
      `(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
