@@ -4835,9 +4835,10 @@ claim to be \"RESTful\".  It includes convenience wrappers for libsoup and
 libxml to ease remote use of the RESTful API.")
     (license license:lgpl2.1+)))
 
-(define-public libsoup
+;;; A minimal version of libsoup used to prevent a cycle with Inkscape.
+(define-public libsoup-minimal
   (package
-    (name "libsoup")
+    (name "libsoup-minimal")
     (version "2.72.0")
     (source (origin
               (method url-fetch)
@@ -4848,23 +4849,14 @@ libxml to ease remote use of the RESTful API.")
                (base32
                 "11skbyw2pw32178q3h8pi7xqa41b2x4k6q4k9f75zxmh8s23y30p"))))
     (build-system meson-build-system)
-    (outputs '("out" "doc"))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build meson-build-system)
                   (ice-9 popen))
 
-       #:configure-flags '("-Dgtk_doc=true")
+       #:configure-flags '("-Dgtk_doc=false")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook-xml
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
-                                          "/xml/dtd/docbook")))
-               (substitute* (find-files "docs/reference")
-                 (("http://.*/docbookx\\.dtd")
-                  (string-append xmldoc "/docbookx.dtd")))
-               #t)))
          (add-after 'unpack 'adjust-tests
            (lambda _
              ;; This test fails due to missing /etc/nsswitch.conf
@@ -4885,22 +4877,10 @@ libxml to ease remote use of the RESTful API.")
              ;; FIXME: ssl-test fails, starting with
              ;; glib-networking 2.68.x.
              (substitute* "tests/meson.build"
-               (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))
-             #t))
-         (add-after 'install 'move-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share"))
-               (copy-recursively (string-append out "/share/gtk-doc")
-                                 (string-append doc "/share/gtk-doc"))
-               (delete-file-recursively (string-append out "/share/gtk-doc"))
-               #t))))))
+               (("[ \t]*\\['ssl', true, \\[\\]\\],") "")))))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
-       ("glib:bin" ,glib "bin")                   ; for glib-mkenums
+     `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -4927,20 +4907,36 @@ libxml to ease remote use of the RESTful API.")
 and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
 
-
-;;; A minimal version of libsoup used to prevent a cycle with Inkscape.
-(define-public libsoup-minimal
-  (package/inherit libsoup
-    (name "libsoup-minimal")
-    (outputs (delete "doc" (package-outputs libsoup)))
+(define-public libsoup
+  (package/inherit libsoup-minimal
+    (name "libsoup")
+    (outputs (cons "doc" (package-outputs libsoup-minimal)))
     (arguments
-     (substitute-keyword-arguments (package-arguments libsoup)
+     (substitute-keyword-arguments (package-arguments libsoup-minimal)
        ((#:configure-flags configure-flags)
-        `(delete "-Dgtk_doc=true" ,configure-flags))
+        `(cons "-Dgtk_doc=true"
+               (delete "-Dgtk_doc=false" ,configure-flags)))
        ((#:phases phases)
         `(modify-phases ,phases
-           (delete 'move-doc)))))
-    (native-inputs (alist-delete "gtk-doc" (package-native-inputs libsoup)))))
+           (add-after 'unpack 'patch-docbook-xml
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                            "/xml/dtd/docbook")))
+                 (substitute* (find-files "docs/reference")
+                   (("http://.*/docbookx\\.dtd")
+                    (string-append xmldoc "/docbookx.dtd"))))))
+           (add-after 'install 'move-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc")))
+                 (mkdir-p (string-append doc "/share"))
+                 (copy-recursively (string-append out "/share/gtk-doc")
+                                   (string-append doc "/share/gtk-doc"))
+                 (delete-file-recursively
+                  (string-append out "/share/gtk-doc")))))))))
+    (native-inputs (append `(("docbook-xml" ,docbook-xml-4.1.2)
+                             ("gtk-doc" ,gtk-doc))
+                       (package-native-inputs libsoup-minimal)))))
 
 (define-public libsecret
   (package
