@@ -8408,7 +8408,8 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags '("--with-kmod=no")))
+     `(#:configure-flags '("--disable-static"
+                           "--with-kmod=no")))
     (home-page "https://ipset.netfilter.org/")
     (synopsis "Administration tool for IP sets")
     (description "IP sets are a framework inside the Linux 2.4.x and 2.6.x kernel which
