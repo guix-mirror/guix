@@ -2118,7 +2118,7 @@ various hardware.")
 (define-public sdr++
   (package
     (name "sdr++")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
@@ -2127,7 +2127,7 @@ various hardware.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mplhys07l4bqv3q301ayh35468mg0hpxp5zgrps7gkjyf3v6idr"))))
+        (base32 "1xwbz6yyca6wmzad5ykxw6i0r8jzc7i3jbzq7mhp8caiymd6knw3"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gcc" ,gcc-10) ; A GCC more recent than version 7 is required.
