@@ -8964,6 +8964,31 @@ implementation of D-Bus.")
                               (package-inputs python-dbus)
                               equal?)))))
 
+(define-public python-dbus-next
+  (package
+    (name "python-dbus-next")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/altdesktop/python-dbus-next")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ahaz52kny1p9xxv6phvk4iq56rg8li390wywlxf2yslaij1188h"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/altdesktop/python-dbus-next")
+    (synopsis "Zero-dependency DBus library for Python with asyncio support")
+    (description
+     "This DBus library for Python aims to be a fully-featured high-level
+library primarily geared towards integration of applications into desktop and
+mobile environments.")
+    (license license:expat)))
+
 (define-public python-notify2
   (package
     (name "python-notify2")
