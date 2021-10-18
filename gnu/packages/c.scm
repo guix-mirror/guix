@@ -779,7 +779,8 @@ currently limited to Huffman encoding and decoding.")
 (define-public aws-c-auth
   (package
     (name "aws-c-auth")
-    (version "0.6.0")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -788,15 +789,17 @@ currently limited to Huffman encoding and decoding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yh9s6q3ahq39xgvihp2a5cn9h39qlq8wfjc32m0ayi9x739rbqg"))
+                "120p69lj279yq3d2b81f45kgfrvf32j6m7s03m8hh27w8yd4vbfp"))
               (patches
                (search-patches
-                "aws-c-auth-cmake-prefix.patch"
-                "aws-c-auth-disable-networking-tests.patch"))))
+                "aws-c-auth-install-private-headers.patch"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-cal" ,aws-c-cal)
        ("aws-c-common" ,aws-c-common)

@@ -870,8 +870,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
-  %D%/packages/patches/aws-c-auth-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-auth-disable-networking-tests.patch\
+  %D%/packages/patches/aws-c-auth-install-private-headers.patch	\
   %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
   %D%/packages/patches/aws-c-mqtt-cmake-prefix.patch		\
   %D%/packages/patches/aws-c-s3-cmake-prefix.patch		\
