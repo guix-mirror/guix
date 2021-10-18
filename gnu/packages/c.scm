@@ -815,7 +815,8 @@ authentication.")
 (define-public aws-c-s3
   (package
     (name "aws-c-s3")
-    (version "0.1.19")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.1.26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -824,15 +825,14 @@ authentication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vkjd8dh99d8qsl7irnbkcdf9vjmcznx0jz186la0472z4h48wjj"))
-              (patches
-               (search-patches
-                "aws-c-s3-cmake-prefix.patch"
-                "aws-c-s3-disable-networking-tests.patch"))))
+                "0gaxnwwk0jbvkgjnxcgchq13xmn7jk5vjvjsps6b0vaz6bf12wv8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-auth" ,aws-c-auth)
        ("aws-c-http" ,aws-c-http)))
