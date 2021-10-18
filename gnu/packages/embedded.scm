@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020, 2021 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1349,6 +1350,38 @@ these identified regions.
 @end enumerate")
     (home-page "https://www.freecalypso.org/")
     (license license:public-domain)))
+
+(define-public stcgal
+  (package
+    (name "stcgal")
+    (version "1.6")
+    (source (origin
+              ;; Neither the unit tests nor the "doc" subdirectory referred to
+              ;; by stcgal's setup.py is present in the source distribution on
+              ;; PyPI, so we fetch directly from the project's git repository
+              ;; instead.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grigorig/stcgal")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1d10qxyghz66zp7iqpm8q8rfv9jz9n609gxmfcav1lssmf1dlyk3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyserial" ,python-pyserial)
+       ("python-pyusb" ,python-pyusb)
+       ("python-tqdm" ,python-tqdm)))
+    (native-inputs
+     ;; For tests.
+     `(("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/grigorig/stcgal")
+    (synopsis "Programmer for STC 8051-compatible microcontrollers")
+    (description "stcgal is a command-line flash-programming tool for STC
+MCU's line of Intel 8051-compatible microcontrollers, including those in the
+STC89, STC90, STC10, STC11, STC12, STC15 and STC8 series.")
+    (license license:expat)))
 
 (define-public stlink
   (package
