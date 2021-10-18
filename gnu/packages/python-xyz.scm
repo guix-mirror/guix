@@ -28062,3 +28062,23 @@ interfaces.")
 It is used to parse text files formatted in @acronym{SGML,Standard Generalized
 Mark-up Language}.")
     (license license:bsd-3)))
+
+(define-public python-iwlib
+  (package
+    (name "python-iwlib")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iwlib" version))
+       (sha256
+        (base32 "18bd35wn7zclalpqbry42pf7bjrdggxkkw58mc0k1vkhg9czc1d8"))))
+    (build-system python-build-system)
+    (inputs
+     `(("wireless-tools" ,wireless-tools)))
+    (propagated-inputs `(("python-cffi" ,python-cffi)))
+    (home-page "https://github.com/nhoad/python-iwlib")
+    (synopsis "Python module to interface with iwlib")
+    (description
+     "This package provides a Python interface to iw wireless tools.")
+    (license license:gpl2)))
