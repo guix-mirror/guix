@@ -16,8 +16,8 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
@@ -67,7 +67,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages xml)
-  #:export (system->llvm-target))
+  #:export (make-lld-wrapper
+            system->llvm-target))
 
 (define* (system->llvm-target #:optional
                               (system (or (and=> (%current-target-system)
@@ -990,6 +991,48 @@ of programming tools as well as libraries with equivalent functionality.")
     (description "LLD is a high-performance linker, built as a set of reusable
 components which highly leverage existing libraries in the larger LLVM Project.")
     (license license:asl2.0))) ; With LLVM exception
+
+(define* (make-lld-wrapper lld #:key lld-as-ld?)
+  "Return a LLD wrapper.  When LLD-AS-LD? is true, create a 'ld' symlink that
+points to 'lld'."
+  (package
+    (name (if lld-as-ld? "lld-as-ld-wrapper" "lld-wrapper"))
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("ld.lld-wrapper" ,(make-ld-wrapper "ld.lld-wrapper"
+                                                  #:binutils lld
+                                                  #:linker "ld.lld"))
+              ("lld-wrapper" ,(make-ld-wrapper "lld-wrapper"
+                                               #:binutils lld
+                                               #:linker "lld"))))
+    (arguments
+     (list #:builder
+           #~(let ((ld.lld (string-append #$(this-package-input
+                                             "ld.lld-wrapper")
+                                          "/bin/ld.lld"))
+                   (lld (string-append #$(this-package-input "lld-wrapper")
+                                       "/bin/lld")))
+               (mkdir #$output)
+               (mkdir (string-append #$output "/bin"))
+               (symlink ld.lld (string-append #$output "/bin/ld.lld"))
+               (symlink lld (string-append #$output "/bin/lld"))
+               (when #$lld-as-ld?
+                 (symlink ld.lld (string-append #$output "/bin/ld"))))))
+    (synopsis "LLD linker wrapper")
+    (description "This is a linker wrapper for LLD; like @code{ld-wrapper}, it
+wraps the linker to add any missing @code{-rpath} flags, and to detect any
+misuse of libraries outside of the store.")
+    (home-page "https://www.gnu.org/software/guix/")
+    (license license:gpl3+)))
+
+;;; A LLD wrapper suitable to use with -fuse-ld and GCC or with Clang.
+(define-public lld-wrapper
+  (make-lld-wrapper lld))
+
+;;; A LLD wrapper that can be used as a (near) drop-in replacement to GNU ld.
+(define-public lld-as-ld-wrapper
+  (make-lld-wrapper lld #:lld-as-ld? #t))
 
 (define-public lldb
   (package
