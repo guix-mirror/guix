@@ -131,6 +131,6 @@
     (synopsis "POSIX.1e @acronym{ACLs, access control lists} for Python")
     (description
      "This Python extension module manipulates the POSIX.1e @acronym{ACLs,
-Access Control Lists available on many file systems.  These allow more
+Access Control Lists} available on many file systems.  These allow more
 fine-grained access control than traditional user/group permissions.")
     (license lgpl2.1+)))
