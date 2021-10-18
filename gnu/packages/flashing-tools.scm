@@ -84,7 +84,15 @@
              (substitute* "dmi.c"
                (("\"dmidecode\"")
                 (format #f "~S"
-                        (search-input-file inputs "/sbin/dmidecode")))))))))
+                        (search-input-file inputs "/sbin/dmidecode"))))))
+         (add-before 'build 'patch-type-error
+           (lambda _
+             ;; See https://github.com/flashrom/flashrom/pull/133
+             (substitute* "libflashrom.c"
+               (("supported_boards\\[i\\].working = binfo\\[i\\].working")
+                "supported_boards[i].working = (enum flashrom_test_state)binfo[i].working")
+               (("supported_chipsets\\[i\\].status = chipset\\[i\\].status")
+                "supported_chipsets[i].status = (enum flashrom_test_state)chipset[i].status")))))))
     (home-page "https://flashrom.org/")
     (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
     (description
