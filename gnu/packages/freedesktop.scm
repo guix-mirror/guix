@@ -1998,17 +1998,14 @@ Python, that binds to the C library @code{uchardet} to increase performance.")
 (define-public udiskie
   (package
     (name "udiskie")
-    (version "2.1.0")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "udiskie" version))
        (sha256
         (base32
-         "0smib8vbs9q37n7ynhzyw97q16fgdkcdw7fw69lci0xvyq00v1dz"))
-       ;; Remove support for the libappindicator library of the
-       ;; Unity desktop environment which is not in Guix.
-       (patches (search-patches "udiskie-no-appindicator.patch"))))
+         "0sagdmsc5km32h3jvgj843p8bicrrgfz26qhl04ibxmas6725zr0"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -2017,6 +2014,7 @@ Python, that binds to the C library @code{uchardet} to increase performance.")
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
+       ("libappindicator" ,libappindicator)
        ("libnotify" ,libnotify)
        ("udisks" ,udisks)))
     (propagated-inputs
