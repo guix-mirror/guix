@@ -578,6 +578,7 @@ portability.")
 (define-public aws-checksums
   (package
     (name "aws-checksums")
+    ; Update only when updating aws-crt-cpp.
     (version "0.1.12")
     (source (origin
               (method git-fetch)
@@ -587,12 +588,13 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))
-              (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
+                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (inputs
      `(("aws-c-common" ,aws-c-common)))
     (synopsis "Amazon Web Services checksum library")
