@@ -750,7 +750,8 @@ specifications.")
 (define-public aws-c-compression
   (package
     (name "aws-c-compression")
-    (version "0.2.13")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.2.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -759,12 +760,13 @@ specifications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zqfxi0fdgapfsfgvsindv63pq7vyl1s376qkpv4jgflyb1v6gp5"))
-              (patches (search-patches "aws-c-compression-cmake-prefix.patch"))))
+                "0fs3zhhzxsb9nfcjpvfbcq79hal7si2ia1c09scab9a8m264f4vd"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)))
     (synopsis "Amazon Web Services compression library")
