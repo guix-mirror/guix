@@ -28581,6 +28581,49 @@ algorithms; density clustering, hierarchical clustering, k-means, and the
 discovery of differentially expressed genes and markers.")
     (license license:gpl3)))
 
+(define-public r-seuratdisk
+  (let ((commit "163f1aade5bac38ed1e9e9c912283a7e74781610")
+        (revision "1"))
+    (package
+      (name "r-seuratdisk")
+      (version (git-version "0.0.0.9019" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mojaveazure/seurat-disk")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1d1v8qi6kknzy5fj6bl8akwy74h5h143i00lyidsnqjbwp9n4qnw"))))
+      (properties `((upstream-name . "SeuratDisk")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-cli" ,r-cli)
+         ("r-crayon" ,r-crayon)
+         ("r-hdf5r" ,r-hdf5r)
+         ("r-matrix" ,r-matrix)
+         ("r-r6" ,r-r6)
+         ("r-rlang" ,r-rlang)
+         ("r-seurat" ,r-seurat)
+         ("r-seuratobject" ,r-seuratobject)
+         ("r-stringi" ,r-stringi)
+         ("r-withr" ,r-withr)))
+      (native-inputs
+       `(("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/mojaveazure/seurat-disk")
+      (synopsis "Interfaces for HDF5-based single cell file formats")
+      (description
+       "The h5Seurat file format is specifically designed for the storage and
+analysis of multi-modal single-cell and spatially-resolved expression
+experiments, for example, from CITE-seq or 10X Visium technologies.  It holds
+all molecular information and associated metadata, including (for example)
+nearest-neighbor graphs, dimensional reduction information, spatial
+coordinates and image data, and cluster labels.  This package also supports
+rapid and on-disk conversion between h5Seurat and AnnData objects, with the
+goal of enhancing interoperability between Seurat and Scanpy.")
+      (license license:gpl3))))
+
 (define-public r-phangorn
   (package
     (name "r-phangorn")
