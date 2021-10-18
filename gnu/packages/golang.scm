@@ -2680,7 +2680,7 @@ time.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://go.googlesource.com/x/mod")
+               (url "https://github.com/golang/mod")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
