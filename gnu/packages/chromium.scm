@@ -460,31 +460,6 @@
         `(cons "--enable-custom-modes"
                ,flags))))))
 
-;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
-;; this trick to make it wrap 'lld'.
-(define (make-lld-wrapper lld)
-  (define lld-as-ld
-    (computed-file "lld-ld"
-                   #~(begin
-                       (mkdir #$output)
-                       (mkdir (string-append #$output "/bin"))
-                       (symlink #$(file-append lld "/bin/lld")
-                                (string-append #$output "/bin/ld")))))
-
-  ;; Create a wrapper for LLD that inserts appropriate -rpath entries.
-  (define lld-wrapper
-    (make-ld-wrapper "lld-wrapper"
-                     #:binutils lld-as-ld))
-
-  ;; Clang looks for an 'ld.lld' executable, so we need to symlink it back.
-  (computed-file "lld-wrapped"
-                 #~(begin
-                     (mkdir #$output)
-                     (mkdir (string-append #$output "/bin"))
-                     (symlink #$(file-append lld-wrapper "/bin/ld")
-                              (string-append #$output "/bin/lld"))
-                     (symlink "lld" (string-append #$output "/bin/ld.lld")))))
-
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
@@ -848,7 +823,7 @@
        ("clang" ,clang-12)
        ("gn" ,gn)
        ("gperf" ,gperf)
-       ("ld-wrapper" ,(make-lld-wrapper lld))
+       ("ld-wrapper" ,lld-as-ld-wrapper)
        ("ninja" ,ninja)
        ("node" ,node-lts)
        ("pkg-config" ,pkg-config)
