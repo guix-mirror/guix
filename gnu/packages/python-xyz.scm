@@ -7408,14 +7408,14 @@ any machine that can run Python.")
 (define-public python-xcffib
   (package
     (name "python-xcffib")
-    (version "0.6.0")
+    (version "0.11.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "xcffib" version))
       (sha256
        (base32
-        "04k91yxyb3pgc5lvxmivh8w71yjrap2g57yk3s73x4rm4nvjq51n"))))
+        "0nkglsm9nbhv238iagmmsjcz6lf1yfdvp5kmspphdj385vz9r50j"))))
     (build-system python-build-system)
     (inputs
      `(("libxcb" ,libxcb)))
@@ -7431,7 +7431,8 @@ any machine that can run Python.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libxcb (assoc-ref inputs "libxcb")))
                (substitute* '("xcffib/__init__.py")
-                 (("^soname = \"") (string-append "soname = \"" libxcb "/lib/")))
+                 (("soname = ctypes.util.find_library.*xcb.*")
+                  (string-append "soname = \"" libxcb "/lib/libxcb.so\"\n")))
                #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
