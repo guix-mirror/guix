@@ -638,7 +638,8 @@ communication.")
 (define-public aws-c-io
   (package
     (name "aws-c-io")
-    (version "0.10.5")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.10.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -647,15 +648,14 @@ communication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jrnzs803jqprnvbw6rqr834qld5sd7flaqzgssp3099m189szpq"))
-              (patches
-               (search-patches
-                "aws-c-io-cmake-prefix.patch"
-                "aws-c-io-disable-networking-tests.patch"))))
+                "14rxa3k842fgk43702nz7z9y3clfhvax8j0k93i0c5vg14wj38yp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-cal" ,aws-c-cal)
        ("aws-c-common" ,aws-c-common)
