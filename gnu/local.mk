@@ -872,7 +872,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/aws-c-auth-install-private-headers.patch	\
   %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
-  %D%/packages/patches/aws-c-mqtt-cmake-prefix.patch		\
   %D%/packages/patches/aws-checksums-cmake-prefix.patch		\
   %D%/packages/patches/aws-crt-cpp-cmake-prefix.patch		\
   %D%/packages/patches/aws-crt-cpp-disable-networking-tests.patch	\

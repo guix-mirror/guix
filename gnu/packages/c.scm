@@ -846,6 +846,7 @@ Service (S3) protocol for object storage.")
 (define-public aws-c-mqtt
   (package
     (name "aws-c-mqtt")
+    ; Update only when updating aws-crt-cpp.
     (version "0.7.8")
     (source (origin
               (method git-fetch)
@@ -855,12 +856,13 @@ Service (S3) protocol for object storage.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19j6nw2v36c4yff4p0fbf0748s06fd5r9cp2yakry9ybn1ada99c"))
-              (patches (search-patches "aws-c-mqtt-cmake-prefix.patch"))))
+                "19j6nw2v36c4yff4p0fbf0748s06fd5r9cp2yakry9ybn1ada99c"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-http" ,aws-c-http)
        ("aws-c-io" ,aws-c-io)))
