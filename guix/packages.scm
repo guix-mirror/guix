@@ -49,6 +49,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (rnrs bytevectors)
   #:use-module (web uri)
+  #:autoload   (texinfo) (texi-fragment->stexi)
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
@@ -438,6 +439,49 @@ lexical scope of its body."
                                   (lambda (s) #,location)))
              body ...))))))
 
+(define-syntax validate-texinfo
+  (let ((validate? (getenv "GUIX_UNINSTALLED")))
+    (define ensure-thread-safe-texinfo-parser!
+      ;; Work around <https://issues.guix.gnu.org/51264> for Guile <= 3.0.7.
+      (let ((patched? (or (> (string->number (major-version)) 3)
+                          (> (string->number (minor-version)) 0)
+                          (> (string->number (micro-version)) 7)))
+            (next-token-of/thread-safe
+             (lambda (pred port)
+               (let loop ((chars '()))
+                 (match (read-char port)
+                   ((? eof-object?)
+                    (list->string (reverse! chars)))
+                   (chr
+                    (let ((chr* (pred chr)))
+                      (if chr*
+                          (loop (cons chr* chars))
+                          (begin
+                            (unread-char chr port)
+                            (list->string (reverse! chars)))))))))))
+        (lambda ()
+          (unless patched?
+            (set! (@@ (texinfo) next-token-of) next-token-of/thread-safe)
+            (set! patched? #t)))))
+
+    (lambda (s)
+      "Raise a syntax error when passed a literal string that is not valid
+Texinfo.  Otherwise, return the string."
+      (syntax-case s ()
+        ((_ str)
+         (string? (syntax->datum #'str))
+         (if validate?
+             (catch 'parser-error
+               (lambda ()
+                 (ensure-thread-safe-texinfo-parser!)
+                 (texi-fragment->stexi (syntax->datum #'str))
+                 #'str)
+               (lambda _
+                 (syntax-violation 'package "invalid Texinfo markup" #'str)))
+             #'str))
+        ((_ obj)
+         #'obj)))))
+
 ;; A package.
 (define-record-type* <package>
   package make-package
@@ -472,9 +516,11 @@ lexical scope of its body."
   (replacement package-replacement                ; package | #f
                (default #f) (thunked) (innate))
 
-  (synopsis package-synopsis)                    ; one-line description
-  (description package-description)              ; one or two paragraphs
-  (license package-license)                      ; <license> instance or list
+  (synopsis package-synopsis
+            (sanitize validate-texinfo))          ; one-line description
+  (description package-description
+               (sanitize validate-texinfo))       ; one or two paragraphs
+  (license package-license)                       ; <license> instance or list
   (home-page package-home-page)
   (supported-systems package-supported-systems    ; list of strings
                      (default %supported-systems))
