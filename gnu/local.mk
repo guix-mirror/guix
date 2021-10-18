@@ -872,7 +872,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/aws-c-auth-cmake-prefix.patch		\
   %D%/packages/patches/aws-c-auth-disable-networking-tests.patch\
-  %D%/packages/patches/aws-c-cal-cmake-prefix.patch		\
   %D%/packages/patches/aws-c-compression-cmake-prefix.patch	\
   %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
   %D%/packages/patches/aws-c-http-cmake-prefix.patch		\

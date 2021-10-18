@@ -669,7 +669,8 @@ event-driven, asynchronous network application protocols.")
 (define-public aws-c-cal
   (package
     (name "aws-c-cal")
-    (version "0.5.11")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.5.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -678,12 +679,13 @@ event-driven, asynchronous network application protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rqqk4n56h8sf4q070rhgjwas04j8h0vq4wl1alq5l1rqq72qqdf"))
-              (patches (search-patches "aws-c-cal-cmake-prefix.patch"))))
+                "09zqf610x4g2mcjcaf9nh88k6dkw14pi721yr8hxb5rmsx7rlfrb"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)))
     (inputs
