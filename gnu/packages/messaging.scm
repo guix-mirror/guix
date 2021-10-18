@@ -1069,7 +1069,7 @@ of xmpppy.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
@@ -1078,7 +1078,7 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1vjzv8zg9s393xw81klcgbkn4h6j2blzla9iil5kqfrw7wmldskh"))
+        (base32 "1337qkpcv7j0fgws9scnk82mn2l7s17060vmrbh3ihinmxmbxg6x"))
        (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1092,13 +1092,6 @@ of xmpppy.")
         (guix build utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             ;; ModuleNotFoundError: No module named 'gajim.gui.emoji_data'
-             ;; https://dev.gajim.org/gajim/gajim/-/issues/10478
-             (delete-file "test/lib/gajim_mocks.py")
-             (delete-file "test/unit/test_gui_interface.py")
-             #t))
          (replace 'check
            (lambda _
              ;; Tests require a running X server.
@@ -1106,8 +1099,7 @@ of xmpppy.")
              (setenv "DISPLAY" ":1")
              ;; For missing '/etc/machine-id'.
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (invoke "dbus-launch" "python" "./setup.py" "test")
-             #t))
+             (invoke "dbus-launch" "python" "./setup.py" "test")))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap
@@ -1123,8 +1115,7 @@ of xmpppy.")
                     (wrap-program file
                       `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
                       `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
-                '("gajim" "gajim-remote" "gajim-history-manager")))
-             #t)))))
+                '("gajim" "gajim-remote" "gajim-history-manager"))))))))
     (native-search-paths
      (list
       (search-path-specification
