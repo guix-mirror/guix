@@ -1157,39 +1157,38 @@ derived from Mozilla's collection.")
       (license license:mpl2.0))))
 
 (define-public s2n
-  (let* ((commit "7f43b102def1d52422f6c3e48d5cb3e6dd26c646")
-         (revision "1"))
-    (package
-      (name "s2n")
-      (version (git-version "1.0.10" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/aws/s2n-tls")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "06rqg0vcispi63cmcza9j7ix80l0w6wmbw81qlg4fq8l1lg9nyvl"))))
-      (build-system cmake-build-system)
-      (arguments
-       '(#:configure-flags
-         '("-DBUILD_SHARED_LIBS=ON")))
-      (propagated-inputs
-       `(("openssl" ,openssl)
-         ("openssl:static" ,openssl "static")))
-      (synopsis "SSL/TLS implementation in C99")
-      (description
-       "This library provides a C99 implementation of SSL/TLS.  It is designed
-to be familiar to users of the widely-used POSIX I/O APIs.  It supports
-blocking, non-blocking, and full-duplex I/O.  There are no locks or mutexes.
+  (package
+    (name "s2n")
+    ; Update only when updating aws-crt-cpp.
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aws/s2n-tls")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14dhdddlph36nshdkh0v33718hxjx5vxqxmkw7707393q0qrgipw"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("openssl" ,openssl)
+       ("openssl:static" ,openssl "static")))
+    (synopsis "SSL/TLS implementation in C99")
+    (description
+     "This library provides a C99 implementation of SSL/TLS.  It is designed to
+be familiar to users of the widely-used POSIX I/O APIs.  It supports blocking,
+non-blocking, and full-duplex I/O.  There are no locks or mutexes.
 
 As it can be difficult to keep track of which encryption algorithms and
 protocols are best to use, s2n-tls features a simple API to use the latest
 default set of preferences.  Remaining on a specific version for backwards
 compatibility is also supported.")
     (home-page "https://github.com/aws/s2n-tls")
-    (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public wolfssl
   (package
