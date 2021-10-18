@@ -719,7 +719,8 @@ low level functionality for coroutines.")
 (define-public aws-c-http
   (package
     (name "aws-c-http")
-    (version "0.6.4")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.6.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -728,15 +729,14 @@ low level functionality for coroutines.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18xlgz68zizkcp784bs6hkyx0gvp0f1p076i46z653bcd3qa87b4"))
-              (patches
-               (search-patches
-                "aws-c-http-cmake-prefix.patch"
-                "aws-c-http-disable-networking-tests.patch"))))
+                "1s06bz6w7355ldyhwjidcpbff7591ch4lwwjcj47a6k2kczdmiz4"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-compression" ,aws-c-compression)
        ("aws-c-io" ,aws-c-io)))
