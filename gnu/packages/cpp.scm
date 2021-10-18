@@ -900,11 +900,14 @@ of C++14 components that complements @code{std} and Boost.")
     (license license:asl2.0)))
 
 (define-public aws-crt-cpp
-  (let* ((commit "c2d6ffa5597825111cc76ad71ffc6aef664d0f25")
+  (let* ((commit "b6d311d76b504bf8ace5134d3fca0e672c36c9c3")
          (revision "1"))
     (package
       (name "aws-crt-cpp")
-      (version (git-version "0.14.2" revision commit))
+      ; Update only when updating aws-sdk-cpp, and when updating also update
+      ; versions of library dependencies linked from from
+      ; https://github.com/awslabs/aws-crt-cpp/tree/{aws-crt-cpp commit}/crt
+      (version (git-version "0.17.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -913,16 +916,15 @@ of C++14 components that complements @code{std} and Boost.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0l7iwynk2rgzjnr1hi1raazghmk4m7pj47vdq2kf2cfz0b6v9jf5"))
-                (patches
-                 (search-patches
-                  "aws-crt-cpp-cmake-prefix.patch"
-                  "aws-crt-cpp-disable-networking-tests.patch"))))
+                  "1n0nlbz91j3ycwwrh9652f0h5qr2sj5b1l0i5sg40ajzs7wvzd32"))))
       (build-system cmake-build-system)
       (arguments
        '(#:configure-flags
-         '("-DBUILD_SHARED_LIBS=ON"
-           "-DBUILD_DEPS=OFF")))
+         (list "-DBUILD_DEPS=OFF"
+               "-DBUILD_SHARED_LIBS=ON"
+               (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+               "-DENABLE_NET_TESTS=OFF")))
       (propagated-inputs
        `(("aws-c-auth" ,aws-c-auth)
          ("aws-c-cal" ,aws-c-cal)
