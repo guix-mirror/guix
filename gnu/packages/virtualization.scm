@@ -1233,14 +1233,14 @@ pretty simple, REST API.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "7.5.0")
+    (version "7.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "15987ihnsjvcgi11dzcf1k3zp1si2d4wcxj0r0i30brc0d4pn44h"))
+        (base32 "0hb1fq0yx41n36c3n1a54b5p37n0m7abs917d76v7aqas03735lg"))
        (patches (search-patches "libvirt-add-install-prefix.patch"))))
     (build-system meson-build-system)
     (arguments

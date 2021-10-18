@@ -390,26 +390,26 @@ trouble using them, because you do not have to remember each snippet name.")
     (license license:expat))))
 
 (define-public vim-scheme
-  (let ((commit "93827987c10f2d5dc519166a761f219204926d5f")
-        (revision "1"))
+  (let ((commit "99af6befee8bc7d289a523064336474ae063cee3")
+        (revision "2"))
     (package
       (name "vim-scheme")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "http://git.foldling.org/vim-scheme.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "1ynjr1109dxgj0lz261gmzz3wf5ap1m6j6hnvl3lcyv66a4y8pjv"))))
+           "0w9hnsxg92f1wd83rra0ss07zla7p2r44whr9rqs70hc0xm8ygd6"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan
-         '(("after" "share/vim/vimfiles/")
-           ("ftplugin" "share/vim/vimfiles/")
+         '(("ftplugin" "share/vim/vimfiles/")
+           ("indent" "share/vim/vimfiles/")
            ("syntax" "share/vim/vimfiles/"))))
       (synopsis "Scheme syntax for Vim")
       (description
@@ -1096,3 +1096,66 @@ to Lisp.")
 @code{Paredit.vim} is similar to @code{paredit.el} for Emacs.")
       ;; License listed in plugin/paredit.vim.
       (license license:public-domain))))
+
+(define-public vim-surround
+  (package
+    (name "vim-surround")
+    (version "2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tpope/vim-surround")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b0bd5m5lv1p4d299mrwjfs2gk0zqwyaqdaid9hs9yqlxnr8s5nf"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/tpope/vim-surround")
+    (synopsis "Vim plugin for easy quoting and parenthesizing")
+    (description
+     "Surround.vim is all about \"surroundings\": parentheses, brackets,
+quotes, XML tags, and more.  The plugin provides mappings to easily delete,
+change and add such surroundings in pairs.")
+    (license license:vim)))
+
+(define-public vim-ctrlp
+  (package
+    (name "vim-ctrlp")
+    (version "1.81")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/ctrlpvim/ctrlp.vim")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n68hg59h4rjn0ziqbsh5pr03l3kr98zk54659ny6vq107af1w96"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://ctrlpvim.github.io/ctrlp.vim/")
+    (synopsis "Fuzzy file, buffer, mru, tag, etc. finder for Vim")
+    (description
+     "CtrlP features:
+@itemize
+@item Written in pure Vimscript for MacVim, gVim and Vim 7.0+.
+@item Full support for Vim's regexp as search patterns.
+@item Built-in @acronym{Most Recently Used, MRU} files monitoring and search.
+@item Built-in project's root finder.
+@item Open multiple files at once.
+@item Create new files and directories.
+@item Execute Ex commands on an opening file (jump to a line, to a string or do
+anything).
+@item Optional cross-session caching and history allow for fast initialization.
+@item Mappings and usage conform to Vim's conventions.
+@end itemize")
+    (license license:vim)))

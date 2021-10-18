@@ -15853,7 +15853,7 @@ provided.")
     (description
      "@code{ghc-citeproc} parses @acronym{Citation Style Language, CSL} style files
 and uses them to generate a list of formatted citations and bibliography
-entries.  For more information about CSL, see @urefhttps://citationstyles.org/}.")
+entries.  For more information about CSL, see @uref{https://citationstyles.org/}.")
     (license license:bsd-2)))
 
 (define-public ghc-commonmark
@@ -16578,12 +16578,12 @@ using the @code{ghc-postgresql-simple} package.")
      "The @uref{https://yaml.org/spec/1.2/spec.html, YAML 1.2} format provides
 a much richer data-model and feature-set than the
 @uref{https://tools.ietf.org/html/rfc7159, @acronym{JavaScript Object
-Notation, JSON} format.  However, sometimes it's desirable to ignore the extra
+Notation, JSON}} format.  However, sometimes it's desirable to ignore the extra
 capabilities and treat YAML as if it was merely a more convenient markup
 format for humans to write JSON data.  To this end this module provides a
 compatibility layer atop @code{ghc-hsyaml} ,which allows decoding YAML
 documents in the more limited JSON data-model while also providing convenience
-by reusing @code{ghc-aeson}'s @code{FromJSON instances for decoding the YAML
+by reusing @code{ghc-aeson}'s @code{FromJSON} instances for decoding the YAML
 data into native Haskell data types.")
     (license license:gpl2+)))
 
@@ -16618,7 +16618,7 @@ data into native Haskell data types.")
 are alternative file locking packages:
 
 @itemize
-@item @code{GHC.IO.Handle.Lock} in @codebase >= 4.10} is good enough for most
+@item @code{GHC.IO.Handle.Lock} in @code{base >= 4.10} is good enough for most
 use cases.  However, uses only @code{Handle}s so these locks cannot be used
 for intra-process locking.
 

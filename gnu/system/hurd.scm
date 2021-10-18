@@ -34,6 +34,7 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages less)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services hurd)
@@ -67,7 +68,8 @@
   (list hurd bash coreutils file findutils grep sed
         diffutils patch gawk tar gzip bzip2 xz lzip
         guile-3.0-latest guile-colorized guile-readline
-        net-base inetutils less shadow shepherd sudo which))
+        net-base inetutils less shadow shepherd sudo which
+        info-reader))
 
 (define %base-services/hurd
   (list (service hurd-console-service-type

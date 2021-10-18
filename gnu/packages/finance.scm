@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
 ;;; Copyright © 2021 François J <francois-oss@avalenn.eu>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1763,3 +1764,29 @@ Interface (UI) for the hledger accounting system.  It can be used as a
 local, single-user UI, or as a multi-user UI for viewing, adding, and
 editing on the Web.")
     (license license:gpl3)))
+
+(define-public ta-lib
+  (package
+    (name "ta-lib")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/ta-lib/ta-lib/"
+                           version "/ta-lib-" version "-src.tar.gz"))
+       (sha256
+        (base32 "0lf69nna0aahwpgd9m9yjzbv2fbfn081djfznssa84f0n7y1xx4z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Parallel build fails with:
+       ;; mv -f .deps/gen_code-gen_code.Tpo .deps/gen_code-gen_code.Po
+       ;; mv: cannot stat '.deps/gen_code-gen_code.Tpo': No such file or directory
+       ;; Makefile:254: recipe for target 'gen_code-gen_code.o' failed
+       #:parallel-build? #f
+       #:configure-flags '("--disable-static")))
+    (home-page "https://ta-lib.org")
+    (synopsis "Technical analysis library")
+    (description
+     "TA-Lib is a library providing common functions for the technical
+analysis of financial market data.")
+    (license license:bsd-3)))

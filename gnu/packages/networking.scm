@@ -649,14 +649,14 @@ systems with no further dependencies.")
 (define-public blueman
   (package
     (name "blueman")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/blueman-project/blueman/releases"
                            "/download/" version "/blueman-" version ".tar.xz"))
        (sha256
-        (base32 "0whs1bqnn1fgzrq7y2w1d06ldvfafq6h2xzmcfncbwmyb4i0mhgw"))))
+        (base32 "1xnhxhr2l4cf703j76wvzl4rf2k4xxgjjisz03y89x9ll6qmkv8r"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
@@ -701,8 +701,7 @@ systems with no further dependencies.")
                (with-directory-excursion "blueman/main"
                  (substitute* "PulseAudioUtils.py"
                    (("libpulse.so.0") pulse)
-                   (("libpulse-mainloop-glib.so.0") pulse-glib)))
-               #t)))
+                   (("libpulse-mainloop-glib.so.0") pulse-glib))))))
          ;; Fix running of blueman programs.
          (add-after 'glib-or-gtk-wrap 'wrap-blueman-progs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -723,8 +722,7 @@ systems with no further dependencies.")
                       '("adapters" "applet" "manager"
                         "sendto" "services" "tray"))
                  (map (lambda (prog) (string-append libexec prog))
-                      '("mechanism" "rfcomm-watcher"))))
-               #t))))))
+                      '("mechanism" "rfcomm-watcher"))))))))))
     (native-inputs
      `(("cython" ,python-cython)
        ("glib:bin" ,glib "bin")

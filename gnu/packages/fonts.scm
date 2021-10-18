@@ -197,21 +197,45 @@ includes lining and old-style numerals, tabular and proportional.  Greek,
 Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
     (license license:cc0)))
 
-(define-public font-cantarell
+(define-public font-abattis-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.301")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
-                                  (version-major+minor version)
-                                  "/cantarell-fonts-" version ".tar.xz"))
-              (sha256
-               (base32
-                "10sycxscs9kzl451mhygyj2qj8qlny8pamskb86np7izq05dnd9x"))))
-    (build-system meson-build-system)
+    (version "0.303")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://gitlab.gnome.org/GNOME/cantarell-fonts/-/"
+                           "jobs/1515399/artifacts/download"))
+       (file-name (string-append name "-" version "-static"))
+       (sha256
+        (base32 "1dz551xrrhx6l40j57ksk2alllrihghg4947z1r88dpcq3snpn1s"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-source
+           ;; The actual OTF fonts are prebuilt (building them requires at least
+           ;; the currently unpackaged psautohint and its numerous dependencies;
+           ;; TODO), but unpack the source so that COPYING is installed later.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "tar" "--strip-components=1" "-xvf"
+                     (string-append "build/meson-dist/cantarell-fonts-"
+                                    ,version ".tar.xz"))))
+         (add-after 'unpack 'unpack-variable-font
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((variable-font (assoc-ref inputs "variable-font")))
+               (copy-recursively (string-append variable-font "/prebuilt")
+                                 ".")))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))   ; for msgfmt
+     `(("variable-font"
+        ,(origin
+           (method url-fetch/zipbomb)
+           (uri (string-append "https://gitlab.gnome.org/GNOME/cantarell-fonts/-/"
+                               "jobs/1515398/artifacts/download"))
+           (file-name (string-append name "-" version "-variable"))
+           (sha256
+            (base32 "0z93pbkxidsx3y98rsl2jm2qpvxv5pj0w870xhnsciglw6pc9a9i"))))
+       ("unzip" ,unzip)))
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
     (description "The Cantarell font family is a contemporary Humanist
@@ -313,15 +337,15 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-liberation
   (package
     (name "font-liberation")
-    (version "2.1.4")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/liberationfonts/liberation-fonts/"
-             "files/6418984/liberation-fonts-ttf-" version ".tar.gz"))
+             "files/7261482/liberation-fonts-ttf-" version ".tar.gz"))
        (sha256
-        (base32 "1vx5q5bif9d1cn5pvm78203sf4may2mch72aa1hx1a8avl959y16"))))
+        (base32 "1l15iwk0x75621q67qlh9wv561c0gc7x0kh9l9rrz29qpxlwd4bi"))))
     (build-system font-build-system)
     (home-page "https://github.com/liberationfonts")
     (synopsis "Fonts compatible with Arial, Times New Roman, and Courier New")
@@ -2242,16 +2266,16 @@ half of the twentieth century.")
 (define-public font-overpass
   (package
     (name "font-overpass")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/RedHatOfficial/Overpass")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pl7zpwlx0j2xv23ahnpmbb4a5d6ib2cjck5mxqzi3jjk25rk9kb"))))
+        (base32 "1vsp94h7v5sn29hajv2ng94gyx4pqb0xgvn3gf7jp2q80gdv8pkm"))))
     (build-system font-build-system)
     (arguments
      `(#:phases

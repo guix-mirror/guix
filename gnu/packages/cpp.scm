@@ -520,6 +520,27 @@ syntax highlighting.  @code{ccls} is derived from @code{cquery} which is not
 maintained anymore.")
     (license license:asl2.0)))
 
+(define-public spscqueue
+  (package
+    (name "spscqueue")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rigtorp/SPSCQueue/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1428cj9x318afvnvnkhg0711iy4czqn86fi7ysgfhw91asa316rc"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/rigtorp/SPSCQueue/")
+    (synopsis "Single producer single consumer queue written in C++11")
+    (description
+     "This package provides a single producer single consumer wait-free and
+lock-free fixed size queue written in C++11.")
+    (license license:expat)))
+
 (define-public gperftools
   (package
     (name "gperftools")
@@ -885,10 +906,49 @@ of C++14 components that complements @code{std} and Boost.")
     (supported-systems '("aarch64-linux" "x86_64-linux"))
     (license license:asl2.0)))
 
+(define-public aws-crt-cpp
+  (let* ((commit "c2d6ffa5597825111cc76ad71ffc6aef664d0f25")
+         (revision "1"))
+    (package
+      (name "aws-crt-cpp")
+      (version (git-version "0.14.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/awslabs/aws-crt-cpp")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0l7iwynk2rgzjnr1hi1raazghmk4m7pj47vdq2kf2cfz0b6v9jf5"))
+                (patches
+                 (search-patches
+                  "aws-crt-cpp-cmake-prefix.patch"
+                  "aws-crt-cpp-disable-networking-tests.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags
+         '("-DBUILD_SHARED_LIBS=ON"
+           "-DBUILD_DEPS=OFF")))
+      (propagated-inputs
+       `(("aws-c-auth" ,aws-c-auth)
+         ("aws-c-cal" ,aws-c-cal)
+         ("aws-c-event-stream" ,aws-c-event-stream)
+         ("aws-c-http" ,aws-c-http)
+         ("aws-c-mqtt" ,aws-c-mqtt)
+         ("aws-c-s3" ,aws-c-s3)))
+      (synopsis "C++ wrapper for Amazon Web Services C libraries")
+      (description "The AWS Common Runtime (CRT) library provides a C++ wrapper
+implementation for the following @acronym{AWS,Amazon Web Services} C libraries:
+aws-c-auth, aws-c-cal, aws-c-common, aws-c-compression, aws-c-event-stream,
+aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
+      (home-page "https://github.com/awslabs/aws-crt-cpp")
+      (license license:asl2.0))))
+
 (define-public aws-sdk-cpp
   (package
     (name "aws-sdk-cpp")
-    (version "1.8.159")
+    (version "1.9.92")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -897,7 +957,12 @@ of C++14 components that complements @code{std} and Boost.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jpfv9x82nq7hcix9in7qgrc8009dwpg6gr96hlgmcvqrqckd2r9"))))
+                "0nbq1qivykfg8jmrn8d0k6fcfa5dw9s90wnwddh7ia4zafmby7pd"))
+              (patches
+               (search-patches
+                "aws-sdk-cpp-cmake-prefix.patch"
+                "aws-sdk-cpp-disable-networking-tests.patch"
+                "aws-sdk-cpp-disable-werror.patch"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests are run during the build phase.
@@ -906,11 +971,9 @@ of C++14 components that complements @code{std} and Boost.")
        '("-DBUILD_SHARED_LIBS=ON"
          "-DBUILD_DEPS=OFF")))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)
-       ("aws-c-event-stream" ,aws-c-event-stream)))
+     `(("aws-crt-cpp" ,aws-crt-cpp)))
     (inputs
-     `(("aws-checksums" ,aws-checksums)
-       ("curl" ,curl)
+     `(("curl" ,curl)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Amazon Web Services SDK for C++")
@@ -1312,4 +1375,30 @@ of reading and writing XML.")
     (synopsis "Data templating language")
     (description "Jsonnet is a templating language extending JSON
 syntax with variables, conditions, functions and more.")
+    (license license:asl2.0)))
+
+(define-public simdjson
+  (package
+    (name "simdjson")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/simdjson/simdjson")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08qpsw0i8481xlyyghzyszb1vh4c8i7krzzghvr9m4yg394vf6zn"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; tests require downloading dependencies
+       #:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (synopsis "JSON parser for C++ using SIMD instructions")
+    (description
+     "The simdjson library uses commonly available SIMD instructions and
+microparallel algorithms to implement a strict JSON parser with UTF-8
+validation.")
+    (home-page "https://github.com/simdjson/simdjson")
     (license license:asl2.0)))

@@ -351,7 +351,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.14-version "5.14.11")
+(define-public linux-libre-5.14-version "5.14.12")
 (define-public linux-libre-5.14-gnu-revision "gnu")
 (define deblob-scripts-5.14
   (linux-libre-deblob-scripts
@@ -361,7 +361,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "024rz0bp3n3r5nkwbib7byx10d72c2fh5cw9iv00diyzgnp819g7")))
 (define-public linux-libre-5.14-pristine-source
   (let ((version linux-libre-5.14-version)
-        (hash (base32 "0capilz3wx29pw7n2m5cn229vy9psrccmdspp27znhjkvwj0m0wk")))
+        (hash (base32 "0dswxf1qk70lms5lph15i7nz3ybwiia58v8zzrmi71ajviwjc9wd")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.14)))
@@ -369,7 +369,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.72")
+(define-public linux-libre-5.10-version "5.10.73")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -379,12 +379,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "024rz0bp3n3r5nkwbib7byx10d72c2fh5cw9iv00diyzgnp819g7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0z2cp8gqnbv7iz8kb5ydfmk019m0gds8wwvwc6kccsk4wypkbmml")))
+        (hash (base32 "0xhf0g5pra27hnavpy0y3mn05m5hqn5rd3d6fx0a3vr35c1jicpd")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.152")
+(define-public linux-libre-5.4-version "5.4.153")
 (define-public linux-libre-5.4-gnu-revision "gnu1")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -394,12 +394,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1may19d47d06mplpk29dpjsq31sxk8wwbwb2jspj3vay9h9wfi40")))
+        (hash (base32 "0jaz57sd51xqc7w8k3f43bfc5mdsh1413mdngqqsgr8isv4hg7vd")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.210")
+(define-public linux-libre-4.19-version "4.19.211")
 (define-public linux-libre-4.19-gnu-revision "gnu1")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -409,7 +409,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0cv126j4sghwgzjm9p5l1brcnxkbgggja2ai37gl8m2s99cj59wv")))
+        (hash (base32 "1m3y5gsf5s8bb4jxkri20dlxi8aiqabzaijj2h1svz4r19ca8j7v")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -2693,7 +2693,7 @@ Both commands are targeted at system administrators.")
 (define-public jitterentropy-rngd
   (package
     (name "jitterentropy-rngd")
-    (version "1.2.0")
+    (version "1.2.5")
     (source
      (origin
        (method git-fetch)
@@ -2702,7 +2702,7 @@ Both commands are targeted at system administrators.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fb8zfwhwkl1d8n4cdn7rdv5rwd75qgc00d36pmkl7wgnj3c9xda"))))
+        (base32 "05h9a60s9x3jav33lh50ac1jw8wvbljw2ndrk3k7gs2nlz0kkl14"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -7969,90 +7969,109 @@ the superuser to make device nodes.")
     (license license:gpl2)))
 
 (define-public fakeroot
-  ;; glibc-2.33 compatibility was added since the last release.
-  (let ((commit "24d6b0857396cad87b2cabd32fb8af9ef4799915")
-        (revision "1"))
-    (package
-      (name "fakeroot")
-      (version (git-version "1.25.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://salsa.debian.org/clint/fakeroot.git")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0rg9m30k6v930cmj16qwk1k2vn1l2irxj7r3pp3k1i1sdhfkm3df"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (replace 'bootstrap
-             (lambda _
-               ;; The "preroll" script takes care of Autoconf and also
-               ;; prepares the translated manuals.
-               (invoke "sh" "./preroll")))
-          (add-after 'configure 'patch-Makefile
-            (lambda _
-              ;; Note: The root of the problem is already in "Makefile.am".
-              (substitute* "Makefile"
+  (package
+    (name "fakeroot")
+    (version "1.26")
+    (source
+     (origin
+       ;; There are no tags in the repository, so take this snapshot.
+       (method url-fetch)
+       (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
+                           "fakeroot/fakeroot_" version ".orig.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sg8inv1zzp4h9ncbbmxip3svd11sd86j22cvxrjwnf5zn7mf2j8"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)))
+       (snippet
+        `(begin
+           ;; Delete pregenerated man page translations, but not the originals.
+           (with-directory-excursion "doc"
+             (for-each (lambda (language)
+                         (for-each delete-file
+                                   (find-files language "\\.[0-9]$")))
+                       (scandir "."
+                                (lambda (file)
+                                  (and (not (string-prefix? "." file))
+                                       (eq? 'directory
+                                            (stat:type (lstat file))))))))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile.am
+           (lambda _
+             (substitute* "Makefile.am"
                (("/bin/sh") (which "sh")))))
-          (add-after 'unpack 'patch-script
-            (lambda*  (#:key inputs #:allow-other-keys)
-              (substitute* "scripts/fakeroot.in"
+         (add-after 'unpack 'patch-script
+           (lambda*  (#:key inputs #:allow-other-keys)
+             (substitute* "scripts/fakeroot.in"
                (("getopt")
-                (search-input-file inputs "/bin/getopt"))
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin/getopt"))
                (("sed")
-                (search-input-file inputs "/bin/sed"))
-               (("cut")
-                (search-input-file inputs "/bin/cut")) )))
-          (add-before 'configure 'setenv
-            (lambda _
-              (setenv "LIBS" "-lacl")))
-          (add-before 'check 'prepare-check
-            (lambda _
-              (setenv "SHELL" (which "bash"))
-              (setenv "VERBOSE" "1")
-              (substitute* "test/t.touchinstall"
+                (string-append (assoc-ref inputs "sed")
+                               "/bin/sed"))
+               (("cat|cut" command)
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/" command)) )))
+         (replace 'bootstrap
+           (lambda _
+             ;; The "preroll" script takes care of Autoconf and also
+             ;; prepares the translated manuals.
+             (invoke "sh" "./preroll")))
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "LIBS" "-lacl")))
+         (add-before 'check 'prepare-check
+           (lambda _
+             (setenv "SHELL" (which "bash"))
+             (setenv "VERBOSE" "1")
+             (substitute* "test/t.touchinstall"
                ;; We don't have the name of the root user, so use ID=0.
                (("grep root") "grep \"\\<0\\>\""))
-              (substitute* "test/tartest"
+             (substitute* "test/tartest"
                ;; We don't have the name of the root group, so use ID=0.
                (("ROOTGROUP=root") "ROOTGROUP=0")
                ;; We don't have the name of the daemon user, so use IDs.
                (("daemon:sys") "1:3")
                (("daemon:") "1:"))
-              ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
-              (substitute* "test/compare-tar"
+             ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
+             (substitute* "test/compare-tar"
                (("tar -tvf") "tar --numeric-owner -tvf")))))))
-      (native-inputs
-       `(;; For bootstrapping the package.
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("gettext" ,gettext-minimal)
-         ("po4a" ,po4a)
+    (native-inputs
+     `(;; For bootstrapping the package.
+       ("autoconf" ,autoconf-2.71)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gettext-minimal)
+       ("po4a" ,po4a)
 
-         ;; For tests.
-         ("sharutils" ,sharutils)
-         ("xz" ,xz)))
-      (inputs
-       `(("acl" ,acl)
-         ("libcap" ,libcap)
-         ("util-linux" ,util-linux)
-         ("sed" ,sed)
-         ("coreutils" ,coreutils)))
-      (synopsis "Provides a fake root environment")
-      (description "@command{fakeroot} runs a command in an environment where
-it appears to have root privileges for file manipulation. This is useful
-for allowing users to create archives (tar, ar, .deb etc.) with files in
-them with root permissions/ownership. Without fakeroot one would have to
-have root privileges to create the constituent files of the archives with
-the correct permissions and ownership, and then pack them up, or one would
-have to construct the archives directly, without using the archiver.")
-      (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
-      (license license:gpl3+))))
+       ;; For tests.
+       ("sharutils" ,sharutils)
+       ("xz" ,xz)))
+    (inputs
+     `(("acl" ,acl)
+       ("libcap" ,libcap)
+       ("util-linux" ,util-linux)
+       ("sed" ,sed)
+       ("coreutils" ,coreutils)))
+    (synopsis "Run commands in an environment with fake root privileges")
+    (description
+     "@command{fakeroot} runs a command in an environment where it appears to
+have root privileges for file manipulation.  This is useful for allowing users
+to create archives (@file{tar}, @file{ar}, @file{deb}, etc.)  with files in
+them with root permissions and/or ownership.
+
+Without fakeroot, one would have to have root privileges to create the
+constituent files of the archives with the correct permissions and ownership,
+and then pack them up, or one would have to construct the archives directly,
+without using the archiver.")
+    (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
+    (license license:gpl3+)))
 
 (define-public fakechroot
   ;; XXX: Build from the change submitted at
@@ -8526,21 +8545,22 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
 (define-public ipset
   (package
     (name "ipset")
-    (version "7.11")
+    (version "7.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://ipset.netfilter.org/"
                            "ipset-" version ".tar.bz2"))
        (sha256
-        (base32 "0zdzp9fhpp6hmirzxy7w27fb9xx9lxd2ykxbn8by7ngi62nvll9i"))))
+        (base32 "0l8pcaym6057hq3a4zwnk53p5y6xg1m3d3c83wn18h5nmnm4am8a"))))
     (build-system gnu-build-system)
     (inputs
      `(("libmnl" ,libmnl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags '("--with-kmod=no")))
+     `(#:configure-flags '("--disable-static"
+                           "--with-kmod=no")))
     (home-page "https://ipset.netfilter.org/")
     (synopsis "Administration tool for IP sets")
     (description "IP sets are a framework inside the Linux 2.4.x and 2.6.x kernel which

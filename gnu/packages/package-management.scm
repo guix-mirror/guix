@@ -145,8 +145,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.3.0")
-        (commit "f743f2046be2c5a338ab871ae8666d8f6de7440b")
-        (revision 9))
+        (commit "c3c502896b1454b345ee9f17d20063853652a35a")
+        (revision 10))
     (package
       (name "guix")
 
@@ -162,7 +162,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0sk8vhvivh3r4jws2gyq02wdvwz2qds53b0vc4k04dx8vwidmid9"))
+                  "037nlr5z8qmq2zp0slcg5lyhcdp7v6vxl1f36wkqrw9xzgq8k6kf"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -657,14 +657,14 @@ GTK icon cache for instance.")))
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.13")
+    (version "2.3.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://releases.nixos.org/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "0631qk2lgd76y6g2z45wy6lcpv647r2a08jd2dagzzpwniy68d3h"))))
+               "1g5aqavr6i3c1xln53w1pdh1kvlxrpnknb105m4jbd85kyv83rky"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")

@@ -1223,7 +1223,7 @@ When a bug is resolved, please close the thread by sending an email to
 If you have not done so already, you may wish to set a name and email
 that will be associated with your commits (@pxref{telling git your name,
 , Telling Git your name, git, Git User Manual}).  If you wish to use a
-different name or email just for commits in this respository, you can
+different name or email just for commits in this repository, you can
 use @command{git config --local}, or edit @file{.git/config} in the
 repository instead of @file{~/.gitconfig}.
 

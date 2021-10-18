@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -263,7 +264,7 @@ used to further tweak the behaviour of the different profiles.")
 (define-public bemenu
   (package
     (name "bemenu")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method git-fetch)
@@ -272,7 +273,7 @@ used to further tweak the behaviour of the different profiles.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13y4y3i03vdx3zkh4lm67xmigzycf8fxg4fdr5s4x2brr3ya46fv"))))
+        (base32 "03q26n796bjgz9q5pjx396rw5kyrdpn52dqi4v2bglnh7dy0r0jk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -2316,14 +2317,14 @@ temperature of the screen.")
 (define-public xsecurelock
   (package
     (name "xsecurelock")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/google/xsecurelock/releases"
                     "/download/v" version "/xsecurelock-" version ".tar.gz"))
               (sha256
-               (base32 "070gknyv0s5hz9hkc6v73m2v7ssyjwgl93b5hd4glayfqxqjbmdp"))))
+               (base32 "0s2q69g1xhvs18q2jhcval5vpa9j0kkrdv02r176vvxvdms7hhc7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

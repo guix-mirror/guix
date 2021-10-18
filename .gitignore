@@ -133,6 +133,7 @@
 /pre-inst-env
 /release-*
 /scripts/guix
+/t-*/
 /test-env
 /test-tmp
 /tests/*.trs
@@ -144,6 +145,7 @@ Makefile
 Makefile.in
 config.cache
 stamp-h[0-9]
+.am[0-9]*/
 .dirstamp
 .deps
 tmp

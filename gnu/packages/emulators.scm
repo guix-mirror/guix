@@ -1434,7 +1434,7 @@ as RetroArch.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.9.4")
+    (version "1.9.11")
     (source
      (origin
        (method git-fetch)
@@ -1443,7 +1443,7 @@ as RetroArch.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wky28y52nsjmannks3y1hbjgw0dvqh85gxrllr98f9y7kvk1cvf"))
+        (base32 "0hd77kw1f655s40qcz1righdhd9czqyy40rf7gigdag1bkchdx6z"))
        (patches
         (search-patches "retroarch-LIBRETRO_DIRECTORY.patch"))))
     (build-system gnu-build-system)

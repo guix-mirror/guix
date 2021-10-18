@@ -1263,7 +1263,7 @@ Encryption to Gajim.")
 (define-public dino
   (package
     (name "dino")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -1271,7 +1271,7 @@ Encryption to Gajim.")
         (string-append "https://github.com/dino/dino/releases/download/v"
                        version "/dino-" version ".tar.gz"))
        (sha256
-        (base32 "13rk8b0sj35az32c0ii173g9ww231awmyb4jlk56jy38hpyp7x1g"))))
+        (base32 "0r5qn9k88d5rh8zzj9gs3bk3dsm795r0pgxs3kawyrsrqr8ny1ry"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments

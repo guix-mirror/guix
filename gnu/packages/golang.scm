@@ -30,6 +30,7 @@
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Chadwain Holness <chadwainholness@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2690,7 +2691,7 @@ time.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://go.googlesource.com/x/mod")
+               (url "https://github.com/golang/mod")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8826,4 +8827,26 @@ line.  @code{csvdiff} supports
 @item Several output formats including colored git style output or
 JSON for post-processing
 @end itemize")
+    (license license:expat)))
+
+(define-public go-gopkg-in-djherbis-times-v1
+  (package
+    (name "go-gopkg-in-djherbis-times-v1")
+    (version "1.5.0")
+    (home-page "https://gopkg.in/djherbis/times.v1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xvl3rgjif5yf62p16yk05kxrsmzhz1kkqisvw4k02svzq10qbfy"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/djherbis/times.v1"))
+    (synopsis "Go library for getting file times")
+    (description
+     "Provides a platform-independent way to get atime, mtime, ctime and btime for files.")
     (license license:expat)))

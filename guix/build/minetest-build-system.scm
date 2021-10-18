@@ -23,6 +23,7 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 exceptions)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module ((guix build copy-build-system) #:prefix copy:)
   #:export (%standard-phases
@@ -40,7 +41,7 @@
      ;; See <https://github.com/minetest/minetest/blob/master/doc/lua_api.txt>
      ;; for an incomple list of files that can be found in mods.
      #:include ("mod.conf" "modpack.conf" "settingtypes.txt" "depends.txt"
-                "description.txt")
+                "description.txt" "config.txt" "_config.txt")
      #:include-regexp (".lua$" ".png$" ".ogg$" ".obj$" ".b3d$" ".tr$"
                        ".mts$"))))
 
@@ -199,20 +200,24 @@ auth_backend = sqlite3
         (define (stop? line)
           (and (string? line)
                (string-contains line "ACTION[Server]: singleplayer [127.0.0.1] joins game.")))
-        (let loop ()
-          (match (read-line port)
-            ((? error? line)
-             (error "minetest raised an error: ~a" line))
-            ((? stop?)
+        (let loop ((has-errors? #f))
+          (match `(,(read-line port) ,has-errors?)
+            (((? error? line) _)
+             (display line)
+             (newline)
+             (loop #t))
+            (((? stop?) #f)
              (kill pid SIGINT)
              (close-port port)
              (waitpid pid))
-            ((? string? line)
+            (((? eof-object?) #f)
+             (error "minetest didn't start"))
+            (((or (? stop?) (? eof-object?)) #t)
+             (error "minetest raised an error"))
+            (((? string? line) has-error?)
              (display line)
              (newline)
-             (loop))
-            ((? eof-object?)
-             (error "minetest didn't start"))))))))
+             (loop has-error?))))))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

@@ -76,6 +76,7 @@
 (define hurd-disk-image
   (image
    (format 'disk-image)
+   (platform hurd)
    (partitions
     (list (partition
            (size 'guess)

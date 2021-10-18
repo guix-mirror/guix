@@ -645,7 +645,7 @@ console.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method git-fetch)
@@ -653,7 +653,7 @@ console.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "1ngvidaka6xbfb3l4zxmlksk2ms93fy3sb76w7917kjgn9mh53zz"))
+        (base32 "19xnqnavpxbyix2gp1p3lbhlaawx0gdklx3aq4x4ylrxml2nwyi6"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -3985,7 +3985,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.3.06-1")
+      (version "3.3.07-1")
       (source
        (origin
          (method git-fetch)
@@ -3994,7 +3994,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1qk40iyrdp52vmbiqwxicvlcycm2v2bf1gg4lzq0b4619sd6d1m7"))))
+          (base32 "1amf1sry7g99khp9ac8f3m4jfa8rn1jjxvrcg0j9wvv65px7zj0i"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

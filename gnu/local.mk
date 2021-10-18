@@ -839,6 +839,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/akonadi-not-relocatable.patch		\
   %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
+  %D%/packages/patches/alpine-fix-privacy-policy-crash.patch	\
   %D%/packages/patches/anki-mpv-args.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
@@ -871,11 +872,24 @@ dist_patch_DATA =						\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
+  %D%/packages/patches/aws-c-auth-cmake-prefix.patch		\
+  %D%/packages/patches/aws-c-auth-disable-networking-tests.patch\
   %D%/packages/patches/aws-c-cal-cmake-prefix.patch		\
+  %D%/packages/patches/aws-c-compression-cmake-prefix.patch	\
   %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
+  %D%/packages/patches/aws-c-http-cmake-prefix.patch		\
+  %D%/packages/patches/aws-c-http-disable-networking-tests.patch\
+  %D%/packages/patches/aws-c-mqtt-cmake-prefix.patch		\
   %D%/packages/patches/aws-c-io-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-io-disable-networking-tests.patch		\
+  %D%/packages/patches/aws-c-io-disable-networking-tests.patch	\
+  %D%/packages/patches/aws-c-s3-cmake-prefix.patch		\
+  %D%/packages/patches/aws-c-s3-disable-networking-tests.patch	\
   %D%/packages/patches/aws-checksums-cmake-prefix.patch		\
+  %D%/packages/patches/aws-crt-cpp-cmake-prefix.patch		\
+  %D%/packages/patches/aws-crt-cpp-disable-networking-tests.patch	\
+  %D%/packages/patches/aws-sdk-cpp-cmake-prefix.patch		\
+  %D%/packages/patches/aws-sdk-cpp-disable-networking-tests.patch	\
+  %D%/packages/patches/aws-sdk-cpp-disable-werror.patch		\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-reproducible-linux-pgrp-pipe.patch	\
   %D%/packages/patches/bash-completion-directories.patch	\
@@ -1369,7 +1383,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgnome-encoding.patch			\
   %D%/packages/patches/libgnomeui-utf8.patch			\
   %D%/packages/patches/libgrss-CVE-2016-2001.patch		\
-  %D%/packages/patches/libhx-fix-double-free-bug.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/libofa-ftbfs-1.diff		\
@@ -1470,6 +1483,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/minisat-friend-declaration.patch		\
   %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/mit-krb5-hurd.patch			\
+  %D%/packages/patches/mixxx-link-qtscriptbytearray-qtscript.patch	\
+  %D%/packages/patches/mixxx-system-googletest-benchmark.patch	\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mpg321-CVE-2019-14247.patch		\
   %D%/packages/patches/mpg321-gcc-10.patch			\

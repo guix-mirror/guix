@@ -2122,6 +2122,17 @@ seamlessly into your existing Python unit testing work flow.")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
 
+(define-public python-hypothesis-6.23
+  (package
+    (inherit python-hypothesis)
+    (version "6.23.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hypothesis" version))
+              (sha256
+               (base32
+                "0lqhfrqsd81apchz93pdqfn85kx0p790w8hhd9qq85692rwja6xp"))))))
+
 ;; This is the last version of Hypothesis that supports Python 2.
 (define-public python2-hypothesis
   (let ((hypothesis (package-with-python2

@@ -611,6 +611,46 @@ enables repeating a single test, or multiple tests, a specific number of
 times.")
     (license license:mpl2.0)))
 
+(define-public python-pytest-mockito
+  (package
+    (name "python-pytest-mockito")
+    (version "0.0.4")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in pypi archive
+       (uri (git-reference
+             (url "https://github.com/kaste/pytest-mockito")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hnpazaw3mglx1c405z2hkavgan99rqb3wgrcqk8x5kmhpay53xx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "-vv")))))))
+    (propagated-inputs
+     `(("python-mockito" ,python-mockito)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/kaste/pytest-mockito")
+    (synopsis "Mockito base fixtures for Pytest")
+    (description "The @code{pytest-mockito} plugin provides base Mockito
+fixtures for Pytest.  It covers the main entry points of the Mockito mocking
+framework and makes it easy to undo any monkey patching.  The fixtures are:
+@itemize
+@item when
+@item when2
+@item expect
+@item patch
+@item unstub
+@item spy2
+@end itemize")
+    (license license:expat)))
+
 (define-public python-pytest-mpl
   (package
     (name "python-pytest-mpl")
@@ -1424,6 +1464,38 @@ the implementation of that name.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
 
+(define-public python-mockito
+  (package
+    (name "python-mockito")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in pypi archive
+       (uri (git-reference
+             (url "https://github.com/kaste/mockito-python")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fg8jflcf4c929gd4zbcrk73d08waaqjfjmdjrgnv54mzl35pjxl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/kaste/mockito-python")
+    (synopsis "Mocking library for Python")
+    (description "This package provides a Python implementation of the Java
+library of the same name.  It eases monkey patching, for example to stub out
+side effects when unit testing.")
+    (license license:expat)))
+
 (define-public python-mypy-extensions
   (package
     (name "python-mypy-extensions")
@@ -1743,4 +1815,44 @@ early beta, it doesn't pledge or intend to support the majority of platforms
 or use cases.  Design is based on supporting slow, io-bound testing with often
 tedious system under test configuration that can benefit from running several
 tests at one time.")
+    (license license:expat)))
+
+(define-public python-aioresponses
+  (package
+    (name "python-aioresponses")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aioresponses" version))
+       (sha256
+        (base32 "16p8mdyfirddrsay62ji7rwcrqmmzxzf2isdbfm9cj5p338rbr42"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke
+                "pytest" "-vv" "tests" "-k"
+                (string-append
+                 ;; These tests require network access.
+                 "not test_address_as_instance_of_url_combined_with_pass_through "
+                 "and not test_pass_through_with_origin_params"))))))))
+    (native-inputs
+     `(("python-pbr" ,python-pbr)
+       ("python-ddt" ,python-ddt)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)))
+    (home-page "https://github.com/pnuckowski/aioresponses")
+    (synopsis "Mock out requests made by ClientSession from aiohttp package")
+    (description
+     "Aioresponses is a helper to mock/fake web requests in python aiohttp
+package.  For requests module there are a lot of packages that help us with
+testing (eg. httpretty, responses, requests-mock).  When it comes to testing
+asynchronous HTTP requests it is a bit harder (at least at the beginning).
+The purpose of this package is to provide an easy way to test asynchronous
+HTTP requests.")
     (license license:expat)))

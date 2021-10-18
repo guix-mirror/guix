@@ -2567,13 +2567,13 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "3.14.0")
+    (version "3.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "peewee" version))
        (sha256
-        (base32 "1yl49gxrg0c2x3n3r60z3lixw9am8b61s0477l9vjabhhx1yziar"))))
+        (base32 "18jidir2wid0cp8a61m9vf9mf0pdvm6nzspc8bfwdbifghr6ndcy"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; fails to import test data

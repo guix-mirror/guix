@@ -59,6 +59,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -697,7 +698,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.5.2")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
@@ -705,7 +706,7 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "0gqaipgs16kw711ijhshmbhhvlyjvh37wxdz059p4vvjhfrxbr1v"))))
+        (base32 "1fr7p0pjli9clsgr0a1fp1pr119r9zqx43dvhc1g91bj742mxhfa"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false                  ;no tests
@@ -713,7 +714,10 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libunistring" ,libunistring)
+     `(("fribidi" ,fribidi)
+       ("harfbuzz" ,harfbuzz)
+       ("libunistring" ,libunistring)
+       ("libwebp" ,libwebp)
        ("mpg123" ,mpg123)
        ("openssl" ,openssl)
        ("pcre" ,pcre)

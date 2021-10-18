@@ -252,15 +252,14 @@ whose behaviour is inconsistent across *NIX flavours.")
 (define-public libhx
   (package
     (name "libhx")
-    (version "4.0.1")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://inai.de/files/libhx/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32 "1f4rmarym1j368cbxhqzyvdn5dk4bh8951s19ffqwql16anqsgfr"))
-       (patches (search-patches "libhx-fix-double-free-bug.patch"))))
+        (base32 "1mifpzxr5kma7gawhv1vbga8j5qi8jgka0axr48v08bdpb83pya2"))))
     (build-system gnu-build-system)
     (home-page "https://inai.de/projects/libhx/")
     (synopsis "C library with common data structures and functions")
@@ -554,7 +553,7 @@ portability.")
 (define-public aws-c-common
   (package
     (name "aws-c-common")
-    (version "0.5.3")
+    (version "0.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -563,7 +562,7 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03fcvh3l1l6fkzkcbaprk10qmy8l77zhmh60h1px2ik09sqd9p72"))))
+                "17iknzqs6dl0ixajplc47ylkyynwpi3x2dxh56wa8ylhgy53d09x"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -578,7 +577,7 @@ portability.")
 (define-public aws-checksums
   (package
     (name "aws-checksums")
-    (version "0.1.11")
+    (version "0.1.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -587,7 +586,7 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pjs31x3cq9wyw511y00kksz660m8im9zxk30hid8iwlilcbnyvx"))
+                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))
               (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
     (build-system cmake-build-system)
     (arguments
@@ -638,7 +637,7 @@ communication.")
 (define-public aws-c-io
   (package
     (name "aws-c-io")
-    (version "0.9.2")
+    (version "0.10.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -647,7 +646,7 @@ communication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vwyf1pm0hhcypyjc9xh9x7y50ic79xlbck1yf9d9wz0bnh43p7v"))
+                "1jrnzs803jqprnvbw6rqr834qld5sd7flaqzgssp3099m189szpq"))
               (patches
                (search-patches
                 "aws-c-io-cmake-prefix.patch"
@@ -669,7 +668,7 @@ event-driven, asynchronous network application protocols.")
 (define-public aws-c-cal
   (package
     (name "aws-c-cal")
-    (version "0.4.5")
+    (version "0.5.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -678,7 +677,7 @@ event-driven, asynchronous network application protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04acra1mnzw9q7jycs5966akfbgnx96hkrq90nq0dhw8pvarlyv6"))
+                "0rqqk4n56h8sf4q070rhgjwas04j8h0vq4wl1alq5l1rqq72qqdf"))
               (patches (search-patches "aws-c-cal-cmake-prefix.patch"))))
     (build-system cmake-build-system)
     (arguments
@@ -713,3 +712,153 @@ cryptographic primitives for the @acronym{AWS,Amazon Web Services} SDK.")
     (description "The @acronym{PCL, Portable Coroutine Library} implements the
 low level functionality for coroutines.")
     (license license:gpl2+)))
+
+(define-public aws-c-http
+  (package
+    (name "aws-c-http")
+    (version "0.6.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18xlgz68zizkcp784bs6hkyx0gvp0f1p076i46z653bcd3qa87b4"))
+              (patches
+               (search-patches
+                "aws-c-http-cmake-prefix.patch"
+                "aws-c-http-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-compression" ,aws-c-compression)
+       ("aws-c-io" ,aws-c-io)))
+    (synopsis "Amazon Web Services HTTP library")
+    (description
+     "This library provides a C99 implementation of the HTTP/1.1 and HTTP/2
+specifications.")
+    (home-page "https://github.com/awslabs/aws-c-http")
+    (license license:asl2.0)))
+
+(define-public aws-c-compression
+  (package
+    (name "aws-c-compression")
+    (version "0.2.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zqfxi0fdgapfsfgvsindv63pq7vyl1s376qkpv4jgflyb1v6gp5"))
+              (patches (search-patches "aws-c-compression-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (synopsis "Amazon Web Services compression library")
+    (description
+     "This library provides a C99 implementation of compression algorithms,
+currently limited to Huffman encoding and decoding.")
+    (home-page "https://github.com/awslabs/aws-c-compression")
+    (license license:asl2.0)))
+
+(define-public aws-c-auth
+  (package
+    (name "aws-c-auth")
+    (version "0.6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0yh9s6q3ahq39xgvihp2a5cn9h39qlq8wfjc32m0ayi9x739rbqg"))
+              (patches
+               (search-patches
+                "aws-c-auth-cmake-prefix.patch"
+                "aws-c-auth-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-cal" ,aws-c-cal)
+       ("aws-c-common" ,aws-c-common)
+       ("aws-c-http" ,aws-c-http)
+       ("aws-c-io" ,aws-c-io)))
+    (synopsis "Amazon Web Services client-side authentication library")
+    (description
+     "This library provides a C99 implementation for AWS client-side
+authentication.")
+    (home-page "https://github.com/awslabs/aws-c-auth")
+    (license license:asl2.0)))
+
+(define-public aws-c-s3
+  (package
+    (name "aws-c-s3")
+    (version "0.1.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vkjd8dh99d8qsl7irnbkcdf9vjmcznx0jz186la0472z4h48wjj"))
+              (patches
+               (search-patches
+                "aws-c-s3-cmake-prefix.patch"
+                "aws-c-s3-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-auth" ,aws-c-auth)
+       ("aws-c-http" ,aws-c-http)))
+    (synopsis "Amazon Web Services client library for Amazon S3")
+    (description
+     "This library provides a C99 client implementation of the Simple Storage
+Service (S3) protocol for object storage.")
+    (home-page "https://github.com/awslabs/aws-c-s3")
+    (license license:asl2.0)))
+
+(define-public aws-c-mqtt
+  (package
+    (name "aws-c-mqtt")
+    (version "0.7.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qgblakp9n281z5w1kmmy9sjiz6s44kg487l76w7p43p1dp7s401"))
+              (patches (search-patches "aws-c-mqtt-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-http" ,aws-c-http)
+       ("aws-c-io" ,aws-c-io)))
+    (synopsis "Amazon Web Services MQTT library")
+    (description
+     "This library provides a C99 implementation of the Message Queuing
+Telemetry Transport (MQTT) publish-subscribe messaging protocol.")
+    (home-page "https://github.com/awslabs/aws-c-mqtt")
+    (license license:asl2.0)))

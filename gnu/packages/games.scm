@@ -3063,15 +3063,16 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.2.1")
+    (version "4.2.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://rephial.org/downloads/"
-                           (version-major+minor version)
-                           "/angband-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/angband/angband")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "03qdavkj2ik02mqjxmlm5bn17ba3yxb1rirp8ghnxy3bsk4kbmxc"))
+        (base32 "1psrdbf90mb6dhq0b9z18pz1csnshz1kvwg82dvwa99apqdw0la8"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -3092,14 +3093,7 @@ that beneath its ruins lay buried an ancient evil.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:configure-flags (list (string-append "--bindir=" %output "/bin"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             (substitute* "acinclude.m4"
-               (("ncursesw5-config") "ncursesw6-config"))
-             (invoke "sh" "autogen.sh"))))))
+       #:configure-flags (list (string-append "--bindir=" %output "/bin"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))

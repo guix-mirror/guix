@@ -114,9 +114,11 @@
        ("mock" ,python-mock)))
     (propagated-inputs
      `(("lockfile" ,python-lockfile)
+       ("pygobject" ,python-pygobject)
        ("urllib3" ,python-urllib3)))
     (inputs
-     `(("librsync" ,librsync)
+     `(("dbus" ,dbus)                   ; dbus-launch (Gio backend)
+       ("librsync" ,librsync)
        ("lftp" ,lftp)
        ("gnupg" ,gnupg)                 ; gpg executable needed
        ("util-linux" ,util-linux)))     ; for setsid
@@ -129,7 +131,11 @@
              (substitute* "duplicity/gpginterface.py"
                (("self.call = u'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
-
+             (substitute* "duplicity/backends/giobackend.py"
+               (("subprocess.Popen\\(\\[u'dbus-launch'\\]")
+                (string-append "subprocess.Popen([u'"
+                               (assoc-ref inputs "dbus")
+                               "/bin/dbus-launch']")))
              (substitute* '("testing/functional/__init__.py"
                             "testing/overrides/bin/lftp")
                (("/bin/sh") (which "sh")))
@@ -143,7 +149,7 @@
              ;; defaults don't match up, breaking test_restart.  Fix it.
              (setenv "TMPDIR" "/tmp")
              #t)))))
-    (home-page "http://duplicity.nongnu.org/index.html")
+    (home-page "https://duplicity.gitlab.io/duplicity-web/")
     (synopsis "Encrypted backup using rsync algorithm")
     (description
      "Duplicity backs up directories by producing encrypted tar-format volumes

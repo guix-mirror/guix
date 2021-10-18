@@ -237,14 +237,14 @@ Callback Hell.
 (define-public python-aiohttp-socks
   (package
     (name "python-aiohttp-socks")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp_socks" version))
        (sha256
         (base32
-         "0jmhb0l1w8k1nishij3awd9zv8zbyb5l35a2pdalrqxxasbhbcif"))))
+         "04w010bvi719ifpc3sshav95k10hf9nq8czn9yglkj206yxcypdr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
@@ -828,13 +828,13 @@ follow links and submit forms.  It doesn’t do JavaScript.")
 (define-public python-hyperframe
   (package
     (name "python-hyperframe")
-    (version "5.2.0")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hyperframe" version))
        (sha256
-        (base32 "07xlf44l1cw0ghxx46sbmkgzil8vqv8kxwy42ywikiy35izw3xd9"))))
+        (base32 "055951gyhnjqpa2al52rj34g8yrls9inyn56n7nfkj0x4d300ldf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -857,7 +857,7 @@ into HTTP/2 frames.")
 (define-public python-hpack
   (package
     (name "python-hpack")
-    (version "3.0.0")
+    (version "4.0.0")
     (source
      (origin
        ;; PyPI tarball is missing some files necessary for the tests.
@@ -867,7 +867,7 @@ into HTTP/2 frames.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0w8hkz50a6lzkmgi41ryicm0mh9ca9cx29pm3s0xlpn0vs29xrmd"))))
+        (base32 "11qdayvz5a8zlzdcdm37f2z1fgnl67pz6j8xj2dz5rfa5lds29yq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -876,10 +876,7 @@ into HTTP/2 frames.")
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "test" "-k"
-                       ;; This test will be fixed in the next version. See:
-                       ;; https://github.com/python-hyper/hpack/issues/168.
-                       "not test_get_by_index_out_of_range")))))))
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://hyper.rtfd.org")
@@ -892,13 +889,13 @@ for use in Python programs that implement HTTP/2.")
 (define-public python-h11
   (package
     (name "python-h11")
-    (version "0.9.0")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "h11" version))
        (sha256
-        (base32 "1qfad70h59hya21vrzz8dqyyaiqhac0anl2dx3s3k80gpskvrm1k"))))
+        (base32 "0hk0nll6qazsambp3kl8cxxsbl4gv5y9252qadyk0jky0sv2q8j7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -921,13 +918,13 @@ and that could be anything you want.")
 (define-public python-h2
   (package
     (name "python-h2")
-    (version "3.2.0")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "h2" version))
        (sha256
-        (base32 "051gg30aca26rdxsmr9svwqm06pdz9bv21ch4n0lgi7jsvml2pw7"))))
+        (base32 "1fraip114fm1ha5w37pdc0sk8dn9pb0ck267zrwwpap7zc4clfm8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -936,13 +933,14 @@ and that could be anything you want.")
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "test")))))))
+               (invoke "python" "-m" "pytest" "-vv" "test")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-hypothesis" ,python-hypothesis-6.23)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-hpack" ,python-hpack)
        ("python-hyperframe" ,python-hyperframe)))
-    (home-page "https://github.com/python-hyper/hyper-h2")
+    (home-page "https://github.com/python-hyper/h2")
     (synopsis "HTTP/2 State-Machine based protocol implementation")
     (description
      "This module contains a pure-Python implementation of a HTTP/2 protocol
@@ -6141,17 +6139,17 @@ your code non-blocking and speedy.")
 (define-public python-socks
   (package
     (name "python-socks")
-    (version "1.1.2")
+    (version "1.2.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "python-socks" version))
-        (sha256
-         (base32
-          "06mgv3icsyglv50w3sb71x6cpbskza20pqd93l5xk59x574i6xgs"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-socks" version))
+       (sha256
+        (base32
+         "1n6xb18jy41ybgkmamakg6psp3qididd45qknxiggngaiibz43kx"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f  ; tests not included
+     `(#:tests? #f                      ; tests not included
        #:phases
        (modify-phases %standard-phases
          (replace 'check

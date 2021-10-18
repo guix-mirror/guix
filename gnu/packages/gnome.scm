@@ -1830,19 +1830,27 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
            (lambda _
              (substitute* "data/post-install.sh"
                (("gtk-update-icon-cache") "true"))
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Add duplicity to the search path
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/deja-dup")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "duplicity") "/bin")))))))))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+     `(("bash-minimal" ,bash-minimal)
        ("duplicity" ,duplicity)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
-       ("libnotify" ,libnotify)
        ("libgpg-error" ,libgpg-error)
+       ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
-       ("packagekit" ,packagekit)))
+       ("packagekit" ,packagekit)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
     (native-inputs
      `(("appstream-glib" ,appstream-glib)
        ("desktop-file-utils" ,desktop-file-utils)
@@ -9353,7 +9361,7 @@ world.")
        ;; Packages not part of GNOME proper but that are needed for a good
        ;; experience.  See <https://bugs.gnu.org/39646>.
        ;; XXX: Find out exactly which ones are needed and why.
-       ("font-cantarell"            ,font-cantarell)
+       ("font-abattis-cantarell"            ,font-abattis-cantarell)
        ("font-dejavu"               ,font-dejavu)
        ("at-spi2-core"              ,at-spi2-core)
        ("dbus"                      ,dbus)
@@ -10771,7 +10779,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.43")
+    (version "1.10.48")
     (source
      (origin
        (method git-fetch)
@@ -10782,7 +10790,7 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1baa9qjzd4b3q1zy5vhvyrx0hyz17mk237373ca48647897kw4cr"))))
+        (base32 "0qcknxylk9mr0xzszsd1rkgh2zpnix20m998dfclkm9x8zh9pvyr"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; The only tests are maintainer tests (in po/), which fail.
@@ -12244,7 +12252,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.35.0")
+    (version "0.35.1")
     (source
      (origin
        (method git-fetch)
@@ -12254,7 +12262,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19axlz34zg4ijfc1z0y2xp6ayi5hvgvqdp4wprkp0wjrkfn7dkq7"))))
+         "0975c55lmiwaqm0wj0ci91a90syjan3i99akrp0hl9m7r73jnfh9"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

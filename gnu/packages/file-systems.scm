@@ -1531,11 +1531,15 @@ Dropbox API v2.")
     (version "1.0.51")
     (source
       (origin
-        (method url-fetch)
-        (uri (pypi-uri "dbxfs" version))
+        ;; Release tarball contains files not in git repository.
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://thelig.ht/code/dbxfs")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1zz82d0mnql55397x4jx7z5rn857rf9zhjv895j93wpxdq10xwvk"))
+          "0bidb1gg5lqa1561f20qnj7gy323q65qwzfrb8h8gs6dsl3g6yfg"))
         (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
     (build-system python-build-system)
     (arguments

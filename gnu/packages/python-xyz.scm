@@ -109,6 +109,7 @@
 ;;; Copyright © 2021 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,6 +232,83 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-janus
+  (package
+    (name "python-janus")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "janus" version))
+       (sha256
+        (base32 "030xvl2vghi5ispfalhvch1rl6i2jsy5bf1dgjafa7vifppy04j7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "--cov=janus" "--cov=tests")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+    (home-page "https://github.com/aio-libs/janus/")
+    (synopsis
+     "Sync-async queue to interoperate between asyncio tasks and classic threads")
+    (description
+     "Mixed sync-async queue, supposed to be used for communicating between
+classic synchronous (threaded) code and asynchronous (in terms of
+@url{https://docs.python.org/3/library/asyncio.html,asyncio}) one.  Like
+@url{https://en.wikipedia.org/wiki/Janus,Janus god} the queue object from the
+library has two faces: synchronous and asynchronous interface.  Synchronous is
+fully compatible with
+@url{https://docs.python.org/3/library/queue.html,standard queue},
+asynchronous one follows
+@url{https://docs.python.org/3/library/asyncio-queue.html,asyncio queue
+design}.")
+    (license license:asl2.0)))
+
+(define-public python-logbook
+  (package
+    (name "python-logbook")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Logbook" version))
+       (sha256
+        (base32 "1s1gyfw621vid7qqvhddq6c3z2895ci4lq3g0r1swvpml2nm9x36"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'cythonize-sources
+           (lambda _
+             (with-directory-excursion "logbook"
+               (invoke "cython" "_speedups.pyx"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Check cython build also
+               (setenv "CYBUILD" "True")
+               (invoke "pytest" "--cov=logbook" "-r" "s" "tests")))))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-google-brotli" ,python-google-brotli)))
+    (home-page "https://github.com/getlogbook/logbook")
+    (synopsis "Logbook is a logging replacement for Python")
+    (description
+     "Logbook is a logging system for Python that replaces the standard
+library’s logging module.  It was designed with both complex and simple
+applications in mind and the idea to make logging fun.")
+    (license license:bsd-3)))
 
 (define-public python-ueberzug
   (package
@@ -4334,7 +4412,7 @@ ecosystem, but can naturally be used also by other projects.")
 (define-public python-robotframework
   (package
     (name "python-robotframework")
-    (version "3.2.2")
+    (version "4.1.2")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -4344,7 +4422,7 @@ ecosystem, but can naturally be used also by other projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0if0h3myb9m3hgmn1phrhq8pfp89kfqsaq32vmfdjkyjdj7y59ds"))
+        (base32 "0s6lakbd8h1pa4lfdj18sm13gpywszgpcns4hz026a4kam787kby"))
        (patches (search-patches
                  "python-robotframework-source-date-epoch.patch"))))
     (build-system python-build-system)
@@ -4358,8 +4436,7 @@ ecosystem, but can naturally be used also by other projects.")
                         (invoke "invoke" "library-docs" "all")
                         (mkdir-p doc)
                         (copy-recursively "doc/libraries"
-                                          (string-append doc "/libraries"))
-                        #t)))
+                                          (string-append doc "/libraries")))))
                   (replace 'check
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; Some tests require timezone data.  Otherwise, they
@@ -4373,7 +4450,9 @@ ecosystem, but can naturally be used also by other projects.")
 
                       (invoke "python" "utest/run.py"))))))
     (native-inputs
-     `(("python-invoke" ,python-invoke)
+     `(("python-docutils" ,python-docutils)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-invoke" ,python-invoke)
        ("python-rellu" ,python-rellu)
        ("python:tk" ,python "tk")             ;used when building the HTML doc
        ("tzdata" ,tzdata-for-tests)))
@@ -4425,7 +4504,7 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
 (define-public python-robotframework-sshlibrary
   (package
     (name "python-robotframework-sshlibrary")
-    (version "3.3.0")
+    (version "3.7.0")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -4436,7 +4515,7 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mk6dz2jqqndbx4yji09012q6rmadnqdywi7czvj62b0s07dr3r2"))))
+         "09ak22rh9qa9wlpvhkliyybcp4xafjhxsps28wz0pf0030771xav"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4450,14 +4529,14 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
                (invoke "invoke" "kw-docs" "project-docs")
                (mkdir-p doc)
                (for-each delete-file (find-files "docs" "\\.rst"))
-               (copy-recursively "docs" doc)
-               #t)))
+               (copy-recursively "docs" doc))))
          (replace 'check
-           (lambda _
-             ;; Some tests require an SSH server; we remove them.
-             (delete-file "utest/test_client_api.py")
-             (delete-file "utest/test_scp.py")
-             (invoke "python" "utest/run.py"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some tests require an SSH server; we remove them.
+               (delete-file "utest/test_client_api.py")
+               (delete-file "utest/test_scp.py")
+               (invoke "python" "utest/run.py")))))))
     (propagated-inputs
      `(("python-robotframework" ,python-robotframework)
        ("python-paramiko" ,python-paramiko)
@@ -4482,6 +4561,94 @@ for SSH and SFTP.  It has the following main usages:
 @item Ensuring that files and directories exist on the remote machine.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public python-robotframework-pythonlibcore
+  (package
+    (name "python-robotframework-pythonlibcore")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in pypi archive
+       (uri (git-reference
+             (url "https://github.com/robotframework/PythonLibCore")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0v89v8va65l6inh0fb34qgxawx6p29pnrmw4n5941yzdi3804rc4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "utest/run.py")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mockito" ,python-pytest-mockito)
+       ("python-robotframework" ,python-robotframework)))
+    (home-page "https://github.com/robotframework/PythonLibCore")
+    (synopsis "Robot Framework Python library tools")
+    (description "PythonLibCore provides tools for creating larger test
+libraries for Robot Framework using Python.  The Robot Framework hybrid and
+dynamic library APIs give more flexibility for library than the static library
+API, but they also set requirements for libraries which need to be implemented
+in the library side.  PythonLibCore eases the problem by providing a simpler
+interface and by handling all the requirements towards the Robot Framework
+library APIs.")
+    (license license:asl2.0)))
+
+(define-public python-robotframework-seleniumlibrary
+  (package
+    (name "python-robotframework-seleniumlibrary")
+    (version "5.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "robotframework-seleniumlibrary" version))
+       (sha256
+        (base32 "1dihrbcid9i7daw2qy6h3xsvwaxzmyip820jw5z11n60qrl006pm"))))
+    (build-system python-build-system)
+    ;; XXX: Tests require ungoogled-chromium, but the chromium module would
+    ;; introduce a cycle if imported here.
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-robotframework-pythonlibcore"
+        ,python-robotframework-pythonlibcore)
+       ("python-selenium" ,python-selenium)))
+    (home-page "https://github.com/robotframework/SeleniumLibrary")
+    (synopsis "Web testing library for Robot Framework")
+    (description "SeleniumLibrary is a web testing library for Robot Framework
+that utilizes the Selenium tool internally.")
+    (license license:asl2.0)))
+
+(define-public python-robotframework-seleniumscreenshots
+  (package
+    (name "python-robotframework-seleniumscreenshots")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "robotframework-seleniumscreenshots" version))
+       (sha256
+        (base32 "05qv323hvjmy62h33ryrjaa9k1hyvp8hq5qnj8j1x3ap2ci3q3s0"))))
+    (build-system python-build-system)
+    (arguments
+    ;; XXX: The tests require a relatively complicated setup configured in
+    ;; their CI with Nix (!).
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-robotframework-seleniumlibrary"
+        ,python-robotframework-seleniumlibrary)))
+    (home-page "https://github.com/MarketSquare/robotframework-seleniumscreenshots")
+    (synopsis "Robot Framework library for annotating and cropping screenshots")
+    (description "The SeleniumScreenshots library for Robot Framework provides
+keywords for annotating and cropping screenshots taken with SeleniumLibrary.
+It is useful for scripting automatically updated screenshots for documentation
+or for visual regression testing purposes.")
+    (license license:bsd-3)))
 
 (define-public python-rstr
   (package
@@ -10685,13 +10852,13 @@ printing of sub-tables by specifying a row range.")
 (define-public python-curio
   (package
     (name "python-curio")
-    (version "1.2")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "curio" version))
        (sha256
-        (base32 "16wkww6kh511b9bzsfhpvrv0766cc6ssgbzz4lgpjnrzzgx21wwh"))))
+        (base32 "045wwg16qadsalhicbv21p14sj8i4w0l57639j7dmdqbb4p2225g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -12337,6 +12504,17 @@ for atomic file system operations.")
 
 (define-public python2-atomicwrites
   (package-with-python2 python-atomicwrites))
+
+(define-public python-atomicwrites-1.4
+  (package
+    (inherit python-atomicwrites)
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "atomicwrites" version))
+              (sha256
+               (base32
+                "0yla2svfhfqrcj8qbyqzx7wi4jy0dwcxvlkg0k3zjd54s5m3jw5f"))))))
 
 (define-public python-qstylizer
   (package
@@ -14451,14 +14629,14 @@ development version of CPython that are not available in older releases.")
 (define-public python-future
   (package
     (name "python-future")
-    (version "0.17.1")
+    (version "0.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "future" version))
        (sha256
         (base32
-         "1f2rlqn9rh7adgir52dlbqz69gsab44x0mlm8gf1cs7xvhv54137"))))
+         "0zakvfj87gy6mn1nba06sdha63rn4njm7bhh0wzyrxhcny8avgmi"))))
     (build-system python-build-system)
     ;; Many tests connect to the network or are otherwise flawed.
     ;; https://github.com/PythonCharmers/python-future/issues/210
@@ -15630,14 +15808,29 @@ simple, lightweight implementation.")
 (define-public python-ukpostcodeparser
   (package
     (name "python-ukpostcodeparser")
-    (version "1.0.3")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "UkPostcodeParser" version))
               (sha256
                (base32
-                "1jwg9z4rz51mcka1821rwgycsd0mcicyp1kiwjfa2kvg8bm9p2qd"))))
+                "03jkf1ygbwq3akzbcjyjk1akc1hv2sfgx90306pq1nwklbpn80lk"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Tests for lowercase postcodes fail.
+               (invoke "pytest" "-vv" "ukpostcodeparser/test/parser.py" "-k"
+                       (string-append "not test_091 "
+                                      "and not test_097 "
+                                      "and not test_098 "
+                                      "and not test_125 "
+                                      "and not test_131"))))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/hamstah/ukpostcodeparser")
     (synopsis "UK Postcode parser for Python")
     (description
@@ -15650,37 +15843,37 @@ parsing UK postcodes.")
 
 (define-public python-faker
   (package
-  (name "python-faker")
-  (version "8.12.1")
-  (source (origin
-            (method url-fetch)
-            (uri (pypi-uri "Faker" version))
-            (sha256
-             (base32
-              "1f95g8adzdh97cbfq7j3482iy4yskbahhjma2cm2mrhrdmi5j241"))))
-  (build-system python-build-system)
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-       (replace 'check
-         (lambda _ (invoke "python" "-m" "pytest" "-v"))))))
-  (native-inputs
-   `(;; For testing
-     ("python-freezegun" ,python-freezegun)
-     ("python-pytest" ,python-pytest)
-     ("python-random2" ,python-random2)
-     ("python-ukpostcodeparser" ,python-ukpostcodeparser)
-     ("python-validators" ,python-validators)))
-  (propagated-inputs
-   `(("python-dateutil" ,python-dateutil)
-     ("python-text-unidecode" ,python-text-unidecode)))
-  (home-page "https://github.com/joke2k/faker")
-  (synopsis "Python package that generates fake data")
-  (description
-   "Faker is a Python package that generates fake data such as names,
+    (name "python-faker")
+    (version "9.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Faker" version))
+              (sha256
+               (base32
+                "0lpfdc4ndvk7chgqrfd2b1my4n54pccq9b645vp9cp5s5ypyknfd"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "python" "-m" "pytest" "-v"))))))
+    (native-inputs
+     `( ;; For testing
+       ("python-freezegun" ,python-freezegun)
+       ("python-pytest" ,python-pytest-6)
+       ("python-random2" ,python-random2)
+       ("python-ukpostcodeparser" ,python-ukpostcodeparser)
+       ("python-validators" ,python-validators)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-text-unidecode" ,python-text-unidecode)))
+    (home-page "https://github.com/joke2k/faker")
+    (synopsis "Python package that generates fake data")
+    (description
+     "Faker is a Python package that generates fake data such as names,
 addresses, and phone numbers.")
-  (license license:expat)
-  (properties `((python2-variant . ,(delay python2-faker))))))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-faker))))))
 
 ;; Faker 4.0 dropped Python 2 support, so we stick with this older version here.
 (define-public python2-faker
@@ -24550,19 +24743,40 @@ replacement for dictionaries where immutability is desired.")
 (define-public python-unpaddedbase64
   (package
     (name "python-unpaddedbase64")
-    (version "1.1.0")
+    (version "2.1.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/matrix-org/python-unpaddedbase64")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "unpaddedbase64" version))
        (sha256
-        (base32
-         "0if3fjfxga0bwdq47v77fs9hrcqpmwdxry2i2a7pdqsp95258nxd"))))
+        (base32 "01ghlmw63fgslwj8j74vkpf1kqvr7a4agm6nyn89vqwx106ccwvj"))))
     (build-system python-build-system)
-    (home-page "https://pypi.org/project/unpaddedbase64/")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
+               (copy-recursively (string-append
+                                  (assoc-ref inputs "tests") "/tests")
+                                 "tests")
+               (invoke "python" "-m" "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("tests"
+        ;; The release on pypi comes without tests.  We can't build from this
+        ;; checkout, though, because installation requires an invocation of
+        ;; poetry.
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/matrix-org/python-unpaddedbase64")
+                 (commit (string-append "v" version))))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32
+             "1n6har8pxv0mqb96lanzihp1xf76aa17jw3977drb1fgz947pnmz"))))))
+    (home-page "https://github.com/matrix-org/python-unpaddedbase64")
     (synopsis "Encode and decode Base64 without “=” padding")
     (description
      "RFC 4648 specifies that Base64 should be padded to a multiple of 4 bytes
@@ -27234,6 +27448,35 @@ location.  This small Python module determines the appropriate
 platform-specific directories, e.g. the ``user data dir''.")
     (license license:expat)))
 
+(define-public python-json2html
+  (package
+    (name "python-json2html")
+    (version "1.3.0")
+    (source
+     ;; There are no tests in the PyPI tarball.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/softvar/json2html")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ncypljnl5y8lsxy6ibcqy412kx3mzxl4ajg67568hvq98kv1sb3"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "test/run_tests.py")))))))
+    (home-page "https://github.com/softvar/json2html")
+    (synopsis "Convert JSON to HTML table")
+    (description "@code{python-json2html} is a python module to convert JSON
+into a human readable HTML table representation.")
+    (license license:expat)))
+
 (define-public python-face
   (package
     (name "python-face")
@@ -27338,3 +27581,41 @@ and powerful way to handle real-world data, featuring:
      "This package provides the @code{python-box} Python module.
 It implements advanced Python dictionaries with dot notation access.")
     (license license:expat)))
+
+(define-public python-fields
+  (package
+    (name "python-fields")
+    (version "5.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fields" version))
+        (sha256
+          (base32 "09sppvhhkhkv9zc9g994m53z15v92csxwcf42ggkaknlv01smm1i"))))
+    (build-system python-build-system)
+    (home-page "https://python-fields.readthedocs.io/")
+    (synopsis "Python container class boilerplate killer")
+    (description "Avoid repetetive boilerplate code in Python classes.")
+    (license license:bsd-3)))
+
+(define-public python-aspectlib
+  (package
+    (name "python-aspectlib")
+    (version "1.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aspectlib" version))
+        (sha256
+          (base32 "1am4ycf292zbmgz791z393v63w7qrynf8q5p9db2wwf2qj1fqxfj"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-fields" ,python-fields)))
+    (home-page "https://github.com/ionelmc/python-aspectlib")
+    (synopsis
+      "Python monkey-patching and decorators")
+    (description
+      "This package provides an aspect-oriented programming, monkey-patch
+and decorators library.  It is useful when changing behavior in existing
+code is desired.  It includes tools for debugging and testing:
+simple mock/record and a complete capture/replay framework.")
+    (license license:bsd-2)))

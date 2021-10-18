@@ -2573,10 +2573,10 @@ This library is no longer supported by its author.")
   (sbcl-package->ecl-package sbcl-cl-colors))
 
 (define-public sbcl-cl-ansi-text
-  (let ((commit "53badf7878f27f22f2d4a2a43e6df458e43acbe9"))
+  (let ((commit "8b129d83c7511b54cdd9d4123825a2d06349b25c"))
     (package
       (name "sbcl-cl-ansi-text")
-      (version (git-version "1.0.0" "1" commit))
+      (version (git-version "2.0.1" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2585,12 +2585,12 @@ This library is no longer supported by its author.")
                (commit commit)))
          (sha256
           (base32
-           "11i27n0dbz5lmygiw65zzr8lx0rac6b6yysqranphn31wls6ja3v"))
+           "0nk7ajqfa937w1iy3zy86jjbw8yffm05cqs4wxkgl97v6kmmya14"))
          (file-name (git-file-name "cl-ansi-text" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
-         ("cl-colors" ,sbcl-cl-colors)))
+         ("cl-colors2" ,sbcl-cl-colors2)))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (synopsis "ANSI terminal color implementation for Common Lisp")
@@ -2610,10 +2610,11 @@ named color.")
   (sbcl-package->ecl-package sbcl-cl-ansi-text))
 
 (define-public sbcl-prove
-  (let ((commit "4f9122bd393e63c5c70c1fba23070622317cfaa0"))
+  (let ((commit "5d71f02795b89e36f34e8c7d50e69b67ec6ca2de")
+        (revision "2"))
     (package
       (name "sbcl-prove")
-      (version (git-version "1.0.0" "1" commit))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2621,12 +2622,12 @@ named color.")
                (url "https://github.com/fukamachi/prove")
                (commit commit)))
          (sha256
-          (base32
-           "07sbfw459z8bbjvx1qlmfa8qk2mvbjnnzi2mi0x72blaj8bkl4vc"))
+          (base32 "0ca6ha3zhmckq3ad9lxm6sbg4i0hg3m81xhan4dkxd3x9898jzpc"))
          (file-name (git-file-name "prove" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("cl-colors" ,sbcl-cl-colors)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("cl-ansi-text" ,sbcl-cl-ansi-text)))
       (synopsis "Yet another unit testing framework for Common Lisp")
@@ -19058,3 +19059,175 @@ libyaml.")
 
 (define-public ecl-cl-yaml
   (sbcl-package->ecl-package sbcl-cl-yaml))
+
+(define-public sbcl-linedit
+  (let ((commit "0561c97dfca2f5854fcc66558a567a9875ddcb8f")
+        (revision "1"))
+    (package
+      (name "sbcl-linedit")
+      (version (git-version "0.17.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/linedit")
+               (commit commit)))
+         (file-name (git-file-name "cl-linedit" version))
+         (sha256
+          (base32 "0hhh7xn6q12rviayfihg1ym6x6csa0pdjgb88ykqbrz2rs3pgpz5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("osicat" ,sbcl-osicat)
+         ("terminfo" ,sbcl-terminfo)))
+      (home-page "https://github.com/sharplispers/linedit")
+      (synopsis "Readline-style line-editor for Common Lisp")
+      (description
+       "Linedit is a readline-style library written in Common Lisp that
+provides customizable line-editing for Common Lisp programs.")
+      (license license:expat))))
+
+(define-public cl-linedit
+  (sbcl-package->cl-source-package sbcl-linedit))
+
+(define-public ecl-linedit
+  (sbcl-package->ecl-package sbcl-linedit))
+
+(define-public sbcl-diff
+  (let ((commit "9c84befa598d4e07c3d223242b5b3f83cd94f301")
+        (revision "1"))
+    (package
+      (name "sbcl-diff")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/froydnj/diff")
+               (commit commit)))
+         (file-name (git-file-name "cl-diff" version))
+         (sha256
+          (base32 "1giafck8qfvb688kx5bn9g32rfc12jjywg8vdav36aqbd6lxf5z5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (home-page "https://github.com/froydnj/diff")
+      (synopsis "Common Lisp library for computing differences between files")
+      (description
+        "DIFF is a package for computing various forms of differences between
+blobs of data and then doing neat things with those differences.  Currently diff
+knows how to compute three common forms of differences: \"unified\" format
+diffs, \"context\" format diffs, and \"vdelta\" format binary diffs.")
+      (license license:bsd-3))))
+
+(define-public cl-diff
+  (sbcl-package->cl-source-package sbcl-diff))
+
+(define-public ecl-diff
+  (sbcl-package->ecl-package sbcl-diff))
+
+(define-public sbcl-montezuma
+  (let ((commit "ee2129eece7065760de4ebbaeffaadcb27644738")
+        (revision "1"))
+    (package
+      (name "sbcl-montezuma")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/montezuma")
+               (commit commit)))
+         (file-name (git-file-name "cl-montezuma" version))
+         (sha256
+          (base32 "0svmvsbsirydk3c1spzfvj8qmkzcs9i69anpfvk1843i62wb7x2c"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; The _darcs directory contains a second copy of
+           ;; montezuma-indexfiles.asd. Remove the directory to
+           ;; prevent build failure caused by .asd files that have
+           ;; the same filename.
+           (add-after 'unpack 'remove-darcs-directory
+             (lambda _
+               (delete-file-recursively
+                "contrib/montezuma-indexfiles/_darcs")))
+           ;; Tests fail with: :FORCE and :FORCE-NOT arguments not
+           ;; allowed in a nested call to ASDF/OPERATE:OPERATE unless
+           ;; identically to toplevel.
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "montezuma.asd"
+                 ((":force t") "")))))))
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("cl-fad" ,sbcl-cl-fad)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (native-inputs
+       `(("trivial-timeout" ,sbcl-trivial-timeout)))
+      (home-page "https://github.com/sharplispers/montezuma")
+      (synopsis "Full-text indexing and search for Common Lisp")
+      (description
+       "Montezuma is a text search engine library for Lisp based on the Ferret
+library for Ruby, which is itself based on the Lucene library for Java.")
+      (license (list license:expat       ; montezuma
+                     license:gpl3+)))))  ; contrib/montezuma-indexfiles
+
+(define-public cl-montezuma
+  (sbcl-package->cl-source-package sbcl-montezuma))
+
+(define-public ecl-montezuma
+  (let ((pkg (sbcl-package->ecl-package sbcl-montezuma)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ;; Tests fail with "Pathname without a physical namestring" error
+         ;; on ECL.
+         ((#:tests? _ #f) #f))))))
+
+(define-public sbcl-cl-charms
+  (let ((commit "64aba59d89f85bc5c9402e445873965338a66a02")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-charms")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/HiTECNOLOGYs/cl-charms")
+               (commit commit)))
+         (file-name (git-file-name "cl-charms" version))
+         (sha256
+          (base32 "1jczaypa9dhxr34yyhsxb6lrdnircjx8am4iqkc3shfpjn32q323"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("ncurses" ,ncurses)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/low-level/curses-bindings.lisp"
+                 (("libncursesw.so")
+                  (string-append (assoc-ref inputs "ncurses")
+                                 "/lib/libncursesw.so"))))))))
+      (home-page "https://github.com/HiTECNOLOGYs/cl-charms")
+      (synopsis "Interface to libcurses in Common Lisp")
+      (description
+       "@code{cl-charms} is an interface to libcurses in Common Lisp.  It
+provides both a raw, low-level interface to libcurses via CFFI, and a more
+higher-level lispier interface.")
+      (license license:expat))))
+
+(define-public cl-charms
+  (sbcl-package->cl-source-package sbcl-cl-charms))
+
+(define-public ecl-cl-charms
+  (sbcl-package->ecl-package sbcl-cl-charms))

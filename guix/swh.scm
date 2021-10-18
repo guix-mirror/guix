@@ -2,6 +2,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -136,6 +137,12 @@
   ;; Whether to verify the X.509 HTTPS certificate for %SWH-BASE-URL.
   (make-parameter #t))
 
+;; Token from an account to the Software Heritage Authentication service
+;; <https://archive.softwareheritage.org/api/>
+(define %swh-token
+  (make-parameter (and=> (getenv "GUIX_SWH_TOKEN")
+                         string->symbol)))
+
 (define (swh-url path . rest)
   ;; URLs returned by the API may be relative or absolute. This has changed
   ;; without notice before. Handle both cases by detecting whether the path
@@ -246,6 +253,10 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (and ((%allow-request?) url method)
        (let*-values (((response port)
                       (method url #:streaming? #t
+                              #:headers
+                              (if (%swh-token)
+                                  `((authorization . (Bearer ,(%swh-token))))
+                                  '())
                               #:verify-certificate?
                               (%verify-swh-certificate?))))
          ;; See <https://archive.softwareheritage.org/api/#rate-limiting>.

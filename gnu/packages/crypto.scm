@@ -72,6 +72,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
   #:use-module (gnu packages serialization)
@@ -92,6 +93,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
@@ -1280,6 +1282,39 @@ cryptographic ratchet.  It is written in C and C++11, and exposed as a C
 API.")
     (home-page "https://matrix.org/docs/projects/other/olm/")
     (license license:asl2.0)))
+
+(define-public python-olm
+  (package
+    ;; python-olm is part of libolm and must be updated at the same time.
+    (inherit libolm)
+    (name "python-olm")
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "python")))
+         (add-before 'build 'set-preprocessor
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPP" "gcc -E")))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (inputs `(("libolm" ,libolm)))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-future" ,python-future)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-aspectlib" ,python-aspectlib)))
+    (synopsis "Python bindings for libolm")
+    (description "The libolm library implements the Double Ratchet
+cryptographic ratchet.  It is written in C and C++11, and exposed as a C
+API.  This package contains its Python bindings.")))
 
 (define-public hash-extender
   (let ((commit "cb8aaee49f93e9c0d2f03eb3cafb429c9eed723d")

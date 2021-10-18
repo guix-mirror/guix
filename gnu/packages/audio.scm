@@ -107,6 +107,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages linphone)
   #:use-module (gnu packages linux)
@@ -1216,6 +1217,40 @@ classes include: dynamics (compressor, limiter), time (delay, chorus,
 flanger), ringmodulator, distortion, filters, pitchshift, oscillators,
 emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
     (license license:gpl3+)))
+
+(define-public libdjinterop
+  (package
+    (name "libdjinterop")
+    (version "0.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xsco/libdjinterop")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16nrqpr90vb9ggmp9j73m0hspd7pmfdhh0g6iyp8vd7kx7g17qnk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; crate_test writes a database file to the source tree.
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files ".")))))))
+    (native-inputs
+     `(("boost" ,boost)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/xsco/libdjinterop")
+    (synopsis "C++ library for access to DJ record libraries")
+    (description
+     "@code{libdjinterop} is a C++ library that allows access to database
+formats used to store information about DJ record libraries.")
+    (license license:lgpl3+)))
 
 (define-public tao
   (package
@@ -3054,6 +3089,31 @@ for \"realtime\" in the index of the Guix manual to learn how to achieve this
 using Guix System.")
     (license license:gpl2+)))
 
+(define-public libshout-idjc
+  (package
+    (name "libshout-idjc")
+    (version "2.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libshoutidjc.idjc.p"
+                           "/libshout-idjc-" version ".tar.gz"))
+       (sha256
+        (base32 "1r9z8ggxylr2ab0isaljbm574rplnlcb12758j994h54nh2vikwb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("speex" ,speex)))
+    (home-page "http://idjc.sourceforge.net/")
+    (synopsis "Broadcast streaming library with IDJC extensions")
+    (description "This package provides libshout plus IDJC extensions.")
+    ;; GNU Library (not Lesser) General Public License.
+    (license license:lgpl2.0+)))
+
 (define-public raul
   (package
     (name "raul")
@@ -3418,6 +3478,31 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; There is no explicit declaration of a license, but a COPYING file
     ;; containing gpl2.
     (license license:gpl2)))
+
+(define-public libkeyfinder
+  (package
+    (name "libkeyfinder")
+    (version "2.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mixxxdj/libkeyfinder")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1623kirmxhmvmhx7f8lbzk0f18w2hrhwlkzl8l4aa906lfqffdp2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch" ,catch-framework2)))
+    (inputs
+     `(("fftw" ,fftw)))
+    (home-page "https://mixxxdj.github.io/libkeyfinder/")
+    (synopsis "Musical key detection for digital audio")
+    (description
+     "@code{libkeyfinder} is a small C++11 library for estimating the musical
+key of digital audio.")
+    (license license:gpl3+)))
 
 (define-public wavpack
   (package
@@ -3976,6 +4061,33 @@ files are a way to represent the layout of a data or audio CD in a
 machine-readable ASCII format.")
     (home-page "https://github.com/svend/cuetools")
     (license license:gpl2+)))
+
+(define-public mp3guessenc
+  (package
+    (name "mp3guessenc")
+    (version "0.27.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/mp3guessenc/mp3guessenc-"
+                           (version-major+minor version) "/mp3guessenc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1fa3sbwwn4p2v1749lzy040bfy1xfd574mf2frwgg9ikgk3vlb3c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure phase
+    (home-page "https://mp3guessenc.sourceforge.io")
+    (synopsis "Analyze MPEG layer I/II/III files")
+    (description "mp3guessenc is a command line utility that tries to detect the
+encoder used for an MPEG Layer III (MP3) file, as well as scan any MPEG audio
+file (any layer) and print a lot of useful information.")
+    (license license:lgpl2.1+)))
 
 (define-public shntool
   (package

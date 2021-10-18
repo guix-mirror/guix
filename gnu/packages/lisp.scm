@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1174,7 +1175,7 @@ including a built-in database engine and a GUI system.")
 (define-public janet
   (package
     (name "janet")
-    (version "1.12.2")
+    (version "1.18.1")
     (source
      (origin
        (method git-fetch)
@@ -1183,20 +1184,18 @@ including a built-in database engine and a GUI system.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0if514zdmbjvvrsa9x5yfvg2b14sz53yaka12g3yhwkq8ls3qk0c"))))
+        (base32 "07k92ip4vmqpzbz32spkpy2rz7pxfsdyl77sy9fylqmc6vg32hr8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list
-                     (string-append "DESTDIR=" (assoc-ref %outputs "out"))
-                     (string-append "PREFIX=")
-                     (string-append "CC=" (assoc-ref %build-inputs "gcc")
-                                    "/bin/gcc"))
+     `(#:make-flags
+       (list
+         (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+         (string-append "PREFIX=")
+         (string-append "CC=" ,(cc-for-target)))
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'check
-           (lambda _
-             (invoke "make" "test"))))))
+         (delete 'configure))))
     (home-page "https://janet-lang.org/")
     (synopsis "Functional, imperative and embeddable programming language")
     (description

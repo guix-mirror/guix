@@ -7788,14 +7788,14 @@ HTTrack is fully configurable, and has an integrated help system.")
 (define-public buku
   (package
     (name "buku")
-    (version "4.5")
+    (version "4.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "buku" version))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bk3h2ya34a5livyf6p7kawh50ikbix5szsq2rkb8cp5bwrzsj5i"))))
+        (base32 "1n4d1mkjyvzdxbyq067p1p9skb3iwx0msd86nzr224dlqrfh9675"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;FIXME: many tests need network access

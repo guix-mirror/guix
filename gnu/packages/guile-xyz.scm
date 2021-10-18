@@ -4480,45 +4480,6 @@ Discovery (DNS-SD).")
       (home-page "https://www.nongnu.org/guile-avahi/")
       (license license:lgpl3+))))
 
-(define-public guile-mkdir-p
-  (package
-    (name "guile-mkdir-p")
-    (version "1.0.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://code.divoplade.fr/mkdir-p.git")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32 "01k20rjcv6p0spmw8ls776aar6bfw0jxw46d2n12w0cb2p79xjv8"))
-       (file-name (git-file-name name version))
-       (snippet
-        `(begin
-           (with-output-to-file ".tarball-version"
-             (lambda _ (format #t "~a~%" ,version)))
-           #t))))
-    (build-system gnu-build-system)
-    (arguments `())
-    (native-inputs
-     `(("guile" ,guile-3.0)
-       ("texinfo" ,texinfo)
-       ("autoconf" ,autoconf)
-       ("autoconf-archive" ,autoconf-archive)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("gettext" ,gettext-minimal)))
-    (inputs `(("guile" ,guile-3.0)))
-    (synopsis "Implementation of a recursive @code{mkdir} for Guile")
-    (description
-     "This package provides within the @code{(mkdir-p)} module the
-@code{mkdir-p} function that tries to create the chain of directories
-recursively.  It also provides new versions of @code{open-output-file},
-@code{call-with-output-file} and @code{with-output-to-file} to create the
-directory of its argument if it does not exist.")
-    (home-page "https://mkdir-p.divoplade.fr")
-    (license license:asl2.0)))
-
 (define-public guile-jwt
   (package
     (name "guile-jwt")

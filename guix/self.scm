@@ -316,81 +316,23 @@ the result to OUTPUT."
                               chr))
                         str))
 
-          (define xref-regexp
-            ;; Texinfo cross-reference regexp.
-            (make-regexp "@(px|x)?ref\\{([^,}]+)"))
-
-          (define (translate-cross-references texi translations)
-            ;; Translate the cross-references that appear in TEXI, a Texinfo
-            ;; file, using the msgid/msgstr pairs from TRANSLATIONS.
-            (define content
-              (call-with-input-file texi get-string-all))
-
-            (define matches
-              (list-matches xref-regexp content))
-
-            (define translation-map
-              (fold (match-lambda*
-                      (((msgid . str) result)
-                       (vhash-cons msgid str result)))
-                    vlist-null
-                    translations))
-
-            (define translated
-              ;; Iterate over MATCHES and replace cross-references with their
-              ;; translation found in TRANSLATION-MAP.  (We can't use
-              ;; 'substitute*' because matches can span multiple lines.)
-              (let loop ((matches matches)
-                         (offset 0)
-                         (result '()))
-                (match matches
-                  (()
-                   (string-concatenate-reverse
-                    (cons (string-drop content offset) result)))
-                  ((head . tail)
-                   (let ((prefix (match:substring head 1))
-                         (ref    (canonicalize-whitespace (match:substring head 2))))
-                     (define translated
-                       (string-append "@" (or prefix "")
-                                      "ref{"
-                                      (match (vhash-assoc ref translation-map)
-                                        (#f ref)
-                                        ((_ . str) str))))
-
-                     (loop tail
-                           (match:end head)
-                           (append (list translated
-                                         (string-take
-                                          (string-drop content offset)
-                                          (- (match:start head) offset)))
-                                   result)))))))
-
-            (format (current-error-port)
-                    "translated ~a cross-references in '~a'~%"
-                    (length matches) texi)
-            (call-with-output-file texi
-              (lambda (port)
-                (display translated port))))
-
           (define* (translate-texi prefix po lang
                                    #:key (extras '()))
             "Translate the manual for one language LANG using the PO file.
 PREFIX must be the prefix of the manual, 'guix' or 'guix-cookbook'.  EXTRAS is
 a list of extra files, such as '(\"contributing\")."
-            (let ((translations (call-with-input-file po read-po-file)))
-              (for-each (lambda (file)
-                          (translate-tmp-texi po (string-append file ".texi")
-                                              (string-append file "." lang
-                                                             ".texi.tmp")))
-                        (cons prefix extras))
+            (for-each (lambda (file)
+                        (translate-tmp-texi po (string-append file ".texi")
+                                            (string-append file "." lang
+                                                           ".texi.tmp")))
+                      (cons prefix extras))
 
-              (for-each (lambda (file)
-                          (let* ((texi (string-append file "." lang ".texi"))
-                                 (tmp  (string-append texi ".tmp")))
-                            (copy-file tmp texi)
-                            (translate-cross-references texi
-                                                        translations)))
-                        (cons prefix extras))))
+            (for-each (lambda (file)
+                        (let* ((texi (string-append file "." lang ".texi"))
+                               (tmp  (string-append texi ".tmp")))
+                          (copy-file tmp texi)
+                          (translate-cross-references texi po)))
+                      (cons prefix extras)))
 
           (define (available-translations directory domain)
             ;; Return the list of available translations under DIRECTORY for

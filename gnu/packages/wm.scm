@@ -954,7 +954,7 @@ experience.")
 (define-public fnott
   (package
     (name "fnott")
-    (version "1.1.0")
+    (version "1.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -963,7 +963,7 @@ experience.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xaz13iry3fdjhqk9xzg29kbv7hqj8dzzqxr5mhrj8f2m013jdc3"))))
+                "0vkwyci4z4jj2aczxkrmj0861j5jczjr8isasa7gml93nlvyw7gv"))))
     (build-system meson-build-system)
     (arguments `(#:build-type "release"))
     (native-inputs

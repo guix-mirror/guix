@@ -73,7 +73,7 @@
 (define-public hwinfo
   (package
     (name "hwinfo")
-    (version "21.76")
+    (version "21.77")
     (home-page "https://github.com/openSUSE/hwinfo")
     (source
      (origin
@@ -84,7 +84,7 @@
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1910wzpdyp1ma1z2v0dripaljgrpl7vjq0f6b7qq9y220899hihb"))
+        (base32 "04xfgixfl9m4hy87xm6drn46x3ybr9hsksar0d6f77hb4l6hprvv"))
        (modules
         '((guix build utils)))
        (snippet
@@ -99,8 +99,7 @@
            ;; Create version file.
            (call-with-output-file "VERSION"
              (lambda (port)
-               (format port ,version)))
-           #t))))
+               (format port ,version)))))))
     (build-system gnu-build-system)
     (outputs '("out" "dev" "doc"))
     (arguments

@@ -36,6 +36,7 @@
   #:use-module (srfi srfi-26)
   #:export (%mirrors
             %disarchive-mirrors
+            %download-fallback-test
             (url-fetch* . url-fetch)
             url-fetch/executable
             url-fetch/tarbomb
@@ -399,13 +400,22 @@
   (plain-file "content-addressed-mirrors"
               (object->string %content-addressed-mirrors)))
 
+(define %no-mirrors-file
+  ;; File specifying an empty list of mirrors, for fallback tests.
+  (plain-file "no-content-addressed-mirrors" (object->string ''())))
+
 (define %disarchive-mirrors
   ;; TODO: Eventually turn into a procedure that takes a hash algorithm
   ;; (symbol) and hash (bytevector).
-  '("https://disarchive.ngyro.com/"))
+  '("https://disarchive.guix.gnu.org/"
+    "https://disarchive.ngyro.com/"))
 
 (define %disarchive-mirror-file
   (plain-file "disarchive-mirrors" (object->string %disarchive-mirrors)))
+
+(define %no-disarchive-mirrors-file
+  ;; File specifying an empty list of Disarchive mirrors, for fallback tests.
+  (plain-file "no-disarchive-mirrors" (object->string '())))
 
 (define built-in-builders*
   (store-lift built-in-builders))
@@ -455,6 +465,24 @@ download by itself using its own dependencies."
                     ;; for that built-in is widespread.
                     #:local-build? #t)))
 
+(define %download-fallback-test
+  ;; Define whether to test one of the download fallback mechanism.  Possible
+  ;; values are:
+  ;;
+  ;;   - #f, to use the normal download methods, not trying to exercise the
+  ;;     fallback mechanism;
+  ;;
+  ;;   - 'none, to disable all the fallback mechanisms;
+  ;;
+  ;;   - 'content-addressed-mirrors, to purposefully attempt to download from
+  ;;     a content-addressed mirror;
+  ;;
+  ;;   - 'disarchive-mirrors, to download from Disarchive + Software Heritage.
+  ;;
+  ;; This is meant to be used for testing purposes.
+  (make-parameter (and=> (getenv "GUIX_DOWNLOAD_FALLBACK_TEST")
+                         string->symbol)))
+
 (define* (url-fetch* url hash-algo hash
                      #:optional name
                      #:key (system (%current-system))
@@ -490,7 +518,10 @@ name in the store."
           (unless (member "download" builtins)
             (error "'guix-daemon' is too old, please upgrade" builtins))
 
-          (built-in-download (or name file-name) url
+          (built-in-download (or name file-name)
+                             (match (%download-fallback-test)
+                               ((or #f 'none) url)
+                               (_ "https://example.org/does-not-exist"))
                              #:guile guile
                              #:system system
                              #:hash-algo hash-algo
@@ -498,9 +529,15 @@ name in the store."
                              #:executable? executable?
                              #:mirrors %mirror-file
                              #:content-addressed-mirrors
-                             %content-addressed-mirror-file
+                             (match (%download-fallback-test)
+                               ((or #f 'content-addressed-mirrors)
+                                %content-addressed-mirror-file)
+                               (_ %no-mirrors-file))
                              #:disarchive-mirrors
-                             %disarchive-mirror-file)))))
+                             (match (%download-fallback-test)
+                               ((or #f 'disarchive-mirrors)
+                                %disarchive-mirror-file)
+                               (_ %no-disarchive-mirrors-file)))))))
 
 (define* (url-fetch/executable url hash-algo hash
                                #:optional name

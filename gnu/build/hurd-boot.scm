@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -191,7 +191,7 @@ set."
                                   "10.0.2.15" ;the default QEMU guest IP
                                   "--netmask" "255.255.255.0"
                                   "--gateway" "10.0.2.2"
-                                  "--ipv6" "/servers/socket/16"))
+                                  "--ipv6" "/servers/socket/26"))
       ("proc"                    ("/hurd/procfs" "--stat-mode=444"))))
 
   (define devices

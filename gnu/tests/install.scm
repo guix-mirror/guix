@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
@@ -355,7 +355,7 @@ IMAGE, a disk image.  The QEMU VM has access to MEMORY-SIZE MiB of RAM."
                 (format #t "creating writable image from '~a'...~%" image)
                 (unless (zero? (system* #+(file-append qemu-minimal
                                                        "/bin/qemu-img")
-                                        "create" "-f" "qcow2"
+                                        "create" "-f" "qcow2" "-F" "qcow2"
                                         "-o"
                                         (string-append "backing_file=" image)
                                         "disk.img"))

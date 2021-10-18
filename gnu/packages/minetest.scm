@@ -187,6 +187,27 @@ numeric identifier TOPIC-ID on the official Minetest forums."
   (string-append "https://forum.minetest.net/viewtopic.php?t="
                  (number->string topic-id)))
 
+(define-public minetest-moreores
+  (package
+    (name "minetest-moreores")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minetest-mods/moreores")
+             (commit (string-append "v" version))))
+       (sha256 (base32 "1chfqbc6bb27aacjc67j5l5wcdvmcsvk2rfmangipd7nwini3y34"))
+       (file-name (git-file-name name version))))
+    (build-system minetest-mod-build-system)
+    (home-page (minetest-topic 549))
+    (synopsis "Additional ore types, tools, swords, and rails for Minetest")
+    (description
+     "This Minetest mod adds new ore types to the game (mithril, silver) as well
+as swords and tools made of different materials.  It also adds copper rails.")
+    (license license:zlib)
+    (properties `((upstream-name . "Calinou/moreores")))))
+
 (define-public minetest-basic-materials
   (package
     (name "minetest-basic-materials")
@@ -202,6 +223,10 @@ numeric identifier TOPIC-ID on the official Minetest forums."
         (base32 "0v6l3lrjgshy4sccjhfhmfxc3gk0cdy73qb02i9wd2vw506v5asx"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
+    (propagated-inputs
+     ;; basic_materials:silver_wire cannot be crafted without
+     ;; moreores:silver_ingot.
+     `(("minetest-moreores" ,minetest-moreores)))
     (home-page (minetest-topic 21000))
     (synopsis "Some \"basic\" materials and items for other Minetest mods to use")
     (description
