@@ -2045,7 +2045,7 @@ voice formats.")
 (define-public sdrangel
   (package
     (name "sdrangel")
-    (version "6.16.1")
+    (version "6.17.1")
     (source
      (origin
        (method git-fetch)
@@ -2054,7 +2054,7 @@ voice formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g9h4cy8k9dqlwkfk4lkk2d2s003bckzskm3vra87ndmgq1nfbzv"))))
+        (base32 "1yraif6dzs5sdskxnj937x613xz3zxnqim5mnk18vj2m0apcaqam"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
