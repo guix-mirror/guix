@@ -553,7 +553,8 @@ portability.")
 (define-public aws-c-common
   (package
     (name "aws-c-common")
-    (version "0.6.2")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.6.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -562,7 +563,7 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17iknzqs6dl0ixajplc47ylkyynwpi3x2dxh56wa8ylhgy53d09x"))))
+                "1v4dhygiynl75y3702lbp9j8kph88j4f2sq39s4lkhn6lmbz5f0f"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
