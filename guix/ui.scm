@@ -1431,10 +1431,22 @@ converted to a space; sequences of more than one line break are preserved."
   (with-fluids ((%default-port-encoding "UTF-8"))
     (stexi->plain-text (texi-fragment->stexi str))))
 
+(define (texi->plain-text* package str)
+  "Same as 'texi->plain-text', but gracefully handle Texinfo errors."
+  (catch 'parser-error
+    (lambda ()
+      (texi->plain-text str))
+    (lambda args
+      (warning (package-location package)
+               (G_ "~a: invalid Texinfo markup~%")
+               (package-full-name package))
+      str)))
+
 (define (package-field-string package field-accessor)
   "Return a plain-text representation of PACKAGE field."
   (and=> (field-accessor package)
-         (compose texi->plain-text P_)))
+         (lambda (str)
+           (texi->plain-text* package (P_ str)))))
 
 (define (package-description-string package)
   "Return a plain-text representation of PACKAGE description field."
@@ -1555,7 +1567,8 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
             (parameterize ((%text-width width*))
               ;; Call 'texi->plain-text' on the concatenated string to account
               ;; for the width of "description:" in paragraph filling.
-              (texi->plain-text
+              (texi->plain-text*
+               p
                (string-append "description: "
                               (or (and=> (package-description p) P_)
                                   ""))))
