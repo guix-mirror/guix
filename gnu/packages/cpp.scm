@@ -943,7 +943,9 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
 (define-public aws-sdk-cpp
   (package
     (name "aws-sdk-cpp")
-    (version "1.9.92")
+    ; When updating also check for a tagged update to aws-crt-cpp from
+    ; https://github.com/aws/aws-sdk-cpp/tree/main/crt
+    (version "1.9.136")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -952,19 +954,16 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nbq1qivykfg8jmrn8d0k6fcfa5dw9s90wnwddh7ia4zafmby7pd"))
-              (patches
-               (search-patches
-                "aws-sdk-cpp-cmake-prefix.patch"
-                "aws-sdk-cpp-disable-networking-tests.patch"
-                "aws-sdk-cpp-disable-werror.patch"))))
+                "0ap7g7nmbnrcajy3b788bnpqd87dwmg83dhll1q8qzli04bcg47i"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests are run during the build phase.
        #:tests? #f
        #:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON"
-         "-DBUILD_DEPS=OFF")))
+       (list "-DBUILD_DEPS=OFF"
+             "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-crt-cpp" ,aws-crt-cpp)))
     (inputs
