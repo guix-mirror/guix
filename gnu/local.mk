@@ -871,7 +871,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/aws-c-auth-install-private-headers.patch	\
-  %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
   %D%/packages/patches/aws-checksums-cmake-prefix.patch		\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-reproducible-linux-pgrp-pipe.patch	\

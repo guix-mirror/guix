@@ -605,6 +605,7 @@ with fallback to efficient C99 software implementations.")
 (define-public aws-c-event-stream
   (package
     (name "aws-c-event-stream")
+    ; Update only when updating aws-crt-cpp.
     (version "0.2.7")
     (source (origin
               (method git-fetch)
@@ -614,12 +615,13 @@ with fallback to efficient C99 software implementations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xwwr7gdgfrphk6j7vk12rgimfim6m4qnj6hg8hgg16cplhvsfzh"))
-              (patches (search-patches "aws-c-event-stream-cmake-prefix.patch"))))
+                "0xwwr7gdgfrphk6j7vk12rgimfim6m4qnj6hg8hgg16cplhvsfzh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)
        ("aws-c-io" ,aws-c-io)
