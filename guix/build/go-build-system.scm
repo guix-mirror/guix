@@ -152,8 +152,10 @@ dependencies, so it should be self-contained."
 
   ;; Make sure we're building for the correct architecture and OS targets
   ;; that Guix targets.
-  (setenv "GOARCH" goarch)
-  (setenv "GOOS" goos)
+  (setenv "GOARCH" (or goarch
+                       (getenv "GOHOSTARCH")))
+  (setenv "GOOS" (or goos
+                     (getenv "GOHOSTOS")))
   (match goarch
     ("arm"
      (setenv "GOARM" "7"))
