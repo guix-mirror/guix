@@ -4488,6 +4488,41 @@ which can convert the contacts to @code{.ldif} format for import into LDAP
 databases, and other tools to process Outlook email archives.")
     (license license:gpl2+)))
 
+(define-public neatmail
+  (package
+    (name "neatmail")
+    (version "02")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/aligrudi/neatmail")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00d453d57d3v6ja2gpmjd8vch804c72g38pc1nr5shmz3hkgd52d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags `((string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (replace 'install              ;no install target in the Makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin")))
+               (rename-file "mail" "neatmail")
+               (install-file "neatmail" bin)))))))
+    (home-page "https://litcave.rudi.ir/")
+    (synopsis "Text-mode mail client")
+    (description
+     "@command{neatmail} is a noninteractive mail client.  It generates
+a listing of the messages in a mailbox in mbox format and executes a list of
+ex-like commands on it.")
+    (license license:isc)))
+
 (define-public crm114
   (package
     (name "crm114")
