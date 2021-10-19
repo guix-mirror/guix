@@ -102,6 +102,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Simon South <simon@simonsouth.net>
+;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23902,9 +23903,11 @@ utilities.")
     (name "emacs-treemacs-extra")
     (propagated-inputs
      `(,@(package-propagated-inputs emacs-treemacs)
+       ("emacs-all-the-icons" ,emacs-all-the-icons)
        ("emacs-evil" ,emacs-evil)
        ("emacs-magit" ,emacs-magit)
        ("emacs-projectile" ,emacs-projectile)
+       ("emacs-perspective" ,emacs-perspective)
        ("emacs-persp-mode" ,emacs-persp-mode)))
     (arguments
      (substitute-keyword-arguments
