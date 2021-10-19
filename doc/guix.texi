@@ -33901,7 +33901,7 @@ guix system delete-generations
 @end example
 
 You can also select the generations you want to delete.  The example below
-deletes all the system generations that are more than two month old:
+deletes all the system generations that are more than two months old:
 
 @example
 guix system delete-generations 2m
@@ -36059,7 +36059,7 @@ guix home delete-generations
 @end example
 
 You can also select the generations you want to delete.  The example below
-deletes all the home generations that are more than two month old:
+deletes all the home generations that are more than two months old:
 
 @example
 guix home delete-generations 2m
