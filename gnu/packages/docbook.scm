@@ -387,15 +387,15 @@ the in DocBook SGML DTDs.")
 (define-public dblatex
   (package
     (name "dblatex")
-    (version "0.3.11")
+    (version "0.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/dblatex/dblatex/"
-                                  "dblatex-" version "/dblatex-"
+                                  "dblatex-" version "/dblatex3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0rp1bc2lgisigscq1i7zxfd2qdaxxxld6khbcxss4pq7fpi9fzkv"))))
+                "0yd09nypswy3q4scri1dg7dr99d7gd6r2dwx0xm81l9f4y32gs0n"))))
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
@@ -456,8 +456,7 @@ the in DocBook SGML DTDs.")
                            (string-append (assoc-ref inputs input)
                                           "/bin"))
                          '("libxslt" "texlive"
-                           "imagemagick" "inkscape"))))
-               #t))))))
+                           "imagemagick" "inkscape"))))))))))
     (home-page "http://dblatex.sourceforge.net")
     (synopsis "DocBook to LaTeX Publishing")
     (description
