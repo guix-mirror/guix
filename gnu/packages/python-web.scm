@@ -2821,14 +2821,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
   (package
     ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.18.203")
+    (version "1.20.64")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "128zg24961j8nmnq2dxqg6a7zwh3qgv87cmvclsdqwwih9nigxv9"))))
+         "0pl88y70rgwfprgv5gqkc2fcbasc9d0qyffl98l82bsc24d4c8b9"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The 'pypi' release does not contain tests.
@@ -2841,13 +2841,12 @@ supports url redirection and retries, and also gzip and deflate decoding.")
                (("if not self._exists_on_path\\('groff'\\):") "")
                (("raise ExecutableNotFoundError\\('groff'\\)") "")
                (("cmdline = \\['groff'")
-                (string-append "cmdline = ['" (which "groff") "'")))
-             #t)))))
+                (string-append "cmdline = ['" (which "groff") "'"))))))))
     (propagated-inputs
-     `(("python-colorama" ,python-colorama)
+     `(("python-colorama" ,python-colorama-for-awscli)
        ("python-botocore" ,python-botocore)
        ("python-s3transfer" ,python-s3transfer)
-       ("python-docutils" ,python-docutils)
+       ("python-docutils" ,python-docutils-0.15)
        ("python-pyyaml" ,python-pyyaml)
        ("python-rsa" ,python-rsa)))
     (native-inputs
