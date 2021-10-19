@@ -33462,10 +33462,10 @@ under its new name.")
      "This library detects the operating system type and version.")
     (license license:expat)))
 
-(define-public rust-os-pipe-0.8
+(define-public rust-os-pipe-0.9
   (package
     (name "rust-os-pipe")
-    (version "0.8.2")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
@@ -33474,12 +33474,12 @@ under its new name.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "049ax8shxik7mm68r2nf7xnrcq3z3p7hz54sbrcxwywxqsjdzs41"))))
+         "04yjs1hf88jjm17g8a2lr7ibxyyg460rzbgcw9f1yzihq833y8zv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-nix" ,rust-nix-0.15)
+       (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page
      "https://github.com/oconnor663/os_pipe.rs")
