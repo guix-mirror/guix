@@ -13076,6 +13076,18 @@ text.")
 (define-public python2-colorama
   (package-with-python2 python-colorama))
 
+;; awscli and botocore do not accept version 0.4.4
+(define-public python-colorama-for-awscli
+  (package
+    (inherit python-colorama)
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "colorama" version))
+       (sha256
+        (base32 "189n8hpijy14jfan4ha9f5n06mnl33cxz7ay92wjqgkr639s0vg9"))))))
+
 (define-public python-moto
   (package
     (name "python-moto")
