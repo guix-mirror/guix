@@ -4135,6 +4135,20 @@ via commands such as @command{rst2man}, as well as supporting Python code.")
 (define-public python2-docutils
   (package-with-python2 python-docutils))
 
+;; awscli refuses to be built with docutils < 0.16.
+(define-public python-docutils-0.15
+  (package
+    (inherit python-docutils)
+    (version "0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "docutils" version))
+              (sha256
+               (base32
+                "0ja8q6mdj6xv62jjw3phv8j5nfqi5x8hnfy4pqfcjcgz4b34k8sl"))))
+    ;; tests contain Python 2 syntax.
+    (arguments '(#:tests? #false))))
+
 ;; python2-sphinx fails its test suite with newer versions.
 (define-public python2-docutils-0.14
   (package
