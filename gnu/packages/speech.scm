@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
@@ -366,6 +366,11 @@ be used by the sighted.")
                               "config/make_system.mak")
                  (("/bin/sh") (which "sh"))))
              #t))
+         (add-after 'unpack-and-patch-speech-tools 'set-fcommon
+           (lambda _
+             (substitute* "../speech_tools/config/rules/defaults.mak"
+               (("\\(CFLAGS\\)") "(CFLAGS) -fcommon")
+               (("\\(CXXFLAGS\\)") "(CXXFLAGS) -fcommon"))))
          (add-after 'unpack 'patch-/bin/sh
            (lambda _
              (substitute* '("config/test_make_rules"
