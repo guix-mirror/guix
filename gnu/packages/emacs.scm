@@ -182,15 +182,13 @@
            (lambda* (#:key outputs target #:allow-other-keys)
              (let* ((libexec (string-append (assoc-ref outputs "out")
                                             "/libexec"))
-                    ;; each of these find-files should return one file
-                    (pdmp (find-files libexec "^emacs\\.pdmp$"))
-                    (pdmp-real (find-files libexec
-                                           "^\\.emacs\\.pdmp-real$")))
-               (for-each (lambda (wrapper real)
-                           (delete-file wrapper)
-                           (rename-file real wrapper))
-                         pdmp pdmp-real))
-             #t))
+                    ;; each of these ought to only match a single file,
+                    ;; but even if not (find-files) sorts by string<,
+                    ;; so the Nth element in one maps to the Nth element of
+                    ;; the other
+                    (pdmp (find-files libexec "\\.pdmp$"))
+                    (pdmp-real (find-files libexec "\\.pdmp-real$")))
+               (for-each rename-file pdmp-real pdmp))))
          (add-after 'glib-or-gtk-wrap 'strip-double-wrap
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
