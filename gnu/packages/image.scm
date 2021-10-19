@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017,2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -2348,7 +2348,7 @@ Wacom-style graphics tablets.")
 (define-public phockup
   (package
     (name "phockup")
-    (version "1.5.9")
+    (version "1.7.1")
     (source
      (origin
        (method git-fetch)
@@ -2358,7 +2358,7 @@ Wacom-style graphics tablets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "13ajj0xch7yfqaaxbw0awxs0fz17n1rxir4gqh2wcgxjysqk1j2y"))))
+         "0nqd89g4ppwc96gxyh9npain7ipnzj66p6n3irsvhrpi4k54h388"))))
     (build-system copy-build-system)
     (arguments
      `(#:install-plan '(("src" "share/phockup/")
@@ -2368,10 +2368,10 @@ Wacom-style graphics tablets.")
          (add-after 'unpack 'configure
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (list "src/dependency.py" "src/exif.py")
-               (("exiftool")
-                (string-append (assoc-ref inputs "perl-image-exiftool")
-                               "/bin/exiftool")))
-             #t))
+               (("'exiftool")
+                (string-append "'"
+                               (assoc-ref inputs "perl-image-exiftool")
+                               "/bin/exiftool")))))
          (add-before 'install 'check
            (lambda _
              (invoke "pytest")))
@@ -2380,11 +2380,18 @@ Wacom-style graphics tablets.")
              (let ((out (assoc-ref outputs "out")))
                (mkdir (string-append out "/bin"))
                (symlink (string-append out "/share/phockup/phockup.py")
-                        (string-append out "/bin/phockup")))
-             #t)))))
+                        (string-append out "/bin/phockup")))))
+         (add-after 'install-bin 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/phockup")
+                 `("PYTHONPATH" prefix
+                   ,(search-path-as-string->list
+                     (getenv "PYTHONPATH"))))))))))
     (inputs
      `(("perl-image-exiftool" ,perl-image-exiftool)
-       ("python" ,python)))
+       ("python" ,python)
+       ("python-tqdm" ,python-tqdm)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)))
