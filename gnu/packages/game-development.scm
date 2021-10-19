@@ -866,7 +866,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
 (define-public allegro-4
   (package
     (name "allegro")
-    (version "4.4.3")
+    (version "4.4.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/"
@@ -874,7 +874,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d5ws3ihvpa6f4qc6a6drq31pajw6bblxifr4kcxzqj9br1nw28y"))))
+                "1m6lz35nk07dli26kkwz3wa50jsrxs1kb6w1nj14a911l34xn6gc"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -886,8 +886,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
              ;; unconditionally clobbered in the build script.
              (substitute* '("CMakeLists.txt")
                (("ADDON_LINKAGE STATIC")
-                "ADDON_LINKAGE SHARED"))
-             #t)))))
+                "ADDON_LINKAGE SHARED")))))))
     (inputs
      `(("glu" ,glu)
        ("libpng" ,libpng)
