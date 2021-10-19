@@ -110,6 +110,7 @@
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
+;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27606,3 +27607,38 @@ and decorators library.  It is useful when changing behavior in existing
 code is desired.  It includes tools for debugging and testing:
 simple mock/record and a complete capture/replay framework.")
     (license license:bsd-2)))
+
+(define-public python-ijson
+  (package
+    (name "python-ijson")
+    (version "3.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ijson" version))
+       (sha256
+        (base32 "1sp463ywj4jv5cp6hsv2qwiima30d09xsabxb2dyq5b17jp0640x"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; the tests run by the default setup.py require yajl 1.x,
+         ;; but we have 2.x.  yajl 1.x support is going to be removed
+         ;; anyway, so use pytest to avoid running the yajl1-related
+         ;; tests. See: https://github.com/ICRAR/ijson/issues/55
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
+    (inputs
+     ;; libyajl is optional, but compiling with it makes faster
+     ;; backends available to ijson:
+     `(("libyajl", libyajl)))
+    (native-inputs
+     `(("python-pytest", python-pytest)))
+    (build-system python-build-system)
+    (home-page "https://github.com/ICRAR/ijson")
+    (synopsis "Iterative JSON parser with Python iterator interfaces")
+    (description
+     "Ijson is an iterative JSON parser with standard Python iterator
+interfaces.")
+    (license license:bsd-3)))
