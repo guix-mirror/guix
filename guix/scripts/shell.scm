@@ -332,6 +332,29 @@ echo ~a >> ~a
     (key (string-append (%profile-cache-directory) "/" key))))
 
 
+;;;
+;;; One-time hints.
+;;;
+
+(define (hint-directory)
+  "Return the directory name where previously given hints are recorded."
+  (string-append (cache-directory #:ensure? #f) "/hints"))
+
+(define (hint-file hint)
+  "Return the name of the file that marks HINT as already printed."
+  (string-append (hint-directory) "/" (symbol->string hint)))
+
+(define (record-hint hint)
+  "Mark HINT as already given."
+  (let ((file (hint-file hint)))
+    (mkdir-p (dirname file))
+    (close-fdes (open-fdes file (logior O_CREAT O_WRONLY)))))
+
+(define (hint-given? hint)
+  "Return true if HINT was already given."
+  (file-exists? (hint-file hint)))
+
+
 (define-command (guix-shell . args)
   (category development)
   (synopsis "spawn one-off software environments")
@@ -348,7 +371,22 @@ echo ~a >> ~a
       (#f 0)                       ;FILE may have been deleted in the meantime
       (st (+ (stat:atime st) (* 60 60 24 7)))))
 
-  (let ((result (guix-environment* (parse-args args))))
+  (define opts
+    (parse-args args))
+
+  (define interactive?
+    (not (assoc-ref opts 'exec)))
+
+  (if (assoc-ref opts 'check?)
+      (record-hint 'shell-check)
+      (when (and interactive?
+                 (not (hint-given? 'shell-check))
+                 (not (assoc-ref opts 'container?))
+                 (not (assoc-ref opts 'search-paths)))
+        (display-hint (G_ "Consider passing the @option{--check} option once
+to make sure your shell does not clobber environment variables."))) )
+
+  (let ((result (guix-environment* opts)))
     (maybe-remove-expired-cache-entries (%profile-cache-directory)
                                         cache-entries
                                         #:entry-expiration entry-expiration)
