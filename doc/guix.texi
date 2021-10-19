@@ -5640,17 +5640,11 @@ environment, where the new packages are added to search path environment
 variables such as @code{PATH}.  You can, instead, choose to create an
 @emph{isolated} environment containing nothing but the packages you
 asked for.  Passing the @option{--pure} option clears environment
-variable definitions found in the parent environment@footnote{Users
-sometimes wrongfully augment environment variables such as @env{PATH} in
-their @file{~/.bashrc} file.  As a consequence, when @command{guix
-environment} launches it, Bash may read @file{~/.bashrc}, thereby
-introducing ``impurities'' in these environment variables.  It is an
-error to define such environment variables in @file{.bashrc}; instead,
-they should be defined in @file{.bash_profile}, which is sourced only by
-log-in shells.  @xref{Bash Startup Files,,, bash, The GNU Bash Reference
-Manual}, for details on Bash start-up files.}; passing
-@option{--container} goes one step further by spawning a @dfn{container}
-isolated from the rest of the system:
+variable definitions found in the parent environment@footnote{Be sure to
+use the @option{--check} option the first time you use @command{guix
+shell} interactively to make sure the shell does not undo the effect of
+@option{--pure}.}; passing @option{--container} goes one step further by
+spawning a @dfn{container} isolated from the rest of the system:
 
 @example
 guix shell --container emacs gcc-toolchain
@@ -5699,6 +5693,24 @@ $ ls "$GUIX_ENVIRONMENT/bin"
 The available options are summarized below.
 
 @table @code
+@item --check
+Set up the environment and check whether the shell would clobber
+environment variables.  It's a good idea to use this option the first
+time you run @command{guix shell} for an interactive session to make
+sure your setup is correct.
+
+For example, if the shell modifies the @env{PATH} environment variable,
+report it since you would get a different environment than what you
+asked for.
+
+Such problems usually indicate that the shell startup files are
+unexpectedly modifying those environment variables.  For example, if you
+are using Bash, make sure that environment variables are set or modified
+in @file{~/.bash_profile} and @emph{not} in @file{~/.bashrc}---the
+former is sourced only by log-in shells.  @xref{Bash Startup Files,,,
+bash, The GNU Bash Reference Manual}, for details on Bash start-up
+files.
+
 @item --development
 @itemx -D
 Cause @command{guix shell} to include in the environment the
@@ -6065,6 +6077,11 @@ guix environment --preserve='^DISPLAY$' --container --network \
 The available options are summarized below.
 
 @table @code
+@item --check
+Set up the environment and check whether the shell would clobber
+environment variables.  @xref{Invoking guix shell, @option{--check}},
+for more info.
+
 @item --root=@var{file}
 @itemx -r @var{file}
 @cindex persistent environment

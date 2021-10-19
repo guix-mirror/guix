@@ -41,12 +41,14 @@
   #:autoload   (gnu build accounts) (password-entry group-entry
                                      password-entry-name password-entry-directory
                                      write-passwd write-group)
-  #:autoload   (guix build syscalls) (set-network-interface-up)
+  #:autoload   (guix build syscalls) (set-network-interface-up openpty login-tty)
   #:use-module (gnu system file-systems)
   #:autoload   (gnu packages) (specification->package+output)
   #:autoload   (gnu packages bash) (bash)
   #:autoload   (gnu packages bootstrap) (bootstrap-executable %bootstrap-guile)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 rdelim) (read-line)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -83,6 +85,8 @@ shell'."
   -m, --manifest=FILE    create environment with the manifest from FILE"))
   (display (G_ "
   -p, --profile=PATH     create environment from profile at PATH"))
+  (display (G_ "
+      --check            check if the shell clobbers environment variables"))
   (display (G_ "
       --pure             unset existing environment variables"))
   (display (G_ "
@@ -178,6 +182,9 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix environment")))
+         (option '("check") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'check? #t result)))
          (option '("pure") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'pure #t result)))
@@ -395,6 +402,155 @@ regexps in WHITE-LIST."
   (match command
     ((program . args)
      (apply execlp program program args))))
+
+(define (child-shell-environment shell profile manifest)
+  "Create a child process, load PROFILE and MANIFEST, and then run SHELL in
+interactive mode in it.  Return a name/value vhash for all the variables shown
+by running 'set' in the shell."
+  (define-values (controller inferior)
+    (openpty))
+
+  (define script
+    ;; Script to obtain the list of environment variable values.  On a POSIX
+    ;; shell we can rely on 'set', but on fish we have to use 'env' (fish's
+    ;; 'set' truncates values and prints them in a different format.)
+    "env || /usr/bin/env || set; echo GUIX-CHECK-DONE; read x; exit\n")
+
+  (define lines
+    (match (primitive-fork)
+      (0
+       (catch #t
+         (lambda ()
+           (load-profile profile manifest #:pure? #t)
+           (setenv "GUIX_ENVIRONMENT" profile)
+           (close-fdes controller)
+           (login-tty inferior)
+           (execl shell shell))
+         (lambda _
+           (primitive-exit 127))))
+      (pid
+       (close-fdes inferior)
+       (let* ((port   (fdopen controller "r+l"))
+              (result (begin
+                        (display script port)
+                        (let loop ((lines '()))
+                          (match (read-line port)
+                            ((? eof-object?) (reverse lines))
+                            ("GUIX-CHECK-DONE\r"
+                             (display "done\n" port)
+                             (reverse lines))
+                            (line
+                             ;; Drop the '\r' from LINE.
+                             (loop (cons (string-drop-right line 1)
+                                         lines))))))))
+         (close-port port)
+         (waitpid pid)
+         result))))
+
+  (fold (lambda (line table)
+          ;; Note: 'set' in fish outputs "NAME VALUE" instead of "NAME=VALUE"
+          ;; but it also truncates values anyway, so don't try to support it.
+          (let ((index (string-index line #\=)))
+            (if index
+                (vhash-cons (string-take line index)
+                            (string-drop line (+ 1 index))
+                            table)
+                table)))
+        vlist-null
+        lines))
+
+(define* (validate-child-shell-environment profile manifest
+                                           #:optional (shell %default-shell))
+  "Run SHELL in interactive mode in an environment for PROFILE and MANIFEST
+and report clobbered environment variables."
+  (define warned? #f)
+  (define-syntax-rule (warn exp ...)
+    (begin
+      (set! warned? #t)
+      (warning exp ...)))
+
+  (info (G_ "checking the environment variables visible from shell '~a'...~%")
+        shell)
+  (let ((actual (child-shell-environment shell profile manifest)))
+    (when (vlist-null? actual)
+      (leave (G_ "failed to determine environment of shell '~a'~%")
+             shell))
+    (for-each (match-lambda
+                ((spec . expected)
+                 (let ((name (search-path-specification-variable spec)))
+                   (match (vhash-assoc name actual)
+                     (#f
+                      (warn (G_ "variable '~a' is missing from shell \
+environment~%")
+                            name))
+                     ((_ . actual)
+                      (cond ((string=? expected actual)
+                             #t)
+                            ((string-prefix? expected actual)
+                             (warn (G_ "variable '~a' has unexpected \
+suffix '~a'~%")
+                                   name
+                                   (string-drop actual
+                                                (string-length expected))))
+                            (else
+                             (warn (G_ "variable '~a' is clobbered: '~a'~%")
+                                   name actual))))))))
+              (profile-search-paths profile manifest))
+
+    ;; Special case.
+    (match (vhash-assoc "GUIX_ENVIRONMENT" actual)
+      (#f
+       (warn (G_ "'GUIX_ENVIRONMENT' is missing from the shell \
+environment~%")))
+      ((_ . value)
+       (unless (string=? value profile)
+         (warn (G_ "'GUIX_ENVIRONMENT' is set to '~a' instead of '~a'~%")
+               value profile))))
+
+    ;; Check the prompt unless we have more important warnings.
+    (unless warned?
+      (match (vhash-assoc "PS1" actual)
+        (#f #f)
+        (str
+         (when (and (getenv "PS1") (string=? str (getenv "PS1")))
+           (warning (G_ "'PS1' is the same in sub-shell~%"))
+           (display-hint (G_ "Consider setting a different prompt for
+environment shells to make them distinguishable.
+
+If you are using Bash, you can do that by adding these lines to
+@file{~/.bashrc}:
+
+@example
+if [ -n \"$GUIX_ENVIRONMENT\" ]
+then
+  export PS1=\"\\u@@\\h \\w [env]\\$ \"
+fi
+@end example
+"))))))
+
+    (if warned?
+        (begin
+          (display-hint (G_ "One or more environment variables have a
+different value in the shell than the one we set.  This means that you may
+find yourself running code in an environment different from the one you asked
+Guix to prepare.
+
+This usually indicates that your shell startup files are unexpectedly
+modifying those environment variables.  For example, if you are using Bash,
+make sure that environment variables are set or modified in
+@file{~/.bash_profile} and @emph{not} in @file{~/.bashrc}.  For more
+information on Bash startup files, run:
+
+@example
+info \"(bash) Bash Startup Files\"
+@end example
+
+Alternatively, you can avoid the problem by passing the @option{--container}
+or @option{-C} option.  That will give you a fully isolated environment
+running in a \"container\", immune to the issue described above."))
+          (exit 1))
+        (info (G_ "All is good!  The shell gets correct environment \
+variables.~%")))))
 
 (define* (launch-environment/fork command profile manifest
                                   #:key pure? (white-list '()))
@@ -774,6 +930,10 @@ command-line option processing with 'parse-command-line'."
                                            (if (derivation? bash) (list bash) '()))))
                   (mwhen gc-root
                     (register-gc-root profile gc-root))
+
+                  (mwhen (assoc-ref opts 'check?)
+                    (return
+                     (validate-child-shell-environment profile manifest)))
 
                   (cond
                    ((assoc-ref opts 'search-paths)
