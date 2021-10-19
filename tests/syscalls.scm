@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
+  #:use-module (srfi srfi-71)
   #:use-module (system foreign)
   #:use-module ((ice-9 ftw) #:select (scandir))
   #:use-module (ice-9 match))
@@ -581,6 +582,40 @@
 
 (test-assert "terminal-rows"
   (> (terminal-rows) 0))
+
+(test-assert "openpty"
+  (let ((head inferior (openpty)))
+    (and (integer? head) (integer? inferior)
+         (let ((port (fdopen inferior "r+0")))
+           (and (isatty? port)
+                (begin
+                  (close-port port)
+                  (close-fdes head)
+                  #t))))))
+
+(test-equal "openpty + login-tty"
+  '(hello world)
+  (let ((head inferior (openpty)))
+    (match (primitive-fork)
+      (0
+       (dynamic-wind
+         (const #t)
+         (lambda ()
+           (setvbuf (current-input-port) 'none)
+           (close-fdes head)
+           (login-tty inferior)
+           (write (read))
+           (read))                          ;this gets EIO when HEAD is closed
+         (lambda ()
+           (primitive-_exit 42))))
+      (pid
+       (close-fdes inferior)
+       (let ((head (fdopen head "r+0")))
+         (write '(hello world) head)
+         (let ((result (read head)))
+           (close-port head)
+           (waitpid pid)
+           result))))))
 
 (test-assert "utmpx-entries"
   (match (utmpx-entries)

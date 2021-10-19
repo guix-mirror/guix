@@ -180,6 +180,8 @@
             terminal-window-size
             terminal-columns
             terminal-rows
+            openpty
+            login-tty
 
             utmpx?
             utmpx-login-type
@@ -2285,6 +2287,43 @@ always a positive integer."
 PORT, trying to guess a reasonable value if all else fails.  The result is
 always a positive integer."
   (terminal-dimension window-size-rows port (const 25)))
+
+(define openpty
+  (let* ((ptr  (dynamic-func "openpty" (dynamic-link "libutil")))
+         (proc (pointer->procedure int ptr '(* * * * *)
+                                   #:return-errno? #t)))
+    (lambda ()
+      "Return two file descriptors: one for the pseudo-terminal control side,
+and one for the controlled side."
+      (let ((head     (make-bytevector (sizeof int)))
+            (inferior (make-bytevector (sizeof int))))
+        (let-values (((ret err)
+                      (proc (bytevector->pointer head)
+                            (bytevector->pointer inferior)
+                            %null-pointer %null-pointer %null-pointer)))
+          (unless (zero? ret)
+            (throw 'system-error "openpty" "~A"
+                   (list (strerror err))
+                   (list err))))
+
+        (let ((* (lambda (bv)
+                   (bytevector-sint-ref bv 0 (native-endianness)
+                                        (sizeof int)))))
+          (values (* head) (* inferior)))))))
+
+(define login-tty
+  (let* ((ptr  (dynamic-func "login_tty" (dynamic-link "libutil")))
+         (proc (pointer->procedure int ptr (list int)
+                                   #:return-errno? #t)))
+    (lambda (fd)
+      "Make FD the controlling terminal of the current process (with the
+TIOCSCTTY ioctl), redirect standard input, standard output and standard error
+output to this terminal, and close FD."
+      (let-values (((ret err) (proc fd)))
+        (unless (zero? ret)
+          (throw 'system-error "login-pty" "~A"
+                 (list (strerror err))
+                 (list err)))))))
 
 
 ;;;
