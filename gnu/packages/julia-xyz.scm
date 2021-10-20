@@ -1895,6 +1895,51 @@ analysis of dense matrices.  The diagonal eigen-decomposition of normal
 matrices the Schur form is often more useful.")
     (license license:expat)))
 
+(define-public julia-geometrybasics
+  (package
+    (name "julia-geometrybasics")
+    (version "0.4.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGeometry/GeometryBasics.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "057j3hjpli3q5b98cqkpi4p10x2k9pyksrz62hjmv1kb5qzdvhsj"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-earcut
+           (lambda _
+             (substitute* '("Project.toml"
+                            "src/GeometryBasics.jl")
+               ((".*EarCut.*") ""))
+             #t))
+         (add-after 'unpack 'skip-incompatible-test
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("@testset.*MetaT and heterogeneous data.*" all)
+                (string-append all "return\n")))
+             #t)))))
+    (propagated-inputs
+     `(("julia-itertools" ,julia-itertools)
+       ("julia-staticarrays" ,julia-staticarrays)
+       ("julia-structarrays" ,julia-structarrays)
+       ("julia-tables" ,julia-tables)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaGeometry/GeometryBasics.jl")
+    (synopsis "Basic Geometry Types")
+    (description "This package aims to offer a standard set of Geometry types,
+which easily work with metadata, query frameworks on geometries and different
+memory layouts.  The aim is to create a solid basis for Graphics/Plotting,
+finite elements analysis, Geo applications, and general geometry manipulations
+- while offering a Julian API, that still allows performant C-interop.")
+    (license license:expat)))
+
 (define-public julia-gr
   (package
     (name "julia-gr")
