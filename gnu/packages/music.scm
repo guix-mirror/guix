@@ -6283,11 +6283,10 @@ ones.")
     (arguments
      `(#:tests? #f                      ; no "check" target
        #:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'set-CC-variable
-           (lambda _ (setenv "CC" "gcc") #t))
          (delete 'configure))))
     (inputs
      `(("cairo" ,cairo)
