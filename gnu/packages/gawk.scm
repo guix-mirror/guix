@@ -55,9 +55,7 @@
                              '((substitute* "extension/Makefile.in"
                                  (("^.*: check-for-shared-lib-support" match)
                                   (string-append "### " match))))
-                             '())
-
-                       #t)))
+                             '()))))
 
                  (add-before 'check 'adjust-test-infrastructure
                    (lambda _
@@ -80,14 +78,12 @@
                      ;; against the actual test output.
                      (substitute* "test/watchpoint1.ok"
                        (("#! /usr/bin/gawk")
-                        (string-append "#!" (which "gawk"))))
-                     #t)))))
+                        (string-append "#!" (which "gawk")))))))))
 
    (inputs `(("libsigsegv" ,libsigsegv)
-
-             ,@(if (%current-target-system)
-                   `(("bash" ,bash))
-                   '())))
+             ;; Use the full-fledged Bash package, otherwise the test suite
+             ;; sometimes fail non-deterministically.
+             ("bash" ,bash)))
 
    (home-page "https://www.gnu.org/software/gawk/")
    (synopsis "Text scanning and processing language")
