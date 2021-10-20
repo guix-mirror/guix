@@ -2448,6 +2448,39 @@ assigned its own index, which is used to retrieve the value from the
 indexed images, sometimes called \"colormap images\" or \"paletted images.\"")
     (license license:expat)))
 
+(define-public julia-infinity
+  (package
+    (name "julia-infinity")
+    (version "0.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/cjdoris/Infinity.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1941lwvrdjnrynigzixxin3chpg1ba6xplvcwc89x0f6z658hwmm"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-timezones.jl
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("using TimeZones.*") "")
+               ((".*infextendedtime.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("julia-requires" ,julia-requires)))
+    (native-inputs
+     `(("julia-compat" ,julia-compat)))
+    (home-page "https://docs.juliahub.com/Infinity/")
+    (synopsis "Representation of infinity in Julia")
+    (description "This package provides representations for infinity and
+negative infinity in Julia.")
+    (license license:expat)))
+
 (define-public julia-inifile
   (package
     (name "julia-inifile")
