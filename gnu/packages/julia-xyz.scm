@@ -1895,6 +1895,28 @@ analysis of dense matrices.  The diagonal eigen-decomposition of normal
 matrices the Schur form is often more useful.")
     (license license:expat)))
 
+(define-public julia-gr
+  (package
+    (name "julia-gr")
+    (version "0.58.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jheinen/GR.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "18zxa1w2wmrf44c5l10qbh99zjdp7h94gxlymh47cf5kj5fc4xmx"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-gr-jll" ,julia-gr-jll)))
+    (home-page "https://github.com/jheinen/GR.jl")
+    (synopsis "Plotting for Julia based on GR")
+    (description "This module provides a Julia interface to GR, a framework for
+visualisation applications.")
+    (license license:expat)))
+
 (define-public julia-graphics
   (package
     (name "julia-graphics")
