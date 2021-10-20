@@ -6483,7 +6483,7 @@ plugin support, JACK support and chord assistance.")
 (define-public dragonfly-reverb
   (package
     (name "dragonfly-reverb")
-    (version "3.2.1")
+    (version "3.2.5")
     (source
      (origin
        (method git-fetch)
@@ -6495,7 +6495,7 @@ plugin support, JACK support and chord assistance.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vfm2510shah67k87mdyar4wr4vqwii59y9lqfhwm6blxparkrqa"))))
+        (base32 "14kia9wjs0nqfx4psnr3vf4x6hihkf80gb0mjzmdnnnk4cnrdydm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -6523,8 +6523,7 @@ plugin support, JACK support and chord assistance.")
                                (and
                                  (equal? (dirname name) "bin")
                                  (not (string-suffix? ".so" name))
-                                 (not (string-suffix? ".lv2" name))))))
-               #t))))))
+                                 (not (string-suffix? ".lv2" name))))))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
