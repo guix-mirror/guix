@@ -52,6 +52,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
@@ -111,7 +112,8 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "5.0.14")
+    ;; When updating, remove the short-lived libbsd input and module import!
+    (version "5.0.28")
     (source
      (origin
        (method git-fetch)
@@ -120,7 +122,7 @@ readers and is needed to communicate with such devices through the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hyxsbxjjn9hh5p7jlcfb5yplf3n8dg49dfgi8fjp95phis3gbd4"))))
+        (base32 "0fmpdx09a60ndbsvy3m6w77naqy3j6k2ydq6jdcmdvxnr31z7fmf"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -133,6 +135,7 @@ readers and is needed to communicate with such devices through the
        ("perl" ,perl)))
     (inputs
      `(("curl" ,curl)
+       ("libbsd" ,libbsd)
        ("openssl" ,openssl)
        ("gtk+" ,gtk+)
        ("pcsc-lite" ,pcsc-lite)
@@ -152,22 +155,7 @@ readers and is needed to communicate with such devices through the
              (substitute* "scripts/build-aux/genver.sh"
                (("/bin/sh") (which "sh"))
                (("^(GITDESC=).*" _ match) (string-append match ,version "\n")))
-             (invoke "sh" "./bootstrap.sh")))
-         (add-after 'unpack 'make-reproducible
-           (lambda _
-             (substitute* "scripts/mac/create-vers.sh"
-               (("NOW=.*")
-                "NOW=1970-01-01\n"))
-             #t))
-         ;; Remove failing test that was removed upstream after version 5.0.8.
-         ;; See: https://github.com/Fedict/eid-mw/commit/3d1187b1b61118b9ae97607903d3d2fc0bad7518
-         (add-before 'check 'remove-failing-test
-           (lambda _
-             (substitute* "tests/unit/Makefile.am"
-               (("sign_state ordering cardcom_common")
-                "sign_state ordering #cardcom_common"))
-             #t))
-         )))
+             (invoke "sh" "./bootstrap.sh"))))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
 online services using the Belgian electronic identity card.")
