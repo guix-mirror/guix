@@ -2436,7 +2436,7 @@ compositors.")
 (define-public waypipe
   (package
     (name "waypipe")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -2445,15 +2445,8 @@ compositors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qa47ljfvb1vv3h647xwn1j5j8gfmcmdfaz4j8ygnkvj36y87vnz"))))
+        (base32 "1v08dv3dfz420v51ahz7qgv3429073kmgrf8f66s4c3jlpch2pa1"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sleep-path
-           (lambda* (#:key #:allow-other-keys)
-             (substitute* "./test/startup_failure.py"
-               (("sleep") (which "sleep"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("scdoc" ,scdoc)
