@@ -760,15 +760,14 @@ for use at smaller text sizes")))
                "psf"   ; PSF (console) version
                "bin")) ; Utilities to manipulate '.hex' format
     (arguments
-     '(#:tests? #f          ; no check target
+     `(#:tests? #f          ; no check target
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda _ (setenv "CC" "gcc")))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
+         (delete 'configure)
+         (replace 'install
+          (lambda* (#:key make-flags outputs #:allow-other-keys)
             (let* ((ttf (string-append (assoc-ref outputs "out")
                                        "/share/fonts/truetype"))
                    (pcf (string-append (assoc-ref outputs "pcf")
@@ -776,12 +775,12 @@ for use at smaller text sizes")))
                    (psf (string-append (assoc-ref outputs "psf")
                                        "/share/consolefonts"))
                    (bin (assoc-ref outputs "bin")))
-              (invoke "make"
-                      (string-append "PREFIX=" bin)
-                      (string-append "TTFDEST=" ttf)
-                      (string-append "PCFDEST=" pcf)
-                      (string-append "CONSOLEDEST=" psf)
-                      "install")
+              (apply invoke "make" "install"
+                     (string-append "PREFIX=" bin)
+                     (string-append "TTFDEST=" ttf)
+                     (string-append "PCFDEST=" pcf)
+                     (string-append "CONSOLEDEST=" psf)
+                     make-flags)
               ;; Move Texinfo file to the right place.
               (mkdir (string-append bin "/share/info"))
               (invoke "gzip" "-9n" "doc/unifont.info")
