@@ -36,6 +36,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -520,6 +521,55 @@ rendering library.")
     (home-page "https://github.com/JuliaBinaryWrappers/Glib_jll.jl")
     (synopsis "Glib library wrappers")
     (description "This package provides a wrapper for the glib library.")
+    (license license:expat)))
+
+(define-public julia-gr-jll
+  (package
+    (name "julia-gr-jll")
+    (version "0.58.1+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/GR_jll.jl")
+               (commit (string-append "GR-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "16m22n0wh86v3lh0im2pc9bg381djbmqji5hjx42j6aaz634gqiq"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("generate_wrapper_header.*")
+                    (string-append
+                      "generate_wrapper_header(\"GR\", \""
+                      (assoc-ref inputs "gr-framework") "\")\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("gr-framework" ,gr-framework)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)
+       ("julia-bzip2-jll" ,julia-bzip2-jll)
+       ("julia-cairo-jll" ,julia-cairo-jll)
+       ("julia-ffmpeg-jll" ,julia-ffmpeg-jll)
+       ("julia-fontconfig-jll" ,julia-fontconfig-jll)
+       ("julia-glfw-jll" ,julia-glfw-jll)
+       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
+       ("julia-libpng-jll" ,julia-libpng-jll)
+       ("julia-libtiff-jll" ,julia-libtiff-jll)
+       ("julia-pixman-jll" ,julia-pixman-jll)
+       ("julia-qt5base-jll" ,julia-qt5base-jll)
+       ("julia-zlib-jll" ,julia-zlib-jll)))
+    (home-page "https://github.com/JuliaBinaryWrappers/GR_jll.jl")
+    (synopsis "GR framework library wrappers")
+    (description "This package provides a wrapper for the GR framework.")
     (license license:expat)))
 
 (define-public julia-gumbo-jll
