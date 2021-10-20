@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,97 +57,37 @@
               (patches (search-patches "genimage-signedness.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:modules
+       ((ice-9 match)
+        ,@%gnu-build-system-modules)
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'guixify
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Note to maintainers: Check ".def =" lines in source.
-             (substitute* "config.c"
-              (("\\.def = \"cpio\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "cpio")
-                              "/bin/cpio\""))
-              (("\\.def = \"dd\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "coreutils")
-                              "/bin/dd\""))
-              (("\\.def = \"debugfs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "e2fsprogs")
-                              "/sbin/debugfs\""))
-              (("\\.def = \"e2fsck\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "e2fsprogs")
-                              "/sbin/e2fsck\""))
-              (("\\.def = \"genext2fs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "genext2fs")
-                              "/bin/genext2fs\""))
-              (("\\.def = \"genisoimage\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "cdrkit-libre")
-                              "/bin/genisoimage\""))
-              (("\\.def = \"mcopy\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "mtools")
-                              "/bin/mcopy\""))
-              (("\\.def = \"mmd\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "mtools")
-                              "/bin/mmd\""))
-              ;;; Note: mkcramfs is obsolete.
-              (("\\.def = \"mkdosfs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "dosfstools")
-                              "/sbin/mkfs.fat\""))
-              (("\\.def = \"mke2fs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "e2fsprogs")
-                              "/sbin/mke2fs\""))
-              (("\\.def = \"mkfs\\.jffs2\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "mtd-utils")
-                              "/sbin/mkfs.jffs2\""))
-              (("\\.def = \"mkfs\\.ubifs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "mtd-utils")
-                              "/sbin/mkfs.ubifs\""))
-              (("\\.def = \"mksquashfs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "squashfs-tools")
-                              "/bin/mksquashfs\""))
-              (("\\.def = \"qemu-img\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "qemu")
-                              "/bin/qemu-img\""))
-              (("\\.def = \"tar\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "tar")
-                              "/bin/tar\""))
-              (("\\.def = \"tune2fs\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "e2fsprogs")
-                              "/sbin/tune2fs\""))
-              (("\\.def = \"ubinize\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "mtd-utils")
-                              "/sbin/ubinize\""))
-              (("\\.def = \"mkimage\"")
-               (string-append ".def = \""
-                              (assoc-ref inputs "u-boot-tools")
-                              "/bin/mkimage\"")))
-             (substitute* "test/basic-images.test"
-              ;; Work around bug in sharness.sh.
-              (("mkdosfs")
-               "mkfs.fat")
-              ;; Work around bug in sharness.sh.
-              (("dd,mkfs\\.fat,mcopy")
-               "dd,mkfs_fat,mcopy")
-              ;; Should be in the next upstream release.
-              (("qemu_img") "qemu-img"))
+             (map (match-lambda
+                    ((input directory regexp)
+                     (substitute* "config.c"
+                       (((format #f "\\.def = \"(~a)\"" regexp) _ command)
+                        (format #f ".def = \"~a/~a/~a\""
+                                (assoc-ref inputs input) directory command)))))
+                  '(("cpio"           "bin"  "cpio")
+                    ("coreutils"      "bin"  "dd")
+                    ("e2fsprogs"      "sbin" "debugfs|e2fsck|mke2fs|tune2fs")
+                    ("genext2fs"      "bin"  "genext2fs")
+                    ("cdrkit-libre"   "bin"  "genisoimage")
+                    ("mtools"         "bin"  "mcopy|mmd")
+                    ;; mkcramfs is obsolete.
+                    ("dosfstools"     "sbin" "mkdosfs")
+                    ("mtd-utils"      "sbin" "mkfs.(jffs2|ubifs)|ubinize")
+                    ("squashfs-tools" "bin"  "mksquashfs")
+                    ("qemu"           "bin"  "qemu-img")
+                    ("tar"            "bin"  "tar")
+                    ("u-boot-tools"   "bin"  "mkimage")))
              (substitute* "util.c"
-              (("\"/bin/sh\"")
-               (string-append "\"" (assoc-ref inputs "bash") "/bin/sh\"")))
+               (("\"/bin/sh\"")
+                (string-append "\"" (assoc-ref inputs "bash") "/bin/sh\"")))))
+         (add-before 'check 'fix-failing-tests
+           (lambda _
              ;; We don't have /etc/passwd so uid 0 is not known as "root".
              ;; Thus patch it out.
              (substitute* '("test/ext2test.dump"
@@ -154,16 +95,14 @@
                             "test/ext4test.dump"
                             "test/ext2test-percent.dump"
                             "test/mke2fs.dump")
-              (("root") "unknown"))
-             #t))
+               (("root") "unknown"))))
          (add-before 'check 'setenv-check
            (lambda _
              ;; Our container doesn't provide access to /etc/mtab
              (setenv "EXT2FS_NO_MTAB_OK" "1")
              ;; Make test reproducible
              (setenv "GENIMAGE_MKFJFFS2" "mkfs.jffs2 -U")
-             (setenv "GENIMAGE_MKE2FS" "mke2fs -E no_copy_xattrs")
-             #t))
+             (setenv "GENIMAGE_MKE2FS" "mke2fs -E no_copy_xattrs")))
          (replace 'check
            (lambda _
              (invoke "make" "TEST_LOG_COMPILER=" "check"))))))
