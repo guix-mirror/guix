@@ -28879,6 +28879,26 @@ logging to plaintext, JSON, (rotating) files, memory buffers, and databases, as
 well as email and push notifications.")
     (license license:expat)))
 
+(define-public r-mhg
+  (package
+    (name "r-mhg")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mHG" version))
+       (sha256
+        (base32
+         "1rz5ncrvvv9h9grls15apa63v2nh9j87fmp4mwjjil37jx6a5zki"))))
+    (properties `((upstream-name . "mHG")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=mHG")
+    (synopsis "Minimum-hypergeometric test")
+    (description
+     "This package runs a minimum-hypergeometric (mHG) test as described in
+\"Discovering Motifs in Ranked Lists of DNA Sequences\" by Eran Eden.")
+    (license license:gpl2)))
+
 (define-public r-mlr3measures
   (package
     (name "r-mlr3measures")
