@@ -78,6 +78,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages lisp-check)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
@@ -3190,6 +3191,59 @@ relational database engine.")
 
 (define-public ecl-cl-sqlite
   (sbcl-package->ecl-package sbcl-cl-sqlite))
+
+(define-public sbcl-cl-redis
+  (let ((commit "7d592417421cf7cd1cffa96043b457af0490df7d")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-redis")
+      (version (git-version "2.3.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vseloved/cl-redis")
+               (commit commit)))
+         (file-name (git-file-name "cl-redis" version))
+         (sha256
+          (base32 "0x5ahxb5cx37biyn3cjycshhm1rr9p5cf1a9l5hd1n1xjxm2f8vi"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'start-redis
+             (lambda _
+               (system "redis-server --port 6379 &"))))))
+      (native-inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("redis" ,redis)
+         ("should-test" ,sbcl-should-test)))
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("rutils" ,sbcl-rutils)
+         ("usocket" ,sbcl-usocket)))
+      (home-page "https://github.com/vseloved/cl-redis")
+      (synopsis "Common Lisp client for Redis")
+      (description "This is a Common Lisp wrapper for interacting with the
+Redis data structure store.")
+      (license license:expat))))
+
+(define-public cl-redis
+  (sbcl-package->cl-source-package sbcl-cl-redis))
+
+(define-public ecl-cl-redis
+  (let ((pkg (sbcl-package->ecl-package sbcl-cl-redis)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ;; Tests are failing on ECL with:
+         ;;   Test L-COMMANDS: An error occurred during initialization:
+         ;;   Protocol not found: "tcp".
+         ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-parenscript
   ;; Source archives are overwritten on every release, we use the Git repo instead.
