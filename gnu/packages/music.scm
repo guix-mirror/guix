@@ -6268,7 +6268,7 @@ ones.")
 (define-public dpf-plugins
   (package
     (name "dpf-plugins")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -6278,8 +6278,7 @@ ones.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hsfmpv3kvpiwk8nfw9xpaipzy0n27i83y2v1yr93lznwm5rqrbs"))))
+        (base32 "0y7qvpfm34g6f7d786c6c9043dlbg5c4h71l2s24dsc9m8i7x2ww"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
