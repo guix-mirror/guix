@@ -235,6 +235,7 @@ files.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there is no check target
+       #:parallel-build? #f             ;randomly fails to link
        #:configure-flags ; Add $libdir to the RUNPATH of all the executables.
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        ;; Building in parallel is flaky: “ld: […]/cachetest.c:393: undefined
