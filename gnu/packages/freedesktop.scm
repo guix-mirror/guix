@@ -27,6 +27,7 @@
 ;;; Copyright © 2021 Robby Zambito <contact@robbyzambito.me>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -580,7 +581,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "243.7")
+    (version "246.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -589,26 +590,19 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ccj3cbs9nsfg497wg195in1a7b9csm1jdm7z6q7vvx1ynpjxlxz"))))
+                "16045bhpwjq2nqgswln67ipg1zrz2djxlgkfngqng3jqpwagmnzq"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       ;; TODO(core-updates): Use #$output unconditionally.
-       ,#~(let* ((out #$(if (%current-target-system)
-                            #~#$output
-                            #~(assoc-ref %outputs "out")))
+       ,#~(let* ((out #$output)
                  (sysconf (string-append out "/etc"))
                  (libexec (string-append out "/libexec/elogind"))
                  (dbuspolicy (string-append out "/etc/dbus-1/system.d"))
-                 ;; TODO(core-updates): use this-package-input unconditionally.
-                 (shadow #$(if (%current-target-system)
-                               (this-package-input "shadow")
-                               #~(assoc-ref %build-inputs "shadow")))
-                 (shepherd #$(if (%current-target-system)
-                                 (this-package-input "shepherd")
-                                 #~(assoc-ref %build-inputs "shepherd")))
+                 (kexec-tools #$(this-package-input "kexec-tools"))
+                 (shadow #$(this-package-input "shadow"))
+                 (shepherd #$(this-package-input "shepherd"))
                  (halt-path (string-append shepherd "/sbin/halt"))
-                 (kexec-path "")           ;not available in Guix yet
+                 (kexec-path (string-append kexec-tools "/sbin/kexec"))
                  (nologin-path (string-append shadow "/sbin/nologin"))
                  (poweroff-path (string-append shepherd "/sbin/shutdown"))
                  (reboot-path (string-append shepherd "/sbin/reboot")))
@@ -634,10 +628,17 @@ the freedesktop.org XDG Base Directory specification.")
            (lambda _
              (substitute* "meson.build"
                (("join_paths\\(bindir, 'pkttyagent'\\)")
-                "'\"/run/current-system/profile/bin/pkttyagent\"'"))
-             #t))
+                "'\"/run/current-system/profile/bin/pkttyagent\"'"))))
          (add-after 'unpack 'adjust-tests
            (lambda _
+             ;; Skip the following test, which depends on users such as 'root'
+             ;; existing in the build environment.
+             (invoke "sed" "/src\\/test\\/test-user-util.c/,+2s/^/#/g"
+                     "-i" "src/test/meson.build")
+             ;; FIXME: This one times out for unknown reasons.
+             (invoke "sed"
+                     "/src\\/libelogind\\/sd-event\\/test-event.c/,+2s/^/#/g"
+                     "-i" "src/test/meson.build")
              ;; This test tries to copy some bytes from /usr/lib/os-release,
              ;; which does not exist in the build container.  Choose something
              ;; more likely to be available.
@@ -674,13 +675,11 @@ the freedesktop.org XDG Base Directory specification.")
              ;; Just skip it until a more narrow selection can be made.
              (substitute* "src/libelogind/sd-login/test-login.c"
                (("test_login\\(\\);")
-                "return 77;"))
-             #t))
+                "return 77;"))))
          (add-after 'unpack 'change-pid-file-path
            (lambda _
              (substitute* "src/login/elogind.c"
-               (("\"/run/elogind.pid\"") "\"/run/systemd/elogind.pid\""))
-             #t)))))
+               (("\"/run/elogind.pid\"") "\"/run/systemd/elogind.pid\"")))))))
     (native-inputs
      `(("docbook-xml" ,docbook-xml)
        ("docbook-xml-4.2" ,docbook-xml-4.2)
@@ -693,7 +692,8 @@ the freedesktop.org XDG Base Directory specification.")
        ("python" ,python)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("linux-pam" ,linux-pam)
+     `(("kexec-tools" ,kexec-tools)
+       ("linux-pam" ,linux-pam)
        ("libcap" ,libcap)
        ("shadow" ,shadow)                    ;for 'nologin'
        ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
