@@ -7736,6 +7736,47 @@ supplement, not a competitor, to Alexandria.")
 (define-public ecl-serapeum
   (sbcl-package->ecl-package sbcl-serapeum))
 
+(define-public sbcl-rutils
+  (let ((commit "db3c3f4ae897025b5f0cd81042ca147da60ca0c5")
+        (revision "0"))
+    (package
+      (name "sbcl-rutils")
+      (version (git-version "5.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vseloved/rutils")
+               (commit commit)))
+         (file-name (git-file-name "rutils" version))
+         (sha256
+          (base32 "1d2whscknh1zga2vdqvfqri8wx0gnml3sfqz62igq0ppap6q07y3"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("rutils" "rutilsx")
+         ;; Tests disabled because of a circular dependency with should-test.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-build
+             (lambda _
+               ;; File faild to load, and we don't use it as tests are
+               ;; disabled, so let's delete it.
+               (delete-file "rutilsx-test.asd"))))))
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (home-page "https://github.com/vseloved/rutils")
+      (synopsis "Radical Utilities for Common Lisp")
+      (description "RUTILS is a syntactic utilities package for Common Lisp.")
+      (license license:bsd-3))))
+
+(define-public cl-rutils
+  (sbcl-package->cl-source-package sbcl-rutils))
+
+(define-public ecl-rutils
+  (sbcl-package->ecl-package sbcl-rutils))
+
 (define-public sbcl-arrows
   (let ((commit "df7cf0067e0132d9697ac8b1a4f1b9c88d4f5382")
         (revision "0"))
