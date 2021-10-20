@@ -2451,16 +2451,14 @@ compositors.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-sleep-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((coreutils (assoc-ref inputs "coreutils")))
-               (substitute* "./test/startup_failure.py"
-                 (("sleep") (string-append coreutils "/bin/sleep")))))))))
+           (lambda* (#:key #:allow-other-keys)
+             (substitute* "./test/startup_failure.py"
+               (("sleep") (which "sleep"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("scdoc" ,scdoc)
        ;; For tests
-       ("python" ,python)
-       ("coreutils" ,coreutils)))
+       ("python" ,python)))
     (home-page "https://gitlab.freedesktop.org/mstoeckl/waypipe")
     (synopsis "Proxy for Wayland protocol applications")
     (description
