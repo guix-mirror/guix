@@ -743,7 +743,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.06")
+    (version "14.0.01")
     (source
      (origin
        (method url-fetch)
@@ -753,7 +753,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "09g91g0gv76sadslp70m5xwfk3jf8kh7rpk2pz3l2hpldnjggpk8"))))
+        (base32 "0wkdn8h20pprna5a3hbny0qk2mgksrbxs2y6ng6qarj6rkpdmlbs"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -765,7 +765,7 @@ for use at smaller text sizes")))
        (modify-phases %standard-phases
          (replace
           'configure
-          (lambda _ (setenv "CC" "gcc") #t))
+          (lambda _ (setenv "CC" "gcc")))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
@@ -786,8 +786,7 @@ for use at smaller text sizes")))
               (mkdir (string-append bin "/share/info"))
               (invoke "gzip" "-9n" "doc/unifont.info")
               (install-file "doc/unifont.info.gz"
-                            (string-append bin "/share/info"))
-              #t))))))
+                            (string-append bin "/share/info"))))))))
     (inputs
      `(("perl" ,perl))) ; for utilities
     (synopsis
