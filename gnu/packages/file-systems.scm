@@ -88,7 +88,7 @@
 (define-public autofs
   (package
     (name "autofs")
-    (version "5.1.7")
+    (version "5.1.8")
     (source
      (origin
        (method url-fetch)
@@ -96,7 +96,7 @@
                            "v" (version-major version) "/"
                            "autofs-" version ".tar.xz"))
        (sha256
-        (base32 "1myfz6a3wj2c4j9h5g44zj796fdi82jhp1s92w2hg6xp2632csx3"))))
+        (base32 "1zf0fgf6kr9amxq5amlgsp1v13sizwl3wvx2xl7b4r2nhmci0gdk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -118,8 +118,7 @@
            (lambda _
              (substitute* "configure"
                (("^searchpath=\".*\"")
-                "searchpath=\"$PATH\""))
-             #t))
+                "searchpath=\"$PATH\""))))
          (add-before 'configure 'fix-rpath
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -132,8 +131,7 @@
            (lambda _
              (substitute* "modules/Makefile"
                (("ln -fs lookup_yp.so" match)
-                (string-append "# " match)))
-             #t)))))
+                (string-append "# " match))))))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
