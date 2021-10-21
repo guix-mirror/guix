@@ -473,7 +473,7 @@ lexical scope of its body."
 
   (synopsis package-synopsis)                    ; one-line description
   (description package-description)              ; one or two paragraphs
-  (license package-license)
+  (license package-license)                      ; <license> instance or list
   (home-page package-home-page)
   (supported-systems package-supported-systems    ; list of strings
                      (default %supported-systems))
