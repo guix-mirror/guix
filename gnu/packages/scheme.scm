@@ -444,7 +444,7 @@ mixed.")
 (define-public chibi-scheme
   (package
     (name "chibi-scheme")
-    (version "0.9")
+    (version "0.10")
     (home-page "https://github.com/ashinn/chibi-scheme")
     (source
      (origin
@@ -452,8 +452,7 @@ mixed.")
        (uri (git-reference (url home-page) (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1lnap41gl9vg82h557f4rlr69jgmd2gh0iqs6cxm77d39kv1scb8"))))
+        (base32 "0yhmj0lws3r3bl4ivs31dhlzxqc7f0dinixi904mraz1fmrg3w7f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
