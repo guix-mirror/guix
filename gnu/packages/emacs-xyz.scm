@@ -21143,7 +21143,7 @@ file.")
 (define-public emacs-packed
   (package
     (name "emacs-packed")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method git-fetch)
@@ -21152,8 +21152,7 @@ file.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "06blk8parnpq3qi6y5628q3v59c8dyi41glb289a0l16248qwphk"))))
+        (base32 "1gpv2vaci0m48fzn0sy7iwl1mnkkqc30bf05jjrqlpn9kpbjyf1p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacscollective/packed")
     (synopsis "Package manager agnostic Emacs Lisp package utilities")
