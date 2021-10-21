@@ -1564,6 +1564,7 @@ domains, their live performance and resource utilization statistics.")
                             "/lib")
              (string-append "ASCIIDOC=" (assoc-ref %build-inputs "asciidoc")
                             "/bin/asciidoc")
+             (string-append "PYTHON=python3")
              (string-append "XMLTO=" (assoc-ref %build-inputs "xmlto")
                             "/bin/xmlto"))
        #:phases
@@ -1583,14 +1584,7 @@ domains, their live performance and resource utilization statistics.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Hardcode arm version detection
              (substitute* "Makefile"
-               (("ARMV.*:=.*") "ARMV := 7\n"))
-             ;; We are currently using python-2
-             (substitute* "crit/Makefile"
-               (("\\$\\(PYTHON\\)") "python2"))
-             (substitute* "lib/Makefile"
-               (("\\$\\(PYTHON\\)")
-                (string-append (assoc-ref inputs "python")
-                               "/bin/python")))))
+               (("ARMV.*:=.*") "ARMV := 7\n"))))
          (add-before 'build 'fix-symlink
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The file 'images/google/protobuf/descriptor.proto' points to
@@ -1604,15 +1598,14 @@ domains, their live performance and resource utilization statistics.")
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'crit' runs with the correct PYTHONPATH.
-             (let* ((out (assoc-ref outputs "out"))
-                    (path (string-append out
-                                         "/lib/python"
-                                         (string-take (string-take-right
-                                                       (assoc-ref inputs "python") 5) 3)
-                                         "/site-packages:"
-                                         (getenv "PYTHONPATH"))))
+             (let* ((out  (assoc-ref outputs "out"))
+                    (site (string-append out "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages"))
+                    (path (getenv "PYTHONPATH")))
                (wrap-program (string-append out "/bin/crit")
-                 `("PYTHONPATH" ":" prefix (,path))))))
+                 `("PYTHONPATH" ":" prefix (,site ,path))))))
          (add-after 'install 'delete-static-libraries
            ;; Not building/installing these at all doesn't seem to be supported.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1620,9 +1613,8 @@ domains, their live performance and resource utilization statistics.")
                (for-each delete-file (find-files out "\\.a$"))))))))
     (inputs
      `(("protobuf" ,protobuf)
-       ("python" ,python-2)
-       ("python2-protobuf" ,python2-protobuf)
-       ("python2-ipaddr" ,python2-ipaddr)
+       ("python" ,python)
+       ("python-protobuf" ,python-protobuf)
        ("iproute" ,iproute)
        ("libaio" ,libaio)
        ("libcap" ,libcap)
