@@ -11071,6 +11071,39 @@ your package is installed, via @code{pkg_resources} (part of
 @code{setuptools}).")
     (license license:gpl3+)))
 
+(define-public python-filetype
+  (package
+    (name "python-filetype")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "filetype" version))
+       (sha256
+        (base32 "05mkinkcn36v1cnb5hzay3zxmv7jmmflckxxp08rgzbkkf3i9pvp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "-k"
+                       (string-append
+                        ;; Both tests fail with FileNotFoundError.
+                        "not test_infer_zip_from_disk"
+                        " and not test_infer_tar_from_disk"))))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)))
+    (home-page "https://github.com/h2non/filetype.py")
+    (synopsis "Infer file type and MIME type of any file/buffer")
+    (description "@code{filetype} is a small and dependency free Python
+package to infer file type and MIME type checking the magic numbers
+signature of a file or buffer.")
+    (license license:expat)))
+
 (define-public python-legacy-api-wrap
   (package
     (name "python-legacy-api-wrap")
