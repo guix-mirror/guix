@@ -7734,6 +7734,50 @@ of transcriptional heterogeneity among single cells.")
 analyze genomic data resulting from various experiments.")
     (license license:gpl2)))
 
+(define-public r-shaman
+  (let ((commit "d6944e8ac7bd1dbd5c6cec646eafc1d19d0ca96f")
+        (release "2.0")
+        (revision "2"))
+    (package
+      (name "r-shaman")
+      (version (git-version release revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tanaylab/shaman")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "03sx138dzpfiq23j49z0m0s4j79855mrg64hpj9c83408wzphxi6"))
+                (snippet
+                 ;; This file will be generated.
+                 '(delete-file "inst/doc/shaman-package.R"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-data-table" ,r-data-table)
+         ("r-domc" ,r-domc)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-gviz" ,r-gviz)
+         ("r-misha" ,r-misha)
+         ("r-plyr" ,r-plyr)
+         ("r-rann" ,r-rann)
+         ("r-rcpp" ,r-rcpp)
+         ("r-reshape2" ,r-reshape2)
+         ;; For vignettes
+         ("r-rmarkdown" ,r-rmarkdown)
+         ("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/tanaylab/shaman")
+      (synopsis "Sampling HiC contact matrices for a-parametric normalization")
+      (description "The Shaman package implements functions for
+resampling Hi-C matrices in order to generate expected contact
+distributions given constraints on marginal coverage and
+contact-distance probability distributions.  The package also provides
+support for visualizing normalized matrices and statistical analysis
+of contact distributions around selected landmarks.")
+      ;; Any version of the GPL
+      (license license:gpl3+))))
+
 (define-public r-centipede
   (package
     (name "r-centipede")
