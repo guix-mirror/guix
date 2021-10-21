@@ -1545,13 +1545,15 @@ domains, their live performance and resource utilization statistics.")
   (package
     (name "criu")
     (version "3.16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.openvz.org/criu/criu-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "13x4s7nms3ckb016d03icdsrw4k6f7i33qz9n84fzhmibm0grj70"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/checkpoint-restore/criu")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ddgmsry4k1ialbj0rwfcdrcsazdn72py7a084wjwb4g0al1jg9l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
