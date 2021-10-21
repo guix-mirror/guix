@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -731,6 +731,8 @@ ready for production.")
                (base32
                 "1d2k43k7i4yvbpi4sw1263a8d0q98z2n7aqhmpinpkih8a681vn5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CFLAGS=-fcommon")))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-schemas, etc.
        ("desktop-file-utils" ,desktop-file-utils)
