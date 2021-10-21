@@ -9729,7 +9729,7 @@ The following file formats are supported:
              "-DCMAKE_CXX_FLAGS=\"-DHAVE_NUMERIC_LIMITS128=1\""
              "-Dlibgff_FOUND=TRUE"
              "-DTBB_FOUND=TRUE"
-             ,(string-append "-DTBB_VERSION=" (package-version tbb-for-salmon))
+             ,(string-append "-DTBB_VERSION=" (package-version tbb-2020))
              "-DTBB_LIBRARIES=tbb -ltbbmalloc"
              "-DFETCHED_PUFFERFISH=TRUE"
              "-DUSE_SHARED_LIBS=TRUE")
@@ -9823,7 +9823,7 @@ The following file formats are supported:
                         (sha256
                          (base32
                           "0qb4a2nl1d59qasr17sslgxnkjd5kbk5mns4cjshrmsvkrqp995n"))))
-       ("tbb" ,tbb-for-salmon)
+       ("tbb" ,tbb-2020)
        ("libstadenio-for-salmon" ,libstadenio-for-salmon)
        ("xz" ,xz)
        ("zlib" ,zlib)))

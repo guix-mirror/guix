@@ -54,7 +54,7 @@ implementation work.  It provides parallel loop constructs, asynchronous
 tasks, synchronization primitives, atomic operations, and more.")
     (license asl2.0)))
 
-(define-public tbb-for-salmon
+(define-public tbb-2020
   (package
     (name "tbb")
     (version "2020.3")
