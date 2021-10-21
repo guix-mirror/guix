@@ -18358,14 +18358,14 @@ perform the operations required for synchronizing plain text.")
 (define-public python-levenshtein
   (package
     (name "python-levenshtein")
-    (version "0.12.0")
+    (version "0.12.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "python-Levenshtein" version))
       (sha256
        (base32
-        "1c9ybqcja31nghfcc8xxbbz9h60s9qi12b9hr4jyl69xbvg12fh3"))))
+        "1xj60gymwx1jl2ra9razx2wk8nb9cv1i7l8d14qsp8a8s7xra8yw"))))
     (build-system python-build-system)
     (home-page "https://github.com/ztane/python-Levenshtein")
     (synopsis "Fast computation of Levenshtein distance and string similarity")
