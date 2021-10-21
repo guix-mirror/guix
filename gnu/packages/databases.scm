@@ -775,8 +775,7 @@ Language.")
                               (unless (string-suffix? "CMakeLists.txt" file)
                                 (delete-file file)))
                             (append (find-files "extra/wolfssl")
-                                    (find-files "zlib")))
-                  #t))))
+                                    (find-files "zlib")))))))
     (build-system cmake-build-system)
     (outputs '("out" "lib" "dev"))
     (arguments
@@ -862,8 +861,7 @@ Language.")
                 "${INSTALL_INCLUDEDIR}"))
              (substitute* "cmake/mariadb_connector_c.cmake"
                (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_BINDIR\\}")
-                "${INSTALL_BINDIR}"))
-             #t))
+                "${INSTALL_BINDIR}"))))
          (add-after 'unpack 'adjust-tests
            (lambda _
              (let ((disabled-tests
@@ -912,8 +910,7 @@ Language.")
 
                (substitute* "mysql-test/mysql-test-run.pl"
                  (("/bin/ls") (which "ls"))
-                 (("/bin/sh") (which "sh")))
-               #t)))
+                 (("/bin/sh") (which "sh"))))))
          (add-before 'configure 'disable-plugins
            (lambda _
              (let ((disable-plugin (lambda (name)
@@ -924,14 +921,14 @@ Language.")
                                          (format port "\n")))))
                    (disabled-plugins '(;; XXX: Causes a test failure.
                                        "disks")))
-               (for-each disable-plugin disabled-plugins)
-               #t)))
+               (for-each disable-plugin disabled-plugins))))
          (replace 'check
            (lambda* (#:key (tests? #t) parallel-tests? #:allow-other-keys)
              (if tests?
                  (with-directory-excursion "mysql-test"
                    (invoke "./mtr" "--verbose"
                            "--retry=3"
+                           "--suite=main"
                            "--testcase-timeout=40"
                            "--suite-timeout=600"
                            "--parallel" (number->string (if parallel-tests?
@@ -942,8 +939,7 @@ Language.")
                            ;; failures even on powerful hardware.
                            "--skip-rpl"
                            "--skip-test-list=unstable-tests"))
-                 (format #t "test suite not run~%"))
-             #t))
+                 (format #t "test suite not run~%"))))
          (add-after
           'install 'post-install
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -988,9 +984,7 @@ Language.")
               (substitute* (list (string-append dev "/bin/mysql_config")
                                  (string-append dev "/lib/pkgconfig/mariadb.pc"))
                 (("-lssl -lcrypto" all)
-                 (string-append "-L" openssl "/lib " all)))
-
-              #t))))))
+                 (string-append "-L" openssl "/lib " all)))))))))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
