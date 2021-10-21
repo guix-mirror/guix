@@ -1458,8 +1458,7 @@ and auto-mapping slices to MIDI note numbers.")
                (("\\(search-executable '\\(\"gs\"\\)\\)")
                 (string-append "\"" (which "gs") "\""))
                (("\"/bin/sh\"")
-                (string-append "\"" (which "sh") "\"")))
-             #t))
+                (string-append "\"" (which "sh") "\"")))))
          (add-after 'fix-path-references 'adjust-to-API-change
            (lambda _
              (substitute* '("Documentation/pictures/GNUmakefile"
@@ -1479,14 +1478,12 @@ and auto-mapping slices to MIDI note numbers.")
                ;; Also allow for SOURCE_DATE_EPOCH = 0 in fontforge.
                (("20110222") "19700101"))
              (setenv "out" "www")
-             (setenv "conf" "www")
-             #t))
+             (setenv "conf" "www")))
          (add-after 'install 'install-info
            (lambda _
              (invoke "make"
                      "-j" (number->string (parallel-job-count))
-                     "conf=www" "install-info")
-             #t)))))
+                     "conf=www" "install-info"))))))
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
