@@ -94,12 +94,12 @@ platform-neutral API for system level and libc-like functions.  It is used
 in the Mozilla clients.")
     (license license:mpl2.0)))
 
-;;; Note: When updating, also update the nss-certs package, which cannot
-;;; inherit from here.
+;;; Note: When updating, verify that the nss-certs package still builds fine
+;;; as it inherits its source from the nss package.
 (define-public nss
   (package
     (name "nss")
-    (version "3.67")
+    (version "3.71")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -110,7 +110,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0zyfi27lbdz1bmk9dmsivcya4phx25rzlxqcnjab69yd928rlm7n"))
+                "0ly2l3dv6z5hlxs72h5x6796ni3x1bq60saavaf42ddgv4ax7b4r"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-3.56-pkgconfig.patch"
                                        "nss-getcwd-nonnull.patch"
@@ -163,7 +163,7 @@ in the Mozilla clients.")
                    ;; leading to test failures:
                    ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
                    ;; work around that, set the time to roughly the release date.
-                   (invoke "faketime" "2021-06-01" "./nss/tests/all.sh"))
+                   (invoke "faketime" "2021-09-30" "./nss/tests/all.sh"))
                  (format #t "test suite not run~%"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -187,9 +187,7 @@ in the Mozilla clients.")
                (copy-recursively (string-append obj "/bin") bin)
                (copy-recursively (string-append obj "/lib") lib)))))))
     (inputs
-     `(;; XXX: Build with SQLite 3.33 to work around
-       ;; https://bugzilla.mozilla.org/show_bug.cgi?id=1714874
-       ("sqlite" ,sqlite-3.33)
+     `(("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("nspr" ,nspr)))                 ;required by nss.pc.
