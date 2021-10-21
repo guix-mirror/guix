@@ -11154,6 +11154,25 @@ package to infer file type and MIME type checking the magic numbers
 signature of a file or buffer.")
     (license license:expat)))
 
+(define-public python-cachelib
+  (package
+    (name "python-cachelib")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cachelib" version))
+       (sha256
+        (base32 "0vs7nimlbhqy9kjcc90nswkhs3kgl28ag19jssx9qwlcsrkmmsa7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;no tests
+    (home-page "https://github.com/pallets/cachelib")
+    (synopsis "Collection of cache libraries")
+    (description "Cachelib is a library extracted from @code{werkzeug} which
+provides a collection of cache libraries in the same API interface.")
+    (license license:bsd-3)))
+
 (define-public python-legacy-api-wrap
   (package
     (name "python-legacy-api-wrap")
