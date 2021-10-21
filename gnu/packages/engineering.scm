@@ -315,7 +315,8 @@ utilities.")
                (string-append "--with-pcb-datadir=" pcb "/share")
                (string-append "--with-pcb-lib-path="
                               pcb "/share/pcb/pcblib-newlib:"
-                              pcb "/share/pcb/newlib")))
+                              pcb "/share/pcb/newlib")
+               "CFLAGS=-fcommon"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-dynamic-link
