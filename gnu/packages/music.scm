@@ -3455,7 +3455,13 @@ and hold, etc.")
                             "/include/"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'build 'target-specific-glib-API-version
+           (lambda _
+             ;; See https://github.com/brummer10/gxtuner/pull/21
+             (setenv "CFLAGS"
+                     "-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_54\
+ -DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_54"))))))
     (inputs
      `(("gtk+" ,gtk+)
        ("jack" ,jack-1)
