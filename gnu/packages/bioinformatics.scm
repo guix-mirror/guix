@@ -1311,6 +1311,56 @@ relying on a complex dependency tree.")
 (define-public python2-fastalite
   (package-with-python2 python-fastalite))
 
+(define-public ciri-long
+  (package
+    (name "ciri-long")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bioinfo-biols/CIRI-long")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "10k88i1fcqchrrjv82rmylwvbwqfba0n51palhig9hsg71xs0dbi"))
+       ;; Delete bundled binary
+       (snippet '(delete-file "libs/ccs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("'argparse[^']*',") "") ; only for python2
+               (("==") ">="))))
+         (add-before 'build 'build-libssw
+           (lambda _
+             (with-directory-excursion "libs/striped_smith_waterman"
+               (invoke "make" "libssw.so")))))))
+    (inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-bwapy" ,python-bwapy)
+       ("python-cython" ,python-cython)
+       ("python-levenshtein" ,python-levenshtein)
+       ("python-mappy" ,python-mappy)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-pyspoa" ,python-pyspoa)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://ciri-cookbook.readthedocs.io/")
+    (synopsis "Circular RNA identification for Nanopore sequencing")
+    (description "CIRI-long is a package for circular RNA identification using
+long-read sequencing data.")
+    (license license:expat)))
+
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
