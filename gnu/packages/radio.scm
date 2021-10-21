@@ -1069,7 +1069,7 @@ you must extend 'udev-service-type' with this package.  E.g.:
 (define-public hamlib
   (package
     (name "hamlib")
-    (version "4.2")
+    (version "4.3.1")
     (source
      (origin
        (method url-fetch)
@@ -1077,7 +1077,7 @@ you must extend 'udev-service-type' with this package.  E.g.:
              "https://github.com/Hamlib/Hamlib/releases/download/"
              version "/hamlib-" version ".tar.gz"))
        (sha256
-        (base32 "1m8gb20i8ga6ndnnw187ry1h4z8wx27v1hl7c610r6ky60pv4072"))))
+        (base32 "0c578m04zs8dllbd4cv6nxb44y0dn8kiapzkih84ycfjzmnkhdrl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
