@@ -29214,14 +29214,14 @@ work on alists, hash-table and arrays.  All functions are prefixed with
 (define-public emacs-xref
   (package
     (name "emacs-xref")
-    (version "1.3.0")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/xref-"
                            version ".tar"))
        (sha256
-        (base32 "0bw2cbxmjavzhmpd9gyl41d4c201p535jrfz3b7jb5zw12jdnppl"))))
+        (base32 "13bsaxdxwn14plaam0hsrswngh3rm2k29v5ybjgjyjy4d5vwz78j"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xref.html")
     (synopsis "Cross-referencing commands")
