@@ -1245,14 +1245,14 @@ sequencing.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.73")
+    (version "1.76")
     (source (origin
               (method url-fetch)
               ;; use PyPi rather than biopython.org to ease updating
               (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "1q55jhf76z3k6is3psis0ckbki7df26x7dikpcc3vhk1vhkwribh"))))
+                "0wlch9xpa0fpgjzyxi6jsfca6iakaq9a05927xg8vqnmvaccnwrq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1272,6 +1272,18 @@ common operations on them; code to perform data classification; code for
 dealing with alignments; code making it easy to split up parallelizable tasks
 into separate processes; and more.")
     (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))))
+
+(define-public python-biopython-1.73
+  (package
+    (inherit python-biopython)
+    (version "1.73")
+    (source (origin
+              (method url-fetch)
+              ;; use PyPi rather than biopython.org to ease updating
+              (uri (pypi-uri "biopython" version))
+              (sha256
+               (base32
+                "1q55jhf76z3k6is3psis0ckbki7df26x7dikpcc3vhk1vhkwribh"))))))
 
 (define-public python2-biopython
   (package-with-python2 python-biopython))
@@ -11730,7 +11742,7 @@ set.")
                (("from job_utils")
                 "from .job_utils")))))))
     (inputs
-     `(("python-biopython" ,python-biopython)
+     `(("python-biopython" ,python-biopython-1.73)
        ("python-boto3" ,python-boto3)
        ("python-h5py" ,python-h5py)
        ("python-lmfit" ,python-lmfit)
