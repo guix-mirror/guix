@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
@@ -80,6 +80,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
@@ -98,6 +99,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -1377,7 +1379,7 @@ multiple files.")
 (define-public pdfpc
   (package
     (name "pdfpc")
-    (version "4.4.1")
+    (version "4.5.0")
     (source
      (origin
        (method git-fetch)
@@ -1386,18 +1388,31 @@ multiple files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11n925c5jj3yfwnqkgxzqrmsrpqh8ls1g4idmqqzpsanpam1xvna"))))
+        (base32 "0bmy51w6ypz927hxwp5g7wapqvzqmsi3w32rch6i3f94kg1152ck"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))          ; no test target
+    (arguments
+     '(#:tests? #f          ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         ;; This is really a bug in Vala.
+         ;; https://github.com/pdfpc/pdfpc/issues/594
+         (add-after 'unpack 'fix-vala-API-conflict
+           (lambda _
+             (substitute* "src/classes/action/movie.vala"
+               (("info.from_caps\\(caps\\)")
+                "Gst.Video.info_from_caps(out info, caps)")))))))
     (inputs
      `(("cairo" ,cairo)
+       ("discount" ,discount) ; libmarkdown
        ("gtk+" ,gtk+)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("json-glib" ,json-glib)
        ("libgee" ,libgee)
        ("poppler" ,poppler)
        ("pango" ,pango)
-       ("vala" ,vala)))
+       ("vala" ,vala)
+       ("webkitgtk" ,webkitgtk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://pdfpc.github.io/")
@@ -1409,7 +1424,7 @@ is able to show a normal presentation window on one screen, while showing a
 more sophisticated overview on the other one providing information like a
 picture of the next slide, as well as the left over time till the end of the
 presentation.  The input files processed by pdfpc are PDF documents.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public paps
   (package
