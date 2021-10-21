@@ -1722,7 +1722,7 @@ directly.")
       (home-page "https://bitbucket.org/agriggio/ahg")
       (synopsis "Emacs front-end for the Mercurial SCM")
       (description
-       "This packages provides a simple Emacs front-end for the Mercurial
+       "This package provides a simple Emacs front-end for the Mercurial
 Distributed @acronym{Source Control Management, SCM} system.")
       (license license:gpl3+))))
 
@@ -29509,7 +29509,7 @@ shorter than usual, using mostly unprefixed keys.")
      `(("emacs-yaml-mode" ,emacs-yaml-mode)))
     (home-page "https://github.com/tom-tan/cwl-mode")
     (synopsis "Emacs mode for @acronym{CWL, Common Workflow Language} files")
-    (description "This packages provides a major mode for editing
+    (description "This package provides a major mode for editing
 @acronym{CWL, Common Workflow Language} files.")
     (license license:gpl3+)))
 

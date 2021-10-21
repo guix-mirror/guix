@@ -807,7 +807,7 @@ programming language.")))
                  ;; The nginx source code is part of the module’s source.
                  (format #t "decompressing nginx source code~%")
                  (invoke "tar" "xvf" (assoc-ref inputs "nginx-sources")
-                         ;; This packages's LICENSE file would be
+                         ;; This package's LICENSE file would be
                          ;; overwritten with the one from nginx when
                          ;; unpacking the nginx source, so rename the nginx
                          ;; one when unpacking.

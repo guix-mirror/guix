@@ -27044,8 +27044,8 @@ result.")
     (home-page "https://github.com/readthedocs/recommonmark")
     (synopsis "Docutils-compatibility bridge to CommonMark")
     (description
-     "This packages provides a docutils-compatibility bridge to CommonMark,
-enabling you to write CommonMark inside of Docutils & Sphinx projects.")
+     "This package provides a docutils-compatibility bridge to CommonMark that
+lets you write CommonMark inside of Docutils & Sphinx projects.")
     (license license:expat)))
 
 (define-public python-pyhull

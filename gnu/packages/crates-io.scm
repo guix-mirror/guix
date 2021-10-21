@@ -20512,7 +20512,7 @@ IEEE 754-2008 binary16 type.")
        (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/brson/home")
     (synopsis "Shared definitions of home directories")
-    (description "This packages provides the definition of @code{home_dir}
+    (description "This package provides the definition of @code{home_dir}
 used by @command{cargo} and @command{rustup}, as well as functions to find the
 correct value of @samp{CARGO_HOME} and @samp{RUSTUP_HOME}.")
     (license (list license:expat license:asl2.0))))

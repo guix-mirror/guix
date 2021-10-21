@@ -7262,8 +7262,8 @@ these missing pieces.")
     (synopsis
      "Backport new syntax to older OCaml versions")
     (description
-     "This packages backports new features of the language to older
-compilers, such as let+.")
+     "This package backports new language features such as @code{let+} to older
+OCaml compilers.")
     (license license:expat)))
 
 (define-public ocaml-angstrom
