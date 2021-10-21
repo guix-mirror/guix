@@ -72,18 +72,22 @@
        #:make-flags (list (string-append "GLOBALCONF="
                                          (assoc-ref %outputs "out")
                                          "/etc/boxes-config"))
+       #:modules
+       ((ice-9 match)
+        ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((dest (assoc-ref outputs "out")))
-               (for-each (lambda (x)
-                           (install-file (car x)
-                                         (string-append dest "/" (cdr x))))
-                         '(("out/boxes" . "bin")
-                           ("doc/boxes.1" . "share/man/man1")
-                           ("boxes-config" . "etc/")))))))))
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (match-lambda
+                           ((source target)
+                            (install-file source
+                                          (string-append out "/" target))))
+                         '(("out/boxes"    "bin/")
+                           ("doc/boxes.1"  "share/man/man1/")
+                           ("boxes-config" "etc/")))))))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
