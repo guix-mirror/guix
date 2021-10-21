@@ -207,7 +207,7 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.10.0")
+    (version "1.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -216,7 +216,7 @@ plans and designs.")
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "06ivgarvwbzjz2wigxzzkm8iszldi2p6x3a6jnlczjyrz4csddsy"))))
+                "19688b0671imy2i3jphcnq1120b8ymhr4wz2psiqylr82ljanqp8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -251,7 +251,8 @@ plans and designs.")
        ("pcb" ,pcb)
        ("python" ,python-2))) ; for xorn
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("groff" ,groff)
+       ("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
        ("perl" ,perl))) ; for tests
     (home-page "http://geda-project.org/")
