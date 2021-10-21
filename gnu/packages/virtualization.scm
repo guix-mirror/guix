@@ -1568,14 +1568,8 @@ domains, their live performance and resource utilization statistics.")
                             "/bin/xmlto"))
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The includes for libnl are located in a sub-directory.
-             (setenv "C_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "libnl")
-                                    "/include/libnl3:"
-                                    (or (getenv "C_INCLUDE_PATH") "")))))
-         (add-after 'configure 'fix-documentation
+         (delete 'configure)            ; no configure script
+         (add-after 'unpack 'fix-documentation
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Documentation/Makefile"
                (("-m custom.xsl")
