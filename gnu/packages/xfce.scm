@@ -2130,3 +2130,28 @@ lan interface (signal state, signal quality, network name (SSID)).")
 local weather in the panel, using forecast data provided by the
 @uref{https://met.no, Norwegian Meteorological Institute}.")
     (license gpl2+)))
+
+(define-public xfce4-dev-tools
+  (package
+    (name "xfce4-dev-tools")
+    (version "4.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  "xfce4-dev-tools/" (version-major+minor version) "/"
+                                  "xfce4-dev-tools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1iwkqj96x2s7fk4srg1pymvsiwb2rn6vvhy6hrmnc3hl1vqw2d6k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://docs.xfce.org/xfce/xfce4-dev-tools/")
+    (synopsis "Xfce developer tools")
+    (description
+     "The Xfce development tools are a collection of tools and macros for Xfce
+developers and people that want to build Xfce from Git In addition it contains
+the Xfce developer's handbook.")
+    (license gpl2+)))
