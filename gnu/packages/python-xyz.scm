@@ -9693,6 +9693,29 @@ applications.")
      "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
     (license license:bsd-4)))
 
+(define-public python-immutabledict
+  (package
+    (name "python-immutabledict")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "immutabledict" version))
+       (sha256
+        (base32 "0fpc4gbk7inpfbgdypsg6c18bmdjw8gwx47bjw0hvixn3gghxnqx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests in PyPI release and no setup.py in GitHub
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/corenting/immutabledict")
+    (synopsis "Immutable wrapper around dictionaries")
+    (description
+     "@dfn{immutabledict} is an immutable wrapper around dictionaries.
+It implements the complete mapping interface and can be used as a drop-in
+replacement for dictionaries where immutability is desired.")
+    (license license:expat)))
+
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
   ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
