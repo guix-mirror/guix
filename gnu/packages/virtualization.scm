@@ -1544,7 +1544,7 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.16")
+    (version "3.16.1")
     (source
      (origin
        (method git-fetch)
@@ -1553,7 +1553,7 @@ domains, their live performance and resource utilization statistics.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ddgmsry4k1ialbj0rwfcdrcsazdn72py7a084wjwb4g0al1jg9l"))))
+        (base32 "1riw15197fnrs254jl7wks9x8bdml76kf1vnqkkgyypr13dnq55g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
