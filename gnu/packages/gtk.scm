@@ -2853,7 +2853,8 @@ library for drawing.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-glade"
-                               "--enable-introspection")
+                               "--enable-introspection"
+                               "CFLAGS=-fcommon")
        #:phases
        (modify-phases %standard-phases
          ;; The "configure" script is present, but otherwise the project is
@@ -2863,11 +2864,14 @@ library for drawing.")
            (lambda _
              (delete-file "configure")
              #t))
-         (add-after 'unpack 'rename-type
+         (add-after 'unpack 'patch-for-compatibility
            (lambda _
              (substitute* "glade/glade-gtksheet-editor.c"
                (("GladeEditableIface") "GladeEditableInterface"))
-             #t))
+             ;; Glade 3.37 renamed the macro GWA_GET_CLASS to
+             ;; GLADE_WIDGET_ADAPTOR_GET_ADAPTOR_CLASS.
+             (substitute* "glade/glade-gtksheet-editor.c"
+               (("GWA_GET_CLASS") "GLADE_WIDGET_ADAPTOR_GET_ADAPTOR_CLASS"))))
          ;; Fix glade install directories.
          (add-before 'bootstrap 'configure-glade-directories
            (lambda* (#:key outputs #:allow-other-keys)
