@@ -7331,6 +7331,37 @@ specified group of genes for a pathway has a coordinated association with a
 phenotype of interest.")
     (license license:gpl2)))
 
+(define-public r-fcscan
+  (package
+    (name "r-fcscan")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "fcScan" version))
+       (sha256
+        (base32 "10fcz741dr3wbb9f63qywlrays4cnvfnsm6yw4bmkrwk6ccijg8h"))))
+    (properties `((upstream-name . "fcScan")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-plyr" ,r-plyr)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/fcScan")
+    (synopsis "Detect clusters of coordinates with user defined options")
+    (description
+     "This package is used to detect combination of genomic coordinates
+falling within a user defined window size along with user defined overlap
+between identified neighboring clusters.  It can be used for genomic data
+where the clusters are built on a specific chromosome or specific strand.
+Clustering can be performed with a \"greedy\" option allowing thus the
+presence of additional sites within the allowed window size.")
+    (license license:artistic2.0)))
+
 (define-public r-fgsea
   (package
     (name "r-fgsea")
