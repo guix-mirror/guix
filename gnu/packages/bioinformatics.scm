@@ -11710,14 +11710,14 @@ set.")
 (define-public instrain
   (package
     (name "instrain")
-    (version "1.5.2")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "inStrain" version))
        (sha256
         (base32
-         "0ykqlpf6yz4caihsaz3ys00cyvlr7wdj4s9a8rh56q5r8xf80ic0"))))
+         "05w1lw75x4lwkzg4qpi055g7hdjp9rnc4ksbxg2hfgksq9djk0hx"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
