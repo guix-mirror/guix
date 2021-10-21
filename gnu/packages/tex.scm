@@ -6419,6 +6419,7 @@ now contains a package @code{fix-cm},f which performs the task of
                     "0vw75i52asi5sssp8k9r8dy4ihvqbvmbsl3dini3ls8cky15lz37"))))
     (package
       (inherit template)
+      (outputs '("out" "doc"))
       (arguments
        (substitute-keyword-arguments (package-arguments template)
          ((#:tex-directory _ #t)
@@ -6428,7 +6429,22 @@ now contains a package @code{fix-cm},f which performs the task of
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'unpack 'chdir
-               (lambda _ (chdir "source/latex/lh") #t))))))
+               (lambda _ (chdir "source/latex/lh")))
+             (replace 'copy-files
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((source (assoc-ref inputs "source"))
+                        (doc (string-append (assoc-ref outputs "doc")
+                                           "/share/texmf-dist/doc"))
+                        (target (string-append (assoc-ref outputs "out")
+                                               "/share/texmf-dist"))
+                        (tex (string-append target "/tex/latex/lh/")))
+                   (copy-recursively "build/" tex)
+                   (copy-recursively (string-append source "/fonts/source/lh")
+                                     (string-append target "/fonts/source/lh"))
+                   (copy-recursively (string-append source "/tex/plain/lh")
+                                     (string-append target "/tex/plain/lh"))
+                   (copy-recursively (string-append source "/doc")
+                                     doc))))))))
       (home-page "https://www.ctan.org/pkg/lh")
       (synopsis "Cyrillic fonts that support LaTeX standard encodings")
       (description
