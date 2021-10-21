@@ -1460,6 +1460,15 @@ and auto-mapping slices to MIDI note numbers.")
                (("\"/bin/sh\"")
                 (string-append "\"" (which "sh") "\"")))
              #t))
+         (add-after 'fix-path-references 'adjust-to-API-change
+           (lambda _
+             (substitute* '("Documentation/pictures/GNUmakefile"
+                            "stepmake/stepmake/tex-rules.make")
+               ((".*-c .setpdfwrite.*") ""))
+             (substitute* "scm/backend-library.scm"
+               (("\"-c.setpdfwrite\"") ""))
+             (substitute* "scm/framework-ps.scm"
+               (("\".setpdfwrite ") "\""))))
          (add-before 'configure 'prepare-configuration
            (lambda _
              (substitute* "configure"
