@@ -106,6 +106,7 @@
   #:use-module (gnu packages java-compression)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages jupyter)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lsof)
@@ -15111,6 +15112,31 @@ the @dfn{partial order alignment} (POA) algorithm (as described in
 10.1093/bioinformatics/18.3.452) which is used to generate consensus
 sequences")
     (license license:expat)))
+
+(define-public python-bwapy
+  (package
+    (name "python-bwapy")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bwapy" version))
+       (sha256
+        (base32 "090qwx3vl729zn3a7sksbviyg04kc71gpbm3nd8dalqp673x1npw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-setuptools" ,python-setuptools)
+       ("python-wheel" ,python-wheel)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/ACEnglish/bwapy")
+    (synopsis "Python bindings to bwa alinger")
+    (description "This package provides Python bindings to the bwa mem
+aligner.")
+    ;; These Python bindings are licensed under Mozilla Public License 2.0,
+    ;; bwa itself is licenced under GNU General Public License v3.0.
+    (license license:mpl2.0)))
 
 (define-public scregseg
   (package
