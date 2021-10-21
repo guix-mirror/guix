@@ -935,13 +935,15 @@ work well with other GTK+ desktop environments.")
        ("perl-pdf-api2" ,perl-pdf-api2)
        ("perl-libintl-perl" ,perl-libintl-perl)
        ("unicode-blocks"
-        ,(origin
-           (method url-fetch)
-           (uri "https://unicode.org/Public/UNIDATA/Blocks.txt")
-           (file-name "unicode-blocks.txt")
-           (sha256
-            (base32
-             "1xs8fnhh48gs41wg004r7m4r2azh9khmyjjlnvyzy9c6zrd212x2"))))))
+        ,(let ((version "14.0.0"))
+           (origin
+             (method url-fetch)
+             (uri (string-append "https://unicode.org/Public/"
+                                 version "/ucd/Blocks.txt"))
+             (file-name (string-append "unicode-blocks-" version ".txt"))
+             (sha256
+              (base32
+               "05vzgrvfp35mgxjgkm4wnxjjgzva8n6545i9jxd4pczpvvfp122r")))))))
     (home-page "https://github.com/eugmes/fntsample")
     (synopsis "PDF and PostScript font samples generator")
     (description "This package provides a tool that can be used to make font
