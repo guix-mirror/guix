@@ -891,7 +891,7 @@ work well with other GTK+ desktop environments.")
 (define-public fntsample
   (package
     (name "fntsample")
-    (version "5.3")
+    (version "5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -900,7 +900,7 @@ work well with other GTK+ desktop environments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02rx3gp7k472304vhjwb129nw10a29s4nvgs7i2m6bpjhlk2xgs5"))))
+                "0pcqqdriv6hq64zrqd9vhdd9p2vhimjnajcxdz10qnqgrkmm751v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -921,8 +921,7 @@ work well with other GTK+ desktop environments.")
                                              "/lib/perl5/site_perl/"
                                              ,(package-version perl))))
                (wrap-program (string-append out "/bin/pdfoutline")
-                 `("PERL5LIB" ":" prefix (,perllib)))
-               #t))))))
+                 `("PERL5LIB" ":" prefix (,perllib)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
