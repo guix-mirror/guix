@@ -866,9 +866,9 @@ program capable of converting PDF into other formats.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "qpdfview.pri"
-               (("/usr") (assoc-ref %outputs "out")))
+               (("/usr") (assoc-ref outputs "out")))
              (invoke "qmake" "qpdfview.pro"))))))
     (home-page "https://launchpad.net/qpdfview")
     (synopsis "Tabbed document viewer")
