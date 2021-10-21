@@ -457,16 +457,16 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
 (define-public emacs-vc-hgcmd
   (package
     (name "emacs-vc-hgcmd")
-    (version "1.14")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/muffinmad/emacs-vc-hgcmd")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1mm8lnwii53j32v54aahl8sf3ciwymrvc1rgy4nw2m7hcrnjsb78"))))
+    (version "1.14.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/muffinmad/emacs-vc-hgcmd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nlaicza4ds325827ks5gb7zn0nc536k2chq8jwbq34ybvxi93wj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/muffinmad/emacs-vc-hgcmd")
     (synopsis "Version control (VC) backend for the Mercurial command server")
