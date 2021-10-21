@@ -93,11 +93,11 @@
     (inputs
      `(("libunistring" ,libunistring)
        ("pcre2" ,pcre2)))
+    (home-page "https://boxes.thomasjensen.com")
     (synopsis "Command line ASCII boxes")
     (description
      "This command-line filter program draws ASCII-art boxes around your input
 text.")
-    (home-page "https://boxes.thomasjensen.com/build.html")
     (license license:gpl2)))
 
 (define-public zsh-autosuggestions
