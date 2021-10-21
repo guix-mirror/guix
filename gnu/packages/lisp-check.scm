@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,6 +18,9 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; This module only contains Common Lisp libraries related to code testing
+;;; facilities.
+
 (define-module (gnu packages lisp-check)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
@@ -23,11 +28,6 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system asdf))
-
-;;; Commentary:
-;;;
-;;; This module only contains Common Lisp libraries related to code testing
-;;; facilities.
 
 (define-public sbcl-nst
   (let ((commit "6c0990f594abcf5887e8d80f1035e3b60454b61b")
@@ -60,4 +60,37 @@
 (define-public cl-nst
   (sbcl-package->cl-source-package sbcl-nst))
 
-;;; lisp-check.scm ends here
+(define-public sbcl-should-test
+  (let ((commit "48facb9f9c07aeceb71fc0c48ce17fd7d54a09d4")
+        (revision "0"))
+    (package
+      (name "sbcl-should-test")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vseloved/should-test")
+               (commit commit)))
+         (file-name (git-file-name "should-test" version))
+         (sha256
+          (base32 "1fqqa7lhf28qg60ji9libkylkcy747x576qpjn1y7c945j2fxmnm"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)
+         ("osicat" ,sbcl-osicat)
+         ("rutils" ,sbcl-rutils)))
+      (home-page "https://github.com/vseloved/should-test")
+      (synopsis "Minimal yet feature-rich Common Lisp test framework")
+      (description
+       "SHOULD-TEST is a methodology-agnostic and non-opinionated Common Lisp
+test framework, i.e. it doesn't care what kind of test approach you'd like to
+take.")
+      (license license:expat))))
+
+(define-public cl-should-test
+  (sbcl-package->cl-source-package sbcl-should-test))
+
+(define-public ecl-should-test
+  (sbcl-package->ecl-package sbcl-should-test))
