@@ -42,18 +42,21 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages shells)
-  #:use-module (gnu packages tmux))
+  #:use-module (gnu packages tmux)
+  #:use-module (gnu packages vim))
 
 (define-public boxes
   (package
     (name "boxes")
-    (version "1.3")
+    (version "2.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -62,7 +65,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0b12rsynrmkldlwcb62drk33kk0aqwbj10mq5y5x3hjf626gjwsi"))))
+                "1bf5rnfiw04ffs1l17zhbg4wvq2vfn2qbz1xmd250xqj15lysw88"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -78,11 +81,18 @@
                (for-each (lambda (x)
                            (install-file (car x)
                                          (string-append dest "/" (cdr x))))
-                         '(("src/boxes" . "bin")
+                         '(("out/boxes" . "bin")
                            ("doc/boxes.1" . "share/man/man1")
-                           ("boxes-config" . "etc/")))
-               #t))))))
-    (native-inputs `(("flex" ,flex) ("bison" ,bison)))
+                           ("boxes-config" . "etc/")))))))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+
+       ;; For the tests.
+       ("xxd" ,xxd)))
+    (inputs
+     `(("libunistring" ,libunistring)
+       ("pcre2" ,pcre2)))
     (synopsis "Command line ASCII boxes")
     (description
      "This command-line filter program draws ASCII-art boxes around your input
