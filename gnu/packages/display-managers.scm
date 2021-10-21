@@ -39,6 +39,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
@@ -307,7 +308,8 @@ display manager which supports different greeters.")
        ("pkg-config" ,pkg-config)
        ("xfce4-dev-tools" ,xfce4-dev-tools)))
     (inputs
-     `(("lightdm" ,lightdm)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("lightdm" ,lightdm)
        ("shared-mime-info" ,shared-mime-info)
        ("at-spi2-core" ,at-spi2-core)
        ("gtk+" ,gtk+)))
