@@ -15065,6 +15065,53 @@ line, interactively explore genomic data within Jupyter environment or web
 browser.")
     (license license:gpl3+)))
 
+(define-public python-pyspoa
+  (package
+    (name "python-pyspoa")
+    (version "0.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nanoporetech/pyspoa")
+             (commit (string-append "v" version))
+             (recursive? #true)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1lgf2shzhxkcsircd6vy46h27pjljd5q95fyz1cm3lkk702qbnzx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-libspoa
+           (lambda _
+             (mkdir-p "src/build")
+             (with-directory-excursion "src/build"
+               (invoke "cmake"
+                       "-Dspoa_optimize_for_portability=ON"
+                       "-DCMAKE_BUILD_TYPE=Release"
+                       "-DCMAKE_CXX_FLAGS=\"-I ../vendor/cereal/include/\" -fPIC"
+                       "..")
+               (invoke "make"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "tests/test_pyspoa.py")))))))
+    (propagated-inputs
+     `(("pybind11" ,pybind11)))
+    (native-inputs
+     `(("cmake" ,cmake-minimal)))
+    (home-page "https://github.com/nanoporetech/pyspoa")
+    (synopsis "Python bindings for the SIMD partial order alignment library ")
+    (description
+     "This package provides Python bindings for spoa, a C++ implementation of
+the @dfn{partial order alignment} (POA) algorithm (as described in
+10.1093/bioinformatics/18.3.452) which is used to generate consensus
+sequences")
+    (license license:expat)))
+
 (define-public scregseg
   (package
     (name "scregseg")
