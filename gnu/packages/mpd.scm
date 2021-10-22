@@ -42,8 +42,10 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools) ;meson-next
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages cmake) ;for MPD
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -61,6 +63,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
@@ -105,7 +108,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.22.11")
+    (version "0.23.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -114,10 +117,11 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1850ii8vnv5l8b561fai4q2mcrnym94mvlrxiy48fvpfm8s7ygql"))))
+                "0m67wibxc6n6438h2va59n51wwwbwhbdj9635cnpc3wqvlq9sd9g"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=enabled")))
+     `(#:meson ,meson-next ; Requires Meson >= 0.56.0
+       #:configure-flags '("-Ddocumentation=enabled")))
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
@@ -125,6 +129,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("curl" ,curl)
               ("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
+              ("fmt" ,fmt)
               ("glib" ,glib)
               ("icu4c" ,icu4c)
               ;; The LAME decoder comes from FFmpeg, but is added here so that
@@ -139,7 +144,8 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)
+    (native-inputs `(("cmake" ,cmake)
+                     ("pkg-config" ,pkg-config)
                      ("python-sphinx" ,python-sphinx)))
     ;; Missing optional inputs:
     ;;   libyajl
@@ -167,6 +173,7 @@ server-side application for playing music.  Through plugins and libraries it
 can play a variety of sound files while being controlled by its network
 protocol.")
     (home-page "https://www.musicpd.org/")
+    (properties `((release-monitoring-url . "https://musicpd.org")))
     (license license:gpl2)))
 
 (define-public mpd-mpc
