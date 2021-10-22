@@ -1346,14 +1346,14 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.27.4")
+    (version "0.27.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
                            "-Source.tar.gz"))
        (sha256
-        (base32 "0klhxkxvkzzzcqpzv8jb56pykq0gyhb6rk9vc2kzjahngjx6sdl4"))))
+        (base32 "1qm6bvj28l42km009nc60gffn1qhngc0m2wjlhf90si3mcc8d99m"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "tests"
