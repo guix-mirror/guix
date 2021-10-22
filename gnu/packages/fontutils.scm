@@ -844,7 +844,7 @@ generated list of fallback fonts are checked.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.8.4")
+   (version "0.8.7")
    (source
     (origin
       (method git-fetch)
@@ -853,8 +853,7 @@ generated list of fallback fonts are checked.")
             (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "09rv0srpj8ann2n1zpv1frlpxz0x10d2y21c5lys7pmfngljlxi9"))))
+       (base32 "0nyda2a6vbzyz4sn9mmrr8bkifzxmmjp7x9a3c4s6n925ccy79cn"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
