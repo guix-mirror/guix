@@ -4659,7 +4659,7 @@ create smoother and stable videos.")
 (define-public libopenshot
   (package
     (name "libopenshot")
-    (version "0.2.5")
+    (version "0.2.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4668,11 +4668,11 @@ create smoother and stable videos.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mxjkgjmjzgf628y3rscc6rqf55hxgjpmvwxlncfk1216i5xskwp"))
+                "0i9bsn8gklm1mvj60l3d3xrxdgy8svpxjfqcwsr308j5zjn30pv8"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Allow overriding of the python installation dir
-                          (substitute* "src/bindings/python/CMakeLists.txt"
+                          (substitute* "bindings/python/CMakeLists.txt"
                             (("(SET\\(PYTHON_MODULE_PATH.*)\\)" _ set)
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
@@ -4684,11 +4684,12 @@ create smoother and stable videos.")
        ("python" ,python)
        ("swig" ,swig)
        ("unittest++" ,unittest-cpp)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("zlib" ,zlib)))
     (propagated-inputs                  ;all referenced in installed headers
      `(("cppzmq" ,cppzmq)
-       ;; libopenshot doesn't yet build with ffmpeg 4.4 (see:
-       ;; https://github.com/OpenShot/libopenshot/issues/676).
-       ("ffmpeg" ,ffmpeg-4.3)
+       ("ffmpeg" ,ffmpeg)
        ("imagemagick" ,imagemagick)
        ("jsoncpp" ,jsoncpp)
        ("libopenshot-audio" ,libopenshot-audio)
