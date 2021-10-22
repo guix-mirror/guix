@@ -3488,17 +3488,20 @@ for dealing with different structured file formats.")
              (substitute* '("Makefile.am" "Makefile.in")
                (("--locked") ""))))
          (add-before 'configure 'pre-configure
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "gdk-pixbuf-loader/Makefile.in"
                ;; By default the gdk-pixbuf loader is installed under
                ;; gdk-pixbuf's prefix.  Work around that.
                (("gdk_pixbuf_moduledir = .*$")
                 (string-append "gdk_pixbuf_moduledir = "
-                               "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
-                               "loaders\n"))
-               ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
-               (("gdk_pixbuf_cache_file = .*$")
-                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))))
+                               "$(prefix)/"
+                               ,(dirname %gdk-pixbuf-loaders-cache-file) "/"
+                               "loaders\n")))
+             (substitute* "configure"
+               (("gdk_pixbuf_cache_file=.*")
+                (string-append "gdk_pixbuf_cache_file="
+                               (assoc-ref outputs "out") "/"
+                               ,%gdk-pixbuf-loaders-cache-file "\n")))))
          (add-after 'configure 'gnu-configure
            (lambda* (#:key outputs #:allow-other-keys #:rest args)
              (apply (assoc-ref gnu:%standard-phases 'configure)
