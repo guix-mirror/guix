@@ -1361,6 +1361,83 @@ relying on a complex dependency tree.")
 long-read sequencing data.")
     (license license:expat)))
 
+(define-public qtltools
+  (package
+    (name "qtltools")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append "https://qtltools.github.io/qtltools/"
+                                  "binaries/QTLtools_" version
+                                  "_source.tar.gz"))
+              (sha256
+               (base32
+                "13gdry5l43abn3464fmk8qzrxgxnxah2612r66p9dzhhl92j30cd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests included
+       #:make-flags
+       (list (string-append "BOOST_INC="
+                            (assoc-ref %build-inputs "boost") "/include")
+             (string-append "BOOST_LIB="
+                            (assoc-ref %build-inputs "boost") "/lib")
+             (string-append "HTSLD_INC="
+                            (assoc-ref %build-inputs "htslib") "/include")
+             (string-append "HTSLD_LIB="
+                            (assoc-ref %build-inputs "htslib") "/lib")
+             (string-append "RMATH_INC="
+                            (assoc-ref %build-inputs "rmath-standalone")
+                            "/include")
+             (string-append "RMATH_LIB="
+                            (assoc-ref %build-inputs "rmath-standalone")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linkage
+           (lambda _
+             (substitute* "qtltools/Makefile"
+               (("libboost_iostreams.a")
+                "libboost_iostreams.so")
+               (("libboost_program_options.a")
+                "libboost_program_options.so")
+               (("-lblas") "-lopenblas"))))
+         (add-before 'build 'chdir
+           (lambda _ (chdir "qtltools")))
+         (replace 'configure
+           (lambda _
+             (substitute* "qtltools/Makefile"
+               (("LIB_FLAGS=-lz")
+                "LIB_FLAGS=-lz -lcrypto -lssl")
+               (("LIB_FILES=\\$\\(RMATH_LIB\\)/libRmath.a \
+\\$\\(HTSLD_LIB\\)/libhts.a \
+\\$\\(BOOST_LIB\\)/libboost_iostreams.a \
+\\$\\(BOOST_LIB\\)/libboost_program_options.a")
+                "LIB_FILES=$(RMATH_LIB)/libRmath.so \
+$(HTSLD_LIB)/libhts.so \
+$(BOOST_LIB)/libboost_iostreams.so \
+$(BOOST_LIB)/libboost_program_options.so"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "bin/QTLtools" bin)))))))
+    (inputs
+     `(("curl" ,curl)
+       ("gsl" ,gsl)
+       ("boost" ,boost)
+       ("rmath-standalone" ,rmath-standalone)
+       ("htslib" ,htslib-1.3)
+       ("openssl" ,openssl)
+       ("openblas" ,openblas)
+       ("zlib" ,zlib)))
+    (home-page "https://qtltools.github.io/qtltools/")
+    (synopsis "Tool set for molecular QTL discovery and analysis")
+    (description "QTLtools is a tool set for molecular QTL discovery
+and analysis.  It allows to go from the raw genetic sequence data to
+collection of molecular @dfn{Quantitative Trait Loci} (QTLs) in few
+easy-to-perform steps.")
+    (license license:gpl3+)))
+
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
