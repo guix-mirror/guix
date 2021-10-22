@@ -422,7 +422,7 @@
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg-jami)
        ("jack" ,jack-1)
-       ("jsoncpp" ,jsoncpp-with-pkg-version)
+       ("jsoncpp" ,jsoncpp)
        ("libarchive" ,libarchive)
        ("libgit2" ,libgit2)
        ("libnatpmp" ,libnatpmp)
