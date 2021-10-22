@@ -4724,7 +4724,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 (define-public openshot
   (package
     (name "openshot")
-    (version "2.5.1")
+    (version "2.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4733,7 +4733,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qc5i0ay6j2wab1whl41sjb71cj02pg6y79drf7asrprq8b2rmfq"))
+                "0pa8iwl217503bjlqg2zlrw5lxyq5hvxrf5apxrh3843hj1w1myv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4758,9 +4758,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
                   (replace 'check
-                    (lambda _
-                      (setenv "QT_QPA_PLATFORM" "offscreen")
-                      (invoke "python" "src/tests/query_tests.py")))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (setenv "QT_QPA_PLATFORM" "offscreen")
+                        (invoke "python" "src/tests/query_tests.py"))))
                   (add-after 'unpack 'patch-font-location
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((font (assoc-ref inputs "font-dejavu")))
@@ -4769,6 +4770,12 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                           (("fonts") "share/fonts/truetype")
                           (("[A-Za-z_-]+.ttf") "DejaVuSans.ttf")))
                       #t))
+                  ;; https://github.com/OpenShot/openshot-qt/issues/4502
+                  (add-before 'ensure-no-mtimes-pre-1980 'fix-symbolic-link
+                    (lambda _
+                      (delete-file "images/Humanity/actions/custom/razor_line_with_razor.png")
+                      (symlink "../../../../src/timeline/media/images/razor_line_with_razor.png"
+                               "images/Humanity/actions/custom/razor_line_with_razor.png")))
                   (add-before 'install 'set-tmp-home
                     (lambda _
                       ;; src/classes/info.py "needs" to create several
