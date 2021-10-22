@@ -455,13 +455,12 @@ mixed.")
         (base32 "0yhmj0lws3r3bl4ivs31dhlzxqc7f0dinixi904mraz1fmrg3w7f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'set-cc
-                    (lambda _
-                      (setenv "CC" "gcc"))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
+                            (string-append "CC=" ,(cc-for-target))
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))
        #:test-target "test"))
     (synopsis "Small embeddable Scheme implementation")
