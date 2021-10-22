@@ -4581,13 +4581,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "4.0.1")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32 "0w22fapghmzk3xdasc4dn7h8sl58l08d1h5zbf72dh80drv1g9b9"))))
+        (base32 "1aww2ncglyii4jkbfjxqhinivawf9zmwifcj32d69gpwp6h86czi"))))
     (propagated-inputs
      `(("python-unidecode" ,python-unidecode)))
     (arguments
