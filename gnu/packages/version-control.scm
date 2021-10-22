@@ -874,16 +874,16 @@ to lock down your entire repository.")
 (define-public git-remote-gcrypt
   (package
    (name "git-remote-gcrypt")
-   (version "1.3")
+   (version "1.4")
    (source (origin
              (method git-fetch)
              (uri (git-reference
                    (url "https://git.spwhitton.name/git-remote-gcrypt")
                    (commit version)))
-             (file-name (string-append name "-" version "-checkout"))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0n8fzvr6y0pxrbvkywlky2bd8jvi0ayp4n9hwi84l1ldmv4a40dh"))))
+               "1x5ca1fi0hyn5w5mnz230x27bqr8j78adnzmlc7cbhzr13q36y5q"))))
    (build-system trivial-build-system)
    (arguments
     `(#:modules ((guix build utils))
@@ -893,8 +893,7 @@ to lock down your entire repository.")
                          (output (assoc-ref %outputs "out"))
                          (bindir (string-append output "/bin")))
                     (install-file (string-append source "/git-remote-gcrypt")
-                                  bindir)
-                    #t))))
+                                  bindir)))))
    (home-page "https://spwhitton.name/tech/code/git-remote-gcrypt/")
    (synopsis "Whole remote repository encryption")
    (description "git-remote-gcrypt is a Git remote helper to push and pull from
