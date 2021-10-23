@@ -2268,6 +2268,7 @@ immutability.")
        ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)
        ("ocaml-uuidm" ,ocaml-uuidm)
        ("ocaml-uutf" ,ocaml-uutf)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-alcotest))))
     (home-page "https://github.com/mirage/alcotest")
     (synopsis "Lightweight OCaml test framework")
     (description "Alcotest exposes simple interface to perform unit tests.  It
@@ -2277,6 +2278,22 @@ Alcotest provides a quiet and colorful output where only faulty runs are fully
 displayed at the end of the run (with the full logs ready to inspect), with a
 simple (yet expressive) query language to select the tests to run.")
     (license license:isc)))
+
+(define-public ocaml4.07-alcotest
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-alcotest)
+      (version "1.0.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mirage/alcotest")
+                      (commit version)))
+                (file-name (git-file-name "ocaml-alcotest" version))
+                (sha256
+                 (base32
+                  "1frwi185z4aadmaf0vp8xk5227nyg7nmh28ijj5l7ncjr5slvhz8"))))
+      (properties '()))))
 
 (define-public ocaml-ppx-tools
   (package
