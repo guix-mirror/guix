@@ -2136,13 +2136,13 @@ seamlessly into your existing Python unit testing work flow.")
 (define-public python-hypothesis-6.23
   (package
     (inherit python-hypothesis)
-    (version "6.23.2")
+    (version "6.23.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0lqhfrqsd81apchz93pdqfn85kx0p790w8hhd9qq85692rwja6xp"))))))
+                "0wp8i9qmd5wl1sq1l2b97fgliyk5fyphssl6j7q5qn5zjlfgi4qs"))))))
 
 ;; This is the last version of Hypothesis that supports Python 2.
 (define-public python2-hypothesis
