@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.22")
+    (version "7.4.25")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "1s5xjy1cchlg0vfxic73wy2wip8spfjr094hzzyc76plsbbqq1wf"))
+                "02iw75niazf3zh3ry15k5yjy6ivg49rwzlr8g8w49rgyszqmi9qj"))
               (patches (search-patches "php-bug-74093-test.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -82,8 +82,7 @@
                             ;;"fileinfo/libmagic" ; a patched version of libmagic
                             '("gd/libgd"
                               "pcre/pcre2lib"
-                              "xmlrpc/libxmlrpc"))
-                  #t))))
+                              "xmlrpc/libxmlrpc"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
