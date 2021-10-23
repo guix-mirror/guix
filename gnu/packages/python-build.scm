@@ -112,14 +112,14 @@ Language (TOML) configuration files.")
 (define-public python-six-bootstrap
   (package
     (name "python-six-bootstrap")
-    (version "1.15.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "six" version))
        (sha256
         (base32
-         "0n82108wxn5giff50hd9ykjhd3zl7cndabdasi6568yvbh1rqqrh"))))
+         "09n9qih9rpj95q3r4a40li7hk6swma11syvgwdc68qm1fxsc6q8y"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))          ;to avoid pytest dependency
     (home-page "https://pypi.org/project/six/")
