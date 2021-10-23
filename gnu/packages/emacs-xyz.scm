@@ -23442,16 +23442,16 @@ buffer and launches Magit from the status buffer for the project at point.")
 (define-public emacs-alect-themes
   (package
     (name "emacs-alect-themes")
-    (version "0.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/alezost/alect-themes")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0nffxpdm0sa7bynwi0rmlwpc4qmvbda5ankhzz7fmk4ap9fkjxv9"))))
+    (version "0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alezost/alect-themes")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "190clnm5x4hpzrq2wp18vxg6614ly3ciyv0y1sm9rfr9w9z5i0ya"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/alezost/alect-themes")
     (synopsis "Low contrast, light, dark and black color theme for Emacs")
