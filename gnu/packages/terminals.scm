@@ -213,15 +213,8 @@ insert mode and command mode where keybindings have different functions.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'patch-exec-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((ncurses (assoc-ref inputs "ncurses")))
-               (substitute* "asciinema/term.py"
-                 (("'tput'")
-                  (string-append "'" ncurses "/bin/tput'"))))))
          (replace 'check
            (lambda _ (invoke "nosetests" "-v"))))))
-    (inputs `(("ncurses" ,ncurses)))
     (native-inputs
      ;; For tests.
      `(("python-nose" ,python-nose)))
