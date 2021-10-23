@@ -143,6 +143,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
@@ -13676,7 +13677,8 @@ let before_space s =
          ("ocaml-sqlite3" ,(package-with-ocaml4.07 ocaml-sqlite3))
          ("ocaml-xmlm" ,(package-with-ocaml4.07 ocaml-xmlm))
          ("ocaml-mcl" ,(package-with-ocaml4.07 ocaml-mcl))
-         ("ocaml-gsl" ,ocaml4.07-gsl-1)))
+         ("ocaml-gsl" ,ocaml4.07-gsl-1)
+         ("sqlite:static" ,sqlite "static")))
       (native-inputs
        `(("cddlib-src" ,(package-source cddlib))
          ("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))
