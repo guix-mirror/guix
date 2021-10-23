@@ -1148,14 +1148,7 @@ with strong support for multi-part, multi-channel use cases.")
     (version (package-version ilmbase))
     (source (origin
               (inherit (package-source ilmbase))
-              (file-name (git-file-name "openexr" version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* (find-files "OpenEXR" "tmpDir\\.h")
-                    (("\"/var/tmp/\"")
-                     "\"/tmp/\""))
-                  #t))))
+              (file-name (git-file-name "openexr" version))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1164,6 +1157,12 @@ with strong support for multi-part, multi-channel use cases.")
            (lambda _
              (chdir "OpenEXR")
              #t))
+         (add-after 'change-directory 'patch-test-directory
+           (lambda _
+             (substitute* '("IlmImfFuzzTest/tmpDir.h"
+                            "IlmImfTest/tmpDir.h"
+                            "IlmImfUtilTest/tmpDir.h")
+               (("/var/tmp") "/tmp"))))
          (add-after 'change-directory 'increase-test-timeout
            (lambda _
              ;; On armhf-linux, we need to override the CTest default
