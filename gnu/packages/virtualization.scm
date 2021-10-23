@@ -2008,7 +2008,7 @@ DOS or Microsoft Windows.")
 (define-public xen
   (package
     (name "xen")
-    (version "4.14.1")
+    (version "4.14.1")               ; please update the mini-os input as well
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2185,10 +2185,12 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
          (method git-fetch)
          (uri (git-reference
                (url "https://xenbits.xen.org/git-http/mini-os.git")
-               (commit (string-append "xen-RELEASE-" version))))
+               ;; This corresponds to (string-append "xen-RELEASE-" version))
+               ;; at time of packaging, but upstream has unfortunately modified
+               ;; existing tags in the past.
+               (commit "0b4b7897e08b967a09bed2028a79fabff82342dd")))
          (sha256
-          (base32
-           "1i8pcl19n60i2m9vlg79q3nknpj209c9ic5x10wxaicx45kc107f"))
+          (base32 "1i8pcl19n60i2m9vlg79q3nknpj209c9ic5x10wxaicx45kc107f"))
          (file-name "mini-os-git-checkout")))
        ("perl" ,perl)
        ; TODO: markdown
