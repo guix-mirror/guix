@@ -6617,7 +6617,8 @@ combinators.")
     (arguments
      ;; Tests require ocamlformat which would lead to circular dependencies
      '(#:tests? #f))
-    (properties '((upstream-name . "bisect_ppx")))
+    (properties `((upstream-name . "bisect_ppx")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-bisect-ppx))))
     (home-page "https://github.com/aantron/bisect_ppx")
     (synopsis "Code coverage for OCaml")
     (description "Bisect_ppx helps you test thoroughly.  It is a small
@@ -6628,6 +6629,33 @@ nice HTML report showing which places were visited and which were missed.
 Usage is simple - add package bisect_ppx when building tests, run your tests,
 then run the Bisect_ppx report tool on the generated visitation files.")
     (license license:mpl2.0)))
+
+(define-public ocaml4.07-bisect-ppx
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-bisect-ppx)
+      (version "2.4.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aantron/bisect_ppx")
+               (commit version)))
+         (file-name (git-file-name "ocaml-bisect-ppx" version))
+         (sha256
+          (base32
+           "1njs8xc108rrpx5am5zhhcn6vjva7rsphm8034qp5lgyvnhfgh7q"))))
+      (propagated-inputs
+       `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+         ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+         ,@(package-propagated-inputs ocaml-bisect-ppx)))
+      (native-inputs
+       `(("ocaml-ounit2" ,ocaml-ounit2)))
+      (arguments
+       `(#:test-target "."
+         ;; tests require git and network
+         #:tests? #f))
+      (properties '((upstream-name . "bisect_ppx"))))))
 
 (define-public ocaml-odoc
   (package
