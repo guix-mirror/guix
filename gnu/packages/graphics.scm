@@ -1117,17 +1117,19 @@ graphics.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vyclrrikphwkkpyjg8kzh3qzflzk3d6xsidgqllgfdgllr9wmgv"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (with-directory-excursion "src/test"
-             (substitute* (append (find-files "." "tmpDir\\.h")
-                                  '("OpenEXRCoreTest/main.cpp"))
-               (("\"/var/tmp/\"")
-                "\"/tmp/\"")))
-           #t))))
+        (base32 "0vyclrrikphwkkpyjg8kzh3qzflzk3d6xsidgqllgfdgllr9wmgv"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; /var/tmp does not exist in the Guix build environment
+         (add-after 'unpack 'patch-test-directory
+           (lambda _
+             (substitute* '("src/test/OpenEXRUtilTest/tmpDir.h"
+                            "src/test/OpenEXRFuzzTest/tmpDir.h"
+                            "src/test/OpenEXRTest/tmpDir.h"
+                            "src/test/OpenEXRCoreTest/main.cpp")
+               (("/var/tmp") "/tmp")))))))
     (inputs
      `(("imath" ,imath)
        ("zlib" ,zlib)))
