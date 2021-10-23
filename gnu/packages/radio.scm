@@ -2135,6 +2135,7 @@ various hardware.")
     (inputs
      `(("airspyhf" ,airspyhf)
        ("alsa-lib" ,alsa-lib)
+       ("codec2" ,codec2)
        ("fftwf" ,fftwf)
        ("glew" ,glew)
        ("glfw" ,glfw)
@@ -2149,7 +2150,8 @@ various hardware.")
     (arguments
      `(#:tests? #f ; No test suite.
        #:configure-flags '("-DOPT_BUILD_AIRSPY_SOURCE=OFF"
-                           "-DOPT_BUILD_PLUTOSDR_SOURCE=OFF")
+                           "-DOPT_BUILD_PLUTOSDR_SOURCE=OFF"
+                           "-DOPT_BUILD_M17_DECODER=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
