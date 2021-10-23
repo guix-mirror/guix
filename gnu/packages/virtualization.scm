@@ -2012,7 +2012,7 @@ DOS or Microsoft Windows.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "git://xenbits.xenproject.org/xen.git")
+                    (url "https://xenbits.xen.org/git-http/xen.git")
                     (commit (string-append "RELEASE-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2184,7 +2184,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
        ,(origin
          (method git-fetch)
          (uri (git-reference
-               (url "http://xenbits.xen.org/git-http/mini-os.git")
+               (url "https://xenbits.xen.org/git-http/mini-os.git")
                (commit (string-append "xen-RELEASE-" version))))
          (sha256
           (base32
