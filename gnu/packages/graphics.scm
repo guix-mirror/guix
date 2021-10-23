@@ -1105,6 +1105,41 @@ graphics.")
     (home-page "https://www.ogre3d.org/")
     (license license:expat)))
 
+(define-public openexr
+  (package
+    (name "openexr")
+    (version "3.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AcademySoftwareFoundation/openexr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vyclrrikphwkkpyjg8kzh3qzflzk3d6xsidgqllgfdgllr9wmgv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (with-directory-excursion "src/test"
+             (substitute* (append (find-files "." "tmpDir\\.h")
+                                  '("OpenEXRCoreTest/main.cpp"))
+               (("\"/var/tmp/\"")
+                "\"/tmp/\"")))
+           #t))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("imath" ,imath)
+       ("zlib" ,zlib)))
+    (home-page "https://www.openexr.com/")
+    (synopsis "High-dynamic-range file format library")
+    (description
+     "OpenEXR provides the specification and reference implementation of the
+EXR file format.  The purpose of EXR format is to accurately and efficiently
+represent high-dynamic-range scene-linear image data and associated metadata,
+with strong support for multi-part, multi-channel use cases.")
+    (license license:bsd-3)))
+
 (define-public openexr-2
   (package
     (name "openexr")
@@ -1152,13 +1187,10 @@ graphics.")
     (propagated-inputs
      `(("ilmbase" ,ilmbase)                       ;used in public headers
        ("zlib" ,zlib)))                           ;OpenEXR.pc reads "-lz"
-    (home-page "https://www.openexr.com/")
-    (synopsis "High-dynamic range file format library")
-    (description
-     "OpenEXR is a high dynamic-range (HDR) image file format developed for
-use in computer imaging applications.  The IlmImf C++ libraries support
-storage of the \"EXR\" file format for storing 16-bit floating-point images.")
-    (license license:bsd-3)))
+    (home-page (package-home-page openexr))
+    (synopsis (package-synopsis openexr))
+    (description (package-description openexr))
+    (license (package-license openexr))))
 
 (define-public openimageio
   (package
