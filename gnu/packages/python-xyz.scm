@@ -5220,7 +5220,7 @@ writing C extensions for Python as easy as Python itself.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.17.3")
+    (version "1.21.3")
     (source
      (origin
        (method url-fetch)
@@ -5229,38 +5229,32 @@ writing C extensions for Python as easy as Python itself.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "1ak9dmjja0q90a7fsxli51ypcwssh8c4pb6f8wkrsnf2xgdk6dy9"))))
+         "0s6hy8828yr7fcjiwnym4l8lrknr21gqfkaiawsf86n0hd0a5fyh"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-xdist" ,python-pytest-xdist)
        ("gfortran" ,gfortran)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'configure-blas-lapack
+         (add-before 'build 'configure-blas
            (lambda* (#:key inputs #:allow-other-keys)
              (call-with-output-file "site.cfg"
                (lambda (port)
                  (format port
-                         "[openblas]
+                         "\
+[openblas]
 libraries = openblas
-library_dirs = ~a/lib
-include_dirs = ~a/include
-
-# backslash-n to make emacs happy
-\n[lapack]
-lapack_libs = lapack
 library_dirs = ~a/lib
 include_dirs = ~a/include
 "
                          (assoc-ref inputs "openblas")
-                         (assoc-ref inputs "openblas")
-                         (assoc-ref inputs "lapack")
-                         (assoc-ref inputs "lapack"))))
-             #t))
+                         (assoc-ref inputs "openblas"))))))
          (add-before 'build 'fix-executable-paths
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Make /gnu/store/...-bash-.../bin/sh the default shell,
@@ -5271,21 +5265,17 @@ include_dirs = ~a/include
              ;; Use "gcc" executable, not "cc".
              (substitute* "numpy/distutils/system_info.py"
                (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
-                "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
-             #t))
-         ;; Tests can only be run after the library has been installed and not
-         ;; within the source directory.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             ;; Make installed package available for running the tests
-             (add-installed-pythonpath inputs outputs)
-             ;; Make sure "f2py" etc is found.
-             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
-                                           ":" (getenv "PATH")))
-             (with-directory-excursion "/tmp"
-               (invoke "python" "-c"
-                       "import numpy; numpy.test(verbose=2)")))))))
+                "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))))
+         (replace 'check
+           (lambda* (#:key tests? outputs inputs #:allow-other-keys)
+             (when tests?
+               ;; Make installed package available for running the tests.
+               (add-installed-pythonpath inputs outputs)
+               ;; Make sure "f2py" etc is found.
+               (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                             ":" (getenv "PATH")))
+               (invoke "./runtests.py"
+                       "-j" (number->string (parallel-job-count)))))))))
     (home-page "https://numpy.org")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
@@ -5332,21 +5322,18 @@ capabilities.")
      (substitute-keyword-arguments (package-arguments python2-numpy)
        ((#:phases phases)
         `(modify-phases ,phases
-           (replace 'configure-blas-lapack
+           (replace 'configure-blas
              (lambda* (#:key inputs #:allow-other-keys)
                (call-with-output-file "site.cfg"
                  (lambda (port)
                    (format port
                            "[openblas]
-libraries = openblas,lapack
-library_dirs = ~a/lib:~a/lib
-include_dirs = ~a/include:~a/include
+libraries = openblas
+library_dirs = ~a/lib
+include_dirs = ~a/include
 "
                            (assoc-ref inputs "openblas")
-                           (assoc-ref inputs "lapack")
-                           (assoc-ref inputs "openblas")
-                           (assoc-ref inputs "lapack"))))
-               #t))))))
+                           (assoc-ref inputs "openblas"))))))))))
     (native-inputs
      `(("python2-nose" ,python2-nose)))
     (description "NumPy is the fundamental package for scientific computing
