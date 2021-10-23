@@ -103,14 +103,14 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.10.0.3")
+   (version "2.11.0.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://skarnet.org/software/s6/s6-"
                          version ".tar.gz"))
      (sha256
-      (base32 "0mw7blp8dwr09z58m9mrxwmmvvpnjzq9klcf1vgm0hbha4qkf88x"))))
+      (base32 "1a3lj0xfhn1w3a4ygqsxy8q4dr3n48hnwml4xzdpz3nrikhy8if5"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
@@ -132,8 +132,7 @@ complexity.")))
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
                    (doc (string-append out "/share/doc/s6-" ,version)))
-              (copy-recursively "doc" doc)
-              #t))))))
+              (copy-recursively "doc" doc)))))))
    (home-page "https://skarnet.org/software/s6")
    (license isc)
    (synopsis "Small suite of programs for process supervision")
