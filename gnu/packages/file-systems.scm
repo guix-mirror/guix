@@ -507,7 +507,17 @@ performance and other characteristics.")
       (substitute-keyword-arguments (package-arguments bcachefs-tools)
         ((#:make-flags make-flags)
          `(append ,make-flags
-                  (list "LDFLAGS=-static")))))
+                  (list "LDFLAGS=-static")))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'skip-shared-library
+              (lambda _
+                (substitute* "Makefile"
+                  ;; Building the shared library with ‘-static’ obviously fails…
+                  (("^((all|install):.*)\\blib\\b(.*)" _ prefix suffix)
+                   (string-append prefix suffix "\n"))
+                  ;; …as does installing a now non-existent file.
+                  ((".*\\$\\(INSTALL\\).* lib.*") ""))))))))
      (inputs
       `(("eudev:static" ,eudev "static")
         ("libscrypt:static" ,libscrypt "static")
