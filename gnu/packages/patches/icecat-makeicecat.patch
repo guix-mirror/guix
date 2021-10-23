@@ -3,108 +3,49 @@ in a snippet without network access.  After this patch is applied, some
 additional changes will be made using 'substitute*'.
 
 diff --git a/makeicecat b/makeicecat
-index 8be2362..48716f2 100755
+index bf2b7a6..bc3b19b 100755
 --- a/makeicecat
 +++ b/makeicecat
-@@ -31,55 +31,55 @@ SOURCEDIR=icecat-$FFVERSION
+@@ -58,7 +58,7 @@ readonly SOURCEDIR=icecat-${FFVERSION}
+ # debug/shell options
+ readonly DEVEL=0
+ set -euo pipefail
+-(( DEVEL )) && set -x
++set -x
  
- DATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/data
- 
--mkdir -p output
--cd output
-+# mkdir -p output
-+# cd output
- 
- ###############################################################################
- # Retrieve FF source code
- ###############################################################################
- 
--rm mozilla-esr${FFMAJOR} $SOURCEDIR -rf
--
--wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz
--wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
--gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
--gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
--echo -n 1aa041db28cd742e93d663a9da8defd33040b38d8b9470350538473251621643 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
--
--echo Extracting Firefox tarball
--tar -xf firefox-${FFVERSION}esr.source.tar.xz
--
--mv firefox-${FFVERSION} $SOURCEDIR
-+# rm mozilla-esr${FFMAJOR} $SOURCEDIR -rf
-+# 
-+# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz
-+# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
-+# gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
-+# gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
-+# echo -n 1aa041db28cd742e93d663a9da8defd33040b38d8b9470350538473251621643 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
-+# 
-+# echo Extracting Firefox tarball
-+# tar -xf firefox-${FFVERSION}esr.source.tar.xz
-+# 
-+# mv firefox-${FFVERSION} $SOURCEDIR
  
  ###############################################################################
- # Retrieve l10n
+@@ -459,7 +459,7 @@ configure_search()
+     sed 's|ddg@|ddg-html@|' -i browser/components/search/extensions/ddg-html/manifest.json
+ 
+     # Process various JSON pre-configuration dumps.
+-    python3 ../../tools/process-json-files.py . browser/components/extensions/schemas/
++    python3 "${DATADIR}"/../tools/process-json-files.py . browser/components/extensions/schemas/
+ }
+ 
+ configure_mobile()
+@@ -855,12 +855,12 @@ finalize_sourceball()
+ # entry point
  ###############################################################################
  
--mkdir l10n
--cd l10n
--while read line;do
--    line=$(echo $line |cut -d' ' -f1)
--    #[ $line = "es-ES" ] || continue # To speed up testing
--    [ $line = "en-US" ] && continue
--    hg clone https://hg.mozilla.org/l10n-central/$line
--    mkdir -p $line/browser/chrome/browser/preferences
--    touch $line/browser/chrome/browser/preferences/advanced-scripts.dtd
--    rm -rf $line/.hg*
--done < ../$SOURCEDIR/browser/locales/shipped-locales
--cd ..
--
--mv l10n $SOURCEDIR
--
--hg clone https://hg.mozilla.org/l10n/compare-locales/
--cd compare-locales/
--hg checkout RELEASE_8_0_0
--cd ..
--rm compare-locales/.hg* compare-locales/.git* -rf
--mv compare-locales $SOURCEDIR/l10n
-+# mkdir l10n
-+# cd l10n
-+# while read line;do
-+#     line=$(echo $line |cut -d' ' -f1)
-+#     #[ $line = "es-ES" ] || continue # To speed up testing
-+#     [ $line = "en-US" ] && continue
-+#     hg clone https://hg.mozilla.org/l10n-central/$line
-+#     mkdir -p $line/browser/chrome/browser/preferences
-+#     touch $line/browser/chrome/browser/preferences/advanced-scripts.dtd
-+#     rm -rf $line/.hg*
-+# done < ../$SOURCEDIR/browser/locales/shipped-locales
-+# cd ..
-+# 
-+# mv l10n $SOURCEDIR
-+# 
-+# hg clone https://hg.mozilla.org/l10n/compare-locales/
-+# cd compare-locales/
-+# hg checkout RELEASE_8_0_0
-+# cd ..
-+# rm compare-locales/.hg* compare-locales/.git* -rf
-+# mv compare-locales $SOURCEDIR/l10n
- 
- #######################################################
- 
--cd $SOURCEDIR
-+# cd $SOURCEDIR
- 
- shopt -s nullglob
- for patch in $DATA/patches/*.patch; do
-@@ -598,6 +598,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
- # Fix CVE-2012-3386
- /bin/sed 's/chmod a+w/chmod u+w/' -i ./js/src/ctypes/libffi/Makefile.in ./toolkit/crashreporter/google-breakpad/Makefile.in ./toolkit/crashreporter/google-breakpad/src/third_party/glog/Makefile.in || true
- 
--cd ..
--echo Packaging tarball
--tar cfj icecat-$ICECATVERSION.tar.bz2 $SOURCEDIR
-+# cd ..
-+# echo Packaging tarball
-+# tar cfj icecat-$ICECATVERSION.tar.bz2 $SOURCEDIR
+-validate_env || exit 1
+-prepare_env
+-fetch_source
+-verify_sources
+-extract_sources
+-fetch_l10n
++# validate_env || exit 1
++# prepare_env
++# fetch_source
++# verify_sources
++# extract_sources
++# fetch_l10n
+ apply_patches
+ configure
+ configure_search
+@@ -872,4 +872,4 @@ prepare_macos_packaging
+ configure_extensions
+ configure_onboarding
+ apply_bugfixes
+-finalize_sourceball
++# finalize_sourceball
