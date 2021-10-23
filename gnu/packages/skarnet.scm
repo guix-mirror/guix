@@ -30,14 +30,14 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.10.0.3")
+    (version "2.11.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/skalibs/skalibs-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0ka6n5rnxd5sn5lycarf596d5wlak5s535zqqlz0rnhdcnpb105p"))))
+       (base32 "1n9l7mb54dlb0iijjaf446jba6nmq1ql9n39s095ngrk5ahcipwq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests exist
@@ -48,8 +48,7 @@
                       ;; and *.so files are reproducible.
                       (substitute* "Makefile"
                         (("\\$\\(wildcard src/lib\\*/\\*.c\\)")
-                         "$(sort $(wildcard src/lib*/*.c))"))
-                      #t)))))
+                         "$(sort $(wildcard src/lib*/*.c))")))))))
     (home-page "https://skarnet.org/software/skalibs/")
     (synopsis "Platform abstraction libraries for skarnet.org software")
     (description
