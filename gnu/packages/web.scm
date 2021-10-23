@@ -1011,8 +1011,8 @@ and UNIX socket support.")
     (arguments
      `(#:configure-flags
        (list  "--disable-plugin"         ;NPAPI plugins are obsolete nowadays.
-             (string-append "BIN_BASH=" (assoc-ref %build-inputs "bash")
-                            "/bin/bash")
+              (string-append "BIN_BASH="
+                             (search-input-file %build-inputs "/bin/bash"))
              (string-append "--with-jdk-home=" (assoc-ref %build-inputs "jdk")))))
     (outputs '("out" "doc"))
     (native-inputs

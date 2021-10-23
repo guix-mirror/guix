@@ -337,17 +337,16 @@ easy.")
            ;; Replace the sole minified file in the package.
            (with-directory-excursion (string-append share "/src")
              (delete-file "FileSaver.min.js")
-             (symlink (string-append (assoc-ref %build-inputs "js-filesaver")
-                                     "/share/javascript/FileSaver.min.js")
+             (symlink (search-input-file %build-inputs
+                                         "/share/javascript/FileSaver.min.js")
                       "FileSaver.min.js"))
            ;; Create a "snap" executable.
            (let* ((bin (string-append out "/bin"))
                   (script (string-append bin "/snap"))
                   (snap (string-append share "/snap.html"))
-                  (bash (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/sh"))
-                  (xdg-open (string-append (assoc-ref %build-inputs "xdg-utils")
-                                           "/bin/xdg-open")))
+                  (bash (search-input-file %build-inputs "/bin/sh"))
+                  (xdg-open (search-input-file %build-inputs
+                                               "/bin/xdg-open")))
              (mkdir-p bin)
              (call-with-output-file script
                (lambda (port)
@@ -589,10 +588,9 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
                ;; Install the launcher.
                (let* ((bin (string-append out "/bin"))
                       (script (string-append bin "/omnitux"))
-                      (bash (string-append (assoc-ref %build-inputs "bash")
-                                           "/bin/bash"))
-                      (python (string-append (assoc-ref %build-inputs "python")
-                                             "/bin/python2")))
+                      (bash (search-input-file %build-inputs "/bin/bash"))
+                      (python (search-input-file %build-inputs
+                                                 "/bin/python2")))
                  (mkdir-p bin)
                  (with-output-to-file script
                    (lambda ()

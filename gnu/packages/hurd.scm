@@ -581,8 +581,8 @@ implementing them.")
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
-         (list (string-append "SHELL=" (assoc-ref %build-inputs "bash")
-                              "/bin/bash")
+         (list (string-append "SHELL="
+                              (search-input-file %build-inputs "/bin/bash"))
                "PKGDIR=libdde_linux26"
                ,@(if (%current-target-system)
                      (list "CC=i586-pc-gnu-gcc"

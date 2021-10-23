@@ -33078,8 +33078,7 @@ The common way to create this file is as follows:
 (let* ((out       (assoc-ref %outputs "out"))
        (targetdir (string-append out "/share/" ,name))
        (app       (string-append out "/bin/" ,name))
-       (Rbin      (string-append (assoc-ref %build-inputs "r-min")
-                                 "/bin/Rscript")))
+       (Rbin      (search-input-file %build-inputs "/bin/Rscript")))
   ;; @dots{}
   (mkdir-p (string-append out "/bin"))
   (call-with-output-file app

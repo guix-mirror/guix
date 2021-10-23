@@ -2553,10 +2553,8 @@ Features include:
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let ((bash (string-append (assoc-ref %build-inputs "bash")
-                                    "/bin/bash"))
-               (rclone (string-append (assoc-ref %build-inputs "rclone")
-                                      "/bin/rclone")))
+         (let ((bash (search-input-file %build-inputs "/bin/bash"))
+               (rclone (search-input-file %build-inputs "/bin/rclone")))
            (copy-file (string-append (assoc-ref %build-inputs "source")
                                      "/git-annex-remote-rclone")
                       "git-annex-remote-rclone")

@@ -2287,8 +2287,7 @@ module.")
                       (ice-9 ftw)
                       (srfi srfi-26))
 
-         (let ((e2fsck (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                      "/sbin/e2fsck"))
+         (let ((e2fsck (search-input-file %build-inputs "/sbin/e2fsck"))
                (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
            (mkdir-p bin)
            (with-directory-excursion bin

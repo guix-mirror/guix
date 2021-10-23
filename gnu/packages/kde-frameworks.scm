@@ -3070,8 +3070,8 @@ to easily extend the contacts collection.")
              (substitute* "autotests/runnercontexttest.cpp"
                (("/home\"") "/tmp\"") ;; single path-part
                (("//usr/bin\"") (string-append (getcwd) "\"")) ;; multiple path-parts
-               (("/bin/ls" path)
-                (string-append (assoc-ref %build-inputs "coreutils") path)))))
+               (("/bin/ls")
+                (search-input-file %build-inputs "/bin/ls")))))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))

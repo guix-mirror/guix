@@ -3701,8 +3701,9 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
       #:phases (modify-phases %standard-phases (delete 'configure))
       #:make-flags
       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-            (string-append "PKG_CONFIG=" (assoc-ref %build-inputs "pkg-config")
-                           "/bin/pkg-config")
+            (string-append "PKG_CONFIG="
+                           (search-input-file %build-inputs
+                                              "/bin/pkg-config"))
             ,(string-append "CC=" (cc-for-target)))))
    (home-page "https://www.open-mesh.org/projects/batman-adv/wiki/Wiki")
    (synopsis "Management tool for the mesh networking BATMAN protocol")

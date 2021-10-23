@@ -972,8 +972,8 @@ library.")
                           (myspell  (string-append out "/share/myspell"))
                           (doc      (string-append out "/share/doc/"
                                                    ,name))
-                          (unzip (string-append (assoc-ref %build-inputs "unzip")
-                                                "/bin/unzip")))
+                          (unzip (search-input-file %build-inputs
+                                                    "/bin/unzip")))
                      (invoke unzip "-j" "-o" (assoc-ref %build-inputs "source"))
                      (invoke unzip "-j" "-o" "pl_PL.zip")
                      (for-each (cut install-file <> hunspell)

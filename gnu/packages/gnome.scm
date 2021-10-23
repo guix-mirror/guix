@@ -7713,8 +7713,7 @@ users.")
     (arguments
      `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out"))
-             (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
-                                      "/sbin/dhclient")))
+             (dhclient (search-input-file %build-inputs "/sbin/dhclient")))
          (list
           ;; Otherwise, the RUNPATH will lack the final 'NetworkManager' path
           ;; component.

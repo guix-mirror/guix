@@ -16394,7 +16394,7 @@ Features:
          ;; Patch shebangs.
          (substitute* "epipe"
            (("/usr/bin/env bash")
-            (string-append (assoc-ref %build-inputs "bash") "/bin/bash")))
+            (search-input-file %build-inputs "/bin/bash")))
          (patch-shebang "epipe.pl"
                         (list (string-append (assoc-ref %build-inputs "perl")
                                              "/bin")))

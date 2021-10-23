@@ -379,8 +379,9 @@ multiplies.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "CFLAGS += -DLTM_DESC -DUSE_LTM"
-             (string-append "EXTRALIBS=" (assoc-ref %build-inputs "libtommath")
-                            "/lib/libtommath.so")
+             (string-append "EXTRALIBS="
+                            (search-input-file %build-inputs
+                                               "/lib/libtommath.so"))
              (string-append "CC=" ,(cc-for-target)))))
     (native-inputs
      `(("libtool" ,libtool)))

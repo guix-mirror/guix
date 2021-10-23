@@ -4623,12 +4623,12 @@ including parsing and code generation.")
              (delete-file-recursively "docs")
              #t))
          (add-after 'install 'install-info-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share"))
                     (doc (string-append share "/doc/" ,name "-" ,version))
                     (info (string-append share "/info/"))
-                    (makeinfo (string-append (assoc-ref %build-inputs "texinfo")
-                                             "/bin/makeinfo")))
+                    (makeinfo (search-input-file inputs
+                                                 "/bin/makeinfo")))
                (invoke makeinfo "guile-shapefile.texi" "-o" info)
                #t))))))
     (inputs

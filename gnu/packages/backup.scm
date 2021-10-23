@@ -840,8 +840,7 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
                     ;; You probably want a service with file(s) to point to.
                     (confdir "/etc/dirvish")
 
-                    (perl (string-append (assoc-ref %build-inputs "perl")
-                                         "/bin/perl"))
+                    (perl (search-input-file inputs "/bin/perl"))
                     (loadconfig.pl (call-with-input-file "loadconfig.pl"
                                      read-string)))
 

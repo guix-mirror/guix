@@ -1381,9 +1381,9 @@ extremely large and complex data collections.")
        #:make-flags
        (list (string-append "HDFLIB=" (assoc-ref %build-inputs "hdf4") "/lib")
              (string-append "HDF5LIB=" (assoc-ref %build-inputs "hdf5") "/lib")
-             (string-append "ZLIB=" (assoc-ref %build-inputs "zlib") "/lib/libz.so")
+             (string-append "ZLIB=" (search-input-file %build-inputs "/lib/libz.so"))
              (string-append "JPEGLIB="
-                            (assoc-ref %build-inputs "libjpeg") "/lib/libjpeg.so")
+                            (search-input-file %build-inputs "/lib/libjpeg.so"))
              "LLEXT=so")
 
        #:phases

@@ -80,8 +80,7 @@
          (use-modules (guix build utils))
          (chdir (assoc-ref %build-inputs "source"))
          (let ((target (string-append %output "/share/javascript/context-menu")))
-           (apply invoke (string-append (assoc-ref %build-inputs "esbuild")
-                                        "/bin/esbuild")
+           (apply invoke (search-input-file %build-inputs "/bin/esbuild")
                   "--bundle"
                   "--tsconfig=tsconfig.json"
                   (string-append "--outdir=" target)
@@ -209,8 +208,7 @@ be able to view it naturally and easily.")))
        (begin
          (use-modules (guix build utils))
          (chdir (assoc-ref %build-inputs "source"))
-         (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
-                                       "/bin/esbuild"))
+         (let ((esbuild (search-input-file %build-inputs "/bin/esbuild"))
                (target (string-append %output "/share/javascript/commander")))
            (invoke esbuild
                    "--bundle"
@@ -251,8 +249,7 @@ command-line interfaces.  ")
          (begin
            (use-modules (guix build utils))
            (chdir (assoc-ref %build-inputs "source"))
-           (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
-                                         "/bin/esbuild"))
+           (let ((esbuild (search-input-file %build-inputs "/bin/esbuild"))
                  (target (string-append %output "/share/javascript/xmldom-sre")))
              (invoke esbuild
                      "--bundle"

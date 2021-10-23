@@ -1457,9 +1457,7 @@ standards of the IceCat project.")
                     (mozconfig (string-append (getcwd) "/.mozconfig")))
                (setenv "SHELL" bash)
                (setenv "AUTOCONF"
-                       (string-append (assoc-ref %build-inputs
-                                                 "autoconf")
-                                      "/bin/autoconf"))
+                       (search-input-file %build-inputs "/bin/autoconf"))
                (setenv "CONFIG_SHELL" bash)
                (setenv "QA_CONFIGURE_OPTIONS" ".*")
                (setenv "MOZBUILD_STATE_PATH"

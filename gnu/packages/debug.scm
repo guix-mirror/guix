@@ -561,9 +561,7 @@ input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "gui/GameConqueror.py"
                (("/usr/bin/env python")
-                (string-append (assoc-ref %build-inputs
-                                          "python-wrapper") "/bin/python")))
-             #t))
+                (search-input-file inputs "/bin/python")))))
          (add-after 'install 'wrap-gameconqueror
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))

@@ -63,7 +63,7 @@
      ;; the configure phase.
      `(#:make-flags
        (list
-        (string-append "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
+        (string-append "SH=" (search-input-file %build-inputs "/bin/sh"))
         (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
         ,(string-append "CC=" (cc-for-target))
 

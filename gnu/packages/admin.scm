@@ -3639,8 +3639,7 @@ you are running, what theme or icon set you are using, etc.")
                          (string-append out "/share/doc/" ,name "-" ,version))
            (substitute* (string-append out "/bin/screenfetch")
              (("/usr/bin/env bash")
-              (string-append (assoc-ref %build-inputs "bash")
-                             "/bin/bash")))
+              (search-input-file %build-inputs "/bin/bash")))
            (wrap-program
                (string-append out "/bin/screenfetch")
              `("PATH" ":" prefix
@@ -3650,8 +3649,9 @@ you are running, what theme or icon set you are using, etc.")
                                 (assoc-ref %build-inputs "xprop") "/bin"))))
            (substitute* (string-append out "/bin/screenfetch")
              (("#!#f")
-              (string-append "#!" (assoc-ref %build-inputs "bash")
-                             "/bin/bash")))))))
+              (string-append "#!"
+                             (search-input-file %build-inputs
+                                                "/bin/bash"))))))))
     (inputs
      `(("bash" ,bash)
        ("bc" ,bc)
@@ -3693,7 +3693,7 @@ everyone's screenshots nowadays.")
                   (output (assoc-ref %outputs "out"))
                   (bindir (string-append output "/bin"))
                   (docdir (string-append output "/share/doc/ufetch-" ,version))
-                  (tput (string-append (assoc-ref %build-inputs "tput") "/bin/tput")))
+                  (tput   (search-input-file %build-inputs "/bin/tput")))
              (install-file (string-append source "/LICENSE") docdir)
              (setenv "PATH" (string-append (assoc-ref %build-inputs "bash") "/bin"))
              (mkdir-p bindir)
@@ -4491,7 +4491,7 @@ text table representation to stdout.")
                            "\nPATH=" (getenv "PATH"))))
          ;; check phase
          (setenv "TERM" "linux") ;set to tty for test
-         (invoke (string-append (assoc-ref %build-inputs "bats") "/bin/bats")
+         (invoke (search-input-file %build-inputs "/bin/bats")
                  "test")
          ;; install phase
          (install-file "hosts" (string-append %output "/bin"))

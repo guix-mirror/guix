@@ -702,7 +702,7 @@ importantly we give you proper follow-symbol and find-references support.")
            (substitute* "colormake"
              (("colormake\\.pl") (string-append bin "/colormake.pl"))
              (("/bin/bash")
-              (string-append (assoc-ref %build-inputs "bash") "/bin/sh")))
+              (search-input-file %build-inputs "/bin/sh")))
            (install-file "colormake.1" (string-append doc "/man/man1"))
            (install-files '("AUTHORS" "BUGS" "ChangeLog" "README") doc)
            (install-files '("colormake" "colormake-short" "clmake"

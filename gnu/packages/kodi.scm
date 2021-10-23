@@ -508,8 +508,8 @@ plug-in system.")
            (use-modules (guix build utils))
            (copy-recursively (assoc-ref %build-inputs "source") ".")
            (substitute* "kodi-cli"
-             (("/bin/bash") (string-append (assoc-ref %build-inputs "bash")
-                                           "/bin/bash"))
+             (("/bin/bash")
+              (search-input-file %build-inputs "/bin/bash"))
              (("output=\\$\\((curl)" all curl)
               (string-append "output=$("
                              (assoc-ref %build-inputs "curl")

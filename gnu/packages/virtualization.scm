@@ -173,7 +173,7 @@
      `(#:tests? ,(or (%current-target-system)
                      (not (string=? "i686-linux" (%current-system))))
        #:configure-flags
-       (let ((gcc (string-append (assoc-ref %build-inputs "gcc") "/bin/gcc"))
+       (let ((gcc (search-input-file %build-inputs "/bin/gcc"))
              (out (assoc-ref %outputs "out")))
          (list (string-append "--cc=" gcc)
                ;; Some architectures insist on using HOST_CC.
@@ -1535,10 +1535,12 @@ domains, their live performance and resource utilization statistics.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "LIBDIR=" (assoc-ref %outputs "out")
                             "/lib")
-             (string-append "ASCIIDOC=" (assoc-ref %build-inputs "asciidoc")
-                            "/bin/asciidoc")
-             (string-append "XMLTO=" (assoc-ref %build-inputs "xmlto")
-                            "/bin/xmlto"))
+             (string-append "ASCIIDOC="
+                            (search-input-file %build-inputs
+                                               "/bin/asciidoc"))
+             (string-append "XMLTO="
+                            (search-input-file %build-input
+                                               "/bin/xmlto")))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

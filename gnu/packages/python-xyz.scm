@@ -936,9 +936,8 @@ to CommonMark.")
            (lambda _
              (substitute* "pymediainfo/__init__.py"
                (("libmediainfo.so.0")
-                (string-append (assoc-ref %build-inputs "libmediainfo")
-                               "/lib/libmediainfo.so.0")))
-             #t))
+                (search-input-file %build-inputs
+                                   "/lib/libmediainfo.so.0")))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
