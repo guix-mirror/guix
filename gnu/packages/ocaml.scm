@@ -3353,6 +3353,7 @@ standard iterator type starting from 4.07.")
      `(("ocaml-seq" ,ocaml-seq)))
     (native-inputs
      `(("ounit" ,ocaml-ounit)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-re))))
     (home-page "https://github.com/ocaml/ocaml-re/")
     (synopsis "Regular expression library for OCaml")
     (description "Pure OCaml regular expressions with:
@@ -3364,6 +3365,19 @@ standard iterator type starting from 4.07.")
 @item Compatibility layer for OCaml's built-in Str module (module Re_str)
 @end enumerate")
     (license license:expat)))
+
+(define-public ocaml4.07-re
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-re)
+      (arguments
+       `(#:test-target "."
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-dune-version
+             (lambda _
+               (delete-file "dune-project"))))))
+      (properties '()))))
 
 (define-public ocaml-ocplib-endian
   (package
