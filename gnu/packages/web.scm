@@ -5823,20 +5823,19 @@ config files---you only have to specify the www root.")
 (define-public goaccess
   (package
     (name "goaccess")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://tar.goaccess.io/goaccess-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03wp75n1krv8g643q00gcv1ikmzwwh8jjqmph0wxww1bwrw7whc8"))
+                "12hwmd9cn7yy7vj92110skjaslpxkn05msb9wj228qmjjf9jzkm0"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "src/error.h"
                             (("__DATE__") "\"1970-01-01\"")
-                            (("__TIME__") "\"00:00:00\""))
-                          #t))))
+                            (("__TIME__") "\"00:00:00\""))))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add dependency on geoip-tools.
