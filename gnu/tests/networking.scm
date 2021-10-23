@@ -286,12 +286,15 @@ port 7, and a dict service on port 2628."
 (define (run-openvswitch-test)
   (define os
     (marionette-operating-system %openvswitch-os
-                                 #:imported-modules '((gnu services herd))))
+                                 #:imported-modules '((gnu services herd)
+                                                      (guix build syscalls))))
 
   (define test
-    (with-imported-modules '((gnu build marionette))
+    (with-imported-modules '((gnu build marionette)
+                             (guix build syscalls))
       #~(begin
           (use-modules (gnu build marionette)
+                       (guix build syscalls)
                        (ice-9 popen)
                        (ice-9 rdelim)
                        (srfi srfi-64))
@@ -337,6 +340,18 @@ port 7, and a dict service on port 2628."
                          (memq 'networking-ovs0
                                (live-service-provision live)))
                        (current-services))))
+             marionette))
+
+          (test-equal "ovs0 is up"
+            IFF_UP
+            (marionette-eval
+             '(begin
+                (use-modules (guix build syscalls))
+
+                (let* ((sock  (socket AF_INET SOCK_STREAM 0))
+                       (flags (network-interface-flags sock "ovs0")))
+                  (close-port sock)
+                  (logand flags IFF_UP)))
              marionette))
 
           (test-end)
