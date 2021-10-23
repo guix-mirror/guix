@@ -4648,34 +4648,6 @@ External contributors added support for Visual Studio Code, Sublime Text and
 Atom.")
     (license license:expat)))
 
-;; ocaml-merlin 3.4.2 can not be built with old version of dune used in
-;; package-with-ocaml4.07
-(define-public ocaml4.07-merlin
-  (package-with-ocaml4.07
-   (package
-     (inherit ocaml-merlin)
-     (name "ocaml-merlin")
-     (version "3.2.2")
-     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/ocaml/merlin")
-              (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
-     (build-system dune-build-system)
-     (inputs
-      `(("ocaml-yojson" ,ocaml-yojson)))
-     (native-inputs
-      `(("ocaml-findlib" ,ocaml-findlib)))
-     (arguments
-      `(#:package "merlin"
-        ;; Errors in tests in version 3.2.2
-        #:tests? #f)))))
-
 (define-public ocaml4.07-gsl
   (package
     (name "ocaml4.07-gsl")
