@@ -265,7 +265,7 @@ provided, as well as a framework to add new color models and data types.")
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
        ("maxflow" ,maxflow)
-       ("openexr" ,openexr)
+       ("openexr" ,openexr-2)
        ("pango" ,pango)
        ("poppler" ,poppler)
        ("sdl2" ,sdl2)))
@@ -352,7 +352,7 @@ buffers.")
        ("libmng" ,libmng)                 ; optional, MNG support
        ("librsvg" ,librsvg)               ; optional, SVG support
        ("libxcursor" ,libxcursor)         ; optional, Mouse Cursor support
-       ("openexr" ,openexr)               ; optional, EXR support
+       ("openexr" ,openexr-2)             ; optional, EXR support
        ("openjpeg" ,openjpeg)             ; optional, JPEG 2000 support
        ("poppler" ,poppler)               ; optional, PDF support
        ("poppler-data" ,poppler-data)     ; optional, PDF support

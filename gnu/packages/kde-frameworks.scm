@@ -1816,7 +1816,7 @@ by applications to write metadata.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("karchive" ,karchive) ; for Krita and OpenRaster images
-       ("openexr" ,openexr) ; for OpenEXR high dynamic-range images
+       ("openexr" ,openexr-2) ; for OpenEXR high dynamic-range images
        ("qtbase" ,qtbase-5)))
     (arguments
      `(#:phases
