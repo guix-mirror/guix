@@ -1837,6 +1837,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tup-unbundle-dependencies.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-bcg729.patch			\
+  %D%/packages/patches/u-boot-allow-disabling-openssl.patch	\
   %D%/packages/patches/u-boot-nintendo-nes-serial.patch		\
   %D%/packages/patches/u-boot-rockchip-inno-usb.patch		\
   %D%/packages/patches/u-boot-sifive-prevent-reloc-initrd-fdt.patch	\

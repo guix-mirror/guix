@@ -499,13 +499,19 @@ tree binary files.  These are board description files used by Linux and BSD.")
   ;; https://bugs.launchpad.net/ubuntu/+source/u-boot/+bug/1937246
   (search-patch "u-boot-sifive-prevent-reloc-initrd-fdt.patch"))
 
+(define %u-boot-allow-disabling-openssl-patch
+  ;; Fixes build of u-boot 2021.10 without openssl
+  ;; https://lists.denx.de/pipermail/u-boot/2021-October/462728.html
+  (search-patch "u-boot-allow-disabling-openssl.patch"))
+
 (define u-boot
   (package
     (name "u-boot")
-    (version "2021.07")
+    (version "2021.10")
     (source (origin
 	      (patches
                (list %u-boot-rockchip-inno-usb-patch
+                     %u-boot-allow-disabling-openssl-patch
                      %u-boot-sifive-prevent-relocating-initrd-fdt))
               (method url-fetch)
               (uri (string-append
@@ -513,7 +519,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0zm7igkdnz0w4ir8rfl2dislfrl0ip104grs5hvd30a5wkm7wari"))))
+                "1m0bvwv8r62s4wk4w3cmvs888dhv9gnfa98dczr4drk2jbhj7ryd"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -585,7 +591,7 @@ def test_ctrl_c"))
                                   ;; See https://bugs.gnu.org/34717 for
                                   ;; details.
                                   (("CONFIG_FIT_SIGNATURE=y")
-                                   "CONFIG_FIT_SIGNATURE=n\nCONFIG_UT_LIB_ASN1=n")
+                                   "CONFIG_FIT_SIGNATURE=n\nCONFIG_UT_LIB_ASN1=n\nCONFIG_TOOLS_LIBCRYPTO=n")
                                   ;; This test requires a sound system, which is un-used
                                   ;; in u-boot-tools.
                                   (("CONFIG_SOUND=y") "CONFIG_SOUND=n")))
@@ -684,6 +690,12 @@ board-independent tools.")))
                                                                   suffix-len))))
                                    (sort entries string-ci<)))
                        (error "Invalid boardname ~s." ,board))))))
+           (add-after 'configure 'disable-tools-libcrypto
+             ;; Disable libcrypto due to GPL and OpenSSL license
+             ;; incompatibilities
+             (lambda _
+               (substitute* ".config"
+                 (("CONFIG_TOOLS_LIBCRYPTO=.*$") "CONFIG_TOOLS_LIBCRYPTO=n"))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -895,7 +907,8 @@ to Novena upstream, does not load u-boot.img from the first partition.")
       (source (origin
                 (inherit (package-source u-boot))
                 (patches
-                 (search-patches "u-boot-riscv64-fix-extlinux.patch")))))))
+                 (search-patches "u-boot-riscv64-fix-extlinux.patch"
+                                 %u-boot-allow-disabling-openssl-patch)))))))
 
 (define-public u-boot-sifive-unleashed
   (make-u-boot-package "sifive_unleashed" "riscv64-linux-gnu"))
