@@ -1400,7 +1400,10 @@ extremely large and complex data collections.")
                             "hdf/hdf5lib/exceptions/Makefile.in"
                             "hdf/hdflib/Makefile.in")
                (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
-                (search-input-file inputs "/share/java/slf4j-api.jar")))
+                ;; 'slf4j-api-X.Y.Z.jar' is installed in a Maven-style
+                ;; directory, so use 'find-files' to find it.
+                (car (find-files (assoc-ref inputs "slf4j-api")
+                                 "^slf4j-api.*\\.jar$"))))
              ;; Replace outdated config.sub and config.guess:
              (with-directory-excursion "config"
                (for-each (lambda (file)
@@ -1428,8 +1431,9 @@ extremely large and complex data collections.")
                     (testjars
                      (append
                        (map (lambda (i)
-                              (string-append (assoc-ref inputs i)
-                                             "/share/java/" i ".jar"))
+                              (car (find-files (assoc-ref inputs i)
+                                               (string-append "^" i
+                                                              ".*\\.jar$"))))
                             '("slf4j-api" "slf4j-simple"))
                        (list
                          (car (find-files (assoc-ref inputs "junit") "jar$"))
