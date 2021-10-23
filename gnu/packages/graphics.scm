@@ -26,6 +26,7 @@
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -795,6 +796,28 @@ many more.")
     ;; The 'LICENSE' file explains that a subset is available under more
     ;; permissive licenses.
     (license license:gpl3+)))
+
+(define-public imath
+  (package
+    (name "imath")
+    (version "3.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AcademySoftwareFoundation/Imath")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nyld18mf220ghm1vidnfnn0rdns9z5i4l9s66xgd0kfdgarb31f"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/AcademySoftwareFoundation/Imath")
+    (synopsis "Library of math operations for computer graphics")
+    (description
+     "Imath is a C++ representation of 2D and 3D vectors and matrices and other
+mathematical objects, functions, and data types common in computer graphics
+applications, including the \"half\" 16-bit floating-point type.")
+    (license license:bsd-3)))
 
 (define-public ilmbase
   (package
