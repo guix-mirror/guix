@@ -1357,7 +1357,14 @@ channels.")
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "tests"
-       #:configure-flags (list "-DEXIV2_BUILD_UNIT_TESTS=ON")))
+       #:configure-flags (list "-DEXIV2_BUILD_UNIT_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file (find-files lib "\\.a$"))))))))
     (propagated-inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)))
