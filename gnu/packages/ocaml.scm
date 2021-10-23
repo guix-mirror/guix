@@ -2419,8 +2419,7 @@ for mapping files in memory.  This function is the same as the
     (arguments
      `(#:package "lwt"))
     (native-inputs
-     `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
-       ("ocaml-cppo" ,ocaml-cppo)
+     `(("ocaml-cppo" ,ocaml-cppo)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)))
