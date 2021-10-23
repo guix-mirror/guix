@@ -6743,6 +6743,12 @@ language understood by ocamldoc.")
         (file-name (git-file-name name version))
         (sha256
          (base32 "0z2nisg1vb5xlk41hqw8drvj90v52wli7zvnih6a844cg6xsvvj2"))))
+    (inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-markup" ,ocaml-markup)
+       ("ocaml-sexplib" ,ocaml-sexplib)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-uutf" ,ocaml-uutf)))
      (properties '()))))
 
 (define-public ocaml4.07-fftw3
