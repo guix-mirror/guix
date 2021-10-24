@@ -1763,7 +1763,7 @@ gapped, local, and paired-end alignment modes.")
          (delete 'configure))))
     (inputs
      `(("python-wrapper" ,python-wrapper)
-       ("tbb" ,tbb)
+       ("tbb" ,tbb-2020)
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
     (home-page "http://bowtie-bio.sourceforge.net/index.shtml")
