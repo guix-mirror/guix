@@ -552,13 +552,19 @@ typically encountered in feature film production.")
                #t))
            (add-after 'set-paths 'add-ilmbase-include-path
              (lambda* (#:key inputs #:allow-other-keys)
-               ;; OpenEXR propagates ilmbase, but its include files do not appear
-               ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
-               ;; the CPATH to satisfy the dependency on "half.h".
-               (setenv "CPATH"
-                       (string-append
-                        (search-input-directory inputs "include/OpenEXR")
-                        ":" (or (getenv "CPATH") "")))))))))
+               ;; OpenEXR propagates ilmbase, but its include files do not
+               ;; appear in the C_INCLUDE_PATH, so we need to add
+               ;; "$ilmbase/include/OpenEXR/" to the C_INCLUDE_PATH to satisfy
+               ;; the dependency on "half.h" and "Iex.h".
+               (let ((headers (string-append
+                               (assoc-ref inputs "ilmbase")
+                               "/include/OpenEXR")))
+                 (setenv "C_INCLUDE_PATH"
+                         (string-append headers ":"
+                                        (or (getenv "C_INCLUDE_PATH") "")))
+                 (setenv "CPLUS_INCLUDE_PATH"
+                         (string-append headers ":"
+                                        (or (getenv "CPLUS_INCLUDE_PATH") ""))))))))))
     (inputs
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
@@ -585,7 +591,7 @@ typically encountered in feature film production.")
        ("python" ,python)
        ("python-numpy" ,python-numpy)
        ("openvdb" ,openvdb)
-       ("tbb" ,tbb)
+       ("tbb" ,tbb-2020)
        ("zlib" ,zlib)
        ("embree" ,embree)))
     (home-page "https://blender.org/")
