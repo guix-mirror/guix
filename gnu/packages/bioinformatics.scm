@@ -9649,7 +9649,7 @@ dependency like SeqAn.")
                                                      "src/xxhash.c"))))))
        ("libdivsufsort" ,libdivsufsort)
        ("libgff" ,libgff)
-       ("tbb" ,tbb)
+       ("tbb" ,tbb-2020)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
