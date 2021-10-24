@@ -1692,8 +1692,7 @@ errors at the end of reads.")
                   (substitute* "Makefile"
                     ;; replace BUILD_HOST and BUILD_TIME for deterministic build
                     (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-                    (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
-                  #t))))
+                    (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1708,8 +1707,7 @@ errors at the end of reads.")
              (invoke "perl"
                      "scripts/test/simple_tests.pl"
                      "--bowtie2=./bowtie2"
-                     "--bowtie2-build=./bowtie2-build")
-             #t)))))
+                     "--bowtie2-build=./bowtie2-build"))))))
     (inputs
      `(("tbb" ,tbb-2020)
        ("zlib" ,zlib)
