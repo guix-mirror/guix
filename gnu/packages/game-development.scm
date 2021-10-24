@@ -1239,21 +1239,19 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.8")
+    (version "7.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1ml3gs87xxk1iflrg5ivffr4q8fi7d65l1cx462bvvpm1rs2sa8d"))
+       (sha256 (base32 "1yngs2kh1l8micg28mcp9580qsvgq3aa8bkhv2xqfkg9qqrbr8y4"))
        (modules '((guix build utils)))
        (patches
         (search-patches
          "renpy-use-system-fribidi.patch"))
        (snippet
         '(with-directory-excursion "module"
-           ;; drop generated sources
-           (delete-file-recursively "gen")
            ;; drop fribidi sources
            (delete-file-recursively "fribidi-src")
            #t))))
