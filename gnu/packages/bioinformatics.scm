@@ -2521,14 +2521,14 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 (define-public python-dnaio
   (package
     (name "python-dnaio")
-    (version "0.3")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dnaio" version))
        (sha256
         (base32
-         "0f16m7hdlm0fz1n7y5asy0v9ghyrq17ni1p9iybq22ddzyd49r27"))))
+         "14v5yyasq2bz34j38wi3xfcp06jj7l35ppibjcn95l2n73hz3zwi"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
