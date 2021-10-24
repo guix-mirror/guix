@@ -1701,7 +1701,12 @@ errors at the end of reads.")
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (replace 'configure
+           (lambda _
+             ;; This "extended character" is not considered valid.
+             (substitute* "processor_support.h"
+               (("“") "\"")
+               (("”") "\""))))
          (replace 'check
            (lambda _
              (invoke "perl"
