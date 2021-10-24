@@ -3426,11 +3426,9 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
            (add-after 'unpack 'unpack-build-resources
              (lambda* (#:key inputs #:allow-other-keys)
                (mkdir-p "../build_resources")
-               (invoke "tar" "xf" (assoc-ref inputs "build-resources")
-                       "-C" "../build_resources"
-                       "--strip-components=1")
-               (mkdir-p "../build_resources/lib")
-               #t))
+               (copy-recursively (assoc-ref inputs "build-resources")
+                                 "../build_resources")
+               (mkdir-p "../build_resources/lib")))
            (add-after 'unpack-build-resources 'fix-dependencies
              (lambda* (#:key inputs #:allow-other-keys)
                ;; FIXME: There should be a more convenient abstraction for
