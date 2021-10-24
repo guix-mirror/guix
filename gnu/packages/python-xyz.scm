@@ -14498,7 +14498,7 @@ syntax highlighting, markdown and more to the terminal.")
 (define-public python-magic
   (package
     (name "python-magic")
-    (version "0.4.22")
+    (version "0.4.24")
     (home-page "https://github.com/ahupp/python-magic")
     (source
      (origin
@@ -14507,7 +14507,7 @@ syntax highlighting, markdown and more to the terminal.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zbdjr5shijs0jayz7gycpx0kn6v2bh83dpanyajk2vmy47jvbd6"))))
+         "17jalhjbfd600lzfz296m0nvgp6c7vx1mgz82jbzn8hgdzknf4w0"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -14521,7 +14521,7 @@ syntax highlighting, markdown and more to the terminal.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((file (assoc-ref inputs "file")))
                         (substitute* "magic/loader.py"
-                          (("ctypes\\.util\\.find_library\\('magic'\\)")
+                          (("find_library\\('magic'\\)")
                            (string-append "'" file "/lib/libmagic.so'"))))))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
