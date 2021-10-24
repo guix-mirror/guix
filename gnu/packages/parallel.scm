@@ -61,14 +61,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20210922")
+    (version "20211022")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0rjd9636sgmnhaww2q8rbnpwhpq1aqg3df6rmpdm880zqi7skp6y"))))
+       (base32 "16yyjvlm70lj7csaz4am98dlyqrc588xydnfnabxm71awby90wfs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -82,8 +82,7 @@
                   ;; $Global::shell = $ENV{'PARALLEL_SHELL'} ||
                   ;;  parent_shell($$) || $ENV{'SHELL'} || "/bin/sh";
                   (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))))
-              (list "src/parallel" "src/sem"))
-             #t))
+              (list "src/parallel" "src/sem"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -92,8 +91,7 @@
                    ,(map (lambda (input)
                            (string-append (assoc-ref inputs input) "/bin"))
                          '("perl"
-                           "procps"))))
-               #t)))
+                           "procps")))))))
          (add-after 'wrap-program 'post-install-test
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke (string-append
