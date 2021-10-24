@@ -17237,14 +17237,14 @@ than during a preprocessing step).")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.5.0")
+    (version "0.8.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "xopen" version))
-        (sha256
-          (base32
-           "17xbrgi23l87yg6h0qcknssp2q812miiy33qw6v45v5gx0jwv5xh"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xopen" version))
+       (sha256
+        (base32
+         "1xrlcnd6fri3w97zzzp6vyk4l21yq1lc8r4wksi06hgpkbh4jdq0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
