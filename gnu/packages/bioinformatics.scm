@@ -9569,13 +9569,11 @@ dependency like SeqAn.")
          (add-after 'unpack 'do-not-look-for-boost
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               (("find_package\\(Boost 1\\.53\\.0") "#"))
-             #t))
+               (("find_package\\(Boost 1\\.53\\.0") "#"))))
          (add-after 'unpack 'do-not-assign-to-macro
            (lambda _
              (substitute* "include/spdlog/details/format.cc"
-               (("const unsigned CHAR_WIDTH = 1;") ""))
-             #t))
+               (("const unsigned CHAR_WIDTH = 1;") ""))))
          (add-after 'unpack 'prepare-rapmap
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((src "external/install/src/rapmap/")
@@ -9648,8 +9646,7 @@ dependency like SeqAn.")
                     (snippet
                      '(begin (delete-file-recursively "include/spdlog")
                              (for-each delete-file '("include/xxhash.h"
-                                                     "src/xxhash.c"))
-                             #t))))
+                                                     "src/xxhash.c"))))))
        ("libdivsufsort" ,libdivsufsort)
        ("libgff" ,libgff)
        ("tbb" ,tbb)
