@@ -3595,7 +3595,7 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
                     (bin (string-append out "/bin/")))
                (install-file "flexbar" bin)))))))
     (inputs
-     `(("tbb" ,tbb)
+     `(("tbb" ,tbb-2020)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
