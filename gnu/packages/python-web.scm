@@ -2559,9 +2559,13 @@ than Python’s urllib2 library.")
              (substitute* "test-requirements.txt"
                (("(.*)==(.*)" _ name) (string-append name "\n")))))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             ;; Avoid a deprecation error.
+             (substitute* "pytest.ini"
+               (("--pep8") ""))
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
     (propagated-inputs
      `(("python-pbr" ,python-pbr)
        ("python-requests" ,python-requests)
