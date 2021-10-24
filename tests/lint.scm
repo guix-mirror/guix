@@ -177,6 +177,20 @@
                               (description "Whitespace. "))))
      (check-description-style pkg))))
 
+(test-equal "description: pluralized 'This package'"
+  "description contains typo 'This packages', should be 'This package'"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "This packages is a typo."))))
+     (check-description-style pkg))))
+
+(test-equal "description: grammar 'allows to'"
+  "description contains typo 'allows to'"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "This package allows to do stuff."))))
+     (check-description-style pkg))))
+
 (test-equal "synopsis: not a string"
   "invalid synopsis: #f"
   (single-lint-warning-message

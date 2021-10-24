@@ -321,6 +321,21 @@ markup is valid return a plain-text version of DESCRIPTION, otherwise #f."
                       (G_ "Texinfo markup in description is invalid")
                       #:field 'description))))
 
+  (define (check-description-typo description typo-corrections)
+    "Check that DESCRIPTION does not contain typo, with optional correction"
+    (append-map
+     (match-lambda
+      ((typo . correction)
+       (if (string-contains description typo)
+           (list
+            (make-warning package
+                          (G_
+                           (format #false
+                                   "description contains typo '~a'~@[, should be '~a'~]"
+                                   typo correction))))
+           '())))
+     typo-corrections))
+
   (define (check-trademarks description)
     "Check that DESCRIPTION does not contain '™' or '®' characters.  See
 http://www.gnu.org/prep/standards/html_node/Trademarks.html."
@@ -401,6 +416,10 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
          (check-not-empty description)
          (check-quotes description)
          (check-trademarks description)
+         (check-description-typo description '(("This packages" . "This package")
+                                               ("This modules" . "This module")
+                                               ("allows to" . #f)
+                                               ("permits to" . #f)))
          ;; Use raw description for this because Texinfo rendering
          ;; automatically fixes end of sentence space.
          (check-end-of-sentence-space description)
