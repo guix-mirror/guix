@@ -4712,13 +4712,10 @@ experiments and provide highly stable thresholds based on reproducibility.")
                 "0npa62wzasdibas5zp3n8j3armsci4kyvh0jw7jr0am4gg7vg5g1"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for library
-               "ruby"     ;for Ruby bindings
                "python")) ;for Python bindings
     (arguments
      `(#:configure-flags
        (list "--without-sse" ; configure script probes for CPU features when SSE is enabled.
-             (string-append "--enable-ruby-binding="
-                            (assoc-ref %outputs "ruby"))
              (string-append "--enable-python-binding="
                             (assoc-ref %outputs "python")))
        #:phases
@@ -4731,7 +4728,6 @@ experiments and provide highly stable thresholds based on reproducibility.")
     (native-inputs
      `(("bc" ,bc)
        ("time" ,time)
-       ("ruby" ,ruby)
        ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (inputs
