@@ -1870,6 +1870,7 @@ splice junctions between exons.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
+       #:make-flags '("CFLAGS=-fcommon")
        #:phases
        (modify-phases %standard-phases
          (replace 'install
