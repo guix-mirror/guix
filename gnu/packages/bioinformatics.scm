@@ -1711,7 +1711,7 @@ errors at the end of reads.")
                      "--bowtie2-build=./bowtie2-build")
              #t)))))
     (inputs
-     `(("tbb" ,tbb)
+     `(("tbb" ,tbb-2020)
        ("zlib" ,zlib)
        ("python" ,python-wrapper)))
     (native-inputs
