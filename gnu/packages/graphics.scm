@@ -486,7 +486,7 @@ applications.")
      `(("boost" ,boost)
        ("c-blosc" ,c-blosc)
        ("ilmbase" ,ilmbase)
-       ("tbb" ,tbb)
+       ("tbb" ,tbb-2020)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
