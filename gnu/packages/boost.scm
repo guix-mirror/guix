@@ -67,7 +67,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.76.0")
+    (version "1.77.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
@@ -75,7 +75,7 @@
                                   (version-with-underscores version) ".tar.bz2"))
               (sha256
                (base32
-                "0hcc661savk32hx65997p0ss1awj6ala4cmz4w7lbi42x6k7nfgh"))))
+                "0m08hhk3l7zvzajyk39qlw566q3fhixayhc2j11328qf0gy8b7zw"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))
@@ -183,8 +183,7 @@
                           (symlink libboost_pythonNN.so
                                    (string-append "libboost_python"
                                                   (string-take python-version 1)
-                                                  ".so")))
-                        #t))))))))
+                                                  ".so")))))))))))
 
     (home-page "https://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
