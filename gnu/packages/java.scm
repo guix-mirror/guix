@@ -6131,9 +6131,9 @@ setter and getter method.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (list (string-append "-Djunit.jar="
-                            (car (find-files (assoc-ref %build-inputs "java-junit")
-                                             "jar$"))))
+       ,#~(list (string-append "-Djunit.jar="
+                               (car (find-files #$(this-package-native-input "java-junit")
+                                                "jar$"))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-javadoc ant-build-javadoc)
