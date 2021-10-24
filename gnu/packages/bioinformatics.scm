@@ -3583,20 +3583,17 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
          (add-after 'unpack 'do-not-tune-to-CPU
            (lambda _
              (substitute* "src/CMakeLists.txt"
-               ((" -march=native") ""))
-             #t))
+               ((" -march=native") ""))))
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
              (with-directory-excursion "../source/test"
-               (invoke "bash" "flexbar_test.sh"))
-             #t))
+               (invoke "bash" "flexbar_test.sh"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
                     (bin (string-append out "/bin/")))
-               (install-file "flexbar" bin))
-             #t)))))
+               (install-file "flexbar" bin)))))))
     (inputs
      `(("tbb" ,tbb)
        ("zlib" ,zlib)))
