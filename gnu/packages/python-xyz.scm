@@ -9346,31 +9346,41 @@ and statistical routines from scipy and statsmodels.")
 
 (define-public python-mpmath
   (package
-  (name "python-mpmath")
-  (version "1.1.0")
-  (source (origin
-            (method url-fetch)
-            (uri (pypi-uri "mpmath" version))
-            (file-name (git-file-name name version))
-            (sha256
-             (base32
-              "1xlrcja213jpfhw25q1jl5pl10w1a2cc68x1c4mkicxsbzhan5zw"))))
-  (build-system python-build-system)
-  (native-inputs
-   `(("python-pytest" ,python-pytest)))
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-       (replace 'check
-         (lambda _
-           (invoke "python" "mpmath/tests/runtests.py" "-local"))))))
-  (home-page "https://mpmath.org")
-  (synopsis "Arbitrary-precision floating-point arithmetic in python")
-  (description
-    "@code{mpmath} can be used as an arbitrary-precision substitute for
+    (name "python-mpmath")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fredrik-johansson/mpmath")
+                    (commit "c6a35f9ee7c294bcf4e0517bc76b268843db9499")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ifw59fjjls3mas104rh0frilvab2fhk1dkjraxlqni5n9l676im"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-version
+           (lambda _
+             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)
+             ;; ZIP does not support timestamps before 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://mpmath.org")
+    (synopsis "Arbitrary-precision floating-point arithmetic in python")
+    (description
+     "@code{mpmath} can be used as an arbitrary-precision substitute for
 Python's float/complex types and math/cmath modules, but also does much
 more advanced mathematics.")
-  (license license:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-mpmath
   (package-with-python2 python-mpmath))
