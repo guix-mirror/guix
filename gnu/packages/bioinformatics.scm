@@ -14006,6 +14006,7 @@ patterns.")
      `(#:test-target "test"
        #:make-flags
        (list "CC=gcc"
+             "CFLAGS=-fcommon"
              (string-append "prefix="
                             (assoc-ref %outputs "out") "/bin/"))
        #:phases
