@@ -23459,14 +23459,14 @@ for YAML and JSON.")
 (define-public python-dbusmock
   (package
     (name "python-dbusmock")
-    (version "0.18.3")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dbusmock" version))
        (sha256
         (base32
-         "0hp2kyac88nh9iv6l8hlmv7s1sa1s5f1a3wc2pmlmmxnd211fjlr"))))
+         "0wn2adqzwvwc0cc7kszidlq0i4xzfyip946dn85hbvjap8fxbq0b"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -23474,8 +23474,7 @@ for YAML and JSON.")
          (add-after 'unpack 'patch-shell-path
            (lambda _
              (substitute* "tests/test_code.py"
-               (("/bin/bash") (which "bash")))
-             #t)))))
+               (("/bin/bash") (which "bash"))))))))
     (native-inputs
      `(;; For tests.
        ("dbus" ,dbus) ; for dbus-daemon
