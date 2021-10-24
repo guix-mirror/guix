@@ -2616,6 +2616,16 @@ annotations of the genome.")
                (base32
                 "1vqmsfkm6llxzmsz9wcfcvzx9a9f8iabvwik2rbyn7nc4wm25z89"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'always-cythonize
+           (lambda _
+             (delete-file "src/cutadapt/_align.c")
+             ;; If PKG-INFO exists, setup.py decides not to run Cython.
+             (substitute* "setup.py"
+               (("os.path.exists\\('PKG-INFO'\\):")
+                "os.path.exists('totally-does-not-exist'):")))))))
     (inputs
      `(("python-dnaio" ,python-dnaio)
        ("python-xopen" ,python-xopen)))
