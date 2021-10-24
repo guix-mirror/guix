@@ -8817,14 +8817,14 @@ parsing (browser/HTTP) user agent strings.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.16")
+    (version "1.2.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
                            "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32 "196m5rk3qzw5nkmgzjl7wmq0v7vpwfhh8bz2sapdi5f9hqfqy8qi"))))
+        (base32 "0q3jrw515z98mqdk9x822nd95rky455zz9876f1nqna5igkd3gcj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -8843,7 +8843,9 @@ implementation of D-Bus.")
     (inputs `(("python" ,python-2)
               ,@(alist-delete "python"
                               (package-inputs python-dbus)
-                              equal?)))))
+                              equal?)))
+    (arguments
+     `(#:configure-flags '("PYTHON_VERSION=2")))))
 
 (define-public python-notify2
   (package
