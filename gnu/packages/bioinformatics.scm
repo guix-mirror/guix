@@ -9581,18 +9581,12 @@ dependency like SeqAn.")
              (let ((src "external/install/src/rapmap/")
                    (include "external/install/include/rapmap/")
                    (rapmap (assoc-ref inputs "rapmap")))
-               (mkdir-p "/tmp/rapmap")
-               (invoke "tar" "xf"
-                       (assoc-ref inputs "rapmap")
-                       "-C" "/tmp/rapmap"
-                       "--strip-components=1")
                (mkdir-p src)
                (mkdir-p include)
                (for-each (lambda (file)
                            (install-file file src))
-                         (find-files "/tmp/rapmap/src" "\\.(c|cpp)"))
-               (copy-recursively "/tmp/rapmap/include" include))
-             #t))
+                         (find-files (string-append rapmap "/src") "\\.(c|cpp)"))
+               (copy-recursively (string-append rapmap "/include") include))))
          (add-after 'unpack 'use-system-libraries
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/SailfishIndexer.cpp"
