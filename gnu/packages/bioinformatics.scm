@@ -7647,6 +7647,33 @@ clustering analysis, differential analysis, motif inference and exploration of
 single cell ATAC-seq sequencing data.")
     (license license:gpl3)))
 
+(define-public r-umi4cpackage
+  (let ((commit "88b07d896a137418ba6c31c2474b9dbe1d86fc20")
+        (revision "1"))
+    (package
+      (name "r-umi4cpackage")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tanaylab/umi4cpackage")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0bjzamdw2lcfhlbzc0vdva87c3wwnij8jsvnrpx4wyyxvpcz13m5"))))
+      (properties `((upstream-name . "umi4cPackage")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-misha" ,r-misha)
+         ("r-zoo" ,r-zoo)))
+      (native-inputs `(("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/tanaylab/umi4cpackage")
+      (synopsis "Processing and analysis of UMI-4C contact profiles.")
+      (description "This is a package that lets you process UMI-4C data from
+scratch to produce nice plots.")
+      (license license:expat))))
+
 (define-public r-shinycell
   (let ((commit
          "aecbd56e66802f28e397f5ae1f19403aadd12163")
