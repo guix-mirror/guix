@@ -344,7 +344,8 @@ Services
 * Base Services::               Essential system services.
 * Scheduled Job Execution::     The mcron service.
 * Log Rotation::                The rottlog service.
-* Networking Services::         Network setup, SSH daemon, etc.
+* Networking Setup::            Setting up network interfaces.
+* Networking Services::         Firewall, SSH daemon, etc.
 * Unattended Upgrades::         Automated system upgrades.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
@@ -15606,7 +15607,8 @@ declaration.
 * Base Services::               Essential system services.
 * Scheduled Job Execution::     The mcron service.
 * Log Rotation::                The rottlog service.
-* Networking Services::         Network setup, SSH daemon, etc.
+* Networking Setup::            Setting up network interfaces.
+* Networking Services::         Firewall, SSH daemon, etc.
 * Unattended Upgrades::         Automated system upgrades.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
@@ -16828,63 +16830,26 @@ The list of syslog-controlled files to be rotated.  By default it is:
 "/var/log/maillog")}.
 @end defvr
 
-@node Networking Services
-@subsection Networking Services
+@node Networking Setup
+@subsection Networking Setup
 
-The @code{(gnu services networking)} module provides services to configure
-the network interface.
+The @code{(gnu services networking)} module provides services to
+configure network interfaces and set up networking on your machine.
+Those services provide different ways for you to set up your machine: by
+declaring a static network configuration, by running a Dynamic Host
+Configuration Protocol (DHCP) client, or by running daemons such as
+NetworkManager and Connman that automate the whole process,
+automatically adapt to connectivity changes, and provide a high-level
+user interface.
 
-@cindex DHCP, networking service
-@defvr {Scheme Variable} dhcp-client-service-type
-This is the type of services that run @var{dhcp}, a Dynamic Host Configuration
-Protocol (DHCP) client, on all the non-loopback network interfaces.  Its value
-is the DHCP client package to use, @code{isc-dhcp} by default.
-@end defvr
+On a laptop, NetworkManager and Connman are by far the most convenient
+options, which is why the default desktop services include
+NetworkManager (@pxref{Desktop Services, @code{%desktop-services}}).
+For a server, or for a virtual machine or a container, static network
+configuration or a simple DHCP client are often more appropriate.
 
-@deffn {Scheme Procedure} dhcpd-service-type
-This type defines a service that runs a DHCP daemon.  To create a
-service of this type, you must supply a @code{<dhcpd-configuration>}.
-For example:
-
-@lisp
-(service dhcpd-service-type
-         (dhcpd-configuration
-          (config-file (local-file "my-dhcpd.conf"))
-          (interfaces '("enp0s25"))))
-@end lisp
-@end deffn
-
-@deftp {Data Type} dhcpd-configuration
-@table @asis
-@item @code{package} (default: @code{isc-dhcp})
-The package that provides the DHCP daemon.  This package is expected to
-provide the daemon at @file{sbin/dhcpd} relative to its output
-directory.  The default package is the
-@uref{https://www.isc.org/products/DHCP, ISC's DHCP server}.
-@item @code{config-file} (default: @code{#f})
-The configuration file to use.  This is required.  It will be passed to
-@code{dhcpd} via its @code{-cf} option.  This may be any ``file-like''
-object (@pxref{G-Expressions, file-like objects}).  See @code{man
-dhcpd.conf} for details on the configuration file syntax.
-@item @code{version} (default: @code{"4"})
-The DHCP version to use.  The ISC DHCP server supports the values ``4'',
-``6'', and ``4o6''.  These correspond to the @code{dhcpd} program
-options @code{-4}, @code{-6}, and @code{-4o6}.  See @code{man dhcpd} for
-details.
-@item @code{run-directory} (default: @code{"/run/dhcpd"})
-The run directory to use.  At service activation time, this directory
-will be created if it does not exist.
-@item @code{pid-file} (default: @code{"/run/dhcpd/dhcpd.pid"})
-The PID file to use.  This corresponds to the @code{-pf} option of
-@code{dhcpd}.  See @code{man dhcpd} for details.
-@item @code{interfaces} (default: @code{'()})
-The names of the network interfaces on which dhcpd should listen for
-broadcasts.  If this list is not empty, then its elements (which must be
-strings) will be appended to the @code{dhcpd} invocation when starting
-the daemon.  It may not be necessary to explicitly specify any
-interfaces here; see @code{man dhcpd} for details.
-@end table
-@end deftp
+This section describes the various network setup services available,
+starting with static network configuration.
 
 @defvr {Scheme Variable} static-networking-service-type
 This is the type for statically-configured network interfaces.
@@ -16914,80 +16879,12 @@ For example:
 @end lisp
 @end deffn
 
-@cindex wicd
-@cindex wireless
-@cindex WiFi
-@cindex network management
-@deffn {Scheme Procedure} wicd-service [#:wicd @var{wicd}]
-Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
-management daemon that aims to simplify wired and wireless networking.
-
-This service adds the @var{wicd} package to the global profile, providing
-several commands to interact with the daemon and configure networking:
-@command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
-and @command{wicd-curses} user interfaces.
-@end deffn
-
-@cindex ModemManager
-
-@defvr {Scheme Variable} modem-manager-service-type
-This is the service type for the
-@uref{https://wiki.gnome.org/Projects/ModemManager, ModemManager}
-service.  The value for this service type is a
-@code{modem-manager-configuration} record.
-
-This service is part of @code{%desktop-services} (@pxref{Desktop
-Services}).
+@cindex DHCP, networking service
+@defvr {Scheme Variable} dhcp-client-service-type
+This is the type of services that run @var{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces.  Its value
+is the DHCP client package to use, @code{isc-dhcp} by default.
 @end defvr
-
-@deftp {Data Type} modem-manager-configuration
-Data type representing the configuration of ModemManager.
-
-@table @asis
-@item @code{modem-manager} (default: @code{modem-manager})
-The ModemManager package to use.
-
-@end table
-@end deftp
-
-@cindex USB_ModeSwitch
-@cindex Modeswitching
-
-@defvr {Scheme Variable} usb-modeswitch-service-type
-This is the service type for the
-@uref{https://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch}
-service.  The value for this service type is
-a @code{usb-modeswitch-configuration} record.
-
-When plugged in, some USB modems (and other USB devices) initially present
-themselves as a read-only storage medium and not as a modem.  They need to be
-@dfn{modeswitched} before they are usable.  The USB_ModeSwitch service type
-installs udev rules to automatically modeswitch these devices when they are
-plugged in.
-
-This service is part of @code{%desktop-services} (@pxref{Desktop
-Services}).
-@end defvr
-
-@deftp {Data Type} usb-modeswitch-configuration
-Data type representing the configuration of USB_ModeSwitch.
-
-@table @asis
-@item @code{usb-modeswitch} (default: @code{usb-modeswitch})
-The USB_ModeSwitch package providing the binaries for modeswitching.
-
-@item @code{usb-modeswitch-data} (default: @code{usb-modeswitch-data})
-The package providing the device data and udev rules file used by
-USB_ModeSwitch.
-
-@item @code{config-file} (default: @code{#~(string-append #$usb-modeswitch:dispatcher "/etc/usb_modeswitch.conf")})
-Which config file to use for the USB_ModeSwitch dispatcher.  By default the
-config file shipped with USB_ModeSwitch is used which disables logging to
-@file{/var/log} among other default settings.  If set to @code{#f}, no config
-file is used.
-
-@end table
-@end deftp
 
 @cindex NetworkManager
 
@@ -17125,6 +17022,139 @@ List of additional command-line arguments to pass to the daemon.
 @end table
 @end deftp
 
+@cindex wicd
+@cindex wireless
+@cindex WiFi
+@cindex network management
+@deffn {Scheme Procedure} wicd-service [#:wicd @var{wicd}]
+Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
+management daemon that aims to simplify wired and wireless networking.
+
+This service adds the @var{wicd} package to the global profile, providing
+several commands to interact with the daemon and configure networking:
+@command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
+and @command{wicd-curses} user interfaces.
+@end deffn
+
+@cindex ModemManager
+Some networking devices such as modems require special care, and this is
+what the services below focus on.
+
+@defvr {Scheme Variable} modem-manager-service-type
+This is the service type for the
+@uref{https://wiki.gnome.org/Projects/ModemManager, ModemManager}
+service.  The value for this service type is a
+@code{modem-manager-configuration} record.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
+@end defvr
+
+@deftp {Data Type} modem-manager-configuration
+Data type representing the configuration of ModemManager.
+
+@table @asis
+@item @code{modem-manager} (default: @code{modem-manager})
+The ModemManager package to use.
+
+@end table
+@end deftp
+
+@cindex USB_ModeSwitch
+@cindex Modeswitching
+
+@defvr {Scheme Variable} usb-modeswitch-service-type
+This is the service type for the
+@uref{https://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch}
+service.  The value for this service type is
+a @code{usb-modeswitch-configuration} record.
+
+When plugged in, some USB modems (and other USB devices) initially present
+themselves as a read-only storage medium and not as a modem.  They need to be
+@dfn{modeswitched} before they are usable.  The USB_ModeSwitch service type
+installs udev rules to automatically modeswitch these devices when they are
+plugged in.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
+@end defvr
+
+@deftp {Data Type} usb-modeswitch-configuration
+Data type representing the configuration of USB_ModeSwitch.
+
+@table @asis
+@item @code{usb-modeswitch} (default: @code{usb-modeswitch})
+The USB_ModeSwitch package providing the binaries for modeswitching.
+
+@item @code{usb-modeswitch-data} (default: @code{usb-modeswitch-data})
+The package providing the device data and udev rules file used by
+USB_ModeSwitch.
+
+@item @code{config-file} (default: @code{#~(string-append #$usb-modeswitch:dispatcher "/etc/usb_modeswitch.conf")})
+Which config file to use for the USB_ModeSwitch dispatcher.  By default the
+config file shipped with USB_ModeSwitch is used which disables logging to
+@file{/var/log} among other default settings.  If set to @code{#f}, no config
+file is used.
+
+@end table
+@end deftp
+
+
+@node Networking Services
+@subsection Networking Services
+
+The @code{(gnu services networking)} module discussed in the previous
+section provides services for more advanced setups: providing a DHCP
+service for others to use, filtering packets with iptables or nftables,
+running a WiFi access point with @command{hostapd}, running the
+@command{inetd} ``superdaemon'', and more.  This section describes
+those.
+
+@deffn {Scheme Procedure} dhcpd-service-type
+This type defines a service that runs a DHCP daemon.  To create a
+service of this type, you must supply a @code{<dhcpd-configuration>}.
+For example:
+
+@lisp
+(service dhcpd-service-type
+         (dhcpd-configuration
+          (config-file (local-file "my-dhcpd.conf"))
+          (interfaces '("enp0s25"))))
+@end lisp
+@end deffn
+
+@deftp {Data Type} dhcpd-configuration
+@table @asis
+@item @code{package} (default: @code{isc-dhcp})
+The package that provides the DHCP daemon.  This package is expected to
+provide the daemon at @file{sbin/dhcpd} relative to its output
+directory.  The default package is the
+@uref{https://www.isc.org/products/DHCP, ISC's DHCP server}.
+@item @code{config-file} (default: @code{#f})
+The configuration file to use.  This is required.  It will be passed to
+@code{dhcpd} via its @code{-cf} option.  This may be any ``file-like''
+object (@pxref{G-Expressions, file-like objects}).  See @code{man
+dhcpd.conf} for details on the configuration file syntax.
+@item @code{version} (default: @code{"4"})
+The DHCP version to use.  The ISC DHCP server supports the values ``4'',
+``6'', and ``4o6''.  These correspond to the @code{dhcpd} program
+options @code{-4}, @code{-6}, and @code{-4o6}.  See @code{man dhcpd} for
+details.
+@item @code{run-directory} (default: @code{"/run/dhcpd"})
+The run directory to use.  At service activation time, this directory
+will be created if it does not exist.
+@item @code{pid-file} (default: @code{"/run/dhcpd/dhcpd.pid"})
+The PID file to use.  This corresponds to the @code{-pf} option of
+@code{dhcpd}.  See @code{man dhcpd} for details.
+@item @code{interfaces} (default: @code{'()})
+The names of the network interfaces on which dhcpd should listen for
+broadcasts.  If this list is not empty, then its elements (which must be
+strings) will be appended to the @code{dhcpd} invocation when starting
+the daemon.  It may not be necessary to explicitly specify any
+interfaces here; see @code{man dhcpd} for details.
+@end table
+@end deftp
+
 @cindex hostapd service, for Wi-Fi access points
 @cindex Wi-Fi access points, hostapd service
 @defvr {Scheme Variable} hostapd-service-type
@@ -17186,6 +17216,7 @@ network that can be seen on @code{wlan0}, by default.
 
 The service's value is a @code{hostapd-configuration} record.
 @end defvr
+
 
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
