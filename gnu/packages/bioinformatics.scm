@@ -14016,8 +14016,7 @@ patterns.")
              (substitute* "Makefile"
                (("-lhts ") "-lhts -lBigWig ")
                (("install MethylDackel \\$\\(prefix\\)" match)
-                (string-append "install -d $(prefix); " match)))
-             #t)))))
+                (string-append "install -d $(prefix); " match))))))))
     (inputs
      `(("curl" ,curl) ; XXX: needed by libbigwig
        ("htslib" ,htslib-1.9)
