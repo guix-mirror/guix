@@ -4878,6 +4878,8 @@ experiments.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'build 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp")))
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
