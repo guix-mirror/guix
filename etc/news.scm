@@ -23,7 +23,66 @@
 
 (channel-news
  (version 0)
-(entry (commit "a2324d8b56eabf8117bca220a507cc791edffd2e")
+
+ (entry (commit "746584e0ca200e7bf51b139ceb36c19ea81d6ef1")
+        (title
+         (en "New @command{guix shell} command supersedes @command{guix
+environment}")
+         (fr "Nouvelle commande @command{guix shell} en remplacement de
+@command{guix environment}"))
+        (body
+         (en "A new @command{guix shell} command is now available.  It is
+similar to @command{guix environment}, but with a more convenient interface
+(@command{guix environment} is deprecated but will remain available until May,
+1st 2023).  The main difference compared to @command{guix environment} is that
+the \"ad hoc\" mode is the default.  Thus, to create an interactive
+environment containing Python, NumPy, and SciPy, you would run:
+
+@example
+guix shell python python-numpy python-scipy
+@end example
+
+To get a development environment for, say, Inkscape, pass the @option{-D}
+flag:
+
+@example
+guix shell -D inkscape
+@end example
+
+Another difference is that running @command{guix shell} without arguments
+loads @file{manifest.scm} or @file{guix.scm} for the current directory or an
+ancestor, provided you allowed it.  The command maintains a cache to speed up
+access to such environments.
+
+Run @command{info \"(guix) Invoking guix shell\"} for more information.")
+         (fr "Une nouvelle commande, @command{guix shell}, est maintenant
+disponible.  Elle est similaire à @command{guix environment}, mais avec une
+interface plus pratique (@command{guix environment} est désuet mais restera
+disponible jusqu'au 1er mai 2023).  La principale différence par rapport à
+@command{guix environment} est que le mode par défaut est le mode \"ad hoc\".
+Pour créer un environnement interactif contenant Python, NumPy et SciPy, il
+faut donc lancer :
+
+@example
+guix shell python python-numpy python-scipy
+@end example
+
+Pour obtenir un environnement de développement pour Inkscape, par exemple,
+passer l'option @option{-D} :
+
+@example
+guix shell -D inkscape
+@end example
+
+Une autre différence est qu'en lançant @command{guix shell} sans argument, le
+fichier @file{manifest.scm} ou @file{guix.scm} du répertoire courant ou d'un
+parent est automatiquement chargé, à condition de l'avoir autorisé.  La
+commande garde un cache pour accélérer l'accès à ces environnements.
+
+Lancer @command{info \"(guix.fr) Invoquer guix shell\"} pour plus
+d'informations.")))
+
+ (entry (commit "a2324d8b56eabf8117bca220a507cc791edffd2e")
         (title
          (en "Guix Home is a part of GNU Guix")
          (de "Guix Home ist jetzt Teil von GNU Guix")
