@@ -1208,7 +1208,7 @@ environment.")
 (define-public ghc-tasty-silver
   (package
     (name "ghc-tasty-silver")
-    (version "3.2.2")
+    (version "3.2.3")
     (source
       (origin
         (method url-fetch)
@@ -1217,7 +1217,7 @@ environment.")
                version
                ".tar.gz"))
         (sha256
-          (base32 "0zsl6nna8ir215qyxhyh2czx4i16hzw1n1m8jw8ym02j6sp6iz13"))))
+          (base32 "0nvh2k8iqqkanmp7lpwd3asimyarzisly8wavbdahcxryn0j4xb7"))))
     (build-system haskell-build-system)
     (inputs
       `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
@@ -1225,13 +1225,13 @@ environment.")
         ("ghc-optparse-applicative" ,ghc-optparse-applicative)
         ("ghc-process-extras" ,ghc-process-extras)
         ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+        ("ghc-semigroups" ,ghc-semigroups)
         ("ghc-tagged" ,ghc-tagged)
         ("ghc-tasty" ,ghc-tasty)
         ("ghc-temporary" ,ghc-temporary)))
-    (native-inputs `(("ghc-tasty-hunit" ,ghc-tasty-hunit)))
-    (arguments
-      `(#:cabal-revision
-        ("1" "0mgdk77xz38zc46qbxvss6vnp4yk328zbpw1l0c1n0f5gyf6sbav")))
+    (native-inputs
+     `(("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-silently" ,ghc-silently)))
     (home-page "https://github.com/phile314/tasty-silver")
     (synopsis "Fancy test runner, including support for golden tests")
     (description
