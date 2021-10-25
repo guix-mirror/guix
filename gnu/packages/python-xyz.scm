@@ -5185,16 +5185,17 @@ provides additional functionality on the produced Mallard documents.")
              ;; time of the test suite.
              (setenv "CFLAGS" "-O0")
 
-             (invoke "python" "runtests.py" "-vv"
-                     "-j" (number->string (parallel-job-count))
-                     ;; XXX: On 32-bit architectures, running the parallel tests
-                     ;; fails on many-core systems, see
-                     ;; <https://github.com/cython/cython/issues/2807>.
-                     ,@(if (not (target-64bit?))
-                           '("-x" "run.parallel")
-                           '())
-                     ;; This test fails when running on 24 cores.
-                     "-x" "cpp_stl_conversion"))))))
+             (when tests?
+               (invoke "python" "runtests.py" "-vv"
+                       "-j" (number->string (parallel-job-count))
+                       ;; XXX: On 32-bit architectures, running the parallel tests
+                       ;; fails on many-core systems, see
+                       ;; <https://github.com/cython/cython/issues/2807>.
+                       ,@(if (not (target-64bit?))
+                             '("-x" "run.parallel")
+                             '())
+                       ;; This test fails when running on 24 cores.
+                       "-x" "cpp_stl_conversion")))))))
     (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
