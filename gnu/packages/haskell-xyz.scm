@@ -11779,7 +11779,7 @@ class, forming lattice-like structure.")
 (define-public ghc-semigroupoids
   (package
     (name "ghc-semigroupoids")
-    (version "5.3.5")
+    (version "5.3.6")
     (source
      (origin
        (method url-fetch)
@@ -11789,7 +11789,7 @@ class, forming lattice-like structure.")
              ".tar.gz"))
        (sha256
         (base32
-         "1c66sc9w9724xhlly9wfjhghmnnw99z9al69264i2izk7vhihbsm"))))
+         "0glhqc9x8i5z3bdg23xvl2lfns95msid3h3x0jksna7i6c8j869n"))))
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
@@ -11799,13 +11799,10 @@ class, forming lattice-like structure.")
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
+       ("ghc-generic-deriving" ,ghc-generic-deriving)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
-    (native-inputs
-     `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-doctest" ,ghc-doctest)))
     (home-page "https://github.com/ekmett/semigroupoids")
     (synopsis "Semigroupoids operations for Haskell")
     (description "This library provides a wide array of (semi)groupoids and
