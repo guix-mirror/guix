@@ -6922,7 +6922,7 @@ language understood by ocamldoc.")
        ("fftwf" ,fftwf)))
     (native-inputs
      `(("ocaml-cppo" ,(package-with-ocaml4.07 ocaml-cppo))
-       ("ocaml-lacaml" ,ocaml4.07-lacaml)))
+       ("ocaml-lacaml" ,(package-with-ocaml4.07 ocaml-lacaml))))
     (home-page
      "https://github.com/Chris00/fftw-ocaml")
     (synopsis
@@ -6932,10 +6932,10 @@ language understood by ocamldoc.")
 library FFTW.")
     (license license:lgpl2.1))) ; with static linking exception.
 
-(define-public ocaml4.07-lacaml
+(define-public ocaml-lacaml
   (package
-    (name "ocaml4.07-lacaml")
-    (version "11.0.5")
+    (name "ocaml-lacaml")
+    (version "11.0.8")
     (source
      (origin
        (method git-fetch)
@@ -6945,18 +6945,15 @@ library FFTW.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "180yb79a3qgx067qcpm50q12hrimjygf06rgkzbish9d1zfm670c"))))
+         "115535kphchh2a434b48b408x9794j8zzrsdmacsgqdsrgy3rck4"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f ; No test target.
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:tests? #f)) ; No test target.
     (native-inputs
      `(("openblas" ,openblas)
        ("lapack" ,lapack)
-       ("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))))
+       ("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)))
     (home-page "https://mmottl.github.io/lacaml/")
     (synopsis
      "OCaml-bindings to BLAS and LAPACK")
