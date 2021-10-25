@@ -898,23 +898,44 @@ specified, the QEMU default path is used."))
 ;;; Secrets for guest VMs.
 ;;;
 
-(define (secret-service-activation port)
-  "Return an activation snippet that fetches sensitive material at local PORT,
+(define (secret-service-shepherd-services port)
+  "Return a Shepherd service that fetches sensitive material at local PORT,
 over TCP.  Reboot upon failure."
-  (with-imported-modules '((gnu build secret-service)
-                           (guix build utils))
-    #~(begin
-        (use-modules (gnu build secret-service))
-        (let ((sent (secret-service-receive-secrets #$port)))
-          (unless sent
-            (sleep 3)
-            (reboot))))))
+  ;; This is a Shepherd service, rather than an activation snippet, to make
+  ;; sure it is started once 'networking' is up so it can accept incoming
+  ;; connections.
+  (list
+   (shepherd-service
+    (documentation "Fetch secrets from the host at startup time.")
+    (provision '(secret-service-client))
+    (requirement '(loopback networking))
+    (modules '((gnu build secret-service)
+               (guix build utils)))
+    (start (with-imported-modules '((gnu build secret-service)
+                                    (guix build utils))
+             #~(lambda ()
+                 ;; Since shepherd's output port goes to /dev/log, write this
+                 ;; message to stderr so it's visible on the Mach console.
+                 (format (current-error-port)
+                         "receiving secrets from the host...~%")
+                 (force-output (current-error-port))
+
+                 (let ((sent (secret-service-receive-secrets #$port)))
+                   (unless sent
+                     (sleep 3)
+                     (reboot))))))
+    (stop #~(const #f)))))
 
 (define secret-service-type
   (service-type
    (name 'secret-service)
-   (extensions (list (service-extension activation-service-type
-                                        secret-service-activation)))
+   (extensions (list (service-extension shepherd-root-service-type
+                                        secret-service-shepherd-services)
+
+                     ;; Make every Shepherd service depend on
+                     ;; 'secret-service-client'.
+                     (service-extension user-processes-service-type
+                                        (const '(secret-service-client)))))
    (description
     "This service fetches secret key and other sensitive material over TCP at
 boot time.  This service is meant to be used by virtual machines (VMs) that

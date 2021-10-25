@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -111,6 +111,15 @@ wait for at most HANDSHAKE-TIMEOUT seconds for handshake to complete.  Return
        (close-port sock)
        #f))))
 
+(define (delete-file* file)
+  "Ensure FILE does not exist."
+  (catch 'system-error
+    (lambda ()
+      (delete-file file))
+    (lambda args
+      (unless (= ENOENT (system-error-errno args))
+        (apply throw args)))))
+
 (define (secret-service-receive-secrets port)
   "Listen to local PORT and wait for a secret service client to send secrets.
 Write them to the file system.  Return the list of files installed on success,
@@ -170,6 +179,12 @@ and #f otherwise."
                    (log "installing file '~a' (~a bytes)...~%"
                         file size)
                    (mkdir-p (dirname file))
+
+                   ;; It could be that FILE already exists, for instance
+                   ;; because it has been created by a service's activation
+                   ;; snippet (e.g., SSH host keys).  Delete it.
+                   (delete-file* file)
+
                    (call-with-output-file file
                      (lambda (output)
                        (dump port output size)
