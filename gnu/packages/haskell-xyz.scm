@@ -212,7 +212,7 @@ for Haskell.")
 (define-public ghc-aeson-compat
   (package
     (name "ghc-aeson-compat")
-    (version "0.3.9")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
@@ -221,30 +221,25 @@ for Haskell.")
                            "aeson-compat-" version ".tar.gz"))
        (sha256
         (base32
-         "1j13gykv4ryvmr14w5blz0nnpdb4p0hpa27wahw3mhb1lwdr8hz0"))))
+         "0ia3qfdpbrzhwwg4ywpdwca0z1m85k081pcz6jh1sx8qjsvcr71w"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("7" "15aflmqs5y0yg2p4042yvnhxyp11ndlihs1dxj21bxfdzd1bbkrn")))
     (inputs `(("ghc-base-compat" ,ghc-base-compat)
               ("ghc-aeson" ,ghc-aeson)
               ("ghc-attoparsec" ,ghc-attoparsec)
-              ("ghc-attoparsec" ,ghc-attoparsec-iso8601)
-              ("ghc-exceptions" ,ghc-exceptions)
+              ("ghc-attoparsec-iso8601" ,ghc-attoparsec-iso8601)
               ("ghc-hashable" ,ghc-hashable)
               ("ghc-scientific" ,ghc-scientific)
               ("ghc-time-locale-compat" ,ghc-time-locale-compat)
               ("ghc-unordered-containers" ,ghc-unordered-containers)
               ("ghc-vector" ,ghc-vector)
-              ("ghc-tagged" ,ghc-tagged)
-              ("ghc-semigroups" ,ghc-semigroups)
-              ("ghc-nats" ,ghc-nats)))
+              ("ghc-tagged" ,ghc-tagged)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-base-orphans" ,ghc-base-orphans)))
     (home-page "https://github.com/phadej/aeson-compat")
     (synopsis "Compatibility layer for ghc-aeson")
     (description "This Haskell package provides compatibility layer for
