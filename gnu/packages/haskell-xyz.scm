@@ -9139,7 +9139,7 @@ to other formats.")
 (define-public ghc-emojis
   (package
     (name "ghc-emojis")
-    (version "0.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
@@ -9147,7 +9147,7 @@ to other formats.")
              "https://hackage.haskell.org/package/emojis/"
              "emojis-" version ".tar.gz"))
        (sha256
-        (base32 "1c6zkj9gmk1y90gbdrn50hyp7mw1mggzhnr2khqd728ryipw60ss"))))
+        (base32 "09x2xrppwypi369y7rzf3ln2g7c3g9qfckn2gydxpfzglcp9rziw"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
