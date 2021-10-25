@@ -10205,16 +10205,16 @@ types.")
 (define-public ghc-prettyprinter
   (package
     (name "ghc-prettyprinter")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://hackage/package/prettyprinter/prettyprinter-"
+             "https://hackage.haskell.org/package/prettyprinter/prettyprinter-"
              version
              ".tar.gz"))
        (sha256
-        (base32 "19z04sn0kqxgwcyfn5igjmbxw13xsb3mdhdidkb3kzswib78f6sr"))))
+        (base32 "0i8b3wjjpdvp5b857j065jwyrpgcnzgk75imrj7i3yhl668acvjy"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-doctest" ,ghc-doctest)
