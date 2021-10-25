@@ -16157,7 +16157,7 @@ Haskell newer than 2.8.")
 (define-public ghc-mysql
   (package
     (name "ghc-mysql")
-    (version "0.2.0.1")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -16166,7 +16166,7 @@ Haskell newer than 2.8.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "16m8hv9yy2nf4jwgqg6n9z53n2pzskbc3gwbp2i3kgff8wsmf8sd"))))
+        (base32 "051w428arxbix06a52dacqjpnkfx42zbazxsd3l9d857dsd0kl3g"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fails to connect to server.
     (inputs
