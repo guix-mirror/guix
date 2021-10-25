@@ -176,7 +176,13 @@ living in the same process.")
        (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                            "download/" version "/p11-kit-" version ".tar.xz"))
        (sha256
-        (base32 "11f6saclxsclc1f3lbavzw8kikws4cr3mfd1avly8dgnhh2i9rl1"))))))
+        (base32 "11f6saclxsclc1f3lbavzw8kikws4cr3mfd1avly8dgnhh2i9rl1"))))
+    (arguments
+     ;; Use the default certificates so that users such as flatpak find them.
+     ;; See <https://issues.guix.gnu.org/49957>.
+     (substitute-keyword-arguments (package-arguments p11-kit)
+       ((#:configure-flags flags ''())
+        ''("--with-trust-paths=/etc/ssl/certs/ca-certificates.crt"))))))
 
 (define-public gnutls
   (package
