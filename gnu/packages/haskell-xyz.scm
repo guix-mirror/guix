@@ -6877,7 +6877,7 @@ Notation, JSON} is a lightweight data-interchange format.")
 (define-public ghc-juicypixels
   (package
     (name "ghc-juicypixels")
-    (version "3.3.5")
+    (version "3.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -6885,14 +6885,13 @@ Notation, JSON} is a lightweight data-interchange format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0yj4jyf56r3c1r3v1lkx8i8ll0jl8g8y2yv87sa4hwgck52199gc"))))
+                "1f8giivsqxma19ax78dr7j4gir12iyfqn2mlsd27zzl8dn7dy6w1"))))
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-zlib" ,ghc-zlib)
        ("ghc-vector" ,ghc-vector)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-mmap" ,ghc-mmap)))
+       ("ghc-primitive" ,ghc-primitive)))
     (home-page "https://github.com/Twinside/Juicy.Pixels")
     (synopsis "Picture loading and serialization library")
     (description
