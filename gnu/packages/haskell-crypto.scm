@@ -780,7 +780,7 @@ extensions.")
 (define-public ghc-hsopenssl
   (package
     (name "ghc-hsopenssl")
-    (version "0.11.7.1")
+    (version "0.11.7.2")
     (source
      (origin
        (method url-fetch)
@@ -788,7 +788,7 @@ extensions.")
                            "HsOpenSSL/HsOpenSSL-" version ".tar.gz"))
        (sha256
         (base32
-         "1vkcs0crifjpgr1rxkbzkwyhl4zg84m5bfxkp095mgry557gqzm8"))))
+         "0ysdfl8ck3nzhx597fa13dqf31jq5gzwajlak6r91jajks9w0dl5"))))
     (build-system haskell-build-system)
     (arguments
      `(#:extra-directories ("openssl")))
