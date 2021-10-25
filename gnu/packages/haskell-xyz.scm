@@ -12470,7 +12470,7 @@ and regression and autocorrelation analysis.
 (define-public ghc-stm-chans
   (package
     (name "ghc-stm-chans")
-    (version "3.0.0.4")
+    (version "3.0.0.6")
     (source
      (origin
        (method url-fetch)
@@ -12479,7 +12479,7 @@ and regression and autocorrelation analysis.
                            "stm-chans-" version ".tar.gz"))
        (sha256
         (base32
-         "0f27sp09yha43xk9q55sc185jyjs5h7gq2dhsyx6bm9kz9dzqi13"))))
+         "04hafqjq8ngvhcavkfx88a0zky8yc7i18q2n9ajav03kns1kwvpa"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/stm-chans")
     (synopsis "Additional types of channels for ghc-stm")
