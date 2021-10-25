@@ -754,7 +754,8 @@ used by Pidgin and Bitlbee, among others, to access
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (wrap-program (string-append bin "/hexchat")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))))))))
+                 `("GUIX_PYTHONPATH" ":" prefix
+                   (,(getenv "GUIX_PYTHONPATH"))))))))))
     (synopsis "Graphical IRC client")
     (description
      "HexChat lets you connect to multiple IRC networks at once.  The main
