@@ -721,7 +721,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
 (define-public ghc-warp-tls
   (package
     (name "ghc-warp-tls")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
@@ -730,7 +730,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
                            "warp-tls-" version ".tar.gz"))
        (sha256
         (base32
-         "1k8f3r0l36mgwm69fikprv6pyjzj15702kq25dr9nc3sv5lcs162"))))
+         "0b9viw26ymzq4q8snfddz3w59sqcf5ankxnw6f99iacxjhk6zs6m"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cryptonite" ,ghc-cryptonite)
@@ -739,6 +739,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
        ("ghc-streaming-commons" ,ghc-streaming-commons)
        ("ghc-tls" ,ghc-tls)
        ("ghc-tls-session-manager" ,ghc-tls-session-manager)
+       ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-wai" ,ghc-wai)
        ("ghc-warp" ,ghc-warp)))
     (home-page "https://github.com/yesodweb/wai")
