@@ -598,7 +598,10 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                            '(;; https://github.com/gnuradio/gnuradio/issues/3871
                              "qa_header_payload_demux"
                              ;; https://github.com/gnuradio/gnuradio/issues/4348
-                             "qa_packet_headerparser_b")
+                             "qa_packet_headerparser_b"
+                             ;; qa_rotator_cc sometimes fails, it looks like
+                             ;; a floating point number precision issue.
+                             "qa_rotator_cc")
                            "|"))))
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap))
