@@ -201,7 +201,7 @@ that hides the C implementation.")
 (define-public ghc-cryptohash-md5
   (package
     (name "ghc-cryptohash-md5")
-    (version "0.11.100.1")
+    (version "0.11.101.0")
     (source
      (origin
        (method url-fetch)
@@ -210,17 +210,13 @@ that hides the C implementation.")
                            "cryptohash-md5-" version ".tar.gz"))
        (sha256
         (base32
-         "1y8q7s2bn4gdknw1wjikdnar2b5pgz3nv3220lxrlgpsf23x82vi"))))
+         "018g13hkmq5782i24b4518hcd926fl6x6fh5hd7b9wlxwc5dn21v"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("6" "191nvffcrlyvr5dq99bbdxxl2qx44bla9adkhklyknf7ipqdd4yj")
-       #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
     (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
                      ("ghc-puremd5" ,ghc-puremd5)
                      ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-                     ("ghc-hunit" ,ghc-hunit)))
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://github.com/hvr/cryptohash-md5")
     (synopsis "MD5 implementation for Haskell")
     (description "This Haskell package provides implementation of MD5.")
