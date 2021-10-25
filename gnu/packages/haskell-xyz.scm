@@ -13733,7 +13733,7 @@ objects from the timezone-series package.")
 (define-public ghc-tldr
   (package
     (name "ghc-tldr")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
@@ -13743,10 +13743,11 @@ objects from the timezone-series package.")
              ".tar.gz"))
        (sha256
         (base32
-         "0xgj3mf51iv68fhgyrjvxfmzrbcwnk7siaynm213x0kgcyvkwbz0"))))
+         "1yypb9zhsj9ks7bbw2sayqv3rn9y8z3w5p1xmsnwb4w99dqmvcx5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-cmark" ,ghc-cmark)
        ("ghc-http-conduit" ,ghc-http-conduit)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
