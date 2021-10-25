@@ -15899,7 +15899,7 @@ varies linearly with input length.")
 (define-public ghc-commonmark-extensions
   (package
     (name "ghc-commonmark-extensions")
-    (version "0.2.1.2")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -15908,7 +15908,7 @@ varies linearly with input length.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "1ky0j7086a8mqpg26j2nkrc5wfwiw5cd3h3jqncpy59vmj1prkx4"))))
+        (base32 "0jm6w84p2a2gyaljvnlvjjwrwnir1lss3ps53d0bd8mkvhixxrqr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-network-uri" ,ghc-network-uri)
