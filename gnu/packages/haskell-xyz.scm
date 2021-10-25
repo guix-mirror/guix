@@ -8980,7 +8980,7 @@ found at runtime, a userError is thrown.")
 (define-public ghc-operational
   (package
     (name "ghc-operational")
-    (version "0.2.3.5")
+    (version "0.2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -8988,7 +8988,7 @@ found at runtime, a userError is thrown.")
                            "operational-" version ".tar.gz"))
        (sha256
         (base32
-         "1x2abg2q9d26h1vzj40r6k7k3gqgappbs4g9d853vvg77837km4i"))))
+         "1hwmwbsxzwv68b39rv4gn3da6irv8zm89gqrkc3rdsgwi5ziyn3i"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-random" ,ghc-random)))
