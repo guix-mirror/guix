@@ -13877,7 +13877,7 @@ but also need those types.")
 (define-public ghc-tree-diff
   (package
     (name "ghc-tree-diff")
-    (version "0.2")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -13887,7 +13887,7 @@ but also need those types.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ny7mi0n8cyb65q9ihbnm2gxiyya888dw2c4y0hjy8k882wdhf0x"))))
+         "0bybi4qp7nj9117yza5qqgw2f7s6rk3i7q642jqd7sdn3bx5cnap"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
