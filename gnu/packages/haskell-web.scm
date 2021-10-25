@@ -539,7 +539,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-extra
   (package
     (name "ghc-wai-extra")
-    (version "3.1.6")
+    (version "3.1.7")
     (source
      (origin
        (method url-fetch)
@@ -549,35 +549,32 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "03bbhmy8dc2ivhgbsrc39wk5kb9ci4p98pb2qcq2w92imy710cj6"))))
+         "1avf7bjcsbs8l6klp5kkd0cd2dc5n0j0a2yf8813pnwfn5b7qyd4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-call-stack" ,ghc-call-stack)
        ("ghc-cookie" ,ghc-cookie)
        ("ghc-network" ,ghc-network)
-       ("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-stringsearch" ,ghc-stringsearch)
        ("ghc-resourcet" ,ghc-resourcet)
        ("ghc-fast-logger" ,ghc-fast-logger)
        ("ghc-wai-logger" ,ghc-wai-logger)
-       ("ghc-zlib" ,ghc-zlib)
        ("ghc-word8" ,ghc-word8)
        ("ghc-iproute" ,ghc-iproute)
-       ("ghc-void" ,ghc-void)
        ("ghc-wai" ,ghc-wai)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-http2" ,ghc-http2)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-vault" ,ghc-vault)
        ("ghc-aeson" ,ghc-aeson)))
     (native-inputs
      `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)))
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-zlib" ,ghc-zlib)))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Some basic WAI handlers and middleware")
     (description "This library provides basic WAI handlers and middleware
