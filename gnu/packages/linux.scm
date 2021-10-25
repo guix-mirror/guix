@@ -8167,7 +8167,12 @@ to ring buffers shared with a consumer daemon.")
          (add-before 'configure 'set-environment-variables
            (lambda _
              (setenv "HOME" "/tmp")
-             (setenv "LTTNG_HOME" "/tmp"))))))
+             (setenv "LTTNG_HOME" "/tmp")))
+         ;; We don't put (which "man") here because LTTng uses execlp.
+         (add-after 'unpack 'patch-default-man-path
+           (lambda _
+             (substitute* "src/common/defaults.h"
+               (("/usr/bin/man") "man")))))))
     ;; NOTE - Users have to install python-3 in their profile to use the
     ;; bindings.  We don't put it in the inputs, because the rest of the tools
     ;; can work without it.
