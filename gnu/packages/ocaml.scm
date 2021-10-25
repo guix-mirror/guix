@@ -4764,9 +4764,9 @@ External contributors added support for Visual Studio Code, Sublime Text and
 Atom.")
     (license license:expat)))
 
-(define-public ocaml4.07-gsl
+(define-public ocaml-gsl
   (package
-    (name "ocaml4.07-gsl")
+    (name "ocaml-gsl")
     (version "1.24.0")
     (source
      (origin
@@ -4786,16 +4786,12 @@ Atom.")
          (add-after 'unpack 'fix-gsl-directory
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/config/discover.ml"
-               (("/usr") (assoc-ref inputs "gsl")))
-             #t)))
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+               (("/usr") (assoc-ref inputs "gsl"))))))))
     (inputs
      `(("gsl" ,gsl)))
     (propagated-inputs
-     `(("ocaml-base" ,(package-with-ocaml4.07 ocaml-base))
-       ("ocaml-stdio" ,(package-with-ocaml4.07 ocaml-stdio))))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)))
     (home-page "https://mmottl.github.io/gsl-ocaml")
     (synopsis "Bindings to the GNU Scientific Library")
     (description
@@ -4804,26 +4800,25 @@ the OCaml language.")
     (license license:gpl3+)))
 
 (define-public ocaml4.07-gsl-1
-  (package
-    (inherit ocaml4.07-gsl)
-    (version "1.19.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mmottl/gsl-ocaml"
-                                  "/releases/download/v"
-                                  version "/gsl-ocaml-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0nzp43hp8pbjqkrxnwp5lgjrabxayf61h18fjaydi0s5faq6f3xh"))))
-    (build-system ocaml-build-system)
-    (inputs
-     `(("gsl" ,gsl)))
-    (native-inputs
-     `(("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))))
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib))
-    (propagated-inputs '())))
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-gsl)
+      (version "1.19.3")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/mmottl/gsl-ocaml"
+                                    "/releases/download/v"
+                                    version "/gsl-ocaml-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0nzp43hp8pbjqkrxnwp5lgjrabxayf61h18fjaydi0s5faq6f3xh"))))
+      (build-system ocaml-build-system)
+      (inputs
+       `(("gsl" ,gsl)))
+      (native-inputs
+       `(("ocamlbuild" ,ocamlbuild)))
+      (arguments '())
+      (propagated-inputs '()))))
 
 (define-public cubicle
   (package
