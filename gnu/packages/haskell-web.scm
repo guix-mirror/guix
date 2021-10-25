@@ -1088,14 +1088,14 @@ essentially the opposite of pretty-printing.")
 (define-public ghc-aeson-qq
   (package
     (name "ghc-aeson-qq")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "aeson-qq/aeson-qq-" version ".tar.gz"))
               (sha256
                (base32
-                "10plwzz05qc8068av00jak8rcciw99cbxh3lkx522lmzi37jjccg"))))
+                "0dpklq2xdhrkg1rdc7zfdjnzm6c3qxx2i1xskrqdxpqi84ffnlyh"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-base-compat" ,ghc-base-compat)
