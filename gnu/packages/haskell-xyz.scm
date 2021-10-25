@@ -1129,7 +1129,7 @@ functions.")
 (define-public ghc-blaze-builder
   (package
     (name "ghc-blaze-builder")
-    (version "0.4.2.1")
+    (version "0.4.2.2")
     (source
      (origin
        (method url-fetch)
@@ -1139,11 +1139,18 @@ functions.")
              ".tar.gz"))
        (sha256
         (base32
-         "01hbx82djckj2x74sk9kc79111djq7f2af3zl5i21y9zkjy8js3f"))))
+         "0rxg6vjr0ji6g1nngrqpl4k1q9w66fwkhld9cqm5yfhx0a69kp1c"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f))          ; FIXME: Missing test libraries.
     (inputs
-     `(("ghc-utf8-string" ,ghc-utf8-string)))
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
     (home-page "https://github.com/lpsmith/blaze-builder")
     (synopsis "Efficient buffered output")
     (description "This library provides an implementation of the older
