@@ -15451,7 +15451,7 @@ provides access to the full zlib feature set.")
 (define-public ghc-zstd
   (package
     (name "ghc-zstd")
-    (version "0.1.2.0")
+    (version "0.1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -15459,7 +15459,7 @@ provides access to the full zlib feature set.")
                            "zstd/zstd-" version ".tar.gz"))
        (sha256
         (base32
-         "0vjw8r11k9kj6c63sfkwz8akq0g32g1bv6n6clvs4g2j12zq1xk8"))))
+         "0vghl48cxcqy72sqk2gpi7rvy5ya36j13vndaxi6kck6bqivbhm0"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
