@@ -156,7 +156,7 @@ in intelligent transportation networks.")
                       (substitute* "Makefile"
                         (("test-runtime\\$\\(EXEEXT\\)") ""))
                       #t)))))
-    (home-page "https://p11-glue.freedesktop.org/p11-kit.html")
+    (home-page "https://p11-glue.github.io/p11-glue/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
      "p11-kit provides a way to load and enumerate PKCS#11 modules.  It
