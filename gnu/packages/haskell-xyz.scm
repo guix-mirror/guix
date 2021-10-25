@@ -6197,29 +6197,29 @@ handler built in.")
 (define-public ghc-hslua
   (package
     (name "ghc-hslua")
-    (version "1.3.0.1")
+    (version "1.3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "hslua/hslua-" version ".tar.gz"))
               (sha256
                (base32
-                "1mz8zk13dhgaf24hmmjqnn5hcln96iw73mcjwjilag8388wq72k7"))))
+                "0p39xm0mmxzs5x6aim11qkb7npn0d9h7li2kwfhry0dijd1vm18i"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fsystem-lua")
        #:extra-directories ("lua")))
     (inputs
      `(("lua" ,lua)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-fail" ,ghc-fail)))
+       ("ghc-base-compat" ,ghc-base-compat)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-semigroups" ,ghc-semigroups)))
     (home-page "https://hackage.haskell.org/package/hslua")
     (synopsis "Lua language interpreter embedding in Haskell")
     (description
