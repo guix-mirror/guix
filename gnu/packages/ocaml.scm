@@ -6896,9 +6896,9 @@ language understood by ocamldoc.")
         ("tidy-html" ,tidy-html)))
      (properties '()))))
 
-(define-public ocaml4.07-fftw3
+(define-public ocaml-fftw3
   (package
-    (name "ocaml4.07-fftw3")
+    (name "ocaml-fftw3")
     (version "0.8.4")
     (source
      (origin
@@ -6912,17 +6912,13 @@ language understood by ocamldoc.")
          "0l66yagjkwdcib6q55wd8wiap50vi23qiahkghlvm28z7nvbclfk"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #t
-       #:test-target "tests"
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "tests"))
     (propagated-inputs
      `(("fftw" ,fftw)
        ("fftwf" ,fftwf)))
     (native-inputs
-     `(("ocaml-cppo" ,(package-with-ocaml4.07 ocaml-cppo))
-       ("ocaml-lacaml" ,(package-with-ocaml4.07 ocaml-lacaml))))
+     `(("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-lacaml" ,ocaml-lacaml)))
     (home-page
      "https://github.com/Chris00/fftw-ocaml")
     (synopsis
