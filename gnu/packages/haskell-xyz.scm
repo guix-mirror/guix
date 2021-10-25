@@ -10236,7 +10236,7 @@ clashes, @code{Text}-based, extensible.")
 (define-public ghc-prettyprinter-ansi-terminal
   (package
     (name "ghc-prettyprinter-ansi-terminal")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
@@ -10244,7 +10244,7 @@ clashes, @code{Text}-based, extensible.")
              "https://hackage.haskell.org/package/prettyprinter-ansi-terminal/"
              "prettyprinter-ansi-terminal-" version ".tar.gz"))
        (sha256
-        (base32 "168p5b7fzqs0g8ld26d3k78afgdx4r21dv0hw8ka2c08p4w76sz2"))))
+        (base32 "1cqxbcmy9ykk4pssq5hp6h51g2h547zfz549awh0c1fni8q3jdw1"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
