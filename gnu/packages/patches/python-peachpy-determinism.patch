@@ -1,0 +1,25 @@
+Make PeachPy processes deterministic:
+
+  https://github.com/Maratyszcza/PeachPy/issues/88
+  https://issues.guix.gnu.org/50672
+
+diff --git a/peachpy/name.py b/peachpy/name.py
+index b6a03dc..412079d 100644
+--- a/peachpy/name.py
++++ b/peachpy/name.py
+@@ -86,13 +86,13 @@ def add_scoped_name(self, scoped_name):
+                 self.names[scope_name.name] = scope
+         else:
+             assert scope_name.name is None
+-            self.prenames.setdefault(scope_name.prename, set())
++            self.prenames.setdefault(scope_name.prename, {})
+             if subscoped_name:
+                 for subscope in iter(self.prenames[scope_name.prename]):
+                     if isinstance(subscope, Namespace) and subscope.scope_name is scope_name:
+                         subscope.add_scoped_name(subscoped_name)
+                         return
+-            self.prenames[scope_name.prename].add(scope)
++            self.prenames[scope_name.prename][scope] = None
+ 
+     def assign_names(self):
+         # Step 1: assign names to symbols with prenames with no conflicts

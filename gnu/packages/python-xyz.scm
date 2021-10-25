@@ -27118,7 +27118,8 @@ and BMI2).")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1yy62k3cjr6556nbp651w6v4hzl7kz4y75wy2dfqgndgbnixskx2"))))
+                  "1yy62k3cjr6556nbp651w6v4hzl7kz4y75wy2dfqgndgbnixskx2"))
+                (patches (search-patches "python-peachpy-determinism.patch"))))
       (build-system python-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
