@@ -9835,7 +9835,7 @@ syntax and semantics as Perl 5.")
 (define-public ghc-persistent
   (package
     (name "ghc-persistent")
-    (version "2.13.1.2")
+    (version "2.13.2.1")
     (source
      (origin
        (method url-fetch)
@@ -9844,7 +9844,7 @@ syntax and semantics as Perl 5.")
              "persistent-" version ".tar.gz"))
        (sha256
         (base32
-         "09si4h64i9drqr80a2sxpxhmsinacqx9bvsc3jah5zlm915q092y"))))
+         "13lp9i94f57qhifdmr1vnsrra34526f7kqa1sybcaj2jh2v3q85k"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
