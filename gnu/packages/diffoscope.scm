@@ -228,7 +228,7 @@ install.")
 (define-public reprotest
   (package
     (name "reprotest")
-    (version "0.7.16")
+    (version "0.7.18")
     (source
      (origin
        (method git-fetch)
@@ -238,7 +238,7 @@ install.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0s7gyixk868dw6yqxsb1sq24mgg9ilz5s2yidd5j0zhl683n7dw9"))))
+         "19lwsxq53isgfkvlxvxqqmbjfcim3lhcxwk7m9ddfjiynhq74949"))))
     (inputs
      `(("python-debian" ,python-debian)
        ("python-distro" ,python-distro)
