@@ -3990,9 +3990,9 @@ library is currently designed for Unicode Standard 3.2.")
     ;; with an exception for linked libraries to use a different license
     (license license:lgpl2.0+)))
 
-(define-public ocaml4.07-charinfo-width
+(define-public ocaml-charinfo-width
   (package
-    (name "ocaml4.07-charinfo-width")
+    (name "ocaml-charinfo-width")
     (version "1.1.0")
     (source (origin
               (method url-fetch)
@@ -4003,15 +4003,11 @@ library is currently designed for Unicode Standard 3.2.")
                (base32
                 "00bv4p1yqs8y0z4z07wd9w9yyv669dikp9b04dcjbwpiy2wy0086"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (propagated-inputs
-     `(("ocaml-result" ,(package-with-ocaml4.07 ocaml-result))
-       ("ocaml-camomile" ,(package-with-ocaml4.07 ocaml-camomile))))
+     `(("ocaml-result" ,ocaml-result)
+       ("ocaml-camomile" ,ocaml-camomile)))
     (native-inputs
-     `(("ocaml-ppx-expect" ,(package-with-ocaml4.07 ocaml-ppx-expect))))
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
     (properties
      `((upstream-name . "charInfo_width")))
     (home-page "https://bitbucket.org/zandoye/charinfo_width/")
@@ -4041,7 +4037,7 @@ function that follows the prototype of POSIX's wcwidth.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
      `(("ocaml-camomile" ,(package-with-ocaml4.07 ocaml-camomile))
-       ("ocaml-charinfo-width" ,ocaml4.07-charinfo-width)
+       ("ocaml-charinfo-width" ,(package-with-ocaml4.07 ocaml-charinfo-width))
        ("ocaml-react" ,(package-with-ocaml4.07 ocaml-react))))
     (home-page "https://github.com/diml/zed")
     (synopsis "Abstract engine for text editing in OCaml")
