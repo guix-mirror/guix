@@ -7583,7 +7583,7 @@ monadic incremental interface is provided as well.")
 (define-public ghc-lzma-conduit
   (package
     (name "ghc-lzma-conduit")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
@@ -7591,7 +7591,7 @@ monadic incremental interface is provided as well.")
                            "lzma-conduit-" version ".tar.gz"))
        (sha256
         (base32
-         "0hm72da7xk9l3zxjh274yg444vf405djxqbkf3q3p2qhicmxlmg9"))))
+         "1z6q16hzp2r5a4gdbg9akky5l9bfarzzhzswrgvh0v28ax400whb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
