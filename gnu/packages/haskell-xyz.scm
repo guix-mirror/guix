@@ -6071,7 +6071,7 @@ representations of current time.")
 (define-public ghc-hpack
   (package
     (name "ghc-hpack")
-    (version "0.34.4")
+    (version "0.34.5")
     (source
      (origin
        (method url-fetch)
@@ -6079,7 +6079,7 @@ representations of current time.")
                            "hpack-" version ".tar.gz"))
        (sha256
         (base32
-         "1xszy00al5zzga64gh7nvgqc93242f61kqy8lb09jkm98a8fs4bl"))))
+         "0gmm6jgi1sgyilphww6apq1x04grqznm7xhyb7g1rj5j7my40ws2"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
