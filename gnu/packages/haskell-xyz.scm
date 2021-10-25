@@ -11021,7 +11021,7 @@ expressions.")
 (define-public ghc-regex-pcre-builtin
   (package
     (name "ghc-regex-pcre-builtin")
-    (version "0.95.2.3.8.43")
+    (version "0.95.2.3.8.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -11029,7 +11029,7 @@ expressions.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02c6vzxcy1zkqwy6w4dsc97xvvdwlh8xr7imrlx2qs2521rvswr7"))))
+                "0pn55ssrwr05c9sa9jvp0knvzjksz04wn3pmzf5dz4xgbyjadkna"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
