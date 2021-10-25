@@ -6798,7 +6798,7 @@ removed.  Both IPv4 and IPv6 are supported.")
 (define-public ghc-ipynb
   (package
     (name "ghc-ipynb")
-    (version "0.1.0.1")
+    (version "0.1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -6806,7 +6806,7 @@ removed.  Both IPv4 and IPv6 are supported.")
                            "ipynb/ipynb-" version ".tar.gz"))
        (sha256
         (base32
-         "0lwpz0ip7r1rxkirqb6p48ql19fzamqkrnf3khx7bfl5wsxi6yrb"))))
+         "0qky4l5aaiq7ypwbxh0mr7s572290fi596f18dg68qpyzc49a9kx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-unordered-containers" ,ghc-unordered-containers)
@@ -6816,10 +6816,8 @@ removed.  Both IPv4 and IPv6 are supported.")
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-aeson-diff" ,ghc-aeson-diff)
        ("ghc-microlens-aeson" ,ghc-microlens-aeson)
-       ("ghc-microlens" ,ghc-microlens)
-       ("ghc-vector" ,ghc-vector)))
+       ("ghc-microlens" ,ghc-microlens)))
     (home-page "https://hackage.haskell.org/package/ipynb")
     (synopsis "Data structure for working with Jupyter notebooks")
     (description "This library defines a data structure for representing
