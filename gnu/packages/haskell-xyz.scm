@@ -16220,7 +16220,7 @@ Haskell datatypes in text form using the @code{ghc-blaze-builder} library.")
 (define-public ghc-mysql-simple
   (package
     (name "ghc-mysql-simple")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
@@ -16229,7 +16229,7 @@ Haskell datatypes in text form using the @code{ghc-blaze-builder} library.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "1am8ck092s9cv4x1ambalil4mlazkp8w5qhjbl4nq0j2hpy73rby"))))
+        (base32 "1mhmszpq64h8kxr20iaj1laq46wr2gaqc8xxq1k821i7jfxfld6j"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fails to connect to server.
     (inputs
@@ -16240,6 +16240,7 @@ Haskell datatypes in text form using the @code{ghc-blaze-builder} library.")
        ("ghc-pcre-light" ,ghc-pcre-light)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-blaze-textual" ,ghc-blaze-textual)
+       ("ghc-vector" ,ghc-vector)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs `(("ghc-hspec" ,ghc-hspec)))
