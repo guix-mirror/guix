@@ -15861,7 +15861,7 @@ entries.  For more information about CSL, see @uref{https://citationstyles.org/}
 (define-public ghc-commonmark
   (package
     (name "ghc-commonmark")
-    (version "0.2.1")
+    (version "0.2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -15870,7 +15870,7 @@ entries.  For more information about CSL, see @uref{https://citationstyles.org/}
              version
              ".tar.gz"))
        (sha256
-        (base32 "1vba7v1zaqh811v3j4x42g7mhwvxwgzm997kq1kzd0njby14fq5b"))))
+        (base32 "105szy7l4ji255fwv0kbfcy3i3a3a4197zgj6s9jb12kwbn6n0c7"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-unicode-transforms" ,ghc-unicode-transforms)))
     (native-inputs
