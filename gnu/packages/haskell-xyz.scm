@@ -9514,7 +9514,7 @@ getDataFileName name = do
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
-    (version "1.22")
+    (version "1.22.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -9522,7 +9522,7 @@ getDataFileName name = do
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0kr5n9yw59513pw2rjc65qs55iq0prn16prk4781arqdh7g7a09q"))))
+                "0z2j306jsiriwhib0201hsllwyck7qcvqci5c25frwsmknr3mls2"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -9546,13 +9546,13 @@ version = Version [~a] []
              #t)))))
     (inputs
      `(("ghc-syb" ,ghc-syb)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-string-qq" ,ghc-string-qq)))
+       ("ghc-aeson" ,ghc-aeson)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-string-qq" ,ghc-string-qq)
        ("ghc-hunit" ,ghc-hunit)))
     (home-page "https://pandoc.org")
     (synopsis "Types for representing a structured document")
