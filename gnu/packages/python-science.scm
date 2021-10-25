@@ -330,13 +330,13 @@ of the SGP4 satellite tracking algorithm.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1pq1nwj2kysy2g3p18wjb1xn8vk1jhcyisxilsnkwyd99aqqqb17"))))
+        (base32 "1z3gm521wpm3j13rwhlb4f2x0645zvxkgxij37i3imdpy39iiam2"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
