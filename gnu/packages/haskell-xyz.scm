@@ -1370,7 +1370,7 @@ Compatibility package for older packages.")
 (define-public ghc-bytestring-lexing
   (package
     (name "ghc-bytestring-lexing")
-    (version "0.5.0.2")
+    (version "0.5.0.7")
     (source
      (origin
        (method url-fetch)
@@ -1379,8 +1379,12 @@ Compatibility package for older packages.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0wrzniawhgpphc6yx1v972gyqxdbv0pizaz9bafahrshyb9svy81"))))
+         "1p7i2haix4m11an3djaq65cnd293hzwqy4cd2i8jxzcl248pk6iy"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
     (home-page "http://code.haskell.org/~wren/")
     (synopsis "Parse and produce literals from strict or lazy bytestrings")
     (description
