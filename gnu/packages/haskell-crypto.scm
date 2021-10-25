@@ -259,7 +259,7 @@ the C implementation.")
 (define-public ghc-cryptohash-sha256
   (package
     (name "ghc-cryptohash-sha256")
-    (version "0.11.102.0")
+    (version "0.11.102.1")
     (source
      (origin
        (method url-fetch)
@@ -268,7 +268,7 @@ the C implementation.")
                            "cryptohash-sha256-" version ".tar.gz"))
        (sha256
         (base32
-         "0685s4hfighzywvvn05cfff5bl2xz3wq0pfncv6zca4iba3ykmla"))))
+         "1xkb7iqplbw4fy1122p79xf1zcb7k44rl0wmfj1q06l7cdqxr9vk"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
