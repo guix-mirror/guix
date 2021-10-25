@@ -800,7 +800,7 @@ maintain the Noto Fonts project.")
 (define-public fcft
   (package
     (name "fcft")
-    (version "2.4.5")
+    (version "2.4.6")
     (home-page "https://codeberg.org/dnkl/fcft")
     (source (origin
               (method git-fetch)
@@ -808,7 +808,7 @@ maintain the Noto Fonts project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z4bqap88pydkgcxrsvm3fmcyhi9x7z8knliarvdcvqlk7qnyzfh"))))
+                "0jh05wzrif7z1xf9jzs8bgf49lpj5zs55agj414bmmwdddk7my7j"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55))
