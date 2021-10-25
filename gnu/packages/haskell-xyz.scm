@@ -9266,7 +9266,7 @@ Implementations using both of these examples are provided.")
 (define-public ghc-doclayout
   (package
     (name "ghc-doclayout")
-    (version "0.3.0.2")
+    (version "0.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -9274,14 +9274,16 @@ Implementations using both of these examples are provided.")
              "https://hackage.haskell.org/package/doclayout/"
              "doclayout-" version ".tar.gz"))
        (sha256
-        (base32 "1hfqagf5rmdjjx3xzx153d769b2vwarmyx7k7cwh872cgasndb3q"))))
+        (base32 "1p9kgjlf7y4p1symvkwndgs4lvyw2c45bsgld09y9r4aiqbhdrxp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-safe" ,ghc-safe)))
+     `(("ghc-safe" ,ghc-safe)
+       ("ghc-emojis" ,ghc-emojis)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://github.com/jgm/doclayout")
     (synopsis "Pretty-printing library for laying out text documents")
     (description
