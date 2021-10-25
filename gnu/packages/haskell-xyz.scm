@@ -4066,7 +4066,7 @@ directly uses the type system, rather than out-of-band exceptions.")
 (define-public ghc-esqueleto
   (package
     (name "ghc-esqueleto")
-    (version "3.5.2.2")
+    (version "3.5.3.0")
     (source
      (origin
        (method url-fetch)
@@ -4074,7 +4074,7 @@ directly uses the type system, rather than out-of-band exceptions.")
                            "esqueleto/esqueleto-" version ".tar.gz"))
        (sha256
         (base32
-         "19m4lzxhjakf1zbsvwa0xmhcln1wb8ydbsnfyhiwhgvryrhvw9ga"))))
+         "0z3cf49sha6q965qw2m08jfmb91ki2rsdpnr7l39lka5b4ffxjlz"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f))  ; TODO: Cannot connect to mysql server.
