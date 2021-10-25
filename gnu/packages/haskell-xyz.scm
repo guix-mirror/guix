@@ -13199,23 +13199,24 @@ dependency.")
 (define-public ghc-texmath
   (package
     (name "ghc-texmath")
-    (version "0.12.3.1")
+    (version "0.12.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "texmath/texmath-" version ".tar.gz"))
               (sha256
                (base32
-                "1qyiihb9h7w7074p495yd4s8dj9adz0dy865gyp822z69jvmkcki"))))
+                "1d9r3na7hmkgr0j63fs50ssll506l1wyqhw0dpap7jk0rdz8pv6n"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-split" ,ghc-split)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-xml" ,ghc-xml)
        ("ghc-pandoc-types" ,ghc-pandoc-types)))
+    (native-inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
     (home-page "https://github.com/jgm/texmath")
     (synopsis "Conversion between formats used to represent mathematics")
     (description
