@@ -15132,14 +15132,14 @@ word expansion like a posix-shell.")
 (define-public ghc-x11
   (package
     (name "ghc-x11")
-    (version "1.10.1")
+    (version "1.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/X11/"
                            "X11-" version ".tar.gz"))
        (sha256
-        (base32 "13a0qf8rwn1s43wcl39f1pcq3h1kw1ddfq205j1ry0j3yafnazxg"))))
+        (base32 "1ip207l97s8nw4daxp9s254agk8f0wibpf0prx0n695klqyn8bz1"))))
     (build-system haskell-build-system)
     (arguments
      `(#:extra-directories
@@ -15149,7 +15149,7 @@ word expansion like a posix-shell.")
        ("libxrandr" ,libxrandr)
        ("libxinerama" ,libxinerama)
        ("libxscrnsaver" ,libxscrnsaver)
-       ("ghc-data-default" ,ghc-data-default)))
+       ("ghc-data-default-class" ,ghc-data-default-class)))
     (home-page "https://github.com/haskell-pkg-janitors/X11")
     (synopsis "Bindings to the X11 graphics library")
     (description
