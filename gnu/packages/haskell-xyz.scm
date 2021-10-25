@@ -15305,14 +15305,14 @@ code via quasi-quoting built on top of @code{ghc-shakespeare}.")
 (define-public ghc-yaml
   (package
     (name "ghc-yaml")
-    (version "0.11.5.0")
+    (version "0.11.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "yaml/yaml-" version ".tar.gz"))
               (sha256
                (base32
-                "1bfdsqckzql50j6ni4fa1470cvkmfiy4skb98cdwnj4rss5p93mj"))))
+                "0s08kw0hqxixxripwjmz7b4yh9130dws3jaj460x8ds8q4b6khbx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
@@ -15322,17 +15322,16 @@ code via quasi-quoting built on top of @code{ghc-shakespeare}.")
        ("ghc-vector" ,ghc-vector)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-scientific" ,ghc-scientific)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-enclosed-exceptions" ,ghc-enclosed-exceptions)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-libyaml" ,ghc-libyaml)))
+       ("ghc-libyaml" ,ghc-libyaml)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-hunit" ,ghc-hunit)
+       ("ghc-base-compat" ,ghc-base-compat)
        ("hspec-discover" ,hspec-discover)
        ("ghc-mockery" ,ghc-mockery)
-       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)))
+       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)
+       ("ghc-temporary" ,ghc-temporary)))
     (home-page "https://github.com/snoyberg/yaml/")
     (synopsis "Parsing and rendering YAML documents")
     (description
