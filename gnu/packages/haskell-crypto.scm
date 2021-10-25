@@ -405,7 +405,7 @@ Mail} (PEM) format.")
 (define-public ghc-puremd5
   (package
     (name "ghc-puremd5")
-    (version "2.1.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
@@ -414,7 +414,7 @@ Mail} (PEM) format.")
                            "pureMD5-" version ".tar.gz"))
        (sha256
         (base32
-         "0zdilz41cla2ck7mcw1a9702gyg2abq94mqahr4vci9sbs53bwxy"))))
+         "0qwkvxwi9wh6knn69rg2hvc8ngmv1if77kmpcnp0xqr0l30fwavq"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-cereal" ,ghc-cereal)
               ("ghc-crypto-api" ,ghc-crypto-api)
