@@ -36,7 +36,6 @@
              (sha256
               (base32
                "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1"))
-             (patches (search-patches "diffutils-gets-undeclared.patch"))
              (modules '((guix build utils)))
              (snippet
               '(begin

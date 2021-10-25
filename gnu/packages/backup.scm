@@ -557,7 +557,6 @@ rsnapshot uses hard links to deduplicate identical files.")
               (sha256
                (base32
                 "0fpdyxww41ba52d98blvnf543xvirq1v9xz1i3x1gm9lzlzpmc2g"))
-              (patches (search-patches "diffutils-gets-undeclared.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
