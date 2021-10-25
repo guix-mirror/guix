@@ -1652,7 +1652,7 @@ very simple example of encoding CSV data:
 (define-public ghc-cassava-megaparsec
   (package
     (name "ghc-cassava-megaparsec")
-    (version "2.0.2")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
@@ -1663,7 +1663,7 @@ very simple example of encoding CSV data:
              ".tar.gz"))
        (sha256
         (base32
-         "03x1462agrfdagklp8c89b8p4z2hd8nbf6d3895sz770zjkawda7"))))
+         "0pg9z38jmrylbj683b6pf7psipp7lrdq6mn1hbj8v2gj5lh8yf8n"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cassava" ,ghc-cassava)
