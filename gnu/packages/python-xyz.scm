@@ -5161,13 +5161,13 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.22")
+    (version "0.29.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
-        (base32 "01jl3544qwsi8lp6anbl55566xqkjd53x452i7m6gnfilv3q6syz"))))
+        (base32 "0hw4gs18rh4slij1fg252argxhraypld9apbqbl60230qc3lvw6d"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -5178,9 +5178,9 @@ provides additional functionality on the produced Mallard documents.")
        (modify-phases %standard-phases
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
-           (lambda _ (setenv "HOME" "/tmp") #t))
+           (lambda _ (setenv "HOME" "/tmp")))
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? #:allow-other-keys)
              ;; Disable compiler optimizations to greatly reduce the running
              ;; time of the test suite.
              (setenv "CFLAGS" "-O0")
@@ -5192,7 +5192,9 @@ provides additional functionality on the produced Mallard documents.")
                      ;; <https://github.com/cython/cython/issues/2807>.
                      ,@(if (not (target-64bit?))
                            '("-x" "run.parallel")
-                           '())))))))
+                           '())
+                     ;; This test fails when running on 24 cores.
+                     "-x" "cpp_stl_conversion"))))))
     (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
