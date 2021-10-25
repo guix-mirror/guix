@@ -8300,7 +8300,7 @@ the @code{mtl-tf} package.")
 (define-public ghc-mono-traversable
   (package
     (name "ghc-mono-traversable")
-    (version "1.0.15.1")
+    (version "1.0.15.3")
     (source
      (origin
        (method url-fetch)
@@ -8309,7 +8309,7 @@ the @code{mtl-tf} package.")
                            "mono-traversable-" version ".tar.gz"))
        (sha256
         (base32
-         "1psxhfjmpv3y54wy8f8dwa43finlj7aw2mry67pg521gxmwmppy2"))))
+         "1dvlp7r7r1lc3fxkwaz68f1nffg83240q8a989x24x1x67rj1clq"))))
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
@@ -8320,7 +8320,6 @@ the @code{mtl-tf} package.")
     (native-inputs `(("ghc-hspec" ,ghc-hspec)
                      ("ghc-hunit" ,ghc-hunit)
                      ("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-semigroups" ,ghc-semigroups)
                      ("ghc-foldl" ,ghc-foldl)))
     (home-page "https://github.com/snoyberg/mono-traversable")
     (synopsis "Haskell classes for mapping, folding, and traversing monomorphic
