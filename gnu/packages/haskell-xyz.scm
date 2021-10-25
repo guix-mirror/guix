@@ -501,7 +501,7 @@ similar operations (e.g. @code{Either}, @code{These}).")
 (define-public ghc-async
   (package
     (name "ghc-async")
-    (version "2.2.3")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -511,11 +511,12 @@ similar operations (e.g. @code{Either}, @code{These}).")
              ".tar.gz"))
        (sha256
         (base32
-         "0p4k6872pj0aykbnc19ilam1h8fgskxlwpyg5qisaivr0fhg6yj6"))))
+         "09d7w3krfhnmf9dp6yffa9wykinhw541wibnjgnlyv77w1dzhka8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-hunit" ,ghc-hunit)
+     `(("ghc-hashable" ,ghc-hashable)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (home-page "https://github.com/simonmar/async")
