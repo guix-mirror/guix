@@ -365,6 +365,9 @@ of the SGP4 satellite tracking algorithm.")
                      (getcwd) "/build/"
                      (first (scandir "build"
                                      (cut string-prefix? "lib." <>))))))
+               (substitute* "pyproject.toml"
+                 ;; Not all data files are distributed with the tarball.
+                 (("--strict-data-files ") ""))
                (with-directory-excursion build-directory
                  (when tests?
                    (invoke "pytest" "-vv" "pandas" "--skip-slow"
