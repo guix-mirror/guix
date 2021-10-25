@@ -16458,7 +16458,7 @@ server and to receive the results of these queries.")
 (define-public ghc-persistent-postgresql
   (package
     (name "ghc-persistent-postgresql")
-    (version "2.13.1.0")
+    (version "2.13.2.1")
     (source
      (origin
        (method url-fetch)
@@ -16467,7 +16467,7 @@ server and to receive the results of these queries.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "05bj3b7kdwaba3szrrsmafxr6vcnvdhq20jk5xx348jnf2flkw0i"))))
+        (base32 "07pnr8m0nk43jaz6l293lzx4ivyqgnw94fjypazzm008b4irh7ir"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Cannot import MaybeFieldDefsTest.
     (inputs
