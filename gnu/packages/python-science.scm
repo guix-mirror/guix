@@ -359,26 +359,27 @@ of the SGP4 satellite tracking algorithm.")
              ;; xsel needs to write a log file.
              (setenv "HOME" "/tmp")))
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? #:allow-other-keys)
              (let ((build-directory
                     (string-append
                      (getcwd) "/build/"
                      (first (scandir "build"
                                      (cut string-prefix? "lib." <>))))))
                (with-directory-excursion build-directory
-                 (invoke "pytest" "-vv" "pandas" "--skip-slow"
-                         "--skip-network"
-                         "-k"
-                         ;; These tets access the internet:
-                         ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[lxml]
-                         ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[etree]
-                         ;; TODO: the excel tests fail for unknown reasons
-                         (string-append "not test_wrong_url"
-                                        " and not test_excelwriter_fspath"
-                                        " and not test_ExcelWriter_dispatch"
-                                        ;; TODO: Missing input
-                                        " and not TestS3"
-                                        " and not s3")))))))))
+                 (when tests?
+                   (invoke "pytest" "-vv" "pandas" "--skip-slow"
+                           "--skip-network"
+                           "-k"
+                           ;; These tets access the internet:
+                           ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[lxml]
+                           ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[etree]
+                           ;; TODO: the excel tests fail for unknown reasons
+                           (string-append "not test_wrong_url"
+                                          " and not test_excelwriter_fspath"
+                                          " and not test_ExcelWriter_dispatch"
+                                          ;; TODO: Missing input
+                                          " and not TestS3"
+                                          " and not s3"))))))))))
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-numpy" ,python-numpy)
