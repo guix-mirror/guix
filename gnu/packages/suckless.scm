@@ -923,7 +923,6 @@ chat output in the background.")
      `(#:tests? #f ; There are no tests.
        #:make-flags
        (list (string-append "CC=" ,(cc-for-target))
-             (string-append "DESTDIR=" %output)
              ;; Set prefix path to root of package path in store instead
              ;; of /usr/local.
              (string-append "PREFIX=" %output))
