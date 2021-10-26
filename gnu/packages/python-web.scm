@@ -171,7 +171,16 @@ API rules.")
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))))
+        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     '("aiohttp/_frozenlist.c"
+                       "aiohttp/_helpers.c"
+                       "aiohttp/_http_parser.c"
+                       "aiohttp/_http_writer.c"
+                       "aiohttp/_websocket.c"))))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -195,6 +204,15 @@ API rules.")
              ;; Don't test the aiohttp pytest plugin to avoid a dependency loop.
              (delete-file "tests/test_pytest_plugin.py")
              #t))
+         (add-before 'build 'cythonize
+           (lambda _
+             ;; Adapted from the Makefile.
+             (with-directory-excursion "aiohttp"
+               (for-each
+                 (lambda (file)
+                   (invoke "cython" "-3"
+                           file "-I" "aiohttp"))
+                 (find-files "." "_.*\\.pyx$")))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (setenv "PYTHONPATH"
@@ -216,7 +234,8 @@ API rules.")
        ("python-typing-extensions" ,python-typing-extensions)
        ("python-yarl" ,python-yarl)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)
        ("python-re-assert" ,python-re-assert)
        ("gunicorn" ,gunicorn-bootstrap)
