@@ -1018,23 +1018,36 @@ in INPUTS and their transitive propagated inputs."
 
 (define package-transitive-supported-systems
   (let ()
-    (define supported-systems
-      (mlambda (package system)
-        (parameterize ((%current-system system))
-          (fold (lambda (input systems)
-                  (match input
-                    ((label (? package? package) . _)
-                     (lset-intersection string=? systems
-                                        (supported-systems package system)))
-                    (_
-                     systems)))
-                (package-supported-systems package)
-                (bag-direct-inputs (package->bag package))))))
+    (define (supported-systems-procedure system)
+      (define supported-systems
+        (mlambdaq (package)
+          (parameterize ((%current-system system))
+            (fold (lambda (input systems)
+                    (match input
+                      ((label (? package? package) . _)
+                       (lset-intersection string=? systems
+                                          (supported-systems package)))
+                      (_
+                       systems)))
+                  (package-supported-systems package)
+                  (bag-direct-inputs (package->bag package))))))
+
+      supported-systems)
+
+    (define procs
+      ;; Map system strings to one-argument procedures.  This allows these
+      ;; procedures to have fast 'eq?' memoization on their argument.
+      (make-hash-table))
 
     (lambda* (package #:optional (system (%current-system)))
       "Return the intersection of the systems supported by PACKAGE and those
 supported by its dependencies."
-      (supported-systems package system))))
+      (match (hash-ref procs system)
+        (#f
+         (hash-set! procs system (supported-systems-procedure system))
+         (package-transitive-supported-systems package system))
+        (proc
+         (proc package))))))
 
 (define* (supported-package? package #:optional (system (%current-system)))
   "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
