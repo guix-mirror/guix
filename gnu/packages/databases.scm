@@ -831,10 +831,10 @@ Language.")
                         "/share/mysql/support-files")
          "-DINSTALL_MYSQLSHAREDIR=share/mysql"
          "-DINSTALL_SHAREDIR=share")
-       ;; The testsuite has spurious failures (mostly timeouts) if run in
-       ;; parallel on Guix CI’s ppc64le VM. It appears that the I/O load is
-       ;; too high for it to handle.
-       #:parallel-tests? ,(not (target-ppc64le?))
+       ;; The test suite has spurious failures (mostly timeouts) if run in
+       ;; parallel on various machines.  Only enable parallel tests on
+       ;; architectures which are likely to not have this issue.
+       #:parallel-tests? ,(target-x86-64?)
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'adjust-output-references
