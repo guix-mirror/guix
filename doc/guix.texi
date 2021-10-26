@@ -36611,7 +36611,9 @@ $ info -k TLS
 @end example
 
 @noindent
-The command below searches for the same keyword in man pages:
+The command below searches for the same keyword in man
+pages@footnote{The database searched by @command{man -k} is only created
+in profiles that contain the @code{man-db} package.}:
 
 @example
 $ man -k TLS

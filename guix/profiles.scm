@@ -1682,6 +1682,16 @@ the entries in MANIFEST."
                     `((type . profile-hook)
                       (hook . manual-database))))
 
+(define (manual-database/optional manifest)
+  "Return a derivation to build the manual database of MANIFEST, but only if
+MANIFEST contains the \"man-db\" package.  Otherwise, return #f."
+  ;; Building the man database (for "man -k") is expensive and rarely used.
+  ;; Build it only if the profile also contains "man-db".
+  (mlet %store-monad ((man-db (manifest-lookup-package manifest "man-db")))
+    (if man-db
+        (manual-database manifest)
+        (return #f))))
+
 (define (texlive-configuration manifest)
   "Return a derivation that builds a TeXlive configuration for the entries in
 MANIFEST."
@@ -1784,7 +1794,7 @@ MANIFEST."
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
   (list info-dir-file
-        manual-database
+        manual-database/optional
         fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
