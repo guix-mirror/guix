@@ -964,5 +964,5 @@ command-line option processing with 'parse-command-line'."
                                                #:pure? pure?))))))))))))))
 
 ;;; Local Variables:
-;;; (put 'with-store/maybe 'scheme-indent-function 1)
+;;; eval: (put 'with-store/maybe 'scheme-indent-function 1)
 ;;; End:
