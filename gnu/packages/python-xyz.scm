@@ -4008,7 +4008,9 @@ logic-free templating system Mustache.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "pytest" "-v" "joblib"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-v" "joblib")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://joblib.readthedocs.io/")
