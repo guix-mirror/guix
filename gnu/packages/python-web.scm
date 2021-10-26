@@ -172,7 +172,16 @@ API rules.")
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))))
+        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     '("aiohttp/_frozenlist.c"
+                       "aiohttp/_helpers.c"
+                       "aiohttp/_http_parser.c"
+                       "aiohttp/_http_writer.c"
+                       "aiohttp/_websocket.c"))))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -195,6 +204,15 @@ API rules.")
 
              ;; Don't test the aiohttp pytest plugin to avoid a dependency loop.
              (delete-file "tests/test_pytest_plugin.py")))
+         (add-before 'build 'cythonize
+           (lambda _
+             ;; Adapted from the Makefile.
+             (with-directory-excursion "aiohttp"
+               (for-each
+                 (lambda (file)
+                   (invoke "cython" "-3"
+                           file "-I" "."))
+                 (find-files "." "_.*\\.pyx$")))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (if tests?
@@ -216,6 +234,7 @@ API rules.")
     (native-inputs
      `(("gunicorn" ,gunicorn-bootstrap)
        ("python-async-generator" ,python-async-generator)
+       ("python-cython" ,python-cython)
        ("python-freezegun" ,python-freezegun)
        ("python-pytest" ,python-pytest-6.1)
        ("python-pytest-mock" ,python-pytest-mock)
