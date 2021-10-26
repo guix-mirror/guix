@@ -4010,6 +4010,7 @@ logic-free templating system Mustache.")
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
+               (setenv "JOBLIB_MULTIPROCESSING" "0")
                (invoke "pytest" "-v" "joblib")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
