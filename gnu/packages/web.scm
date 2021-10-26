@@ -5803,7 +5803,8 @@ and similar services.")
         (base32 "0w11xq160q9yyffv4mw9ncp1n0dl50d9plmwxb0yijaaxls9i4sk"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
        #:tests? #f ; No test suite
        #:phases
        (modify-phases %standard-phases
