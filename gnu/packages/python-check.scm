@@ -228,25 +228,44 @@ result documents that can be read by tools such as Jenkins or Bamboo.")
 (define-public python-vcrpy
   (package
     (name "python-vcrpy")
-    (version "2.0.1")
+    (version "4.1.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "vcrpy" version))
-        (sha256
-         (base32
-          "0kws7l3hci1dvjv01nxw3805q9v2mwldw58bgl8s90wqism69gjp"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "vcrpy" version))
+       (sha256
+        (base32 "16gmzxs3lzbgf1828n0q61vbmwyhpvzdlk37x6gdk8n05zr5n2ap"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; tests require more packages for python-pytest-httpbin
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? outputs #:allow-other-keys)
+             (when tests?
+               (substitute* "tox.ini"
+                 (("AWS_ACCESS_KEY_ID") "PYTHONPATH"))
+               (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
+               ;; These tests require network access.
+               (delete-file "tests/unit/test_stubs.py")
+               (invoke "pytest" "tests/unit")))))))
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)
        ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)
        ("python-yarl" ,python-yarl)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("python-black" ,python-black)
+       ("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-flask" ,python-flask)
+       ("python-httplib2" ,python-httplib2)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-httpbin" ,python-pytest-httpbin)))
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-httpbin" ,python-pytest-httpbin)
+       ("python-tox" ,python-tox)
+       ("python-urllib3" ,python-urllib3)))
     (home-page "https://github.com/kevin1024/vcrpy")
     (synopsis "Automatically mock your HTTP interactions")
     (description
