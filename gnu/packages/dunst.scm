@@ -38,16 +38,16 @@
 (define-public dunst
   (package
     (name "dunst")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/dunst-project/dunst")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/dunst-project/dunst")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lga1kj2vjbj9g9rl93nivngjmk5fkxdxwal8w96x9whwk9jvdga"))))
+                "0bc8f8h7qvxfx742jb8ggycw3z0il3pgln7lgkdjap2pxccyyrh5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
