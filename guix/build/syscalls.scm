@@ -424,15 +424,21 @@ expansion-time error is raised if FIELD does not exist in TYPE."
   "Evaluate EXPR and restart upon EINTR.  Return the value of EXPR."
   (call-with-restart-on-EINTR (lambda () expr)))
 
-(define (syscall->procedure return-type name argument-types)
+(define* (syscall->procedure return-type name argument-types
+                             #:key library)
   "Return a procedure that wraps the C function NAME using the dynamic FFI,
-and that returns two values: NAME's return value, and errno.
+and that returns two values: NAME's return value, and errno.  When LIBRARY is
+specified, look up NAME in that library rather than in the global symbol name
+space.
 
 If an error occurs while creating the binding, defer the error report until
 the returned procedure is called."
   (catch #t
     (lambda ()
-      (let ((ptr (dynamic-func name (dynamic-link))))
+      (let ((ptr (dynamic-func name
+                               (if library
+                                   (dynamic-link library)
+                                   (dynamic-link)))))
         ;; The #:return-errno? facility was introduced in Guile 2.0.12.
         (pointer->procedure return-type ptr argument-types
                             #:return-errno? #t)))
@@ -2289,9 +2295,8 @@ always a positive integer."
   (terminal-dimension window-size-rows port (const 25)))
 
 (define openpty
-  (let* ((ptr  (dynamic-func "openpty" (dynamic-link "libutil")))
-         (proc (pointer->procedure int ptr '(* * * * *)
-                                   #:return-errno? #t)))
+  (let ((proc (syscall->procedure int "openpty" '(* * * * *)
+                                  #:library "libutil")))
     (lambda ()
       "Return two file descriptors: one for the pseudo-terminal control side,
 and one for the controlled side."
@@ -2312,9 +2317,8 @@ and one for the controlled side."
           (values (* head) (* inferior)))))))
 
 (define login-tty
-  (let* ((ptr  (dynamic-func "login_tty" (dynamic-link "libutil")))
-         (proc (pointer->procedure int ptr (list int)
-                                   #:return-errno? #t)))
+  (let* ((proc (syscall->procedure int "login_tty" (list int)
+                                   #:library "libutil")))
     (lambda (fd)
       "Make FD the controlling terminal of the current process (with the
 TIOCSCTTY ioctl), redirect standard input, standard output and standard error
