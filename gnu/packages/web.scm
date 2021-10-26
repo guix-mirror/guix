@@ -5791,28 +5791,28 @@ and similar services.")
 (define-public darkhttpd
   (package
     (name "darkhttpd")
-    (version "1.12")
+    (version "1.13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://unix4lyfe.org/darkhttpd/darkhttpd-"
-                           version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emikulic/darkhttpd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0185wlyx4iqiwfigp1zvql14zw7gxfacncii3d15yaxk4av1f155"))))
+        (base32 "0w11xq160q9yyffv4mw9ncp1n0dl50d9plmwxb0yijaaxls9i4sk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")
        #:tests? #f ; No test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "darkhttpd"
                            (string-append (assoc-ref outputs "out")
-                                          "/bin"))
-             #t)))))
+                                          "/bin")))))))
     (synopsis "Simple static web server")
     (description "darkhttpd is a simple static web server.  It is
 standalone and does not need inetd or ucspi-tcp.  It does not need any
