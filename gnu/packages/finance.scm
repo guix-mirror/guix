@@ -193,7 +193,7 @@ line client and a client based on Qt.")
 (define-public bitcoin-core-0.20
   (package
     (inherit bitcoin-core-0.21)
-    (version "0.20.1")
+    (version "0.20.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -201,7 +201,7 @@ line client and a client based on Qt.")
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))))
+                "14smp5vmh7baabl856wlg7w7y5910jhx6c02mlkm4hkywf3yylky"))))))
 
 ;; The support lifetimes for bitcoin-core versions can be found in
 ;; <https://bitcoincore.org/en/lifecycle/#schedule>.
