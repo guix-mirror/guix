@@ -79,13 +79,7 @@
         (service hurd-getty-service-type (hurd-getty-configuration
                                           (tty "tty2")))
         (service static-networking-service-type
-                 (list (static-networking
-                        (addresses
-                         (list (network-address
-                                (device "lo")
-                                (value "127.0.0.1"))))
-                        (requirement '())
-                        (provision '(loopback)))
+                 (list %loopback-static-networking
 
                        ;; QEMU user-mode networking.  To get "eth0", you need
                        ;; QEMU to emulate a device for which Mach has an

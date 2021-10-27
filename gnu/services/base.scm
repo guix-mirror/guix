@@ -116,6 +116,7 @@
             static-networking-service
             static-networking-service-type
 
+            %loopback-static-networking
             %qemu-static-networking
 
             udev-configuration
@@ -2710,6 +2711,15 @@ to handle."
                          (provision (or provision '(networking)))
                          (name-servers name-servers)))))
 
+(define %loopback-static-networking
+  ;; The loopback device.
+  (static-networking
+   (addresses (list (network-address
+                     (device "lo")
+                     (value "127.0.0.1"))))
+   (requirement '())
+   (provision '(loopback))))
+
 (define %qemu-static-networking
   ;; Networking configuration for QEMU's user-mode network stack (info "(QEMU)
   ;; Using the user mode network stack").
@@ -2754,12 +2764,7 @@ to handle."
                                          (tty "tty6")))
 
         (service static-networking-service-type
-                 (list (static-networking
-                        (addresses (list (network-address
-                                          (device "lo")
-                                          (value "127.0.0.1"))))
-                        (requirement '())
-                        (provision '(loopback)))))
+                 (list %loopback-static-networking))
         (syslog-service)
         (service urandom-seed-service-type)
         (service guix-service-type)

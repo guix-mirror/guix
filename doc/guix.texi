@@ -17012,6 +17012,13 @@ List of arguments for this type of link.
 @end table
 @end deftp
 
+@cindex loopback device
+@defvr {Scheme Variable} %loopback-static-networking
+This is the @code{static-networking} record representing the ``loopback
+device'', @code{lo}, for IP addresses 127.0.0.1 and ::1, and providing
+the @code{loopback} Shepherd service.
+@end defvr
+
 @cindex networking, with QEMU
 @cindex QEMU, networking
 @defvr {Scheme Variable} %qemu-static-networking
