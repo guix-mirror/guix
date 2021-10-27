@@ -1787,14 +1787,14 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
 (define-public deja-dup
   (package
     (name "deja-dup")
-    (version "40.6")
+    (version "42.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/deja-dup/-/archive/"
                                   version "/deja-dup-" version ".tar.bz2"))
               (sha256
                (base32
-                "0lwazh6crby5wpy9fg6zvwy4plqbhs2f98bm5lbizjdlbh88n5q0"))))
+                "0d1jnlxpk52x56aqxz1g2xb4y4sm24h08p2di8mc1k8n8b52rpi4"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -1848,6 +1848,7 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
+       ("libhandy" ,libhandy)
        ("packagekit" ,packagekit)
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)))
