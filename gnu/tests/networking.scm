@@ -122,10 +122,8 @@
    (value
     (let ((os (marionette-operating-system
                (simple-operating-system
-                (static-networking-service "eth0" "10.0.2.15"
-                                           #:netmask "255.255.255.0"
-                                           #:gateway "10.0.2.2"
-                                           #:name-servers '("10.0.2.2")))
+                (service static-networking-service-type
+                         (list %qemu-static-networking)))
                #:imported-modules '((gnu services herd)
                                     (guix combinators)))))
       (run-static-networking-test (virtual-machine os))))))
@@ -275,9 +273,13 @@ port 7, and a dict service on port 2628."
 (define %openvswitch-os
   (operating-system
     (inherit (simple-operating-system
-              (static-networking-service "ovs0" "10.1.1.1"
-                                         #:netmask "255.255.255.252"
-                                         #:requirement '(openvswitch-configuration))
+              (simple-service 'openswitch-networking
+                              static-networking-service-type
+                              (list (static-networking
+                                     (addresses (list (network-address
+                                                       (value "10.1.1.1/24")
+                                                       (device "ovs0"))))
+                                     (requirement '(openvswitch-configuration)))))
               (service openvswitch-service-type)
               openvswitch-configuration-service))
     ;; Ensure the interface name does not change depending on the driver.
@@ -392,10 +394,15 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 
 (define %dhcpd-os
   (simple-operating-system
-   (static-networking-service "ens3" "192.168.1.4"
-                              #:netmask "255.255.255.0"
-                              #:gateway "192.168.1.1"
-                              #:name-servers '("192.168.1.2" "192.168.1.3"))
+   (service static-networking-service-type
+            (list (static-networking
+                   (addresses (list (network-address
+                                     (value "192.168.1.4/24")
+                                     (device "ens3"))))
+                   (routes (list (network-route
+                                  (destination "default")
+                                  (gateway "192.168.1.1"))))
+                   (name-servers '("192.168.1.2" "192.168.1.3")))))
    (service dhcpd-service-type dhcpd-v4-configuration)))
 
 (define (run-dhcpd-test)

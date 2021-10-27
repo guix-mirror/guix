@@ -59,11 +59,8 @@
     (packages (append (list ganeti-instance-debootstrap ganeti-instance-guix)
                       %base-packages))
     (services
-     (append (list (static-networking-service "eth0" "10.0.2.15"
-                                              #:netmask "255.255.255.0"
-                                              #:gateway "10.0.2.2"
-                                              #:name-servers '("10.0.2.3"))
-
+     (append (list (service static-networking-service-type
+                            (list %qemu-static-networking))
                    (service openssh-service-type
                             (openssh-configuration
                              (permit-root-login 'prohibit-password)))
