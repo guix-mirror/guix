@@ -49,6 +49,7 @@
   #:use-module (gnu packages mono)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages pascal)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages python-web)
@@ -72,7 +73,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "186")
+    (version "188")
     (source
      (origin
        (method git-fetch)
@@ -81,9 +82,9 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qlll5jn76ci5jy915v2kvyngfyycwylxpbdylffzaninvdy3dav"))
+        (base32 "1byd28ihni5g0ikjjcsq68smj1rw33vv9z0cymqa4ds670c77yvn"))
        (patches
-        (search-patches "diffoscope-fix-test_item3_deflate_llvm_bitcode.patch"))))
+        (search-patches "diffoscope-fix-llvm-test.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -108,6 +109,36 @@
                          (string-append "['" (which "stat") "',"))
                         (("\\['getfacl',")
                          (string-append "['" (which "getfacl") "',")))))
+                  (add-after 'unpack 'skip-python-tests
+                    (lambda _
+                      ;; Python tests appear to assume python 3.9, remove
+                      ;; phase when python is upgraded
+                      (substitute* "tests/comparators/test_python.py"
+                        (("def test_identification")
+                         "def skip_test_identification"))
+                      (substitute* "tests/comparators/test_python.py"
+                        (("def test_diff")
+                         "def skip_test_diff"))))
+                  (add-after 'unpack 'use-dumppdf-py
+                    ;; python-pdfminer-six ships "dumppdf" as "dumppdf.py"
+                    ;; https://salsa.debian.org/reproducible-builds/diffoscope/-/issues/283
+                    ;; Fixed upstream, remove this phase when updating to
+                    ;; diffoscope 189
+                    (lambda _
+                      (substitute* "diffoscope/comparators/pdf.py"
+                        (("dumppdf") "dumppdf.py"))
+                      (substitute* "diffoscope/external_tools.py"
+                        (("dumppdf") "dumppdf.py"))
+                      (substitute* "diffoscope/external_tools.py"
+                        (("'debian': 'python3-pdfminer'")
+                         "'debian': 'python3-pdfminer', 'guix': 'python-pdfminer-six'"))))
+                  (add-after 'unpack 'fpc-external-tool
+                    ;; Fixed upstream, remove this phase when updating to
+                    ;; diffoscope 189
+                    (lambda _
+                      (substitute* "diffoscope/external_tools.py"
+                        (("'debian': 'fp-utils'")
+                         "'debian': 'fp-utils', 'guix': 'fpc'"))))
                   (add-after 'build 'build-man-page
                     (lambda* (#:key (make-flags '()) #:allow-other-keys)
                       (apply invoke "make" "-C" "doc" make-flags)))
@@ -182,6 +213,7 @@
                      ("dtc" ,dtc)
                      ("e2fsprogs" ,e2fsprogs)
                      ("ffmpeg" ,ffmpeg)
+                     ("fpc" ,fpc)
                      ("gettext" ,gettext-minimal)
                      ("ghostscript" ,ghostscript)
                      ("giflib:bin" ,giflib "bin")
