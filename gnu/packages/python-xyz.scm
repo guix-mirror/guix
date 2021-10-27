@@ -4347,7 +4347,7 @@ software version simply.")
 (define-public python-deprecated
   (package
     (name "python-deprecated")
-    (version "1.2.5")
+    (version "1.2.13")
     (source
      (origin
        (method git-fetch)
@@ -4357,7 +4357,7 @@ software version simply.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14909glxxwwc4b9qpz2b9jdriwzi5n65ichw85xqppap5f79wcwz"))))
+         "0v4ys9xr8lski2r98da99spsj6hjlnnqgnhhmyhrm66myiix885c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
