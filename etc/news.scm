@@ -28,6 +28,8 @@
         (title
          (en "New @command{guix shell} command supersedes @command{guix
 environment}")
+         (de "Neuer Befehl @command{guix shell} löst @command{guix
+environment} ab")
          (fr "Nouvelle commande @command{guix shell} en remplacement de
 @command{guix environment}"))
         (body
@@ -55,6 +57,34 @@ ancestor, provided you allowed it.  The command maintains a cache to speed up
 access to such environments.
 
 Run @command{info \"(guix) Invoking guix shell\"} for more information.")
+         (de "Ein neuer Befehl @command{guix shell} ist ab jetzt
+verfügbar. Er ähnelt @command{guix environment}, ist aber leichter zu
+benutzen (@command{guix environment} gilt als veraltet, bleibt aber
+bis zum 1.@: Mai 2023 verfügbar). Der größte Unterschied ist, dass das
+Verhalten mit @option{--ad-hoc} nun der Normalfall ist. D.h.@: um eine
+interaktive Umgebung mit Python, NumPy und SciPy zu bekommen, lautet
+der Befehl:
+
+@example
+guix shell python python-numpy python-scipy
+@end example
+
+Wenn Sie eine Entwicklungsumgebung für, sagen wir, Inkscape schaffen
+wollen, übergeben Sie die Option @option{-D}:
+
+@example
+guix shell -D inkscape
+@end example
+
+Noch ein Unterschied ist, dass wenn Sie @command{guix shell} ohne
+Argumente ausführen, @file{manifest.scm} oder @file{guix.scm} aus dem
+aktuellen Arbeitsverzeichnis oder einem übergeordneten Verzeichnis
+geladen wird, wenn Sie die Berechtigung dazu erteilt haben. Für den
+Befehl wird ein Zwischenspeicher vorgehalten, damit Sie schneller auf
+solche Umgebungen zugreifen können.
+
+Führen Sie @command{info \"(guix) Invoking guix shell\"} aus, um mehr
+zu erfahren.")
          (fr "Une nouvelle commande, @command{guix shell}, est maintenant
 disponible.  Elle est similaire à @command{guix environment}, mais avec une
 interface plus pratique (@command{guix environment} est désuet mais restera
