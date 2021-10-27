@@ -202,7 +202,7 @@ API rules.")
                          ;; Disable loading the aiohttp coverage plugin
                          ;; to avoid a circular dependency (code coverage
                          ;; is not very interesting to us anyway).
-                         "-o" "addopts=''")
+                         "-o" "addopts=''" "--ignore=aiohttp")
                  (format #t "test suite not run~%")))))))
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
@@ -214,7 +214,7 @@ API rules.")
        ("python-typing-extensions" ,python-typing-extensions)
        ("python-yarl" ,python-yarl)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest-6.1)
        ("python-pytest-mock" ,python-pytest-mock)
        ("python-re-assert" ,python-re-assert)
        ("gunicorn" ,gunicorn-bootstrap)
