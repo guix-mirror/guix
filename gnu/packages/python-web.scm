@@ -6251,3 +6251,42 @@ communicate with Microsoft Azure Storage services.")
 comments, or tags from HTML snippets, extract base url from HTML snippets,
 translate entities on HTML strings, among other things.")
     (license license:bsd-3)))
+
+(define-public python-flask-combo-jsonapi
+  (package
+    (name "python-flask-combo-jsonapi")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AdCombo/flask-combo-jsonapi")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07fhcjiyif80z1vyh35za29sqx1mmqh568jrbrrs675j4a797sj1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-marshmallow" ,python-marshmallow-3.2)
+       ("python-marshmallow-jsonapi" ,python-marshmallow-jsonapi)
+       ("python-simplejson" ,python-simplejson)
+       ("python-sqlalchemy" ,python-sqlalchemy-1.3)
+       ("python-apispec" ,python-apispec)
+       ("python-simplejson" ,python-simplejson)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/AdCombo/flask-combo-jsonapi")
+    (synopsis "Flask extension to quickly create JSON:API 1.0 REST Web APIs")
+    (description
+     "Flask-COMBO-JSONAPI is a Python Flask extension for building REST Web APIs
+compliant with the @uref{https://jsonapi.org, JSON:API 1.0} specification.
+
+It tries to combine the power of Flask-Restless with the flexibility of
+Flask-RESTful to quickly build APIs that fit the complexity of existing
+real-life projects with legacy data and diverse storage providers.")
+    (license license:expat)))
