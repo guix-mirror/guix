@@ -327,10 +327,12 @@ comes with a SOCKS proxy client.")
                (base32 "1saqgpgbdvb8awzm0f0640j0im55hkrfzvcw683cgqw4ni3apwaf"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-vv"))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-asyncio" ,python-pytest-asyncio)))
