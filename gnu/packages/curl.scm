@@ -57,16 +57,15 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.77.0")
+   (version "7.79.1")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://curl.haxx.se/download/curl-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0jsrc97vbghvljic997r9nypc9qqddcil2lzvv032br8ahn5hr0g"))
-             (patches (search-patches "curl-use-ssl-cert-env.patch"
-                                      "curl-7.77-tls-priority-string.patch"))))
+               "129n9hi7rbg3s112chyadhp4y27ppb5i65n12wm77aw2255zf1h6"))
+             (patches (search-patches "curl-use-ssl-cert-env.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -112,8 +111,7 @@
             ;; Do not save the configure options to avoid unnecessary references.
             (substitute* "curl-config.in"
               (("@CONFIGURE_OPTIONS@")
-               "\"not available\""))
-            #t))
+               "\"not available\""))))
         (add-after
          'install 'move-man3-pages
          (lambda* (#:key outputs #:allow-other-keys)
@@ -122,8 +120,7 @@
                  (doc (assoc-ref outputs "doc")))
              (mkdir-p (string-append doc "/share/man"))
              (rename-file (string-append out "/share/man/man3")
-                          (string-append doc "/share/man/man3"))
-             #t)))
+                          (string-append doc "/share/man/man3")))))
         (replace 'check
           (lambda* (#:key tests? #:allow-other-keys)
             (substitute* "tests/runtests.pl"
