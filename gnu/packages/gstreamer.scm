@@ -497,7 +497,15 @@ the GStreamer multimedia framework.")
                         "")
                        (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
                         "")))))
-               '()))))
+               '())
+         (add-after 'unpack 'disable-problematic-tests
+           (lambda _
+             ;; Disable the 'pipelines-seek' test, which appears to be load
+             ;; sensitive (see:
+             ;; https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/854).
+             (substitute* "tests/check/meson.build"
+               ((".*'pipelines/seek.c'.*")
+                "")))))))
     (propagated-inputs
      ;; In gstreamer-1.0.pc:
      ;;   Requires: glib-2.0, gobject-2.0
