@@ -1334,10 +1334,10 @@ reported in a previous test run.")
                (invoke "pytest" "--assert=plain"
                        "-k" "not test_standalone_mock")))))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pytest-dev/pytest-mock/")
     (synopsis "Thin-wrapper around the mock package for easier use with py.test")
     (description
@@ -1363,6 +1363,8 @@ same arguments.")
            "1i5mg3ff1qk0wqfcxfz60hwy3q5dskdp36i10ckigkzffg8hc3ad"))))
       (arguments
        `(#:python ,python-2))
+      (native-inputs
+       `(("python2-setuptools-scm" ,python2-setuptools-scm)))
       (propagated-inputs
        `(("python2-mock" ,python2-mock)
          ("python2-pytest" ,python2-pytest))))))
