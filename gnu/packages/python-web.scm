@@ -319,13 +319,12 @@ comes with a SOCKS proxy client.")
 (define-public python-asgiref
   (package
     (name "python-asgiref")
-    (version "3.3.4")
+    (version "3.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "asgiref" version))
               (sha256
-               (base32
-                "0y0vdzldjkbs4pxf10pi6jpxq9b2sfp1rlwm153jcf5nvzxns8fi"))))
+               (base32 "1saqgpgbdvb8awzm0f0640j0im55hkrfzvcw683cgqw4ni3apwaf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
