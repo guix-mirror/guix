@@ -146,6 +146,15 @@ remote store."
                                sources)))
           (mbegin %store-monad
             ((store-lift send-files) to-send remote #:recursive? #t)
-            (return (build-derivations remote inputs))
+
+            ;; Build handlers are not tied to a specific <store-connection>.
+            ;; If a handler is already installed, it might want to go ahead
+            ;; and build, but on the local <store-connection> instead of
+            ;; REMOTE.  To avoid that, install a build handler that does
+            ;; nothing.
+            (return (with-build-handler (lambda (continue . _)
+                                          (continue #t))
+                      (build-derivations remote inputs)))
+
             (return (close-connection remote))
             (return (%remote-eval lowered session become-command)))))))
