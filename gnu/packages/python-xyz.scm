@@ -4362,8 +4362,9 @@ software version simply.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda _
-                      (invoke "pytest"))))))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
     (propagated-inputs
      `(("python-wrapt" ,python-wrapt)))
     (native-inputs
