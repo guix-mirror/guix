@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,7 +151,7 @@ a continuous layout.")
 (define-public pdf2djvu
   (package
     (name "pdf2djvu")
-    (version "0.9.17.1")
+    (version "0.9.18.1")
     (source
      (origin
        (method url-fetch)
@@ -159,7 +159,7 @@ a continuous layout.")
              "https://github.com/jwilk/pdf2djvu/releases/download/" version
              "/pdf2djvu-" version ".tar.xz"))
        (sha256
-        (base32 "18r648kna6ccw0m0nfxxnsmz541k69d0w9zzqvm1x2l5qyyvgfsv"))))
+        (base32 "0c595yziz81c9izf9s5sskd00qmgz2n1hp2vdcgg0dx81g3xfidb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -174,7 +174,15 @@ a continuous layout.")
        ("poppler-data" ,poppler-data)
        ("util-linux-lib" ,util-linux "lib"))) ; for libuuid
     (arguments
-     `(#:test-target "test"))
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "tests/test-xmp-broken.py"
+               ;; Error message changed in recent versions of XML parser
+               (("XML parsing failure")
+                "Error in XMLValidator")))))))
     (synopsis "PDF to DjVu converter")
     (description
      "@code{pdf2djvu} creates DjVu files from PDF files.
