@@ -17012,6 +17012,14 @@ List of arguments for this type of link.
 @end table
 @end deftp
 
+@cindex networking, with QEMU
+@cindex QEMU, networking
+@defvr {Scheme Variable} %qemu-static-networking
+This is the @code{static-networking} record representing network setup
+when using QEMU's user-mode network stack on @code{eth0} (@pxref{Using
+the user mode network stack,,, QEMU, QEMU Documentation}).
+@end defvr
+
 @cindex DHCP, networking service
 @defvr {Scheme Variable} dhcp-client-service-type
 This is the type of services that run @var{dhcp}, a Dynamic Host Configuration

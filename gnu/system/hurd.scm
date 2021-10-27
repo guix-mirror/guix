@@ -86,21 +86,12 @@
                                 (value "127.0.0.1"))))
                         (requirement '())
                         (provision '(loopback)))
-                       (static-networking
-                        (addresses
-                         ;; The default QEMU guest address.  To get "eth0",
-                         ;; you need QEMU to emulate a device for which Mach
-                         ;; has an in-kernel driver, for instance with:
-                         ;; --device rtl8139,netdev=net0 --netdev user,id=net0
-                         (list (network-address
-                                (device "eth0")
-                                (value "10.0.2.15/24"))))
-                        (routes
-                         (list (network-route
-                                (destination "default")
-                                (gateway "10.0.2.2"))))
-                        (provision '(networking))
-                        (name-servers '("10.0.2.3")))))
+
+                       ;; QEMU user-mode networking.  To get "eth0", you need
+                       ;; QEMU to emulate a device for which Mach has an
+                       ;; in-kernel driver, for instance with:
+                       ;; --device rtl8139,netdev=net0 --netdev user,id=net0
+                       %qemu-static-networking))
         (syslog-service)
         (service guix-service-type
                  (guix-configuration

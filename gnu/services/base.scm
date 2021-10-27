@@ -116,6 +116,8 @@
             static-networking-service
             static-networking-service-type
 
+            %qemu-static-networking
+
             udev-configuration
             udev-configuration?
             udev-configuration-rules
@@ -2707,6 +2709,20 @@ to handle."
                          (requirement requirement)
                          (provision (or provision '(networking)))
                          (name-servers name-servers)))))
+
+(define %qemu-static-networking
+  ;; Networking configuration for QEMU's user-mode network stack (info "(QEMU)
+  ;; Using the user mode network stack").
+  (static-networking
+   (addresses (list (network-address
+                     (device "eth0")
+                     (value "10.0.2.15/24"))))
+   (routes (list (network-route
+                  (destination "default")
+                  (gateway "10.0.2.2"))))
+   (requirement '())
+   (provision '(networking))
+   (name-servers '("10.0.2.3"))))
 
 
 (define %base-services
