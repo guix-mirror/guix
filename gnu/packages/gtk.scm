@@ -638,16 +638,12 @@ highlighting and other features typical of a source code editor.")
     (build-system meson-build-system)
     (outputs '("out" "debug"))
     (arguments
-     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
-       #:configure-flags '("-Dinstalled_tests=false" "-Djasper=true")
+     `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
+       #:configure-flags '("-Dinstalled_tests=false")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook
-           ;; TODO(core-updates): Unconditionally look in (or native-inputs inputs)
-           (lambda* (#:key ,@(if (%current-target-system)
-                                 '(native-inputs)
-                                 '())
-                     inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (with-directory-excursion "docs"
                (substitute* "meson.build"
                  (("http://docbook.sourceforge.net/release/xsl/current/")
@@ -684,7 +680,6 @@ highlighting and other features typical of a source code editor.")
      `(,@(if (%current-target-system)
              `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
              '())
-       ("jasper" ,jasper)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng"  ,libpng)
        ("libtiff" ,libtiff)))
@@ -692,7 +687,7 @@ highlighting and other features typical of a source code editor.")
      `(("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)
        ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")             ; glib-mkenums, etc.
+       ("glib" ,glib "bin")                             ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
