@@ -4910,7 +4910,7 @@ and fairly speedy.")
 (define-public python-uvicorn
   (package
     (name "python-uvicorn")
-    (version "0.11.8")
+    (version "0.13.2")
     (source
      (origin
        ;; PyPI tarball has no tests.
@@ -4920,7 +4920,7 @@ and fairly speedy.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00iidg5ysp7k00bw3kmkvr8mghnh4jdi0p2ryiarhryf8wz2r3fy"))))
+        (base32 "04zgmp9z46k72ay6cz7plga6d3w3a6x41anabm7ramp7jdqf6na9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4930,15 +4930,11 @@ and fairly speedy.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-codecov" ,python-codecov)
-       ("python-flake8" ,python-flake8)
-       ("python-isort" ,python-isort)
-       ("python-mypy" ,python-mypy)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
+     `(("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)
-       ("python-requests" ,python-requests)))
+       ("python-requests" ,python-requests)
+       ("python-trustme" ,python-trustme)
+       ("python-wsproto" ,python-wsproto)))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-h11" ,python-h11)
@@ -4946,8 +4942,7 @@ and fairly speedy.")
        ("python-pyyaml" ,python-pyyaml)
        ("python-uvloop" ,python-uvloop)
        ("python-watchgod" ,python-watchgod)
-       ("python-websockets" ,python-websockets)
-       ("python-wsproto" ,python-wsproto)))
+       ("python-websockets" ,python-websockets)))
     (home-page "https://github.com/encode/uvicorn")
     (synopsis "Fast ASGI server implementation")
     (description
