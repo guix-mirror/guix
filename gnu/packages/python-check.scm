@@ -1129,12 +1129,13 @@ service processes for your tests with pytest.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "setup.cfg"
-               ((".*timeout.*") ""))
-             ;; Make the installed plugin discoverable by Pytest.
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (substitute* "setup.cfg"
+                 ((".*timeout.*") ""))
+               ;; Make the installed plugin discoverable by Pytest.
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-pydantic" ,python-pydantic)
        ("python-pytest" ,python-pytest)
