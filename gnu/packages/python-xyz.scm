@@ -24324,7 +24324,7 @@ but portable.")
 (define-public python-watchgod
   (package
     (name "python-watchgod")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        ;; There are no tests in the PyPI tarball.
@@ -24334,7 +24334,7 @@ but portable.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lqx44wkryakgpyqj3m0hsz61bqr07vc7smgzh188374hwvscp66"))))
+        (base32 "1w2xsidwp9n4giqhja0bzw7rwrh01db0kdxf2n54mv3dkx545jpq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -24345,15 +24345,10 @@ but portable.")
                (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
-       ("python-docutils" ,python-docutils)
-       ("python-flake8" ,python-flake8)
-       ("python-isort" ,python-isort)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-pyflakes" ,python-pyflakes)
        ("python-pygments" ,python-pygments)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
        ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-aiohttp" ,python-pytest-aiohttp)
        ("python-pytest-mock" ,python-pytest-mock)
        ("python-pytest-sugar" ,python-pytest-sugar)
        ("python-pytest-toolbox" ,python-pytest-toolbox)))
