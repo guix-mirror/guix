@@ -1130,22 +1130,15 @@ service processes for your tests with pytest.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "setup.cfg"
+               ((".*timeout.*") ""))
              ;; Make the installed plugin discoverable by Pytest.
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-docutils" ,python-docutils)
-       ("python-flake8" ,python-flake8)
-       ("python-isort" ,python-isort)
-       ("python-pydantic" ,python-pydantic)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-pygments" ,python-pygments)
+     `(("python-pydantic" ,python-pydantic)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-isort" ,python-pytest-isort)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest-sugar" ,python-pytest-sugar)))
+       ("python-pytest-isort" ,python-pytest-isort)))
     (home-page "https://github.com/samuelcolvin/pytest-toolbox")
     (synopsis "Numerous useful plugins for Pytest")
     (description
