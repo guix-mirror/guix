@@ -710,21 +710,20 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.18.0")
+    (version "1.19.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mupdf.com/downloads/archive/"
                            "mupdf-" version "-source.tar.xz"))
        (sha256
-        (base32 "16m5sksil22sshxy70xkslsb2qhvcqb1d95i9savnhds1xn4ybar"))
-       (patches (search-patches "mupdf-fix-linkage.patch"
-                                "mupdf-CVE-2021-3407.patch"))
+        (base32 "1i98xqgnzp168hnnhradl8658qsif06wlbvcglz0mmh8wi1rkwrq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove bundled software.
-           (let* ((keep (list "lcms2")) ; different from our lcms2 package
+           (let* ((keep (list "extract"
+                              "lcms2")) ; different from our lcms2 package
                   (from "thirdparty")
                   (kept (string-append from "~temp")))
              (mkdir-p kept)
