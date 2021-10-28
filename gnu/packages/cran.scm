@@ -23669,6 +23669,35 @@ univariate time series forecasts including exponential smoothing via state
 space models and automatic ARIMA modelling.")
     (license license:gpl3)))
 
+(define-public r-formattable
+  (package
+    (name "r-formattable")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "formattable" version))
+       (sha256
+        (base32 "1vdxi0xmg019qyzjrp8bkjxciz245jcxsrkhfzd44ynqcwi4s3ag"))))
+    (properties `((upstream-name . "formattable")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/renkun-ken/formattable")
+    (synopsis "Print vectors and data frames with text fromatting")
+    (description
+     "This R package provides functions to create formattable vectors and data
+frames.  @emph{Formattable} vectors are printed with text formatting, and
+formattable data frames are printed with multiple types of formatting in HTML
+to improve the readability of data presented in tabular form rendered in web
+pages.")
+    (license license:expat)))
+
 (define-public r-xmisc
   (package
     (name "r-xmisc")
