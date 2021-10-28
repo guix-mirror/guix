@@ -4594,8 +4594,9 @@ Python.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "python" "test.py"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "test.py")))))))
     (build-system python-build-system)
     (home-page "https://github.com/un33k/python-slugify")
     (synopsis "Python Slugify application that handles Unicode")
