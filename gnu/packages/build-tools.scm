@@ -297,6 +297,22 @@ files}, are written in a custom domain-specific language (@dfn{DSL}) that
 resembles Python.")
     (license license:asl2.0)))
 
+;;; This older Meson variant is kept for now for gtkmm and others that may
+;;; have problems with 0.60.
+(define-public meson-0.59
+  (package/inherit meson
+    (version "0.59.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "releases/download/" version  "/meson-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "117cm8794h291lca1wljz1pwnzidgbvrpg3mw3np6ksma368hyd7"))
+              (patches (search-patches
+                        "meson-allow-dirs-outside-of-prefix.patch"))))))
+
 (define-public premake4
   (package
     (name "premake")
