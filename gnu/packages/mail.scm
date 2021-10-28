@@ -1964,7 +1964,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
   (let ((dovecot-version (version-major+minor (package-version dovecot))))
     (package
       (name "dovecot-pigeonhole")
-      (version "0.5.16")
+      (version "0.5.17")
       (source
        (origin
          (method url-fetch)
@@ -1972,7 +1972,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
                "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
          (sha256
-          (base32 "0f79qsiqnhaxn7mrrfcrnsjyv6357kzb7wa0chhfd69vwa06g8sw"))
+          (base32 "0j6ng173hh5iiqxdkxfb5v9djpn39gxdrv5ki7i22cf5cqwq47h3"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1981,8 +1981,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
              (substitute* "configure"
                (("doc/rfc/Makefile") ""))
              (substitute* "doc/Makefile.in"
-               (("rfc ") ""))
-             #t))))
+               (("rfc ") ""))))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags
@@ -2010,8 +2009,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                  (substitute* "src/managesieve-login/managesieve-login-settings.c"
                    (("\\.executable = \"managesieve-login\"")
                     (string-append ".executable = \"" libexec
-                                   "/managesieve-login\"")))
-                 #t))))))
+                                   "/managesieve-login\"")))))))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
