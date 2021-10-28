@@ -1781,7 +1781,7 @@ library.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
@@ -1790,7 +1790,7 @@ library.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "12x9j82y37r4v0ngs22rzp4wmw7k2bbb9d3bymcczzz7y8w4q328"))))
+        (base32 "1nhdf1s437k41af6frbqw2sky46qci0hgkg9h86a9rlnc0r69d1f"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -1809,8 +1809,7 @@ library.")
              (setenv "HOME" (getcwd))
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t))
+             (setenv "DBUS_FATAL_WARNINGS" "0")))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1818,8 +1817,7 @@ library.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+                (string-append doc "/share/doc"))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
