@@ -332,7 +332,7 @@ also known as DXTn or DXTC) for Mesa.")
          ;; Enable the Vulkan overlay layer on architectures using llvm.
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
-              '("-Dvulkan-overlay-layer=true"))
+              '("-Dvulkan-layers=device-select,overlay"))
              (_
               '()))
 
@@ -400,8 +400,7 @@ also known as DXTn or DXTC) for Mesa.")
            (lambda _
              ;; See <https://gitlab.freedesktop.org/mesa/mesa/-/issues/3181>.
              (substitute* "src/compiler/glsl/glcpp/tests/084-unbalanced-parentheses.c.expected"
-              (("unexpected \\$end") "unexpected end of file"))
-             #t))
+              (("unexpected \\$end") "unexpected end of file"))))
          (add-before 'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -419,8 +418,7 @@ also known as DXTn or DXTC) for Mesa.")
                  ;; it's never installed since Mesa removed its
                  ;; egl_gallium support.
                  (("\"gbm_dri\\.so")
-                  (string-append "\"" out "/lib/dri/gbm_dri.so")))
-               #t)))
+                  (string-append "\"" out "/lib/dri/gbm_dri.so"))))))
          (add-after 'install 'split-outputs
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -465,8 +463,7 @@ also known as DXTn or DXTC) for Mesa.")
                                                        file)
                                               (symlink reference file)))
                                         others))))
-                         (delete-duplicates inodes))
-               #t))))))
+                         (delete-duplicates inodes))))))))
     (home-page "https://mesa3d.org/")
     (synopsis "OpenGL and Vulkan implementations")
     (description "Mesa is a free implementation of the OpenGL and Vulkan
