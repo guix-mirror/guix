@@ -44,24 +44,21 @@
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (srfi srfi-1))
 
-(define-public gdb-10
+(define-public gdb-11
   (package
     (name "gdb")
-    (version "10.2")
+    (version "11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0aag1c0fw875pvhjg1qp7x8pf6gf92bjv5gcic5716scacyj58da"))
-              (patches
-               (search-patches "gdb-hurd.patch"))))
-
+                "151z6d0265hv9cgx9zqqa4bd6vbp20hrljhd6bxl7lr0gd0crkyc"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
-     `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
+     `(#:tests? #f                      ;FIXME: 217 unexpected failures
        #:out-of-source? #t
        #:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
@@ -142,42 +139,10 @@ the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
-;; This version of GDB is required by some of the Rust compilers, see
-;; <https://github.com/rust-lang/rust/issues/79009>.
-(define-public gdb-9.2
-  (package
-    (inherit gdb-10)
-    (version "9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                  version ".tar.xz"))
-              (patches (search-patches "gdb-9.2-sim-ppc-fno-common.patch"))
-              (sha256
-               (base32
-                "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments gdb-11)
-       ((#:phases phases)
-        ;; Override the patch-paths phase as the pathstuff.c file was later
-        ;; renamed.
-        `(modify-phases ,phases
-           (replace 'patch-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((sh (string-append (assoc-ref inputs "bash")
-                                        "/bin/sh")))
-                 (substitute* '("gdb/gdbsupport/pathstuff.c"
-                                "gdb/ser-pipe.c")
-                   (("\"/bin/sh\"")
-                    (format #f "~s" sh))))))))))
-    (inputs
-     (alist-replace "guile" (list guile-2.0)
-                    (package-inputs gdb-10)))))
-
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely
   ;; enough to avoid massive rebuilds.
-  gdb-10)
+  gdb-11)
 
 (define-public gdb-minimal
   (package/inherit gdb
