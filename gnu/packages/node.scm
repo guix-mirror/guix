@@ -647,14 +647,14 @@ source files.")
 (define-public node-lts
   (package
     (inherit node)
-    (version "14.16.0")
+    (version "14.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "19nz2mhmn6ikahxqyna1dn25pb5v3z9vsz9zb2flb6zp2yk4hxjf"))
+                "1vc9rypkgr5i5y946jnyr9jjpydxvm74p1s17rg2zayzvlddg89z"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -783,6 +783,9 @@ source files.")
                          '("test/parallel/test-dns.js"
                            "test/parallel/test-dns-lookupService-promises.js"))
 
+               ;; These tests require networking.
+               (delete-file "test/parallel/test-https-agent-unref-socket.js")
+
                ;; FIXME: This test fails randomly:
                ;; https://github.com/nodejs/node/issues/31213
                (delete-file "test/parallel/test-net-listen-after-destroying-stdin.js")
@@ -821,7 +824,7 @@ source files.")
                             "deps/llhttp/include/llhttp.h"))))))))
     (native-inputs
      `(;; Runtime dependencies for binaries used as a bootstrap.
-       ("c-ares" ,c-ares)
+       ("c-ares" ,c-ares-for-node)
        ("brotli" ,brotli)
        ("icu4c" ,icu4c-67)
        ("libuv" ,libuv-for-node)
@@ -837,7 +840,7 @@ source files.")
     (inputs
      `(("bash" ,bash)
        ("coreutils" ,coreutils)
-       ("c-ares" ,c-ares)
+       ("c-ares" ,c-ares-for-node)
        ("icu4c" ,icu4c-67)
        ("libuv" ,libuv-for-node)
        ("llhttp" ,llhttp-bootstrap)
