@@ -1553,6 +1553,35 @@ and simplified.  It supports SPDX license expressions as well as other naming
 conventions and aliases in the same expression.")
     (license license:gpl2+)))
 
+(define-public python-wand
+  (package
+    (name "python-wand")
+    (version "0.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Wand" version))
+       (sha256
+        (base32 "1nxn7zvbnfgk4kkxajbzglcjpbgr84ilhnxm990nifjxqb61ph7b"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-magickwand
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "MAGICK_HOME" (assoc-ref inputs "imagemagick"))
+             (setenv "WAND_MAGICK_LIBRARY_SUFFIX" ".Q16"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://docs.wand-py.org/")
+    (synopsis "MagickWand API binding for Python")
+    (description
+     "Wand is a ctypes-based binding for the C API of ImageMagick's MagickWand
+library.")
+    (license license:expat)))
+
 (define-public python-lockfile
   (package
     (name "python-lockfile")
