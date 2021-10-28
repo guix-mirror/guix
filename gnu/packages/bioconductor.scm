@@ -4682,6 +4682,38 @@ and specific in detecting differential transcription.")
 libraries for systems that do not have these available via other means.")
     (license license:artistic2.0)))
 
+(define-public r-zellkonverter
+  (package
+    (name "r-zellkonverter")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "zellkonverter" version))
+       (sha256
+        (base32 "1ihp2f23lpdfgf3qliy22vrq8czm353hyhqf74r5r712190k6pgg"))))
+    (properties `((upstream-name . "zellkonverter")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-basilisk" ,r-basilisk)
+       ("r-cli" ,r-cli)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)
+       ("r-reticulate" ,r-reticulate)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/theislab/zellkonverter")
+    (synopsis "Conversion between AnnData and single-cell experiments objects")
+    (description
+     "This package provides methods to convert between Python AnnData objects
+and SingleCellExperiment objects.  These are primarily intended for use by
+downstream Bioconductor packages that wrap Python methods for single-cell data
+analysis.  It also includes functions to read and write H5AD files used for
+saving AnnData objects to disk.")
+    (license license:expat)))
+
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
