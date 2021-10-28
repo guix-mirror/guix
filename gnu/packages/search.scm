@@ -328,7 +328,7 @@ for parsing HTML files.")
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
     (home-page "https://www.lesbonscomptes.com/recoll/")
-    (synopsis "Recoll finds documents based on their contents or file names")
+    (synopsis "Find documents based on their contents or file names")
     (description "Recoll finds documents based on their contents as well as
 their file names.  It can search most document formats, but you may need
 external applications for text extraction.  It can reach any storage place:
