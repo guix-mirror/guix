@@ -1896,7 +1896,7 @@ facilities for checking incoming mail.")
   (package
     (name "dovecot")
     ;; Also update dovecot-pigeonhole when updating to a new minor version.
-    (version "2.3.16")
+    (version "2.3.17")
     (source
      (origin
        (method url-fetch)
@@ -1904,7 +1904,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "04ngqv5mml5z0i4p7fkchp4xw2awy7x7mq2mim9frnav0m9iv9q3"))))
+        (base32 "1y9dpn4jgzrfjibp5zrc11bdk0q843d998kxhpxkyfm2fz6i4i12"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1943,8 +1943,7 @@ facilities for checking incoming mail.")
                (("sleep") (which "sleep")))
              (substitute* (list "src/lib-smtp/test-bin/sendmail-exit-1.sh"
                                 "src/lib-smtp/test-bin/sendmail-success.sh")
-               (("cat") (which "cat")))
-             #t))
+               (("cat") (which "cat")))))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
              ;; Simple hack to avoid installing a trivial README in /etc.
