@@ -4572,7 +4572,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.36.0")
+    (version "0.40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4581,7 +4581,7 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bfs069pjv6lhp7xrzmrhz3876ay2ryqxzc6mlva1hhz34ibprlz"))))
+                "0cs5nayg080y8pb9b7qccm1ni8wkicdmqp1jsgc22110r6j24zyg"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
@@ -4601,7 +4601,7 @@ and RDP protocols.")
        ("vala" ,vala)))
     (arguments
      `(#:glib-or-gtk? #t
-       #:configure-flags '("-Denable-gtk-doc=true")
+       #:configure-flags '("-Dgtk_doc=true")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'increase-test-timeout
                     (lambda _
