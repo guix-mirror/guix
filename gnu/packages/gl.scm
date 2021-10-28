@@ -269,7 +269,6 @@ also known as DXTn or DXTC) for Mesa.")
         ("libelf" ,elfutils)  ;required for r600 when using llvm
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
-        ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
@@ -291,6 +290,7 @@ also known as DXTn or DXTC) for Mesa.")
              `()))
         ("pkg-config" ,pkg-config)
         ("python" ,python-wrapper)
+        ("python-libxml2", python-libxml2) ;for OpenGL ES 1.1 and 2.0 support
         ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
     (outputs '("out" "bin"))
