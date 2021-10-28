@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-pypi))
@@ -83,21 +84,22 @@ Import and convert the PyPI package for PACKAGE-NAME.\n"))
                             (_ #f))
                            (reverse opts))))
     (match args
-      ((package-name)
-       (if (assoc-ref opts 'recursive)
-           ;; Recursive import
-           (map (match-lambda
-                  ((and ('package ('name name) . rest) pkg)
-                   `(define-public ,(string->symbol name)
-                      ,pkg))
-                  (_ #f))
-                (pypi-recursive-import package-name))
-           ;; Single import
-           (let ((sexp (pypi->guix-package package-name)))
-             (unless sexp
-               (leave (G_ "failed to download meta-data for package '~a'~%")
-                      package-name))
-             sexp)))
+      ((spec)
+       (let ((name version (package-name->name+version spec)))
+         (if (assoc-ref opts 'recursive)
+             ;; Recursive import
+             (map (match-lambda
+                    ((and ('package ('name name) . rest) pkg)
+                     `(define-public ,(string->symbol name)
+                        ,pkg))
+                    (_ #f))
+                  (pypi-recursive-import name version))
+             ;; Single import
+             (let ((sexp (pypi->guix-package name #:version version)))
+               (unless sexp
+                 (leave (G_ "failed to download meta-data for package '~a'~%")
+                        name))
+               sexp))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

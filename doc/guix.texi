@@ -11723,11 +11723,17 @@ information, including package dependencies.  For maximum efficiency, it
 is recommended to install the @command{unzip} utility, so that the
 importer can unzip Python wheels and gather data from them.
 
-The command below imports metadata for the @code{itsdangerous} Python
-package:
+The command below imports metadata for the latest version of the
+@code{itsdangerous} Python package:
 
 @example
 guix import pypi itsdangerous
+@end example
+
+You can also ask for a specific version:
+
+@example
+guix import pypi itsdangerous@@1.1.0
 @end example
 
 @table @code

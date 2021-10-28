@@ -260,9 +260,15 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                      ('synopsis "summary")
                      ('description "summary")
                      ('license 'license:lgpl2.0))
-                   (string=? (bytevector->nix-base32-string
-                              test-source-hash)
-                             hash))
+                   (and (string=? (bytevector->nix-base32-string
+                                   test-source-hash)
+                                  hash)
+                        (equal? (pypi->guix-package "foo" #:version "1.0.0")
+                                (pypi->guix-package "foo"))
+                        (catch 'quit
+                          (lambda ()
+                            (pypi->guix-package "foo" #:version "42"))
+                          (const #t))))
                   (x
                    (pk 'fail x #f))))))
 
