@@ -73,7 +73,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "188")
+    (version "189")
     (source
      (origin
        (method git-fetch)
@@ -82,7 +82,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1byd28ihni5g0ikjjcsq68smj1rw33vv9z0cymqa4ds670c77yvn"))
+        (base32 "0dai9gwsr9xnficjy8myq6xr301y4iy82aidm936qsqjwrp8q1sm"))
        (patches
         (search-patches "diffoscope-fix-llvm-test.patch"))))
     (build-system python-build-system)
@@ -115,30 +115,7 @@
                       ;; phase when python is upgraded
                       (substitute* "tests/comparators/test_python.py"
                         (("def test_identification")
-                         "def skip_test_identification"))
-                      (substitute* "tests/comparators/test_python.py"
-                        (("def test_diff")
-                         "def skip_test_diff"))))
-                  (add-after 'unpack 'use-dumppdf-py
-                    ;; python-pdfminer-six ships "dumppdf" as "dumppdf.py"
-                    ;; https://salsa.debian.org/reproducible-builds/diffoscope/-/issues/283
-                    ;; Fixed upstream, remove this phase when updating to
-                    ;; diffoscope 189
-                    (lambda _
-                      (substitute* "diffoscope/comparators/pdf.py"
-                        (("dumppdf") "dumppdf.py"))
-                      (substitute* "diffoscope/external_tools.py"
-                        (("dumppdf") "dumppdf.py"))
-                      (substitute* "diffoscope/external_tools.py"
-                        (("'debian': 'python3-pdfminer'")
-                         "'debian': 'python3-pdfminer', 'guix': 'python-pdfminer-six'"))))
-                  (add-after 'unpack 'fpc-external-tool
-                    ;; Fixed upstream, remove this phase when updating to
-                    ;; diffoscope 189
-                    (lambda _
-                      (substitute* "diffoscope/external_tools.py"
-                        (("'debian': 'fp-utils'")
-                         "'debian': 'fp-utils', 'guix': 'fpc'"))))
+                         "def skip_test_identification"))))
                   (add-after 'build 'build-man-page
                     (lambda* (#:key (make-flags '()) #:allow-other-keys)
                       (apply invoke "make" "-C" "doc" make-flags)))
