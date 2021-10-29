@@ -1926,7 +1926,7 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bshapr")
-    (version "0.9")
+    (version "0.13")
     (source
      (origin
        (method git-fetch)
@@ -1935,7 +1935,7 @@ B.Choppr is the successor of B.Slizr.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04zd3a178i2nivg5rjailzqvc5mlnilmhj1ziygmbhshbrywplri"))))
+        (base32 "1qr3fxqcplgb6iqi2vxc27jghhv6qsidww2by15zb2vs34yh73pl"))))
     (synopsis "Beat/envelope shaper LV2 plugin")
     (description "B.Shapr is a beat/envelope shaper LV2 plugin.")
     (home-page "https://github.com/sjaehn/BShapr")
