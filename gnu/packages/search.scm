@@ -43,15 +43,19 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
@@ -303,17 +307,55 @@ for parsing HTML files.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--disable-qtgui"
-             "--disable-webkit"
+       (list "--disable-webkit"
              "--disable-python-module"
-             "--without-systemd")
+             "--without-systemd"
+             (string-append "QMAKEPATH=" (assoc-ref %build-inputs "qtbase")
+                            "/bin/qmake"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-default-data-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "python/recoll/recoll/rclconfig.py"
                (("/opt/local")
-                (assoc-ref outputs "out"))))))))
+                (assoc-ref outputs "out")))))
+         (add-after 'install 'wrap-filters
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mapping
+                     '(("rclps"
+                        "poppler")
+                       ("rclpdf.py"
+                        "poppler")
+                       ("rclpurple"
+                        "gawk")
+                       ("rcllyx"
+                        "libiconv")
+                       ("rcltex"
+                        "libiconv")
+                       ("rclkwd"
+                        "unzip" "gzip" "tar" "libxslt")
+                       ("rclman"
+                        "groff")
+                       ("rclgaim"
+                        "gawk" "libiconv")
+                       ("rclaptosidman"
+                        "sed")
+                       ("rclscribus"
+                        "grep" "gawk" "sed"))))
+               (for-each
+                (lambda (program packages)
+                  (wrap-program (string-append out "/share/recoll/filters/" program)
+                    `("PATH" ":" prefix
+                      ,(map (lambda (i)
+                              (string-append (assoc-ref inputs i) "/bin"))
+                            packages))))
+                (map car mapping)
+                (map cdr mapping))
+
+               (wrap-program (string-append out "/share/recoll/filters/rclimg")
+                 `("PERL5LIB" ":" prefix
+                   (,(getenv "PERL5LIB"))))))))))
     (inputs
      `(("aspell" ,aspell)
        ("chmlib" ,chmlib)
@@ -321,9 +363,22 @@ for parsing HTML files.")
        ("libxslt" ,libxslt)
        ("libxml2" ,libxml2)
        ("python" ,python)
-       ("python-pdftotext" ,python-pdftotext)
+       ("qtbase" ,qtbase-5)
+       ("unzip" ,unzip)
        ("xapian" ,xapian)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+
+       ;; For filters
+       ("gawk" ,gawk)
+       ("grep" ,grep)
+       ("groff" ,groff)
+       ("gzip" ,gzip)
+       ("libiconv" ,libiconv)
+       ("perl" ,perl)
+       ("perl-image-exiftool" ,perl-image-exiftool)
+       ("poppler" ,poppler)
+       ("sed" ,sed)
+       ("tar" ,tar)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
