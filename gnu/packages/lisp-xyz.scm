@@ -18628,3 +18628,37 @@ terminals.")
 
 (define-public ecl-clinenoise
   (sbcl-package->ecl-package sbcl-clinenoise))
+
+(define-public sbcl-cl-pass
+  (let ((commit "e58e97c0c0588dc742c061208afb9bc31e4dbd34")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-pass")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/cl-pass")
+               (commit commit)))
+         (file-name (git-file-name "cl-pass" version))
+         (sha256
+          (base32 "05qx4jrkxqbqi72cxgswbpnifbdvp9mh7apc7566v522899bh0hb"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("ironclad" ,sbcl-ironclad)
+         ("trivial-utf-8" ,sbcl-trivial-utf-8)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/eudoxia0/cl-pass")
+      (synopsis "Password hashing and verification library")
+      (description
+       "@code{cl-pass} is a password hashing and verification library.")
+      (license license:expat))))
+
+(define-public cl-pass
+  (sbcl-package->cl-source-package sbcl-cl-pass))
+
+(define-public ecl-cl-pass
+  (sbcl-package->ecl-package sbcl-cl-pass))
