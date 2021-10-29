@@ -5394,15 +5394,16 @@ by the Xorg server.")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.11")
+    (version "21.1.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://xorg/individual/xserver/"
-                            "xorg-server-" version ".tar.bz2"))
+
+        (uri (string-append "https://xorg.freedesktop.org/archive/individual"
+                            "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "0jacqgin8kcyy8fyv0lhgb4if8g9hp60rm3ih3s1mgps7xp7jk4i"))
+          "0hpyq51sf7f5yqq87zgcdiidfmb8r93am1djvxhcnwj4izfidhsh"))
         (patches
          (list
           ;; See:
@@ -5419,7 +5420,9 @@ by the Xorg server.")
             (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("libpciaccess" ,libpciaccess)
+     ;; The following libraries are required by xorg-server.pc.
+     `(("libpciaccess" ,libpciaccess)
+        ("libxcvt" ,libxcvt)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
         ("xorgproto" ,xorgproto)))
@@ -5522,30 +5525,7 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (version "1.20.10")
-     (source
-       (origin
-         (method url-fetch)
-         (uri (string-append "mirror://xorg/individual/xserver/"
-                             "xorg-server-" version ".tar.bz2"))
-         (sha256
-          (base32
-           "16bwrf0ag41l7jbrllbix8z6avc5yimga7ihvq4ch3a5hb020x4p"))
-         (patches
-          (list
-           ;; See:
-           ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
-           ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
-           (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
-                   "/plain/06_use-intel-only-on-pre-gen4.diff"))
-             (sha256
-              (base32
-               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-             (file-name "xorg-server-use-intel-only-on-pre-gen4.diff")))))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package/inherit xorg-server
