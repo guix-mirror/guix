@@ -73,8 +73,10 @@
     (version "1.2.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "file:///tmp/test-"
-                                  version ".tar.gz"))
+              (uri (list (string-append "file:///tmp/test-"
+                                        version ".tar.gz")
+                         (string-append "http://example.org/test-"
+                                        version ".tar.gz")))
               (sha256
                (base32
                 "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))

@@ -25,6 +25,7 @@
   #:use-module (guix build-system)
   #:use-module (gnu packages)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (guix import utils)
   #:use-module (ice-9 control)
   #:use-module (ice-9 match)
@@ -72,6 +73,11 @@ when evaluated."
       (file-type (quote ,(search-path-specification-file-type spec)))
       (file-pattern ,(search-path-specification-file-pattern spec))))
 
+  (define (factorized-uri-code uri version)
+    (match (factorize-uri uri version)
+      ((? string? uri) uri)
+      ((factorized ...) `(string-append ,@factorized))))
+
   (define (source->code source version)
     (let ((uri       (origin-uri source))
           (method    (origin-method source))
@@ -90,9 +96,12 @@ when evaluated."
                              (guix svn-download)))
                       (procedure-name method)))
          (uri ,(if version
-                   `(string-append ,@(match (factorize-uri uri version)
-                                       ((? string? uri) (list uri))
-                                       (factorized factorized)))
+                   (match uri
+                     ((? string? uri)
+                      (factorized-uri-code uri version))
+                     ((lst ...)
+                      `(list
+                        ,@(map (cut factorized-uri-code <> version) uri))))
                    uri))
          ,(if (equal? (content-hash-algorithm hash) 'sha256)
               `(sha256 (base32 ,(bytevector->nix-base32-string
