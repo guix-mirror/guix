@@ -6414,18 +6414,17 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.18")
+    (version "1.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "12bjisf5nlqinw8n4r223vld52p0p2mw3fca92vi175c46bycbzn"))))
+                "19ybvv0dkql913xpgjgxyyy50s72vajc7hm83zsvy2lsq8lhg76q"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests included
-       #:configure-flags '("CFLAGS=-fgnu89-inline"))) ; fix inlines
+     `(#:tests? #f))                    ; no tests included
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
        ("freetype" ,freetype)
