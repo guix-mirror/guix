@@ -112,8 +112,17 @@ when evaluated."
          ;; FIXME: in order to be able to throw away the directory prefix,
          ;; we just assume that the patch files can be found with
          ;; "search-patches".
-         ,@(if (null? patches) '()
-               `((patches (search-patches ,@(map basename patches))))))))
+         ,@(cond ((null? patches)
+                  '())
+                 ((every string? patches)
+                  `((patches (search-patches ,@(map basename patches)))))
+                 (else
+                  `((patches (list ,@(map (match-lambda
+                                            ((? string? file)
+                                             `(search-patch ,file))
+                                            ((? origin? origin)
+                                             (source->code origin #f)))
+                                          patches)))))))))
 
   (define (package-lists->code lsts)
     (list 'quasiquote

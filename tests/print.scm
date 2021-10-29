@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((gnu packages) #:select (search-patches))
   #:use-module (srfi srfi-64))
 
 (define-syntax-rule (define-with-source object source expr)
@@ -79,7 +80,9 @@
                                         version ".tar.gz")))
               (sha256
                (base32
-                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))
+              (patches (search-patches "guile-linux-syscalls.patch"
+                                       "guile-relocatable.patch"))))
     (build-system (@ (guix build-system gnu) gnu-build-system))
     (inputs
      `(("o" ,(origin
@@ -88,6 +91,30 @@
                (sha256
                 (base32
                  "0000000000000000000000000000000000000000000000000000"))))))
+    (home-page "http://gnu.org")
+    (synopsis "Dummy")
+    (description "This is a dummy package.")
+    (license license:gpl3+)))
+
+(define-with-source pkg-with-origin-patch pkg-with-origin-patch-source
+  (package
+    (name "test")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "file:///tmp/test-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))
+              (patches
+               (list (origin
+                       (method url-fetch)
+                       (uri "http://example.org/x.patch")
+                       (sha256
+                        (base32
+                         "0000000000000000000000000000000000000000000000000000")))))))
+    (build-system (@ (guix build-system gnu) gnu-build-system))
     (home-page "http://gnu.org")
     (synopsis "Dummy")
     (description "This is a dummy package.")
@@ -104,5 +131,9 @@
 (test-equal "package with origin input"
   `(define-public test ,pkg-with-origin-input-source)
   (package->code pkg-with-origin-input))
+
+(test-equal "package with origin patch"
+  `(define-public test ,pkg-with-origin-patch-source)
+  (package->code pkg-with-origin-patch))
 
 (test-end "print")
