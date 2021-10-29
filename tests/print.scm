@@ -67,6 +67,30 @@
     (description "This is a dummy package.")
     (license license:gpl3+)))
 
+(define-with-source pkg-with-origin-input pkg-with-origin-input-source
+  (package
+    (name "test")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "file:///tmp/test-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
+    (build-system (@ (guix build-system gnu) gnu-build-system))
+    (inputs
+     `(("o" ,(origin
+               (method url-fetch)
+               (uri "http://example.org/somefile.txt")
+               (sha256
+                (base32
+                 "0000000000000000000000000000000000000000000000000000"))))))
+    (home-page "http://gnu.org")
+    (synopsis "Dummy")
+    (description "This is a dummy package.")
+    (license license:gpl3+)))
+
 (test-equal "simple package"
   `(define-public test ,pkg-source)
   (package->code pkg))
@@ -74,5 +98,9 @@
 (test-equal "package with inputs"
   `(define-public test ,pkg-with-inputs-source)
   (package->code pkg-with-inputs))
+
+(test-equal "package with origin input"
+  `(define-public test ,pkg-with-origin-input-source)
+  (package->code pkg-with-origin-input))
 
 (test-end "print")

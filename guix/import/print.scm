@@ -89,9 +89,11 @@ when evaluated."
                              (guix hg-download)
                              (guix svn-download)))
                       (procedure-name method)))
-         (uri (string-append ,@(match (factorize-uri uri version)
-                                 ((? string? uri) (list uri))
-                                 (factorized factorized))))
+         (uri ,(if version
+                   `(string-append ,@(match (factorize-uri uri version)
+                                       ((? string? uri) (list uri))
+                                       (factorized factorized)))
+                   uri))
          ,(if (equal? (content-hash-algorithm hash) 'sha256)
               `(sha256 (base32 ,(bytevector->nix-base32-string
                                  (content-hash-value hash))))
@@ -109,7 +111,7 @@ when evaluated."
           (map (match-lambda
                  ((? symbol? s)
                   (list (symbol->string s) (list 'unquote s)))
-                 ((label pkg . out)
+                 ((label (? package? pkg) . out)
                   (let ((mod (package-module-name pkg)))
                     (cons* label
                            ;; FIXME: using '@ certainly isn't pretty, but it
@@ -117,7 +119,9 @@ when evaluated."
                            ;; modules.
                            (list 'unquote
                                  (list '@ mod (variable-name pkg mod)))
-                           out))))
+                           out)))
+                 ((label (? origin? origin))
+                  (list label (list 'unquote (source->code origin #f)))))
                lsts)))
 
   (let ((name                (package-name package))
