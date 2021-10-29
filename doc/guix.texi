@@ -11833,6 +11833,12 @@ The command command below imports metadata for the Cairo R package:
 guix import cran Cairo
 @end example
 
+You can also ask for a specific version:
+
+@example
+guix import cran rasterVis@@0.50.3
+@end example
+
 When @option{--recursive} is added, the importer will traverse the
 dependency graph of the given upstream package recursively and generate
 package expressions for all those packages that are not yet in Guix.
