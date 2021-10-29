@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -634,12 +635,31 @@ Javascript and a small built-in standard library with C library wrappers.")
                 "19szwxzvl2g65fw95ggvb8h0ma5bd9vvnnccn59hwnc4dida1x4n"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; No tests.
+     `(#:tests? #f                      ; No tests.
        #:make-flags (list "-f" "Makefile.sharedlibrary"
                           (string-append "INSTALL_PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         ;; At least another major GNU/Linux distribution carries their own
+         ;; .pc file with this package.
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-config-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-config-dir)
+               (with-output-to-file (string-append pkg-config-dir "/duktape.pc")
+                 (lambda _
+                   (format #t "prefix=~@*~a~@
+                               libdir=${prefix}/lib~@
+                               includedir=${prefix}/include~@
+
+                               Name: duktape~@
+                               Description: Embeddable Javascript engine~@
+                               Version: ~a~@
+                               Libs: -L${libdir} -lduktape~@
+                               Cflags: -I${includedir}~%"
+                           out ,version)))))))))
     (home-page "https://duktape.org/")
     (synopsis "Small embeddable Javascript engine")
     (description "Duktape is an embeddable Javascript engine, with a focus on
