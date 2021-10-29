@@ -1869,7 +1869,7 @@ device supports.")
 (define-public bsequencer
   (package
     (name "bsequencer")
-    (version "1.8.0")
+    (version "1.8.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1878,12 +1878,13 @@ device supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w7iwzz2r4a699fi24qk71vv2k3jpl9ylzlgmvyc3rlgad0m01k1"))))
+                "0w3m7x0619iq8rafcy0bal4gwh9m9h7iq93q7gkpxhv6dq58ix6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; there are none
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; there are none
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
