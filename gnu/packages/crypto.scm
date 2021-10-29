@@ -952,6 +952,8 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
                (setenv "CXXFLAGS" "-O3")
                (invoke "python" "./configure.py"
                        (string-append "--prefix=" out)
+                       "--disable-static"
+
                        ;; Otherwise, the `botan` executable cannot find
                        ;; libbotan.
                        (string-append "--ldflags=-Wl,-rpath=" lib)
