@@ -4087,17 +4087,17 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.33")
+    (version "2.34")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-              "mirror://xorg/individual/data/xkeyboard-config/xkeyboard-config-"
+              "ftp://ftp.freedesktop.org/pub/xorg//individual/data/xkeyboard-config/xkeyboard-config-"
               version
               ".tar.bz2"))
         (sha256
           (base32
-            "1g6kn7l0mixw50kgn7d97gwv1990c5rczr2x776q3xywss8dfzv5"))))
+            "1kmq2ykwmh10sd6155gml4jhdxmvsll6xdg7zw86czpfhrvd48dk"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
