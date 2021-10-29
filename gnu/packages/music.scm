@@ -1945,7 +1945,7 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bjumblr")
-    (version "1.4.2")
+    (version "1.6.8")
     (source
      (origin
        (method git-fetch)
@@ -1954,8 +1954,7 @@ B.Choppr is the successor of B.Slizr.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v"))))
+        (base32 "00fgax8aqqggs54pjpagw5pc30kgxaghh8mrzpqwhs06cnchcam9"))))
     (inputs
      `(("cairo" ,cairo)
        ("libsndfile" ,libsndfile)
