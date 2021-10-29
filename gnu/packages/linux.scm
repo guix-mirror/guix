@@ -1219,7 +1219,7 @@ and should be used with caution, especially on untested models.")
 (define-public corefreq
   (package
     (name "corefreq")
-    (version "1.86.7")
+    (version "1.87.4")
     (source
      (origin
        (method git-fetch)
@@ -1228,7 +1228,7 @@ and should be used with caution, especially on untested models.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k8pyxcahc78kcc8q1h76dr91i1r33jciqhgkajkz3xa28qx8mhn"))))
+        (base32 "01g1smhfzb02gmfjm8c7rchc79dan9jc9pv9c0f8f7fly2hy5zvs"))))
     (build-system linux-module-build-system)
     (outputs (list "out" "linux-module"))
     (arguments
