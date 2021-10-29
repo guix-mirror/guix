@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,18 @@
   #:use-module ((guix licenses) #:select (lgpl2.0+))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
+  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
@@ -63,8 +68,14 @@
                  (substitute* "test/Makefile.in"
                    (("SUBDIRS = mocklibc . polkit polkitbackend")
                     "SUBDIRS = mocklibc . polkit"))
-                 ;; Guix System's polkit service stores actions under
-                 ;; /etc/polkit-1/actions.
+                 ;; Disable a test that requires Python, D-Bus and a few
+                 ;; libraries and fails with "ERROR: timed out waiting for bus
+                 ;; process to terminate".
+                 (substitute* "test/polkitbackend/Makefile.am"
+                   (("TEST_PROGS \\+= polkitbackendjsauthoritytest-wrapper.py")
+                    ""))
+                 ;; Guix System's polkit
+                 ;; service stores actions under /etc/polkit-1/actions.
                  (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
                    (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
                     "PACKAGE_SYSCONF_DIR \"/polkit-1/actions\""))
@@ -135,6 +146,36 @@ privileged processes.  It is a framework for centralizing the decision
 making process with respect to granting access to privileged operations
 for unprivileged applications.")
     (license lgpl2.0+)))
+
+;;; Variant of polkit built with Duktape, a lighter JavaScript engine compared
+;;; to mozjs.
+(define-public polkit-duktape
+  (package/inherit polkit
+    (name "polkit-duktape")
+    (source
+     (origin
+       (inherit (package-source polkit))
+       (patches
+        (append
+            (search-patches "polkit-use-duktape.patch")
+            (origin-patches (package-source polkit))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments polkit)
+       ((#:configure-flags flags)
+        `(cons "--with-duktape" ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'force-gnu-build-system-bootstrap
+             (lambda _
+               (delete-file "configure")))))))
+    (native-inputs
+     (append `(("autoconf" ,autoconf)
+               ("automake" ,automake)
+               ("libtool" ,libtool)
+               ("pkg-config" ,pkg-config))
+         (package-native-inputs polkit)))
+    (inputs (alist-replace "mozjs" `(,duktape)
+                           (package-inputs polkit)))))
 
 (define-public polkit-qt
   (package
