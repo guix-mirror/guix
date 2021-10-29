@@ -18595,3 +18595,36 @@ higher-level lispier interface.")
 
 (define-public ecl-cl-charms
   (sbcl-package->ecl-package sbcl-cl-charms))
+
+(define-public sbcl-clinenoise
+  (let ((commit "46e21f99d06a55d93eaa382cf652d55d457032ef")
+        (revision "1"))
+    (package
+      (name "sbcl-clinenoise")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jasom/clinenoise")
+               (commit commit)))
+         (file-name (git-file-name "clinenoise" version))
+         (sha256
+          (base32 "0ydlirfk4dbpqqjwwph99v5swcrhd8v9g8q24fvs35wn2vm08lh1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (home-page "https://github.com/jasom/clinenoise")
+      (synopsis "Port of linenoise to Common Lisp")
+      (description
+       "This package provides a trivial line-input library for VT-like
+terminals.")
+      (license license:bsd-2))))
+
+(define-public cl-clinenoise
+  (sbcl-package->cl-source-package sbcl-clinenoise))
+
+(define-public ecl-clinenoise
+  (sbcl-package->ecl-package sbcl-clinenoise))
