@@ -1905,7 +1905,7 @@ with a selectable pattern matrix size.")
   (package
     (inherit bsequencer)
     (name "bchoppr")
-    (version "1.8.0")
+    (version "1.10.10")
     (source
      (origin
        (method git-fetch)
@@ -1914,8 +1914,7 @@ with a selectable pattern matrix size.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nd6byy75f0rbz9dm9drhxmpsfhxhg0y7q3v2m3098llynhy9k2j"))))
+        (base32 "0gxz0cpxdfj7ajcd9yg05d26i7p24mx5865vy3ph76ni8kycdlrc"))))
     (synopsis "Audio stream-chopping LV2 plugin")
     (description "B.Choppr cuts the audio input stream into a repeated
 sequence of up to 16 chops.  Each chop can be leveled up or down (gating).
