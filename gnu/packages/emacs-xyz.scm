@@ -28664,26 +28664,29 @@ rather excellent completion provided by both Bash and Zsh.")
     (license license:gpl3+)))
 
 (define-public emacs-shell-command+
-  (package
-    (name "emacs-shell-command+")
-    (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.sr.ht/~pkal/shell-command-plus")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "1lrwp73klx5cb74i7iiq7r83dy55qxg1ivnrhfyvk8y2l9hfz30v"))))
-    (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/shell-command+.html")
-    (synopsis "Extended Emacs @code{shell-command}")
-    (description
-     "Shell-command+ is a @code{shell-command} substitute that extends the
+  ;; XXX: Upstream did not tag last release.  The commit below corresponds to
+  ;; the exact version bump.
+  (let ((commit "bf744c63bbd1e3bbb93407bd32d6da670b23e67e"))
+    (package
+      (name "emacs-shell-command+")
+      (version "2.3.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~pkal/shell-command-plus")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "0prlvcryq5ngrzn5f45rkw09wbr99v7nnwps2bjrjc3wvr2rp6h0"))))
+      (build-system emacs-build-system)
+      (home-page "http://elpa.gnu.org/packages/shell-command+.html")
+      (synopsis "Extended Emacs @code{shell-command}")
+      (description
+       "Shell-command+ is a @code{shell-command} substitute that extends the
 regular Emacs command with several features.  You can for example count all
 the lines in a buffer with @code{> wc -l}, or delete all lower case letters in
 the selected region with @code{| tr -d a-z}.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-shell-pop
   (let ((commit "4b4394037940a890a313d715d203d9ead2d156a6")
