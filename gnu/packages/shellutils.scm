@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -463,3 +464,51 @@ the UNIX philosophy, these commands are designed to be composed via pipes. A
 large collection of functions such as basename, replace, contains or is_dir
 are provided as arguments to these commands.")
     (license license:expat)))
+
+(define-public rig
+  (package
+    (name "rig")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/rig/rig/"
+                                  version "/rig-"
+                                  version ".tar.gz"))
+              (sha256
+                (base32
+                  "1f3snysjqqlpk2kgvm5p2icrj4lsdymccmn3igkc2f60smqckgq0"))))
+    (build-system gnu-build-system)
+    (arguments `(#:make-flags
+                 (list (string-append "CXX=" ,(cxx-for-target))
+                       (string-append "PREFIX=" %output))
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (add-after 'unpack 'fix-build
+                     (lambda _
+                       (substitute* "rig.cc"
+                         (("^#include <string>")
+                          "#include <cstring>"))
+                       (substitute* "Makefile"
+                         (("g\\+\\+")
+                          "${CXX} -O2")
+                         (("install -g 0 -m 755 -o 0 -s rig \\$\\(BINDIR\\)")
+                          "install -m 755 -d $(DESTDIR)$(BINDIR)\n\t\
+install -m 755 rig $(DESTDIR)$(BINDIR)/rig")
+                         (("install -g 0 -m 644 -o 0 rig.6 \\$\\(MANDIR\\)/man6/rig.6")
+                          "install -m 755 -d $(DESTDIR)$(MANDIR)/man6/\n\t\
+install -m 644 rig.6 $(DESTDIR)$(MANDIR)/man6/rig.6")
+                         (("install -g 0 -m 755 -o 0 -d \\$\\(DATADIR\\)")
+                          "install -m 755 -d $(DESTDIR)$(DATADIR)")
+                         (("install -g 0 -m 644 -o 0 data/\\*.idx \\$\\(DATADIR\\)")
+                          "install -m 644 data/*.idx $(DESTDIR)$(DATADIR)")))))
+                 #:tests? #f))
+    (home-page "http://rig.sourceforge.net")
+    (synopsis "Random identity generator")
+    (description
+      "RIG (Random Identity Generator) generates random, yet real-looking,
+personal data.  It is useful if you need to feed a name to a Web site, BBS, or
+real person, and are too lazy to think of one yourself.  Also, if the Web
+site/BBS/person you are giving the information to tries to cross-check the
+city, state, zip, or area code, it will check out.")
+    (license license:gpl2+)))
