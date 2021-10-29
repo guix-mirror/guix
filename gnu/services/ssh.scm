@@ -39,6 +39,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (lsh-configuration
             lsh-configuration?
             lsh-service
@@ -535,7 +536,15 @@ of user-name/file-like tuples."
   (openssh-configuration
    (inherit config)
    (authorized-keys
-    (append (openssh-authorized-keys config) keys))))
+    (match (openssh-authorized-keys config)
+      (((users _ ...) ...)
+       ;; Build a user/key-list mapping.
+       (let ((user-keys (alist->vhash (openssh-authorized-keys config))))
+         ;; Coalesce the key lists associated with each user.
+         (map (lambda (user)
+                `(,user
+                  ,@(concatenate (vhash-fold* cons '() user user-keys))))
+              users)))))))
 
 (define openssh-service-type
   (service-type (name 'openssh)
