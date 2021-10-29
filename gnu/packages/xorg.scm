@@ -24,7 +24,7 @@
 ;;; Copyright © 2020 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
@@ -54,6 +54,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
@@ -5368,6 +5369,27 @@ over Xlib, including:
 - easy extension implementation: interfaces auto-generated from XML-XCB.")
     (license license:x11)))
 
+(define-public libxcvt
+  (package
+    (name "libxcvt")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.x.org/releases/individual"
+                                  "/lib/libxcvt-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0acc7vrj5kfb19zvyl7f29rnsvx383dvwc19k70r8prm1lccxsr7"))))
+    (build-system meson-build-system)
+    (home-page "https://gitlab.freedesktop.org/xorg/lib/libxcvt")
+    (synopsis "VESA Coordinated Video Timings (CVT) library")
+    (description "@code{libxcvt} is a library providing a standalone version
+of the X server implementation of the VESA Coordinated Video Timings (CVT)
+standard timing modelines generator.  @code{libxcvt} also provides a
+standalone version of the command line tool @command{cvt} copied from the Xorg
+implementation and is meant to be a direct replacement to the version provided
+by the Xorg server.")
+    (license license:x11)))
 
 (define-public xorg-server
   (package
