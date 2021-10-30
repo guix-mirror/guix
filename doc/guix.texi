@@ -35853,12 +35853,27 @@ still in an experimental stage, though.
 @section Declaring the Home Environment
 The home environment is configured by providing a
 @code{home-environment} declaration in a file that can be passed to the
-@command{guix home} command (@pxref{Invoking guix home}).  A simple
-setup can include Bash and a custom text configuration, like in the
-example below.  Don't be afraid to declare home environment parts, which
-overlaps with your current dotfiles, before installing any configuration
-files, Guix Home will back up existing config files to a separate place
-in the home folder.
+@command{guix home} command (@pxref{Invoking guix home}).  The easiest
+way to get started is by generating an initial configuration with
+@command{guix home import}:
+
+@example
+guix home import ~/src/guix-config
+@end example
+
+The @command{guix home import} command reads some of the ``dot files''
+such as @file{~/.bashrc} found in your home directory and copies them to
+the given directory, @file{~/src/guix-config} in this case; it also
+reads the contents of your profile, @file{~/.guix-profile}, and, based
+on that, it outputs a Home configuration that resembles your current
+configuration.  You can dump that configuration to a file and you're
+ready to go!
+
+A simple setup can include Bash and a custom text configuration, like in
+the example below.  Don't be afraid to declare home environment parts,
+which overlaps with your current dot files: before installing any
+configuration files, Guix Home will back up existing config files to a
+separate place in the home directory.
 
 @quotation Note
 It is highly recommended that you manage your shell or shells with Guix
