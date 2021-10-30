@@ -2098,7 +2098,7 @@ contain a 'define-command' form."
     (lambda (command)
       (eq? category (command-category command))))
 
-  (format #t (G_ "Usage: guix OPTION | COMMAND ARGS...
+  (display (G_ "Usage: guix OPTION | COMMAND ARGS...
 Run COMMAND with ARGS, if given.\n"))
 
   (display (G_ "
@@ -2108,7 +2108,7 @@ Run COMMAND with ARGS, if given.\n"))
   (newline)
 
   (newline)
-  (format #t (G_ "COMMAND must be one of the sub-commands listed below:\n"))
+  (display (G_ "COMMAND must be one of the sub-commands listed below:\n"))
 
   (let ((commands   (commands))
         (categories (module-ref (resolve-interface '(guix scripts))
