@@ -39,7 +39,9 @@ guix shell --bootstrap --pure guile-bootstrap -- guile --version
 cat > "$tmpdir/guix.scm" <<EOF
 This is a broken guix.scm file.
 EOF
-(cd "$tmpdir"; SHELL="$(type -P true)" guix shell --bootstrap)
+! (cd "$tmpdir"; SHELL="$(type -P true)" guix shell --bootstrap 2> "stderr")
+grep "not authorized" "$tmpdir/stderr"
+rm "$tmpdir/stderr"
 
 # Authorize the directory.
 echo "$(realpath "$tmpdir")" > "$configdir/guix/shell-authorized-directories"

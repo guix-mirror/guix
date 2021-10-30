@@ -283,8 +283,9 @@ Return the modified OPTS."
                  ("guix.scm" (alist-cons 'load `(package ,file) opts))
                  ("manifest.scm" (alist-cons 'manifest file opts))))
              (begin
-               (warning (G_ "not loading '~a' because not authorized to do so~%")
-                        file)
+               (report-error
+                (G_ "not loading '~a' because not authorized to do so~%")
+                file)
                (display-hint (format #f (G_ "To allow automatic loading of
 @file{~a} when running @command{guix shell}, you must explicitly authorize its
 directory, like so:
@@ -295,7 +296,7 @@ echo ~a >> ~a
                                      file
                                      (dirname file)
                                      (authorized-directory-file)))
-               opts))))))
+               (exit 1)))))))
 
 
 ;;;
