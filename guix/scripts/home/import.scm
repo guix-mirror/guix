@@ -98,9 +98,8 @@ service declaration."
                                          destination-directory "/" file))
                              proc)))))
                  %files+configurations-alist)
-     (lambda (x y)
-       (equal? (procedure-name x) (procedure-name y)))))
-  
+     eq?))
+
   (map (lambda (proc) (proc destination-directory)) configurations))
 
 ;; Based on `manifest->code' from (guix profiles)
