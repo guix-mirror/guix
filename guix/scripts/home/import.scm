@@ -43,8 +43,7 @@
   (let ((rc (destination-append ".bashrc"))
         (profile (destination-append ".bash_profile"))
         (logout (destination-append ".bash_logout")))
-    `((gnu home-services bash)
-      (service home-bash-service-type
+    `((service home-bash-service-type
                (home-bash-configuration
                 ,@(if (file-exists? rc)
                       `((bashrc
@@ -60,12 +59,15 @@
                       `((bash-logout
                          (list (slurp-file-gexp
                                 (local-file ,logout)))))
-                      '()))))))
+                      '())))
+      (gnu home-services bash))))
 
-(define %files-configurations-alist
-  `((".bashrc" . ,generate-bash-module+configuration)
-    (".bash_profile" . ,generate-bash-module+configuration)
-    (".bash_logout" . ,generate-bash-module+configuration)))
+
+
+(define %files+configurations-alist
+  `((".bashrc" . ,generate-bash-configuration+modules)
+    (".bash_profile" . ,generate-bash-configuration+modules)
+    (".bash_logout" . ,generate-bash-configuration+modules)))
 
 (define (configurations+modules destination-directory)
   "Return a list of procedures which when called, generate code for a home
@@ -144,12 +146,13 @@ available."
             (let ((configurations+modules
                    (configurations+modules destination-directory)))
               `(begin
-               (use-modules (gnu home)
-                            (gnu packages)
-                            ,@(map first modules+configurations))
-               ,(home-environment-template
-                 #:specs specs
-                 #:services (map second modules+configurations))))
+                 (use-modules (gnu home)
+                              (gnu packages)
+                              (gnu services)
+                              ,@(concatenate (map cdr configurations+modules)))
+                 ,(home-environment-template
+                   #:specs specs
+                   #:services (map first configurations+modules))))
             `(begin
                (use-modules (gnu packages))
 
@@ -190,13 +193,14 @@ available."
                  (use-modules (guix transformations)
                               (gnu home)
                               (gnu packages)
-                              ,@(map first modules+configurations))
+                              (gnu services)
+                              ,@(concatenate (map cdr configurations+modules)))
 
                  ,@transformations
 
                  ,(home-environment-template
                    #:packages packages
-                   #:services (map second modules+configurations))))
+                   #:services (map first configurations+modules))))
             `(begin
                (use-modules (guix transformations)
                             (gnu packages))
