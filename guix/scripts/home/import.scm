@@ -22,6 +22,7 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix packages)
+  #:autoload   (guix scripts package) (manifest-entry-version-prefix)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
@@ -241,28 +242,8 @@ containing PACKAGES, or SPECS (package specifications), and SERVICES."
           manifest destination-directory
           #:optional (port (current-output-port)))
   "Write to PORT a <home-environment> corresponding to MANIFEST."
-  (define (version-spec entry)
-    (let ((name (manifest-entry-name entry)))
-      (match (map package-version (find-packages-by-name name))
-        ((_)
-         ;; A single version of NAME is available, so do not specify the
-         ;; version number, even if the available version doesn't match ENTRY.
-         "")
-        (versions
-         ;; If ENTRY uses the latest version, don't specify any version.
-         ;; Otherwise return the shortest unique version prefix.  Note that
-         ;; this is based on the currently available packages, which could
-         ;; differ from the packages available in the revision that was used
-         ;; to build MANIFEST.
-         (let ((current (manifest-entry-version entry)))
-           (if (every (cut version>? current <>)
-                      (delete current versions))
-               ""
-               (version-unique-prefix (manifest-entry-version entry)
-                                      versions)))))))
-
   (match (manifest->code manifest destination-directory
-                         #:entry-package-version version-spec
+                         #:entry-package-version manifest-entry-version-prefix
                          #:home-environment? #t)
     (('begin exp ...)
      (format port (G_ "\

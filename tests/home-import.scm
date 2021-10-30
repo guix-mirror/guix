@@ -24,6 +24,8 @@
   #:use-module (ice-9 match)
   #:use-module ((guix profiles) #:hide (manifest->code))
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
+  #:use-module ((guix scripts package)
+                #:select (manifest-entry-version-prefix))
   #:use-module (gnu packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -81,33 +83,13 @@ corresponding file."
               ((file . content) (create-file file content)))
             files-alist))
 
-;; Copied from (guix profiles)
-(define (version-spec entry)
-  (let ((name (manifest-entry-name entry)))
-    (match (map package-version (find-packages-by-name name))
-      ((_)
-       ;; A single version of NAME is available, so do not specify the
-       ;; version number, even if the available version doesn't match ENTRY.
-       "")
-      (versions
-       ;; If ENTRY uses the latest version, don't specify any version.
-       ;; Otherwise return the shortest unique version prefix.  Note that
-       ;; this is based on the currently available packages, which could
-       ;; differ from the packages available in the revision that was used
-       ;; to build MANIFEST.
-       (let ((current (manifest-entry-version entry)))
-         (if (every (cut version>? current <>)
-                    (delete current versions))
-             ""
-             (version-unique-prefix (manifest-entry-version entry)
-                                    versions)))))))
-
 (define (eval-test-with-home-environment files-alist manifest matcher)
   (create-temporary-home files-alist)
   (setenv "HOME" %temporary-home-directory)
   (mkdir-p %temporary-home-directory)
   (let* ((home-environment (manifest->code manifest %destination-directory
-                                           #:entry-package-version version-spec
+                                           #:entry-package-version
+                                           manifest-entry-version-prefix
                                            #:home-environment? #t))
          (result (matcher home-environment)))
     (delete-file-recursively %temporary-home-directory)
