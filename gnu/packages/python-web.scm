@@ -1650,9 +1650,10 @@ RFC6455, regardless of your programming paradigm.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
     ;; Propagate because Hypercorn also exposes functionality over a module.
     (propagated-inputs
      `(("python-h11" ,python-h11)
