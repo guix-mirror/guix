@@ -145,7 +145,8 @@ available."
                  (use-modules (gnu home)
                               (gnu packages)
                               (gnu services)
-                              ,@(concatenate (map cdr configurations+modules)))
+                              ,@((compose delete-duplicates concatenate)
+                                 (map cdr configurations+modules)))
                  ,(home-environment-template
                    #:specs specs
                    #:services (map first configurations+modules))))
@@ -190,7 +191,8 @@ available."
                               (gnu home)
                               (gnu packages)
                               (gnu services)
-                              ,@(concatenate (map cdr configurations+modules)))
+                              ,@((compose delete-duplicates concatenate)
+                                 (map cdr configurations+modules)))
 
                  ,@transformations
 
