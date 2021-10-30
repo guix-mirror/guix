@@ -5363,7 +5363,7 @@ output devices.")
        (patches (search-patches "geoclue-config.patch"))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags (list "-Dbus-srv-user=geoclue")))
+     '(#:configure-flags (list "-Ddbus-srv-user=geoclue")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
