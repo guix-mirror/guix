@@ -12304,8 +12304,12 @@ programming and reproducible research.")
        ;; XXX: ob-sclang.el is packaged separately to avoid the dependency on
        ;; SuperCollider and qtwebengine.  This will be unnecessary in 0.4+
        ;; release as the file is going to be removed from the repository.
+
+       ;; XXX: org-contacts.el is now maintained in a separate repository and
+       ;; will soon be removed from org-contrib
        (modules '((guix build utils)))
-       (snippet '(begin (delete-file "lisp/ob-sclang.el")))))
+       (snippet '(begin (delete-file "lisp/ob-sclang.el")
+                        (delete-file "lisp/org-contacts.el")))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
