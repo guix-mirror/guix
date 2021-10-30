@@ -64,6 +64,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -1414,7 +1415,8 @@ message bus.")
         (base32 "16wwd633jak9ajyr1f1h047rmd09fhf3kzjz6g5xjsz0lwcj8azz"))))
     (build-system meson-build-system)
     (arguments
-     '(#:tests? #f ; XXX: tests require DocBook 4.1.2
+     `(#:meson ,meson-0.59 ;see https://github.com/mesonbuild/meson/issues/6470
+       #:tests? #f ; XXX: tests require DocBook 4.1.2
        #:configure-flags
        '("--localstatedir=/var"
          "-Dsystemdsystemunitdir=/tmp/empty"
