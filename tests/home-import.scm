@@ -87,10 +87,8 @@ corresponding file."
   (create-temporary-home files-alist)
   (setenv "HOME" %temporary-home-directory)
   (mkdir-p %temporary-home-directory)
-  (let* ((home-environment (manifest->code manifest %destination-directory
-                                           #:entry-package-version
-                                           manifest-entry-version-prefix
-                                           #:home-environment? #t))
+  (let* ((home-environment (manifest+configuration-files->code
+                            manifest %destination-directory))
          (result (matcher home-environment)))
     (delete-file-recursively %temporary-home-directory)
     result))
@@ -107,6 +105,22 @@ corresponding file."
             ('list "guile@2.0.9" "gcc" "glibc@2.19")))
      ('services
       ('list)))))
+
+(define-home-environment-matcher match-home-environment-transformations
+  ('begin
+    ('use-modules
+     ('gnu 'home)
+     ('gnu 'packages)
+     ('gnu 'services)
+     ('guix 'transformations))
+
+    ('define transform ('options->transformation _))
+    ('home-environment
+     ('packages
+      ('list (transform ('specification->package "guile@2.0.9"))
+             ('specification->package "gcc")
+             ('specification->package "glibc@2.19")))
+     ('services ('list)))))
 
 (define-home-environment-matcher match-home-environment-no-services-nor-packages
   ('begin
@@ -141,11 +155,22 @@ corresponding file."
                 ('list ('local-file "/tmp/guix-config/.bashrc"
                                     "bashrc"))))))))))
 
+
 (test-assert "manifest->code: No services"
   (eval-test-with-home-environment
    '()
    (make-manifest (list guile-2.0.9 gcc glibc))
    match-home-environment-no-services))
+
+(test-assert "manifest->code: No services, package transformations"
+  (eval-test-with-home-environment
+   '()
+   (make-manifest (list (manifest-entry
+                          (inherit guile-2.0.9)
+                          (properties `((transformations
+                                         . ((foo . "bar"))))))
+                        gcc glibc))
+   match-home-environment-transformations))
 
 (test-assert "manifest->code: No packages nor services"
   (eval-test-with-home-environment

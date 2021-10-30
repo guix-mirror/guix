@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
   #:export (import-manifest
 
             ;; For tests.
-            manifest->code))
+            manifest+configuration-files->code))
 
 ;;; Commentary:
 ;;;
@@ -105,146 +106,49 @@ in CONFIGURATION-DIRECTORY."
 
   (map (lambda (proc) (proc configuration-directory)) configurations))
 
-;; Based on `manifest->code' from (guix profiles)
-;; MAYBE: Upstream it?
-(define* (manifest->code manifest destination-directory
-                         #:key
-                         (entry-package-version (const ""))
-                         (home-environment? #f))
-  "Return an sexp representing code to build an approximate version of
-MANIFEST; the code is wrapped in a top-level 'begin' form.  If
-HOME-ENVIRONMENT? is #t, return an <home-environment> definition.
-Call ENTRY-PACKAGE-VERSION to determine the version number to use in
-the spec for a given entry; it can be set to 'manifest-entry-version'
-for fully-specified version numbers, or to some other procedure to
-disambiguate versions for packages for which several versions are
-available."
-  (define (entry-transformations entry)
-    ;; Return the transformations that apply to ENTRY.
-    (assoc-ref (manifest-entry-properties entry) 'transformations))
+(define (manifest+configuration-files->code manifest
+                                            configuration-directory)
+  "Read MANIFEST and the user's configuration files listed in
+%FILES+CONFIGURATIONS-ALIST, and return a 'home-environment' sexp.  Copy the
+user's files to CONFIGURATION-DIRECTORY; the generated sexp refers to them."
+  (match (manifest->code manifest
+                         #:entry-package-version
+                         manifest-entry-version-prefix)
+    (('begin ('use-modules profile-modules ...)
+             definitions ... ('packages->manifest packages))
+     (match (configurations+modules configuration-directory)
+       (((services . modules) ...)
+        `(begin
+           (use-modules (gnu home)
+                        (gnu packages)
+                        (gnu services)
+                        ,@(delete-duplicates
+                           (append profile-modules (concatenate modules))))
 
-  (define transformation-procedures
-    ;; List of transformation options/procedure name pairs.
-    (let loop ((entries (manifest-entries manifest))
-               (counter 1)
-               (result  '()))
-      (match entries
-        (() result)
-        ((entry . tail)
-         (match (entry-transformations entry)
-           (#f
-            (loop tail counter result))
-           (options
-            (if (assoc-ref result options)
-                (loop tail counter result)
-                (loop tail (+ 1 counter)
-                      (alist-cons options
-                                  (string->symbol
-                                   (format #f "transform~a" counter))
-                                  result)))))))))
+           ,@definitions
 
-  (define (qualified-name entry)
-    ;; Return the name of ENTRY possibly with "@" followed by a version.
-    (match (entry-package-version entry)
-      (""      (manifest-entry-name entry))
-      (version (string-append (manifest-entry-name entry)
-                              "@" version))))
+           (home-environment
+            (packages ,packages)
+            (services (list ,@services)))))))
+    (('begin ('specifications->manifest packages))
+     (match (configurations+modules configuration-directory)
+       (((services . modules) ...)
+        `(begin
+           (use-modules (gnu home)
+                        (gnu packages)
+                        (gnu services)
+                        ,@(delete-duplicates (concatenate modules)))
 
-  (if (null? transformation-procedures)
-      (let ((specs (map (lambda (entry)
-                          (match (manifest-entry-output entry)
-                            ("out"  (qualified-name entry))
-                            (output (string-append (qualified-name entry)
-                                                   ":" output))))
-                        (manifest-entries manifest))))
-        (if home-environment?
-            (let ((configurations+modules
-                   (configurations+modules destination-directory)))
-              `(begin
-                 (use-modules (gnu home)
-                              (gnu packages)
-                              (gnu services)
-                              ,@((compose delete-duplicates concatenate)
-                                 (map cdr configurations+modules)))
-                 ,(home-environment-template
-                   #:specs specs
-                   #:services (map first configurations+modules))))
-            `(begin
-               (use-modules (gnu packages))
-
-               (specifications->manifest
-                (list ,@specs)))))
-      (let* ((transform (lambda (options exp)
-                         (if (not options)
-                             exp
-                             (let ((proc (assoc-ref transformation-procedures
-                                                    options)))
-                               `(,proc ,exp)))))
-            (packages (map (lambda (entry)
-                                   (define options
-                                     (entry-transformations entry))
-
-                                   (define name
-                                     (qualified-name entry))
-
-                                   (match (manifest-entry-output entry)
-                                     ("out"
-                                      (transform options
-                                                 `(specification->package ,name)))
-                                     (output
-                                      `(list ,(transform
-                                               options
-                                               `(specification->package ,name))
-                                             ,output))))
-                           (manifest-entries manifest)))
-            (transformations (map (match-lambda
-                         ((options . name)
-                          `(define ,name
-                             (options->transformation ',options))))
-                       transformation-procedures)))
-        (if home-environment?
-            (let ((configurations+modules
-                   (configurations+modules destination-directory)))
-              `(begin
-                 (use-modules (guix transformations)
-                              (gnu home)
-                              (gnu packages)
-                              (gnu services)
-                              ,@((compose delete-duplicates concatenate)
-                                 (map cdr configurations+modules)))
-
-                 ,@transformations
-
-                 ,(home-environment-template
-                   #:packages packages
-                   #:services (map first configurations+modules))))
-            `(begin
-               (use-modules (guix transformations)
-                            (gnu packages))
-
-                ,@transformations
-
-                (packages->manifest
-                 (list ,@packages)))))))
-
-(define* (home-environment-template #:key (packages #f) (specs #f) services)
-  "Return an S-exp containing a <home-environment> declaration
-containing PACKAGES, or SPECS (package specifications), and SERVICES."
-  `(home-environment
-     (packages
-      ,@(if packages
-            `((list ,@packages))
-            `((map specification->package
-                   (list ,@specs)))))
-     (services (list ,@services))))
+           (home-environment
+            (packages (map specification->package ,packages))
+            (services (list ,@services)))))))))
 
 (define* (import-manifest
           manifest destination-directory
           #:optional (port (current-output-port)))
   "Write to PORT a <home-environment> corresponding to MANIFEST."
-  (match (manifest->code manifest destination-directory
-                         #:entry-package-version manifest-entry-version-prefix
-                         #:home-environment? #t)
+  (match (manifest+configuration-files->code manifest
+                                             destination-directory)
     (('begin exp ...)
      (format port (G_ "\
 ;; This \"home-environment\" file can be passed to 'guix home reconfigure'
