@@ -2098,8 +2098,15 @@ contain a 'define-command' form."
     (lambda (command)
       (eq? category (command-category command))))
 
-  (format #t (G_ "Usage: guix COMMAND ARGS...
-Run COMMAND with ARGS.\n"))
+  (format #t (G_ "Usage: guix OPTION | COMMAND ARGS...
+Run COMMAND with ARGS, if given.\n"))
+
+  (display (G_ "
+  -h, --help             display this helpful text again and exit"))
+  (display (G_ "
+  -V, --version          display version and copyright information and exit"))
+  (newline)
+
   (newline)
   (format #t (G_ "COMMAND must be one of the sub-commands listed below:\n"))
 
