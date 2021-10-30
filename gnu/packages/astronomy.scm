@@ -57,6 +57,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -612,6 +613,100 @@ accurately in real time at any rate desired.")
     (arguments
      `(#:configure-flags '("-DENABLE_GTK=ON" "-DENABLE_QT=OFF")
        #:tests? #f))))
+
+(define-public python-astropy
+  (package
+    (name "python-astropy")
+    (version "4.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astropy" version))
+       (sha256
+        (base32 "0lfd6n7v7kas4wvacddnwgccax3ks908735dzilg7dsf7ci52f9d"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove Python bundles.
+           (with-directory-excursion "astropy/extern"
+             (for-each delete-file-recursively '("ply" "configobj")))
+           ;; Remove cextern bundles and leave the wcslib bundle.  Astropy
+           ;; upgrades to different versions of wcslib every few releases
+           ;; and tests break every upgrade.
+           ;; TODO: unbundle wcslib.
+           (with-directory-excursion "cextern"
+             (for-each delete-file-recursively '("cfitsio" "expat")))
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Use our own libraries in place of bundles, with the
+             ;; exception of wcslib.
+             (setenv "ASTROPY_USE_SYSTEM_CFITSIO" "1")
+             (setenv "ASTROPY_USE_SYSTEM_EXPAT" "1")
+             ;; Some tests require a writable home.
+             (setenv "HOME" "/tmp")
+             ;; Relax xfail tests.
+             (substitute* "setup.cfg"
+               (("xfail_strict = true") "xfail_strict = false"))
+             ;; Replace all references to external ply.
+             (let ((ply-files '("coordinates/angle_formats.py"
+                                "utils/parsing.py")))
+               (with-directory-excursion "astropy"
+                 (map (lambda (file)
+                        (substitute* file (("astropy.extern.ply")
+                                           "ply")))
+                      ply-files)))
+             ;; Replace reference to external configobj.
+             (with-directory-excursion "astropy/config"
+               (substitute* "configuration.py"
+                 (("from astropy.extern.configobj ") "")))))
+         ;; This file is opened in both install and check phases.
+         (add-before 'install 'writable-compiler
+           (lambda _ (make-file-writable "astropy/_compiler.c")))
+         (add-before 'check 'writable-compiler
+           (lambda _ (make-file-writable "astropy/_compiler.c")))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Extensions have to be rebuilt before running the tests.
+               (invoke "python" "setup.py" "build_ext" "--inplace")
+               (invoke "python" "-m" "pytest" "--pyargs" "astropy"
+                       ;; Skip tests that need remote data.
+                       "-m" "not remote_data")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-coverage" ,python-coverage)
+       ("python-cython" ,python-cython)
+       ("python-extension-helpers" ,python-extension-helpers)
+       ("python-ipython" ,python-ipython)
+       ("python-jplephem" ,python-jplephem)
+       ("python-objgraph" ,python-objgraph)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-astropy" ,python-pytest-astropy)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sgp4" ,python-sgp4)
+       ("python-skyfield" ,python-skyfield)))
+    (inputs
+     `(("cfitsio" ,cfitsio)
+       ("expat" ,expat)))
+    (propagated-inputs
+     `(("python-configobj" ,python-configobj)
+       ("python-numpy" ,python-numpy)
+       ("python-ply" ,python-ply)
+       ("python-pyerfa" ,python-pyerfa)))
+    (home-page "https://www.astropy.org/")
+    (synopsis "Core package for Astronomy in Python")
+    (description
+     "Astropy is a single core package for Astronomy in Python.  It contains
+much of the core functionality and some common tools needed for performing
+astronomy and astrophysics.")
+    (license license:bsd-3)))
 
 (define-public libnova
   (package
