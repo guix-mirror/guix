@@ -11772,7 +11772,7 @@ your operating-system definition:
 (define-public piper
   (package
     (name "piper")
-    (version "0.5.1")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -11780,7 +11780,7 @@ your operating-system definition:
              (url "https://github.com/libratbag/piper")
              (commit version)))
        (sha256
-        (base32 "1nfjnsiwg2rs6gkjsxzhr2708i6di149dgwq3cf6l12rxqpb8arj"))
+        (base32 "02x4d4n0078slj2pl0rvgayrrxvna6y6vj8fxfamvazsh5xyfzwk"))
        (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (native-inputs
@@ -11793,6 +11793,7 @@ your operating-system definition:
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
        ("gtk" ,gtk+)
        ("gtk:bin" ,gtk+ "bin")
+       ("libratbag" ,libratbag)
        ("librsvg" ,librsvg)
        ("python-evdev" ,python-evdev)
        ("python-lxml" ,python-lxml)
