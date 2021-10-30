@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1005,12 +1006,13 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
              (setenv "PYERFA_USE_SYSTEM_LIBERFA" "1")
              #t)))))
     (native-inputs
-     `(("pytest" ,python-pytest)
-       ("setuptools-scm" ,python-setuptools-scm)
-       ("pytest-doctestplus" ,python-pytest-doctestplus)))
+     `(("pytest-doctestplus" ,python-pytest-doctestplus)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
-     `(("liberfa" ,erfa)
-       ("numpy" ,python-numpy)))
+     `(("liberfa" ,erfa)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
     (home-page "https://github.com/liberfa/pyerfa")
     (synopsis "Python bindings for ERFA")
     (description
