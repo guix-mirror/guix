@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6250,6 +6251,43 @@ communicate with Microsoft Azure Storage services.")
      "This is a Python library of web-related functions, such as: remove
 comments, or tags from HTML snippets, extract base url from HTML snippets,
 translate entities on HTML strings, among other things.")
+    (license license:bsd-3)))
+
+(define-public python-webcolors
+  (package
+    (name "python-webcolors")
+    (version "1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "webcolors" version))
+       (sha256
+        (base32 "1rkda75h2p65zx6r84c9mjavn4xpviqvqrklvdvcklapd5in1wvn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ubernostrum/webcolors")
+    (synopsis "HTML/CSS color definitions library")
+    (description "@code{python-webcolors} is a module for working with
+HTML/CSS color definitions.  Normalizing and converting between the following
+formats is supported.
+@itemize
+@item Specification-defined color names
+@item Six-digit hexadecimal
+@item Three-digit hexadecimal
+@item Integer rgb() triplet
+@item Percentage rgb() triplet
+@end itemize
+Only the RGB colorspace is supported.  Conversion to/from the HSL colorspace
+can be handled by the @code{colorsys} module in the Python standard library.")
     (license license:bsd-3)))
 
 (define-public python-flask-combo-jsonapi
