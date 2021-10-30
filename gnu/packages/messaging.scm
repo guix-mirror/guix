@@ -3053,4 +3053,54 @@ API.  Mattermost is not required.")
 Weechat communicate over the Matrix protocol.")
     (license license:isc)))
 
+(define-public weechat-wee-slack
+  (package
+    (name "weechat-wee-slack")
+    (version "2.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wee-slack/wee-slack")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xfklr0gsc9jgxfyrrb2j756lclz9g8imcb0pk0xgyj8mhsw23zk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Augment sys.path so that dependencies are found.
+             (substitute* "wee_slack.py"
+               (("import sys\n" all)
+                (apply string-append
+                       all
+                       (map (lambda (path)
+                              (string-append "sys.path.append('" path "')\n"))
+                            (string-split (getenv "PYTHONPATH") #\:)))))
+             ;; Install script.
+             (install-file "wee_slack.py"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/weechat/python"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (inputs
+     `(("python-websocket-client" ,python-websocket-client)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/wee-slack/wee-slack")
+    (synopsis "Weechat Slack script")
+    (description "@code{weechat-wee-slack} is a WeeChat native client for
+Slack.  It provides supplemental features only available in the web/mobile
+clients such as synchronizing read markers, typing notification, threads (and
+more)!  It connects via the Slack API, and maintains a persistent websocket
+for notification of events.")
+    (license license:expat)))
+
 ;;; messaging.scm ends here
