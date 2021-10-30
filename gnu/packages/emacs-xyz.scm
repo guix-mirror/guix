@@ -12329,6 +12329,30 @@ receive little if no maintainance and there is no guaranty that they are
 compatible with the Org stable version.")
     (license license:gpl3+)))
 
+(define-public emacs-org-contacts
+  ;;; XXX: Upstream made no release yet.
+  (let ((commit "3d2f39f62aefb0a32d10607703e8b1d4f43821fa")
+        (revision "0"))
+    (package
+      (name "emacs-org-contacts")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stardiviner/org-contacts.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a654406w8zd1hbp8ckc975jhl9mi14xzqizzwiki625dymiw5g5"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/stardiviner/org-contacts.el")
+      (synopsis "Contacts management system for Org mode")
+      (description "Manage your contacts from Org mode.  You can auto
+complete email addresses, export contacts to a vCard file, put birthdays
+in your Org Agenda, and more.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-pretty-table
   ;; There is no release yet.
   (let ((commit "1331c600b83d95b28730b1bfcb48369ac1cf12ef")
