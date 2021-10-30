@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2021 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8126,6 +8127,42 @@ It contains the code shared by all Kiwix ports.")
     (description "Kiwix Desktop allows you to enjoy a lot of different content
 offline (such as Wikipedia), without any access to Internet.")
     (license license:gpl3)))
+
+(define-public kiwix-tools
+  (package
+    (name "kiwix-tools")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.kiwix.org/release/"
+                                  "kiwix-tools/kiwix-tools-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1npf9ddhpkmx97gxmvmwmi8a69md8kh2szimd9rpg6ggd4big03a"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("kiwix-lib" ,kiwix-lib)
+       ("libmicrohttpd" ,libmicrohttpd)
+       ("libzim" ,libzim)
+       ("pugixml" ,pugixml)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.kiwix.org/wiki/Software")
+    (synopsis "Kiwix command line tools")
+    (description "The Kiwix tools are a collection of Kiwix-related command line
+tools:
+@itemize
+@item kiwix-manage: Manage XML based library of ZIM files
+@item kiwix-read: Read ZIM file content
+@item kiwix-search: Fulltext search in ZIM files
+@item kiwix-serve: HTTP daemon serving ZIM files
+@end itemize\n")
+    (license license:gpl3+)))
 
 (define-public uriparser
   (let ((commit "25dddb16cf044a7df27884e7ad3911baaaca3d7c")
