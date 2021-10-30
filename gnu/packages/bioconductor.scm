@@ -4386,6 +4386,39 @@ events and allows for the incorporation of prior knowledge through supervised
 graph construction.")
    (license license:artistic2.0)))
 
+(define-public r-stringdb
+  (package
+    (name "r-stringdb")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "STRINGdb" version))
+       (sha256
+        (base32 "1hvb73anhbf1g82nn5m11s783z6ihvlavf7p30w29qggxggnl6lm"))))
+    (properties `((upstream-name . "STRINGdb")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gplots" ,r-gplots)
+       ("r-hash" ,r-hash)
+       ("r-igraph" ,r-igraph)
+       ("r-plotrix" ,r-plotrix)
+       ("r-plyr" ,r-plyr)
+       ("r-png" ,r-png)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcurl" ,r-rcurl)
+       ("r-sqldf" ,r-sqldf)))
+    (home-page "https://git.bioconductor.org/packages/STRINGdb")
+    (synopsis "Search tool for the retrieval of interacting proteins database")
+    (description
+     "The @code{STRINGdb} package provides an R interface to the STRING
+protein-protein interactions database.  @url{https://www.string-db.org,
+STRING} is a database of known and predicted protein-protein interactions.
+The interactions include direct (physical) and indirect (functional)
+associations.  Each interaction is associated with a combined confidence score
+that integrates the various evidences.")
+    (license license:gpl2)))
+
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
