@@ -82,9 +82,11 @@ FILE-NAME with \"-\", and return the basename of it."
     (".bash_profile" . ,generate-bash-configuration+modules)
     (".bash_logout" . ,generate-bash-configuration+modules)))
 
-(define (configurations+modules destination-directory)
+(define (configurations+modules configuration-directory)
   "Return a list of procedures which when called, generate code for a home
-service declaration."
+service declaration.  Copy configuration files to CONFIGURATION-DIRECTORY; the
+generated service declarations will refer to those files that have been saved
+in CONFIGURATION-DIRECTORY."
   (define configurations
     (delete-duplicates
      (filter-map (match-lambda
@@ -95,12 +97,12 @@ service declaration."
                            (begin
                              (copy-file absolute-path
                                         (string-append
-                                         destination-directory "/" file))
+                                         configuration-directory "/" file))
                              proc)))))
                  %files+configurations-alist)
      eq?))
 
-  (map (lambda (proc) (proc destination-directory)) configurations))
+  (map (lambda (proc) (proc configuration-directory)) configurations))
 
 ;; Based on `manifest->code' from (guix profiles)
 ;; MAYBE: Upstream it?
