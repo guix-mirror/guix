@@ -1638,13 +1638,13 @@ RFC6455, regardless of your programming paradigm.")
 (define-public hypercorn
   (package
     (name "hypercorn")
-    (version "0.10.2")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Hypercorn" version))
        (sha256
-        (base32 "15dgy47a18w2ls3hwykra1cyf7yzxmfjqnsqml482p12cxr2xwqr"))))
+        (base32 "16kai5d12f05jr89mj611zslxqri4cd7ixcgd6yhl211qlcyg8av"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
