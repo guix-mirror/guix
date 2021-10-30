@@ -28,10 +28,11 @@ _guix_complete_command ()
     if [ -z "$_guix_commands" ]
     then
 	# Cache the list of commands to speed things up.
-	_guix_commands="$(guix --help 2> /dev/null  \
+	_guix_commands="$(${COMP_WORDS[0]} --help 2> /dev/null  \
                                      | grep '^    ' \
 				     | sed '-es/^ *\([a-z-]\+\).*$/\1/g')"
     fi
+
     COMPREPLY+=($(compgen -W "$_guix_commands" -- "$word_at_point"))
 }
 
