@@ -4695,6 +4695,42 @@ their variance is independent of the mean, and they are usually more sensitive
 and specific in detecting differential transcription.")
     (license license:artistic2.0)))
 
+(define-public r-xina
+  (package
+    (name "r-xina")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "XINA" version))
+       (sha256
+        (base32 "14j1rn3p7i0rlqkbbg0a6pyhb97ifzvsbw6vfxw9pna7zv7rbhsp"))))
+    (properties `((upstream-name . "XINA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-alluvial" ,r-alluvial)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-igraph" ,r-igraph)
+       ("r-mclust" ,r-mclust)
+       ("r-plyr" ,r-plyr)
+       ("r-stringdb" ,r-stringdb)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://git.bioconductor.org/packages/XINA")
+    (synopsis "Identifying proteins that exhibit similar patterns")
+    (description
+     "The aim of @code{XINA} is to determine which proteins exhibit similar
+patterns within and across experimental conditions, since proteins with
+co-abundance patterns may have common molecular functions.  @code{XINA} imports
+multiple datasets, tags dataset in silico, and combines the data for subsequent
+subgrouping into multiple clusters.  The result is a single output depicting
+the variation across all conditions.  @code{XINA} not only extracts
+coabundance profiles within and across experiments, but also incorporates
+protein-protein interaction databases and integrative resources such as
+@dfn{Kyoto encyclopedia of genes and genomes} (KEGG) to infer interactors and
+molecular functions, respectively, and produces intuitive graphical outputs.")
+    (license license:gpl3)))
+
 (define-public r-xvector
   (package
     (name "r-xvector")
