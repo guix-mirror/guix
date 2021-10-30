@@ -7121,6 +7121,26 @@ a candidate list, using several criteria.  The blocking can be done when whole
 and within plot factors interact.")
     (license license:gpl2+)))
 
+(define-public r-alluvial
+  (package
+    (name "r-alluvial")
+    (version "0.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "alluvial" version))
+       (sha256
+        (base32 "039frwrsxq1lb97s7vf2vbyyadimkigs628ymym06fxka53drdkp"))))
+    (properties `((upstream-name . "alluvial")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mbojan/alluvial")
+    (synopsis "Create parallel sets plots (Alluvial Diagrams)")
+    (description
+     "This package creates alluvial diagrams (also known as parallel sets
+plots) for multivariate and time series-like data.")
+    (license license:expat)))
+
 (define-public r-signal
   (package
     (name "r-signal")
