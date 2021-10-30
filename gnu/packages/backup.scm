@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
@@ -80,6 +80,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -1171,4 +1172,52 @@ can be used to recreate a software archive bit-for-bit from the
 original files.  For example, a software archive made using tar and
 Gzip will need to describe the order of files in the tarball and the
 compression parameters used by Gzip.")
+    (license license:gpl3+)))
+
+(define-public borgmatic
+  (package
+    (name "borgmatic")
+    (version "1.5.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "borgmatic" version))
+       (sha256
+        (base32 "1rdpj1mii4fbyprg56krf5k0xsd97ghybaabr7zdhsrcsxf719ha"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Set absolute store path to borg.
+             (substitute* "borgmatic/commands/borgmatic.py"
+               (("location\\.get\\('local_path', 'borg'\\)")
+                (string-append "location.get('local_path', '"
+                               (assoc-ref inputs "borg") "/bin/borg"
+                               "')")))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               ;; Tests require the installed executable.
+               (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                             ":" (getenv "PATH")))
+               (invoke "pytest")))))))
+    (inputs
+     `(("borg" ,borg)
+       ("python-colorama" ,python-colorama)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-requests" ,python-requests)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+    (native-inputs
+     `(("python-flexmock" ,python-flexmock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://torsion.org/borgmatic/")
+    (synopsis "Simple, configuration-driven backup software")
+    (description
+     "borgmatic is a simple, configuration-driven backup software for servers
+and workstations.  Protect your files with client-side encryption.  Backup
+your databases too.  Monitor it all with integrated third-party services.
+borgmatic is powered by borg.")
     (license license:gpl3+)))
