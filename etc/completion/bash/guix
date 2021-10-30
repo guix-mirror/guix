@@ -72,10 +72,16 @@ _guix_complete_option ()
 {
     local command="${COMP_WORDS[$1]}"
     local subcommand="${COMP_WORDS[$(($1 + 1))]}"
-    if _guix_is_option "$subcommand"
+
+    if [ $1 -le 1 ]
+    then
+	command=""
+	subcommand=""
+    elif _guix_is_option "$subcommand"
     then
 	subcommand=""
     fi
+
     local options="$(${COMP_WORDS[0]} $command $subcommand --help 2> /dev/null \
                             | grep '^  \+-' \
                             | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
@@ -229,6 +235,7 @@ _guix_complete ()
     case $COMP_CWORD in
 	$command_index)
 	    _guix_complete_command
+	    _guix_complete_option 0 "$word_at_point"
 	    ;;
 	*)
 	    if [[ "$command" = "package" ]]
