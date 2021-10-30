@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
-;;; Copyright © 2017, 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2020, 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -11705,7 +11705,7 @@ It uses pandoc as back-end for parsing Markdown.")
 (define-public libratbag
   (package
     (name "libratbag")
-    (version "0.14")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -11714,7 +11714,7 @@ It uses pandoc as back-end for parsing Markdown.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fpwp2sj8mf98bqasq2h8qwgprxi7k3iw33gcfid3d1lbyiacw0x"))))
+        (base32 "0jjf6xc3a37icp5dvbxla3ai9is2ns31m0llbfq1bmb6dk8cd4n0"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
