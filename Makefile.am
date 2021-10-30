@@ -475,6 +475,7 @@ SCM_TESTS =					\
   tests/graph.scm				\
   tests/gremlin.scm				\
   tests/hackage.scm				\
+  tests/home-import.scm				\
   tests/import-git.scm				\
   tests/import-utils.scm			\
   tests/inferior.scm				\

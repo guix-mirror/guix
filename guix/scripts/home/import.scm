@@ -27,7 +27,10 @@
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:export (import-manifest))
+  #:export (import-manifest
+
+            ;; For tests.
+            manifest->code))
 
 ;;; Commentary:
 ;;;
@@ -35,6 +38,8 @@
 ;;; configurations from existing "dotfiles".
 ;;;
 ;;; Code:
+
+
 
 (define (generate-bash-configuration+modules destination-directory)
   (define (destination-append path)
