@@ -47,23 +47,18 @@
                (home-bash-configuration
                 ,@(if (file-exists? rc)
                       `((bashrc
-                         (list (slurp-file-gexp
-                                (local-file ,rc)))))
+                         (list (local-file ,rc))))
                       '())
                 ,@(if (file-exists? profile)
                       `((bash-profile
-                         (list (slurp-file-gexp
-                                (local-file ,profile)))))
+                         (list (local-file ,profile))))
                       '())
                 ,@(if (file-exists? logout)
                       `((bash-logout
-                         (list (slurp-file-gexp
-                                (local-file ,logout)))))
+                         (list (local-file ,logout))))
                       '())))
       (guix gexp)
       (gnu home services shells))))
-
-
 
 (define %files+configurations-alist
   `((".bashrc" . ,generate-bash-configuration+modules)
