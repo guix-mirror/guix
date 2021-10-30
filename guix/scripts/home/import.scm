@@ -60,7 +60,8 @@
                          (list (slurp-file-gexp
                                 (local-file ,logout)))))
                       '())))
-      (gnu home-services bash))))
+      (guix gexp)
+      (gnu home services shells))))
 
 
 
