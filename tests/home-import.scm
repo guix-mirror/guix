@@ -156,7 +156,8 @@ corresponding file."
               'home-bash-service-type
               ('home-bash-configuration
                ('bashrc
-                ('list ('local-file "/tmp/guix-config/.bashrc"))))))))))
+                ('list ('local-file "/tmp/guix-config/.bashrc"
+                                    "bashrc"))))))))))
 
 (test-assert "manifest->code: No services"
   (eval-test-with-home-environment

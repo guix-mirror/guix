@@ -39,7 +39,16 @@
 ;;;
 ;;; Code:
 
-
+(define (basename+remove-dots file-name)
+  "Remove the dot from the dotfile FILE-NAME; replace the other dots in
+FILE-NAME with \"-\", and return the basename of it."
+  (string-map (match-lambda
+                (#\. #\-)
+                (c c))
+              (let ((base (basename file-name)))
+                (if (string-prefix? "." base)
+                    (string-drop base 1)
+                    base))))
 
 (define (generate-bash-configuration+modules destination-directory)
   (define (destination-append path)
@@ -52,15 +61,18 @@
                (home-bash-configuration
                 ,@(if (file-exists? rc)
                       `((bashrc
-                         (list (local-file ,rc))))
+                         (list (local-file ,rc
+                                           ,(basename+remove-dots rc)))))
                       '())
                 ,@(if (file-exists? profile)
                       `((bash-profile
-                         (list (local-file ,profile))))
+                         (list (local-file ,profile
+                                           ,(basename+remove-dots profile)))))
                       '())
                 ,@(if (file-exists? logout)
                       `((bash-logout
-                         (list (local-file ,logout))))
+                         (list (local-file ,logout
+                                           ,(basename+remove-dots logout)))))
                       '())))
       (guix gexp)
       (gnu home services shells))))
