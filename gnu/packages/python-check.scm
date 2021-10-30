@@ -341,21 +341,28 @@ Astropy project, but is optimized for use with astropy-related projects.")
         (base32 "18j6z6y2fvykmcs5z0mldhhaxxn6wzpnhlm2ps7m8r5z5kmh1631"))))
     (build-system python-build-system)
     (arguments
-     ;; No tests provided
-     '(#:tests? #f))
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; There is a bug somewhere that makes pytest-filter-subpackage appear
+         ;; as version 0.0.0 to setup.py.  Remove it from the requirements.
+         (add-after 'unpack 'remove-requirement
+           (lambda _
+             (substitute* "setup.cfg"
+               ((".*pytest-filter-subpackage.*") "")))))))
     (native-inputs
-     `(("attrs" ,python-attrs)
-       ("hypothesis" ,python-hypothesis)
-       ("pytest" ,python-pytest)
-       ("pytest-arraydiff" ,python-pytest-arraydiff)
-       ("pytest-astropy-header" ,python-pytest-astropy-header)
-       ("pytest-cov" ,python-pytest-cov)
-       ("pytest-doctestplus" ,python-pytest-doctestplus)
-       ("pytest-filter-subpackage" ,python-pytest-filter-subpackage)
-       ("pytest-mock" ,python-pytest-mock)
-       ("pytest-openfiles" ,python-pytest-openfiles)
-       ("pytest-remotedata" ,python-pytest-remotedata)
-       ("setuptools-scm" ,python-setuptools-scm)))
+     `(("python-attrs" ,python-attrs)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest-arraydiff" ,python-pytest-arraydiff)
+       ("python-pytest-astropy-header" ,python-pytest-astropy-header)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-doctestplus" ,python-pytest-doctestplus)
+       ("python-pytest-filter-subpackage" ,python-pytest-filter-subpackage)
+       ("python-pytest-openfiles" ,python-pytest-openfiles)
+       ("python-pytest-remotedata" ,python-pytest-remotedata)))
     (home-page "https://github.com/astropy/pytest-astropy")
     (synopsis
      "Metapackage for all the testing machinery used by the Astropy Project")
