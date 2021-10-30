@@ -13,7 +13,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
-;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020, 2021 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Baptiste Strazzul <bstrazzull@hotmail.fr>
@@ -1598,12 +1598,12 @@ standards of the IceCat project.")
                 #t))))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20211008000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20211119000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "78.15.0")
-    (source icecat-78-source)
+    (version "91.3.2")
+    (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
     (build-system gnu-build-system)
@@ -1621,7 +1621,6 @@ standards of the IceCat project.")
              (mkdir "comm")
              (copy-recursively (assoc-ref inputs "thunderbird-sources")
                                "comm")
-             (delete-file-recursively "obj-x86_64-pc-linux-gnu")
              (delete-file "sourcestamp.txt")
              #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
@@ -1643,14 +1642,12 @@ standards of the IceCat project.")
          (add-after 'patch-source-shebangs 'fix-profile-setting
            (lambda _
              (substitute* "comm/mail/moz.configure"
-               (("'MOZ_DEDICATED_PROFILES', True")
-                "'MOZ_DEDICATED_PROFILES', False"))
+               (("MOZ_DEDICATED_PROFILES, True")
+                "MOZ_DEDICATED_PROFILES, False"))
              #t))
          (add-after 'prepare-thunderbird-sources 'rename-to-icedove
            (lambda _
              (substitute* "comm/mail/confvars.sh"
-               (("MOZ_APP_BASENAME=Thunderbird")
-                "MOZ_APP_BASENAME=Icedove\nMOZ_APP_DISPLAYNAME=Icedove")
                (("MOZ_APP_NAME=thunderbird")
                 "MOZ_APP_NAME=icedove")
                (("MOZ_UPDATER=1")
@@ -1694,7 +1691,8 @@ standards of the IceCat project.")
                               "enterprisepolicies/schemas/moz.build")
                  (("Thunderbird") "Icedove")))
              (substitute* '("comm/mailnews/base/prefs/content/accountUtils.js"
-                            "comm/common/src/customizeToolbar.js")
+                            "comm/mail/base/content/customizeToolbar.js"
+                            "comm/suite/components/customizeToolbar.js")
                (("AppConstants.MOZ_APP_NAME (.)= \"thunderbird" _ e)
                 (format #f "AppConstants.MOZ_APP_NAME ~a= \"icedove" e)))
 
@@ -1728,6 +1726,7 @@ standards of the IceCat project.")
                                "<!-- Guix: not a runtime dependency -->"
                                (string-drop hash 8))))
              #t))
+         (delete 'bootstrap)
          (replace 'configure
            (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1738,10 +1737,6 @@ standards of the IceCat project.")
                              ,@configure-flags))
                     (mozconfig (string-append (getcwd) "/.mozconfig")))
                (setenv "SHELL" bash)
-               (setenv "AUTOCONF"
-                       (string-append (assoc-ref %build-inputs
-                                                 "autoconf")
-                                      "/bin/autoconf"))
                (setenv "CONFIG_SHELL" bash)
                (setenv "QA_CONFIGURE_OPTIONS" ".*")
                (setenv "MOZBUILD_STATE_PATH"
@@ -1750,10 +1745,12 @@ standards of the IceCat project.")
                        (string-append (getcwd) "/.mozconfig"))
                (setenv "CC" "gcc")
                (setenv "MOZ_NOSPAM" "1")
+               (setenv "MACH_USE_SYSTEM_PYTHON" "1")
                (setenv "PYTHON"
                        (string-append (assoc-ref inputs "python2")
                                       "/bin/python"))
                (setenv "MOZ_BUILD_DATE" ,%icedove-build-id) ; avoid timestamp
+               (setenv "MOZ_APP_NAME" "icedove")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath="
                                                 (assoc-ref outputs "out")
                                                 "/lib/icedove"))
@@ -1773,7 +1770,6 @@ standards of the IceCat project.")
                      "ac_add_options --disable-updater\n"
                      "ac_add_options --disable-webrtc\n"
                      "ac_add_options --enable-application=comm/mail\n"
-                     "ac_add_options --enable-calendar\n"
                      "ac_add_options --enable-default-toolkit=\"cairo-gtk3\"\n"
                      "ac_add_options --enable-optimize\n"
                      "ac_add_options --enable-pulseaudio\n"
@@ -1790,7 +1786,7 @@ standards of the IceCat project.")
                      "ac_add_options --with-system-jpeg\n"
                      "ac_add_options --with-system-libevent\n"
                      "ac_add_options --with-system-nspr\n"
-                     "ac_add_options --with-system-nss\n"
+                     ;"ac_add_options --with-system-nss\n"
                      "ac_add_options --with-system-zlib\n"
                      "ac_add_options --with-user-appdir=\\.icedove\n"
                      "mk_add_options MOZ_MAKE_FLAGS=-j"
@@ -1855,7 +1851,7 @@ standards of the IceCat project.")
        ("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
        ("hunspell" ,hunspell)
-       ("icu4c" ,icu4c-67)
+       ("icu4c" ,icu4c-69)
        ("libcanberra" ,libcanberra)
        ("libevent" ,libevent)
        ("libffi" ,libffi)
@@ -1870,8 +1866,9 @@ standards of the IceCat project.")
        ("libxt" ,libxt)
        ("mesa" ,mesa)
        ("mit-krb5" ,mit-krb5)
-       ("nspr" ,nspr)
-       ("nss" ,nss)
+       ("nspr" ,nspr-4.32)
+       ; FIXME: create nss >= 3.68 after core-updates merge
+       ;("nss" ,nss)
        ("pango" ,pango)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
@@ -1887,28 +1884,28 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "2aa18076f0c3bc49d0e216798b3640891e68fada"))
+        ,(let ((changeset "c35def313c0c2bd0341e3e058f862f02390269c4"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
-                   (url "https://hg.mozilla.org/releases/comm-esr78")
+                   (url "https://hg.mozilla.org/releases/comm-esr91")
                    (changeset changeset)))
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "0ww1rgm8hpmji9fjhinqrwf07j2jikdq8j2x87h5s3naw5898fr3")))))
-       ("autoconf" ,autoconf-2.13)
-       ("cargo" ,rust-1.41 "cargo")
+               "0rp4i353dskx065a6hskvfpf0l2qywqnivks9qc6a85h4yah4rvq")))))
+       ("cargo" ,rust-1.51 "cargo")
        ("clang" ,clang)
        ("llvm" ,llvm)
+       ("m4" ,m4)
        ("nasm" ,nasm)
        ("node" ,node)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python2" ,python-2.7)
-       ("rust" ,rust-1.41)
-       ("rust-cbindgen" ,rust-cbindgen-0.14)
+       ("rust" ,rust-1.51)
+       ("rust-cbindgen" ,rust-cbindgen-0.19)
        ("which" ,which)
        ("yasm" ,yasm)))
     (home-page "https://www.thunderbird.net")
