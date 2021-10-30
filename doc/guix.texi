@@ -35900,6 +35900,16 @@ be confused with Shepherd services (@pxref{Shepherd Services}).  Using this exte
 mechanism and some Scheme code that glues things together gives the user
 the freedom to declare their own, very custom, home environments.
 
+Once you have a configuration file that suits your needs, you can
+reconfigure your home by running:
+
+@example
+guix home reconfigure config.scm
+@end example
+
+This ``builds'' your home environment and creates @file{~/.guix-home}
+pointing to it.  Voilà!
+
 @node Configuring the Shell
 @section Configuring the Shell
 This section is safe to skip if your shell or shells are managed by
