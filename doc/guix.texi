@@ -36509,6 +36509,38 @@ generations that are up to 10 days old:
 $ guix home list-generations 10d
 @end example
 
+@item import
+Generate a @dfn{home environment} from the packages in the default
+profile and configuration files found in the user's home directory.  The
+configuration files will be copied to the specified directory.  Note
+that not every home service that exists is supported (@pxref{Home
+Services}).
+
+@example
+$ guix home import ~/guix-config
+;; This "home-environment" file can be passed to 'guix home reconfigure'
+;; to reproduce the content of your profile.  This is "symbolic": it only
+;; specifies package names.  To reproduce the exact same profile, you also
+;; need to capture the channels being used, as returned by "guix describe".
+;; See the "Replicating Guix" section in the manual.
+
+(use-modules
+  (gnu home)
+  (gnu packages)
+  (gnu home services shells))
+
+(home-environment
+  (packages
+    (map specification->package
+         (list "glibc-locales" "nss-certs" "nss")))
+  (services
+    (list (service
+            home-bash-service-type
+            (home-bash-configuration
+              (bashrc
+                (list (local-file "/home/charlie/guix-config/.bashrc"))))))))
+@end example
+
 @end table
 
 @var{options} can contain any of the common build options (@pxref{Common
