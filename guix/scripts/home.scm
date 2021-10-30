@@ -40,6 +40,7 @@
   #:autoload   (guix scripts pull) (channel-commit-hyperlink)
   #:use-module (guix scripts home import)
   #:use-module ((guix status) #:select (with-status-verbosity))
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (srfi srfi-1)
@@ -260,15 +261,20 @@ argument list and OPTS is the option alist."
      (apply search args))
     ((import)
      (let* ((profiles (delete-duplicates
-                      (match (filter-map (match-lambda
-                                           (('profile . p) p)
-                                           (_              #f))
-                                         opts)
-                        (() (list %current-profile))
-                        (lst (reverse lst)))))
-           (manifest (concatenate-manifests
-                      (map profile-manifest profiles))))
-       (import-manifest manifest (current-output-port))))
+                       (match (filter-map (match-lambda
+                                            (('profile . p) p)
+                                            (_              #f))
+                                          opts)
+                         (() (list %current-profile))
+                         (lst (reverse lst)))))
+            (manifest (concatenate-manifests
+                       (map profile-manifest profiles)))
+            (destination (match args
+                           ((destination) destination)
+                           (_ (leave (G_ "wrong number of arguments~%"))))))
+       (unless (file-exists? destination)
+         (mkdir-p destination))
+       (import-manifest manifest destination (current-output-port))))
     ((describe)
      (match (generation-number %guix-home)
        (0

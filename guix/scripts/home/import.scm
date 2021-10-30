@@ -36,49 +36,61 @@
 ;;;
 ;;; Code:
 
+(define (generate-bash-configuration+modules destination-directory)
+  (define (destination-append path)
+    (string-append destination-directory "/" path))
 
-(define (generate-bash-module+configuration)
-  (let ((rc (string-append (getenv "HOME") "/.bashrc"))
-        (profile (string-append (getenv "HOME") "/.bash_profile"))
-        (logout (string-append (getenv "HOME") "/.bash_logout")))
-    `((gnu home services bash)
+  (let ((rc (destination-append ".bashrc"))
+        (profile (destination-append ".bash_profile"))
+        (logout (destination-append ".bash_logout")))
+    `((gnu home-services bash)
       (service home-bash-service-type
-                 (home-bash-configuration
-                  ,@(if (file-exists? rc)
-                        `((bashrc
-                           (list (local-file ,rc))))
-                        '())
-                  ,@(if (file-exists? profile)
-                        `((bash-profile
-                           (list (local-file ,profile))))
-                        '())
-                  ,@(if (file-exists? logout)
-                        `((bash-logout
-                           (list (local-file ,logout))))
-                        '()))))))
-
+               (home-bash-configuration
+                ,@(if (file-exists? rc)
+                      `((bashrc
+                         (list (slurp-file-gexp
+                                (local-file ,rc)))))
+                      '())
+                ,@(if (file-exists? profile)
+                      `((bash-profile
+                         (list (slurp-file-gexp
+                                (local-file ,profile)))))
+                      '())
+                ,@(if (file-exists? logout)
+                      `((bash-logout
+                         (list (slurp-file-gexp
+                                (local-file ,logout)))))
+                      '()))))))
 
 (define %files-configurations-alist
   `((".bashrc" . ,generate-bash-module+configuration)
     (".bash_profile" . ,generate-bash-module+configuration)
     (".bash_logout" . ,generate-bash-module+configuration)))
 
-(define (modules+configurations)
-  (let ((configurations (delete-duplicates
-                         (filter-map (match-lambda
-                                ((file . proc)
-                                 (if (file-exists?
-                                      (string-append (getenv "HOME") "/" file))
-                                     proc
-                                     #f)))
-                                     %files-configurations-alist)
-                         (lambda (x y)
-                           (equal? (procedure-name x) (procedure-name y))))))
-    (map (lambda (proc) (proc)) configurations)))
+(define (configurations+modules destination-directory)
+  "Return a list of procedures which when called, generate code for a home
+service declaration."
+  (define configurations
+    (delete-duplicates
+     (filter-map (match-lambda
+                   ((file . proc)
+                    (let ((absolute-path (string-append (getenv "HOME")
+                                                        "/" file)))
+                      (and (file-exists? absolute-path)
+                           (begin
+                             (copy-file absolute-path
+                                        (string-append
+                                         destination-directory "/" file))
+                             proc)))))
+                 %files+configurations-alist)
+     (lambda (x y)
+       (equal? (procedure-name x) (procedure-name y)))))
+  
+  (map (lambda (proc) (proc destination-directory)) configurations))
 
 ;; Based on `manifest->code' from (guix profiles)
 ;; MAYBE: Upstream it?
-(define* (manifest->code manifest
+(define* (manifest->code manifest destination-directory
                          #:key
                          (entry-package-version (const ""))
                          (home-environment? #f))
@@ -129,7 +141,8 @@ available."
                                                    ":" output))))
                         (manifest-entries manifest))))
         (if home-environment?
-            (let ((modules+configurations (modules+configurations)))
+            (let ((configurations+modules
+                   (configurations+modules destination-directory)))
               `(begin
                (use-modules (gnu home)
                             (gnu packages)
@@ -171,7 +184,8 @@ available."
                              (options->transformation ',options))))
                        transformation-procedures)))
         (if home-environment?
-            (let ((modules+configurations (modules+configurations)))
+            (let ((configurations+modules
+                   (configurations+modules destination-directory)))
               `(begin
                  (use-modules (guix transformations)
                               (gnu home)
@@ -204,7 +218,7 @@ containing PACKAGES, or SPECS (package specifications), and SERVICES."
      (services (list ,@services))))
 
 (define* (import-manifest
-          manifest
+          manifest destination-directory
           #:optional (port (current-output-port)))
   "Write to PORT a <home-environment> corresponding to MANIFEST."
   (define (version-spec entry)
@@ -227,7 +241,7 @@ containing PACKAGES, or SPECS (package specifications), and SERVICES."
                (version-unique-prefix (manifest-entry-version entry)
                                       versions)))))))
 
-  (match (manifest->code manifest
+  (match (manifest->code manifest destination-directory
                          #:entry-package-version version-spec
                          #:home-environment? #t)
     (('begin exp ...)
