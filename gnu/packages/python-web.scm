@@ -1635,9 +1635,9 @@ choose to use, ensuring that you can communicate via WebSockets, as defined in
 RFC6455, regardless of your programming paradigm.")
     (license license:expat)))
 
-(define-public python-hypercorn
+(define-public hypercorn
   (package
-    (name "python-hypercorn")
+    (name "hypercorn")
     (version "0.10.2")
     (source
      (origin
@@ -1653,6 +1653,7 @@ RFC6455, regardless of your programming paradigm.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
+    ;; Propagate because Hypercorn also exposes functionality over a module.
     (propagated-inputs
      `(("python-h11" ,python-h11)
        ("python-h2" ,python-h2)
@@ -1676,6 +1677,9 @@ wsproto libraries and inspired by Gunicorn.  It supports HTTP/1, HTTP/2,
 WebSockets (over HTTP/1 and HTTP/2), ASGI/2, and ASGI/3 specifications.  It can
 utilise asyncio, uvloop, or trio worker types.")
     (license license:expat)))
+
+(define-public python-hypercorn
+  (deprecated-package "python-hypercorn" hypercorn))
 
 (define-public python-querystring-parser
   (package
