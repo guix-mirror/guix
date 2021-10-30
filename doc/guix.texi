@@ -35896,7 +35896,7 @@ There is no daemon (at least not necessarily) related to a home service,
 a home service is just an element that is used to declare part of home
 environment and extend other parts of it.  The extension mechanism
 discussed in the previous chapter (@pxref{Defining Services}) should not
-be confused with @ref{Shepherd Services}.  Using this extension
+be confused with Shepherd services (@pxref{Shepherd Services}).  Using this extension
 mechanism and some Scheme code that glues things together gives the user
 the freedom to declare their own, very custom, home environments.
 
