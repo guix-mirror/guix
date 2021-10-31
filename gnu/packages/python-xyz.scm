@@ -8431,10 +8431,10 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (setenv "HOME" "/tmp")
-             (invoke "pytest" "-v")
-             #t))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (invoke "pytest" "-v"))))
          (add-after 'install 'set-python-file-name
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Record the absolute file name of the 'python' executable in
