@@ -16443,7 +16443,7 @@ binary or text.")
 (define-public binwalk
   (package
     (name "binwalk")
-    (version "2.2.0")
+    (version "2.3.2")
     (source
      (origin
        (method git-fetch)
@@ -16452,8 +16452,7 @@ binary or text.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1bxgj569fzwv6jhcbl864nmlsi9x1k1r20aywjxc8b9b1zgqrlvc"))))
+        (base32 "01dalxw07c42ka4fqpixcacvy42h04ya909lzpmsblr9s2xdgwcm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16464,8 +16463,7 @@ binary or text.")
                      (string-append
                       (getcwd) "/src/"
                       ":" (getenv "PYTHONPATH")))
-             (setenv "HOME" "")
-             #t)))))
+             (setenv "HOME" ""))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
