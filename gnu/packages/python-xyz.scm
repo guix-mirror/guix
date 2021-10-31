@@ -16440,9 +16440,9 @@ binary or text.")
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
 
-(define-public python-binwalk
+(define-public binwalk
   (package
-    (name "python-binwalk")
+    (name "binwalk")
     (version "2.2.0")
     (source
      (origin
@@ -16474,6 +16474,9 @@ binary or text.")
     (description "Binwalk is a tool for analyzing, reverse engineering, and
 extracting firmware images")
     (license license:expat)))
+
+(define-public python-binwalk
+  (deprecated-package "python-binwalk" binwalk))
 
 (define-public python-nltk
   (package
