@@ -962,8 +962,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
        ("nss" ,nss)
        ("parted" ,parted)
        ("volume-key" ,volume-key)
-       ;; ("xfsprogs" ,xfsprogs) ; TODO: Package?
-       ))
+       ("xfsprogs" ,xfsprogs)))
     (home-page "https://github.com/storaged-project/libblockdev")
     (synopsis "Library for manipulating block devices")
     (description
