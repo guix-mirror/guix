@@ -12549,7 +12549,7 @@ Document Analysis and Recognition program.")
       (home-page "https://gnome.pages.gitlab.gnome.org/libadwaita/")
       (synopsis "Building blocks for GNOME applications")
       (description
-       "@code(libadwaita) offers widgets and objects to build GNOME
+       "@code{libadwaita} offers widgets and objects to build GNOME
 applications scaling from desktop workstations to mobile phones.  It is the
 successor of @code{libhandy} for GTK4.")
       (license license:lgpl2.1+))))
