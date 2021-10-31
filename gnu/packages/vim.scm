@@ -43,6 +43,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
@@ -1273,7 +1274,18 @@ additions:
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("plugin" "share/vim/vimfiles/")
-         ("syntax" "share/vim/vimfiles/"))))
+         ("syntax" "share/vim/vimfiles/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-univerisal-ctags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ctags (assoc-ref inputs "universal-ctags")))
+               (substitute* "autoload/tagbar.vim"
+                 (("(.*)universal-ctags']" all leader)
+                  (string-append all "\n"
+                                 leader ctags "/bin/ctags']")))))))))
+    (inputs
+     `(("universal-ctags" ,universal-ctags)))
     (home-page "https://github.com/preservim/tagbar")
     (synopsis "Vim plugin that displays tags in a window, ordered by scope")
     (description
