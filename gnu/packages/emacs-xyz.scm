@@ -10545,86 +10545,92 @@ indentation guides in Emacs:
       (license license:gpl2+))))
 
 (define-public emacs-elpy
-  (package
-    (name "emacs-elpy")
-    (version "1.35.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jorgenschaefer/elpy")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "07rdb9w3bxzfr07224awa541xdy116hyc2b3bpl3fc3ikddmbydk"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-ffip-project-search-call
-           (lambda _
-             ;; Since version 6.0.0 of find-file-in-project,
-             ;; ffip-project-search doesn't accept a third argument anymore
-             ;; (see: https://github.com/jorgenschaefer/elpy/issues/1889).
-             (substitute* "elpy.el"
-               (("\\((ffip-project-search nil nil) project-root\\)" _ signature)
-                (format #f "(let ((ffip-project-root project-root)) (~a))"
-                        signature)))))
-         ;; The default environment of the RPC uses Virtualenv to install
-         ;; Python dependencies from PyPI.  We don't want/need this in Guix.
-         (add-before 'check 'do-not-use-virtualenv
-           (lambda _
-             (setenv "ELPY_TEST_DONT_USE_VIRTUALENV" "1")
-             (substitute* "elpy-rpc.el"
-               (("defcustom elpy-rpc-virtualenv-path 'default")
-                "defcustom elpy-rpc-virtualenv-path 'system"))))
-         (add-before 'check 'build-doc
-           (lambda _
-             (with-directory-excursion "docs"
-               (invoke "make" "info" "man"))
-             ;; Move .info file at the root so that it can installed by the
-             ;; 'move-doc phase.
-             (rename-file "docs/_build/texinfo/Elpy.info" "Elpy.info")))
-         (add-after 'build-doc 'install-manpage
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (man1 (string-append out "/share/man/man1")))
-               (mkdir-p man1)
-               (copy-file "docs/_build/man/elpy.1"
-                          (string-append man1 "/elpy.1"))))))
-       #:tests? #t
-       #:test-command '("ert-runner")))
-    (propagated-inputs
-     `(("emacs-company" ,emacs-company)
-       ("emacs-find-file-in-project" ,emacs-find-file-in-project)
-       ("emacs-highlight-indentation" ,emacs-highlight-indentation)
-       ("emacs-yasnippet" ,emacs-yasnippet)
-       ("pyvenv" ,emacs-pyvenv)
-       ("s" ,emacs-s)
-       ;; The following are recommended Python dependencies that make Elpy
-       ;; much more useful.  Installing these avoids Elpy prompting to install them
-       ;; from PyPI using pip.
-       ("python-autopep8" ,python-autopep8)
-       ("python-black" ,python-black)
-       ("python-flake8" ,python-flake8)
-       ("python-jedi" ,python-jedi)
-       ("python-rope" ,python-rope)
-       ("python-yapf" ,python-yapf)))
-    (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)
-       ("emacs-f" ,emacs-f)
-       ("python" ,python-wrapper)
-       ;; For documentation.
-       ("python-sphinx" ,python-sphinx)
-       ("texinfo" ,texinfo)))
-    (home-page "https://github.com/jorgenschaefer/elpy")
-    (synopsis "Python development environment for Emacs")
-    (description "Elpy brings powerful Python editing to Emacs.  It combines
+  ;; Use the latest commit, as it contains unreleased fixes for Python 3.9 and
+  ;; Jedi 0.18.
+  (let ((commit "8d0de310d41ebf06b22321a8534546447456870c")
+        (revision "0"))
+    (package
+      (name "emacs-elpy")
+      (version (git-version "1.35.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jorgenschaefer/elpy")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hg6yk0wkfh2rwcc4h0bb6m2p3dg62ja22mjpa94khq52lv1piwf"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'disable-broken-tests
+             ;; Some tests are known to have problems with Python 3.9; disable
+             ;; them (see: https://github.com/jorgenschaefer/elpy/issues/1856).
+             (lambda _
+               (substitute* "test/elpy-refactor-rename-test.el"
+                 ((".*ert-deftest elpy-refactor.*rename-in-multiple-files.*"
+                   all)
+                  (string-append all "  :expected-result :failed\n")))
+               (substitute* "test/elpy-multiedit-python-symbol-at-point-test.el"
+                 ((".*ert-deftest elpy-multiedit.*should-save-some-buffers.*"
+                   all)
+                  (string-append all "  :expected-result :failed\n")))))
+           ;; The default environment of the RPC uses Virtualenv to install
+           ;; Python dependencies from PyPI.  We don't want/need this in Guix.
+           (add-before 'check 'do-not-use-virtualenv
+             (lambda _
+               (setenv "ELPY_TEST_DONT_USE_VIRTUALENV" "1")
+               (substitute* "elpy-rpc.el"
+                 (("defcustom elpy-rpc-virtualenv-path 'default")
+                  "defcustom elpy-rpc-virtualenv-path 'system"))))
+           (add-before 'check 'build-doc
+             (lambda _
+               (with-directory-excursion "docs"
+                 (invoke "make" "info" "man"))
+               ;; Move .info file at the root so that it can installed by the
+               ;; 'move-doc phase.
+               (rename-file "docs/_build/texinfo/Elpy.info" "Elpy.info")))
+           (add-after 'build-doc 'install-manpage
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (man1 (string-append out "/share/man/man1")))
+                 (mkdir-p man1)
+                 (copy-file "docs/_build/man/elpy.1"
+                            (string-append man1 "/elpy.1"))))))
+         #:tests? #t
+         #:test-command '("ert-runner")))
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-find-file-in-project" ,emacs-find-file-in-project)
+         ("emacs-highlight-indentation" ,emacs-highlight-indentation)
+         ("emacs-yasnippet" ,emacs-yasnippet)
+         ("pyvenv" ,emacs-pyvenv)
+         ("s" ,emacs-s)
+         ;; The following are recommended Python dependencies that make Elpy
+         ;; much more useful.  Installing these avoids Elpy prompting to install them
+         ;; from PyPI using pip.
+         ("python-autopep8" ,python-autopep8)
+         ("python-black" ,python-black)
+         ("python-flake8" ,python-flake8)
+         ("python-jedi" ,python-jedi)
+         ("python-yapf" ,python-yapf)))
+      (native-inputs
+       `(("ert-runner" ,emacs-ert-runner)
+         ("emacs-f" ,emacs-f)
+         ("python" ,python-wrapper)
+         ;; For documentation.
+         ("python-sphinx" ,python-sphinx)
+         ("texinfo" ,texinfo)))
+      (home-page "https://github.com/jorgenschaefer/elpy")
+      (synopsis "Python development environment for Emacs")
+      (description "Elpy brings powerful Python editing to Emacs.  It combines
 and configures a number of other packages written in Emacs Lisp as well as
 Python, together offering features such as navigation, documentation,
 completion, interactive development and more.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-rainbow-delimiters
   (package
