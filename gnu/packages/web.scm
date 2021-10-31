@@ -5092,7 +5092,7 @@ fast and flexible way of exploring HTML from the terminal.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libsoup" ,libsoup)))
+     `(("libsoup" ,libsoup-minimal-2)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
