@@ -7545,7 +7545,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.40.0")
+    (version "3.43.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7553,7 +7553,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yn3n9pn2afrfv36cy2vxhm5r8lbn4gb0kyvpxvknm3gkyblyp2q"))))
+                "1s5pmy3hx6hhnyi40r7b773py9kn2qbkxnpxv6149z9fl5ikdjrv"))))
     (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -7588,7 +7588,9 @@ window manager.")
        ("json-glib" ,json-glib)
        ("libsecret" ,libsecret)
        ("rest" ,rest)
-       ("webkitgtk" ,webkitgtk)))
+       ;; WebKitGtk propagates libsoup 3, which causes the build to fail; so
+       ;; use a special variant.
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (synopsis "Single sign-on framework for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineAccounts")
     (description
