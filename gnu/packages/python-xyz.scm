@@ -8386,7 +8386,6 @@ without using the configuration machinery.")
        ("python-traitlets" ,python-traitlets)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)
        ("python-pytest-timeout" ,python-pytest-timeout)
        ("python-async-generator" ,python-async-generator)
        ("python-mock" ,python-mock)
