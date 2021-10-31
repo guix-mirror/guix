@@ -74,7 +74,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "6.16")
+    (version "6.20")
     (source
      (origin
        (method url-fetch)
@@ -86,7 +86,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "1s7sz1rimax4kxij1ngkwnx4hcljwjq3q5gksz22k8cq1l2r4l39"))))
+        (base32 "0wc4a8slb3k859sdw9wwy92zc4pq7xw1kbq4frnxbzbvkiz26a20"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -194,15 +194,12 @@
                  (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
                   (format #f "~a\"~a\"" defso (find-so soname))))
                #t)))
-         (add-after 'patch-generated-file-shebangs 'patch-makefile
+         (add-after 'patch-generated-file-shebangs 'patch-makedep
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "Makefile") ; Makefile is first regenerated
-             (substitute* "Makefile"
-               (("-lntdll" id)
-                (string-append id
-                               " -Wl,-rpath=" (assoc-ref outputs "out")
-                               "/lib/wine32/wine/$(ARCH)-unix")))
-             #t)))))
+             (substitute* "tools/makedep.c"
+               (("output_filenames\\( unix_libs \\);" all)
+                (string-append all
+                               "output ( \" -Wl,-rpath=%s \", so_dir );"))))))))
     (home-page "https://www.winehq.org/")
     (synopsis "Implementation of the Windows API (32-bit only)")
     (description
@@ -262,15 +259,12 @@ integrate Windows applications into your desktop.")
                       #t)))))
              (_
               `()))
-         (add-after 'patch-generated-file-shebangs 'patch-makefile
+         (add-after 'patch-generated-file-shebangs 'patch-makedep
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "Makefile") ; Makefile is first regenerated
-             (substitute* "Makefile"
-               (("-lntdll" id)
-                (string-append id
-                               " -Wl,-rpath=" (assoc-ref outputs "out")
-                               "/lib/wine64/wine/$(ARCH)-unix")))
-             #t))
+             (substitute* "tools/makedep.c"
+               (("output_filenames\\( unix_libs \\);" all)
+                (string-append all
+                               "output ( \" -Wl,-rpath=%s \", so_dir );")))))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine"))
