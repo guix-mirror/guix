@@ -546,6 +546,11 @@ decentralized calling using P2P-DHT.")
          (add-after 'unpack 'change-directory
            (lambda _
              (chdir "client-gnome")))
+         (add-after 'change-directory 'fix-webkit-detection
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("WEBKIT webkit2gtk-4.0")
+                "WEBKIT webkit2gtk-4.1"))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
