@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -36,19 +36,26 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system meson)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aspell)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages ebook)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
@@ -285,6 +292,104 @@ words in close proximity to each other.  It handles context gracefully,
 accounting for new lines and paragraph changes.  It also has robust support
 for parsing HTML files.")
     (license gpl3+)))
+
+(define-public recoll
+  (package
+    (name "recoll")
+    (version "1.31.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.lesbonscomptes.com/recoll/"
+                           "recoll-" version ".tar.gz"))
+       (sha256
+        (base32 "0m1w5hf2n09lbzmzvlrm2lks4lci9vvjxy2mcmgb2avgly7v5vfk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-webkit"
+             "--disable-python-module"
+             "--without-systemd"
+             (string-append "QMAKEPATH=" (assoc-ref %build-inputs "qtbase")
+                            "/bin/qmake"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-default-data-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "python/recoll/recoll/rclconfig.py"
+               (("/opt/local")
+                (assoc-ref outputs "out")))))
+         (add-after 'install 'wrap-filters
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mapping
+                     '(("rclps"
+                        "poppler")
+                       ("rclpdf.py"
+                        "poppler")
+                       ("rclpurple"
+                        "gawk")
+                       ("rcllyx"
+                        "libiconv")
+                       ("rcltex"
+                        "libiconv")
+                       ("rclkwd"
+                        "unzip" "gzip" "tar" "libxslt")
+                       ("rclman"
+                        "groff")
+                       ("rclgaim"
+                        "gawk" "libiconv")
+                       ("rclaptosidman"
+                        "sed")
+                       ("rclscribus"
+                        "grep" "gawk" "sed"))))
+               (for-each
+                (lambda (program packages)
+                  (wrap-program (string-append out "/share/recoll/filters/" program)
+                    `("PATH" ":" prefix
+                      ,(map (lambda (i)
+                              (string-append (assoc-ref inputs i) "/bin"))
+                            packages))))
+                (map car mapping)
+                (map cdr mapping))
+
+               (wrap-program (string-append out "/share/recoll/filters/rclimg")
+                 `("PERL5LIB" ":" prefix
+                   (,(getenv "PERL5LIB"))))))))))
+    (inputs
+     `(("aspell" ,aspell)
+       ("chmlib" ,chmlib)
+       ("inotify-tools" ,inotify-tools)
+       ("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
+       ("python" ,python)
+       ("qtbase" ,qtbase-5)
+       ("unzip" ,unzip)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+
+       ;; For filters
+       ("gawk" ,gawk)
+       ("grep" ,grep)
+       ("groff" ,groff)
+       ("gzip" ,gzip)
+       ("libiconv" ,libiconv)
+       ("perl" ,perl)
+       ("perl-image-exiftool" ,perl-image-exiftool)
+       ("poppler" ,poppler)
+       ("sed" ,sed)
+       ("tar" ,tar)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://www.lesbonscomptes.com/recoll/")
+    (synopsis "Find documents based on their contents or file names")
+    (description "Recoll finds documents based on their contents as well as
+their file names.  It can search most document formats, but you may need
+external applications for text extraction.  It can reach any storage place:
+files, archive members, email attachments, transparently handling
+decompression.")
+    (license gpl2+)))
 
 (define-public hyperestraier
   (package

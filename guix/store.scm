@@ -1349,11 +1349,14 @@ on the build output of a previous derivation."
   (things       unresolved-things)
   (continuation unresolved-continuation))
 
-(define (build-accumulator continue store things mode)
-  "This build handler accumulates THINGS and returns an <unresolved> object."
-  (if (= mode (build-mode normal))
-      (unresolved things continue)
-      (continue #t)))
+(define (build-accumulator expected-store)
+  "Return a build handler that accumulates THINGS and returns an <unresolved>
+object, only for build requests on EXPECTED-STORE."
+  (lambda (continue store things mode)
+    (if (and (eq? store expected-store)
+             (= mode (build-mode normal)))
+        (unresolved things continue)
+        (continue #t))))
 
 (define* (map/accumulate-builds store proc lst
                                 #:key (cutoff 30))
@@ -1366,13 +1369,16 @@ CUTOFF is the threshold above which we stop accumulating unresolved nodes."
   ;; stumbling upon the same .drv build requests with many incoming edges.
   ;; See <https://bugs.gnu.org/49439>.
 
+  (define accumulator
+    (build-accumulator store))
+
   (define-values (result rest)
     (let loop ((lst lst)
                (result '())
                (unresolved 0))
       (match lst
         ((head . tail)
-         (match (with-build-handler build-accumulator
+         (match (with-build-handler accumulator
                   (proc head))
            ((? unresolved? obj)
             (if (>= unresolved cutoff)

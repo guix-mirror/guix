@@ -231,13 +231,15 @@ files.")
               '(begin
                  ;; Make libraries respect LDFLAGS.
                  (substitute* '("paranoia/Makefile.in" "interface/Makefile.in")
-                   (("-Wl,-soname") "$(LDFLAGS) -Wl,-soname"))
-                 #t))))
+                   (("-Wl,-soname") "$(LDFLAGS) -Wl,-soname"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there is no check target
        #:configure-flags ; Add $libdir to the RUNPATH of all the executables.
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       ;; Building in parallel is flaky: “ld: […]/cachetest.c:393: undefined
+       ;; reference to `paranoia_free'”.
+       #:parallel-build? #f))
     (home-page "https://www.xiph.org/paranoia/")
     (synopsis "Audio CD reading utility")
     (description "Cdparanoia retrieves audio tracks from CDDA capable CDROM

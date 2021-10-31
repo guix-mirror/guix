@@ -490,6 +490,34 @@
             (equal? (map derivation-file-name (drop d 16)) batch3)
             lst)))))
 
+(test-equal "map/accumulate-builds and different store"
+  '(d2)                               ;see <https://issues.guix.gnu.org/46756>
+  (let* ((b  (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s  (add-to-store %store "bash" #t "sha256"
+                           (search-bootstrap-binary "bash"
+                                                    (%current-system))))
+         (d1 (derivation %store "first"
+                         s `("-e" ,b)
+                         #:env-vars `(("foo" . ,(random-text)))
+                         #:sources (list b s)))
+         (d2 (derivation %store "second"
+                         s `("-e" ,b)
+                         #:env-vars `(("foo" . ,(random-text))
+                                      ("bar" . "baz"))
+                         #:sources (list b s))))
+    (with-store alternate-store
+      (with-build-handler (lambda (continue store things mode)
+                            ;; If this handler is called, it means that
+                            ;; 'map/accumulate-builds' triggered a build,
+                            ;; which it shouldn't since the inner
+                            ;; 'build-derivations' call is for another store.
+                            'failed)
+        (map/accumulate-builds %store
+                               (lambda (drv)
+                                 (build-derivations alternate-store (list d2))
+                                 'd2)
+                               (list d1))))))
+
 (test-assert "mapm/accumulate-builds"
   (let* ((d1 (run-with-store %store
                (gexp->derivation "foo" #~(mkdir #$output))))

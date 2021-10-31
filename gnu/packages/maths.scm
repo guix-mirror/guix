@@ -1315,7 +1315,7 @@ extremely large and complex data collections.")
 (define-public hdf5-1.12
   (package
     (inherit hdf5-1.8)
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
@@ -1329,7 +1329,7 @@ extremely large and complex data collections.")
                                         (take (string-split version #\.) 2))
                                  "/src/hdf5-" version ".tar.bz2")))
        (sha256
-        (base32 "0qazfslkqbmzg495jafpvqp0khws3jkxa0z7rph9qvhacil6544p"))
+        (base32 "074g3z504xf77ff38igs30i1aqxpm508p7yw78ykva7dncrgbyda"))
        (patches (search-patches "hdf5-config-date.patch"))))))
 
 (define-public hdf5
@@ -2223,6 +2223,163 @@ Computational Engineering and Sciences} at The University of Texas at Austin.
 @code{libflame} includes a compatibility layer, @code{lapack2flame}, which
 includes a complete LAPACK implementation.")
     (license license:bsd-3)))
+
+(define-public libpotassco
+  ;; No public release, update together with clasp
+  (let ((revision "1")
+        (commit "2f9fb7ca2c202f1b47643aa414054f2f4f9c1821"))
+    (package
+      (name "libpotassco")
+      (version (git-version "0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/potassco/libpotassco")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1c32f9gqclf7qx07lpx8wd720vfhkjqhzc6nyy8mjmgwpmb3iyyn"))))
+      (arguments
+       `(#:configure-flags '("-DLIB_POTASSCO_BUILD_TESTS=on"
+                             "-DLIB_POTASSCO_INSTALL_LIB=on"
+                             "-DBUILD_SHARED_LIBS=on")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-cmake
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 ;; clasp expects lowercase potassco and include directory is
+                 ;; lowercase as well, so let's use that
+                 (("\"cmake/Potassco\"") "\"cmake/potassco\"")
+                 (("PotasscoConfig\\.cmake") "potassco-config.cmake")
+                 (("PotasscoConfigVersion\\.cmake")
+                  "potassco-config-version.cmake"))
+               (rename-file "cmake/PotasscoConfig.cmake.in"
+                            "cmake/potassco-config.cmake.in"))))))
+      (build-system cmake-build-system)
+      (home-page "https://potassco.org/")
+      (synopsis "Utility library for Potassco's projects")
+      (description "@code{libpotassco} is a utility library providing functions
+and datatypes for
+@itemize
+@item parsing, writing, and converting logic programs in aspif and smodels
+format,
+@item passing information between a grounder and a solver,
+@item and defining and parsing command-line options and for creating
+command-line applications.
+@end itemize
+Furthermore, it comes with the tool @command{lpconvert} that converts either
+between aspif and smodels format or to a human-readable text format.")
+      (license license:expat))))
+
+(define-public clasp
+  (package
+    (name "clasp")
+    (version "3.3.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/potassco/clasp")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rahqiq530jckvx717858h1q5p8znp1kb6sjm95p8blkr4n3pvmj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DCLASP_BUILD_TESTS=on"
+                           "-DCLASP_INSTALL_LIB=on"
+                           "-DCLASP_USE_LOCAL_LIB_POTASSCO=off"
+                           "-DBUILD_SHARED_LIBS=on")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ;; Use lowercase to be consistent with libpotassco
+               (("\"cmake/Clasp\"") "\"cmake/clasp\"")
+               (("ClaspConfig\\.cmake") "clasp-config.cmake")
+               (("ClaspConfigVersion\\.cmake")
+                "clasp-config-version.cmake"))
+             (substitute* "cmake/ClaspConfig.cmake.in"
+               (("find_package\\(Potassco") "find_package(potassco"))
+             (rename-file "cmake/ClaspConfig.cmake.in"
+                          "cmake/clasp-config.cmake.in"))))))
+    (inputs
+     `(("libpotassco" ,libpotassco)))
+    (home-page "https://potassco.org/")
+    (synopsis "Answer set solver")
+    (description "clasp is an answer set solver for (extended) normal and
+disjunctive logic programs.  The primary algorithm of clasp relies on
+conflict-driven nogood learning, a technique that proved very successful for
+satisfiability checking (SAT).")
+    (license license:expat)))
+
+(define-public clingo
+  (package
+    (name "clingo")
+    (version "5.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/potassco/clingo")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rfjwkcwm0mmf3r4i7asyjwb6cia4i7px7fn2kdbi9j85qvas4pb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags `("-DCLINGO_BUILD_TESTS=on"
+                           "-DCLINGO_INSTALL_LIB=on"
+                           "-DCLINGO_BUILD_STATIC=off"
+                           "-DCLINGO_BUILD_SHARED=on"
+                           ;; XXX: Clingo requries private headers and
+                           ;;      sources from clasp
+                           ,(string-append
+                             "-DCLASP_SOURCE_DIR="
+                             (assoc-ref %build-inputs "clasp-src")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("add_subdirectory\\(clasp\\)")
+                "find_package(clasp REQUIRED)"))
+             (substitute* "libclingo/CMakeLists.txt"
+               (("\"cmake/Clingo\"") "\"cmake/clingo\"")
+               (("ClingoConfig\\.cmake") "clingo-config.cmake")
+               (("ClingoConfigVersion\\.cmake")
+                "clingo-config-version.cmake"))
+             (substitute* "cmake/ClingoConfig.cmake.in"
+               (("find_package\\(Clasp") "find_package(clasp"))
+             (rename-file "cmake/ClingoConfig.cmake.in"
+                          "cmake/clingo-config.cmake.in")))
+         (add-after 'unpack 'skip-failing-tests
+           (lambda _
+             (with-directory-excursion "libclingo/tests"
+               (substitute* "CMakeLists.txt"
+                 (("COMMAND test_clingo" all)
+                  (string-append all
+                                 " -f "
+                                 "\"${CMAKE_CURRENT_SOURCE_DIR}/good.txt\"")))
+               (call-with-output-file "good.txt"
+                 (lambda (port)
+                   (for-each (lambda (test) (format port "~s~%" test))
+                             '("parse-ast-v2" "add-ast-v2" "build-ast-v2"
+                               "unpool-ast-v2" "parse_term"
+                               "propagator" "propgator-sequence-mining"
+                               "symbol" "visitor"))))))))))
+    (inputs
+     `(("clasp" ,clasp)
+       ("libpotassco" ,libpotassco)))
+    (native-inputs
+     `(("clasp-src" ,(package-source clasp))))
+    (home-page "https://potassco.org/")
+    (synopsis "Grounder and solver for logic programs")
+    (description "Clingo computes answer sets for a given logic program.")
+    (license license:expat)))
 
 (define-public ceres
   (package
@@ -5662,6 +5819,65 @@ as equations, scalars, vectors, and matrices.")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
     (license license:expat)))
+
+(define-public ocaml-z3
+  (package
+    (inherit z3)
+    (name "ocaml-z3")
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build python-build-system) #:select (site-packages))
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:tests? #f; no ml tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "OCAMLFIND_LDCONF" "ignore")
+               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
+               (mkdir-p (string-append out "/lib/ocaml/site-lib"))
+               (substitute* "scripts/mk_util.py"
+                 (("LIBZ3 = LIBZ3")
+                  (string-append "LIBZ3 = LIBZ3 + ' -dllpath " out "/lib'"))
+                 ;; Do not build z3 again, use the library passed as input
+                 ;; instead
+                 (("z3linkdep,") "\"\",")
+                 (("z3linkdep)") "\"\")"))
+               (invoke "python" "scripts/mk_make.py"))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure"
+                     "--ml"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+         (add-after 'configure 'change-directory
+           (lambda _
+             (chdir "build")
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "make" "ml")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "ocamlfind" "install" "-destdir"
+                     (string-append (assoc-ref outputs "out") "/lib/ocaml/site-lib")
+                     "z3" "api/ml/META" "api/ml/z3enums.mli" "api/ml/z3enums.cmi"
+                     "api/ml/z3enums.cmx" "api/ml/z3native.mli"
+                     "api/ml/z3native.cmi" "api/ml/z3native.cmx"
+                     "../src/api/ml/z3.mli" "api/ml/z3.cmi" "api/ml/z3.cmx"
+                     "api/ml/libz3ml.a" "api/ml/z3ml.a" "api/ml/z3ml.cma"
+                     "api/ml/z3ml.cmxa" "api/ml/z3ml.cmxs" "api/ml/dllz3ml.so"))))))
+    (native-inputs
+     `(("which" ,which)
+       ("python" ,python-wrapper)
+       ("ocaml" ,ocaml)
+       ("ocaml-findlib" ,ocaml-findlib)))
+    (propagated-inputs
+     `(("ocaml-zarith" ,ocaml-zarith)))
+    (inputs
+     `(("z3" ,z3)))))
 
 (define-public elpa
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -59,6 +59,7 @@
         ;; failed" crash: <https://bugs.gnu.org/47428>.
         (computed-file (computed-file-name result)
                        (computed-file-gexp result)
+                       #:local-build? #f
                        #:options (computed-file-options result)
                        #:guile guile-3.0-latest)))))
 
@@ -699,7 +700,7 @@ makeinfo OPTIONS."
                             '#$languages)))))
 
   (let* ((name   (string-append manual "-html-manual"))
-         (manual (computed-file name build)))
+         (manual (computed-file name build #:local-build? #f)))
     (syntax-highlighted-html manual
                              #:mono-node-indexes mono-node-indexes
                              #:split-node-indexes split-node-indexes
@@ -803,7 +804,8 @@ PDF for language '~a'!~%~%"
                                 opts))))
                     '#$languages))))
 
-  (computed-file (string-append manual "-pdf-manual") build))
+  (computed-file (string-append manual "-pdf-manual") build
+                 #:local-build? #f))
 
 (define (guix-manual-text-domain source languages)
   "Return the PO files for LANGUAGES of the 'guix-manual' text domain taken

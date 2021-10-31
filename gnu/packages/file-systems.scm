@@ -88,7 +88,7 @@
 (define-public autofs
   (package
     (name "autofs")
-    (version "5.1.7")
+    (version "5.1.8")
     (source
      (origin
        (method url-fetch)
@@ -96,7 +96,7 @@
                            "v" (version-major version) "/"
                            "autofs-" version ".tar.xz"))
        (sha256
-        (base32 "1myfz6a3wj2c4j9h5g44zj796fdi82jhp1s92w2hg6xp2632csx3"))))
+        (base32 "1zf0fgf6kr9amxq5amlgsp1v13sizwl3wvx2xl7b4r2nhmci0gdk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -118,8 +118,7 @@
            (lambda _
              (substitute* "configure"
                (("^searchpath=\".*\"")
-                "searchpath=\"$PATH\""))
-             #t))
+                "searchpath=\"$PATH\""))))
          (add-before 'configure 'fix-rpath
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -132,8 +131,7 @@
            (lambda _
              (substitute* "modules/Makefile"
                (("ln -fs lookup_yp.so" match)
-                (string-append "# " match)))
-             #t)))))
+                (string-append "# " match))))))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
@@ -416,8 +414,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "37850436dd7dfbe67738749c4d4a2506ffff1ec3")
-        (revision "11"))
+  (let ((commit "f9f57789de567726f7cfa46bd13df4b0815d137a")
+        (revision "12"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -429,7 +427,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "040vgxrimahmfs9rhlggfwg0bzl7h9j2ksx3563rh63asjwlhnhi"))))
+          (base32 "13442qpmv7hywkpbnbwlg2sfhlfh16qxry1xwlv35vch2qnzlhrq"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -509,7 +507,17 @@ performance and other characteristics.")
       (substitute-keyword-arguments (package-arguments bcachefs-tools)
         ((#:make-flags make-flags)
          `(append ,make-flags
-                  (list "LDFLAGS=-static")))))
+                  (list "LDFLAGS=-static")))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'skip-shared-library
+              (lambda _
+                (substitute* "Makefile"
+                  ;; Building the shared library with ‘-static’ obviously fails…
+                  (("^((all|install):.*)\\blib\\b(.*)" _ prefix suffix)
+                   (string-append prefix suffix "\n"))
+                  ;; …as does installing a now non-existent file.
+                  ((".*\\$\\(INSTALL\\).* lib.*") ""))))))))
      (inputs
       `(("eudev:static" ,eudev "static")
         ("libscrypt:static" ,libscrypt "static")

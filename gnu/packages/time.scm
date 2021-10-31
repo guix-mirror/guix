@@ -435,10 +435,10 @@ timestamps.")
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytz" ,python-pytz)
        ("python-simplejson" ,python-simplejson)))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-pytz" ,python-pytz)))
+     `(("python-dateutil" ,python-dateutil)))
     (home-page "https://github.com/arrow-py/arrow")
     (synopsis "Dates and times for Python")
     (description

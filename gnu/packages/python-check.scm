@@ -120,7 +120,7 @@ interfaces with pytest.")
        ("python-six" ,python-six)))
     (home-page "https://github.com/nicoulaj/pytest-csv")
     (synopsis "CSV reporter for Pytest")
-    (description "This packages provides a plugin for Pytest that enables a
+    (description "This package provides a plugin for Pytest that enables a
 CSV output mode for Pytest.  It can be enabled via the @option{--csv} option
 it adds to the Pytest command line interface (CLI).")
     (license license:gpl3+)))

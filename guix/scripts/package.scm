@@ -68,6 +68,7 @@
             guix-package
 
             search-path-environment-variables
+            manifest-entry-version-prefix
 
             transaction-upgrade-entry             ;mostly for testing
 
@@ -327,31 +328,35 @@ Alternately, see @command{guix package --search-paths -p ~s}.")
 ;;; Export a manifest.
 ;;;
 
+(define (manifest-entry-version-prefix entry)
+  "Search among all the versions of ENTRY's package that are available, and
+return the shortest unambiguous version prefix for this package.  If only one
+version of ENTRY's package is available, return the empty string."
+  (let ((name (manifest-entry-name entry)))
+    (match (map package-version (find-packages-by-name name))
+      ((_)
+       ;; A single version of NAME is available, so do not specify the
+       ;; version number, even if the available version doesn't match ENTRY.
+       "")
+      (versions
+       ;; If ENTRY uses the latest version, don't specify any version.
+       ;; Otherwise return the shortest unique version prefix.  Note that
+       ;; this is based on the currently available packages, which could
+       ;; differ from the packages available in the revision that was used
+       ;; to build MANIFEST.
+       (let ((current (manifest-entry-version entry)))
+         (if (every (cut version>? current <>)
+                    (delete current versions))
+             ""
+             (version-unique-prefix (manifest-entry-version entry)
+                                    versions)))))))
+
 (define* (export-manifest manifest
                           #:optional (port (current-output-port)))
   "Write to PORT a manifest corresponding to MANIFEST."
-  (define (version-spec entry)
-    (let ((name (manifest-entry-name entry)))
-      (match (map package-version (find-packages-by-name name))
-        ((_)
-         ;; A single version of NAME is available, so do not specify the
-         ;; version number, even if the available version doesn't match ENTRY.
-         "")
-        (versions
-         ;; If ENTRY uses the latest version, don't specify any version.
-         ;; Otherwise return the shortest unique version prefix.  Note that
-         ;; this is based on the currently available packages, which could
-         ;; differ from the packages available in the revision that was used
-         ;; to build MANIFEST.
-         (let ((current (manifest-entry-version entry)))
-           (if (every (cut version>? current <>)
-                      (delete current versions))
-               ""
-               (version-unique-prefix (manifest-entry-version entry)
-                                      versions)))))))
-
   (match (manifest->code manifest
-                         #:entry-package-version version-spec)
+                         #:entry-package-version
+                         manifest-entry-version-prefix)
     (('begin exp ...)
      (format port (G_ "\
 ;; This \"manifest\" file can be passed to 'guix package -m' to reproduce

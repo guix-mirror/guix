@@ -151,7 +151,7 @@ a continuous layout.")
 (define-public pdf2djvu
   (package
     (name "pdf2djvu")
-    (version "0.9.18")
+    (version "0.9.18.1")
     (source
      (origin
        (method url-fetch)
@@ -159,7 +159,7 @@ a continuous layout.")
              "https://github.com/jwilk/pdf2djvu/releases/download/" version
              "/pdf2djvu-" version ".tar.xz"))
        (sha256
-        (base32 "0vxa0b3g7zhflc5m6ln4f0hi0shsqyqc3344y7azlllibxc5ba22"))))
+        (base32 "0c595yziz81c9izf9s5sskd00qmgz2n1hp2vdcgg0dx81g3xfidb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -177,9 +177,12 @@ a continuous layout.")
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-home-for-tests
+         (add-after 'unpack 'fix-tests
            (lambda _
-             (setenv "HOME" "/tmp"))))))
+             (substitute* "tests/test-xmp-broken.py"
+               ;; Error message changed in recent versions of XML parser
+               (("XML parsing failure")
+                "Error in XMLValidator")))))))
     (synopsis "PDF to DjVu converter")
     (description
      "@code{pdf2djvu} creates DjVu files from PDF files.

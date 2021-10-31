@@ -866,7 +866,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
 (define-public allegro-4
   (package
     (name "allegro")
-    (version "4.4.3")
+    (version "4.4.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/"
@@ -874,7 +874,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d5ws3ihvpa6f4qc6a6drq31pajw6bblxifr4kcxzqj9br1nw28y"))))
+                "1m6lz35nk07dli26kkwz3wa50jsrxs1kb6w1nj14a911l34xn6gc"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -886,8 +886,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
              ;; unconditionally clobbered in the build script.
              (substitute* '("CMakeLists.txt")
                (("ADDON_LINKAGE STATIC")
-                "ADDON_LINKAGE SHARED"))
-             #t)))))
+                "ADDON_LINKAGE SHARED")))))))
     (inputs
      `(("glu" ,glu)
        ("libpng" ,libpng)
@@ -1184,7 +1183,7 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "7.4.8"))
+        (renpy-version "7.4.10"))
     (package
       (inherit python-pygame)
       (name "python-pygame-sdl2")
@@ -1194,7 +1193,7 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1yyqcg7khac17jif86vi2d4j9l8x2vfg4h5pasrwwsy0g8386zsm"))
+         (sha256 (base32 "0m0asrr722a4v24fm8199b0c53igagylay8bn9bz9rmc0r4v8si4"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1240,21 +1239,19 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.8")
+    (version "7.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1ml3gs87xxk1iflrg5ivffr4q8fi7d65l1cx462bvvpm1rs2sa8d"))
+       (sha256 (base32 "1yngs2kh1l8micg28mcp9580qsvgq3aa8bkhv2xqfkg9qqrbr8y4"))
        (modules '((guix build utils)))
        (patches
         (search-patches
          "renpy-use-system-fribidi.patch"))
        (snippet
         '(with-directory-excursion "module"
-           ;; drop generated sources
-           (delete-file-recursively "gen")
            ;; drop fribidi sources
            (delete-file-recursively "fribidi-src")
            #t))))

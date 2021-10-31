@@ -41,6 +41,7 @@
   #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
@@ -262,16 +263,16 @@ display manager which supports different greeters.")
 (define-public lightdm-gtk-greeter
   (package
     (name "lightdm-gtk-greeter")
-    (version "2.0.7")
+    (version "2.0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://launchpad.net/lightdm-gtk-greeter/"
-                    (version-major+minor version) "/" version
-                    "/+download/lightdm-gtk-greeter-" version ".tar.gz"))
+                    "https://github.com/xubuntu/lightdm-gtk-greeter"
+                    "/releases/download/lightdm-gtk-greeter-" version "/"
+                    "lightdm-gtk-greeter-" version ".tar.gz"))
               (sha256
                (base32
-                "1g7wc3d3vqfa7mrdhx1w9ywydgjbffla6rbrxq9k3sc62br97qms"))))
+                "04q62mvr97l9gv8h37hfarygqc7p0498ig7xclcg4kxkqw0b7yxy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -306,14 +307,16 @@ display manager which supports different greeters.")
     (native-inputs
      `(("exo" ,exo)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xfce4-dev-tools" ,xfce4-dev-tools)))
     (inputs
-     `(("lightdm" ,lightdm)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("lightdm" ,lightdm)
        ("shared-mime-info" ,shared-mime-info)
        ("at-spi2-core" ,at-spi2-core)
        ("gtk+" ,gtk+)))
     (synopsis "GTK+ greeter for LightDM")
-    (home-page "https://launchpad.net/lightdm-gtk-greeter")
+    (home-page "https://github.com/xubuntu/lightdm-gtk-greeter")
     (description "This package provides a LightDM greeter implementation using
 GTK+, lets you select a desktop session and log in to it.")
     (license license:gpl3+)))

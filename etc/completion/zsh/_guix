@@ -58,6 +58,7 @@ _guix_list_available_packages()
     if ( [[ ${+_guix_available_packages} -eq 0 ]] || _cache_invalid GUIX_AVAILABLE_PACKAGES ) \
        && ! _retrieve_cache GUIX_AVAILABLE_PACKAGES; then
         _guix_available_packages=(${${(f)"$(guix package -A | cut -f1)"}})
+        _guix_available_packages=("${_guix_available_packages[@]// /}")
         _store_cache GUIX_AVAILABLE_PACKAGES _guix_available_packages
     fi
 }

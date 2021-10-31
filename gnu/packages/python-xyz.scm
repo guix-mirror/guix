@@ -110,6 +110,7 @@
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
+;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4332,7 +4333,7 @@ software version simply.")
 (define-public python-deprecated
   (package
     (name "python-deprecated")
-    (version "1.2.5")
+    (version "1.2.13")
     (source
      (origin
        (method git-fetch)
@@ -4342,13 +4343,14 @@ software version simply.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14909glxxwwc4b9qpz2b9jdriwzi5n65ichw85xqppap5f79wcwz"))))
+         "0v4ys9xr8lski2r98da99spsj6hjlnnqgnhhmyhrm66myiix885c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda _
-                      (invoke "pytest"))))))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest")))))))
     (propagated-inputs
      `(("python-wrapt" ,python-wrapt)))
     (native-inputs
@@ -18389,14 +18391,14 @@ perform the operations required for synchronizing plain text.")
 (define-public python-levenshtein
   (package
     (name "python-levenshtein")
-    (version "0.12.0")
+    (version "0.12.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "python-Levenshtein" version))
       (sha256
        (base32
-        "1c9ybqcja31nghfcc8xxbbz9h60s9qi12b9hr4jyl69xbvg12fh3"))))
+        "1xj60gymwx1jl2ra9razx2wk8nb9cv1i7l8d14qsp8a8s7xra8yw"))))
     (build-system python-build-system)
     (home-page "https://github.com/ztane/python-Levenshtein")
     (synopsis "Fast computation of Levenshtein distance and string similarity")
@@ -27051,8 +27053,8 @@ result.")
     (home-page "https://github.com/readthedocs/recommonmark")
     (synopsis "Docutils-compatibility bridge to CommonMark")
     (description
-     "This packages provides a docutils-compatibility bridge to CommonMark,
-enabling you to write CommonMark inside of Docutils & Sphinx projects.")
+     "This package provides a docutils-compatibility bridge to CommonMark that
+lets you write CommonMark inside of Docutils & Sphinx projects.")
     (license license:expat)))
 
 (define-public python-pyhull
@@ -27125,7 +27127,8 @@ and BMI2).")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1yy62k3cjr6556nbp651w6v4hzl7kz4y75wy2dfqgndgbnixskx2"))))
+                  "1yy62k3cjr6556nbp651w6v4hzl7kz4y75wy2dfqgndgbnixskx2"))
+                (patches (search-patches "python-peachpy-determinism.patch"))))
       (build-system python-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
@@ -27660,3 +27663,38 @@ and decorators library.  It is useful when changing behavior in existing
 code is desired.  It includes tools for debugging and testing:
 simple mock/record and a complete capture/replay framework.")
     (license license:bsd-2)))
+
+(define-public python-ijson
+  (package
+    (name "python-ijson")
+    (version "3.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ijson" version))
+       (sha256
+        (base32 "1sp463ywj4jv5cp6hsv2qwiima30d09xsabxb2dyq5b17jp0640x"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; the tests run by the default setup.py require yajl 1.x,
+         ;; but we have 2.x.  yajl 1.x support is going to be removed
+         ;; anyway, so use pytest to avoid running the yajl1-related
+         ;; tests. See: https://github.com/ICRAR/ijson/issues/55
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
+    (inputs
+     ;; libyajl is optional, but compiling with it makes faster
+     ;; backends available to ijson:
+     `(("libyajl", libyajl)))
+    (native-inputs
+     `(("python-pytest", python-pytest)))
+    (build-system python-build-system)
+    (home-page "https://github.com/ICRAR/ijson")
+    (synopsis "Iterative JSON parser with Python iterator interfaces")
+    (description
+     "Ijson is an iterative JSON parser with standard Python iterator
+interfaces.")
+    (license license:bsd-3)))

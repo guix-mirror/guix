@@ -265,6 +265,13 @@
            (manifest-transaction-removal-candidate? guile-2.0.9 t)
            (null? install) (null? downgrade) (null? upgrade)))))
 
+(test-assert "package->development-manifest"
+  (let ((manifest (package->development-manifest packages:hello)))
+    (every (lambda (name)
+             (manifest-installed? manifest
+                                  (manifest-pattern (name name))))
+           '("gcc" "binutils" "glibc" "coreutils" "grep" "sed"))))
+
 (test-assertm "profile-derivation"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry %bootstrap-guile))

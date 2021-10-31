@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,7 +181,7 @@ in intelligent transportation networks.")
                       (substitute* "Makefile"
                         (("test-runtime\\$\\(EXEEXT\\)") ""))
                       #t)))))
-    (home-page "https://p11-glue.freedesktop.org/p11-kit.html")
+    (home-page "https://p11-glue.github.io/p11-glue/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
      "p11-kit provides a way to load and enumerate PKCS#11 modules.  It
@@ -189,6 +190,24 @@ in such a way that they are discoverable.  It also solves problems with
 coordinating the use of PKCS#11 by different components or libraries
 living in the same process.")
     (license license:bsd-3)))
+
+(define-public p11-kit-next
+  (package
+    (inherit p11-kit)
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
+                           "download/" version "/p11-kit-" version ".tar.xz"))
+       (sha256
+        (base32 "11f6saclxsclc1f3lbavzw8kikws4cr3mfd1avly8dgnhh2i9rl1"))))
+    (arguments
+     ;; Use the default certificates so that users such as flatpak find them.
+     ;; See <https://issues.guix.gnu.org/49957>.
+     (substitute-keyword-arguments (package-arguments p11-kit)
+       ((#:configure-flags flags ''())
+        ''("--with-trust-paths=/etc/ssl/certs/ca-certificates.crt"))))))
 
 (define-public gnutls
   (package

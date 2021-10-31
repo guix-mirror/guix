@@ -34,6 +34,8 @@
   #:use-module (web uri)
   #:use-module (guix memoization)
   #:use-module (guix http-client)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module ((guix serialization) #:select (write-file))
@@ -171,11 +173,11 @@ package definition."
 release."
   (let ((url (string->uri (bioconductor-packages-list-url type))))
     (guard (c ((http-get-error? c)
-               (format (current-error-port)
-                       "error: failed to retrieve list of packages from ~s: ~a (~s)~%"
-                       (uri->string (http-get-error-uri c))
-                       (http-get-error-code c)
-                       (http-get-error-reason c))
+               (warning (G_ "failed to retrieve list of packages \
+from ~a: ~a (~a)~%")
+                        (uri->string (http-get-error-uri c))
+                        (http-get-error-code c)
+                        (http-get-error-reason c))
                #f))
       ;; Split the big list on empty lines, then turn each chunk into an
       ;; alist of attributes.
@@ -237,12 +239,11 @@ case-sensitive."
     ((cran)
      (let ((url (string-append %cran-url name "/DESCRIPTION")))
        (guard (c ((http-get-error? c)
-                  (format (current-error-port)
-                          "error: failed to retrieve package information \
-from ~s: ~a (~s)~%"
-                          (uri->string (http-get-error-uri c))
-                          (http-get-error-code c)
-                          (http-get-error-reason c))
+                  (warning (G_ "failed to retrieve package information \
+from ~a: ~a (~a)~%")
+                           (uri->string (http-get-error-uri c))
+                           (http-get-error-code c)
+                           (http-get-error-reason c))
                   #f))
          (let* ((port   (http-fetch url))
                 (result (description->alist (read-string port))))

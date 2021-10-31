@@ -131,7 +131,11 @@ Be careful, all data on the disk will be lost.")
   (run-listbox-selection-page
    #:info-text (G_ "Please select the file-system type for this partition.")
    #:title (G_ "File-system type")
-   #:listbox-items '(ext4 btrfs fat16 fat32 jfs ntfs xfs swap)
+   #:listbox-items '(btrfs ext4 jfs xfs
+                           swap
+                           ;; These lack basic Unix features.  Their only use
+                           ;; on GNU is for interoperation, e.g., with UEFI.
+                           fat32 fat16 ntfs)
    #:listbox-item->text user-fs-type-name
    #:sort-listbox-items? #f
    #:button-text (G_ "Exit")

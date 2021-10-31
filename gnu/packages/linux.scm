@@ -57,6 +57,7 @@
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
+;;; Copyright © 2021 Olivier Dion <olivier.dion@polymtl.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -351,17 +352,17 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.14-version "5.14.12")
+(define-public linux-libre-5.14-version "5.14.15")
 (define-public linux-libre-5.14-gnu-revision "gnu")
 (define deblob-scripts-5.14
   (linux-libre-deblob-scripts
    linux-libre-5.14-version
    linux-libre-5.14-gnu-revision
-   (base32 "00vv2a51cvw2nx8iazmiy9i4h3jj9gvvpwz9gxp2v1hcmrsxq935")
+   (base32 "11zax57brk8bl75q68c71xsdlvslj48wpmrv8rh34sb8wym9n4mc")
    (base32 "024rz0bp3n3r5nkwbib7byx10d72c2fh5cw9iv00diyzgnp819g7")))
 (define-public linux-libre-5.14-pristine-source
   (let ((version linux-libre-5.14-version)
-        (hash (base32 "0dswxf1qk70lms5lph15i7nz3ybwiia58v8zzrmi71ajviwjc9wd")))
+        (hash (base32 "01m4qw1z7xn3ngsbm1bvcvikqpkjjr9n8585556wkmz9d469mwvl")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.14)))
@@ -369,92 +370,92 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.73")
+(define-public linux-libre-5.10-version "5.10.76")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
    linux-libre-5.10-gnu-revision
-   (base32 "19d1pdsilq1ycnx1zw3vhf9mwdxbi5nmgzm0g1kj1lkkf1y4i1mv")
+   (base32 "1swy3y851jnnmk3hc0khllpsifb98camlwyskpn1dyvjsgjljd8x")
    (base32 "024rz0bp3n3r5nkwbib7byx10d72c2fh5cw9iv00diyzgnp819g7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0xhf0g5pra27hnavpy0y3mn05m5hqn5rd3d6fx0a3vr35c1jicpd")))
+        (hash (base32 "140qkvs88b5zh6mxxzpf36z1r8bbvyh3yigripqjz1k236x0j2j8")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.153")
+(define-public linux-libre-5.4-version "5.4.156")
 (define-public linux-libre-5.4-gnu-revision "gnu1")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
    linux-libre-5.4-gnu-revision
-   (base32 "1cdxljvmivdwcy9v9fr5iv0x0d1884pf3876p9nzrly599lz2wnl")
+   (base32 "1nlgk8ajb5wl3aa96h9a0pb9j5a5wmrbpk63varn557x1d00r7wj")
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0jaz57sd51xqc7w8k3f43bfc5mdsh1413mdngqqsgr8isv4hg7vd")))
+        (hash (base32 "1zkpqfhrc5n0yiij3jzvzywgabva53c8668f1ly1pkrzcbj77zh6")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.211")
+(define-public linux-libre-4.19-version "4.19.214")
 (define-public linux-libre-4.19-gnu-revision "gnu1")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
    linux-libre-4.19-gnu-revision
-   (base32 "1hiaagdyfy6b0f9ivdy7zq0cd6akaj6v3c4nzikrgsk12vgc1a1q")
+   (base32 "06pqv050bkii0hc2v7ymny5264w1bca8db0dp1pw9mfmjg865am5")
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1m3y5gsf5s8bb4jxkri20dlxi8aiqabzaijj2h1svz4r19ca8j7v")))
+        (hash (base32 "0i08np4gxiks7chp6j328pdqb02apbba53mj4zvxb9v37qpxzqgz")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.250")
+(define-public linux-libre-4.14-version "4.14.253")
 (define-public linux-libre-4.14-gnu-revision "gnu1")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
    linux-libre-4.14-gnu-revision
-   (base32 "0cnax38650m9sxiwvc1xm5saymlsmx427j3jqpx34df2ah2rnrwf")
+   (base32 "02rxvr0gmxb3zfsyyzdmzgfq04gkdkv1cc38md0xfl0mxzdzdfyk")
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0zbf6gxm8iwf7cra310gfd0zyj8l9ckdahky9w6wb9wlznwkvd54")))
+        (hash (base32 "1mgl55c8fa2ry4qp0phkdkzjhwfnkbhvi266n348kyjyqnjl234f")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.286")
+(define-public linux-libre-4.9-version "4.9.288")
 (define-public linux-libre-4.9-gnu-revision "gnu1")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
    linux-libre-4.9-gnu-revision
-   (base32 "1n74ddrifnw06hx7ih2sk8jaiqlm1jyyhswyjpxiyhrrcvjcilch")
+   (base32 "0nai5m4rbh37qaj1xf2qj7656l2gacfh0847q5d07y22b048fq5n")
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0id62p43dmkl9ir278p0dsfg3q7m1d8rlxv0c9qi1pzalkygv8p2")))
+        (hash (base32 "0v5592v565bl924c23m1n7p5zddr0w7zn8m97pmikk6p7cyhjq9n")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.288")
+(define-public linux-libre-4.4-version "4.4.290")
 (define-public linux-libre-4.4-gnu-revision "gnu1")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
    linux-libre-4.4-gnu-revision
-   (base32 "11397dgj6cdfv6anxrj7jwgvnqvwh5i0ci6c8mb85ry6h4fnfmq4")
+   (base32 "1mmnv77432la5dkhpy1n8w59c0v6l08fyf2ggh294gyrx8nbci11")
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "028w3yzmzymy7l1nf3n1pfbg95hfi4ilphkyl00ddgj8sfm542c7")))
+        (hash (base32 "1dcx58nmzkcc5nz2b5b7mgw4w7y28v3s9wd8h78czdqfa0kxrl20")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1226,7 +1227,7 @@ and should be used with caution, especially on untested models.")
 (define-public corefreq
   (package
     (name "corefreq")
-    (version "1.86.7")
+    (version "1.87.4")
     (source
      (origin
        (method git-fetch)
@@ -1235,7 +1236,7 @@ and should be used with caution, especially on untested models.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k8pyxcahc78kcc8q1h76dr91i1r33jciqhgkajkz3xa28qx8mhn"))))
+        (base32 "01g1smhfzb02gmfjm8c7rchc79dan9jc9pv9c0f8f7fly2hy5zvs"))))
     (build-system linux-module-build-system)
     (outputs (list "out" "linux-module"))
     (arguments
@@ -5820,7 +5821,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "1.2.2")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -5829,7 +5830,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01l1pnj1cgy3dwgyys2s5iqzyv6kk47vlpy09qjafk8py21ijik3"))))
+        (base32 "1whdhf3aw0g4xwbn1csy2wz6g1hw5nlw64r91nnxba9qn25nl9k4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -8287,6 +8288,71 @@ user space tracer.  It receives commands from a session daemon, for example to
 enable and disable specific instrumentation points, and writes event records
 to ring buffers shared with a consumer daemon.")
     (license license:lgpl2.1+)))
+
+(define-public lttng-tools
+  (package
+    (name "lttng-tools")
+    (version "2.12.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://lttng.org/files/lttng-tools/"
+                                  "lttng-tools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bgk35423v6z17j1w80m7dcza7gigs1pwyq24sdmgqwg6j2d1zmc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; FIXME - Currently there's a segmentation fault by swig when enabling
+       ;; Python's bindings.  Thus, bindings are disable here.  Replace
+       ;; `disable` by `enable` in #:configure-flags when this is fixed.
+       #:configure-flags '("--disable-python-bindings")
+       ;; FIXME - Tests are disabled for now because one test hangs
+       ;; indefinetely.  Also, parallel testing is not possible because of how
+       ;; the lttng-daemon handles sessions.  Thus, keep parallel testing
+       ;; disabled even after tests are enabled!
+       #:tests? #f
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-environment-variables
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (setenv "LTTNG_HOME" "/tmp")))
+         ;; We don't put (which "man") here because LTTng uses execlp.
+         (add-after 'unpack 'patch-default-man-path
+           (lambda _
+             (substitute* "src/common/defaults.h"
+               (("/usr/bin/man") "man")))))))
+    ;; NOTE - Users have to install python-3 in their profile to use the
+    ;; bindings.  We don't put it in the inputs, because the rest of the tools
+    ;; can work without it.
+    (inputs
+     `(("liburcu" ,liburcu)
+       ("popt" ,popt)
+       ("numactl" ,numactl)))
+    (propagated-inputs
+     `(("kmod" ,kmod)
+       ("module-init-tools" ,module-init-tools)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("libpfm4" ,libpfm4)
+       ("python-3" ,python-3)
+       ("swig" ,swig)
+       ("procps" ,procps)
+       ("which" ,which)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("asciidoc" ,asciidoc)
+       ("libxml2" ,libxml2)
+       ("lttng-ust" ,lttng-ust)))
+    (home-page "https://lttng.org/")
+    (synopsis "LTTng userspace tracer libraries")
+    (description "The lttng-tools project provides a session
+daemon @code{lttng-sessiond} that acts as a tracing registry, the @command{lttng} command
+line for tracing control, a @code{lttng-ctl} library for tracing control and a
+@code{lttng-relayd} for network streaming.")
+    (license (list  license:gpl2 license:lgpl2.1))))
 
 (define-public kexec-tools
   (package

@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -255,6 +256,29 @@ minor changes to the source code.  In most cases only a few type statements
 and (for Fortran-90 programs) read/write statements need to be changed.  PSLQ
 and numerical quadrature programs are included.")
     (license bsd-3)))
+
+(define-public cln
+  (package
+    (name "cln")
+    (version "1.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.ginac.de/CLN/cln-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "0jlq9l4hphk7qqlgqj9ihjp4m3rwjbhk6q4v00lsbgbri07574pl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")))
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "https://www.ginac.de/CLN/")
+    (synopsis "Library for arbitrary precision computations")
+    (description "CLN is a C++ library for efficient computations with all
+kinds of numbers in arbitrary precision.  It provides a rich set of number
+classes and elementary, logical and transcendental functions.")
+    (license gpl2+)))
 
 (define-public tomsfastmath
   (package

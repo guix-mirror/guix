@@ -49,6 +49,7 @@
   #:use-module (gnu packages mono)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages pascal)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages python-web)
@@ -72,7 +73,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "188")
+    (version "189")
     (source
      (origin
        (method git-fetch)
@@ -81,9 +82,9 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1byd28ihni5g0ikjjcsq68smj1rw33vv9z0cymqa4ds670c77yvn"))
+        (base32 "0dai9gwsr9xnficjy8myq6xr301y4iy82aidm936qsqjwrp8q1sm"))
        (patches
-        (search-patches "diffoscope-fix-test_item3_deflate_llvm_bitcode.patch"))))
+        (search-patches "diffoscope-fix-llvm-test.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -183,6 +184,7 @@
                      ("dtc" ,dtc)
                      ("e2fsprogs" ,e2fsprogs)
                      ("ffmpeg" ,ffmpeg)
+                     ("fpc" ,fpc)
                      ("gettext" ,gettext-minimal)
                      ("ghostscript" ,ghostscript)
                      ("giflib:bin" ,giflib "bin")
@@ -229,7 +231,7 @@ install.")
 (define-public reprotest
   (package
     (name "reprotest")
-    (version "0.7.16")
+    (version "0.7.18")
     (source
      (origin
        (method git-fetch)
@@ -239,7 +241,7 @@ install.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0s7gyixk868dw6yqxsb1sq24mgg9ilz5s2yidd5j0zhl683n7dw9"))))
+         "19lwsxq53isgfkvlxvxqqmbjfcim3lhcxwk7m9ddfjiynhq74949"))))
     (inputs
      `(("python-debian" ,python-debian)
        ("python-distro" ,python-distro)

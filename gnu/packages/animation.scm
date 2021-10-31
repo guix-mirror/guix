@@ -179,7 +179,7 @@ C++ @dfn{Standard Template Library} (STL).")
        ("libxml++" ,libxml++)
        ("libsigc++" ,libsigc++)
        ("mlt" ,mlt-6)
-       ("openexr" ,openexr)
+       ("openexr" ,openexr-2)
        ("pango" ,pango)))
     (native-inputs
      `(("intltool" ,intltool)

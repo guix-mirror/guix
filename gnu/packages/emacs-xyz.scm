@@ -102,6 +102,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Simon South <simon@simonsouth.net>
+;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -456,16 +457,16 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
 (define-public emacs-vc-hgcmd
   (package
     (name "emacs-vc-hgcmd")
-    (version "1.14")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/muffinmad/emacs-vc-hgcmd")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1mm8lnwii53j32v54aahl8sf3ciwymrvc1rgy4nw2m7hcrnjsb78"))))
+    (version "1.14.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/muffinmad/emacs-vc-hgcmd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nlaicza4ds325827ks5gb7zn0nc536k2chq8jwbq34ybvxi93wj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/muffinmad/emacs-vc-hgcmd")
     (synopsis "Version control (VC) backend for the Mercurial command server")
@@ -1718,7 +1719,7 @@ directly.")
       (home-page "https://bitbucket.org/agriggio/ahg")
       (synopsis "Emacs front-end for the Mercurial SCM")
       (description
-       "This packages provides a simple Emacs front-end for the Mercurial
+       "This package provides a simple Emacs front-end for the Mercurial
 Distributed @acronym{Source Control Management, SCM} system.")
       (license license:gpl3+))))
 
@@ -6414,31 +6415,27 @@ for the current function or variable in the minibuffer.")
     (license license:gpl3+)))
 
 (define-public emacs-company-quickhelp
-  ;; XXX: release version 2.3.0 is on an unmaintained branch for some reason,
-  ;; so we use the latest 2.2.0 commit instead
-  (let ((commit "479676cade80a9f03802ca3d956591820ed5c537")
-        (revision "1"))
-    (package
-      (name "emacs-company-quickhelp")
-      (version (git-version "2.2.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/expez/company-quickhelp")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0hbqpnaf4hnin3nmdzmfj3v22kk9a97b6zssqs96ns36d9h52xcp"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-pos-tip" ,emacs-pos-tip)
-         ("emacs-company" ,emacs-company)))
-      (home-page "https://github.com/expez/company-quickhelp")
-      (synopsis "Popup documentation for completion candidates")
-      (description "@code{company-quickhelp} shows documentation for the
+  (package
+    (name "emacs-company-quickhelp")
+    (version "2.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/expez/company-quickhelp")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08ccsfvwdpzpj0gai3xrdb2bv1nl6myjkxsc5774pbvlq9nkfdvr"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-pos-tip" ,emacs-pos-tip)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/expez/company-quickhelp")
+    (synopsis "Popup documentation for completion candidates")
+    (description "@code{company-quickhelp} shows documentation for the
 completion candidate when using the Company text completion framework.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-math-symbol-lists
   (package
@@ -8208,7 +8205,7 @@ them easier to distinguish from other, less important buffers.")
 (define-public emacs-embark
   (package
     (name "emacs-embark")
-    (version "0.10")
+    (version "0.12")
     (source
      (origin
        (method git-fetch)
@@ -8216,7 +8213,7 @@ them easier to distinguish from other, less important buffers.")
              (url "https://github.com/oantolin/embark")
              (commit version)))
        (sha256
-        (base32 "063hc0hganws11vjdk3ic0mxm9i0vpw6s7hzbgxvja0gjkdxjldz"))
+        (base32 "16z7g6ynj4d64wsg49skhwypn5j6awlpsawbz61djsmpzlzjnv36"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -18954,7 +18951,7 @@ powerful Org contents.")
 (define-public emacs-org-re-reveal
   (package
     (name "emacs-org-re-reveal")
-    (version "3.12.1")
+    (version "3.12.3")
     (source
      (origin
        (method git-fetch)
@@ -18963,7 +18960,7 @@ powerful Org contents.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hi8lq9rj6i2m14dh75dzq7lq41i4f6qj4xbp2b8krqw6mk9xg7z"))))
+        (base32 "08ai87b6nybg0l7y8falb53wwvdv8hr3jzj5q995x48ylw6r1582"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-htmlize" ,emacs-htmlize)
@@ -21139,7 +21136,7 @@ file.")
 (define-public emacs-packed
   (package
     (name "emacs-packed")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method git-fetch)
@@ -21148,8 +21145,7 @@ file.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "06blk8parnpq3qi6y5628q3v59c8dyi41glb289a0l16248qwphk"))))
+        (base32 "1gpv2vaci0m48fzn0sy7iwl1mnkkqc30bf05jjrqlpn9kpbjyf1p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacscollective/packed")
     (synopsis "Package manager agnostic Emacs Lisp package utilities")
@@ -23439,16 +23435,16 @@ buffer and launches Magit from the status buffer for the project at point.")
 (define-public emacs-alect-themes
   (package
     (name "emacs-alect-themes")
-    (version "0.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/alezost/alect-themes")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0nffxpdm0sa7bynwi0rmlwpc4qmvbda5ankhzz7fmk4ap9fkjxv9"))))
+    (version "0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alezost/alect-themes")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "190clnm5x4hpzrq2wp18vxg6614ly3ciyv0y1sm9rfr9w9z5i0ya"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/alezost/alect-themes")
     (synopsis "Low contrast, light, dark and black color theme for Emacs")
@@ -23814,7 +23810,7 @@ processes for Emacs")
 (define-public emacs-treemacs
   (package
     (name "emacs-treemacs")
-    (version "2.9.3")
+    (version "2.9.4")
     (source
      (origin
        (method git-fetch)
@@ -23823,7 +23819,7 @@ processes for Emacs")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ik7wkv6w5vga29pmj8zzn3lq9a2ww26gkl380hmaak809in6k65"))))
+        (base32 "1g2fy2qkscqx01av92hpjbr6qld8s1gk59cdjbff8fm0vlx8xk2p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ace-window" ,emacs-ace-window)
@@ -23895,9 +23891,11 @@ utilities.")
     (name "emacs-treemacs-extra")
     (propagated-inputs
      `(,@(package-propagated-inputs emacs-treemacs)
+       ("emacs-all-the-icons" ,emacs-all-the-icons)
        ("emacs-evil" ,emacs-evil)
        ("emacs-magit" ,emacs-magit)
        ("emacs-projectile" ,emacs-projectile)
+       ("emacs-perspective" ,emacs-perspective)
        ("emacs-persp-mode" ,emacs-persp-mode)))
     (arguments
      (substitute-keyword-arguments
@@ -26066,14 +26064,14 @@ federated microblogging social network.")
 (define-public emacs-ebdb
   (package
     (name "emacs-ebdb")
-    (version "0.8.6")
+    (version "0.8.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "ebdb-" version ".tar"))
        (sha256
-        (base32 "0amr1s1q5w4513qw31qsr8gpsfgj5b2j7qn017rmwbaf1mj0k6z0"))))
+        (base32 "035xakji5vypdpc06qp9yhg8ny7qn80h8kax6cl80p0lljplzrnn"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/girzel/ebdb")
     (synopsis "EIEIO port of BBDB, Emacs's contact-management package")
@@ -28655,26 +28653,29 @@ rather excellent completion provided by both Bash and Zsh.")
     (license license:gpl3+)))
 
 (define-public emacs-shell-command+
-  (package
-    (name "emacs-shell-command+")
-    (version "2.2.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.sr.ht/~pkal/shell-command-plus")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "1micvz6smhjma7qbka8h3w0crb3sgrxf9lz2548iqfgww50gb0lj"))))
-    (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/shell-command+.html")
-    (synopsis "Extended Emacs @code{shell-command}")
-    (description
-     "Shell-command+ is a @code{shell-command} substitute that extends the
+  ;; XXX: Upstream did not tag last release.  The commit below corresponds to
+  ;; the exact version bump.
+  (let ((commit "bf744c63bbd1e3bbb93407bd32d6da670b23e67e"))
+    (package
+      (name "emacs-shell-command+")
+      (version "2.3.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~pkal/shell-command-plus")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "0prlvcryq5ngrzn5f45rkw09wbr99v7nnwps2bjrjc3wvr2rp6h0"))))
+      (build-system emacs-build-system)
+      (home-page "http://elpa.gnu.org/packages/shell-command+.html")
+      (synopsis "Extended Emacs @code{shell-command}")
+      (description
+       "Shell-command+ is a @code{shell-command} substitute that extends the
 regular Emacs command with several features.  You can for example count all
 the lines in a buffer with @code{> wc -l}, or delete all lower case letters in
 the selected region with @code{| tr -d a-z}.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-shell-pop
   (let ((commit "4b4394037940a890a313d715d203d9ead2d156a6")
@@ -29204,14 +29205,14 @@ work on alists, hash-table and arrays.  All functions are prefixed with
 (define-public emacs-xref
   (package
     (name "emacs-xref")
-    (version "1.3.0")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/xref-"
                            version ".tar"))
        (sha256
-        (base32 "0bw2cbxmjavzhmpd9gyl41d4c201p535jrfz3b7jb5zw12jdnppl"))))
+        (base32 "13bsaxdxwn14plaam0hsrswngh3rm2k29v5ybjgjyjy4d5vwz78j"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xref.html")
     (synopsis "Cross-referencing commands")
@@ -29499,7 +29500,7 @@ shorter than usual, using mostly unprefixed keys.")
      `(("emacs-yaml-mode" ,emacs-yaml-mode)))
     (home-page "https://github.com/tom-tan/cwl-mode")
     (synopsis "Emacs mode for @acronym{CWL, Common Workflow Language} files")
-    (description "This packages provides a major mode for editing
+    (description "This package provides a major mode for editing
 @acronym{CWL, Common Workflow Language} files.")
     (license license:gpl3+)))
 

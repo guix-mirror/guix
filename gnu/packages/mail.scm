@@ -1896,7 +1896,7 @@ facilities for checking incoming mail.")
   (package
     (name "dovecot")
     ;; Also update dovecot-pigeonhole when updating to a new minor version.
-    (version "2.3.16")
+    (version "2.3.17")
     (source
      (origin
        (method url-fetch)
@@ -1904,7 +1904,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "04ngqv5mml5z0i4p7fkchp4xw2awy7x7mq2mim9frnav0m9iv9q3"))))
+        (base32 "1y9dpn4jgzrfjibp5zrc11bdk0q843d998kxhpxkyfm2fz6i4i12"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1939,8 +1939,7 @@ facilities for checking incoming mail.")
                (("sleep") (which "sleep")))
              (substitute* (list "src/lib-smtp/test-bin/sendmail-exit-1.sh"
                                 "src/lib-smtp/test-bin/sendmail-success.sh")
-               (("cat") (which "cat")))
-             #t))
+               (("cat") (which "cat")))))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
              ;; Simple hack to avoid installing a trivial README in /etc.
@@ -1961,7 +1960,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
   (let ((dovecot-version (version-major+minor (package-version dovecot))))
     (package
       (name "dovecot-pigeonhole")
-      (version "0.5.16")
+      (version "0.5.17")
       (source
        (origin
          (method url-fetch)
@@ -1969,7 +1968,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
                "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
          (sha256
-          (base32 "0f79qsiqnhaxn7mrrfcrnsjyv6357kzb7wa0chhfd69vwa06g8sw"))
+          (base32 "0j6ng173hh5iiqxdkxfb5v9djpn39gxdrv5ki7i22cf5cqwq47h3"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1978,8 +1977,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
              (substitute* "configure"
                (("doc/rfc/Makefile") ""))
              (substitute* "doc/Makefile.in"
-               (("rfc ") ""))
-             #t))))
+               (("rfc ") ""))))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags
@@ -2007,8 +2005,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                  (substitute* "src/managesieve-login/managesieve-login-settings.c"
                    (("\\.executable = \"managesieve-login\"")
                     (string-append ".executable = \"" libexec
-                                   "/managesieve-login\"")))
-                 #t))))))
+                                   "/managesieve-login\"")))))))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs

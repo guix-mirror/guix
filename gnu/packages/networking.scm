@@ -649,14 +649,14 @@ systems with no further dependencies.")
 (define-public blueman
   (package
     (name "blueman")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/blueman-project/blueman/releases"
                            "/download/" version "/blueman-" version ".tar.xz"))
        (sha256
-        (base32 "1xnhxhr2l4cf703j76wvzl4rf2k4xxgjjisz03y89x9ll6qmkv8r"))))
+        (base32 "1s86w4mklzr8hvbgl3nkg8jycl6grww533dhzw8gdn5glqfpkpbf"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
@@ -1219,14 +1219,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.12")
+    (version "5.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "01vgyczgldrfss98cqrgjz8krj6kwb29xjf8p08q0g85fnfgmpgm"))))
+                "11kns8imm55i0miggsnv9nblnzm60zgnanxnjajdgb2wj68xn4xv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

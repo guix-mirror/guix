@@ -110,18 +110,18 @@ endef
 $(srcdir)/%D%/guix.%.texi: po/doc/guix-manual.%.po $(srcdir)/%D%/contributing.%.texi guix/build/po.go
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
-	-$(AM_V_POXREF)$(xref_command)
+	-$(AM_V_POXREF)LC_ALL=en_US.UTF-8 $(xref_command)
 	-mv "$@.tmp" "$@"
 
 $(srcdir)/%D%/guix-cookbook.%.texi: po/doc/guix-cookbook.%.po guix/build/po.go
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix-cookbook.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix-cookbook\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
-	-$(AM_V_POXREF)$(xref_command)
+	-$(AM_V_POXREF)LC_ALL=en_US.UTF-8 $(xref_command)
 	-mv "$@.tmp" "$@"
 
 $(srcdir)/%D%/contributing.%.texi: po/doc/guix-manual.%.po guix/build/po.go
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$<" -l "$@.tmp"
-	-$(AM_V_POXREF)$(xref_command)
+	-$(AM_V_POXREF)LC_ALL=en_US.UTF-8 $(xref_command)
 	-mv "$@.tmp" "$@"
 
 %D%/os-config-%.texi: gnu/system/examples/%.tmpl

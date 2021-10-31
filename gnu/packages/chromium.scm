@@ -336,8 +336,8 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "94.0.4606.81")
-(define %ungoogled-revision "94.0.4606.81-1")
+(define %chromium-version "95.0.4638.69")
+(define %ungoogled-revision (string-append %chromium-version "-1"))
 (define %arch-revision "db2157b84924ce84201a8245e68a02f7d55f6491")
 (define %debian-revision "debian/90.0.4430.85-1")
 
@@ -367,7 +367,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "113abybh8kkw9a92lj6jww6dl6rc1sv5x7a7a1gjwsihzd2r0cik"))))
+      "19azr4m4rd6za9vgcggijyq9x54jrjp0n07y4falgjrdz9q4f7aj"))))
 
 (define %guix-patches
   (list (local-file
@@ -502,7 +502,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "16755mfqxxmvslm9ix060safrnml91ckj5p85960jj5g5hmslwbh"))
+                "1rzg48mbd5n75nq2rfwknyxpmfrddds199ic82c736kcgirpv8rq"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -598,7 +598,6 @@
              "rtc_use_h264=true"
              "rtc_use_pipewire=true"
              "rtc_link_pipewire=true"
-             "rtc_pipewire_version=\"0.3\""
              ;; Don't use bundled sources.
              "rtc_build_json=true"      ;FIXME: libc++ std::string ABI difference
              "rtc_build_libevent=false"
@@ -651,15 +650,16 @@
                 ""))
 
              ;; XXX: Should be unnecessary when use_system_lcms2=true.
-             (substitute* "third_party/pdfium/core/fxcodec/icc/iccmodule.h"
+             (substitute* "third_party/pdfium/core/fxcodec/icc/icc_transform.h"
                (("include \"third_party/lcms/include/lcms2\\.h\"")
                 "include \"lcms2.h\""))
 
-             ;; Add missing include statement.
-             (substitute* "third_party/pdfium/core/fxcodec/png/png_decoder.cpp"
-               (("#include \"core/fxcodec/fx_codec.h\"" all)
-                (string-append all
-                               "\n#include \"core/fxcodec/fx_codec_def.h\"")))
+             ;; Chromium bundles a pre-release of Harfbuzz 3.0 and uses an
+             ;; experimental API that was removed in 3.0.  Adjust to use
+             ;; the updated API (taken from <https://crrev.com/c/3076563>).
+             (substitute* "components/paint_preview/common/subset_font.cc"
+               (("hb_subset_input_no_subset_tables_set\\(input\\.get\\(\\)\\)")
+                "hb_subset_input_set(input.get(), HB_SUBSET_SETS_NO_SUBSET_TABLE_TAG)"))
 
              (substitute*
                  "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"

@@ -838,7 +838,7 @@ Service (S3) protocol for object storage.")
 (define-public aws-c-mqtt
   (package
     (name "aws-c-mqtt")
-    (version "0.7.6")
+    (version "0.7.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -847,7 +847,7 @@ Service (S3) protocol for object storage.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qgblakp9n281z5w1kmmy9sjiz6s44kg487l76w7p43p1dp7s401"))
+                "19j6nw2v36c4yff4p0fbf0748s06fd5r9cp2yakry9ybn1ada99c"))
               (patches (search-patches "aws-c-mqtt-cmake-prefix.patch"))))
     (build-system cmake-build-system)
     (arguments

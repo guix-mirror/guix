@@ -12,7 +12,7 @@
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -343,7 +343,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.7.0-37")
+    (version "1.7.0-39")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1mzqf7r40ppmzixf4s6sjk76y0wpcf6xp7hklzrn2l1910ld61pz"))))
+        (base32 "0mmdzhnahiz6hr7a4brnjdmmm4mcaqkigrh1b6n9z5l46bilaii3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -987,6 +987,36 @@ algorithms from the FORTRAN library MINPACK.")
 Optional thin wrappers allow usage of the library from other languages.")
     (license (list license:expat        ;SymEngine
                    license:bsd-3))))    ;3rd party code
+
+(define-public ginac
+  (package
+    (name "ginac")
+    (version "1.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.ginac.de/ginac-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1az1ypfcny4jdz0mic1kywwa9nynr547cl5s7zpn2w0qdfymssgi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper))) ; Python is required
+    (inputs
+     `(("cln" ,cln)
+       ("readline" ,readline)))
+    (home-page "https://www.ginac.de/")
+    (synopsis "Library for symbolic computation")
+    (description "GiNaC is a C++ library for symbolic computation.  Contrary
+to other CAS it does not try to provide extensive algebraic capabilities and a
+simple programming language but instead accepts a given language (C++) and
+extends it by a set of algebraic capabilities.")
+    (license license:gpl2+)))
 
 (define-public eigen
   (package

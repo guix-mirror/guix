@@ -904,6 +904,38 @@ It is a front end for ii-like chat programs.  It uses @code{tail -f} to get the
 chat output in the background.")
       (license license:isc))))
 
+(define-public snooze
+  (package
+    (name "snooze")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/leahneukirchen/snooze")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02ng3r1gzgpyjia4b60i11dj5bhn3xjsdcbwmxaam6dzb33dmgib"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             ;; Set prefix path to root of package path in store instead
+             ;; of /usr/local.
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/leahneukirchen/snooze")
+    (synopsis "Run a command at a particular time")
+    (description
+"@command{snooze} is a tool for waiting until a particular time and then
+running a command.")
+    (license license:cc0)))
+
 (define-public scron
   (package
     (name "scron")

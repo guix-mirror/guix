@@ -31,7 +31,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
-;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
 ;;; Copyright © 2021 Marcel Schilling <marcel.schilling@uni-luebeck.de>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
@@ -905,6 +905,27 @@ functions which can speed up workflow.")
      "This package provides an implementation of heatmaps that offers more
 control over dimensions and appearance.")
     (license license:gpl2+)))
+
+(define-public r-pnwcolors
+  (package
+    (name "r-pnwcolors")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PNWColors" version))
+       (sha256
+        (base32
+         "1phplnclkficfv8s6wsyrckk4ixzbayiy5iix6dddg40485l9nyj"))))
+    (properties `((upstream-name . "PNWColors")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jakelawlor/PNWColors")
+    (synopsis "Color palettes for data visualizations")
+    (description
+     "This package provides color palettes.  They are checked for colorblind
+accessibility from hue, saturation, and lightness value scaling using the
+Chroma.js Color Palette Helper.  See @url{https://gka.github.io/palettes}.")
+    (license license:cc0)))
 
 (define-public r-ecp
   (package
@@ -23649,6 +23670,35 @@ univariate time series forecasts including exponential smoothing via state
 space models and automatic ARIMA modelling.")
     (license license:gpl3)))
 
+(define-public r-formattable
+  (package
+    (name "r-formattable")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "formattable" version))
+       (sha256
+        (base32 "1vdxi0xmg019qyzjrp8bkjxciz245jcxsrkhfzd44ynqcwi4s3ag"))))
+    (properties `((upstream-name . "formattable")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/renkun-ken/formattable")
+    (synopsis "Print vectors and data frames with text fromatting")
+    (description
+     "This R package provides functions to create formattable vectors and data
+frames.  @emph{Formattable} vectors are printed with text formatting, and
+formattable data frames are printed with multiple types of formatting in HTML
+to improve the readability of data presented in tabular form rendered in web
+pages.")
+    (license license:expat)))
+
 (define-public r-xmisc
   (package
     (name "r-xmisc")
@@ -28581,6 +28631,49 @@ algorithms; density clustering, hierarchical clustering, k-means, and the
 discovery of differentially expressed genes and markers.")
     (license license:gpl3)))
 
+(define-public r-seuratdisk
+  (let ((commit "163f1aade5bac38ed1e9e9c912283a7e74781610")
+        (revision "1"))
+    (package
+      (name "r-seuratdisk")
+      (version (git-version "0.0.0.9019" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mojaveazure/seurat-disk")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1d1v8qi6kknzy5fj6bl8akwy74h5h143i00lyidsnqjbwp9n4qnw"))))
+      (properties `((upstream-name . "SeuratDisk")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-cli" ,r-cli)
+         ("r-crayon" ,r-crayon)
+         ("r-hdf5r" ,r-hdf5r)
+         ("r-matrix" ,r-matrix)
+         ("r-r6" ,r-r6)
+         ("r-rlang" ,r-rlang)
+         ("r-seurat" ,r-seurat)
+         ("r-seuratobject" ,r-seuratobject)
+         ("r-stringi" ,r-stringi)
+         ("r-withr" ,r-withr)))
+      (native-inputs
+       `(("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/mojaveazure/seurat-disk")
+      (synopsis "Interfaces for HDF5-based single cell file formats")
+      (description
+       "The h5Seurat file format is specifically designed for the storage and
+analysis of multi-modal single-cell and spatially-resolved expression
+experiments, for example, from CITE-seq or 10X Visium technologies.  It holds
+all molecular information and associated metadata, including (for example)
+nearest-neighbor graphs, dimensional reduction information, spatial
+coordinates and image data, and cluster labels.  This package also supports
+rapid and on-disk conversion between h5Seurat and AnnData objects, with the
+goal of enhancing interoperability between Seurat and Scanpy.")
+      (license license:gpl3))))
+
 (define-public r-phangorn
   (package
     (name "r-phangorn")
@@ -28835,6 +28928,26 @@ hierarchical loggers, custom log levels, arbitrary data fields in log events,
 logging to plaintext, JSON, (rotating) files, memory buffers, and databases, as
 well as email and push notifications.")
     (license license:expat)))
+
+(define-public r-mhg
+  (package
+    (name "r-mhg")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mHG" version))
+       (sha256
+        (base32
+         "1rz5ncrvvv9h9grls15apa63v2nh9j87fmp4mwjjil37jx6a5zki"))))
+    (properties `((upstream-name . "mHG")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=mHG")
+    (synopsis "Minimum-hypergeometric test")
+    (description
+     "This package runs a minimum-hypergeometric (mHG) test as described in
+\"Discovering Motifs in Ranked Lists of DNA Sequences\" by Eran Eden.")
+    (license license:gpl2)))
 
 (define-public r-mlr3measures
   (package
@@ -32032,6 +32145,71 @@ Monte Carlo approach implemented in JAGS.")
 Python module, this utility provides a flexible and extensible way of
 formatting and delivering log messages with low overhead.")
     (license license:agpl3+)))
+
+(define-public r-fasterize
+  (package
+    (name "r-fasterize")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "fasterize" version))
+        (sha256
+          (base32 "10bzl77c1b9jhcn1xp467qzp2n8c7s3wpxn53qjh1nwvbri5kd32"))))
+    (properties `((upstream-name . "fasterize")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-raster" ,r-raster)
+        ("r-rcpp" ,r-rcpp)
+        ("r-rcpparmadillo" ,r-rcpparmadillo)
+        ("r-sp" ,r-sp)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ecohealthalliance/fasterize")
+    (synopsis "Fast Polygon to Raster Conversion")
+    (description
+"This package provides a drop-in replacement for @code{rasterize} from
+the @code{raster} package that takes sf-type objects, and is much faster.
+There is support for the main options provided by the @code{rasterize}
+function, including setting the field used and background value, and
+options for aggregating multi-layer rasters.")
+    (license license:expat)))
+
+(define-public r-bien
+  (package
+    (name "r-bien")
+    (version "1.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "BIEN" version))
+        (sha256
+          (base32 "1dagrs54ciagm2mgqrvxl6k2akahr0qk63ifxqnks7iljm0x1gw6"))))
+    (properties `((upstream-name . "BIEN")))
+    (build-system r-build-system)
+    (native-inputs
+      `(("r-knitr" ,r-knitr)
+        ("r-testthat" ,r-testthat)))
+    (propagated-inputs
+      `(("r-ape" ,r-ape)
+        ("r-dbi" ,r-dbi)
+        ("r-doparallel" ,r-doparallel)
+        ("r-fasterize" ,r-fasterize)
+        ("r-foreach" ,r-foreach)
+        ("r-raster" ,r-raster)
+        ("r-rgdal" ,r-rgdal)
+        ("r-rgeos" ,r-rgeos)
+        ("r-rpostgresql" ,r-rpostgresql)
+        ("r-sf" ,r-sf)
+        ("r-sp" ,r-sp)))
+    (home-page "https://cran.r-project.org/package=BIEN")
+    (synopsis "Tools for accessing the BIEN database")
+    (description
+     "This package provides tools for accessing the Botanical Information and
+Ecology Network (BIEN) database.  The BIEN database contains cleaned and
+standardized botanical data including occurrence, trait, plot and taxonomic
+data.  This package provides functions that query the BIEN database by
+constructing and executing optimized SQL queries.")
+    (license license:expat)))
 
 (define-public r-ggh4x
   (package

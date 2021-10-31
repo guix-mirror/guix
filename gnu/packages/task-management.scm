@@ -143,7 +143,7 @@ and querying data, exposing task data in multiple formats to other tools.")
 (define-public dstask
   (package
     (name "dstask")
-    (version "0.24.1")
+    (version "0.25")
     (source
      (origin
        (method git-fetch)
@@ -152,7 +152,7 @@ and querying data, exposing task data in multiple formats to other tools.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03rl2wh58xd6a80ji43c7ak3h0ysi3ddg570pn8ry24s7s45zsz2"))))
+        (base32 "1m83zc2zqvpcbjng92jvlnk0biw4krv12wjvjas66jbbk3sjghcy"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/naggie/dstask"
@@ -178,8 +178,7 @@ and querying data, exposing task data in multiple formats to other tools.")
                  (install-file "dstask" bindir)
                  (install-file "dstask-import" bindir)
                  (install-file ".dstask-bash-completions.sh" bash-completion)
-                 (install-file ".dstask-zsh-completions.sh" zsh-completion)))
-             #t)))))
+                 (install-file ".dstask-zsh-completions.sh" zsh-completion))))))))
     (synopsis "CLI-based TODO manager with git-based sync + markdown notes per task")
     (description "dstask is a personal task tracker that uses git for
 synchronization.  It offers a note command to attach a Markdown based note to

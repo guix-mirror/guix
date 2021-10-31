@@ -5433,14 +5433,14 @@ while still staying in time.")
 (define-public butt
   (package
     (name "butt")
-    (version "0.1.31")
+    (version "0.1.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/butt/butt/butt-"
                                   version "/butt-" version ".tar.gz"))
               (sha256
                (base32
-                "19zvdi5vr6vqnrpc60jir7550nz9a5x1c61lh13355cdny2zp28z"))
+                "1qwllkx9p1gb3syhbbck3agrk375m82l18fb81aqygi4g3dg3s9r"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "src/butt.cpp"
@@ -5481,7 +5481,7 @@ while still staying in time.")
                                         version "_manual.pdf"))
                     (sha256
                      (base32
-                      "0a0kgd069whfp1v8xgw6qm67w02n8b7b4h5ay5665wgq947hxanp"))))))
+                      "0g70jyyxbx5nin3xs9q9zf878b2kyy7rn8gn9w91x1ychbjd6dhh"))))))
     (home-page "https://danielnoethen.de/butt/")
     (synopsis "Audio streaming tool")
     (description "Butt is a tool to stream audio to a ShoutCast or

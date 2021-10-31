@@ -180,6 +180,8 @@
             terminal-window-size
             terminal-columns
             terminal-rows
+            openpty
+            login-tty
 
             utmpx?
             utmpx-login-type
@@ -422,15 +424,21 @@ expansion-time error is raised if FIELD does not exist in TYPE."
   "Evaluate EXPR and restart upon EINTR.  Return the value of EXPR."
   (call-with-restart-on-EINTR (lambda () expr)))
 
-(define (syscall->procedure return-type name argument-types)
+(define* (syscall->procedure return-type name argument-types
+                             #:key library)
   "Return a procedure that wraps the C function NAME using the dynamic FFI,
-and that returns two values: NAME's return value, and errno.
+and that returns two values: NAME's return value, and errno.  When LIBRARY is
+specified, look up NAME in that library rather than in the global symbol name
+space.
 
 If an error occurs while creating the binding, defer the error report until
 the returned procedure is called."
   (catch #t
     (lambda ()
-      (let ((ptr (dynamic-func name (dynamic-link))))
+      (let ((ptr (dynamic-func name
+                               (if library
+                                   (dynamic-link library)
+                                   (dynamic-link)))))
         ;; The #:return-errno? facility was introduced in Guile 2.0.12.
         (pointer->procedure return-type ptr argument-types
                             #:return-errno? #t)))
@@ -2285,6 +2293,41 @@ always a positive integer."
 PORT, trying to guess a reasonable value if all else fails.  The result is
 always a positive integer."
   (terminal-dimension window-size-rows port (const 25)))
+
+(define openpty
+  (let ((proc (syscall->procedure int "openpty" '(* * * * *)
+                                  #:library "libutil")))
+    (lambda ()
+      "Return two file descriptors: one for the pseudo-terminal control side,
+and one for the controlled side."
+      (let ((head     (make-bytevector (sizeof int)))
+            (inferior (make-bytevector (sizeof int))))
+        (let-values (((ret err)
+                      (proc (bytevector->pointer head)
+                            (bytevector->pointer inferior)
+                            %null-pointer %null-pointer %null-pointer)))
+          (unless (zero? ret)
+            (throw 'system-error "openpty" "~A"
+                   (list (strerror err))
+                   (list err))))
+
+        (let ((* (lambda (bv)
+                   (bytevector-sint-ref bv 0 (native-endianness)
+                                        (sizeof int)))))
+          (values (* head) (* inferior)))))))
+
+(define login-tty
+  (let* ((proc (syscall->procedure int "login_tty" (list int)
+                                   #:library "libutil")))
+    (lambda (fd)
+      "Make FD the controlling terminal of the current process (with the
+TIOCSCTTY ioctl), redirect standard input, standard output and standard error
+output to this terminal, and close FD."
+      (let-values (((ret err) (proc fd)))
+        (unless (zero? ret)
+          (throw 'system-error "login-pty" "~A"
+                 (list (strerror err))
+                 (list err)))))))
 
 
 ;;;

@@ -4588,8 +4588,7 @@ and RDP protocols.")
                       ;; much longer than the default of 30 seconds.
                       (substitute* "tests/meson.build"
                         (("test\\(unit_test\\[0\\], exe" all)
-                         (string-append all ", timeout : 90")))
-                      #t)))))
+                         (string-append all ", timeout: 300"))))))))
     (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
@@ -12251,7 +12250,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.35.1")
+    (version "0.35.2")
     (source
      (origin
        (method git-fetch)
@@ -12261,7 +12260,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0975c55lmiwaqm0wj0ci91a90syjan3i99akrp0hl9m7r73jnfh9"))))
+         "11iq2mc8k7ny70vb0iqfjhj1hii0wvr4cv2p6b5rnjqdp6hc63n9"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

@@ -743,7 +743,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.06")
+    (version "14.0.01")
     (source
      (origin
        (method url-fetch)
@@ -753,22 +753,21 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "09g91g0gv76sadslp70m5xwfk3jf8kh7rpk2pz3l2hpldnjggpk8"))))
+        (base32 "0wkdn8h20pprna5a3hbny0qk2mgksrbxs2y6ng6qarj6rkpdmlbs"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
                "psf"   ; PSF (console) version
                "bin")) ; Utilities to manipulate '.hex' format
     (arguments
-     '(#:tests? #f          ; no check target
+     `(#:tests? #f          ; no check target
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda _ (setenv "CC" "gcc") #t))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
+         (delete 'configure)
+         (replace 'install
+          (lambda* (#:key make-flags outputs #:allow-other-keys)
             (let* ((ttf (string-append (assoc-ref outputs "out")
                                        "/share/fonts/truetype"))
                    (pcf (string-append (assoc-ref outputs "pcf")
@@ -776,18 +775,17 @@ for use at smaller text sizes")))
                    (psf (string-append (assoc-ref outputs "psf")
                                        "/share/consolefonts"))
                    (bin (assoc-ref outputs "bin")))
-              (invoke "make"
-                      (string-append "PREFIX=" bin)
-                      (string-append "TTFDEST=" ttf)
-                      (string-append "PCFDEST=" pcf)
-                      (string-append "CONSOLEDEST=" psf)
-                      "install")
+              (apply invoke "make" "install"
+                     (string-append "PREFIX=" bin)
+                     (string-append "TTFDEST=" ttf)
+                     (string-append "PCFDEST=" pcf)
+                     (string-append "CONSOLEDEST=" psf)
+                     make-flags)
               ;; Move Texinfo file to the right place.
               (mkdir (string-append bin "/share/info"))
               (invoke "gzip" "-9n" "doc/unifont.info")
               (install-file "doc/unifont.info.gz"
-                            (string-append bin "/share/info"))
-              #t))))))
+                            (string-append bin "/share/info"))))))))
     (inputs
      `(("perl" ,perl))) ; for utilities
     (synopsis
@@ -845,7 +843,7 @@ visual language \"Material Design\".")
 (define-public font-borg-sans-mono
   (package
     (name "font-borg-sans-mono")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -854,7 +852,7 @@ visual language \"Material Design\".")
              "/releases/download/v" version "/borg-sans-mono.zip"))
        (sha256
         (base32
-         "0q16gw3ry9hpgbl2636qq00ap59xyx15jf3gzvx2ybz3gja164c4"))))
+         "0xzi866ag9w4q114bn984yjfy72pmfs563v5yy1rkbqycphgwwyp"))))
     (build-system font-build-system)
     (home-page "https://github.com/charje/borg-sans-mono")
     (synopsis "The Borg Sans Mono font")
@@ -1968,25 +1966,25 @@ in small sizes, the text looks crisper.")
 (define-public font-juliamono
   (package
     (name "font-juliamono")
-    (version "0.031")
+    (version "0.043")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/cormullion/juliamono")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/cormullion/juliamono/releases/download/"
+             "v" version "/JuliaMono-ttf.tar.gz"))
        (sha256
-        (base32 "0pcz2qaw0g0gak4plvhgg3m76h4gamffa373r52dzx0qwn1i1cf1"))))
+        (base32
+         "0vb7n9yqgasnxzps13ckklay5bla6b0i79pzmfqvjms1r37079gh"))))
     (build-system font-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-website-folder
-           ;; This folder contains other unrelated fonts.
-           (lambda _
-             (delete-file-recursively "website")
-             #t)))))
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'unpack
+                    (lambda* (#:key source #:allow-other-keys)
+                      (mkdir "source")
+                      (chdir "source")
+                      (invoke "tar" "xzf" source))))))
+    (native-inputs `(("tar" ,tar)))
     (home-page "https://github.com/cormullion/juliamono")
     (synopsis "Monospaced font for programming")
     (description

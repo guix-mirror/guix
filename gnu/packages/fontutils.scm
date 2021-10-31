@@ -846,7 +846,7 @@ maintain the Noto Fonts project.")
 (define-public fcft
   (package
     (name "fcft")
-    (version "2.4.5")
+    (version "2.4.6")
     (home-page "https://codeberg.org/dnkl/fcft")
     (source (origin
               (method git-fetch)
@@ -854,7 +854,7 @@ maintain the Noto Fonts project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z4bqap88pydkgcxrsvm3fmcyhi9x7z8knliarvdcvqlk7qnyzfh"))))
+                "0jh05wzrif7z1xf9jzs8bgf49lpj5zs55agj414bmmwdddk7my7j"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -888,7 +888,7 @@ generated list of fallback fonts are checked.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.8.4")
+   (version "0.8.7")
    (source
     (origin
       (method git-fetch)
@@ -897,8 +897,7 @@ generated list of fallback fonts are checked.")
             (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "09rv0srpj8ann2n1zpv1frlpxz0x10d2y21c5lys7pmfngljlxi9"))))
+       (base32 "0nyda2a6vbzyz4sn9mmrr8bkifzxmmjp7x9a3c4s6n925ccy79cn"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -935,7 +934,7 @@ work well with other GTK+ desktop environments.")
 (define-public fntsample
   (package
     (name "fntsample")
-    (version "5.3")
+    (version "5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -944,7 +943,7 @@ work well with other GTK+ desktop environments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02rx3gp7k472304vhjwb129nw10a29s4nvgs7i2m6bpjhlk2xgs5"))))
+                "0pcqqdriv6hq64zrqd9vhdd9p2vhimjnajcxdz10qnqgrkmm751v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -965,8 +964,7 @@ work well with other GTK+ desktop environments.")
                                              "/lib/perl5/site_perl/"
                                              ,(package-version perl))))
                (wrap-program (string-append out "/bin/pdfoutline")
-                 `("PERL5LIB" ":" prefix (,perllib)))
-               #t))))))
+                 `("PERL5LIB" ":" prefix (,perllib)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
@@ -979,13 +977,15 @@ work well with other GTK+ desktop environments.")
        ("perl-pdf-api2" ,perl-pdf-api2)
        ("perl-libintl-perl" ,perl-libintl-perl)
        ("unicode-blocks"
-        ,(origin
-           (method url-fetch)
-           (uri "https://unicode.org/Public/UNIDATA/Blocks.txt")
-           (file-name "unicode-blocks.txt")
-           (sha256
-            (base32
-             "1xs8fnhh48gs41wg004r7m4r2azh9khmyjjlnvyzy9c6zrd212x2"))))))
+        ,(let ((version "14.0.0"))
+           (origin
+             (method url-fetch)
+             (uri (string-append "https://unicode.org/Public/"
+                                 version "/ucd/Blocks.txt"))
+             (file-name (string-append "unicode-blocks-" version ".txt"))
+             (sha256
+              (base32
+               "05vzgrvfp35mgxjgkm4wnxjjgzva8n6545i9jxd4pczpvvfp122r")))))))
     (home-page "https://github.com/eugmes/fntsample")
     (synopsis "PDF and PostScript font samples generator")
     (description "This package provides a tool that can be used to make font

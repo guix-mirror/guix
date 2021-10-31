@@ -44,6 +44,14 @@ else
     test $? = 42
 fi
 
+# Try '--root' and '--profile'.
+root="$tmpdir/root"
+guix environment -C --ad-hoc --bootstrap guile-bootstrap -r "$root" -- guile --version
+guix environment -C -p "$root" --bootstrap -- guile --version
+path1=$(guix environment -C -p "$root" --bootstrap -- guile -c '(display (getenv "PATH"))')
+path2=$(guix environment -C --ad-hoc --bootstrap guile-bootstrap  -- guile -c '(display (getenv "PATH"))')
+test "$path1" = "$path2"
+
 # Make sure "localhost" resolves.
 guix environment --container --ad-hoc --bootstrap guile-bootstrap \
      -- guile -c '(exit (pair? (getaddrinfo "localhost" "80")))'

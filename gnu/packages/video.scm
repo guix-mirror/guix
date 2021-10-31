@@ -54,6 +54,7 @@
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Robin Templeton <robin@terpri.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,6 +144,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -2362,6 +2364,74 @@ To load this plugin, specify the following option when starting mpv:
 YouTube.com and many more sites.")
     (home-page "https://yt-dl.org")
     (license license:public-domain)))
+
+(define-public yt-dlp
+  (package/inherit youtube-dl
+    (name "yt-dlp")
+    (version "2021.10.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/yt-dlp/yt-dlp/"
+                                  "releases/download/"
+                                  version "/yt-dlp.tar.gz"))
+              (sha256
+               (base32
+                "0xh4cwmvx49pxn8x07wj2dy8ynj6xg8977l5493vv0l8zc27wp87"))
+              (snippet
+               '(begin
+                  ;; Delete the pre-generated files, except for the man page
+                  ;; which requires 'pandoc' to build.
+                  (for-each delete-file '("yt-dlp"
+                                          ;;pandoc is needed to generate
+                                          ;;"yt-dlp.1"
+                                          "completions/bash/yt-dlp"
+                                          "completions/fish/yt-dlp.fish"
+                                          "completions/zsh/_yt-dlp"))
+                  #t))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments youtube-dl)
+       ((#:tests? _) #t)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; See the comment for the corresponding phase in youtube-dl.
+           (replace 'default-to-the-ffmpeg-input
+             (lambda _
+               (substitute* "yt_dlp/postprocessor/ffmpeg.py"
+                 (("\\.get_param\\('ffmpeg_location'\\)" match)
+                  (format #f "~a or '~a'" match (which "ffmpeg"))))
+               #t))
+           (replace 'build-generated-files
+             (lambda _
+               ;; Avoid the yt-dlp.1 target, which requires pandoc.
+               (invoke "make" "PYTHON=python" "yt-dlp" "completions")))
+           (replace 'fix-the-data-directories
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((prefix (assoc-ref outputs "out")))
+                 (substitute* "setup.py"
+                   (("'etc/")
+                    (string-append "'" prefix "/etc/"))
+                   (("'share/")
+                    (string-append "'" prefix "/share/"))))
+               #t))
+           (delete 'install-completion)
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "pytest" "-k" "not download"))))))))
+    (inputs
+     `(("python-mutagen" ,python-mutagen)
+       ("python-pycryptodomex" ,python-pycryptodomex)
+       ("python-websockets" ,python-websockets)
+       ,@(package-inputs youtube-dl)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ,@(package-native-inputs youtube-dl)))
+    (description
+     "yt-dlp is a small command-line program to download videos from
+YouTube.com and many more sites.  It is a fork of youtube-dl with a
+focus on adding new features while keeping up-to-date with the
+original project.")
+    (home-page "https://github.com/yt-dlp/yt-dlp")))
 
 (define-public youtube-dl-gui
   (package

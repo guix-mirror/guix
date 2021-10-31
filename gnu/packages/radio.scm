@@ -380,14 +380,14 @@ SoapySDR library.")
 (define-public chirp
   (package
     (name "chirp")
-    (version "20201121")
+    (version "20211016")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://trac.chirp.danplanet.com/chirp_daily/daily-"
                            version "/chirp-daily-" version ".tar.gz"))
        (sha256
-        (base32 "092jryb1jn9li6zj243awv6piz1lhghqsm4phrz7j0rgqf76dy4n"))))
+        (base32 "13xzqnhvnw6yipv4izkq0s9ykyl9pc5ifpr1ii8xfp28ch706qyw"))))
     (build-system python-build-system)
     (inputs
      `(("python2-libxml2" ,python2-libxml2)
@@ -954,7 +954,7 @@ or USB connection.")
 (define-public flamp
   (package
     (name "flamp")
-    (version "2.2.05")
+    (version "2.2.07")
     (source
      (origin
        (method git-fetch)
@@ -963,7 +963,7 @@ or USB connection.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ll2wbhyh1sb4iqsypwrd118mrgw3vbsdbz442qhk4r6l8kjzblq"))))
+        (base32 "0rygd5w04nspxdj8qj81gpb3mgijvlmii74s1f4mihqs5kb8nwh6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1070,7 +1070,7 @@ you must extend 'udev-service-type' with this package.  E.g.:
 (define-public hamlib
   (package
     (name "hamlib")
-    (version "4.2")
+    (version "4.3.1")
     (source
      (origin
        (method url-fetch)
@@ -1078,7 +1078,7 @@ you must extend 'udev-service-type' with this package.  E.g.:
              "https://github.com/Hamlib/Hamlib/releases/download/"
              version "/hamlib-" version ".tar.gz"))
        (sha256
-        (base32 "1m8gb20i8ga6ndnnw187ry1h4z8wx27v1hl7c610r6ky60pv4072"))))
+        (base32 "0c578m04zs8dllbd4cv6nxb44y0dn8kiapzkih84ycfjzmnkhdrl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2130,6 +2130,7 @@ various hardware.")
     (inputs
      `(("airspyhf" ,airspyhf)
        ("alsa-lib" ,alsa-lib)
+       ("codec2" ,codec2)
        ("fftwf" ,fftwf)
        ("glew" ,glew)
        ("glfw" ,glfw)
@@ -2144,7 +2145,8 @@ various hardware.")
     (arguments
      `(#:tests? #f ; No test suite.
        #:configure-flags '("-DOPT_BUILD_AIRSPY_SOURCE=OFF"
-                           "-DOPT_BUILD_PLUTOSDR_SOURCE=OFF")
+                           "-DOPT_BUILD_PLUTOSDR_SOURCE=OFF"
+                           "-DOPT_BUILD_M17_DECODER=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths

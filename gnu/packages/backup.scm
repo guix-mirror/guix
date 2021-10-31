@@ -1141,21 +1141,15 @@ backup.")
 (define-public disarchive
   (package
     (name "disarchive")
-    (version "0.2.1")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.ngyro.com/disarchive/"
                                   "disarchive-" version ".tar.gz"))
               (sha256
                (base32
-                "1jypk0gdwxqbqxiblww863nzq0kwnc676q68j32sprqd7ilnq02s"))
-              (patches (search-patches "disarchive-cross-compilation.patch"))))
+                "0jgc53rrbas8i4z13l2ii99cpav1ma73spsjg70ygihf0635r3dh"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'delete-configure
-                    (lambda _
-                      (delete-file "configure"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

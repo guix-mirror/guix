@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +51,8 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages tls))
 
 (define-public flashrom
   (package
@@ -196,7 +198,7 @@ ISP.")
 (define-public dfu-util
   (package
     (name "dfu-util")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -204,7 +206,7 @@ ISP.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0hlvc47ccf5hry13saqhc1j5cdq5jyjv4i05kj0mdh3rzj6wagd0"))))
+                "17piiyp08pccqmbhnswv957lkypmmm92kps79hypxvw23ai3pddl"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)))
@@ -526,3 +528,55 @@ Unifinished Extensible Firmware Interface (UEFI) images.")
 manipulating EPROM load files.  It reads and writes numerous EPROM file
 formats, and can perform many different manipulations.")
     (license license:gpl3+)))
+
+(define-public uuu
+  (package
+    (name "uuu")
+    (version "1.4.165")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NXPmicro/mfgtools")
+             (commit (string-append "uuu_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0k309lp27d4k6x4qq0badbk8i47xsc6f3fffz73650iyfs4hcniw"))))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:modules ((guix build utils)
+                  (ice-9 popen)
+                  (srfi srfi-26)
+                  (guix build cmake-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-version-gen
+           (lambda _
+             (call-with-output-file ".tarball-version"
+               (lambda (port)
+                 (display ,version port)))))
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (uuu (string-append out "/bin/uuu"))
+                    (pipe (open-pipe* OPEN_READ uuu "-udev"))
+                    (rules
+                     (string-append out "/lib/udev/rules.d/70-uuu.rules")))
+               (mkdir-p (string-append out "/lib/udev/rules.d"))
+               (call-with-output-file rules
+                 (cut dump-port pipe <>))))))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("bzip2" ,bzip2)
+       ("zlib" ,zlib)
+       ("libzip" ,libzip)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/NXPmicro/mfgtools")
+    (synopsis "Freescale/NXP I.MX chip image deploy tools")
+    (description "@code{uuu} is a command line tool, evolved out of MFGTools.
+It can be used to upload images to I.MX SoC's using at least their boot ROM.")
+    (license license:bsd-3)))

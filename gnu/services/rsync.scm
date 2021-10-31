@@ -45,6 +45,8 @@
   rsync-configuration?
   (package       rsync-configuration-package              ; package
                  (default rsync))
+  (address       rsync-configuration-address              ; string | #f
+                 (default #f))
   (port-number   rsync-configuration-port-number          ; integer
                  (default 873))
   (pid-file      rsync-configuration-pid-file             ; string
@@ -110,7 +112,7 @@
 (define rsync-config-file
   ;; Return the rsync configuration file corresponding to CONFIG.
   (match-lambda
-    (($ <rsync-configuration> package port-number pid-file lock-file log-file
+    (($ <rsync-configuration> package address port-number pid-file lock-file log-file
                               use-chroot? share-path share-comment read-only?
                               timeout user group uid gid)
      (if (not (string=? user "root"))
@@ -132,6 +134,7 @@
       "pid file = " pid-file "\n"
       "lock file = " lock-file "\n"
       "log file = " log-file "\n"
+      (if address (string-append "address = " address "\n") "")
       "port = " (number->string port-number) "\n"
       "use chroot = " (if use-chroot? "true" "false") "\n"
       (if uid (string-append "uid = " uid "\n") "")

@@ -413,7 +413,7 @@ overlapping images, as well as some command line tools.")
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("openexr" ,openexr)
+       ("openexr" ,openexr-2)
        ("vigra" ,vigra)
        ("zlib" ,zlib)))
     (arguments
@@ -568,7 +568,7 @@ photographic equipment.")
        ("libxslt" ,libxslt)
        ("lua" ,lua) ;optional, for plugins
        ("opencl-icd-loader" ,opencl-icd-loader) ;optional, for OpenCL support
-       ("openexr" ,openexr) ;optional, for EXR import/export
+       ("openexr" ,openexr-2) ;optional, for EXR import/export
        ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
        ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view
        ("pugixml" ,pugixml)
@@ -726,7 +726,7 @@ off' shooting directly from the controlling computer.")
        ("libxi" ,libxi)
        ("libxmu" ,libxmu)
        ("mesa" ,mesa)
-       ("openexr" ,openexr)
+       ("openexr" ,openexr-2)
        ("sqlite" ,sqlite)
        ("vigra" ,vigra)
        ("wxwidgets" ,wxwidgets)

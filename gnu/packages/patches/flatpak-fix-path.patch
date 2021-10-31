@@ -1,0 +1,29 @@
+Flatpak writes files for installed applications with the full Flatpak (store) path. This patch makes it write just "flatpak", using Flatpak from PATH. This is similar to the NixOS [0] patch, updated for Flatpak 1.12.1
+
+[0] https://github.com/NixOS/nixpkgs/blob/bf4167861d0f864b0fc457778d54feb4a2675ea2/pkgs/development/libraries/flatpak/use-flatpak-from-path.patch
+
+diff --git a/common/flatpak-dir.c b/common/flatpak-dir.c
+index 80ff5e5f..0c111c31 100644
+--- a/common/flatpak-dir.c
++++ b/common/flatpak-dir.c
+@@ -7134,8 +7134,7 @@ export_desktop_file (const char         *app,
+         flatpak = FLATPAK_BINDIR "/flatpak";
+
+       g_string_append_printf (new_exec,
+-                              "%s run --branch=%s --arch=%s",
+-                              flatpak,
++                              "flatpak run --branch=%s --arch=%s",
+                               escaped_branch,
+                               escaped_arch);
+
+@@ -8467,8 +8466,8 @@ flatpak_dir_deploy (FlatpakDir          *self,
+       if ((flatpak = g_getenv ("FLATPAK_BINARY")) == NULL)
+         flatpak = FLATPAK_BINDIR "/flatpak";
+
+-      bin_data = g_strdup_printf ("#!/bin/sh\nexec %s run --branch=%s --arch=%s %s \"$@\"\n",
+-                                  flatpak, escaped_branch, escaped_arch, escaped_app);
++      bin_data = g_strdup_printf ("#!/bin/sh\nexec flatpak run --branch=%s --arch=%s %s \"$@\"\n",
++                                  escaped_branch, escaped_arch, escaped_app);
+       if (!g_file_replace_contents (wrapper, bin_data, strlen (bin_data), NULL, FALSE,
+                                     G_FILE_CREATE_REPLACE_DESTINATION, NULL, cancellable, error))
+         return FALSE;

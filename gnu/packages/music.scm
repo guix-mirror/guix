@@ -1865,7 +1865,7 @@ device supports.")
 (define-public bsequencer
   (package
     (name "bsequencer")
-    (version "1.8.0")
+    (version "1.8.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1874,12 +1874,13 @@ device supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w7iwzz2r4a699fi24qk71vv2k3jpl9ylzlgmvyc3rlgad0m01k1"))))
+                "0w3m7x0619iq8rafcy0bal4gwh9m9h7iq93q7gkpxhv6dq58ix6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; there are none
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; there are none
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
@@ -1900,7 +1901,7 @@ with a selectable pattern matrix size.")
   (package
     (inherit bsequencer)
     (name "bchoppr")
-    (version "1.8.0")
+    (version "1.10.10")
     (source
      (origin
        (method git-fetch)
@@ -1909,8 +1910,7 @@ with a selectable pattern matrix size.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nd6byy75f0rbz9dm9drhxmpsfhxhg0y7q3v2m3098llynhy9k2j"))))
+        (base32 "0gxz0cpxdfj7ajcd9yg05d26i7p24mx5865vy3ph76ni8kycdlrc"))))
     (synopsis "Audio stream-chopping LV2 plugin")
     (description "B.Choppr cuts the audio input stream into a repeated
 sequence of up to 16 chops.  Each chop can be leveled up or down (gating).
@@ -1922,7 +1922,7 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bshapr")
-    (version "0.9")
+    (version "0.13")
     (source
      (origin
        (method git-fetch)
@@ -1931,7 +1931,7 @@ B.Choppr is the successor of B.Slizr.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04zd3a178i2nivg5rjailzqvc5mlnilmhj1ziygmbhshbrywplri"))))
+        (base32 "1qr3fxqcplgb6iqi2vxc27jghhv6qsidww2by15zb2vs34yh73pl"))))
     (synopsis "Beat/envelope shaper LV2 plugin")
     (description "B.Shapr is a beat/envelope shaper LV2 plugin.")
     (home-page "https://github.com/sjaehn/BShapr")
@@ -1941,7 +1941,7 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bjumblr")
-    (version "1.4.2")
+    (version "1.6.8")
     (source
      (origin
        (method git-fetch)
@@ -1950,8 +1950,7 @@ B.Choppr is the successor of B.Slizr.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v"))))
+        (base32 "00fgax8aqqggs54pjpagw5pc30kgxaghh8mrzpqwhs06cnchcam9"))))
     (inputs
      `(("cairo" ,cairo)
        ("libsndfile" ,libsndfile)
@@ -1966,7 +1965,7 @@ re-sequencer LV2 plugin.")
   (package
     (inherit bsequencer)
     (name "bschaffl")
-    (version "1.2.0")
+    (version "1.4.8")
     (source
      (origin
        (method git-fetch)
@@ -1975,8 +1974,7 @@ re-sequencer LV2 plugin.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1c09acqrbd387ba41f8ch1qykdap5h6cg9if5pgd16i4dmjnpghj"))))
+        (base32 "1kfc75xhj365fwl8cbvhg5chwz1snzcvf4929flds02ljylc7k6d"))))
     (inputs
      `(("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
@@ -6271,7 +6269,7 @@ ones.")
 (define-public dpf-plugins
   (package
     (name "dpf-plugins")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -6281,17 +6279,15 @@ ones.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hsfmpv3kvpiwk8nfw9xpaipzy0n27i83y2v1yr93lznwm5rqrbs"))))
+        (base32 "0y7qvpfm34g6f7d786c6c9043dlbg5c4h71l2s24dsc9m8i7x2ww"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
        #:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'set-CC-variable
-           (lambda _ (setenv "CC" "gcc") #t))
          (delete 'configure))))
     (inputs
      `(("cairo" ,cairo)
@@ -6487,7 +6483,7 @@ plugin support, JACK support and chord assistance.")
 (define-public dragonfly-reverb
   (package
     (name "dragonfly-reverb")
-    (version "3.2.1")
+    (version "3.2.5")
     (source
      (origin
        (method git-fetch)
@@ -6499,11 +6495,12 @@ plugin support, JACK support and chord assistance.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vfm2510shah67k87mdyar4wr4vqwii59y9lqfhwm6blxparkrqa"))))
+        (base32 "14kia9wjs0nqfx4psnr3vf4x6hihkf80gb0mjzmdnnnk4cnrdydm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:make-flags (list "CC=gcc")
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ;no configure target
@@ -6527,8 +6524,7 @@ plugin support, JACK support and chord assistance.")
                                (and
                                  (equal? (dirname name) "bin")
                                  (not (string-suffix? ".so" name))
-                                 (not (string-suffix? ".lv2" name))))))
-               #t))))))
+                                 (not (string-suffix? ".lv2" name))))))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

@@ -26,6 +26,7 @@
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Robby Zambito <contact@robbyzambito.me>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2055,17 +2056,14 @@ Python, that binds to the C library @code{uchardet} to increase performance.")
 (define-public udiskie
   (package
     (name "udiskie")
-    (version "2.1.0")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "udiskie" version))
        (sha256
         (base32
-         "0smib8vbs9q37n7ynhzyw97q16fgdkcdw7fw69lci0xvyq00v1dz"))
-       ;; Remove support for the libappindicator library of the
-       ;; Unity desktop environment which is not in Guix.
-       (patches (search-patches "udiskie-no-appindicator.patch"))))
+         "0sagdmsc5km32h3jvgj843p8bicrrgfz26qhl04ibxmas6725zr0"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -2074,6 +2072,7 @@ Python, that binds to the C library @code{uchardet} to increase performance.")
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
+       ("libappindicator" ,libappindicator)
        ("libnotify" ,libnotify)
        ("udisks" ,udisks)))
     (propagated-inputs
@@ -2350,16 +2349,15 @@ fallback to generic Systray support if none of those are available.")
 (define-public xdg-desktop-portal
   (package
     (name "xdg-desktop-portal")
-    (version "1.8.1")
+    (version "1.10.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/flatpak/xdg-desktop-portal")
-                     (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/flatpak/xdg-desktop-portal/releases/download/"
+                    version "/xdg-desktop-portal-" version ".tar.xz"))
               (sha256
                (base32
-                "0pq0kmvzk56my396vh97pzw4wizwmlmzvv2kr2xv047x3044mr5n"))))
+                "199lqr2plsy9qqnxx5a381ml8ygcbz4nkjla5pvljjcrwzlqsygd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2410,16 +2408,15 @@ and others.")
 (define-public xdg-desktop-portal-gtk
   (package
     (name "xdg-desktop-portal-gtk")
-    (version "1.7.1")
+    (version "1.10.0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/flatpak/xdg-desktop-portal-gtk")
-                     (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/flatpak/xdg-desktop-portal-gtk/releases/download/"
+                    version "/xdg-desktop-portal-gtk-" version ".tar.xz"))
               (sha256
                (base32
-                "183iha9dxmvprn99ymgz17jx1lyn1fj5jyj6ghxl716zn9mxmird"))))
+                "0nlbnd6qvs92fanrmmn123vy0y2ml0v3ndxyk5x0cpfbnmxpa2f8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -2430,13 +2427,21 @@ and others.")
              (for-each (lambda (po)
                          (chmod po #o666))
                        (find-files "po" "\\.po$"))
-             #t)))))
+             #t)))
+       ;; Enable Gnome portal backends
+       #:configure-flags
+       (list
+        "--enable-appchooser"
+        "--enable-wallpaper"
+        "--enable-screenshot"
+        "--enable-screencast"
+        "--enable-background"
+        "--enable-settings")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("xdg-desktop-portal" ,xdg-desktop-portal)
        ("glib:bin" ,glib "bin")
        ("which" ,which)
        ("gettext" ,gettext-minimal)))
@@ -2446,10 +2451,8 @@ and others.")
        ("fontconfig" ,fontconfig)
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "XDG_DESKTOP_PORTAL_DIR")
-            (files '("share/xdg-desktop-portal/portals")))))
+    (propagated-inputs
+     `(("xdg-desktop-portal" ,xdg-desktop-portal)))
     (home-page "https://github.com/flatpak/xdg-desktop-portal-gtk")
     (synopsis "GTK implementation of xdg-desktop-portal")
     (description
@@ -2499,7 +2502,7 @@ compositors.")
 (define-public waypipe
   (package
     (name "waypipe")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -2508,22 +2511,13 @@ compositors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qa47ljfvb1vv3h647xwn1j5j8gfmcmdfaz4j8ygnkvj36y87vnz"))))
+        (base32 "1v08dv3dfz420v51ahz7qgv3429073kmgrf8f66s4c3jlpch2pa1"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sleep-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((coreutils (assoc-ref inputs "coreutils")))
-               (substitute* "./test/startup_failure.py"
-                 (("sleep") (string-append coreutils "/bin/sleep")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("scdoc" ,scdoc)
        ;; For tests
-       ("python" ,python)
-       ("coreutils" ,coreutils)))
+       ("python" ,python)))
     (home-page "https://gitlab.freedesktop.org/mstoeckl/waypipe")
     (synopsis "Proxy for Wayland protocol applications")
     (description

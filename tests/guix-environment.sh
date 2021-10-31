@@ -119,6 +119,13 @@ test `readlink "$gcroot"` = "$expected"
 guix environment --bootstrap -r "$gcroot" --ad-hoc guile-bootstrap \
      -- guile -c 1
 test `readlink "$gcroot"` = "$expected"
+
+# Make sure '-p' works as expected.
+test $(guix environment -p "$gcroot" -- "$SHELL" -c 'echo $GUIX_ENVIRONMENT') = "$expected"
+paths1="$(guix environment -p "$gcroot" --search-paths)"
+paths2="$(guix environment --bootstrap --ad-hoc guile-bootstrap --search-paths)"
+test "$paths1" = "$paths2"
+
 rm "$gcroot"
 
 # Try '-r' with a relative file name.

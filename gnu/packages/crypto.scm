@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -841,6 +841,41 @@ as the latest standard, SHA-3.  It is an improved version of the SHA-3 finalist
 BLAKE.")
     (license license:public-domain)))
 
+(define-public b2sum
+  ;; Upstream doesn't seem to use a versioned release workflow, so build from
+  ;; a recent commit.
+  (let ((commit "54f4faa4c16ea34bcd59d16e8da46a64b259fc07")
+        (revision "0"))
+    (package
+      (name "b2sum")
+      (version (git-version "20190724" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/BLAKE2/BLAKE2")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "04z631v0vzl52g73v390ask5fnzi5wg83lcjkjhpmmymaz0jn152"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
+                            (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:tests? #f ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'change-directory
+                       (lambda _
+                         (chdir "b2sum")))
+           (delete 'configure)))) ; No ./configure script
+      (home-page "https://www.blake2.net/")
+      (synopsis "BLAKE2 checksum tool")
+      (description "BLAKE2 is a cryptographic hash function faster than MD5,
+SHA-1, SHA-2, and SHA-3, yet is at least as secure as SHA-3.")
+      ;; You may also choose to redistribute this program as Apache 2.0 or the
+      ;; OpenSSL license. See 'b2sum/b2sum.c' in the source distribution.
+      (license license:cc0))))
+
 (define-public rhash
   (package
     (name "rhash")
@@ -898,14 +933,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.18.1")
+    (version "2.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tar.xz"))
               (sha256
                (base32
-                "0adf53drhk1hlpfih0175c9081bqpclw6p2afn51cmx849ib9izq"))))
+                "0zih8agygp39ff0dwi3fv8y7dnnzpz3y86kcgjbhzlxry49kn6jl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -918,6 +953,8 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
                (setenv "CXXFLAGS" "-O3")
                (invoke "python" "./configure.py"
                        (string-append "--prefix=" out)
+                       "--disable-static"
+
                        ;; Otherwise, the `botan` executable cannot find
                        ;; libbotan.
                        (string-append "--ldflags=-Wl,-rpath=" lib)
@@ -974,8 +1011,8 @@ security.")
     (license license:gpl2)))
 
 (define-public asignify
-  (let ((commit "f58e7977a599f040797975d649ed318e25cbd2d5")
-        (revision "0"))
+  (let ((commit "08af003e1f4833713db28b871759d94f9b2b1469")
+        (revision "1"))
     (package
       (name "asignify")
       (version (git-version "1.1" revision commit))
@@ -987,7 +1024,7 @@ security.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1zl68qq6js6fdahxzyhvhrpyrwlv8c2zhdplycnfxyr1ckkhq8dw"))))
+                  "1zacpqa8b5lg270z1g06r5ik9vnb91crb4ivyy20381dny82xvr1"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags

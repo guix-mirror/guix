@@ -317,6 +317,7 @@ MODULES =					\
   guix/scripts/import/stackage.scm		\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
+  guix/scripts/shell.scm			\
   guix/scripts/publish.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
@@ -477,6 +478,7 @@ SCM_TESTS =					\
   tests/graph.scm				\
   tests/gremlin.scm				\
   tests/hackage.scm				\
+  tests/home-import.scm				\
   tests/import-git.scm				\
   tests/import-utils.scm			\
   tests/inferior.scm				\
@@ -556,6 +558,7 @@ SH_TESTS =					\
   tests/guix-authenticate.sh			\
   tests/guix-environment.sh			\
   tests/guix-environment-container.sh		\
+  tests/guix-shell.sh				\
   tests/guix-graph.sh				\
   tests/guix-describe.sh			\
   tests/guix-repl.sh     			\

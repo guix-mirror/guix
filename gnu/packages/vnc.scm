@@ -61,7 +61,7 @@
 (define-public remmina
   (package
     (name "remmina")
-    (version "1.4.20")
+    (version "1.4.21")
     (source
      (origin
        (method git-fetch)
@@ -71,7 +71,7 @@
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0apm4lqcmqskdp2fjxl8dbg3686cm4w0b5806fqj7w43hdmd8w4v"))))
+        (base32 "1g6aqbkbjfywkbaigyysivxswmbp8fbcw9x5ppysaj658cfdnicx"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No target
@@ -102,8 +102,7 @@
                         (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                     (wrap-program file
                       `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
-                '("remmina" "remmina-file-wrapper")))
-             #t)))))
+                '("remmina" "remmina-file-wrapper"))))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")

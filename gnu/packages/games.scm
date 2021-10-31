@@ -4136,7 +4136,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.17")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -4145,7 +4145,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qc4ylhc4ab51milclzhflpmzw6bg35knwqaj3b157700jkcniin"))))
+                "0qs102ws46z0cqyk3maxd1c4bywswlacbqkpmb51x9jd8c746vhz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -6397,18 +6397,17 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.18")
+    (version "1.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "12bjisf5nlqinw8n4r223vld52p0p2mw3fca92vi175c46bycbzn"))))
+                "19ybvv0dkql913xpgjgxyyy50s72vajc7hm83zsvy2lsq8lhg76q"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests included
-       #:configure-flags '("CFLAGS=-fgnu89-inline"))) ; fix inlines
+     `(#:tests? #f))                    ; no tests included
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
        ("freetype" ,freetype)

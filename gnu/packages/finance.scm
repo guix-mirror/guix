@@ -116,7 +116,7 @@
 (define-public bitcoin-core-0.21
   (package
     (name "bitcoin-core")
-    (version "0.21.1")
+    (version "0.21.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -124,7 +124,7 @@
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "1q51nqv64lhng5wh1cqb01jar7iswpnyyb1i7xslbkr0j9227zya"))))
+                "17nvir1yc6mf4wr1fn4xsabw49cd5p9vig8wj77vv4anzi8zfij1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1778,7 +1778,17 @@ editing on the Web.")
         (base32 "0lf69nna0aahwpgd9m9yjzbv2fbfn081djfznssa84f0n7y1xx4z"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; Parallel build fails with:
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-math-library
+           (lambda _
+             (substitute* "src/Makefile.am"
+               (("ta_common/libta_common.la")
+                "ta_common/libta_common.la -lm"))
+             (substitute* "src/Makefile.in"
+               (("\\$\\(libta_lib_la_LDFLAGS\\) \\$\\(LDFLAGS\\) -o \\$@")
+                "$(libta_lib_la_LDFLAGS) $(LDFLAGS) -lm -o $@")))))
+       ;; Parallel build fails with:
        ;; mv -f .deps/gen_code-gen_code.Tpo .deps/gen_code-gen_code.Po
        ;; mv: cannot stat '.deps/gen_code-gen_code.Tpo': No such file or directory
        ;; Makefile:254: recipe for target 'gen_code-gen_code.o' failed

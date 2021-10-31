@@ -106,6 +106,7 @@
   #:use-module (gnu packages java-compression)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages jupyter)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lsof)
@@ -1216,14 +1217,14 @@ sequencing.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.73")
+    (version "1.76")
     (source (origin
               (method url-fetch)
               ;; use PyPi rather than biopython.org to ease updating
               (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "1q55jhf76z3k6is3psis0ckbki7df26x7dikpcc3vhk1vhkwribh"))))
+                "0wlch9xpa0fpgjzyxi6jsfca6iakaq9a05927xg8vqnmvaccnwrq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1243,6 +1244,18 @@ common operations on them; code to perform data classification; code for
 dealing with alignments; code making it easy to split up parallelizable tasks
 into separate processes; and more.")
     (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))))
+
+(define-public python-biopython-1.73
+  (package
+    (inherit python-biopython)
+    (version "1.73")
+    (source (origin
+              (method url-fetch)
+              ;; use PyPi rather than biopython.org to ease updating
+              (uri (pypi-uri "biopython" version))
+              (sha256
+               (base32
+                "1q55jhf76z3k6is3psis0ckbki7df26x7dikpcc3vhk1vhkwribh"))))))
 
 (define-public python2-biopython
   (package-with-python2 python-biopython))
@@ -1269,6 +1282,133 @@ relying on a complex dependency tree.")
 
 (define-public python2-fastalite
   (package-with-python2 python-fastalite))
+
+(define-public ciri-long
+  (package
+    (name "ciri-long")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bioinfo-biols/CIRI-long")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "10k88i1fcqchrrjv82rmylwvbwqfba0n51palhig9hsg71xs0dbi"))
+       ;; Delete bundled binary
+       (snippet '(delete-file "libs/ccs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("'argparse[^']*',") "") ; only for python2
+               (("==") ">="))))
+         (add-before 'build 'build-libssw
+           (lambda _
+             (with-directory-excursion "libs/striped_smith_waterman"
+               (invoke "make" "libssw.so")))))))
+    (inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-bwapy" ,python-bwapy)
+       ("python-cython" ,python-cython)
+       ("python-levenshtein" ,python-levenshtein)
+       ("python-mappy" ,python-mappy)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-pyspoa" ,python-pyspoa)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://ciri-cookbook.readthedocs.io/")
+    (synopsis "Circular RNA identification for Nanopore sequencing")
+    (description "CIRI-long is a package for circular RNA identification using
+long-read sequencing data.")
+    (license license:expat)))
+
+(define-public qtltools
+  (package
+    (name "qtltools")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append "https://qtltools.github.io/qtltools/"
+                                  "binaries/QTLtools_" version
+                                  "_source.tar.gz"))
+              (sha256
+               (base32
+                "13gdry5l43abn3464fmk8qzrxgxnxah2612r66p9dzhhl92j30cd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests included
+       #:make-flags
+       (list (string-append "BOOST_INC="
+                            (assoc-ref %build-inputs "boost") "/include")
+             (string-append "BOOST_LIB="
+                            (assoc-ref %build-inputs "boost") "/lib")
+             (string-append "HTSLD_INC="
+                            (assoc-ref %build-inputs "htslib") "/include")
+             (string-append "HTSLD_LIB="
+                            (assoc-ref %build-inputs "htslib") "/lib")
+             (string-append "RMATH_INC="
+                            (assoc-ref %build-inputs "rmath-standalone")
+                            "/include")
+             (string-append "RMATH_LIB="
+                            (assoc-ref %build-inputs "rmath-standalone")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linkage
+           (lambda _
+             (substitute* "qtltools/Makefile"
+               (("libboost_iostreams.a")
+                "libboost_iostreams.so")
+               (("libboost_program_options.a")
+                "libboost_program_options.so")
+               (("-lblas") "-lopenblas"))))
+         (add-before 'build 'chdir
+           (lambda _ (chdir "qtltools")))
+         (replace 'configure
+           (lambda _
+             (substitute* "qtltools/Makefile"
+               (("LIB_FLAGS=-lz")
+                "LIB_FLAGS=-lz -lcrypto -lssl")
+               (("LIB_FILES=\\$\\(RMATH_LIB\\)/libRmath.a \
+\\$\\(HTSLD_LIB\\)/libhts.a \
+\\$\\(BOOST_LIB\\)/libboost_iostreams.a \
+\\$\\(BOOST_LIB\\)/libboost_program_options.a")
+                "LIB_FILES=$(RMATH_LIB)/libRmath.so \
+$(HTSLD_LIB)/libhts.so \
+$(BOOST_LIB)/libboost_iostreams.so \
+$(BOOST_LIB)/libboost_program_options.so"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "bin/QTLtools" bin)))))))
+    (inputs
+     `(("curl" ,curl)
+       ("gsl" ,gsl)
+       ("boost" ,boost)
+       ("rmath-standalone" ,rmath-standalone)
+       ("htslib" ,htslib-1.3)
+       ("openssl" ,openssl)
+       ("openblas" ,openblas)
+       ("zlib" ,zlib)))
+    (home-page "https://qtltools.github.io/qtltools/")
+    (synopsis "Tool set for molecular QTL discovery and analysis")
+    (description "QTLtools is a tool set for molecular QTL discovery
+and analysis.  It allows to go from the raw genetic sequence data to
+collection of molecular @dfn{Quantitative Trait Loci} (QTLs) in few
+easy-to-perform steps.")
+    (license license:gpl3+)))
 
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
@@ -7448,6 +7588,33 @@ clustering analysis, differential analysis, motif inference and exploration of
 single cell ATAC-seq sequencing data.")
     (license license:gpl3)))
 
+(define-public r-umi4cpackage
+  (let ((commit "88b07d896a137418ba6c31c2474b9dbe1d86fc20")
+        (revision "1"))
+    (package
+      (name "r-umi4cpackage")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tanaylab/umi4cpackage")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0bjzamdw2lcfhlbzc0vdva87c3wwnij8jsvnrpx4wyyxvpcz13m5"))))
+      (properties `((upstream-name . "umi4cPackage")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-misha" ,r-misha)
+         ("r-zoo" ,r-zoo)))
+      (native-inputs `(("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/tanaylab/umi4cpackage")
+      (synopsis "Processing and analysis of UMI-4C contact profiles.")
+      (description "This is a package that lets you process UMI-4C data from
+scratch to produce nice plots.")
+      (license license:expat))))
+
 (define-public r-shinycell
   (let ((commit
          "aecbd56e66802f28e397f5ae1f19403aadd12163")
@@ -7576,6 +7743,86 @@ of transcriptional heterogeneity among single cells.")
     ;; See https://github.com/hms-dbmi/scde/issues/38
     (license license:gpl2)))
 
+(define-public r-misha
+  (package
+    (name "r-misha")
+    (version "4.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tanaylab/misha")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bgivx3lzjh3173jsfrhb5kvhjsn53br0n4hmyx7i3dwy2cnnp2p"))
+       ;; Delete bundled executable.
+       (snippet
+        '(delete-file "exec/bigWigToWig"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-bundled-bigWigToWig
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "R/misha.R"
+               (("get\\(\".GLIBDIR\"\\), \"/exec/bigWigToWig")
+                (string-append "\""
+                               (assoc-ref inputs "kentutils")
+                               "/bin/bigWigToWig"))))))))
+    (inputs
+     `(("kentutils" ,kentutils)))
+    (home-page "https://github.com/tanaylab/misha")
+    (synopsis "Toolkit for analysis of genomic data")
+    (description "This package is intended to help users to efficiently
+analyze genomic data resulting from various experiments.")
+    (license license:gpl2)))
+
+(define-public r-shaman
+  (let ((commit "d6944e8ac7bd1dbd5c6cec646eafc1d19d0ca96f")
+        (release "2.0")
+        (revision "2"))
+    (package
+      (name "r-shaman")
+      (version (git-version release revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tanaylab/shaman")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "03sx138dzpfiq23j49z0m0s4j79855mrg64hpj9c83408wzphxi6"))
+                (snippet
+                 ;; This file will be generated.
+                 '(delete-file "inst/doc/shaman-package.R"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-data-table" ,r-data-table)
+         ("r-domc" ,r-domc)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-gviz" ,r-gviz)
+         ("r-misha" ,r-misha)
+         ("r-plyr" ,r-plyr)
+         ("r-rann" ,r-rann)
+         ("r-rcpp" ,r-rcpp)
+         ("r-reshape2" ,r-reshape2)
+         ;; For vignettes
+         ("r-rmarkdown" ,r-rmarkdown)
+         ("r-knitr" ,r-knitr)))
+      (home-page "https://github.com/tanaylab/shaman")
+      (synopsis "Sampling HiC contact matrices for a-parametric normalization")
+      (description "The Shaman package implements functions for
+resampling Hi-C matrices in order to generate expected contact
+distributions given constraints on marginal coverage and
+contact-distance probability distributions.  The package also provides
+support for visualizing normalized matrices and statistical analysis
+of contact distributions around selected landmarks.")
+      ;; Any version of the GPL
+      (license license:gpl3+))))
+
 (define-public r-centipede
   (package
     (name "r-centipede")
@@ -7638,6 +7885,46 @@ includes software to
 @end enumerate
 ")
       (license license:cc0))))
+
+(define-public gdc-client
+  (package
+    (name "gdc-client")
+    (version "1.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NCI-GDC/gdc-client.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cagawlzjwj3wam10lv64xgbfx4zcnzxi5sjpsdhq7rn4z24mzc2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "requirements.txt"
+               (("==") ">=")))))))
+    (inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-lxml" ,python-lxml)
+       ("python-ndg-httpsclient" ,python-ndg-httpsclient)
+       ("python-progressbar2" ,python-progressbar2)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-termcolor" ,python-termcolor)))
+    (home-page "https://gdc.nci.nih.gov/access-data/gdc-data-transfer-tool")
+    (synopsis "GDC data transfer tool")
+    (description "The gdc-client provides several convenience functions over
+the GDC API which provides general download/upload via HTTPS.")
+    (license license:asl2.0)))
 
 (define-public vsearch
   (package
@@ -11642,14 +11929,14 @@ set.")
 (define-public instrain
   (package
     (name "instrain")
-    (version "1.5.2")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "inStrain" version))
        (sha256
         (base32
-         "0ykqlpf6yz4caihsaz3ys00cyvlr7wdj4s9a8rh56q5r8xf80ic0"))))
+         "05w1lw75x4lwkzg4qpi055g7hdjp9rnc4ksbxg2hfgksq9djk0hx"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -11662,7 +11949,7 @@ set.")
                (("from job_utils")
                 "from .job_utils")))))))
     (inputs
-     `(("python-biopython" ,python-biopython)
+     `(("python-biopython" ,python-biopython-1.73)
        ("python-boto3" ,python-boto3)
        ("python-h5py" ,python-h5py)
        ("python-lmfit" ,python-lmfit)
@@ -14994,6 +15281,78 @@ plots or fetch common used genomic data files with a Python script or command
 line, interactively explore genomic data within Jupyter environment or web
 browser.")
     (license license:gpl3+)))
+
+(define-public python-pyspoa
+  (package
+    (name "python-pyspoa")
+    (version "0.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nanoporetech/pyspoa")
+             (commit (string-append "v" version))
+             (recursive? #true)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1lgf2shzhxkcsircd6vy46h27pjljd5q95fyz1cm3lkk702qbnzx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-libspoa
+           (lambda _
+             (mkdir-p "src/build")
+             (with-directory-excursion "src/build"
+               (invoke "cmake"
+                       "-Dspoa_optimize_for_portability=ON"
+                       "-DCMAKE_BUILD_TYPE=Release"
+                       "-DCMAKE_CXX_FLAGS=\"-I ../vendor/cereal/include/\" -fPIC"
+                       "..")
+               (invoke "make"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "tests/test_pyspoa.py")))))))
+    (propagated-inputs
+     `(("pybind11" ,pybind11)))
+    (native-inputs
+     `(("cmake" ,cmake-minimal)))
+    (home-page "https://github.com/nanoporetech/pyspoa")
+    (synopsis "Python bindings for the SIMD partial order alignment library ")
+    (description
+     "This package provides Python bindings for spoa, a C++ implementation of
+the @dfn{partial order alignment} (POA) algorithm (as described in
+10.1093/bioinformatics/18.3.452) which is used to generate consensus
+sequences")
+    (license license:expat)))
+
+(define-public python-bwapy
+  (package
+    (name "python-bwapy")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bwapy" version))
+       (sha256
+        (base32 "090qwx3vl729zn3a7sksbviyg04kc71gpbm3nd8dalqp673x1npw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-setuptools" ,python-setuptools)
+       ("python-wheel" ,python-wheel)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/ACEnglish/bwapy")
+    (synopsis "Python bindings to bwa alinger")
+    (description "This package provides Python bindings to the bwa mem
+aligner.")
+    ;; These Python bindings are licensed under Mozilla Public License 2.0,
+    ;; bwa itself is licenced under GNU General Public License v3.0.
+    (license license:mpl2.0)))
 
 (define-public scregseg
   (package

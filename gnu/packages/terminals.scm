@@ -198,7 +198,7 @@ insert mode and command mode where keybindings have different functions.")
 (define-public asciinema
   (package
     (name "asciinema")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -207,22 +207,13 @@ insert mode and command mode where keybindings have different functions.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1a2pysxnp6icyd08mgf66xr6f6j0irnfxdpf3fmzcz31ix7l9kc4"))))
+        (base32 "1alcz018jrrpasrmgs8nw775a6pf62xq2xgs54c4mb396prdqy4x"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'patch-exec-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((ncurses (assoc-ref inputs "ncurses")))
-               (substitute* "asciinema/term.py"
-                 (("'tput'")
-                  (string-append "'" ncurses "/bin/tput'"))))
-             #t))
          (replace 'check
            (lambda _ (invoke "nosetests" "-v"))))))
-    (inputs `(("ncurses" ,ncurses)))
     (native-inputs
      ;; For tests.
      `(("python-nose" ,python-nose)))

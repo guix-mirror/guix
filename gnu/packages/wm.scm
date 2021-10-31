@@ -102,6 +102,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp-check)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
@@ -1422,14 +1423,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.5.5")
+    (version "3.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar.gz"))
        (sha256
-        (base32 "1c8br9972x1qw7l2shj9aqzv0gsx58fdh3r0f1z5i1bqdwxmsqky"))))
+        (base32 "1nr386jdlm8qkbdf23w7lyvbfhr362s90f957fawnyi1finhw8bk"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the

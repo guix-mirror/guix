@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2021 Tobias Geerinck-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
@@ -28,10 +28,11 @@ _guix_complete_command ()
     if [ -z "$_guix_commands" ]
     then
 	# Cache the list of commands to speed things up.
-	_guix_commands="$(guix --help 2> /dev/null  \
+	_guix_commands="$(${COMP_WORDS[0]} --help 2> /dev/null  \
                                      | grep '^    ' \
 				     | sed '-es/^ *\([a-z-]\+\).*$/\1/g')"
     fi
+
     COMPREPLY+=($(compgen -W "$_guix_commands" -- "$word_at_point"))
 }
 
@@ -71,10 +72,16 @@ _guix_complete_option ()
 {
     local command="${COMP_WORDS[$1]}"
     local subcommand="${COMP_WORDS[$(($1 + 1))]}"
-    if _guix_is_option "$subcommand"
+
+    if [ $1 -le 1 ]
+    then
+	command=""
+	subcommand=""
+    elif _guix_is_option "$subcommand"
     then
 	subcommand=""
     fi
+
     local options="$(${COMP_WORDS[0]} $command $subcommand --help 2> /dev/null \
                             | grep '^  \+-' \
                             | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
@@ -215,7 +222,7 @@ _guix_complete ()
 	if [[ "$word" = "--" ]]
 	then
 	    case "$command" in
-		environment)
+		environment|shell)
 		    break
 		    ;;
 		time-machine)
@@ -228,6 +235,7 @@ _guix_complete ()
     case $COMP_CWORD in
 	$command_index)
 	    _guix_complete_command
+	    _guix_complete_option 0 "$word_at_point"
 	    ;;
 	*)
 	    if [[ "$command" = "package" ]]
@@ -265,7 +273,7 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package_or_store_file "$word_at_point"
                 fi
-	    elif [[ "$command" = "environment" ]]
+	    elif [[ "$command" = "environment" || "$command" = "shell" ]]
 	    then
                 if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_l
                 then

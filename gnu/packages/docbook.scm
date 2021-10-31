@@ -459,8 +459,7 @@ the in DocBook SGML DTDs.")
                            (string-append (assoc-ref inputs input)
                                           "/bin"))
                          '("libxslt" "texlive"
-                           "imagemagick" "inkscape"))))
-               #t))))))
+                           "imagemagick" "inkscape"))))))))))
     (home-page "http://dblatex.sourceforge.net")
     (synopsis "DocBook to LaTeX Publishing")
     (description

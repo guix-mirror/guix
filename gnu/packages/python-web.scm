@@ -4571,13 +4571,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "4.0.1")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32 "0w22fapghmzk3xdasc4dn7h8sl58l08d1h5zbf72dh80drv1g9b9"))))
+        (base32 "1aww2ncglyii4jkbfjxqhinivawf9zmwifcj32d69gpwp6h86czi"))))
     (propagated-inputs
      `(("python-unidecode" ,python-unidecode)
        ("python-text-unidecode" ,python-text-unidecode)))
@@ -4585,8 +4585,9 @@ Python.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "python" "test.py"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "test.py")))))))
     (build-system python-build-system)
     (home-page "https://github.com/un33k/python-slugify")
     (synopsis "Python Slugify application that handles Unicode")

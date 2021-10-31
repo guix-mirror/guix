@@ -561,6 +561,38 @@ can be a test-only dependency, allowing it to have potentially heavy
 dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible.")
     (license license:expat)))
 
+(define-public julia-codeczlib
+  (package
+    (name "julia-codeczlib")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaIO/CodecZlib.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xm603nylkwk4bzx66zv1g3syzrvn3jh9spdx7kvcvgszzyrrgh4"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
+    (propagated-inputs
+     `(("julia-zlib-jll" ,julia-zlib-jll)
+       ("julia-transcodingstreams" ,julia-transcodingstreams)))
+    (home-page "https://github.com/JuliaIO/CodecZlib.jl")
+    (synopsis "Zlib codecs for @code{TranscodingStreams.jl}")
+    (description "This package provides zlib codecs for
+@code{TranscodingStreams.jl}.")
+    (license license:expat)))
+
 (define-public julia-colors
   (package
     (name "julia-colors")
@@ -624,11 +656,11 @@ color scales for graphics.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0n7h70caqv7yd0khjhn90iax62r73mcif8qzkwj5b4q46li1r8ih"))))
-    (arguments
-     '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-fixedpointnumbers" ,julia-fixedpointnumbers)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/JuliaGraphics/ColorTypes.jl")
     (synopsis "Basic color types and constructor")
     (description "This minimalistic package serves as the foundation for
@@ -806,14 +838,12 @@ for construction of objects.")
         (sha256
          (base32 "15zbkn32v7xlz7559s0r5a0vkwmjwsswxaqpzijly4lky4jnp33d"))))
     (build-system julia-build-system)
-    (arguments
-     `(#:tests? #f))    ; Documenter.jl not packaged yet.
     (propagated-inputs
      `(("julia-staticarrays" ,julia-staticarrays)))
-    ;(native-inputs
-    ; `(("julia-documenter" ,julia-documenter)
-    ;   ("julia-forwarddiff" ,julia-forwarddiff)
-    ;   ("julia-unitful" ,julia-unitful)))
+    (native-inputs
+    `(("julia-documenter" ,julia-documenter)
+      ("julia-forwarddiff" ,julia-forwarddiff)
+      ("julia-unitful" ,julia-unitful)))
     (home-page "https://github.com/JuliaGeometry/CoordinateTransformations.jl")
     (synopsis "Coordinate transformations in Julia")
     (description "@code{CoordinateTransformations} is a Julia package to manage
@@ -1745,6 +1775,31 @@ differentiation (AD).")
 arbitrary functions.")
     (license license:expat)))
 
+(define-public julia-functors
+  (package
+    (name "julia-functors")
+    (version "0.2.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/FluxML/Functors.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "03ry1wn1y2jssq65l29bi6q4ki041aa6gl1nd2w6cgl00k2mrxf3"))))
+    (build-system julia-build-system)
+    (home-page "https://fluxml.ai/Functors.jl/stable/")
+    (synopsis "Design pattern for structures as in machine learning")
+    (description "This package provides tools to express a design pattern for
+dealing with large/ nested structures, as in machine learning and
+optimisation.  For large machine learning models it can be cumbersome or
+inefficient to work with parameters as one big, flat vector, and structs help
+in managing complexity; but it is also desirable to easily operate over all
+parameters at once, e.g. for changing precision or applying an optimiser
+update step.")
+    (license license:expat)))
+
 (define-public julia-fuzzycompletions
   (package
     (name "julia-fuzzycompletions")
@@ -1838,6 +1893,73 @@ algebra routines written in Julia (except for optimized BLAS).")
 analysis of dense matrices.  The diagonal eigen-decomposition of normal
 (especially Hermitian) matrices is an important special case, but for non-normal
 matrices the Schur form is often more useful.")
+    (license license:expat)))
+
+(define-public julia-geometrybasics
+  (package
+    (name "julia-geometrybasics")
+    (version "0.4.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaGeometry/GeometryBasics.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "057j3hjpli3q5b98cqkpi4p10x2k9pyksrz62hjmv1kb5qzdvhsj"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-earcut
+           (lambda _
+             (substitute* '("Project.toml"
+                            "src/GeometryBasics.jl")
+               ((".*EarCut.*") ""))
+             #t))
+         (add-after 'unpack 'skip-incompatible-test
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("@testset.*MetaT and heterogeneous data.*" all)
+                (string-append all "return\n")))
+             #t)))))
+    (propagated-inputs
+     `(("julia-itertools" ,julia-itertools)
+       ("julia-staticarrays" ,julia-staticarrays)
+       ("julia-structarrays" ,julia-structarrays)
+       ("julia-tables" ,julia-tables)))
+    (native-inputs
+     `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaGeometry/GeometryBasics.jl")
+    (synopsis "Basic Geometry Types")
+    (description "This package aims to offer a standard set of Geometry types,
+which easily work with metadata, query frameworks on geometries and different
+memory layouts.  The aim is to create a solid basis for Graphics/Plotting,
+finite elements analysis, Geo applications, and general geometry manipulations
+- while offering a Julian API, that still allows performant C-interop.")
+    (license license:expat)))
+
+(define-public julia-gr
+  (package
+    (name "julia-gr")
+    (version "0.58.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jheinen/GR.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "18zxa1w2wmrf44c5l10qbh99zjdp7h94gxlymh47cf5kj5fc4xmx"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-gr-jll" ,julia-gr-jll)))
+    (home-page "https://github.com/jheinen/GR.jl")
+    (synopsis "Plotting for Julia based on GR")
+    (description "This module provides a Julia interface to GR, a framework for
+visualisation applications.")
     (license license:expat)))
 
 (define-public julia-graphics
@@ -2326,6 +2448,39 @@ assigned its own index, which is used to retrieve the value from the
 indexed images, sometimes called \"colormap images\" or \"paletted images.\"")
     (license license:expat)))
 
+(define-public julia-infinity
+  (package
+    (name "julia-infinity")
+    (version "0.2.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/cjdoris/Infinity.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1941lwvrdjnrynigzixxin3chpg1ba6xplvcwc89x0f6z658hwmm"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-timezones.jl
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("using TimeZones.*") "")
+               ((".*infextendedtime.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("julia-requires" ,julia-requires)))
+    (native-inputs
+     `(("julia-compat" ,julia-compat)))
+    (home-page "https://docs.juliahub.com/Infinity/")
+    (synopsis "Representation of infinity in Julia")
+    (description "This package provides representations for infinity and
+negative infinity in Julia.")
+    (license license:expat)))
+
 (define-public julia-inifile
   (package
     (name "julia-inifile")
@@ -2463,11 +2618,11 @@ as a string together with the return value.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "11334fcg2slpwcj0raxf457brhf7pxglgxc6cy8q58ggrpxqfqql"))))
-    (arguments
-     '(#:tests? #f))                    ;require Documenter, not packaged yet
     (build-system julia-build-system)
     (propagated-inputs
      `(("julia-macrotools" ,julia-macrotools)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/FluxML/IRTools.jl")
     (synopsis "Simple and flexible IR format")
     (description "This package provides a simple and flexible IR format,
@@ -2810,6 +2965,32 @@ expressions involving differing types of units that are then evaluated,
 resolving them into absolute units.")
     (license license:expat)))
 
+(define-public julia-media
+  (package
+    (name "julia-media")
+    (version "0.5.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JunoLab/Media.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "05jq9j3vs8yfj2lwz3sh1vk5rha06xdcikp9s2q3dn316vryy6di"))))
+    (build-system julia-build-system)
+    ;; Package without Project.toml
+    (arguments
+     '(#:julia-package-name "Media"))
+    (propagated-inputs
+     `(("julia-macrotools" ,julia-macrotools)))
+    (home-page "https://github.com/JunoLab/Media.jl")
+    (synopsis "Unified measure and coordinates types")
+    (description "This package provides a display system which enables the
+user handle multiple input/output devices and decide what media types get
+displayed where.")
+    (license license:expat)))
+
 (define-public julia-missings
   (package
     (name "julia-missings")
@@ -3125,10 +3306,10 @@ languages like Fortran.")
         (sha256
          (base32 "0ran2vj6ahlzib0g77y7g0jhavy3k9s2mqq23ybpgp9z677wf26h"))))
     (build-system julia-build-system)
-    (arguments
-     '(#:tests? #f))                    ;require Documenter, not packaged yet
     (propagated-inputs
      `(("julia-offsetarrays" ,julia-offsetarrays)))
+    (native-inputs
+     `(("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/JuliaArrays/PaddedViews.jl")
     (synopsis "Add virtual padding to the edges of an array")
     (description "@code{PaddedViews} provides a simple wrapper type,
@@ -4125,8 +4306,7 @@ some performance improvements).")
          (base32 "1fwiaxdpx1z9dli3jr8kyraych0jbdiny3qklynf0r13px25r6i7"))))
     (build-system julia-build-system)
     (arguments
-     `(#:tests? #f  ; Documenter.jl not packaged yet
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-doctest
            (lambda _
@@ -4135,9 +4315,9 @@ some performance improvements).")
              #t)))))
     (propagated-inputs
      `(("julia-offsetarrays" ,julia-offsetarrays)))
-    ;(native-inputs
-    ; `(("julia-aqua" ,julia-aqua)
-    ;   ("julia-documenter" ,julia-documenter)))
+    (native-inputs
+    `(("julia-aqua" ,julia-aqua)
+      ("julia-documenter" ,julia-documenter)))
     (home-page "https://github.com/JuliaArrays/StackViews.jl")
     (synopsis "No more catcat")
     (description "StackViews provides only one array type: @code{StackView}.
@@ -4539,6 +4719,34 @@ package.")
     (synopsis "Operator overloading reverse-mode automatic differentiator")
     (description "@code{Tracker.jl} previously provided @code{Flux.jl} with
 automatic differentiation for its machine learning platform.")
+    (license license:expat)))
+
+(define-public julia-transcodingstreams
+  (package
+    (name "julia-transcodingstreams")
+    (version "0.9.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaIO/TranscodingStreams.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1w3klii293caqiclfh28jggv7f53xclm9fr6xmw38brwrn1hjb48"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:tests? #f))                ; Circular dependency with various codecs.
+    (home-page "https://github.com/JuliaIO/TranscodingStreams.jl")
+    (synopsis "Fast I/O transcoding data streams")
+    (description "This package provides tools for transcoding data streams
+which are:
+@itemize
+@item fast: small overhead and specialized methods
+@item consistent: basic I/O operations work as expected
+@item generic: support any I/O objects like files, buffers, pipes, etc.
+@item extensible: easy definition for new codec to transcode data
+@end itemize")
     (license license:expat)))
 
 (define-public julia-typedtables
