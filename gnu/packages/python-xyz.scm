@@ -14476,6 +14476,53 @@ checking library.")
           ,python2-backport-ssl-match-hostname)
           ,@(package-propagated-inputs whoosh))))))
 
+(define-public python-codespell
+  (package
+    (name "python-codespell")
+    (version "2.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "codespell" version))
+        (sha256
+          (base32 "1r9y714cz8m894rxp7pyvicr1lw2iid24vz6fxbl5wzy8ibgxlqr"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-chardet" ,python-chardet)))
+    (native-inputs
+      `(("python-check-manifest" ,python-check-manifest)
+        ("python-flake8" ,python-flake8)
+        ("python-pytest" ,python-pytest)
+        ("python-pytest-cov" ,python-pytest-cov)
+        ("python-pytest-dependency" ,python-pytest-dependency)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key outputs tests? #:allow-other-keys)
+             (when tests?
+               ;; Make installed executable available for running the tests.
+               (setenv "PATH"
+                       (string-append (assoc-ref outputs "out") "/bin"
+                                      ":" (getenv "PATH")))
+               (invoke "pytest" "-vv")))))))
+    (home-page "https://github.com/codespell-project/codespell/")
+    (synopsis "Spellchecker for code")
+    (description "Codespell fixes common misspellings in text files.
+It's designed primarily for checking misspelled words in source code,
+but it can be used with other files as well.  It does not check for word
+membership in a complete dictionary, but instead looks for a set of
+common misspellings.  Therefore it should catch errors like \"adn\", but
+it will not catch \"adnasdfasdf\".  This also means it shouldn't
+generate false-positives when you use a niche term it doesn't know
+about.")
+    (license
+      (list
+        ; for codespell and codespell_lib
+        license:gpl2
+        ; for dictionary*.txt
+        license:cc-by-sa3.0))))
+
 (define-public python-pathlib
   (package
     (name "python-pathlib")
