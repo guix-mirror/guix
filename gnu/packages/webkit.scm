@@ -6,6 +6,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -359,3 +361,15 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
+
+;;; Required by gnome-online-accounts; as webkitgtk 2.34 propagates libsoup 3,
+;;; which causes the build to fail.
+(define-public webkitgtk-with-libsoup2
+  (package/inherit webkitgtk
+    (name "webkitgtk-with-libsoup2")
+    (arguments (substitute-keyword-arguments (package-arguments webkitgtk)
+                 ((#:configure-flags flags)
+                  `(cons "-DUSE_SOUP2=ON" ,flags))))
+    (propagated-inputs
+     (alist-replace "libsoup" (list libsoup-minimal-2)
+                    (package-propagated-inputs webkitgtk)))))
