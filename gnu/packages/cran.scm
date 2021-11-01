@@ -28214,14 +28214,14 @@ use.")
 (define-public r-tidymodels
   (package
     (name "r-tidymodels")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidymodels" version))
        (sha256
         (base32
-         "18vz0xsgxrfzcfxpvilhj1w0f4v4lx5ws37nwmy40lhv3v05nxn8"))))
+         "18krycdn0h1i8swrq6bgj8qnb200rr0pqhr6maq3h1jc66x0y7nd"))))
     (properties `((upstream-name . "tidymodels")))
     (build-system r-build-system)
     (propagated-inputs
@@ -28231,6 +28231,7 @@ use.")
        ("r-dials" ,r-dials)
        ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-hardhat" ,r-hardhat)
        ("r-infer" ,r-infer)
        ("r-modeldata" ,r-modeldata)
        ("r-parsnip" ,r-parsnip)
