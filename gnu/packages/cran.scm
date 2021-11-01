@@ -2262,36 +2262,35 @@ supports interactive trees, to enable rich, editable trees in Shiny.")
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "shinydashboard" version))
               (sha256
                (base32
-                "0khac8b27q3swdw07kl609hm0fjfjsjv591b388q99mqqr2rk92i"))))
+                "0hrqkwlpb8rnmp5j74p134g4c4cl16icmwc2ip6k1634fa2y8vm5"))))
     (build-system r-build-system)
     ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
     ;; Regenerate it from the included sources.
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build r-build-system)
-                  (ice-9 popen))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'generate-minified-javascript
            (lambda _
              (with-directory-excursion "inst/AdminLTE"
-               (delete-file "app.min.js")
-               (let ((minified (open-pipe* OPEN_READ "uglifyjs" "app.js")))
-                 (call-with-output-file "app.min.js"
-                   (lambda (port)
-                     (dump-port minified port))))))))))
+               (let ((target "app.min.js")
+                     (source "app.js"))
+                 (format #t "Processing ~a --> ~a~%"
+                         source target)
+                 (delete-file target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
        ("r-promises" ,r-promises)
        ("r-shiny" ,r-shiny)))
     (native-inputs
-     `(("uglifyjs" ,node-uglify-js)))
+     `(("esbuild" ,esbuild)))
     (home-page "https://rstudio.github.io/shinydashboard/")
     (synopsis "Create dashboards with shiny")
     (description "This package provides an extension to the Shiny web
