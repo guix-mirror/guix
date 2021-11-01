@@ -4402,7 +4402,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.13")
+    (version "0.3.18")
     (source
      (origin
        (method git-fetch)
@@ -4412,7 +4412,7 @@ parts of it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14jxh0v3jfbw4mfjx4mcz4dd51lyq7pqvh9k8dg94539ypzjr2lj"))))
+         "17zdd8asylz2w71hczrz5y344p6d5ds1jn4901maw7zcp3dbk63g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -4469,8 +4469,7 @@ parts of it.")
              ;; Get libgfortran found when building in utest.
              (setenv "FEXTRALIB"
                      (string-append "-L" (assoc-ref inputs "fortran-lib")
-                                    "/lib"))
-             #t)))))
+                                    "/lib")))))))
     (inputs
      `(("fortran-lib" ,gfortran "lib")))
     (native-inputs
