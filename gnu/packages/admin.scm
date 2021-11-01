@@ -2569,7 +2569,7 @@ sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
            (lambda _
              (substitute* "test/lib/ansible_test/_internal/ansible_util.py"
                (("PYTHONPATH=get_ansible_python_path\\(args\\)" all)
-                (string-append all "+ ':' + os.environ['PYTHONPATH']")))))
+                (string-append all "+ ':' + os.environ['GUIX_PYTHONPATH']")))))
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "lib/ansible/module_utils/compat/selinux.py"
