@@ -11,6 +11,7 @@
 ;;; Copyright © 2020, 2021 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Tissevert <tissevert+guix@marvid.fr>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -392,8 +393,8 @@ trouble using them, because you do not have to remember each snippet name.")
     (license license:expat))))
 
 (define-public vim-scheme
-  (let ((commit "99af6befee8bc7d289a523064336474ae063cee3")
-        (revision "2"))
+  (let ((commit "e22fc8e199ef52f2efacd08e71c3add90d83b375")
+        (revision "3"))
     (package
       (name "vim-scheme")
       (version (git-version "0.0.0" revision commit))
@@ -401,12 +402,12 @@ trouble using them, because you do not have to remember each snippet name.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "http://git.foldling.org/vim-scheme.git")
+               (url "https://git.foldling.org/vim-scheme.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0w9hnsxg92f1wd83rra0ss07zla7p2r44whr9rqs70hc0xm8ygd6"))))
+           "04h946vr4f8wxap3wzqs69y2v8n50g2zbk22jsg2kxr4c01z5cbw"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan
@@ -417,7 +418,7 @@ trouble using them, because you do not have to remember each snippet name.")
       (description
        "@code{vim-scheme} provides Scheme support for Vim (R7RS and CHICKEN).")
       (home-page "https://foldling.org/git/vim-scheme.git/")
-      (license license:public-domain))))
+      (license license:unlicense))))
 
 (define-public vim-luna
   (let ((commit "633619953dcf8577168e255230f96b05f28d6371")
