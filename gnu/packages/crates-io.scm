@@ -31725,14 +31725,14 @@ system for OpenSSL.")
 (define-public rust-openssl-sys-0.9
   (package
     (name "rust-openssl-sys")
-    (version "0.9.64")
+    (version "0.9.68")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-sys" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "1bsim2zk69q1dw6rixn48l1ci8bmz5kvbkgsks2ci079w0pzr7i0"))
+         (base32 "0l2ikxygkza3s5q3lvng4mhisdp2vdrvzkhpwhkx8vgnscjiymqw"))
         (patches (search-patches "rust-openssl-sys-no-vendor.patch"))))
     (build-system cargo-build-system)
     (arguments
