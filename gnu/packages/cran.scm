@@ -12580,19 +12580,18 @@ features (e.g. local modes).")
 (define-public r-arm
   (package
     (name "r-arm")
-    (version "1.11-2")
+    (version "1.12-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "arm" version))
        (sha256
         (base32
-         "1grb27vayr2vhyalzfqbhx6p278r7c3l4pzi5nrz3dmnyqrbx1c3"))))
+         "0pagrc1vkaz460d0lvrgb4xj6gcd920f4mrc8zpzw07c3v1s2sw1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
        ("r-coda" ,r-coda)
-       ("r-hmisc" ,r-hmisc)
        ("r-lme4" ,r-lme4)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
