@@ -22706,17 +22706,18 @@ it may be seen by an animal with less acute vision.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-88")
+    (version "6.0-90")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "174cyyhsw8s6jp80spmi40qq9sw5ys0r58v4ikp53kiw1dhd247s"))))
+         "1g36m06hp2fxxwv155bwbqlf97xhcia1lmg3axg6d74kgpns8lg8"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-foreach" ,r-foreach)
+     `(("r-e1071" ,r-e1071)
+       ("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
        ("r-lattice" ,r-lattice)
        ("r-modelmetrics" ,r-modelmetrics)
