@@ -19966,18 +19966,19 @@ in pipelines.")
 (define-public r-parameters
   (package
     (name "r-parameters")
-    (version "0.14.0")
+    (version "0.15.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "parameters" version))
        (sha256
         (base32
-         "03x2h8izbpz9cq25i0a6dh99m26a9isgpv4kxsfkx97qzlh9cd67"))))
+         "0f06bwlc1g0xdyhdqzx8plfx1jwk8a9j4lcbl91wjsil8wja0bkl"))))
     (properties `((upstream-name . "parameters")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
+       ("r-datawizard" ,r-datawizard)
        ("r-insight" ,r-insight)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
