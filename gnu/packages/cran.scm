@@ -18408,14 +18408,14 @@ more generic data visualisation.")
 (define-public r-pmcmr
   (package
     (name "r-pmcmr")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "PMCMR" version))
        (sha256
         (base32
-         "09bvdj2h1086r2cgy3myrhlylplxxlliv8nwx09c8kb1vn02i2ij"))))
+         "05n13pp5yff6pzk4ry07crddfaj3jlglrd1vkcnacyd8jpaxkd77"))))
     (properties `((upstream-name . "PMCMR")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/PMCMR/")
