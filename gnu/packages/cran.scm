@@ -11485,20 +11485,22 @@ results using @code{ggplot2}.")
 (define-public r-effectsize
   (package
     (name "r-effectsize")
-    (version "0.4.5")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "effectsize" version))
        (sha256
         (base32
-         "0rp0r75p8q467lmrsr1gl9wjpib9jz7ksx5rm6c7q2lfg9b9zrjf"))))
+         "0w7m3hzmwral9cycpvknrkbdvgk230b3vg5sxbm84x72mw534hnh"))))
     (properties `((upstream-name . "effectsize")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
+       ("r-datawizard" ,r-datawizard)
        ("r-insight" ,r-insight)
-       ("r-parameters" ,r-parameters)))
+       ("r-parameters" ,r-parameters)
+       ("r-performance" ,r-performance)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/easystats/effectsize")
