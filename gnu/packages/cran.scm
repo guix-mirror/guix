@@ -4247,14 +4247,14 @@ functions from LINPACK.")
 (define-public r-fitdistrplus
   (package
     (name "r-fitdistrplus")
-    (version "1.1-5")
+    (version "1.1-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fitdistrplus" version))
        (sha256
         (base32
-         "1p9rvvh05zqb9vzhcyzdh7i8lbmb53nj8nyn0gqcmp7wafg9cd1f"))))
+         "1glnbcm1gghzgvzpxcfsmn7dp2f9jqyx39n3ydwp9fx38409khhp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
