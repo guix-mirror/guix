@@ -4888,14 +4888,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.16")
+    (version "0.1.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "1mayfdbn6q775d4gbdjrrhdbmpsxga57kwh0h7bwv8rk0vmvik23"))))
+         "0gbdc5kvbn14s5zrf4vrdjvkfajs00p7vvb433ii0lqnl07bl87d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -4914,6 +4914,7 @@ provides a one-row summary of model-level statistics.")
        ("r-tidyr" ,r-tidyr)
        ("r-tidyselect" ,r-tidyselect)
        ("r-timedate" ,r-timedate)
+       ("r-vctrs" ,r-vctrs)
        ("r-withr" ,r-withr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
