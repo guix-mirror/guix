@@ -5445,14 +5445,14 @@ where possible.")
 (define-public r-laeken
   (package
     (name "r-laeken")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "laeken" version))
        (sha256
         (base32
-         "199rjkhjjygpr6cjzab87as46acb5npi44m4yycvk7lnd0blma8s"))))
+         "1p3ccbaydlr52p8qmgmm2l6kryvq6jjjx7mqn2vv0gpjaxqhyy92"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
