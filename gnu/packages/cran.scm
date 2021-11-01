@@ -11861,19 +11861,19 @@ directories or URLs with their associated programs.")
 (define-public r-rcmdcheck
   (package
     (name "r-rcmdcheck")
-    (version "1.3.3")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rcmdcheck" version))
        (sha256
         (base32
-         "1d4kzgfqy72r6b7bn1j4znyksrycgypx1jjvpv9lrmvn37mpkdhs"))))
+         "1l696byn3kjq2xvz4wxybzaj6ink85h4lz3a35v2132ba5yyzm5v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
        ("r-cli" ,r-cli)
-       ("r-crayon" ,r-crayon)
+       ("r-curl" ,r-curl)
        ("r-desc" ,r-desc)
        ("r-digest" ,r-digest)
        ("r-pkgbuild" ,r-pkgbuild)
