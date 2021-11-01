@@ -23347,14 +23347,14 @@ for manual interpretation.")
 (define-public python-distro
   (package
     (name "python-distro")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "distro" version))
        (sha256
         (base32
-         "0mrg75w4ap7mdzyga75yaid9n8bgb345ih5mwjp3plj6v1jxwb9n"))))
+         "09441261dd3c8b2gv15vhw1cryzg60lmgpkk07v6hpwwkyhfbxc3"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
