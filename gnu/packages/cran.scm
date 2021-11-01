@@ -2796,14 +2796,14 @@ coordinates.")
 (define-public r-geosphere
   (package
     (name "r-geosphere")
-    (version "1.5-10")
+    (version "1.5-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "geosphere" version))
        (sha256
         (base32
-         "15xlgsmn0vwky1l13n6acdz6jn2b2na3gf6x367y3qh1f5w4zkan"))))
+         "0bg4vfmrw140j2ax0p6bflvb77w03ir39wa87l96rj473jpa9hzj"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-sp" ,r-sp)))
     (home-page "https://cran.r-project.org/web/packages/geosphere")
