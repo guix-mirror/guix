@@ -1972,14 +1972,14 @@ language, which is stable, powerful, and CSS compatible.")
 (define-public r-bslib
   (package
     (name "r-bslib")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bslib" version))
        (sha256
         (base32
-         "0zfjavz5jw4lfbrmc3rgsivcrxq2ia9jwmfbcrdxnxlmyri8qinr"))
+         "0jcqklry1nkibz0sydsz5xdsnb4wnrrhvmyr9ji3k45bbipbap2z"))
        (snippet
         '(for-each delete-file
                    '("inst/lib/bs-a11y-p/plugins/js/bootstrap-accessibility.min.js"
