@@ -2518,17 +2518,18 @@ APIs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.25.0")
+    (version "2.26.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1y6mb8c0ipd64d5axq2p368yxndp3f966hmabjka2q2a5y9hn6kz"))))
+               "19q73fq7hip7b74fwls3p9x6zwvfwqcwpn6kha3zsgvrrzw5iamq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
        ("python-chardet" ,python-chardet)
+       ("python-charset-normalizer" ,python-charset-normalizer)
        ("python-idna" ,python-idna)
        ("python-urllib3" ,python-urllib3)))
     (arguments
