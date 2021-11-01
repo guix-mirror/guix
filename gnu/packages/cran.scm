@@ -19023,16 +19023,18 @@ consensus and secondary clusterings.")
 (define-public r-sitmo
   (package
     (name "r-sitmo")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sitmo" version))
        (sha256
         (base32
-         "0apdhwy3kxs39agsbvx5vn3xsgb22bf3jrwmr2cmqk9kmxbx740c"))))
+         "1hm89zi38ldgbskyx1cn7gm87yqy7zrxli8q05a36y1ndvazi3j4"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/coatless/sitmo/")
     (synopsis "Parallel pseudo random number generator header files")
     (description
