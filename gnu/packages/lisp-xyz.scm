@@ -3948,8 +3948,8 @@ defined in RFC 2616.")
 
 (define-public sbcl-cl-who
   (let ((version "1.1.4")
-        (commit "2c08caa4bafba720409af9171feeba3f32e86d32")
-        (revision "1"))
+        (commit "0d3826475133271ee8c590937136c1bc41b8cbe0")
+        (revision "2"))
     (package
       (name "sbcl-cl-who")
       (version (git-version version revision commit))
@@ -3959,10 +3959,10 @@ defined in RFC 2616.")
          (uri (git-reference
                (url "https://github.com/edicl/cl-who")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-who" version))
          (sha256
           (base32
-           "0yjb6sr3yazm288m318kqvj9xk8rm9n1lpimgf65ymqv0i5agxsb"))))
+           "0sc8nji9q1df04lhsiwsjy1a35996bibl31w5hp5sh8q6sa122dy"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("sbcl-flexi-streams" ,sbcl-flexi-streams)))
