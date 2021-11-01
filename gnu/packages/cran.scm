@@ -26536,13 +26536,13 @@ doi.org/10.1007/s10115-013-0679-x} for details.")
 (define-public r-memuse
   (package
     (name "r-memuse")
-    (version "4.1-0")
+    (version "4.2-1")
     (source (origin
              (method url-fetch)
              (uri (cran-uri "memuse" version))
              (sha256
               (base32
-               "1bbjp8y0ji71956fbaxiil7ynq2nkmmgz7i9xps83m3bbp5d3mjq"))))
+               "1wvwnjaaiv2647561z2b55dss35033ildx4kk8hzxfzgsjmdpsgm"))))
     (properties `((upstream-name . "memuse")))
     (build-system r-build-system)
     (home-page "https://github.com/shinra-dev/memuse")
