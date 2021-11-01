@@ -26625,14 +26625,14 @@ and predictions of any machine learning model.  Implemented methods are:
 (define-public r-goftest
   (package
     (name "r-goftest")
-    (version "1.2-2")
+    (version "1.2-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "goftest" version))
        (sha256
         (base32
-         "0ivnkqhv5xgiv05dm648nngacymd8x8g0fyppv3bc0mhcqk9k5z4"))))
+         "06bz6k7smr4jbvzmb73qc5fkf4my59w5gbl18wlmpkkymsv78prs"))))
     (properties `((upstream-name . "goftest")))
     (build-system r-build-system)
     (home-page "https://github.com/baddstats/goftest")
