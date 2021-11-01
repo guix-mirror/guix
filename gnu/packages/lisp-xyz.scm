@@ -2472,7 +2472,7 @@ values from a string in Common Lisp.")
        (origin
          (method hg-fetch)
          (uri (hg-reference
-               (url "https://bitbucket.org/vityok/cl-string-match/")
+               (url "https://github.com/vityok/cl-string-match")
                (changeset changeset)))
          (sha256
           (base32
@@ -2494,13 +2494,20 @@ values from a string in Common Lisp.")
        ;; For testing:
        `(("lisp-unit" ,sbcl-lisp-unit)))
       (arguments
-       `(#:tests? #f))
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-dependency
+             (lambda _
+               (substitute* "cl-string-match.asd"
+                 ((":mgl-pax")
+                  ":mgl-pax/document")))))))
       (synopsis "Set of utilities to manipulate strings in Common Lisp")
       (description
        "@command{cl-strings} is a small, portable, dependency-free set of
 utilities that make it even easier to manipulate text in Common Lisp.  It has
 100% test coverage and works at least on sbcl, ecl, ccl, abcl and clisp.")
-      (home-page "https://bitbucket.org/vityok/cl-string-match/")
+      (home-page "https://github.com/vityok/cl-string-match")
       (license license:bsd-3))))
 
 (define-public cl-string-match
