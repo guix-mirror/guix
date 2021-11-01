@@ -28764,14 +28764,14 @@ parabolic or user defined by custom scale factors.")
 (define-public r-decon
   (package
     (name "r-decon")
-    (version "1.2-4")
+    (version "1.3-4")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "decon" version))
         (sha256
           (base32
-            "1v4l0xq29rm8mks354g40g9jxn0didzlxg3g7z08m0gvj29zdj7s"))))
+            "036cv56wf42q2p3d5h15hbrp5rc29xxy20qwv4k1qzhkq6hmw0qs"))))
     (properties `((upstream-name . "decon")))
     (build-system r-build-system)
     (native-inputs
