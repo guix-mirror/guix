@@ -4683,13 +4683,13 @@ mechanism.")
 (define-public r-ztable
   (package
     (name "r-ztable")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ztable" version))
               (sha256
                (base32
-                "0wxcdb7yp2r6w5iznz1k49npp5sn4jiybfcj30s3198hkcnv0r8y"))))
+                "1ps7ix0hc84s0p0ra6bkjxky3cffs1rvdcagqzj78lbdq22dk5j8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-flextable" ,r-flextable)
