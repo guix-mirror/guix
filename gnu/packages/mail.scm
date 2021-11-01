@@ -1735,14 +1735,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.16")
+    (version "1.8.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "1n271yr83grpki9szdirnk6wb5rcc319f0gmfabyw3fzyf4msjy0"))))
+        (base32 "19b0anfrkg4lqp4h13qi2rqgwvipp1ga0id237nwbp7b6ypn5z0l"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1772,8 +1772,7 @@ addons which can add many functionalities to the base client.")
                ;; Don't rely on netcat being in the PATH to test for a
                ;; connection, instead look up and ping debian.org.
                (substitute* (string-append bin "/msmtpq")
-                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
-               #t))))))
+                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
     (description
