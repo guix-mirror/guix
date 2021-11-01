@@ -9369,14 +9369,14 @@ bootstrap.  Confidence intervals can be computed for (p)AUC or ROC curves.")
 (define-public r-rootsolve
   (package
     (name "r-rootsolve")
-    (version "1.8.2.2")
+    (version "1.8.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rootSolve" version))
        (sha256
         (base32
-         "1p7nh09g2815vqpvi6c5vvjshkwjn00nx5d3gdyjs304q5312q0a"))))
+         "182bb727sgqi5f3pzmw8jnn328wdjrgj9lfvg49gv8s22rjd3cxm"))))
     (properties `((upstream-name . "rootSolve")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
