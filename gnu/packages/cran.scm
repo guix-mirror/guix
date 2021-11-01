@@ -24377,21 +24377,20 @@ network, tree, dendrogram, and Sankey graphs from R using data frames.")
 (define-public r-qgraph
   (package
     (name "r-qgraph")
-    (version "1.6.9")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "qgraph" version))
        (sha256
         (base32
-         "153bqfmsrghkg7598nfr57r3cxv6dn6ir084njl2sqq5np0sj9di"))))
+         "1ahhzp64jdgki5p2wga5mn8a2n1x2zldgpilrpf7hy5l9nf4imz1"))))
     (properties `((upstream-name . "qgraph")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
        ("r-colorspace" ,r-colorspace)
        ("r-corpcor" ,r-corpcor)
-       ("r-dplyr" ,r-dplyr)
        ("r-fdrtool" ,r-fdrtool)
        ("r-ggplot2" ,r-ggplot2)
        ("r-glasso" ,r-glasso)
