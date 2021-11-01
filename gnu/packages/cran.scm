@@ -212,14 +212,14 @@ wrangling backend for the packages in the @code{easystats} ecosystem.")
 (define-public r-diffobj
   (package
     (name "r-diffobj")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diffobj" version))
        (sha256
         (base32
-         "1z4yhfasjpi9rxl1lh9bny7yvs947a6hhc768azc1wwad748mk9q"))))
+         "0q6gwd9pqh41f6j5p9jl92aji4p8kx9inffpha93d7jc3ndsfq6q"))))
     (properties `((upstream-name . "diffobj")))
     (build-system r-build-system)
     (propagated-inputs `(("r-crayon" ,r-crayon)))
