@@ -12166,13 +12166,19 @@ coexist.
 @cindex egg
 Import metadata for @uref{https://wiki.call-cc.org/eggs, CHICKEN eggs}.
 The information is taken from @file{PACKAGE.egg} files found in the
-@uref{git://code.call-cc.org/eggs-5-latest, eggs-5-latest} Git
+@uref{git://code.call-cc.org/eggs-5-all, eggs-5-all} Git
 repository.  However, it does not provide all the information that we
 need, there is no ``description'' field, and the licenses used are not
 always precise (BSD is often used instead of BSD-N).
 
 @example
 guix import egg sourcehut
+@end example
+
+You can also ask for a specific version:
+
+@example
+guix import egg arrays@@1.0
 @end example
 
 Additional options include:
