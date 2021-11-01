@@ -12762,14 +12762,14 @@ Anderson-Darling Distribution\".")
 (define-public r-sodium
   (package
     (name "r-sodium")
-    (version "1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sodium" version))
        (sha256
         (base32
-         "1zxzi8xvxnhgcd5qrylf08nz1cdq3aslrswjas440qg63ypmbf6w"))))
+         "0x4jb3cf1nv1spz1jc9xp8hly2b4a7nj48xr4s33jnfcpdjkmn5q"))))
     (properties `((upstream-name . "sodium")))
     (build-system r-build-system)
     (inputs
