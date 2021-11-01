@@ -28879,6 +28879,26 @@ web feed files and correctly parse and format the elements to be
 displayed for sharing.")
     (license license:gpl3+)))
 
+(define-public emacs-orglink
+  (package
+    (name "emacs-orglink")
+    (version "1.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tarsius/orglink")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ipy1p2cr5i0465hchqazmgn9jrgwzbyrb3prfgkl7z2m1gd7fcg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tarsius/orglink")
+    (synopsis "Use Org mode links in other modes")
+    (description "This library implements support for some Org mode link types
+in other major modes.  Links can be opened and edited like in Org mode.")
+    (license license:gpl3+)))
+
 (define-public emacs-scpaste
   (let ((commit "cd4fa0aafecd839736e0b6cba68b4fc4d7045472")
         (revision "0"))
