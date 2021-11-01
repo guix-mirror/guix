@@ -31234,20 +31234,21 @@ to archive and assign DOIs to data, software, figures, and more.")
 (define-public r-dismo
   (package
     (name "r-dismo")
-    (version "1.3-3")
+    (version "1.3-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dismo" version))
        (sha256
         (base32
-         "1jj9d78f251bxgrwbv1ycn677qnhvl40bfan12x8fhlaq4d36rgx"))))
+         "1rqf6h4imbqvs7hjd1k4my6154wg0qnmnp5byan403rcshr1jbl1"))))
     (properties `((upstream-name . "dismo")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-raster" ,r-raster)
        ("r-rcpp" ,r-rcpp)
-       ("r-sp" ,r-sp)))
+       ("r-sp" ,r-sp)
+       ("r-terra" ,r-terra)))
     (home-page "https://rspatial.org/raster/sdm/")
     (synopsis "Species distribution modeling")
     (description
