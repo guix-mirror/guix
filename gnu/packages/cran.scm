@@ -23963,14 +23963,14 @@ errors; tetrachoric and biserial correlations are special cases.")
 (define-public r-msm
   (package
     (name "r-msm")
-    (version "1.6.8")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "msm" version))
        (sha256
         (base32
-         "1d32y8f0vb2dfv3999liigpns788j145nrvd1xpxb9i2lsg8mwgk"))))
+         "08vhazswyxr3y1zb9y60mbg3bappzlizxml8s08p65mh82xxkz5f"))))
     (properties `((upstream-name . "msm")))
     (build-system r-build-system)
     (propagated-inputs
