@@ -11817,14 +11817,14 @@ more information about packages, and where they were installed from.")
 (define-public r-remotes
   (package
     (name "r-remotes")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "remotes" version))
        (sha256
         (base32
-         "048lihmwksl72fg4fdmhihblj9ipxl22x9wfpgwsbsv79zjc7rfd"))))
+         "0xij8x4ga0r7rp2lxx9hw1zlzv48mfg56v8nf03gsw0dw6r7gmym"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
