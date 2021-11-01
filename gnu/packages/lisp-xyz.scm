@@ -2139,11 +2139,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
   (sbcl-package->ecl-package sbcl-slime-swank))
 
 (define-public sbcl-mgl-pax
-  (let ((commit "4ada6eb26364e71addb169ce58e4ba83bc7a8eaa")
-        (revision "2"))
+  (let ((commit "a7f904784ae59bbeeeb15a14348cda46ed9bdeb3")
+        (revision "0"))
     (package
       (name "sbcl-mgl-pax")
-      (version (git-version "0.0.3" revision commit))
+      (version (git-version "0.0.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2151,17 +2151,22 @@ processes that doesn't run under Emacs.  Lisp processes created by
                (url "https://github.com/melisgl/mgl-pax")
                (commit commit)))
          (sha256
-          (base32 "1s38crgvmd9hgqwsscqpj6m6c10a074zjgg8k5sl15yih1wkpssm"))
+          (base32 "119pb3485m6hqsqsaqpaq2x8xh5lrbqapw7zaqyq425n75vd1mc8"))
          (file-name (git-file-name "mgl-pax" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("3bmd" ,sbcl-3bmd)
-         ("babel" ,sbcl-babel)
-         ("cl-fad" ,sbcl-cl-fad)
-         ("ironclad" ,sbcl-ironclad)
+         ("alexandria" ,sbcl-alexandria)
+         ("colorize" ,sbcl-colorize)
+         ("md5" ,sbcl-md5)
          ("named-readtables" ,sbcl-named-readtables)
          ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
          ("swank" ,sbcl-slime-swank)))
+      (arguments
+       `(#:asd-systems '("mgl-pax"
+                         "mgl-pax/navigate"
+                         "mgl-pax/document"
+                         "mgl-pax/transcribe")))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
