@@ -106,23 +106,24 @@ client.")
 (define-public docker-compose
   (package
     (name "docker-compose")
-    (version "1.25.4")
+    (version "1.29.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker-compose" version))
        (sha256
         (base32
-         "1ww8ckpj3n5jdg63qvmiqx3gk0fsrnynnnqj17fppymbwjzf5fps"))))
+         "1dq9kfak61xx7chjrzmkvbw9mvj9008k7g8q7mwi4x133p9dk32c"))))
     (build-system python-build-system)
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-cached-property"
-        ,python-cached-property)
+     `(("python-cached-property" ,python-cached-property)
+       ("python-distro" ,python-distro)
        ("python-docker" ,python-docker)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
+       ("python-dotenv" ,python-dotenv)
        ("python-jsonschema" ,python-jsonschema)
        ("python-pyyaml" ,python-pyyaml)
        ("python-requests" ,python-requests)
