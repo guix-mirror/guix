@@ -23036,14 +23036,14 @@ Edition), John Wiley and Sons.")
 (define-public r-anthropometry
   (package
     (name "r-anthropometry")
-    (version "1.15")
+    (version "1.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Anthropometry" version))
        (sha256
         (base32
-         "03xw0ggb2qqlldrv0qpjwmncnari742habb46im7y65bhgnr2awx"))))
+         "0iqlmp9vig4qdavs37kislqxwhk0c0pgsn1kwz3mm75nylxmpbp0"))))
     (properties `((upstream-name . "Anthropometry")))
     (build-system r-build-system)
     (propagated-inputs
