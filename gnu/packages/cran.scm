@@ -11164,20 +11164,19 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.6.3")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "1mwcq3hvpx04qnn5k0bv1mikjgm9mk6m83i8hj350s1c1a0mi40n"))))
+         "1ig94mjifhhygznv2xv1gl8hdvk618w5fcmkaj1xmpwpc64m9dnl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-numderiv" ,r-numderiv)
-       ("r-plyr" ,r-plyr)
        ("r-xtable" ,r-xtable)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
