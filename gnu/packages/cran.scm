@@ -22321,18 +22321,19 @@ variable observed over time.")
 (define-public r-fda
   (package
     (name "r-fda")
-    (version "5.1.9")
+    (version "5.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fda" version))
        (sha256
         (base32
-         "0yjrjsv55bcwqn2yxjgj3hn17wfvjvgngfw9xv3w802i52yz9gf8"))))
+         "000flssclb2c1sfm2czyp1qxrfrl9rp6bd8sw87ign8165maplqf"))))
     (properties `((upstream-name . "fda")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-fds" ,r-fds)
+     `(("r-desolve" ,r-desolve)
+       ("r-fds" ,r-fds)
        ("r-matrix" ,r-matrix)))
     (home-page "https://www.functionaldata.org")
     (synopsis "Functional data analysis")
