@@ -16686,14 +16686,14 @@ spanning tree.")
 (define-public r-adegenet
   (package
     (name "r-adegenet")
-    (version "2.1.4")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "adegenet" version))
        (sha256
         (base32
-         "0sxbw5l92xmkazndxbqaa2cxmgk8bqzzbk77q9li850s2i1fdssp"))))
+         "1wjp31634n6z6wglf4z3ydrhhn5jmpwwckmp3n2b0v5f3p2fivp4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
@@ -16706,7 +16706,6 @@ spanning tree.")
        ("r-reshape2" ,r-reshape2)
        ("r-seqinr" ,r-seqinr)
        ("r-shiny" ,r-shiny)
-       ("r-spdep" ,r-spdep)
        ("r-vegan" ,r-vegan)))
     (home-page "https://github.com/thibautjombart/adegenet")
     (synopsis "Exploratory analysis of genetic and genomic data")
