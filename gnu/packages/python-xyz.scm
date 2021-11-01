@@ -12243,6 +12243,37 @@ programmatically with command-line parsers like @code{getopt} and
 (define-public python2-docopt
   (package-with-python2 python-docopt))
 
+(define-public python-dotenv
+  (package
+    (name "python-dotenv")
+    (version "0.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-dotenv" version))
+       (sha256
+        (base32 "1f64ni36j5khzhfn01z7f53kg5byrgflm4g6hck6d56lr1f1iy0l"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-sh" ,python-sh)))
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
+    (home-page "https://github.com/theskumar/python-dotenv")
+    (synopsis "Environment variables configuration tool")
+    (description "Python-dotenv reads key-value pairs from a .env file and can
+set them as environment variables.")
+    (license license:bsd-3)))
+
 (define-public python-pythondialog
   (package
     (name "python-pythondialog")
