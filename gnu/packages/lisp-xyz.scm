@@ -4022,17 +4022,17 @@ the format used by the popular compression tool bzip2.")
 (define-public sbcl-drakma
   (package
     (name "sbcl-drakma")
-    (version "2.0.7")
+    (version "2.0.8")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/edicl/drakma")
              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (file-name (git-file-name "cl-drakma" version))
        (sha256
         (base32
-         "1441idnyif9xzx3ln1p3fg36k2v9h4wasjqrzc8y52j61420qpci"))))
+         "1wf2zivfvhsh6zvd6wcwfd67bm8s8a1p2fismszc8xb819dqk9yl"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("sbcl-puri" ,sbcl-puri)
