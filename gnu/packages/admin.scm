@@ -2653,13 +2653,13 @@ provides the following commands:
 (define-public ansible
   (package
     (name "ansible")
-    (version "4.4.0")
+    (version "4.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "031n22j0lsmh69x6i6gkva81j68b4yzh1pbg3q2h4bknl85q46ag"))))
+        (base32 "0aab9id6dqfw2111r731c7y1p77dpzczynmgl4d989p3a7n54z0b"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("ansible-core" ,ansible-core)))
