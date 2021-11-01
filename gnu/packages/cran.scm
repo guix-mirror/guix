@@ -24066,20 +24066,19 @@ actuarial models such as pension mathematics.")
 (define-public r-sem
   (package
     (name "r-sem")
-    (version "3.1-11")
+    (version "3.1-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sem" version))
        (sha256
         (base32
-         "03j3ig6fy34pi6nwfq9w8f5m555lilw5skr1vn6ay4yvjmvavc9k"))))
+         "0r9g4j0w6q4qy9jl9gkjkihml4109ymg3y6zmhyg806q19qryx07"))))
     (properties `((upstream-name . "sem")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
        ("r-mass" ,r-mass)
-       ("r-matrixcalc" ,r-matrixcalc)
        ("r-mi" ,r-mi)))
     (home-page "https://cran.r-project.org/package=sem")
     (synopsis "Structural equation models")
