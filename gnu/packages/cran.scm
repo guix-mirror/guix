@@ -15497,45 +15497,36 @@ to easily call your own custom JavaScript functions from R.")
 (define-public r-colourpicker
   (package
     (name "r-colourpicker")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "colourpicker" version))
        (sha256
         (base32
-         "1qjispj7i12m02js5cm5xlgn5lyff0kc5ybz6lbknz8q5lkbdyrd"))))
+         "1q1wi3g403fbzp4ys3gsjbwdc86x770cx323qgi47ca8n219kl50"))))
     (build-system r-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build r-build-system)
-                  (srfi srfi-1)
-                  (ice-9 popen))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'process-javascript
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "inst"
-               (call-with-values
-                   (lambda ()
-                     (unzip2
+               (let ((mapping
                       `((,(assoc-ref inputs "js-salvattore")
-                         "examples/colourInput/www/salvattore.min.js")
+                         . "examples/colourInput/www/salvattore.min.js")
                         (,(assoc-ref inputs "js-jquery")
-                         "htmlwidgets/lib/jquery/jquery.min.js")
+                         . "htmlwidgets/lib/jquery/jquery.min.js")
                         ("www/shared/colourpicker/js/colourpicker.js"
-                         "www/shared/colourpicker/js/colourpicker.min.js"))))
-                 (lambda (sources targets)
-                   (for-each (lambda (source target)
-                               (format #t "Processing ~a --> ~a~%"
-                                       source target)
-                               (delete-file target)
-                               (let ((minified (open-pipe* OPEN_READ "uglifyjs" source)))
-                                 (call-with-output-file target
-                                   (lambda (port)
-                                     (dump-port minified port)))))
-                             sources targets))))
-             #t)))))
+                         . "www/shared/colourpicker/js/colourpicker.min.js"))))
+                 (for-each (lambda (source target)
+                             (format #true "Processing ~a --> ~a~%"
+                                     source target)
+                             (delete-file target)
+                             (invoke "esbuild" source "--minify"
+                                     (string-append "--outfile=" target)))
+                           (map car mapping)
+                           (map cdr mapping)))))))))
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-htmltools" ,r-htmltools)
@@ -15545,15 +15536,14 @@ to easily call your own custom JavaScript functions from R.")
        ("r-shiny" ,r-shiny)
        ("r-shinyjs" ,r-shinyjs)))
     (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("uglifyjs" ,node-uglify-js)
+     `(("esbuild" ,esbuild)
        ("js-jquery"
         ,(origin
            (method url-fetch)
-           (uri "https://code.jquery.com/jquery-3.3.1.js")
+           (uri "https://code.jquery.com/jquery-1.11.3.js")
            (sha256
             (base32
-             "1b8zxrp6xwzpw25apn8j4qws0f6sr7qr7h2va5h1mjyfqvn29anq"))))
+             "1v956yf5spw0156rni5z77hzqwmby7ajwdcd6mkhb6zvl36awr90"))))
        ("js-salvattore"
         ,(origin
            (method url-fetch)
