@@ -19842,14 +19842,14 @@ emphasize hidden group structures in networks or focus on specific nodes.")
 (define-public r-terra
   (package
     (name "r-terra")
-    (version "1.3-22")
+    (version "1.4-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "terra" version))
        (sha256
         (base32
-         "1z5zql68q4n81ccpl02hndhbavhhqs65bli1hjxlqdwdq192whkh"))))
+         "08gx28ad00adz4fqch3fx27s6yd0rpjhmdy6b83d1wnlzzgc13qa"))))
     (properties `((upstream-name . "terra")))
     (build-system r-build-system)
     (inputs
@@ -19859,8 +19859,7 @@ emphasize hidden group structures in networks or focus on specific nodes.")
        ("sqlite" ,sqlite) ; needed for proj
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-raster" ,r-raster)
-       ("r-rcpp" ,r-rcpp)))
+     `(("r-rcpp" ,r-rcpp)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://rspatial.org/terra")
