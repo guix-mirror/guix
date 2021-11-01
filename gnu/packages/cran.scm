@@ -17323,14 +17323,14 @@ and accessing fields.")
 (define-public r-svmisc
   (package
     (name "r-svmisc")
-    (version "1.1.4")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svMisc" version))
        (sha256
         (base32
-         "0y8mhiblyzwads4gf4whmxi7c6wdmqs3ahbj132l79bbdk40p83a"))))
+         "1r3kih5bnr4plnzdn5f2gg3xl3krgyl7gkdlf58a2l8vk13j3m9d"))))
     (properties `((upstream-name . "svMisc")))
     (build-system r-build-system)
     (native-inputs
