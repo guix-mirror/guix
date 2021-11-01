@@ -9980,14 +9980,14 @@ data with multiple data types.")
 (define-public r-qualv
   (package
     (name "r-qualv")
-    (version "0.3-3")
+    (version "0.3-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "qualV" version))
        (sha256
         (base32
-         "1yyqk223ydcc0125gsn33a4mcdp8bd76fpn8kj9bfz9g78b8dqmx"))))
+         "0rkjzva2h158d5c631jmjjh7qjibbyisl0503san80rk9fgxl45b"))))
     (properties `((upstream-name . "qualV")))
     (build-system r-build-system)
     (propagated-inputs
