@@ -57,21 +57,21 @@
 (define-public python-docker
   (package
     (name "python-docker")
-    (version "3.7.3")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker" version))
        (sha256
         (base32
-         "0qmrcvpaz37p85hfddsd4yc8hgqlkzs4cz09q9wmy0pz5pwajqm0"))))
+         "1yr7w8vmdis01myx26pqx7wcyz2cy1mfs421alppq3lpc9ms45nr"))))
     (build-system python-build-system)
     ;; TODO: Tests require a running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-requests" ,python-requests-2.20)
+     `(("python-requests" ,python-requests)
        ("python-six" ,python-six)
-       ("python-urllib3" ,python-urllib3-1.24)))
+       ("python-urllib3" ,python-urllib3)))
     (propagated-inputs
      `(("python-docker-pycreds" ,python-docker-pycreds)
        ("python-paramiko" ,python-paramiko)    ;adds SSH support

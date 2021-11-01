@@ -2542,22 +2542,6 @@ APIs.")
 than Python’s urllib2 library.")
     (license license:asl2.0)))
 
-;; Some software requires an older version of Requests, notably Docker/Docker
-;; Compose.
-(define-public python-requests-2.20
-  (package (inherit python-requests)
-           (version "2.20.1")
-           (source (origin
-                     (method url-fetch)
-                     (uri (pypi-uri "requests" version))
-                     (sha256
-                      (base32
-                       "0qzj6cgv3k9wyj7wlxgz7xq0cfg4jbbkfm24pp8dnhczwl31527a"))))
-           (propagated-inputs
-            `(("python-urllib3" ,python-urllib3-1.24)
-              ("python-idna" ,python-idna-2.7)
-              ,@(package-propagated-inputs python-requests)))))
-
 (define-public python2-requests
   (package-with-python2 python-requests))
 
@@ -2823,17 +2807,6 @@ can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
     (properties `((python2-variant . ,(delay python2-urllib3))))
     (license license:expat)))
-
-;; Some software requires an older version of urllib3, notably Docker.
-(define-public python-urllib3-1.24
-  (package (inherit python-urllib3)
-           (version "1.24.3")
-           (source (origin
-                     (method url-fetch)
-                     (uri (pypi-uri "urllib3" version))
-                     (sha256
-                      (base32
-                       "1x0slqrv6kixkbcdnxbglvjliwhc1payavxjvk8fvbqjrnasd4r3"))))))
 
 (define-public python2-urllib3
   (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
