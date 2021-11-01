@@ -17134,14 +17134,14 @@ authoring books and technical documents with R Markdown.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.6.6")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "1l301dy3gc8pn7j00awcjh41wmc1ks9kswak255kbsa6f54rsxsi"))))
+         "1rqz0y4r94y3mwbb9kyz97cjqpnprka96qbncvbnbmgg2d630kij"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
