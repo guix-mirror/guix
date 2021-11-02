@@ -2084,7 +2084,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.33.1")
+    (version "0.34.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2092,8 +2092,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32
-                "06rw1f55zcsj78ql8w70j9ljp2qb1pv594xj7q9cmq7i92a7hq45"))))
+               (base32 "0kqckrgvpx42gdmnc644lpwbimwf1am256xd670w2b8sbrjv3bm9"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
@@ -2137,19 +2136,17 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ("libxkbcommon" ,libxkbcommon)
-       ("youtube-dl" ,youtube-dl)
+       ("yt-dlp" ,yt-dlp)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'patch-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((ytdl (assoc-ref inputs "youtube-dl")))
-              (substitute* "player/lua/ytdl_hook.lua"
-                (("\"youtube-dl\",")
-                 (string-append "\"" ytdl "/bin/youtube-dl\",")))
-              #t)))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ytdl (assoc-ref inputs "yt-dlp")))
+               (substitute* "player/lua/ytdl_hook.lua"
+                 (("\"yt-dlp\",")
+                  (string-append "\"" ytdl "/bin/yt-dlp\","))))))
          (add-before 'configure 'build-reproducibly
            (lambda _
              ;; Somewhere in the build system library dependencies are enumerated
