@@ -791,14 +791,14 @@ interactive POSIX shell targeted at resource-constrained systems.")
 (define-public mksh
   (package
     (name "mksh")
-    (version "58")
+    (version "59c")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.mirbsd.org/MirOS/dist/mir/mksh/mksh-R"
                            version ".tgz"))
        (sha256
-        (base32 "1337zjvzh14yncg9igdry904a3ns52l8rnm1kcq262w7f5xyp2v0"))))
+        (base32 "01n5ggw33bw4jv4d3148wlw9n4aj7vdn3ffnc66c9w9pldjidbkp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; tests require access to /dev/tty
@@ -817,8 +817,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
                (install-file "mksh" bin)
                (with-directory-excursion bin
                  (symlink "mksh" "ksh"))
-               (install-file "mksh.1" man)
-               #t))))))
+               (install-file "mksh.1" man)))))))
     (home-page "https://www.mirbsd.org/mksh.htm")
     (synopsis "Korn Shell from MirBSD")
     (description "mksh is an actively developed free implementation of the
