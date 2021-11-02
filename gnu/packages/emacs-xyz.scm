@@ -14053,7 +14053,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.24")
+    (version "0.25")
     (synopsis "Emacs X window manager")
     (source
      (origin
@@ -14061,7 +14061,7 @@ It should enable you to implement low-level X11 applications.")
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "exwm-" version ".tar"))
        (sha256
-        (base32 "0lj1a3cmbpf4h6x8k6x8cdm1qb51ca6filydnvi5zcda8zpl060s"))
+        (base32 "0imd4v9ccvpsskmfnycz5fgabsvdjp1msg5v8rc7x0v26r3kr4x7"))
        (patches
         ;; Patch fixing fullscreen view.  Applied upstream as
         ;; edb930005b0ba83051ca8a59b493e9a3c8ef580a.  It can be removed in
