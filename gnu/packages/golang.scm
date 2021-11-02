@@ -8913,3 +8913,40 @@ averages.")
      "This package provides functions to get the fixed width of a character or
 string.")
     (license license:expat)))
+
+(define-public go-github-com-arceliar-ironwood
+  (package
+    (name "go-github-com-arceliar-ironwood")
+    (version "0.0.0-20210912013146-c2bc55bb349c")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Arceliar/ironwood")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dfkqnkfxwlwcsk8g9r1pv84lfzgn8r1vam13zlmk81cgan2r6fx"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/Arceliar/ironwood"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Source-only package
+         (delete 'build))))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-github-com-arceliar-phony" ,go-github-com-arceliar-phony)))
+    (home-page "https://github.com/Arceliar/ironwood")
+    (synopsis "Experimental network routing library")
+    (description
+     "Ironwood is a routing library with a @code{net.PacketConn}-compatible
+interface using @code{ed25519.PublicKey}s as addresses.  Basically, you use it
+when you want to communicate with some other nodes in a network, but you can't
+guarantee that you can directly connect to every node in that network.  It was
+written to test improvements to / replace the routing logic in
+@url{https://github.com/yggdrasil-network/yggdrasil-go,Yggdrasil}, but it may
+be useful for other network applications.")
+    (license license:mpl2.0)))
