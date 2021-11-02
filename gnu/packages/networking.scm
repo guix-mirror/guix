@@ -4067,7 +4067,7 @@ network.")
 (define-public yggdrasil
   (package
     (name "yggdrasil")
-    (version "0.3.16")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -4078,7 +4078,7 @@ network.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vyd7a333hwn6j1lv1g9sicw74a4qk982bsi3cfdhjlv6hsjwmil"))
+        (base32 "0mmqw6w5a6ph49xd1yzb7i70xg466k9pi5sdvplhb66x68wipixh"))
        (patches (search-patches "yggdrasil-extra-config.patch"))))
     (build-system go-build-system)
     (arguments
@@ -4095,7 +4095,7 @@ network.")
                           "go" "build" "-v" "-ldflags=-s -w"
                           (string-append
                            "github.com/yggdrasil-network/yggdrasil-go/cmd/" c)))
-                       (list "yggdrasil" "yggdrasilctl"))
+                       (list "yggdrasil" "yggdrasilctl" "genkeys"))
                       #t))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -4106,7 +4106,7 @@ network.")
                         (for-each
                          (lambda (f)
                            (install-file f bin))
-                         (list "yggdrasil" "yggdrasilctl"))
+                         (list "yggdrasil" "yggdrasilctl" "genkeys"))
                         (mkdir-p doc)
                         (copy-recursively
                          (string-append
@@ -4116,20 +4116,43 @@ network.")
                       #t)))))
     ;; https://github.com/kardianos/minwinsvc is windows only
     (propagated-inputs
-     `(("go-github-com-arceliar-phony" ,go-github-com-arceliar-phony)
-       ("go-github-com-cheggaaa-pb" ,go-github-com-cheggaaa-pb)
-       ("go-github-com-gologme-log" ,go-github-com-gologme-log)
-       ("go-github-com-hashicorp-go-syslog" ,go-github-com-hashicorp-go-syslog)
-       ("go-github-com-hjson-hjson-go" ,go-github-com-hjson-hjson-go)
-       ("go-github-com-kardianos-minwinsvc" ,go-github-com-kardianos-minwinsvc)
+     `(;;("go-golang-zx2c4-com-wireguard-windows"
+       ;; ,go-golang-zx2c4-com-wireguard-windows)
+       ("go-golang-zx2c4-com-wireguard"
+        ,go-golang-zx2c4-com-wireguard)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-crypto"
+        ,go-golang-org-x-crypto)
+       ("go-netns"
+        ,go-netns)
+       ("go-netlink"
+        ,go-netlink)
        ("go-github-com-mitchellh-mapstructure"
         ,go-github-com-mitchellh-mapstructure)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
-       ("go-golang-org-x-net" ,go-golang-org-x-net)
-       ("go-golang-org-x-text" ,go-golang-org-x-text)
-       ("go-golang-zx2c4-com-wireguard" ,go-golang-zx2c4-com-wireguard)
-       ("go-netlink" ,go-netlink)
-       ("go-netns" ,go-netns)))
+       ("go-github-com-mattn-go-runewidth"
+        ,go-github-com-mattn-go-runewidth)
+       ("go-github-com-mattn-go-isatty"
+        ,go-github-com-mattn-go-isatty)
+       ("go-github-com-kardianos-minwinsvc"
+        ,go-github-com-kardianos-minwinsvc)
+       ("go-github-com-hjson-hjson-go"
+        ,go-github-com-hjson-hjson-go)
+       ("go-github-com-hashicorp-go-syslog"
+        ,go-github-com-hashicorp-go-syslog)
+       ("go-github-com-gologme-log"
+        ,go-github-com-gologme-log)
+       ("go-github-com-fatih-color"
+        ,go-github-com-fatih-color)
+       ("go-github-com-cheggaaa-pb-v3"
+        ,go-github-com-cheggaaa-pb-v3)
+       ("go-github-com-vividcortex-ewma"
+        ,go-github-com-vividcortex-ewma)
+       ("go-github-com-arceliar-phony"
+        ,go-github-com-arceliar-phony)
+       ("go-github-com-arceliar-ironwood"
+        ,go-github-com-arceliar-ironwood)))
     (home-page "https://yggdrasil-network.github.io/blog.html")
     (synopsis
      "Experiment in scalable routing as an encrypted IPv6 overlay network")
