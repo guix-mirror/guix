@@ -7945,9 +7945,9 @@ error messages.")
 inspired by the causal messaging system in the Pony programming language.")
       (license license:expat))))
 
-(define-public go-github-com-cheggaaa-pb
+(define-public go-github-com-cheggaaa-pb-v3
   (package
-    (name "go-github-com-cheggaaa-pb")
+    (name "go-github-com-cheggaaa-pb-v3")
     (version "3.0.8")
     (source
      (origin
@@ -7977,6 +7977,9 @@ inspired by the causal messaging system in the Pony programming language.")
     (description "This package is a Go library that draws progress bars on
 the terminal.")
     (license license:bsd-3)))
+
+(define-public go-github-com-cheggaaa-pb
+  (deprecated-package "go-github-com-cheggaaa-pb" go-github-com-cheggaaa-pb-v3))
 
 (define-public go-github-com-gologme-log
   ;; this is the same as v1.2.0, only the LICENSE file changed
