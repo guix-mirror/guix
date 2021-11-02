@@ -1649,6 +1649,19 @@ boilerplate code from defining new Flymake backend functions.")
          (sha256
           (base32 "04yfb4sy41spjzk9mhm4gy0h8vnjx09p2g6nm1yzgd9a5ph9sqgl"))))
       (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'substitute-shellcheck-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (make-file-writable "flymake-shellcheck.el")
+               (emacs-substitute-sexps "flymake-shellcheck.el"
+                 ("defcustom flymake-shellcheck-path"
+                  `(or (executable-find "shellcheck")
+                       ,(string-append (assoc-ref inputs "shellcheck")
+                                       "/bin/shellcheck")))))))))
+      (inputs
+       `(("shellcheck" ,shellcheck)))
       (home-page "https://github.com/federicotdn/flymake-shellcheck")
       (synopsis "Flymake backend for Bash/Sh powered by ShellCheck")
       (description
