@@ -8861,3 +8861,25 @@ JSON for post-processing
      "This package implements algorithms for exponentially weighted moving
 averages.")
     (license license:expat)))
+
+(define-public go-github-com-rivo-uniseg
+  (package
+    (name "go-github-com-rivo-uniseg")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rivo/uniseg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j7h22vfmjj562vr8gpsyrkrwp1pq9ayh5fylv24skxb467g9f0q"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/rivo/uniseg"))
+    (home-page "https://github.com/rivo/uniseg")
+    (synopsis "Unicode Text Segmentation for Go")
+    (description
+     "This package implements Unicode Text Segmentation according to
+@url{https://unicode.org/reports/tr29/, Unicode Standard Annex #29}.")
+    (license license:expat)))
