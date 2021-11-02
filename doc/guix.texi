@@ -30060,6 +30060,53 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 @end deffn
 
 
+@subsubheading QEMU Guest Agent
+
+@cindex emulation
+
+The QEMU guest agent provides control over the emulated system to the
+host.  The @code{qemu-guest-agent} service runs the agent on Guix
+guests.  To control the agent from the host, open a socket by invoking
+QEMU with the following arguments:
+
+@example
+qemu-system-x86_64 \
+	-chardev socket,path=/tmp/qga.sock,server=on,wait=off,id=qga0 \
+	-device virtio-serial \
+	-device virtserialport,chardev=qga0,name=org.qemu.guest_agent.0 \
+	...
+@end example
+
+This creates a socket at @file{/tmp/qga.sock} on the host.  Once the
+guest agent is running, you can issue commands with @code{socat}:
+
+@example
+$ guix shell socat -- socat unix-connect:/tmp/qga.sock stdio
+@{"execute": "guest-get-host-name"@}
+@{"return": @{"host-name": "guix"@}@}
+@end example
+
+See @url{https://wiki.qemu.org/Features/GuestAgent,QEMU guest agent
+documentation} for more options and commands.
+
+@defvr {Scheme Variable} qemu-guest-agent-service-type
+Service type for the QEMU guest agent service.
+@end defvr
+
+@deftp {Data Type} qemu-guest-agent-configuration
+Configuration for the @code{qemu-guest-agent} service.
+
+@table @asis
+@item @code{qemu} (default: @code{qemu-minimal})
+The QEMU package to use.
+
+@item @code{device} (default: @code{""})
+File name of the device or socket the agent uses to communicate with the
+host.  If empty, QEMU uses a default file name.
+@end table
+@end deftp
+
+
 @subsubheading The Hurd in a Virtual Machine
 
 @cindex @code{hurd}

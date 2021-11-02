@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
 ;;; Copyright © 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020,2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,7 +83,11 @@
 
             qemu-binfmt-configuration
             qemu-binfmt-configuration?
-            qemu-binfmt-service-type))
+            qemu-binfmt-service-type
+
+            qemu-guest-agent-configuration
+            qemu-guest-agent-configuration?
+            qemu-guest-agent-service-type))
 
 (define (uglify-field-name field-name)
   (let ((str (symbol->string field-name)))
@@ -846,6 +851,47 @@ given QEMU package."
                  "This service supports transparent emulation of binaries
 compiled for other architectures using QEMU and the @code{binfmt_misc}
 functionality of the kernel Linux.")))
+
+
+;;;
+;;; QEMU guest agent service.
+;;;
+
+(define-configuration qemu-guest-agent-configuration
+  (qemu
+   (package qemu-minimal)
+   "QEMU package.")
+  (device
+   (string "")
+   "Path to device or socket used to communicate with the host.  If not
+specified, the QEMU default path is used."))
+
+(define qemu-guest-agent-shepherd-service
+  (match-lambda
+    (($ <qemu-guest-agent-configuration> qemu device)
+     (list
+      (shepherd-service
+       (provision '(qemu-guest-agent))
+       (documentation "Run the QEMU guest agent.")
+       (start #~(make-forkexec-constructor
+                 `(,(string-append #$qemu "/bin/qemu-ga") "--daemon"
+                   "--pidfile=/var/run/qemu-ga.pid"
+                   "--statedir=/var/run"
+                   ,@(if #$device
+                         (list (string-append "--path=" #$device))
+                         '()))
+                 #:pid-file "/var/run/qemu-ga.pid"
+                 #:log-file "/var/log/qemu-ga.log"))
+       (stop #~(make-kill-destructor)))))))
+
+(define qemu-guest-agent-service-type
+  (service-type
+   (name 'qemu-guest-agent)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             qemu-guest-agent-shepherd-service)))
+   (default-value (qemu-guest-agent-configuration))
+   (description "Run the QEMU guest agent.")))
 
 
 ;;;
