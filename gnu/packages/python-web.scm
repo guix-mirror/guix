@@ -5283,18 +5283,19 @@ Some things HTTP Core does do:
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv" "-k"
-                     ;; These tests try to open an outgoing connection.
-                     (string-append
-                      "not test_connect_timeout"
-                      " and not test_that_send_cause_async_client_to_be_not_"
-                      "closed"
-                      " and not test_that_async_client_caused_warning_when_"
-                      "being_deleted"
-                      " and not test_that_send_cause_client_to_be_not_closed"
-                      " and not test_async_proxy_close"
-                      " and not test_sync_proxy_close")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "-k"
+                       ;; These tests try to open an outgoing connection.
+                       (string-append
+                        "not test_connect_timeout"
+                        " and not test_that_send_cause_async_client_to_be_not_"
+                        "closed"
+                        " and not test_that_async_client_caused_warning_when_"
+                        "being_deleted"
+                        " and not test_that_send_cause_client_to_be_not_closed"
+                        " and not test_async_proxy_close"
+                        " and not test_sync_proxy_close"))))))))
     (native-inputs
      `(("python-autoflake" ,python-autoflake)
        ("python-black" ,python-black)
