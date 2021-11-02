@@ -2699,7 +2699,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.13.0")
+    (version "5.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2707,7 +2707,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0dhvdybfm33q9lz73sfnc24pxy2r42xywzb1gdgydjfafhvyb8kj"))))
+                "1zwin8sjnnwf2a9rjwzb3q8lkhcpy06s29sh05f5gxd7z6jy9qrq"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
