@@ -1234,7 +1234,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
     (synopsis "Quickly find emails")
     (description
      "Mu is a tool for dealing with e-mail messages stored in the
-Maildir-format.  Mu's purpose in life is to help you to quickly find the
+Maildir format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license license:gpl3+)))
