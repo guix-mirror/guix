@@ -308,6 +308,8 @@ at URI, which may be a file:// URI pointing the package's tree."
            "https://directory.fsf.org/wiki/License:EUPL-1.2"
            "https://www.gnu.org/licenses/license-list#EUPL-1.2"))
 
+;; Some people call it the MIT license. For clarification see:
+;; https://www.gnu.org/licenses/license-list.html#Expat
 (define expat
   (license "Expat"
            "http://directory.fsf.org/wiki/License:Expat"
