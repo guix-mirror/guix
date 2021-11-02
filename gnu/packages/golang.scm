@@ -7948,27 +7948,30 @@ inspired by the causal messaging system in the Pony programming language.")
 (define-public go-github-com-cheggaaa-pb
   (package
     (name "go-github-com-cheggaaa-pb")
-    (version "3.0.4")
+    (version "3.0.8")
     (source
-      (origin
+     (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/cheggaaa/pb/")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0xhsv9yf3fz918ay6w0d87jnb3hk9vxvi16jk172kqq26x7jixd0"))))
+        (base32 "0d701s2niy39r650d1phjw19h4l27b1yfc2ih6s31f56b3zzqspx"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/cheggaaa/pb/"))
+     '(#:import-path "github.com/cheggaaa/pb/v3"
+       ;; XXX: it does have tests but I'm not sure how to run them.
+       ;; go-build-system is looking in the wrong directory.
+       #:tests? #f))
     (propagated-inputs
-     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-github-com-rivo-uniseg" ,go-github-com-rivo-uniseg)
+       ("go-github-com-mattn-go-runewidth" ,go-github-com-mattn-go-runewidth)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
        ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
-       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
-       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
-    (native-inputs
-     `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)))
+       ("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-vividcortex-ewma" ,go-github-com-vividcortex-ewma)))
     (home-page "https://github.com/cheggaaa/pb/")
     (synopsis "Console progress bar for Go")
     (description "This package is a Go library that draws progress bars on
