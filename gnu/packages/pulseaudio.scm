@@ -281,7 +281,7 @@ sound server.")
 (define-public pavucontrol
   (package
     (name "pavucontrol")
-    (version "4.0")
+    (version "5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -290,11 +290,12 @@ sound server.")
                    ".tar.xz"))
              (sha256
               (base32
-               "1qhlkl3g8d7h72xjskii3g1l7la2cavwp69909pzmbi2jyn5pi4g"))))
+               "0yjfiwpaydh5s8v3l78dhwhbsmcl1xsq3p8rvz80m9zinp1p4ayf"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
        ("gtkmm" ,gtkmm)
+       ("json-glib" ,json-glib)
        ("libcanberra" ,libcanberra)
        ("pulseaudio" ,pulseaudio)))
     (native-inputs
