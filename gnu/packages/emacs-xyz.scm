@@ -8207,40 +8207,43 @@ them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
 (define-public emacs-embark
-  (package
-    (name "emacs-embark")
-    (version "0.12")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/oantolin/embark")
-             (commit version)))
-       (sha256
-        (base32 "16z7g6ynj4d64wsg49skhwypn5j6awlpsawbz61djsmpzlzjnv36"))
-       (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-avy" ,emacs-avy)
-       ("emacs-consult" ,emacs-consult)))
-    (home-page "https://github.com/oantolin/embark")
-    (synopsis "Emacs mini-buffer actions rooted in keymaps")
-    (description
-     "This package provides a sort of right-click contextual menu for Emacs
+  ;; XXX: Upstream did not tag last release.  Commit hash below matches
+  ;; version bump.
+  (let ((commit "bc3e4654329563ab28a96003610634c3a5e5a484"))
+    (package
+      (name "emacs-embark")
+      (version "0.13")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oantolin/embark")
+               (commit commit)))
+         (sha256
+          (base32 "1x6m6gc32z7kv9nkr8mwhi9mimbwhd37qyxpwj33hml9ygi8s7r6"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-avy" ,emacs-avy)
+         ("emacs-consult" ,emacs-consult)))
+      (home-page "https://github.com/oantolin/embark")
+      (synopsis "Emacs mini-buffer actions rooted in keymaps")
+      (description
+       "This package provides a sort of right-click contextual menu for Emacs
 offering you relevant @emph{actions} to use on a @emph{target} determined by
 the context.
 
 In the minibuffer, the target is the current best completion candidate.  In
-the @code{*Completions*} buffer the target is the completion at point.
-n a regular buffer, the target is the region if active, or else the file,
-symbol or URL at point.
+the @code{*Completions*} buffer the target is the completion at point.  In
+a regular buffer, the target is the region if active, or else the file, symbol
+or URL at point.
 
 The type of actions offered depend on the type of the target.  For files you
 get offered actions like deleting, copying, renaming, visiting in another
 window, running a shell command on the file, etc.  For buffers the actions
 include switching to or killing the buffer.  For package names the actions
 include installing, removing or visiting the homepage.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-prescient
   (package
