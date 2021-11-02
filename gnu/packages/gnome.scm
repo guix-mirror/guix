@@ -6564,7 +6564,8 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                 "1hlxl6368h6nyqp1888szxs9hnpcw98k3h23dgqi29xd38klzsmj"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:configure-flags
        (list "-Dsystemduserunitdir=no"
              "-Dtmpfilesdir=no"
@@ -6572,7 +6573,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib/gvfs"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+     `(("glib:bin" ,glib "bin")         ;for glib-genmarshal, etc.
        ("gettext" ,gettext-minimal)
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
