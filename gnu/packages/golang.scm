@@ -8883,3 +8883,27 @@ averages.")
      "This package implements Unicode Text Segmentation according to
 @url{https://unicode.org/reports/tr29/, Unicode Standard Annex #29}.")
     (license license:expat)))
+
+(define-public go-github-com-mattn-go-runewidth
+  (package
+    (name "go-github-com-mattn-go-runewidth")
+    (version "0.0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mattn/go-runewidth")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yir0f3wc5z5hnkwhvx5qb6nmpfb05zp2gvfjvna63s8kmla1rrn"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/mattn/go-runewidth"))
+    (propagated-inputs
+     `(("go-github-com-rivo-uniseg" ,go-github-com-rivo-uniseg)))
+    (home-page "https://github.com/mattn/go-runewidth")
+    (synopsis "Rune width implementation for Go")
+    (description
+     "This package provides functions to get the fixed width of a character or
+string.")
+    (license license:expat)))
