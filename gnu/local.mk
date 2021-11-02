@@ -1024,7 +1024,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/elm-compiler-disable-reactor.patch	\
   %D%/packages/patches/elm-compiler-fix-map-key.patch		\
   %D%/packages/patches/emacs-exec-path.patch			\
-  %D%/packages/patches/emacs-exwm-fix-fullscreen-states.patch	\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-ignore-empty-xim-styles.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\

@@ -14064,12 +14064,7 @@ It should enable you to implement low-level X11 applications.")
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "exwm-" version ".tar"))
        (sha256
-        (base32 "0imd4v9ccvpsskmfnycz5fgabsvdjp1msg5v8rc7x0v26r3kr4x7"))
-       (patches
-        ;; Patch fixing fullscreen view.  Applied upstream as
-        ;; edb930005b0ba83051ca8a59b493e9a3c8ef580a.  It can be removed in
-        ;; next release.
-        (search-patches "emacs-exwm-fix-fullscreen-states.patch"))))
+        (base32 "0imd4v9ccvpsskmfnycz5fgabsvdjp1msg5v8rc7x0v26r3kr4x7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
