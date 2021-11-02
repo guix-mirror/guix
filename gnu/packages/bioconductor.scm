@@ -14183,6 +14183,11 @@ Python environments in a single R session.")
          "08awghsg7q22csb0j9dr8dpb1vkn9gcs9qnhhljxifkw2ahbqia4"))))
     (properties `((upstream-name . "biocthis")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      `(("r-biocmanager" ,r-biocmanager)
        ("r-fs" ,r-fs)
