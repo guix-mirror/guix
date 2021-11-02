@@ -431,7 +431,7 @@ install one or more of the following packages alongside pulseaudio-dlna:
 (define-public pamixer
   (package
     (name "pamixer")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method git-fetch)
@@ -440,19 +440,18 @@ install one or more of the following packages alongside pulseaudio-dlna:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i14550n8paijwwnhksv5izgfqm3s5q2773bdfp6vyqybkll55f7"))))
+        (base32 "1d5arjbsh3q9z693pi2rq553ai9b18iz36ss7q8ff29m0hf62lzd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; There is no test suite.
+     `(#:tests? #f                      ; no test suite
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; There's no configure phase.
+         (delete 'configure)            ; no configure script
          (add-before 'install 'mkdir-bin
            (lambda _
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
-             #t)))))
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin")))))))
     (inputs
      `(("boost" ,boost)
        ("pulseaudio" ,pulseaudio)))
