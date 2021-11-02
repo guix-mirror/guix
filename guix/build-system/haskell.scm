@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,9 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:export (%haskell-build-system-modules
+  #:export (hackage-uri
+
+            %haskell-build-system-modules
             haskell-build
             haskell-build-system))
 
@@ -40,6 +43,12 @@
 ;; implemented as an extension of 'gnu-build-system'.
 ;;
 ;; Code:
+
+(define (hackage-uri name version)
+  "Return a URI string for the Haskell package hosted on Hackage corresponding
+to NAME and VERSION."
+  (string-append "https://hackage.haskell.org/package/" name "/"
+                 name "-" version ".tar.gz"))
 
 (define %haskell-build-system-modules
   ;; Build-side modules imported by default.

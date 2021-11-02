@@ -170,10 +170,7 @@ library
     ('source
      ('origin
        ('method 'url-fetch)
-       ('uri ('string-append
-              "https://hackage.haskell.org/package/foo/foo-"
-              'version
-              ".tar.gz"))
+       ('uri ('hackage-uri "foo" 'version))
        ('sha256
         ('base32
          (? string? hash)))))
@@ -215,10 +212,7 @@ library
     ('source
      ('origin
        ('method 'url-fetch)
-       ('uri ('string-append
-              "https://hackage.haskell.org/package/foo/foo-"
-              'version
-              ".tar.gz"))
+       ('uri ('hackage-uri "foo" 'version))
        ('sha256
         ('base32
          (? string? hash)))))
@@ -343,10 +337,7 @@ executable cabal
     ('source
      ('origin
        ('method 'url-fetch)
-       ('uri ('string-append
-              "https://hackage.haskell.org/package/foo/foo-"
-              'version
-              ".tar.gz"))
+       ('uri ('hackage-uri "foo" 'version))
        ('sha256
         ('base32
          (? string? hash)))))
@@ -409,10 +400,7 @@ executable cabal
     ('source
      ('origin
        ('method 'url-fetch)
-       ('uri ('string-append
-              "https://hackage.haskell.org/package/foo/foo-"
-              'version
-              ".tar.gz"))
+       ('uri ('hackage-uri "foo" 'version))
        ('sha256
         ('base32
          (? string? hash)))))

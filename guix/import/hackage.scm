@@ -40,6 +40,7 @@
   #:use-module (guix memoization)
   #:use-module (guix upstream)
   #:use-module (guix packages)
+  #:autoload   (guix build-system haskell) (hackage-uri)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (%hackage-url
             hackage->guix-package
@@ -303,7 +304,7 @@ the hash of the Cabal file."
         (version ,version)
         (source (origin
                   (method url-fetch)
-                  (uri (string-append ,@(factorize-uri source-url version)))
+                  (uri (hackage-uri ,name version))
                   (sha256
                    (base32
                     ,(if tarball
@@ -367,7 +368,7 @@ respectively."
                (hackage-cabal-url hackage-name))
        #f)
       ((_ *** ("version" (version)))
-       (let ((url (hackage-source-url hackage-name version)))
+       (let ((url (hackage-uri hackage-name version)))
          (upstream-source
           (package (package-name package))
           (version version)
