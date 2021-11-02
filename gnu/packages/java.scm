@@ -2121,14 +2121,15 @@ new Date();"))
 (define-public openjdk11
   (package
     (name "openjdk")
-    (version "11.28")
+    (version "11.0.13")
     (source (origin
               (method url-fetch)
-              (uri "http://hg.openjdk.java.net/jdk/jdk/archive/76072a077ee1.tar.bz2")
+              (uri (string-append "https://openjdk-sources.osci.io/openjdk11/openjdk-"
+                                  version "-ga.tar.xz"))
               (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v705w1s9lrqalzahir78pk397rkk9gfvzq821yv8h3xha0bqi6w"))
+                "0xavz7msaadprq65p5bhp6sxcyp12p0zlbhb3aaz0cvp21c9pdm9"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -2365,6 +2366,7 @@ new Date();"))
        ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
+       ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxt" ,libxt)
        ("libxtst" ,libxtst)))
