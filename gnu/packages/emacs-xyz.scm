@@ -4334,17 +4334,16 @@ Expectations, but it can be used in other contexts.")
 (define-public emacs-ecukes
   (package
     (name "emacs-ecukes")
-    (version "0.6.17")
-    (home-page "https://github.com/ecukes/ecukes")
+    (version "0.6.18")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url home-page)
+             (url "https://github.com/ecukes/ecukes")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1isscwz4h3nx62lwfrj899lp2yc27zk1ndgr441d848495ccmshn"))))
+        (base32 "182qgddfv8nd89y1l55rs5vm5i61ayc8cxbplb8zx0alnid9xrw1"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^feature/" "^reporters/" "^templates/" %default-include)))
@@ -4355,6 +4354,7 @@ Expectations, but it can be used in other contexts.")
        ("emacs-espuds" ,emacs-espuds)
        ("emacs-f" ,emacs-f)
        ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/ecukes/ecukes")
     (synopsis "Cucumber for Emacs")
     (description
      "This package provides Ecukes, a Cucumber-inspired integration testing
