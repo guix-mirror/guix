@@ -21713,45 +21713,42 @@ source code.")
                    license:asl2.0))))
 
 (define-public emacs-rustic
-  ;; XXX: Upstream does not tag releases.  Version is extracted from main
-  ;; file.
-  (let ((commit "bbf129cd128105de51b6c242b2551094b8d8987d")
-        (revision "0"))
-    (package
-      (name "emacs-rustic")
-      (version (git-version "1.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/brotzeit/rustic")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "09dnlvi8kf683n6q3yp4gy9d4idiyg4x6rcij8d90cvygh8i30wd"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
-         ("emacs-f" ,emacs-f)
-         ("emacs-flycheck" ,emacs-flycheck)
-         ("emacs-lsp-mode" ,emacs-lsp-mode)
-         ("emacs-markdown-mode" ,emacs-markdown-mode)
-         ("emacs-project" ,emacs-project)
-         ("emacs-s" ,emacs-s)
-         ("emacs-spinner" ,emacs-spinner)
-         ("emacs-xterm-color" ,emacs-xterm-color)))
-      (arguments
-       ;; Tests require rust, cargo, rustfmt, and various crates to be
-       ;; vendored.
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-without-cask
-             (lambda _
-               (setenv "WITHOUT_CASK" "1"))))))
-      (home-page "https://github.com/brotzeit/rustic")
-      (synopsis "Rust development environment for Emacs")
-      (description "Rustic is a fork of Rust mode.
+  (package
+    (name "emacs-rustic")
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brotzeit/rustic")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x06lp0c656zm07n28lnkqp678y4f9zkd9n5m0lramndllrpk3x2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-project" ,emacs-project)
+       ("emacs-rust-mode" ,emacs-rust-mode)
+       ("emacs-s" ,emacs-s)
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-xterm-color" ,emacs-xterm-color)))
+    (arguments
+     ;; Tests require rust, cargo, rustfmt, and various crates to be
+     ;; vendored.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-without-cask
+           (lambda _
+             (setenv "WITHOUT_CASK" "1"))))))
+    (home-page "https://github.com/brotzeit/rustic")
+    (synopsis "Rust development environment for Emacs")
+    (description "Rustic is a fork of Rust mode.
 In addition to its predecessor, it offers the following features:
 @itemize
 @item Flycheck integration,
@@ -21765,8 +21762,8 @@ In addition to its predecessor, it offers the following features:
 @item optional Rust inline documentation,
 @item etc.
 @end itemize")
-      (license (list license:expat
-                     license:asl2.0)))))
+    (license (list license:expat
+                   license:asl2.0))))
 
 (define-public emacs-ztree
   ;; Upstream provides no tag, but the commit below matches latest release.
