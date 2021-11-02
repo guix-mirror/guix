@@ -21691,7 +21691,7 @@ docstring of the thing at point.")
 (define-public emacs-rust-mode
   (package
     (name "emacs-rust-mode")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -21700,7 +21700,7 @@ docstring of the thing at point.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08gz7wq1las3bqqs8qhmhmncax4j6kjnyxpfzslby3b1dkclc7ig"))))
+        (base32 "1chb3a97cwf1pkxn8cm3wc35gfh9k55l7khg7pklmx36isr3csjv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #false                  ;FIXME: phase fail with status 127
