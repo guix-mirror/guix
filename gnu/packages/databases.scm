@@ -2214,7 +2214,7 @@ easy, requiring concise and simple code.")
      "UnQLite is an in-process software library which implements a
 self-contained, serverless, zero-configuration, transactional NoSQL
 database engine.  UnQLite is a document store database similar to
-MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
+Redis, CouchDB, etc., as well as a standard key/value store
 similar to BerkeleyDB, LevelDB, etc.")
     (license license:bsd-2)))
 
