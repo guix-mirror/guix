@@ -7157,14 +7157,14 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20201006")
+    (version "20211031")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "19jnkh57f979b78ak5mpxmdvnkgc33r55cw9shgd2hc380b3zi8k"))))
+                "13sxb2ar4gypiv0l87lr7hf3qjccwgsg1r92adv9jvrfxcv36pbn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -7179,8 +7179,7 @@ available in the kernel Linux.")
                       ;; Make the compressed manpages writable so that the
                       ;; reset-gzip-timestamps phase does not error out.
                       (substitute* "Makefile"
-                        (("-m 444") "-m 644"))
-                      #t)))))
+                        (("-m 444") "-m 644")))))))
     (inputs `(("perl" ,perl)))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.etallen.com/cpuid.html")
