@@ -4209,23 +4209,21 @@ on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
 (define-public putty
   (package
     (name "putty")
-    (version "0.75")
+    (version "0.76")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.putty.be/" version
                            "/putty-" version ".tar.gz"))
        (sha256
-        (base32
-         "1xgrr1fbirw79zafspg2b6crzfmlfw910y79md4r7gnxgq1kn5yk"))))
+        (base32 "0gvi8phabszqksj2by5jrjmshm7bpirhgavz0dqyz1xaimxdjz2l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "unix")
-             #t)))))
+             (chdir "unix"))))))
     (inputs
      `(("gtk+" ,gtk+)))
     (native-inputs
