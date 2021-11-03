@@ -9275,9 +9275,10 @@ levels to unlock.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; Skip tests that require internet access.
-             (invoke "ctest" "-E" "(http|dns)"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Skip tests that require internet access.
+               (invoke "ctest" "-E" "(http|dns)")))))))
     (inputs
      `(("boost" ,boost-for-mysql)       ; fails with 1.69
        ("curl" ,curl)
