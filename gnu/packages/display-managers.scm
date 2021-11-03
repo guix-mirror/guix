@@ -220,6 +220,37 @@ probably cause you diabetes just from looking at it.  Sweeten the login
 experience for your users, your family and yourself")
     (license license:gpl3+)))
 
+(define-public sugar-light-sddm-theme
+  (package
+    (name "sugar-light-sddm-theme")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/MarianArlt/sddm-sugar-light")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1sfd5bi5jcfz3hmvvr3smalywixa70g5j96qgx1220mp6rqf886k"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (sddm-themes (string-append out "/share/sddm/themes")))
+           (mkdir-p sddm-themes)
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             (string-append sddm-themes "/chili"))))))
+    (home-page "https://github.com/MarianArlt/sddm-sugar-light")
+    (synopsis "Sugar light theme for SDDM")
+    (description "Sugar is extremely customizable and so sweet it will
+probably cause you diabetes just from looking at it.  Sweeten the login
+experience for your users, your family and yourself")
+    (license license:gpl3+)))
+
 (define-public lightdm
   (package
     (name "lightdm")
