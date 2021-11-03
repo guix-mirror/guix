@@ -239,7 +239,7 @@ Its design goals are simplicity and stability.")
 (define-public libgnt
   (package
     (name "libgnt")
-    (version "2.14.1")
+    (version "2.14.3")
     (source
      (origin
        (method url-fetch)
@@ -247,7 +247,7 @@ Its design goals are simplicity and stability.")
         (string-append "mirror://sourceforge/pidgin/libgnt/"
                        version "/libgnt-" version ".tar.xz"))
        (sha256
-        (base32 "1n2bxg0ignn53c08cp69pj4sdg53kwlqn23rincyjmpr327fdhsy"))))
+        (base32 "08v14fjcx2wx6c573wllq015l6zc8qkpz8rrl6qhp7crf9zlbxap"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -260,16 +260,14 @@ Its design goals are simplicity and stability.")
                (("'/usr'")
                 (string-append "'"
                                (assoc-ref inputs "ncurses")
-                               "'")))
-             #t))
+                               "'")))))
          (add-before 'configure 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "doc"
                (substitute* "libgnt-docs.xml"
                  (("http://www.oasis-open.org/docbook/xml/4.1.2/")
                   (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
+                                 "/xml/dtd/docbook/"))))))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -277,8 +275,7 @@ Its design goals are simplicity and stability.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/gtk-doc")
-                (string-append doc "/share/gtk-doc"))
-               #t))))))
+                (string-append doc "/share/gtk-doc"))))))))
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.1.2)
        ("glib:bin" ,glib "bin")
