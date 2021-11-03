@@ -80,7 +80,8 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (ice-9 match))
 
 (define-public argagg
   (let ((commit "79e4adfa2c6e2bfbe63da05cc668eb9ad5596748") (revision "0"))
@@ -1612,4 +1613,76 @@ validation.")
       (description
        "This package provides the cmake imports needed to build bloomberg-bde.")
       (home-page "https://github.com/bloomberg/bde-tools")
+      (license license:asl2.0))))
+
+(define-public bloomberg-bde
+  (let ((commit "b6bcc0e24a5862bf77aea7edd831dedf50e21d64"))
+    (package
+      (name "bloomberg-bde")
+      ;; Recent releases are not tagged so commit must be used for checkout.
+      (version "3.98.0.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bloomberg/bde")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0y3lipi1lj9qazgc935851r2qsx5aq3vvc4y52jq57riyz8wg3ma"))
+                (patches
+                 (search-patches
+                  "bloomberg-bde-cmake-module-path.patch"))
+                ;;(modules '((guix build utils)))
+                (snippet
+                 `(begin
+                    ;; FIXME: Delete bundled software. The third-party packages
+                    ;; may be patched or modified from upstream sources.
+                    ;;(for-each delete-file-recursively
+                    ;; (list "thirdparty"))
+                    ;; Delete failing tests.
+                    (for-each
+                     delete-file
+                     (list "groups/bal/ball/ball_asyncfileobserver.t.cpp"
+                           "groups/bal/ball/ball_fileobserver2.t.cpp"
+                           "groups/bal/ball/ball_recordstringformatter.t.cpp"
+                           "groups/bal/balst/balst_stacktraceutil.t.cpp"
+                           "groups/bdl/bdlmt/bdlmt_eventscheduler.t.cpp"
+                           "groups/bdl/bdlmt/bdlmt_timereventscheduler.t.cpp"
+                           "groups/bdl/bdls/bdls_filesystemutil.t.cpp"
+                           "groups/bsl/bslh/bslh_hashpair.t.cpp"
+                           "groups/bsl/bsls/bsls_platform.t.cpp"
+                           "groups/bsl/bsls/bsls_stackaddressutil.t.cpp"
+                           "groups/bsl/bsls/bsls_stopwatch.t.cpp"
+                           "groups/bsl/bslstl/bslstl_function_invokerutil.t.cpp"))
+                    #t))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:parallel-tests? #f           ; Test parallelism may fail inconsistently.
+         ;; Set UFID to build shared libraries. Flag descriptions can be found at
+         ;; https://bloomberg.github.io/bde-tools/reference/bde_repo.html#ufid
+         #:configure-flags ,(match %current-system
+            ((or "i686-linux" "armhf-linux")
+             ''("-DUFID=opt_dbg_exc_mt_32_shr_cpp17"))
+            (_
+             ''("-DUFID=opt_dbg_exc_mt_64_shr_cpp17")))
+         #:phases
+         (modify-phases %standard-phases
+           ;; Explicitly build tests separate from the main build.
+           (add-after 'build 'build-tests
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "all.t"
+                 `(,@(if #:parallel-build?
+                         `("-j" ,(number->string (parallel-job-count)))
+                         '())
+                 ,@make-flags)))))))
+      (native-inputs
+       (list bloomberg-bde-tools pkg-config python))
+      (synopsis "Foundational C++ libraries used at Bloomberg")
+      (description
+       "The BDE Development Environment libraries provide an enhanced
+implementation of STL containers, vocabulary types for representing common
+concepts (like dates and times), and building blocks for developing
+multi-threaded applications and network applications.")
+      (home-page "https://github.com/bloomberg/bde")
       (license license:asl2.0))))

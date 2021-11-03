@@ -1,0 +1,16 @@
+This package requires CMAKE_MODULE_PATH be set by the calling process. This
+patch uses the CMAKE_PREFIX_PATH passed from Guix as the search path for
+locating the bloomberg-bde-tools CMake modules.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,8 +1,6 @@
+ cmake_minimum_required(VERSION 3.15)
+ 
+-if (NOT CMAKE_MODULE_PATH)
+-    message(FATAL "Please specify path to BDE cmake modules.")
+-endif()
++string(REPLACE ":" "cmake/;" CMAKE_MODULE_PATH "$ENV{CMAKE_PREFIX_PATH}cmake/")
+ 
+ get_filename_component(repoName ${CMAKE_CURRENT_LIST_DIR} NAME)
+ 
