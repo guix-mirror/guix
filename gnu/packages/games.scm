@@ -9261,7 +9261,7 @@ levels to unlock.")
 (define simgear
   (package
     (name "simgear")
-    (version "2018.3.5")
+    (version "2020.3.11")
     (source
      (origin
        (method url-fetch)
@@ -9269,7 +9269,7 @@ levels to unlock.")
                            (version-major+minor version) "/"
                            "simgear-" version ".tar.bz2"))
        (sha256
-        (base32 "1vkqm66r1205k3hdjmx5wmx5kvmsb0dgfzrs8n5gqnxj8szs42dl"))))
+        (base32 "0g2g3n3sb6kdimvcrn9kvlhyyrp5c6lx20fgzz8l609v5aygr3dv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -9305,7 +9305,7 @@ and also provides the base for the FlightGear Flight Simulator.")
                            (version-major+minor version) "/"
                            "flightgear-" version ".tar.bz2"))
        (sha256
-        (base32 "0ya3vb539kwi1qrifqhsj5j3k4w6s06hrllp2vdzxf6id7cgf0hc"))
+        (base32 "15sar94x13j2y1m6adgmz2q1m1i9bzj3sxqla6y3m9vyf33hc9zy"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9375,10 +9375,10 @@ and also provides the base for the FlightGear Flight Simulator.")
            (method url-fetch)
            (uri (string-append "mirror://sourceforge/flightgear/release-"
                                (version-major+minor version) "/"
-                               "FlightGear-" version "-data.tar.bz2"))
+                               "FlightGear-" version "-data.txz"))
            (sha256
             (base32
-             "04fv9za5zlyxlyfh6jx78y42l3jazvzl9dq2y6rzxqlcc9g5swhk"))))))
+             "0n5mw9vw1snab16c1y3i9ylkiv54az57bs2mvpq20hhg5hdiagqj"))))))
     (home-page "https://home.flightgear.org/")
     (synopsis "Flight simulator")
     (description "The goal of the FlightGear project is to create a
