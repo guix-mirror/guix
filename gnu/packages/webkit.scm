@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015–2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
@@ -40,6 +40,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -252,6 +254,9 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                            "-DLIB_INSTALL_DIR="
                            (assoc-ref %outputs "out") "/lib")
 
+                          ;; XXX TODO: Use libsoup@3.
+                          "-DUSE_SOUP2=ON"
+
                           ;; XXX Adding GStreamer GL support would apparently
                           ;; require adding gst-plugins-bad to the inputs,
                           ;; which might entail a security risk as a result of
@@ -290,6 +295,11 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
                   (string-append wpebackend-fdo "/lib/" all)))
                #t)))
+         (add-before 'configure 'prepare-build-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CC" "clang")
+             (setenv "CXX" "clang++")
+             #t))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -299,7 +309,8 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                             (string-append doc "/share/gtk-doc"))
                #t))))))
     (native-inputs
-     `(("bison" ,bison)
+     `(("clang" ,clang-11)
+       ("bison" ,bison)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -323,6 +334,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("harfbuzz" ,harfbuzz)
        ("hyphen" ,hyphen)
        ("icu4c" ,icu4c)
+       ("lcms" ,lcms)
        ("libgcrypt" ,libgcrypt)
        ("libjpeg" ,libjpeg-turbo)
        ("libnotify" ,libnotify)
