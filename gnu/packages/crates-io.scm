@@ -16897,6 +16897,37 @@ it.")
 descriptors limit.")
     (license license:asl2.0)))
 
+(define-public rust-feed-rs-0.6
+  (package
+    (name "rust-feed-rs")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "feed-rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1a1ain6r9k8bx7cz9pxqh3hdqbn8cqdkrbx78c8rxb7vqngyg53z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-quick-xml" ,rust-quick-xml-0.20)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-siphasher" ,rust-siphasher-0.3)
+        ("rust-url" ,rust-url-2)
+        ("rust-uuid" ,rust-uuid-0.8))))
+    (home-page "https://github.com/feed-rs/feed-rs")
+    (synopsis "Unified feed parser")
+    (description "This package provides a unified feed parser that handles
+Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
+    (license license:expat)))
+
 (define-public rust-femme-2
   (package
     (name "rust-femme")
