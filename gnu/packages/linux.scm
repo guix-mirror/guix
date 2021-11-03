@@ -7183,7 +7183,7 @@ available in the kernel Linux.")
     (inputs `(("perl" ,perl)))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.etallen.com/cpuid.html")
-    (synopsis "Linux tool to dump x86 CPUID information about the CPU(s)")
+    (synopsis "Dump x86 CPUID processor information")
     (description "cpuid dumps detailed information about the CPU(s) gathered
 from the CPUID instruction, and also determines the exact model of CPU(s).  It
 supports Intel, AMD, and VIA CPUs, as well as older Transmeta, Cyrix, UMC,
