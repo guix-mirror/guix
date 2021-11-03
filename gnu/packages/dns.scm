@@ -592,14 +592,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.3.7")
+    (version "4.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1bg87g0i66hw16fm7gbqmzyi2rcn1hadzz0bg9b8s5mx7g2rwfzx"))))
+        (base32 "1qcrrglm3r486r6n26h5fr1xb1k8jf63gm9b43wrhnigywjpx28i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -635,8 +635,7 @@ asynchronous fashion.")
                  ((".*INSTALL.*\\$\\((config|pid|xfr|db)dir" command)
                   (string-append "#" command))
                  (("\\$\\(nsdconfigfile\\)\\.sample" file-name)
-                  (string-append doc "/examples/" file-name)))
-               #t))))
+                  (string-append doc "/examples/" file-name)))))))
        #:tests? #f))                    ; no tests
     (inputs
      `(("libevent" ,libevent)
