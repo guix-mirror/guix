@@ -539,7 +539,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-extra
   (package
     (name "ghc-wai-extra")
-    (version "3.1.6")
+    (version "3.1.7")
     (source
      (origin
        (method url-fetch)
@@ -549,35 +549,32 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "03bbhmy8dc2ivhgbsrc39wk5kb9ci4p98pb2qcq2w92imy710cj6"))))
+         "1avf7bjcsbs8l6klp5kkd0cd2dc5n0j0a2yf8813pnwfn5b7qyd4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-call-stack" ,ghc-call-stack)
        ("ghc-cookie" ,ghc-cookie)
        ("ghc-network" ,ghc-network)
-       ("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-stringsearch" ,ghc-stringsearch)
        ("ghc-resourcet" ,ghc-resourcet)
        ("ghc-fast-logger" ,ghc-fast-logger)
        ("ghc-wai-logger" ,ghc-wai-logger)
-       ("ghc-zlib" ,ghc-zlib)
        ("ghc-word8" ,ghc-word8)
        ("ghc-iproute" ,ghc-iproute)
-       ("ghc-void" ,ghc-void)
        ("ghc-wai" ,ghc-wai)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-http2" ,ghc-http2)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-vault" ,ghc-vault)
        ("ghc-aeson" ,ghc-aeson)))
     (native-inputs
      `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)))
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-zlib" ,ghc-zlib)))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Some basic WAI handlers and middleware")
     (description "This library provides basic WAI handlers and middleware
@@ -724,7 +721,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
 (define-public ghc-warp-tls
   (package
     (name "ghc-warp-tls")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
@@ -733,7 +730,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
                            "warp-tls-" version ".tar.gz"))
        (sha256
         (base32
-         "1k8f3r0l36mgwm69fikprv6pyjzj15702kq25dr9nc3sv5lcs162"))))
+         "0b9viw26ymzq4q8snfddz3w59sqcf5ankxnw6f99iacxjhk6zs6m"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cryptonite" ,ghc-cryptonite)
@@ -742,6 +739,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
        ("ghc-streaming-commons" ,ghc-streaming-commons)
        ("ghc-tls" ,ghc-tls)
        ("ghc-tls-session-manager" ,ghc-tls-session-manager)
+       ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-wai" ,ghc-wai)
        ("ghc-warp" ,ghc-warp)))
     (home-page "https://github.com/yesodweb/wai")
@@ -1057,7 +1055,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
 (define-public ghc-aeson-pretty
   (package
     (name "ghc-aeson-pretty")
-    (version "0.8.8")
+    (version "0.8.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1065,7 +1063,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
                     version ".tar.gz"))
               (sha256
                (base32
-                "09n7gs91y1fbw6gjszrd2na3isnvk3y5rsi90lzjrwywnqfadkl1"))))
+                "021az9az6xik9c9s3rnar5fr1lgy2h3igibf5ixnc7ps3m2lzg2x"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -1090,14 +1088,14 @@ essentially the opposite of pretty-printing.")
 (define-public ghc-aeson-qq
   (package
     (name "ghc-aeson-qq")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "aeson-qq/aeson-qq-" version ".tar.gz"))
               (sha256
                (base32
-                "10plwzz05qc8068av00jak8rcciw99cbxh3lkx522lmzi37jjccg"))))
+                "0dpklq2xdhrkg1rdc7zfdjnzm6c3qxx2i1xskrqdxpqi84ffnlyh"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-base-compat" ,ghc-base-compat)

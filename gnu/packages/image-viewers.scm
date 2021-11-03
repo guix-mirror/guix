@@ -809,14 +809,21 @@ with tiling window managers.  Features include:
 (define-public qiv
   (package
     (name "qiv")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://spiegl.de/qiv/download/qiv-"
                            version ".tgz"))
        (sha256
-        (base32 "1rlf5h67vhj7n1y7jqkm9k115nfnzpwngj3kzqsi2lg676srclv7"))))
+        (base32 "1mc0f2nnas4q0d7zc9r6g4z93i32xlx0p9hl4fn5zkyml24a1q28"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fix a typo.  This can probably be removed on the next update.
+           (substitute* "Makefile"
+             (("\\$\\(PREFIX\\)/man")
+              "$(PREFIX)/share/man"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -847,8 +854,7 @@ with tiling window managers.  Features include:
              ;; There must be a running X server and make install doesn't start one.
              ;; Therefore we must do it.
              (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t)))
+             (setenv "DISPLAY" ":1"))))
        #:tests? #f                      ; there is no check target
        #:make-flags
        (list

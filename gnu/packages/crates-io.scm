@@ -4175,7 +4175,13 @@ c6e7d37.  However, this package works only up to 128 bytes.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-rand" ,rust-rand-0.6)
-        ("rust-structopt" ,rust-structopt-0.3))))
+        ("rust-structopt" ,rust-structopt-0.3))
+       #:phases
+        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-criterion-minor-version
+          (lambda* _
+           (substitute* "Cargo.toml"
+            (("0.3.2") "0.3.3")))))))
     (home-page "https://github.com/marshallpierce/rust-base64")
     (synopsis "Encodes and decodes base64 as bytes or utf8")
     (description
@@ -8182,8 +8188,29 @@ Python arrow.humanize.")
 TimeZone trait for @code{rust-chrono}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-chunked-transfer-1
+  (package
+    (name "rust-chunked-transfer")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chunked_transfer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bkdlsrszfcscw3j6yhs7kj6jbp8id47jjk6h9k58px47na5gy7z"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/frewsxcv/rust-chunked-transfer")
+    (synopsis "Encoder and decoder for HTTP chunked transfer coding")
+    (description "This package provides an encoder and decoder for HTTP chunked
+transfer coding.")
+    (license license:asl2.0)))
+
 (define-public rust-chunked-transfer-0.3
   (package
+    (inherit rust-chunked-transfer-1)
     (name "rust-chunked-transfer")
     (version "0.3.1")
     (source
@@ -8192,15 +8219,7 @@ TimeZone trait for @code{rust-chrono}.")
        (uri (crate-uri "chunked_transfer" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "11yghnd24w0i9p8g368c3pg7qh9nfz7kgri6pywja9pnmakj13a9"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/frewsxcv/rust-chunked-transfer")
-    (synopsis "Encoder and decoder for HTTP chunked transfer coding")
-    (description
-     "This package provides an encoder and decoder for HTTP chunked transfer
-coding.")
-    (license license:asl2.0)))
+        (base32 "11yghnd24w0i9p8g368c3pg7qh9nfz7kgri6pywja9pnmakj13a9"))))))
 
 (define-public rust-ci-info-0.3
   (package
@@ -13021,8 +13040,35 @@ type.")
 thread.")
     (license license:mpl2.0)))
 
+(define-public rust-deflate-0.9
+  (package
+    (name "rust-deflate")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "deflate" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0w0ww0hrq4bjnihxgbnrri4lj5c8yzg31fyzx36fd9pvvw2vz5az"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-adler32" ,rust-adler32-1)
+        ("rust-gzip-header" ,rust-gzip-header-0.3))
+       #:cargo-development-inputs
+       (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
+    (home-page "https://github.com/image-rs/deflate-rs")
+    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
+    (description "This package provides a DEFLATE, zlib and gzip encoder
+written in rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-deflate-0.8
   (package
+    (inherit rust-deflate-0.9)
     (name "rust-deflate")
     (version "0.8.6")
     (source
@@ -13034,20 +13080,14 @@ thread.")
         (sha256
          (base32
           "0x6iqlayg129w63999kz97m279m0jj4x4sm6gkqlvmp73y70yxvk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; not all test files included
        #:cargo-inputs
-       (("rust-adler32" ,rust-adler32-1)
-        ("rust-byteorder" ,rust-byteorder-1)
-        ("rust-gzip-header" ,rust-gzip-header-0.3))
+         (("rust-adler32" ,rust-adler32-1)
+          ("rust-byteorder" ,rust-byteorder-1)
+          ("rust-gzip-header" ,rust-gzip-header-0.3))
        #:cargo-development-inputs
-       (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
-    (home-page "https://github.com/image-rs/deflate-rs")
-    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
-    (description
-     "This package provides a DEFLATE, zlib and gzip encoder written in rust.")
-    (license (list license:expat license:asl2.0))))
+         (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))))
 
 (define-public rust-deflate-0.7
   (package
@@ -16653,6 +16693,28 @@ it.")
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
+
+(define-public rust-fdlimit-0.1
+  (package
+    (name "rust-fdlimit")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fdlimit" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0g30d6gqkrwy8ylwdy7pqm443iq0p5dmnpz4ks41pirl7dclm98d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/paritytech/fdlimit")
+    (synopsis "Utility crate for raising file descriptors limit")
+    (description "This package provides a Rust library to raise file
+descriptors limit.")
+    (license license:asl2.0)))
 
 (define-public rust-femme-2
   (package
@@ -28322,8 +28384,50 @@ which defines a default trait implementation, and @code{trait_impl} which uses
 a default trait implementation you've defined.")
     (license license:lgpl2.1+)))
 
+(define-public rust-multipart-0.18
+  (package
+    (name "rust-multipart")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "multipart" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10libwfbazqcyxcpgpcdf1a66jnzghwlmxlxnffg4rrqhqrwdph0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-buf-redux" ,rust-buf-redux-0.8)
+        ("rust-clippy" ,rust-clippy-0.0)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-hyper" ,rust-hyper-0.10)
+        ("rust-iron" ,rust-iron-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-nickel" ,rust-nickel-0.11)
+        ("rust-quick-error" ,rust-quick-error-1)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rocket" ,rust-rocket-0.4)
+        ("rust-safemem" ,rust-safemem-0.3)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-tiny-http" ,rust-tiny-http-0.6)
+        ("rust-twoway" ,rust-twoway-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.5))))
+    (home-page "https://github.com/abonander/multipart")
+    (synopsis "Backend-agnostic extension for file uploads in HTTP libraries for Rust")
+    (description "This package provides a backend-agnostic extension for HTTP
+libraries that provides support for POST multipart/form-data requests on both
+client and server.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-multipart-0.17
   (package
+    (inherit rust-multipart-0.18)
     (name "rust-multipart")
     (version "0.17.1")
     (source
@@ -28333,7 +28437,6 @@ a default trait implementation you've defined.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1m3nrydgc56wjixsahipmvjgnxnw2cz7w8ryghsgahwjr3nswl6h"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -28353,15 +28456,9 @@ a default trait implementation you've defined.")
         ("rust-safemem" ,rust-safemem-0.3)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-tiny-http" ,rust-tiny-http-0.6)
-        ("rust-twoway" ,rust-twoway-0.1))))
-    (home-page "https://github.com/abonander/multipart")
-    (synopsis
-     "Backend-agnostic extension for file uploads in HTTP libraries for Rust")
-    (description
-     "This package provides a backend-agnostic extension for HTTP libraries
-that provides support for POST multipart/form-data requests on both client and
-server.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-twoway" ,rust-twoway-0.1))
+       #:cargo-development-inputs
+        (("rust-env-logger" ,rust-env-logger-0.5))))))
 
 (define-public rust-multiversion-0.6
   (package
@@ -30130,6 +30227,32 @@ with all line endings.")
       "Cross-platform filesystem notification library")
     (license (list license:cc0 license:artistic2.0))))
 
+(define-public rust-noise-0.7
+  (package
+    (name "rust-noise")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "noise" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hsbw9gpsz8w9msvyvddygagd9wj93hqpg5pxz388laxfkb1s1c2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-image" ,rust-image-0.23)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/razaekel/noise-rs")
+    (synopsis "Procedural noise generation library")
+    (description "This package provides a Rust library to generate smoothly
+varying noise for textural use and graphical display.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-notify-4
   (package
     (inherit rust-notify-5)
@@ -31722,14 +31845,14 @@ system for OpenSSL.")
 (define-public rust-openssl-sys-0.9
   (package
     (name "rust-openssl-sys")
-    (version "0.9.64")
+    (version "0.9.68")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-sys" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "1bsim2zk69q1dw6rixn48l1ci8bmz5kvbkgsks2ci079w0pzr7i0"))
+         (base32 "0l2ikxygkza3s5q3lvng4mhisdp2vdrvzkhpwhkx8vgnscjiymqw"))
         (patches (search-patches "rust-openssl-sys-no-vendor.patch"))))
     (build-system cargo-build-system)
     (arguments
@@ -50856,8 +50979,38 @@ closures after a delay or at a given timestamp.")
 manipulation in Rust.")
     (license license:expat)))
 
+(define-public rust-tiny-http-0.8
+  (package
+    (name "rust-tiny-http")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tiny-http" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fcdwpb2ghk671qjjrk6048hs3yp7f681hxpr68gamk00181prcw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ascii" ,rust-ascii-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chunked-transfer" ,rust-chunked-transfer-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-fdlimit" ,rust-fdlimit-0.1)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-sha1" ,rust-sha1-0.6))))
+    (home-page "https://github.com/tiny-http/tiny-http")
+    (synopsis "Low level HTTP server library")
+    (description "This package provides a low level HTTP server library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tiny-http-0.6
   (package
+    (inherit rust-tiny-http-0.8)
     (name "rust-tiny-http")
     (version "0.6.2")
     (source
@@ -50867,7 +51020,6 @@ manipulation in Rust.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0la95daknfh8g951ddb2zdz6av2459rncp6h9dh02pf98h5glq8n"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -50876,11 +51028,7 @@ manipulation in Rust.")
         ("rust-chunked-transfer" ,rust-chunked-transfer-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-openssl" ,rust-openssl-0.10)
-        ("rust-url" ,rust-url-1))))
-    (home-page "https://github.com/tiny-http/tiny-http")
-    (synopsis "Low level HTTP server library")
-    (description "This package provides a low level HTTP server library.")
-    (license license:asl2.0)))
+        ("rust-url" ,rust-url-1))))))
 
 (define-public rust-tiny-keccak-2
   (package

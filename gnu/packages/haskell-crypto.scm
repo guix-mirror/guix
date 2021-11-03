@@ -201,7 +201,7 @@ that hides the C implementation.")
 (define-public ghc-cryptohash-md5
   (package
     (name "ghc-cryptohash-md5")
-    (version "0.11.100.1")
+    (version "0.11.101.0")
     (source
      (origin
        (method url-fetch)
@@ -210,17 +210,13 @@ that hides the C implementation.")
                            "cryptohash-md5-" version ".tar.gz"))
        (sha256
         (base32
-         "1y8q7s2bn4gdknw1wjikdnar2b5pgz3nv3220lxrlgpsf23x82vi"))))
+         "018g13hkmq5782i24b4518hcd926fl6x6fh5hd7b9wlxwc5dn21v"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("6" "191nvffcrlyvr5dq99bbdxxl2qx44bla9adkhklyknf7ipqdd4yj")
-       #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
     (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
                      ("ghc-puremd5" ,ghc-puremd5)
                      ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-                     ("ghc-hunit" ,ghc-hunit)))
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://github.com/hvr/cryptohash-md5")
     (synopsis "MD5 implementation for Haskell")
     (description "This Haskell package provides implementation of MD5.")
@@ -263,7 +259,7 @@ the C implementation.")
 (define-public ghc-cryptohash-sha256
   (package
     (name "ghc-cryptohash-sha256")
-    (version "0.11.102.0")
+    (version "0.11.102.1")
     (source
      (origin
        (method url-fetch)
@@ -272,7 +268,7 @@ the C implementation.")
                            "cryptohash-sha256-" version ".tar.gz"))
        (sha256
         (base32
-         "0685s4hfighzywvvn05cfff5bl2xz3wq0pfncv6zca4iba3ykmla"))))
+         "1xkb7iqplbw4fy1122p79xf1zcb7k44rl0wmfj1q06l7cdqxr9vk"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
@@ -409,7 +405,7 @@ Mail} (PEM) format.")
 (define-public ghc-puremd5
   (package
     (name "ghc-puremd5")
-    (version "2.1.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
@@ -418,7 +414,7 @@ Mail} (PEM) format.")
                            "pureMD5-" version ".tar.gz"))
        (sha256
         (base32
-         "0zdilz41cla2ck7mcw1a9702gyg2abq94mqahr4vci9sbs53bwxy"))))
+         "0qwkvxwi9wh6knn69rg2hvc8ngmv1if77kmpcnp0xqr0l30fwavq"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-cereal" ,ghc-cereal)
               ("ghc-crypto-api" ,ghc-crypto-api)
@@ -784,7 +780,7 @@ extensions.")
 (define-public ghc-hsopenssl
   (package
     (name "ghc-hsopenssl")
-    (version "0.11.7.1")
+    (version "0.11.7.2")
     (source
      (origin
        (method url-fetch)
@@ -792,7 +788,7 @@ extensions.")
                            "HsOpenSSL/HsOpenSSL-" version ".tar.gz"))
        (sha256
         (base32
-         "1vkcs0crifjpgr1rxkbzkwyhl4zg84m5bfxkp095mgry557gqzm8"))))
+         "0ysdfl8ck3nzhx597fa13dqf31jq5gzwajlak6r91jajks9w0dl5"))))
     (build-system haskell-build-system)
     (arguments
      `(#:extra-directories ("openssl")))

@@ -2269,14 +2269,14 @@ libproxy only have to specify which proxy to use.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.14")
+    (version "4.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://ftp.barfooze.de/pub/sabotage/tarballs/"
                            "proxychains-ng-" version ".tar.xz"))
        (sha256
-        (base32 "1bmhfbl1bzc87vl0xwr1wh5xvslfyc41nl2hqzhbj258p0sy004x"))))
+        (base32 "10ch6rmbw2lwrq1bc9w4glxkws7hvsy5ihasvzf3yg053xzsn1rj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2289,12 +2289,10 @@ libproxy only have to specify which proxy to use.")
              (substitute* "configure"
                (("\\*\\) break ;;" line)
                 (string-append "[A-Z]*) shift ;;\n"
-                               line)))
-             #t))
+                               line)))))
          (add-before 'configure 'set-up-environment
            (lambda _
-             (setenv "CC" "gcc")
-             #t)))))
+             (setenv "CC" ,(cc-for-target)))))))
     (synopsis "Redirect any TCP connection through a proxy or proxy chain")
     (description "Proxychains-ng is a preloader which hooks calls to sockets
 in dynamically linked programs and redirects them through one or more SOCKS or
@@ -2503,7 +2501,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.16.0")
+    (version "2.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2511,11 +2509,12 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0sldyib85v5lh3qp9af0jgvf304pwdmjd0y7rknfwliykgjvgqsm"))))
+                "1x0k0pw6jykrfgb8rq56bp2ghxd433d55pmr8mxy9gbzw1nc1vbi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        '("--enable-shared"
+         "--disable-static"        ; XXX still installs libopenvswitchavx512.a
          "--localstatedir=/var"
          "--with-dbdir=/var/lib/openvswitch")
        #:phases
@@ -4216,32 +4215,34 @@ on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
 (define-public putty
   (package
     (name "putty")
-    (version "0.75")
+    (version "0.76")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.putty.be/" version
-                           "/putty-" version ".tar.gz"))
+       (uri (list (string-append "https://the.earth.li/~sgtatham/putty/"
+                                 version "/putty-" version ".tar.gz")
+                  (string-append "http://www.putty.be/" version
+                                 "/putty-" version ".tar.gz")))
        (sha256
-        (base32
-         "1xgrr1fbirw79zafspg2b6crzfmlfw910y79md4r7gnxgq1kn5yk"))))
+        (base32 "0gvi8phabszqksj2by5jrjmshm7bpirhgavz0dqyz1xaimxdjz2l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "unix")
-             #t)))))
+             (chdir "unix"))))))
     (inputs
      `(("gtk+" ,gtk+)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python))) ; for tests
-    (synopsis "Graphical @acronym{SSH} and telnet client")
-    (description "Putty is a terminal client.  It supports @acronym{SSH},
-telnet, and raw socket connections with good terminal emulation.  It supports
-public key authentication and Kerberos single-sign-on.  It also includes
-command-line @acronym{SFTP} and @acronym{SCP} implementations.")
+    (synopsis "Graphical @acronym{SSH, Secure SHell} and telnet client")
+    (description "PuTTY is a graphical text terminal client.  It supports
+@acronym{SSH, Secure SHell}, telnet, and raw socket connections with good
+terminal emulation.  It can authenticate with public keys and Kerberos
+single-sign-on.  It also includes command-line @acronym{SFTP, Secure File
+Transfer Protocol} and older @acronym{SCP, Secure Copy Protocol}
+implementations.")
     (home-page "https://www.chiark.greenend.org.uk/~sgtatham/putty/")
     (license license:expat)))

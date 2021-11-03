@@ -2,6 +2,8 @@ https://sources.debian.org/data/main/r/rust-openssl-sys/0.9.53-1/debian/patches/
 "MIT" licensed according to debian/copyright file
 slightly modified to only change the vendored openssl-src dependency
 
+Starting from rust-openssl-sys@0.9.69 Cargo.toml starts searching for openssl-3.0.
+
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -31,14 +31,11 @@

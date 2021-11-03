@@ -1076,7 +1076,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public pipe-viewer
   (package
     (name "pipe-viewer")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method git-fetch)
@@ -1086,7 +1086,7 @@ H.264 (MPEG-4 AVC) video streams.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d8b3gcr9dndw8qlwfrm0wgp4vjmn8fwd151kmzz7kkw57f5jfch"))))
+        (base32 "075xc5kvnmyqqj7zijvdrvbkna931h7xf8f8z0ick7yx5fy3pn5j"))))
     (build-system perl-build-system)
     (arguments
      `(#:imported-modules
@@ -1704,17 +1704,6 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
-(define-public ffmpeg-4.3
-  (package/inherit ffmpeg
-    (version "4.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1nyd9jlcy0pqnwzi29a7sg50hq37vb0g3f9l16y3q8yh3m7ydr26"))))))
-
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
@@ -2098,7 +2087,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.33.1")
+    (version "0.34.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2106,8 +2095,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32
-                "06rw1f55zcsj78ql8w70j9ljp2qb1pv594xj7q9cmq7i92a7hq45"))))
+               (base32 "0kqckrgvpx42gdmnc644lpwbimwf1am256xd670w2b8sbrjv3bm9"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
@@ -2151,19 +2139,17 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ("libxkbcommon" ,libxkbcommon)
-       ("youtube-dl" ,youtube-dl)
+       ("yt-dlp" ,yt-dlp)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'patch-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((ytdl (assoc-ref inputs "youtube-dl")))
-              (substitute* "player/lua/ytdl_hook.lua"
-                (("\"youtube-dl\",")
-                 (string-append "\"" ytdl "/bin/youtube-dl\",")))
-              #t)))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ytdl (assoc-ref inputs "yt-dlp")))
+               (substitute* "player/lua/ytdl_hook.lua"
+                 (("\"yt-dlp\",")
+                  (string-append "\"" ytdl "/bin/yt-dlp\","))))))
          (add-before 'configure 'build-reproducibly
            (lambda _
              ;; Somewhere in the build system library dependencies are enumerated
@@ -4661,7 +4647,7 @@ create smoother and stable videos.")
 (define-public libopenshot
   (package
     (name "libopenshot")
-    (version "0.2.5")
+    (version "0.2.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4670,11 +4656,11 @@ create smoother and stable videos.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mxjkgjmjzgf628y3rscc6rqf55hxgjpmvwxlncfk1216i5xskwp"))
+                "0i9bsn8gklm1mvj60l3d3xrxdgy8svpxjfqcwsr308j5zjn30pv8"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Allow overriding of the python installation dir
-                          (substitute* "src/bindings/python/CMakeLists.txt"
+                          (substitute* "bindings/python/CMakeLists.txt"
                             (("(SET\\(PYTHON_MODULE_PATH.*)\\)" _ set)
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
@@ -4686,11 +4672,12 @@ create smoother and stable videos.")
        ("python" ,python)
        ("swig" ,swig)
        ("unittest++" ,unittest-cpp)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("zlib" ,zlib)))
     (propagated-inputs                  ;all referenced in installed headers
      `(("cppzmq" ,cppzmq)
-       ;; libopenshot doesn't yet build with ffmpeg 4.4 (see:
-       ;; https://github.com/OpenShot/libopenshot/issues/676).
-       ("ffmpeg" ,ffmpeg-4.3)
+       ("ffmpeg" ,ffmpeg)
        ("imagemagick" ,imagemagick)
        ("jsoncpp" ,jsoncpp)
        ("libopenshot-audio" ,libopenshot-audio)
@@ -4724,7 +4711,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 (define-public openshot
   (package
     (name "openshot")
-    (version "2.5.1")
+    (version "2.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4733,7 +4720,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qc5i0ay6j2wab1whl41sjb71cj02pg6y79drf7asrprq8b2rmfq"))
+                "0pa8iwl217503bjlqg2zlrw5lxyq5hvxrf5apxrh3843hj1w1myv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4758,9 +4745,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
                   (replace 'check
-                    (lambda _
-                      (setenv "QT_QPA_PLATFORM" "offscreen")
-                      (invoke "python" "src/tests/query_tests.py")))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (setenv "QT_QPA_PLATFORM" "offscreen")
+                        (invoke "python" "src/tests/query_tests.py"))))
                   (add-after 'unpack 'patch-font-location
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((font (assoc-ref inputs "font-dejavu")))
@@ -4769,6 +4757,12 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                           (("fonts") "share/fonts/truetype")
                           (("[A-Za-z_-]+.ttf") "DejaVuSans.ttf")))
                       #t))
+                  ;; https://github.com/OpenShot/openshot-qt/issues/4502
+                  (add-before 'ensure-no-mtimes-pre-1980 'fix-symbolic-link
+                    (lambda _
+                      (delete-file "images/Humanity/actions/custom/razor_line_with_razor.png")
+                      (symlink "../../../../src/timeline/media/images/razor_line_with_razor.png"
+                               "images/Humanity/actions/custom/razor_line_with_razor.png")))
                   (add-before 'install 'set-tmp-home
                     (lambda _
                       ;; src/classes/info.py "needs" to create several

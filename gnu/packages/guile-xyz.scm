@@ -3145,6 +3145,16 @@ list of components.  This module takes care of that for you.")
                   (ice-9 rdelim))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-dotted-circle-from-combining-character
+           ;; The test/string.scm files contain ◌̀, which is a dotted circle
+           ;; (U+25cc) followed by an upper combining character (U+0300). The
+           ;; old guile 3.0.2 reader incorrectly ignores the dotted circle,
+           ;; and parses it as the combining character alone, but the new
+           ;; guile reader does not.
+           ;; See https://github.com/spk121/guile-gi/issues/112
+           (lambda* _
+             (substitute* "test/string.scm"
+               (("#\\\\◌̀") "#\\x0300"))))
          (add-after 'unpack 'patch-references-to-extension
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((effective (read-line

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 (define-public purescript
   (package
     (name "purescript")
-    (version "0.14.4")
+    (version "0.14.5")
     (source
      (origin
        (method url-fetch)
@@ -42,8 +43,7 @@
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0qda90yycv2yyjdpfqvmsnxbyxpx55b53cfp9rgnbhbrskr0w2vk"))))
+        (base32 "06f318hdah076vkviw1ryyg2p0gpbabsp8lbm5x03f2qv92n9j1n"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-glob" ,ghc-glob)

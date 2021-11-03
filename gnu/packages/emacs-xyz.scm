@@ -2114,14 +2114,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "7.7")
+    (version "7.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "0n9nx4wgjxkr8nsxcq8svg0x0qkqj7bsd2j0ihy4jzj29xmyxl0h"))))
+        (base32 "1nlb9rrdlbcqghph30r9i9m1brbdha818czbms0zhzdisxb0smi0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
@@ -2514,8 +2514,8 @@ configuration language. It features:
 
 (define-public emacs-link-hint
   ;; Last release was in 2015.
-  (let ((commit "9fbf196d155016d9b8471a99318ed67a086cf257")
-        (revision "3"))
+  (let ((commit "83cd0489b16f013647d0507ef20905a0a91db433")
+        (revision "4"))
     (package
       (name "emacs-link-hint")
       (version (git-version "0.1" revision commit))
@@ -2528,7 +2528,7 @@ configuration language. It features:
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0v2g9gzf2v88ag59q1pf5vhd4qjnz3g4i6gzl27k6fi7pvlxdn39"))))
+           "0kwaia6i0asr7yqcw1anzq6lf93357cc1fphkvp0llbmxizmkzb3"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-avy" ,emacs-avy)))
@@ -3794,7 +3794,7 @@ a command.")
 (define-public emacs-olivetti
   (package
     (name "emacs-olivetti")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
      (origin
        (method git-fetch)
@@ -3803,7 +3803,7 @@ a command.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qhv4ah9bn1mjvivgxp7z1gf91d0cdr2ma5cy5xaja97ispa4l3z"))))
+        (base32 "0wc0rki4zvzdxs126g5c8d92h1vfn9slfkdx831rr9d0jx93wc7s"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/olivetti")
     (synopsis "Emacs minor mode for a nice writing environment")
@@ -4330,17 +4330,16 @@ Expectations, but it can be used in other contexts.")
 (define-public emacs-ecukes
   (package
     (name "emacs-ecukes")
-    (version "0.6.17")
-    (home-page "https://github.com/ecukes/ecukes")
+    (version "0.6.18")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url home-page)
+             (url "https://github.com/ecukes/ecukes")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1isscwz4h3nx62lwfrj899lp2yc27zk1ndgr441d848495ccmshn"))))
+        (base32 "182qgddfv8nd89y1l55rs5vm5i61ayc8cxbplb8zx0alnid9xrw1"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^feature/" "^reporters/" "^templates/" %default-include)))
@@ -4351,6 +4350,7 @@ Expectations, but it can be used in other contexts.")
        ("emacs-espuds" ,emacs-espuds)
        ("emacs-f" ,emacs-f)
        ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/ecukes/ecukes")
     (synopsis "Cucumber for Emacs")
     (description
      "This package provides Ecukes, a Cucumber-inspired integration testing
@@ -8203,40 +8203,43 @@ them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
 (define-public emacs-embark
-  (package
-    (name "emacs-embark")
-    (version "0.12")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/oantolin/embark")
-             (commit version)))
-       (sha256
-        (base32 "16z7g6ynj4d64wsg49skhwypn5j6awlpsawbz61djsmpzlzjnv36"))
-       (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-avy" ,emacs-avy)
-       ("emacs-consult" ,emacs-consult)))
-    (home-page "https://github.com/oantolin/embark")
-    (synopsis "Emacs mini-buffer actions rooted in keymaps")
-    (description
-     "This package provides a sort of right-click contextual menu for Emacs
+  ;; XXX: Upstream did not tag last release.  Commit hash below matches
+  ;; version bump.
+  (let ((commit "bc3e4654329563ab28a96003610634c3a5e5a484"))
+    (package
+      (name "emacs-embark")
+      (version "0.13")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oantolin/embark")
+               (commit commit)))
+         (sha256
+          (base32 "1x6m6gc32z7kv9nkr8mwhi9mimbwhd37qyxpwj33hml9ygi8s7r6"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-avy" ,emacs-avy)
+         ("emacs-consult" ,emacs-consult)))
+      (home-page "https://github.com/oantolin/embark")
+      (synopsis "Emacs mini-buffer actions rooted in keymaps")
+      (description
+       "This package provides a sort of right-click contextual menu for Emacs
 offering you relevant @emph{actions} to use on a @emph{target} determined by
 the context.
 
 In the minibuffer, the target is the current best completion candidate.  In
-the @code{*Completions*} buffer the target is the completion at point.
-n a regular buffer, the target is the region if active, or else the file,
-symbol or URL at point.
+the @code{*Completions*} buffer the target is the completion at point.  In
+a regular buffer, the target is the region if active, or else the file, symbol
+or URL at point.
 
 The type of actions offered depend on the type of the target.  For files you
 get offered actions like deleting, copying, renaming, visiting in another
 window, running a shell command on the file, etc.  For buffers the actions
 include switching to or killing the buffer.  For package names the actions
 include installing, removing or visiting the homepage.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-prescient
   (package
@@ -12295,8 +12298,12 @@ programming and reproducible research.")
        ;; XXX: ob-sclang.el is packaged separately to avoid the dependency on
        ;; SuperCollider and qtwebengine.  This will be unnecessary in 0.4+
        ;; release as the file is going to be removed from the repository.
+
+       ;; XXX: org-contacts.el is now maintained in a separate repository and
+       ;; will soon be removed from org-contrib
        (modules '((guix build utils)))
-       (snippet '(begin (delete-file "lisp/ob-sclang.el")))))
+       (snippet '(begin (delete-file "lisp/ob-sclang.el")
+                        (delete-file "lisp/org-contacts.el")))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -12315,6 +12322,30 @@ programming and reproducible research.")
 receive little if no maintainance and there is no guaranty that they are
 compatible with the Org stable version.")
     (license license:gpl3+)))
+
+(define-public emacs-org-contacts
+  ;;; XXX: Upstream made no release yet.
+  (let ((commit "3d2f39f62aefb0a32d10607703e8b1d4f43821fa")
+        (revision "0"))
+    (package
+      (name "emacs-org-contacts")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stardiviner/org-contacts.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a654406w8zd1hbp8ckc975jhl9mi14xzqizzwiki625dymiw5g5"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/stardiviner/org-contacts.el")
+      (synopsis "Contacts management system for Org mode")
+      (description "Manage your contacts from Org mode.  You can auto
+complete email addresses, export contacts to a vCard file, put birthdays
+in your Org Agenda, and more.")
+      (license license:gpl3+))))
 
 (define-public emacs-org-pretty-table
   ;; There is no release yet.
@@ -14046,7 +14077,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.24")
+    (version "0.25")
     (synopsis "Emacs X window manager")
     (source
      (origin
@@ -14054,12 +14085,7 @@ It should enable you to implement low-level X11 applications.")
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "exwm-" version ".tar"))
        (sha256
-        (base32 "0lj1a3cmbpf4h6x8k6x8cdm1qb51ca6filydnvi5zcda8zpl060s"))
-       (patches
-        ;; Patch fixing fullscreen view.  Applied upstream as
-        ;; edb930005b0ba83051ca8a59b493e9a3c8ef580a.  It can be removed in
-        ;; next release.
-        (search-patches "emacs-exwm-fix-fullscreen-states.patch"))))
+        (base32 "0imd4v9ccvpsskmfnycz5fgabsvdjp1msg5v8rc7x0v26r3kr4x7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -18951,7 +18977,7 @@ powerful Org contents.")
 (define-public emacs-org-re-reveal
   (package
     (name "emacs-org-re-reveal")
-    (version "3.12.3")
+    (version "3.12.4")
     (source
      (origin
        (method git-fetch)
@@ -18960,7 +18986,7 @@ powerful Org contents.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08ai87b6nybg0l7y8falb53wwvdv8hr3jzj5q995x48ylw6r1582"))))
+        (base32 "0j7394zcbzqfk33g2xdyb3fmw3brxy8v66vvf1j9nqlskfddh7bn"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-htmlize" ,emacs-htmlize)
@@ -21684,7 +21710,7 @@ docstring of the thing at point.")
 (define-public emacs-rust-mode
   (package
     (name "emacs-rust-mode")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -21693,7 +21719,7 @@ docstring of the thing at point.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08gz7wq1las3bqqs8qhmhmncax4j6kjnyxpfzslby3b1dkclc7ig"))))
+        (base32 "1chb3a97cwf1pkxn8cm3wc35gfh9k55l7khg7pklmx36isr3csjv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #false                  ;FIXME: phase fail with status 127
@@ -21706,45 +21732,42 @@ source code.")
                    license:asl2.0))))
 
 (define-public emacs-rustic
-  ;; XXX: Upstream does not tag releases.  Version is extracted from main
-  ;; file.
-  (let ((commit "bbf129cd128105de51b6c242b2551094b8d8987d")
-        (revision "0"))
-    (package
-      (name "emacs-rustic")
-      (version (git-version "1.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/brotzeit/rustic")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "09dnlvi8kf683n6q3yp4gy9d4idiyg4x6rcij8d90cvygh8i30wd"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
-         ("emacs-f" ,emacs-f)
-         ("emacs-flycheck" ,emacs-flycheck)
-         ("emacs-lsp-mode" ,emacs-lsp-mode)
-         ("emacs-markdown-mode" ,emacs-markdown-mode)
-         ("emacs-project" ,emacs-project)
-         ("emacs-s" ,emacs-s)
-         ("emacs-spinner" ,emacs-spinner)
-         ("emacs-xterm-color" ,emacs-xterm-color)))
-      (arguments
-       ;; Tests require rust, cargo, rustfmt, and various crates to be
-       ;; vendored.
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-without-cask
-             (lambda _
-               (setenv "WITHOUT_CASK" "1"))))))
-      (home-page "https://github.com/brotzeit/rustic")
-      (synopsis "Rust development environment for Emacs")
-      (description "Rustic is a fork of Rust mode.
+  (package
+    (name "emacs-rustic")
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brotzeit/rustic")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x06lp0c656zm07n28lnkqp678y4f9zkd9n5m0lramndllrpk3x2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-project" ,emacs-project)
+       ("emacs-rust-mode" ,emacs-rust-mode)
+       ("emacs-s" ,emacs-s)
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-xterm-color" ,emacs-xterm-color)))
+    (arguments
+     ;; Tests require rust, cargo, rustfmt, and various crates to be
+     ;; vendored.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-without-cask
+           (lambda _
+             (setenv "WITHOUT_CASK" "1"))))))
+    (home-page "https://github.com/brotzeit/rustic")
+    (synopsis "Rust development environment for Emacs")
+    (description "Rustic is a fork of Rust mode.
 In addition to its predecessor, it offers the following features:
 @itemize
 @item Flycheck integration,
@@ -21758,8 +21781,8 @@ In addition to its predecessor, it offers the following features:
 @item optional Rust inline documentation,
 @item etc.
 @end itemize")
-      (license (list license:expat
-                     license:asl2.0)))))
+    (license (list license:expat
+                   license:asl2.0))))
 
 (define-public emacs-ztree
   ;; Upstream provides no tag, but the commit below matches latest release.
@@ -23810,7 +23833,7 @@ processes for Emacs")
 (define-public emacs-treemacs
   (package
     (name "emacs-treemacs")
-    (version "2.9.4")
+    (version "2.9.5")
     (source
      (origin
        (method git-fetch)
@@ -23819,7 +23842,7 @@ processes for Emacs")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g2fy2qkscqx01av92hpjbr6qld8s1gk59cdjbff8fm0vlx8xk2p"))))
+        (base32 "01qrprxfwmdzak77k2qa9fc2kb4hxddbvj30avqglj9sjaid9wmq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ace-window" ,emacs-ace-window)
@@ -24161,16 +24184,16 @@ as Emacs Lisp.")
 (define-public emacs-transient
   (package
     (name "emacs-transient")
-    (version "0.3.6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/magit/transient")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "10k9dzs8y6i0rfckclxm5n3maylmh95993n5dvrs8rbmlcpmihvy"))))
+    (version "0.3.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magit/transient")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0c7wbd0j0b802bzdpdkrx2q7wm7b9s56rk554dnadkpywhmdiqwn"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #f                      ;no test suite
@@ -25308,14 +25331,14 @@ well as an option for visually flashing evaluated s-expressions.")
 (define-public emacs-tramp
   (package
     (name "emacs-tramp")
-    (version "2.5.1.3")
+    (version "2.5.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "tramp-" version ".tar"))
        (sha256
-        (base32 "1qcwdavfrbw8yyfy5rbzbcfyqavqbz13jncahkqlgwbkqvmgh7y5"))))
+        (base32 "0mk9r9hj43klah7mwldg4bw7fxcqvrbwv1gj6g90zdfsflqy7nh9"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs                   ;need D-Bus
@@ -28732,7 +28755,7 @@ and Emacs lisp commands.")
 (define-public emacs-extmap
   (package
     (name "emacs-extmap")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -28741,11 +28764,11 @@ and Emacs lisp commands.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dl630jl46jz5slpv28l8b745051ghp0g296x5180vl5v88v3hsl"))))
+        (base32 "00415w4l9wfpw9v0a35dm1av2w1m6s36yr9f9286jg844x6l375f"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/doublep/extmap")
     (synopsis "Externally-stored constant mapping for Emacs Lisp")
-    (description "A very simple package that lets you build a
+    (description "Extmap is a very simple package that lets you build a
 read-only, constant database that maps Emacs Lisp symbols to
 arbitrary Emacs Lisp objects.")
     (license license:gpl3+)))
@@ -28871,6 +28894,26 @@ Intended to integrate with Org-based websites and blogs (either
 directly, or indirectly, as in ox-hugo), it will fetch a given list of
 web feed files and correctly parse and format the elements to be
 displayed for sharing.")
+    (license license:gpl3+)))
+
+(define-public emacs-orglink
+  (package
+    (name "emacs-orglink")
+    (version "1.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tarsius/orglink")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ipy1p2cr5i0465hchqazmgn9jrgwzbyrb3prfgkl7z2m1gd7fcg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tarsius/orglink")
+    (synopsis "Use Org mode links in other modes")
+    (description "This library implements support for some Org mode link types
+in other major modes.  Links can be opened and edited like in Org mode.")
     (license license:gpl3+)))
 
 (define-public emacs-scpaste

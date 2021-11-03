@@ -16491,10 +16491,10 @@ binary or text.")
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
 
-(define-public python-binwalk
+(define-public binwalk
   (package
-    (name "python-binwalk")
-    (version "2.2.0")
+    (name "binwalk")
+    (version "2.3.2")
     (source
      (origin
        (method git-fetch)
@@ -16503,8 +16503,7 @@ binary or text.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1bxgj569fzwv6jhcbl864nmlsi9x1k1r20aywjxc8b9b1zgqrlvc"))))
+        (base32 "01dalxw07c42ka4fqpixcacvy42h04ya909lzpmsblr9s2xdgwcm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16520,6 +16519,9 @@ binary or text.")
     (description "Binwalk is a tool for analyzing, reverse engineering, and
 extracting firmware images")
     (license license:expat)))
+
+(define-public python-binwalk
+  (deprecated-package "python-binwalk" binwalk))
 
 (define-public python-nltk
   (package

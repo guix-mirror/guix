@@ -2139,11 +2139,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
   (sbcl-package->ecl-package sbcl-slime-swank))
 
 (define-public sbcl-mgl-pax
-  (let ((commit "4ada6eb26364e71addb169ce58e4ba83bc7a8eaa")
-        (revision "2"))
+  (let ((commit "a7f904784ae59bbeeeb15a14348cda46ed9bdeb3")
+        (revision "0"))
     (package
       (name "sbcl-mgl-pax")
-      (version (git-version "0.0.3" revision commit))
+      (version (git-version "0.0.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2151,17 +2151,22 @@ processes that doesn't run under Emacs.  Lisp processes created by
                (url "https://github.com/melisgl/mgl-pax")
                (commit commit)))
          (sha256
-          (base32 "1s38crgvmd9hgqwsscqpj6m6c10a074zjgg8k5sl15yih1wkpssm"))
+          (base32 "119pb3485m6hqsqsaqpaq2x8xh5lrbqapw7zaqyq425n75vd1mc8"))
          (file-name (git-file-name "mgl-pax" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("3bmd" ,sbcl-3bmd)
-         ("babel" ,sbcl-babel)
-         ("cl-fad" ,sbcl-cl-fad)
-         ("ironclad" ,sbcl-ironclad)
+         ("alexandria" ,sbcl-alexandria)
+         ("colorize" ,sbcl-colorize)
+         ("md5" ,sbcl-md5)
          ("named-readtables" ,sbcl-named-readtables)
          ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
          ("swank" ,sbcl-slime-swank)))
+      (arguments
+       `(#:asd-systems '("mgl-pax"
+                         "mgl-pax/navigate"
+                         "mgl-pax/document"
+                         "mgl-pax/transcribe")))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
@@ -2467,7 +2472,7 @@ values from a string in Common Lisp.")
        (origin
          (method hg-fetch)
          (uri (hg-reference
-               (url "https://bitbucket.org/vityok/cl-string-match/")
+               (url "https://github.com/vityok/cl-string-match")
                (changeset changeset)))
          (sha256
           (base32
@@ -2489,13 +2494,20 @@ values from a string in Common Lisp.")
        ;; For testing:
        `(("lisp-unit" ,sbcl-lisp-unit)))
       (arguments
-       `(#:tests? #f))
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-dependency
+             (lambda _
+               (substitute* "cl-string-match.asd"
+                 ((":mgl-pax")
+                  ":mgl-pax/document")))))))
       (synopsis "Set of utilities to manipulate strings in Common Lisp")
       (description
        "@command{cl-strings} is a small, portable, dependency-free set of
 utilities that make it even easier to manipulate text in Common Lisp.  It has
 100% test coverage and works at least on sbcl, ecl, ccl, abcl and clisp.")
-      (home-page "https://bitbucket.org/vityok/cl-string-match/")
+      (home-page "https://github.com/vityok/cl-string-match")
       (license license:bsd-3))))
 
 (define-public cl-string-match
@@ -3936,8 +3948,8 @@ defined in RFC 2616.")
 
 (define-public sbcl-cl-who
   (let ((version "1.1.4")
-        (commit "2c08caa4bafba720409af9171feeba3f32e86d32")
-        (revision "1"))
+        (commit "0d3826475133271ee8c590937136c1bc41b8cbe0")
+        (revision "2"))
     (package
       (name "sbcl-cl-who")
       (version (git-version version revision commit))
@@ -3947,10 +3959,10 @@ defined in RFC 2616.")
          (uri (git-reference
                (url "https://github.com/edicl/cl-who")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cl-who" version))
          (sha256
           (base32
-           "0yjb6sr3yazm288m318kqvj9xk8rm9n1lpimgf65ymqv0i5agxsb"))))
+           "0sc8nji9q1df04lhsiwsjy1a35996bibl31w5hp5sh8q6sa122dy"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("sbcl-flexi-streams" ,sbcl-flexi-streams)))
@@ -4010,17 +4022,17 @@ the format used by the popular compression tool bzip2.")
 (define-public sbcl-drakma
   (package
     (name "sbcl-drakma")
-    (version "2.0.7")
+    (version "2.0.8")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/edicl/drakma")
              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (file-name (git-file-name "cl-drakma" version))
        (sha256
         (base32
-         "1441idnyif9xzx3ln1p3fg36k2v9h4wasjqrzc8y52j61420qpci"))))
+         "1wf2zivfvhsh6zvd6wcwfd67bm8s8a1p2fismszc8xb819dqk9yl"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("sbcl-puri" ,sbcl-puri)

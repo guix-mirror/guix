@@ -359,10 +359,7 @@ DELIMITER interposed LS.  Support 'infix and 'suffix GRAMMAR values."
       (G_ "The GRAMMAR value must be 'infix or 'suffix, but ~a provided.")
       grammar)))
   (fold-right (lambda (e acc)
-                (cons #~(begin
-                          (use-modules (ice-9 rdelim))
-                          (with-fluids ((%default-port-encoding "UTF-8"))
-                            (with-input-from-file #$e read-string)))
+                (cons e
                       (if (and (null? acc) (eq? grammar 'infix))
                           acc
                           (cons delimiter acc))))
@@ -387,7 +384,16 @@ the list result in @code{#t} when applying PRED? on them."
 (define (text-config? config)
   (list-of file-like?))
 (define (serialize-text-config field-name val)
-  #~(string-append #$@(interpose val "\n" 'suffix)))
+  #~(string-append
+     #$@(interpose
+         (map
+          (lambda (e)
+            #~(begin
+                (use-modules (ice-9 rdelim))
+                (with-fluids ((%default-port-encoding "UTF-8"))
+                  (with-input-from-file #$e read-string))))
+          val)
+         "\n" 'suffix)))
 
 (define ((generic-serialize-alist-entry serialize-field) entry)
   "Apply the SERIALIZE-FIELD procedure on the field and value of ENTRY."

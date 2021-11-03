@@ -522,7 +522,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.22")
+    (version "6.4.23")
     (source
      (origin
        (method url-fetch)
@@ -530,7 +530,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "111cc6zfmb53f2a844iiyp3j2symcg8xd4m2kwb04mj3b6yihs6c"))))
+        (base32 "001394gxji89hfh6jcdrmv9ndimdsz7bndd55i516c8lfc9mwyjz"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -604,7 +604,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20211015")
+    (version "20211029")
     (source
      (origin
        (method git-fetch)
@@ -613,7 +613,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06rjx81ahrwcl1zhpdgqngr99l0cx1i4fwaaxd6rsn9zsj3ixdir"))))
+        (base32 "1ad05k98z9r317k2hhxbgdic00iha5r0k0f8224anz60i9kc78w5"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -705,8 +705,7 @@ operating systems.")
              (copy-recursively (assoc-ref inputs "neomutt-test-files") "tests")
              (with-directory-excursion "tests"
                (setenv "NEOMUTT_TEST_DIR" (getcwd)) ; must be absolute
-               (invoke "bash" "setup.sh")
-               #t))))))
+               (invoke "bash" "setup.sh")))))))
     (home-page "https://neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
@@ -1170,15 +1169,15 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.6.6")
+    (version "1.6.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/" version "/"
+                                  "download/" version "-signed/"
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "1da3ykqnba3axggxyzsh3kjhy0rbdfdh9pnwprbzww56y8h3vka2"))))
+                "0n5gvdz6vn6y69f5gx0gndjdl328qjbvi2q048qynhk99w5476cd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1234,7 +1233,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
     (synopsis "Quickly find emails")
     (description
      "Mu is a tool for dealing with e-mail messages stored in the
-Maildir-format.  Mu's purpose in life is to help you to quickly find the
+Maildir format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license license:gpl3+)))
@@ -1735,14 +1734,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.16")
+    (version "1.8.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "1n271yr83grpki9szdirnk6wb5rcc319f0gmfabyw3fzyf4msjy0"))))
+        (base32 "19b0anfrkg4lqp4h13qi2rqgwvipp1ga0id237nwbp7b6ypn5z0l"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1772,8 +1771,7 @@ addons which can add many functionalities to the base client.")
                ;; Don't rely on netcat being in the PATH to test for a
                ;; connection, instead look up and ping debian.org.
                (substitute* (string-append bin "/msmtpq")
-                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
-               #t))))))
+                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
     (description
@@ -2821,14 +2819,14 @@ easily (one at a time).")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.14")
+    (version "1.4.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "046wbglvry54id9wik6c020fs09piv3gig3z0nh5nmyhsxjw4i18"))))
+        (base32 "1yc7lsdy9gvlslvljqg34kvcaf4wvrwlvj6h5awkzlp6x9qva3l7"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
@@ -2848,15 +2846,14 @@ Names} and SOCKS proxies.")
 (define-public mhonarc
   (package
     (name "mhonarc")
-    (version "2.6.19")
+    (version "2.6.24")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/EH/EHOOD/MHonArc-"
+       (uri (string-append "mirror://cpan/authors/id/L/LD/LDIDRY/MHonArc-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0ll3v93yji334zqp6xfzfxc0127pmjcznmai1l5q6dzawrs2igzq"))))
+        (base32 "0cszh619i8bfjpyxhfgph20v8lic5zpirr990xdbg7759qvwfza5"))))
     (build-system perl-build-system)
     (home-page "https://www.mhonarc.org/")
     (synopsis "Create HTML archives of mail/news messages")

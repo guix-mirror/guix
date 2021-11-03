@@ -11,6 +11,7 @@
 ;;; Copyright © 2020, 2021 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Tissevert <tissevert+guix@marvid.fr>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
@@ -390,8 +392,8 @@ trouble using them, because you do not have to remember each snippet name.")
     (license license:expat))))
 
 (define-public vim-scheme
-  (let ((commit "99af6befee8bc7d289a523064336474ae063cee3")
-        (revision "2"))
+  (let ((commit "e22fc8e199ef52f2efacd08e71c3add90d83b375")
+        (revision "3"))
     (package
       (name "vim-scheme")
       (version (git-version "0.0.0" revision commit))
@@ -399,12 +401,12 @@ trouble using them, because you do not have to remember each snippet name.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "http://git.foldling.org/vim-scheme.git")
+               (url "https://git.foldling.org/vim-scheme.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0w9hnsxg92f1wd83rra0ss07zla7p2r44whr9rqs70hc0xm8ygd6"))))
+           "04h946vr4f8wxap3wzqs69y2v8n50g2zbk22jsg2kxr4c01z5cbw"))))
       (build-system copy-build-system)
       (arguments
        '(#:install-plan
@@ -415,7 +417,7 @@ trouble using them, because you do not have to remember each snippet name.")
       (description
        "@code{vim-scheme} provides Scheme support for Vim (R7RS and CHICKEN).")
       (home-page "https://foldling.org/git/vim-scheme.git/")
-      (license license:public-domain))))
+      (license license:unlicense))))
 
 (define-public vim-luna
   (let ((commit "633619953dcf8577168e255230f96b05f28d6371")
@@ -1217,3 +1219,78 @@ text object.  The signs are always up to date and the plugin never saves your
 buffer.")
       (home-page "https://github.com/airblade/vim-gitgutter")
       (license license:expat))))
+
+(define-public vim-characterize
+  (package
+    (name "vim-characterize")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tpope/vim-characterize")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ppsbsd696ih40d9f76mdl9sd9y7p2pvm65qmvq4b2zhkv4xbpxz"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/tpope/vim-characterize")
+    (synopsis "Vim plugin for showing Unicode character metadata")
+    (description
+     "In Vim, pressing @code{ga} on a character reveals its representation in
+decimal, octal, and hex.  Characterize.vim modernizes this with the following
+additions:
+@itemize
+@item Unicode character names: @code{U+00A9 COPYRIGHT SYMBOL}
+@item Vim digraphs (type after @code{<C-K>} to insert the character):
+@code{Co}, @code{cO}
+@item Emoji codes: @code{:copyright:}
+@item HTML entities: @code{&copy;}
+@end itemize")
+    (license license:vim)))
+
+(define-public vim-tagbar
+  (package
+    (name "vim-tagbar")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/preservim/tagbar")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fqfs8msmr6d4kpvxqp14sdjvp5fj52q5w5kz71myzcd4kqzmirp"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("syntax" "share/vim/vimfiles/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-univerisal-ctags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ctags (assoc-ref inputs "universal-ctags")))
+               (substitute* "autoload/tagbar.vim"
+                 (("(.*)universal-ctags']" all leader)
+                  (string-append all "\n"
+                                 leader ctags "/bin/ctags']")))))))))
+    (inputs
+     `(("universal-ctags" ,universal-ctags)))
+    (home-page "https://github.com/preservim/tagbar")
+    (synopsis "Vim plugin that displays tags in a window, ordered by scope")
+    (description
+     "Tagbar is a Vim plugin that provides an easy way to browse the tags of
+the current file and get an overview of its structure.  It does this by creating
+a sidebar that displays the ctags-generated tags of the current file, ordered
+by their scope.  This means that for example methods in C++ are displayed under
+the class they are defined in.")
+    (license license:vim)))

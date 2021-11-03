@@ -1347,7 +1347,7 @@ segmentation.")
 (define-public labelme
   (package
     (name "labelme")
-    (version "4.5.9")
+    (version "4.5.13")
     (source
      (origin
        ;; PyPi tarball lacks tests.
@@ -1357,7 +1357,7 @@ segmentation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12wn291516kdv0wqngz4l04j95g3rwc6cvkcb0gw8rrv4wgc7c66"))))
+        (base32 "0cmi2xb4dgh7738l259rgwhn9l134f0vnaaqc2gflc5yr3lqhrv2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

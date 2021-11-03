@@ -284,14 +284,14 @@ please install the @code{flyer-composer-gui} package.")))
 (define-public poppler-data
   (package
     (name "poppler-data")
-    (version "0.4.10")
+    (version "0.4.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://poppler.freedesktop.org/poppler-data"
                                   "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c3vjs3p7rjc4yfacnhd865r27czmzwcr4j2z4jldi68dvvcwbvf"))))
+                "137h4m48gc4v0srnr0gkwaqna6kfdqpy5886if5gjfmh3g6hbv1c"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no test suite
@@ -1104,13 +1104,13 @@ the PDF pages.")
 (define-public img2pdf
   (package
     (name "img2pdf")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "img2pdf" version))
        (sha256
-        (base32 "18kr8j31rrcfs3fiav552d23hv2lbv48ag5hpx9kw4fn0djmikxa"))))
+        (base32 "17z0bn8kihiyqjd1m5jr80m7ry06l1qn0l8v918xg5gs7q2calcf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pikepdf" ,python-pikepdf)

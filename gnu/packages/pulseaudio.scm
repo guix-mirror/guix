@@ -283,7 +283,7 @@ sound server.")
 (define-public pavucontrol
   (package
     (name "pavucontrol")
-    (version "4.0")
+    (version "5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -292,11 +292,12 @@ sound server.")
                    ".tar.xz"))
              (sha256
               (base32
-               "1qhlkl3g8d7h72xjskii3g1l7la2cavwp69909pzmbi2jyn5pi4g"))))
+               "0yjfiwpaydh5s8v3l78dhwhbsmcl1xsq3p8rvz80m9zinp1p4ayf"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
        ("gtkmm" ,gtkmm-3)
+       ("json-glib" ,json-glib)
        ("libcanberra" ,libcanberra)
        ("pulseaudio" ,pulseaudio)))
     (native-inputs
@@ -433,7 +434,7 @@ install one or more of the following packages alongside pulseaudio-dlna:
 (define-public pamixer
   (package
     (name "pamixer")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method git-fetch)
@@ -442,19 +443,18 @@ install one or more of the following packages alongside pulseaudio-dlna:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i14550n8paijwwnhksv5izgfqm3s5q2773bdfp6vyqybkll55f7"))))
+        (base32 "1d5arjbsh3q9z693pi2rq553ai9b18iz36ss7q8ff29m0hf62lzd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; There is no test suite.
+     `(#:tests? #f                      ; no test suite
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; There's no configure phase.
+         (delete 'configure)            ; no configure script
          (add-before 'install 'mkdir-bin
            (lambda _
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
-             #t)))))
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin")))))))
     (inputs
      `(("boost" ,boost)
        ("pulseaudio" ,pulseaudio)))

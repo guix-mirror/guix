@@ -710,8 +710,8 @@ in C/C++.")
 ;; XXXX: Workaround 'snippet' limitations.
 (define computed-origin-method (@@ (guix packages) computed-origin-method))
 
-(define %icecat-version "91.2.0-guix0-preview1")
-(define %icecat-build-id "20211006000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "91.3.0-guix0-preview1")
+(define %icecat-build-id "20211102000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -733,11 +733,11 @@ in C/C++.")
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1hs2bvzl0d4kfir3gq997kwxm90ygapqn6xlw47cihnh479wzwry"))))
+              "0v79c435vfbhsx7pqyq4jm5rv8iysig69wwqhvys1n0jy54m72qj"))))
 
-         (upstream-icecat-base-version "91.2.0") ; maybe older than base-version
+         (upstream-icecat-base-version "91.3.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "1537880dac3087d3779543303f0df83432831166")
+         (gnuzilla-commit "32631cac00953abbac61dc7ab1a0eafbdd59b53a")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -749,7 +749,7 @@ in C/C++.")
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "16r42hp05qmiifw8ym89328w5b4flp3hngpjwbrzgq23q1qmixa9"))))
+              "13ckga49h5azf0c6q3c6b6wcmahzyywryxgwmwr1dahsjgy0wwrw"))))
 
          ;; 'search-patch' returns either a valid file name or #f, so wrap it
          ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
@@ -1158,6 +1158,7 @@ in C/C++.")
                                              "/share/mime")
                              ,(string-append (assoc-ref inputs "font-dejavu")
                                              "/share/fonts")
+                             "/run/current-system/profile/share/fonts"
                              ,@(append-map runpaths-of-input
                                            '("mesa" "ffmpeg"))))))
                     (whitelist-string (string-join whitelist ","))

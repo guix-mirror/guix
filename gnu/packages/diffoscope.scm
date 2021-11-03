@@ -150,9 +150,9 @@
               ("xxd" ,xxd)))
     (native-inputs `(("help2man" ,help2man)
                      ;; Below are modules used for tests.
+                     ("binwalk" ,binwalk)
                      ("python-pytest" ,python-pytest)
                      ("python-chardet" ,python-chardet)
-                     ("python-binwalk" ,python-binwalk)
                      ("python-black" ,python-black)
                      ("python-h5py" ,python-h5py)
                      ("python-pypdf2" ,python-pypdf2)
