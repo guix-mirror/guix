@@ -962,8 +962,8 @@ in C/C++.")
 
        ("patch" ,(canonical-package patch))
 
-       ("rust" ,rust-1.51)
-       ("cargo" ,rust-1.51 "cargo")
+       ("rust" ,rust)
+       ("cargo" ,rust "cargo")
        ("rust-cbindgen" ,rust-cbindgen-0.19)
        ("llvm" ,llvm-11)
        ("clang" ,clang-11)
