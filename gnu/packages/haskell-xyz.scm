@@ -9874,8 +9874,7 @@ syntax and semantics as Perl 5.")
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Type-safe, multi-backend data serialization for Haskell")
     (description "This Haskell package allows Haskell programs to access data
-storage systems like PostgreSQL, SQLite, MySQL and MongoDB in a type-safe
-way.")
+storage systems like PostgreSQL, SQLite, and MariaDB in a type-safe way.")
     (license license:expat)))
 
 (define-public ghc-persistent-sqlite
