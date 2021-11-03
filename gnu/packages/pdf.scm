@@ -1093,13 +1093,13 @@ the PDF pages.")
 (define-public img2pdf
   (package
     (name "img2pdf")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "img2pdf" version))
        (sha256
-        (base32 "18kr8j31rrcfs3fiav552d23hv2lbv48ag5hpx9kw4fn0djmikxa"))))
+        (base32 "17z0bn8kihiyqjd1m5jr80m7ry06l1qn0l8v918xg5gs7q2calcf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pikepdf" ,python-pikepdf)
