@@ -25055,7 +25055,8 @@ library.")
      (origin
        (method url-fetch)
        (uri (crate-uri "libloading" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0sidr67nsa693mqrqgk2np3bkqni0778yk147xncspy171jdk13g"))))
@@ -25098,32 +25099,6 @@ loading utilities.")
     (inputs
      `(("rust-cfg-if" ,rust-cfg-if-1)
        ("rust-winapi" ,rust-winapi-0.3)))))
-
-(define-public rust-libloading-0.7
-  (package
-    (name "rust-libloading")
-    (version "0.7.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "libloading" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0sidr67nsa693mqrqgk2np3bkqni0778yk147xncspy171jdk13g"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-winapi" ,rust-winapi-0.3))
-       #:cargo-development-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-static-assertions" ,rust-static-assertions-1))))
-    (home-page
-     "https://github.com/nagisa/rust_libloading/")
-    (synopsis "Safer binding to platform dynamic library loading utilities")
-    (description "This package provides a safer binding to platform dynamic
-library loading utilities.")
-    (license license:isc)))
 
 (define-public rust-libloading-0.5
   (package
