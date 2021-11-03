@@ -1284,32 +1284,6 @@ virtual reality, scientific visualization and modeling.")
     ;; LGPL 2.1, but with 4 exceptions. This version is called OSGPL.
     (license license:lgpl2.1)))
 
-;; We need this for simgear
-(define-public openscenegraph-3.4
-  (package (inherit openscenegraph)
-    (name "openscenegraph")
-    (version "3.4.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/openscenegraph/OpenSceneGraph")
-             (commit (string-append "OpenSceneGraph-" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1fbzg1ihjpxk6smlq80p3h3ggllbr16ihd2fxpfwzam8yr8yxip9"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments openscenegraph)
-       ((#:configure-flags flags)
-        `(cons
-          ;; The jpeg plugin requires conversion between integers and booleans
-          "-DCMAKE_CXX_FLAGS=-fpermissive"
-          ,flags))))
-    (inputs
-     `(("libjpeg" ,libjpeg-turbo)
-       ,@(package-inputs openscenegraph)))))
-
 (define-public gr-framework
   (package
     (name "gr-framework")
