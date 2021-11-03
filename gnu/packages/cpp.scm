@@ -14,7 +14,7 @@
 ;;; Copyright © 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
-;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020-2022 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Milkey Mouse <milkeymouse@meme.institute>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
@@ -48,6 +48,7 @@
   #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix modules)
@@ -1585,3 +1586,30 @@ microparallel algorithms to implement a strict JSON parser with UTF-8
 validation.")
     (home-page "https://github.com/simdjson/simdjson")
     (license license:asl2.0)))
+
+(define-public bloomberg-bde-tools
+  (let ((commit "094885bd177e0159232d4e6a060a04edb1edd786"))
+    (package
+      (name "bloomberg-bde-tools")
+      ;; Recent releases are not tagged so commit must be used for checkout.
+      (version "3.97.0.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bloomberg/bde-tools")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mbbai73z8amh23ah3wy35kmy612380yr5wg89mic60qwqmpqb02"))
+                (patches
+                 (search-patches
+                  "bloomberg-bde-tools-fix-install-path.patch"))))
+      (build-system copy-build-system)
+      ;; Unable to be an inline dependency of bloomberg-bde due to patch.
+      (properties '((hidden? . #t)))
+      (synopsis "Tools for developing and building libraries modeled on BDE")
+      (description
+       "This package provides the cmake imports needed to build bloomberg-bde.")
+      (home-page "https://github.com/bloomberg/bde-tools")
+      (license license:asl2.0))))

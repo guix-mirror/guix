@@ -1,0 +1,95 @@
+Install shared libraries into "lib". Do not create symbolic links to static
+libraries since only shared libraries are built.
+
+--- a/cmake/layers/ufid.cmake
++++ b/cmake/layers/ufid.cmake
+@@ -6,10 +6,7 @@ bde_prefixed_override(ufid project_setup_install_opts)
+ function(ufid_project_setup_install_opts proj)
+     bde_assert_no_extra_args()
+ 
+-    set(libPath "bin/so")
+-    if (${bde_ufid_is_64}) 
+-        string(APPEND libPath "/64")
+-    endif()
++    set(libPath "lib")
+ 
+     bde_struct_create(
+         installOpts
+@@ -86,13 +83,6 @@ function(bde_create_ufid_symlink uor installOpts)
+             "${symlinkPrefix}/${symlinkDir}/${libLinkName}"
+         )
+ 
+-        install(
+-            CODE
+-                "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+-                ${symlinkVal} ${symlinkFile})"
+-            COMPONENT "${component}-symlinks"
+-        )
+-
+         # This code creates compatibility symlinks
+         # WARNING: This is custom logic that has nothing to do with our build system.
+         # Some external build systems expect to find a variaty of ufids in dpkg.
+@@ -110,14 +100,6 @@ function(bde_create_ufid_symlink uor installOpts)
+                 symlinkFile
+                 "${symlinkPrefix}/${symlinkDir}/${libLinkName}"
+             )
+-
+-            # IMPORTANT: symlinkFile is the same as above!
+-            install(
+-                CODE
+-                    "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+-                    ${symlinkVal} ${symlinkFile})"
+-                COMPONENT "${component}-symlinks"
+-            )
+         endif()
+ 
+         if (${bde_ufid_is_pic})
+@@ -134,14 +116,6 @@ function(bde_create_ufid_symlink uor installOpts)
+                 "${symlinkPrefix}/${symlinkDir}/${libLinkName}"
+             )
+ 
+-            # IMPORTANT: symlinkFile is the same as above!
+-            install(
+-                CODE
+-                    "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+-                    ${symlinkVal} ${symlinkFile})"
+-                COMPONENT "${component}-pic-symlink-hack"
+-            )
+-
+             # And another one for "64" - remove "pic", add "64"
+             if (${bde_ufid_is_64})
+                 set(temp_ufid_flags ${install_ufid_flags})
+@@ -157,14 +131,6 @@ function(bde_create_ufid_symlink uor installOpts)
+                     symlinkFile
+                     "${symlinkPrefix}/${symlinkDir}/${libLinkName}"
+                 )
+-
+-                # IMPORTANT: symlinkFile is the same as above!
+-                install(
+-                    CODE
+-                        "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+-                        ${symlinkVal} ${symlinkFile})"
+-                    COMPONENT "${component}-pic-symlink-hack"
+-                )
+             endif()
+         endif()
+ 
+@@ -177,18 +143,5 @@ function(bde_create_ufid_symlink uor installOpts)
+             symlinkReleaseFile
+             "${symlinkPrefix}/${symlinkDir}/${libReleaseLinkName}"
+         )
+-        install(
+-            CODE
+-                "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+-                ${symlinkVal} ${symlinkReleaseFile})"
+-            COMPONENT "${component}-release-symlink"
+-        )
+-        install(
+-            CODE
+-                "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+-                ${symlinkVal} ${symlinkReleaseFile})"
+-            COMPONENT "release-symlink"
+-            EXCLUDE_FROM_ALL
+-        )
+     endif()
+ endfunction()
