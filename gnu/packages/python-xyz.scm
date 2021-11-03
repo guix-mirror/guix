@@ -19163,7 +19163,7 @@ address is valid and really exists.")
        ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/marshmallow-code/marshmallow")
     (synopsis "Convert complex datatypes to and from native
-Python datatypes.")
+Python datatypes")
     (description "@code{marshmallow} provides a library for converting
 complex datatypes to and from native Python datatypes.")
     (license license:expat)))
