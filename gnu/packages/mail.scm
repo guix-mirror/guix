@@ -603,7 +603,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20211015")
+    (version "20211029")
     (source
      (origin
        (method git-fetch)
@@ -612,7 +612,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06rjx81ahrwcl1zhpdgqngr99l0cx1i4fwaaxd6rsn9zsj3ixdir"))))
+        (base32 "1ad05k98z9r317k2hhxbgdic00iha5r0k0f8224anz60i9kc78w5"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -704,8 +704,7 @@ operating systems.")
              (copy-recursively (assoc-ref inputs "neomutt-test-files") "tests")
              (with-directory-excursion "tests"
                (setenv "NEOMUTT_TEST_DIR" (getcwd)) ; must be absolute
-               (invoke "bash" "setup.sh")
-               #t))))))
+               (invoke "bash" "setup.sh")))))))
     (home-page "https://neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
