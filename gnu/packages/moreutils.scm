@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook))
@@ -66,7 +67,7 @@
                             (assoc-ref %build-inputs "docbook-xsl") "/xml/xsl/"
                             ,(package-name docbook-xsl) "-"
                             ,(package-version docbook-xsl))
-             "CC=gcc")))
+             (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://joeyh.name/code/moreutils/")
     (synopsis "Miscellaneous general-purpose command-line tools")
     (description
