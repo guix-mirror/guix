@@ -8746,8 +8746,10 @@ The phase runs @code{ninja} to build the package in parallel by default, but
 this can be changed with @code{#:parallel-build?}.
 
 @item check
-The phase runs @code{ninja} with the target specified in @code{#:test-target},
-which is @code{"test"} by default.
+The phase runs @samp{meson test} with a base set of options that cannot
+be overridden.  This base set of options can be extended via the
+@code{#:test-options} argument, for example to select or skip a specific
+test suite.
 
 @item install
 The phase runs @code{ninja install} and can not be changed.

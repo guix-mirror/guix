@@ -169,7 +169,7 @@ TRIPLET."
                       (search-paths '())
                       (build-type "debugoptimized")
                       (tests? #t)
-                      (test-target "test")
+                      (test-options ''())
                       (glib-or-gtk? #f)
                       (parallel-build? #t)
                       (parallel-tests? #f)
@@ -218,7 +218,7 @@ has a 'meson.build' file."
                                    configure-flags)
                              #:build-type #$build-type
                              #:tests? #$tests?
-                             #:test-target #$test-target
+                             #:test-options #$(sexp->gexp test-options)
                              #:parallel-build? #$parallel-build?
                              #:parallel-tests? #$parallel-tests?
                              #:validate-runpath? #$validate-runpath?
@@ -251,7 +251,7 @@ has a 'meson.build' file."
 
                             (build-type "debugoptimized")
                             (tests? #f)
-                            (test-target "test")
+                            (test-options ''())
                             (glib-or-gtk? #f)
                             (parallel-build? #t)
                             (parallel-tests? #f)
@@ -281,7 +281,7 @@ SOURCE has a 'meson.build' file."
     (if (null? target-inputs)
         (input-tuples->gexp host-inputs)
         #~(append #$(input-tuples->gexp host-inputs)
-                  #+(input-tuples->gexp target-inputs))))
+              #+(input-tuples->gexp target-inputs))))
   (define builder
     (with-imported-modules imported-modules
       #~(begin
@@ -306,7 +306,7 @@ SOURCE has a 'meson.build' file."
                        #:native-inputs #+(input-tuples->gexp build-inputs)
                        #:search-paths '#$(sexp->gexp
                                           (map search-path-specification->sexp
-                                                     search-paths))
+                                               search-paths))
                        #:native-search-paths '#$(sexp->gexp
                                                  (map search-path-specification->sexp
                                                       native-search-paths))
@@ -318,7 +318,7 @@ SOURCE has a 'meson.build' file."
                                                    configure-flags))
                        #:build-type #$build-type
                        #:tests? #$tests?
-                       #:test-target #$test-target
+                       #:test-options #$(sexp->gexp test-options)
                        #:parallel-build? #$parallel-build?
                        #:parallel-tests? #$parallel-tests?
                        #:validate-runpath? #$validate-runpath?
