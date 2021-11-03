@@ -59,7 +59,7 @@ text editors.")
 (define-public lesspipe
   (package
     (name "lesspipe")
-    (version "1.89")
+    (version "1.90")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -68,7 +68,7 @@ text editors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lxf0m4bgwhpwmwa5q2vklk31yhiaz049kpm4n2hqiyb5mlpa94a"))))
+                "17gv4nr9fxrk3png477pgiimdz8minp9scmqg2nxa96jfz4sk4li"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -79,8 +79,7 @@ text editors.")
                         (delete-file "Makefile") ; force generating
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
-                                "--yes")
-                        #t)))
+                                "--yes"))))
                   (add-before 'install 'patch-tput-and-file
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "lesspipe.sh"
@@ -89,8 +88,7 @@ text editors.")
                                         "/bin/tput colors"))
                         (("file -")
                          (string-append (assoc-ref inputs "file")
-                                        "/bin/file -")))
-                      #t)))))
+                                        "/bin/file -"))))))))
     (inputs
      `(("file" ,file)
        ("ncurses" ,ncurses)))  ; for tput
