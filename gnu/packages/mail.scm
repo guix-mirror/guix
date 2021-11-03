@@ -2850,15 +2850,14 @@ Names} and SOCKS proxies.")
 (define-public mhonarc
   (package
     (name "mhonarc")
-    (version "2.6.19")
+    (version "2.6.24")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/EH/EHOOD/MHonArc-"
+       (uri (string-append "mirror://cpan/authors/id/L/LD/LDIDRY/MHonArc-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0ll3v93yji334zqp6xfzfxc0127pmjcznmai1l5q6dzawrs2igzq"))))
+        (base32 "0cszh619i8bfjpyxhfgph20v8lic5zpirr990xdbg7759qvwfza5"))))
     (build-system perl-build-system)
     (home-page "https://www.mhonarc.org/")
     (synopsis "Create HTML archives of mail/news messages")
