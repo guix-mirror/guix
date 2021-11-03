@@ -2505,6 +2505,7 @@ procedure calls (RPCs).")
     (arguments
      '(#:configure-flags
        '("--enable-shared"
+         "--disable-static"        ; XXX still installs libopenvswitchavx512.a
          "--localstatedir=/var"
          "--with-dbdir=/var/lib/openvswitch")
        #:phases
