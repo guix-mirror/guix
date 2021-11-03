@@ -4213,8 +4213,10 @@ on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.putty.be/" version
-                           "/putty-" version ".tar.gz"))
+       (uri (list (string-append "https://the.earth.li/~sgtatham/putty/"
+                                 version "/putty-" version ".tar.gz")
+                  (string-append "http://www.putty.be/" version
+                                 "/putty-" version ".tar.gz")))
        (sha256
         (base32 "0gvi8phabszqksj2by5jrjmshm7bpirhgavz0dqyz1xaimxdjz2l"))))
     (build-system gnu-build-system)
