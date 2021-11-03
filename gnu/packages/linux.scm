@@ -6387,7 +6387,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "176")
+    (version "179")
     (source
      (origin
        (method git-fetch)
@@ -6396,14 +6396,13 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mlwn6ck9qiwqa2vg5wg1gvfva3jv7ygjr7p7bam0qszajs5pirk"))
+        (base32 "0fz9j0p8jyp4m09wshl8cdhdvrdidf29bjp9hgwvv6xvg8lma06g"))
        (modules '((guix build utils)))
        (snippet
         `(begin
            ;; The checkout lacks a .git directory, breaking ‘git describe’.
            (substitute* "Makefile"
-             (("\"unknown\"") (string-append "\"v" ,version "\"")))
-           #t))))
+             (("\"unknown\"") (string-append "\"v" ,version "\"")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
