@@ -1331,14 +1331,14 @@ default.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.11.9")
+    (version "0.11.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "02gzvsaq0l5lx608sfh7hfz14s6yfsr4sr4kzcsqd1cxljp35h6c"))))
+                "1q84s9cq7cgzd295qxa2iy0r3vd3v3chbck62bdx3pd6skk19my6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;tests require "busted"
@@ -1354,16 +1354,14 @@ default.")
              ;; The configure script aborts when it encounters unexpected
              ;; arguments.  Make it more tolerant.
              (substitute* "configure"
-               (("exit 1") ""))
-             #t))
+               (("exit 1") ""))))
          (add-after 'unpack 'fix-makefile
            (lambda _
              (substitute* "GNUmakefile"
                ;; prosodyctl needs to read the configuration file.
                (("^INSTALLEDCONFIG =.*") "INSTALLEDCONFIG = /etc/prosody\n")
                ;; prosodyctl needs a place to put auto-generated certificates.
-               (("^INSTALLEDDATA =.*") "INSTALLEDDATA = /var/lib/prosody\n"))
-             #t))
+               (("^INSTALLEDDATA =.*") "INSTALLEDDATA = /var/lib/prosody\n"))))
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure all executables in "bin" find the required Lua
@@ -1399,8 +1397,7 @@ default.")
                              `("LUA_PATH"  ";" = (,lua-path))
                              `("LUA_CPATH" ";" = (,lua-cpath))
                              `("PATH" ":" prefix ,path)))
-                         (find-files bin ".*"))
-               #t))))))
+                         (find-files bin ".*"))))))))
     (inputs
      `(("libidn" ,libidn)
        ("openssl" ,openssl)
