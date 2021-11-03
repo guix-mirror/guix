@@ -1297,7 +1297,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/inetutils-hurd.patch			\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/instead-use-games-path.patch		\
-  %D%/packages/patches/inkscape-1.1-fix-build-witch-gcc7.5.patch	\
   %D%/packages/patches/intel-xed-fix-nondeterminism.patch	\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/iputils-libcap-compat.patch		\
