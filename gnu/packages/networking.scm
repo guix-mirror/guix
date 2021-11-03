@@ -2283,8 +2283,7 @@ libproxy only have to specify which proxy to use.")
                                line)))))
          (add-before 'configure 'set-up-environment
            (lambda _
-             (setenv "CC" "gcc")
-             #t)))))
+             (setenv "CC" ,(cc-for-target)))))))
     (synopsis "Redirect any TCP connection through a proxy or proxy chain")
     (description "Proxychains-ng is a preloader which hooks calls to sockets
 in dynamically linked programs and redirects them through one or more SOCKS or
