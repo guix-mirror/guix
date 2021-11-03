@@ -28087,6 +28087,44 @@ file's MIME type by its extension.")
         ("rust-phf-codegen" ,rust-phf-codegen-0.7)
         ("rust-unicase" ,rust-unicase-1))))))
 
+(define-public rust-miniflux-api-0.3
+  (package
+    (name "rust-miniflux-api")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "miniflux-api" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r0bd907v2abv40i0c0xaj87ik4w9d3syn1f4byy0ssv55dw7mdq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;tests use the network
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-reqwest" ,rust-reqwest-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-dotenv" ,rust-dotenv-0.15)
+        ("rust-tokio" ,rust-tokio-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://gitlab.com/news-flash/miniflux_api")
+    (synopsis "Rust implementation of the Miniflux REST API")
+    (description
+     "This package provides a Rust implementation of the Miniflux REST API.")
+    ;; No copyright headers in the source code.  LICENSE indicates gpl3.
+    (license license:gpl3)))
+
 (define-public rust-minimal-lexical-0.1
   (package
     (name "rust-minimal-lexical")
