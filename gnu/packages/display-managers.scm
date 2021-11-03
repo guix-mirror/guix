@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,6 +187,37 @@ Guix's logo.  Based on Arch linux's archlinux-simplyblack theme.")
     (synopsis "Chili theme for SDDM")
     (description "Chili reduces all the clutter and leaves you with a clean,
 easy to use, login interface with a modern yet classy touch.")
+    (license license:gpl3+)))
+
+(define-public sugar-dark-sddm-theme
+  (package
+    (name "sugar-dark-sddm-theme")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/MarianArlt/sddm-sugar-dark")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gx0am7vq1ywaw2rm1p015x90b75ccqxnb1sz3wy8yjl27v82yhb"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (sddm-themes (string-append out "/share/sddm/themes")))
+           (mkdir-p sddm-themes)
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             (string-append sddm-themes "/chili"))))))
+    (home-page "https://github.com/MarianArlt/sddm-sugar-dark")
+    (synopsis "Sugar dark theme for SDDM")
+    (description "Sugar is extremely customizable and so sweet it will
+probably cause you diabetes just from looking at it.  Sweeten the login
+experience for your users, your family and yourself")
     (license license:gpl3+)))
 
 (define-public lightdm
