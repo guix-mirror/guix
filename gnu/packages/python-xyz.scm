@@ -8701,6 +8701,15 @@ computing.")
         (base32
          "1bky2bra6673xx8jy0826znw6cmxs89wcwwzda8d025j3jffx2sq"))))
     (build-system python-build-system)
+    (arguments
+      (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'remove-vterm-tests
+              ;; According to Debian these tests are cursed.
+              ;; https://salsa.debian.org/python-team/packages/urwid/-/blob/debian/2.1.2-2/debian/changelog#L141
+              (lambda _
+                (delete-file "urwid/tests/test_vterm.py"))))))
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
     (description
