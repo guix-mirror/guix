@@ -4231,10 +4231,12 @@ on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python))) ; for tests
-    (synopsis "Graphical @acronym{SSH} and telnet client")
-    (description "Putty is a terminal client.  It supports @acronym{SSH},
-telnet, and raw socket connections with good terminal emulation.  It supports
-public key authentication and Kerberos single-sign-on.  It also includes
-command-line @acronym{SFTP} and @acronym{SCP} implementations.")
+    (synopsis "Graphical @acronym{SSH, Secure SHell} and telnet client")
+    (description "PuTTY is a graphical text terminal client.  It supports
+@acronym{SSH, Secure SHell}, telnet, and raw socket connections with good
+terminal emulation.  It can authenticate with public keys and Kerberos
+single-sign-on.  It also includes command-line @acronym{SFTP, Secure File
+Transfer Protocol} and older @acronym{SCP, Secure Copy Protocol}
+implementations.")
     (home-page "https://www.chiark.greenend.org.uk/~sgtatham/putty/")
     (license license:expat)))
