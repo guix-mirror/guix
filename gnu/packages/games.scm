@@ -9313,7 +9313,7 @@ and also provides the base for the FlightGear Flight Simulator.")
            (for-each delete-file-recursively
                      '("3rdparty/sqlite3/"))
            #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags
        (list "-DSYSTEM_SQLITE=ON"
@@ -9325,21 +9325,6 @@ and also provides the base for the FlightGear Flight Simulator.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/fgfs")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtdeclarative" "qtsvg")))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/qml"))
-                         '("qtdeclarative" "qtsvg"))))
-               #t)))
          (add-after 'install 'install-data
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out") "/share/flightgear")))
@@ -9379,7 +9364,7 @@ and also provides the base for the FlightGear Flight Simulator.")
            (sha256
             (base32
              "0n5mw9vw1snab16c1y3i9ylkiv54az57bs2mvpq20hhg5hdiagqj"))))))
-    (home-page "https://home.flightgear.org/")
+    (home-page "https://www.flightgear.org/")
     (synopsis "Flight simulator")
     (description "The goal of the FlightGear project is to create a
 sophisticated flight simulator framework for use in research or academic
