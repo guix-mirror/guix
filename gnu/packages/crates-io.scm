@@ -50308,40 +50308,8 @@ no_std compatible by default, only relying on alloc.")
         ("rust-errno" ,rust-errno-0.2)
         ("rust-libc" ,rust-libc-0.2))))))
 
-(define-public rust-sysinfo-0.20
-  (package
-    (name "rust-sysinfo")
-    (version "0.20.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "sysinfo" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0ljf8cdn50g9vrg4h9qxv070n4zd83cv63g62007qs8d8n1pimwj"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:rust ,rust-1.54
-       #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.8)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-ntapi" ,rust-ntapi-0.3)
-        ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-rayon" ,rust-rayon-1)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/GuillaumeGomez/sysinfo")
-    (synopsis "System handler to interact with processes")
-    (description
-     "This package is a library to get system information such as processes,
-processors, disks, components and networks.")
-    (license license:expat)))
-
 (define-public rust-sysinfo-0.18
   (package
-    (inherit rust-sysinfo-0.20)
     (name "rust-sysinfo")
     (version "0.18.2")
     (source
@@ -50353,6 +50321,7 @@ processors, disks, components and networks.")
        (sha256
         (base32
          "0zd974yydc4yszxgx9hiqm5ah2rqnsgyq3qrl7raf90scpxaw16l"))))
+    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -50363,7 +50332,13 @@ processors, disks, components and networks.")
         ("rust-ntapi" ,rust-ntapi-0.3)
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-winapi" ,rust-winapi-0.3))))))
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/GuillaumeGomez/sysinfo")
+    (synopsis "System handler to interact with processes")
+    (description
+     "This package is a library to get system information such as processes,
+processors, disks, components and networks.")
+    (license license:expat)))
 
 (define-public rust-sysinfo-0.16
   (package
