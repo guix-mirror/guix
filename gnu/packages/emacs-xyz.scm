@@ -1587,6 +1587,27 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
       (license license:gpl3+))))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-flymake-flycheck
+  (package
+    (name "emacs-flymake-flycheck")
+    (version "20210404.2128")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://melpa.org/packages/flymake-flycheck-"
+                           version ".el"))
+       (sha256
+        (base32 "1m59ahd5gjlfwf328labwdlpcxh8ywywkwgfrlsy5jyxfc9ss4nv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-flycheck" ,emacs-flycheck)))
+    (home-page "https://github.com/purcell/flymake-flycheck")
+    (synopsis "Use Flycheck checkers as Flymake backends")
+    (description
+     "This package provides support for running any Flycheck checker as a
+Flymake diagnostic backend.  The effect is that Flymake will control when the
+checker runs, and Flymake will receive its errors.")
+    (license license:gpl3+)))
+
 (define-public emacs-flymake-quickdef
   ;; This particular commit includes bug fixes on top of 1.0.0 release.
   (let ((version "1.0.0")
