@@ -9269,10 +9269,18 @@ levels to unlock.")
                            (version-major+minor version) "/"
                            "simgear-" version ".tar.bz2"))
        (sha256
-        (base32 "0g2g3n3sb6kdimvcrn9kvlhyyrp5c6lx20fgzz8l609v5aygr3dv"))))
+        (base32 "0g2g3n3sb6kdimvcrn9kvlhyyrp5c6lx20fgzz8l609v5aygr3dv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; There are some bundled libraries.
+           (for-each delete-file-recursively
+                     '("3rdparty/expat/"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags (list "-DSYSTEM_EXPAT=ON")
+       #:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
