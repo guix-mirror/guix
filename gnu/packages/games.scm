@@ -9320,12 +9320,14 @@ and also provides the base for the FlightGear Flight Simulator.")
         '(begin
            ;; There are some bundled libraries.
            (for-each delete-file-recursively
-                     '("3rdparty/sqlite3/"))
+                     '("3rdparty/sqlite3/"
+                       "3rdparty/cppunit/"))
            #t))))
     (build-system qt-build-system)
     (arguments
      `(#:configure-flags
        (list "-DSYSTEM_SQLITE=ON"
+             "-DSYSTEM_CPPUNIT=ON"
              (string-append "-DFG_DATA_DIR="
                             (assoc-ref %outputs "out")
                             "/share/flightgear"))
