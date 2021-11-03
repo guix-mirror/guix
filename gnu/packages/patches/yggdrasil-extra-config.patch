@@ -1,8 +1,20 @@
+From 779f980451d20079b34812f7006f2d7230738ad0 Mon Sep 17 00:00:00 2001
+From: csepp <raingloom@riseup.net>
+Date: Wed, 3 Nov 2021 21:14:54 +0100
+Subject: [PATCH] add extra config file option to yggdrasil command
+
+This is useful in Guix and Nix, because one config file can come
+from the world-readable store and another can be placed directly
+into /etc with much stricter permissions.
+---
+ cmd/yggdrasil/main.go | 29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
+
 diff --git a/cmd/yggdrasil/main.go b/cmd/yggdrasil/main.go
-index 813e950..08d35cc 100644
+index 58b8230..b9df98a 100644
 --- a/cmd/yggdrasil/main.go
 +++ b/cmd/yggdrasil/main.go
-@@ -40,11 +40,12 @@ type node struct {
+@@ -43,11 +43,12 @@ type node struct {
  	admin     *admin.AdminSocket
  }
  
@@ -16,7 +28,7 @@ index 813e950..08d35cc 100644
  	var err error
  	if useconffile != "" {
  		// Read the file from the filesystem
-@@ -56,6 +57,21 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+@@ -59,6 +60,21 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf
  	if err != nil {
  		panic(err)
  	}
@@ -38,7 +50,7 @@ index 813e950..08d35cc 100644
  	// If there's a byte order mark - which Windows 10 is now incredibly fond of
  	// throwing everywhere when it's converting things into UTF-16 for the hell
  	// of it - remove it and decode back down into UTF-8. This is necessary
-@@ -69,11 +85,6 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf bool) *config
+@@ -72,11 +88,6 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf
  			panic(err)
  		}
  	}
@@ -50,7 +62,7 @@ index 813e950..08d35cc 100644
  	var dat map[string]interface{}
  	if err := hjson.Unmarshal(conf, &dat); err != nil {
  		panic(err)
-@@ -112,6 +123,7 @@ func readConfig(log *log.Logger, useconf *bool, useconffile *string, normaliseconf *bool) *config
+@@ -136,6 +147,7 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf
  	if err = mapstructure.Decode(dat, &cfg); err != nil {
  		panic(err)
  	}
@@ -58,15 +70,15 @@ index 813e950..08d35cc 100644
  	return cfg
  }
  
-@@ -185,6 +197,7 @@ func main() {
- 	genconf       bool
- 	useconf       bool
+@@ -192,6 +204,7 @@ type yggArgs struct {
+ 	getaddr       bool
+ 	getsnet       bool
  	useconffile   string
-+	extraconffile string
- 	normaliseconf bool
- 	confjson      bool
- 	autoconf      bool
-@@ -164,6 +176,7 @@ func main() {
++        extraconffile string
+ 	logto         string
+ 	loglevel      string
+ }
+@@ -200,6 +213,7 @@ func getArgs() yggArgs {
  	genconf := flag.Bool("genconf", false, "print a new config to stdout")
  	useconf := flag.Bool("useconf", false, "read HJSON/JSON config from stdin")
  	useconffile := flag.String("useconffile", "", "read HJSON/JSON config from specified file path")
@@ -74,15 +86,15 @@ index 813e950..08d35cc 100644
  	normaliseconf := flag.Bool("normaliseconf", false, "use in combination with either -useconf or -useconffile, outputs your configuration normalised")
  	confjson := flag.Bool("json", false, "print configuration from -genconf or -normaliseconf as JSON instead of HJSON")
  	autoconf := flag.Bool("autoconf", false, "automatic mode (dynamic IP, peer with IPv6 neighbors)")
-@@ -212,6 +225,7 @@ func main() {
+@@ -213,6 +227,7 @@ func getArgs() yggArgs {
  		genconf:       *genconf,
  		useconf:       *useconf,
  		useconffile:   *useconffile,
-+		extraconffile: *extraconffile,
++                extraconffile: *extraconffile,
  		normaliseconf: *normaliseconf,
  		confjson:      *confjson,
  		autoconf:      *autoconf,
-@@ -187,7 +200,7 @@ func main() {
+@@ -265,7 +280,7 @@ func run(args yggArgs, ctx context.Context, done chan struct{}) {
  		cfg = defaults.GenerateConfig()
  	case args.useconffile != "" || args.useconf:
  		// Read the configuration from either stdin or from the filesystem
@@ -91,3 +103,6 @@ index 813e950..08d35cc 100644
  		// If the -normaliseconf option was specified then remarshal the above
  		// configuration and print it back to stdout. This lets the user update
  		// their configuration file with newly mapped names (like above) or to
+-- 
+2.33.1
+
