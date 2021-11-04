@@ -298,6 +298,14 @@ used in the image."
          ((member 'esp flags) "0xEF")
          (else "0x83"))))
 
+    (define (partition->gpt-type partition)
+      ;; Return the genimage GPT partition type code corresponding to PARTITION.
+      ;; See https://github.com/pengutronix/genimage/blob/master/README.rst
+      (let ((flags (partition-flags partition)))
+        (cond
+          ((member 'esp flags) "U")
+          (else "L"))))
+
     (define (partition-image partition)
       ;; Return as a file-like object, an image of the given PARTITION.  A
       ;; directory, filled by calling the PARTITION initializer procedure, is
@@ -347,26 +355,44 @@ used in the image."
                        #:local-build? #f
                        #:options `(#:references-graphs ,inputs))))
 
-    (define (partition->config partition)
+    (define (gpt-image? image)
+      (eq? 'gpt (image-partition-table-type image)))
+
+    (define (partition-type-values image partition)
+      (if (gpt-image? image)
+          (values "partition-type-uuid" (partition->gpt-type partition))
+          (values "partition-type" (partition->dos-type partition))))
+
+    (define (partition->config image partition)
       ;; Return the genimage partition configuration for PARTITION.
-      (let ((label (partition-label partition))
-            (dos-type (partition->dos-type partition))
-            (image (partition-image partition))
-            (offset (partition-offset partition)))
-        #~(format #f "~/partition ~a {
-~/~/partition-type = ~a
-~/~/image = \"~a\"
-~/~/offset = \"~a\"
-~/}"
-                  #$label
-                  #$dos-type
-                  #$image
-                  #$offset)))
+      (let-values (((partition-type-attribute partition-type-value)
+                    (partition-type-values image partition)))
+        (let ((label (partition-label partition))
+              (image (partition-image partition))
+              (offset (partition-offset partition)))
+          #~(format #f "~/partition ~a {
+  ~/~/~a = ~a
+  ~/~/image = \"~a\"
+  ~/~/offset = \"~a\"
+  ~/}"
+                    #$label
+                    #$partition-type-attribute
+                    #$partition-type-value
+                    #$image
+                    #$offset))))
+
+    (define (genimage-type-options image-type image)
+      (cond
+        ((equal? image-type "hdimage")
+         (format #f "~%~/~/gpt = ~a~%~/"
+                 (if (gpt-image? image) "true" "false")))
+        (else "")))
 
     (let* ((format (image-format image))
            (image-type (format->image-type format))
+           (image-type-options (genimage-type-options image-type image))
            (partitions (image-partitions image))
-           (partitions-config (map partition->config partitions))
+           (partitions-config (map (cut partition->config image <>) partitions))
            (builder
             #~(begin
                 (let ((format (@ (ice-9 format) format)))
@@ -375,9 +401,10 @@ used in the image."
                       (format port
                               "\
 image ~a {
-~/~a {}
+~/~a {~a}
 ~{~a~^~%~}
-}~%" #$genimage-name #$image-type (list #$@partitions-config))))))))
+}~%" #$genimage-name #$image-type #$image-type-options
+ (list #$@partitions-config))))))))
       (computed-file "genimage.cfg" builder)))
 
   (let* ((image-name (image-name image))
