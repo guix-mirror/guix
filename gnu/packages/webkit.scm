@@ -295,6 +295,11 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
                   (string-append wpebackend-fdo "/lib/" all)))
                #t)))
+         (add-before 'configure 'prepare-build-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CC" "clang")
+             (setenv "CXX" "clang++")
+             #t))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -304,8 +309,8 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                             (string-append doc "/share/gtk-doc"))
                #t))))))
     (native-inputs
-     `(("bison" ,bison)
-       ("gcc" ,gcc-11)
+     `(("clang" ,clang-11)
+       ("bison" ,bison)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
