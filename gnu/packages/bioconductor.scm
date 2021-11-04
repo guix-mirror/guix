@@ -13859,13 +13859,13 @@ starting site, start codon, stop codon and transcription ending site.")
 (define-public r-sushi
   (package
     (name "r-sushi")
-    (version "1.30.0")
+    (version "1.31.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Sushi" version))
               (sha256
                (base32
-                "1m5l0nflhcynb3gz7b8qzvknb0s6xhds8z1yl3mbv8ic9qn2knv4"))))
+                "1cj4palsq99vnwihp6z9mw0f8w9qj2vq8zwnabf3bgg0l1wpsc7c"))))
     (properties `((upstream-name . "Sushi")))
     (build-system r-build-system)
     (propagated-inputs
