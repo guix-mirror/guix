@@ -215,8 +215,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
              ;; This ensures that Guix can detect embedded store references;
              ;; see bug #28157 for details.
              (substitute* "src/library/base/makebasedb.R"
-               (("compress = TRUE") "compress = FALSE"))
-             #t))
+               (("compress = TRUE") "compress = FALSE"))))
          (add-before 'configure 'patch-coreutils-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((coreutils (assoc-ref inputs "coreutils"))
@@ -225,8 +224,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin))
                (substitute* "src/unix/sys-std.c"
-                 (("rm -Rf ") (string-append rm-bin " -Rf "))))
-             #t))
+                 (("rm -Rf ") (string-append rm-bin " -Rf "))))))
          (add-after 'unpack 'build-reproducibly
            (lambda _
              ;; The documentation contains time stamps to demonstrate
@@ -285,17 +283,15 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
              ;; that is suspected to be the culprit.
              (substitute* "src/library/methods/DESCRIPTION.in"
                (("\\(2008\\)\n") "(2008) ")
-               (("  ``Software") "``Software"))
-             #t))
+               (("  ``Software") "``Software"))))
          (add-before 'build 'set-locales
            (lambda _
              (setlocale LC_ALL "C")
-             (setenv "LC_ALL" "C")
-             #t))
+             (setenv "LC_ALL" "C")))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
-          (lambda _ (setenv "PAGER" "cat") #t))
+          (lambda _ (setenv "PAGER" "cat")))
          (add-before 'check 'set-timezone
            ;; Some tests require the timezone to be set.  However, the
            ;; timezone may not just be "UTC", or else a brittle regression
@@ -304,8 +300,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
              (setenv "TZ" "UTC+1")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t))
+                                    "/share/zoneinfo"))))
          (add-after 'build 'make-info
           (lambda _ (invoke "make" "info")))
          (add-after 'build 'install-info
