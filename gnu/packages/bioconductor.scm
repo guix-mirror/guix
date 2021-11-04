@@ -4616,13 +4616,13 @@ and specific in detecting differential transcription.")
 (define-public r-xvector
   (package
     (name "r-xvector")
-    (version "0.32.0")
+    (version "0.34.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "XVector" version))
               (sha256
                (base32
-                "1cw34gd9iaspl0v737xl7rngq63zrj03a5ngai15ggrnv1sq2aqr"))))
+                "07r4qgmnifw9jk2srjg0cvl310j0f9y35jrg0zqhlvhmyhg6n2c0"))))
     (properties
      `((upstream-name . "XVector")))
     (build-system r-build-system)
