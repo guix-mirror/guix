@@ -11592,14 +11592,14 @@ visualize bioinformatics analyses.")
 (define-public r-graphite
   (package
     (name "r-graphite")
-    (version "1.38.0")
+    (version "1.40.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "graphite" version))
        (sha256
         (base32
-         "11bgz6951nfygxp3fm0190gf2bb5zplis1bc0am4757liw4qybhf"))))
+         "0wmdv4j6dinszxwpz2jddshkh1ahbhm2fxh6vhjsk4grw38i1lfr"))))
     (properties `((upstream-name . "graphite")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11608,8 +11608,6 @@ visualize bioinformatics analyses.")
        ("r-graph" ,r-graph)
        ("r-httr" ,r-httr)
        ("r-rappdirs" ,r-rappdirs)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/graphite/")
     (synopsis "Networks from pathway databases")
     (description
