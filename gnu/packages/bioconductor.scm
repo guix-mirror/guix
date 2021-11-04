@@ -7946,12 +7946,12 @@ distributions, modules and filter motifs.")
 (define-public r-motifdb
   (package
    (name "r-motifdb")
-   (version "1.34.0")
+   (version "1.36.0")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "MotifDb" version))
             (sha256
-             (base32 "04cmgg5mw1cqbg95zyfc2imykmdxyff16w26rq97xghcxwiq2b3z"))))
+             (base32 "0a2zg26zzk7bj5c33mbwl8dx9lh1hns8q8kwp09rbfjdichv7425"))))
    (properties `((upstream-name . "MotifDb")))
    (build-system r-build-system)
    (propagated-inputs
