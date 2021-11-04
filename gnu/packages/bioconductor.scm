@@ -7354,17 +7354,19 @@ phenotype of interest.")
 (define-public r-fcscan
   (package
     (name "r-fcscan")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fcScan" version))
        (sha256
-        (base32 "10fcz741dr3wbb9f63qywlrays4cnvfnsm6yw4bmkrwk6ccijg8h"))))
+        (base32 "0b161ayq4m9xxfs0lgw632lgygzabz8gjl0n75050pa7qaazknvd"))))
     (properties `((upstream-name . "fcScan")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-genomicranges" ,r-genomicranges)
+     `(("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-plyr" ,r-plyr)
        ("r-rtracklayer" ,r-rtracklayer)
