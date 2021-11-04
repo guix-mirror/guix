@@ -9973,14 +9973,14 @@ package.")
 (define-public r-opencyto
   (package
     (name "r-opencyto")
-    (version "2.4.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "openCyto" version))
        (sha256
         (base32
-         "1par1d5pk1rjg15q7i5z5wqma7xg6fycb826a823wk8wr52a885x"))))
+         "11svr1lk383pkm4npwrnf3h37b3drjsmcwcgdbb45x8k2k95z2fm"))))
     (properties `((upstream-name . "openCyto")))
     (build-system r-build-system)
     (propagated-inputs
