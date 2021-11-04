@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -985,7 +986,7 @@ in C/C++.")
 
        #:configure-flags `("--enable-application=browser"
                            "--with-distribution-id=org.gnu"
-
+                           "--enable-geckodriver"
                            ;; Do not require addons in the global app or
                            ;; system directories to be signed by Mozilla.
                            "--with-unsigned-addon-scopes=app,system"
@@ -1077,8 +1078,7 @@ in C/C++.")
                               (format #t "applying '~a'...~%" file)
                               (invoke patch "--force" "--no-backup-if-mismatch"
                                       "-p1" "--input" file))))
-                         (or native-inputs inputs)))
-             #t))
+                         (or native-inputs inputs)))))
          (add-after 'apply-guix-specific-patches 'remove-bundled-libraries
            (lambda _
              ;; Remove bundled libraries that we don't use, since they may
@@ -1127,8 +1127,7 @@ in C/C++.")
                          ;; UNBUNDLE-ME! "gfx/graphite2"
                          "js/src/ctypes/libffi"
                          ;; UNBUNDLE-ME! "db/sqlite3"
-                         ))
-             #t))
+                         ))))
          (add-after 'remove-bundled-libraries 'fix-ffmpeg-runtime-linker
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
@@ -1136,8 +1135,7 @@ in C/C++.")
                ;; Arrange to load libavcodec.so by its absolute file name.
                (substitute* "dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp"
                  (("libavcodec\\.so")
-                  libavcodec))
-               #t)))
+                  libavcodec)))))
          (add-after 'fix-ffmpeg-runtime-linker 'build-sandbox-whitelist
            (lambda* (#:key inputs #:allow-other-keys)
              (define (runpath-of lib)
@@ -1167,8 +1165,7 @@ in C/C++.")
                        whitelist-string)
                (format port "~%pref(\"security.sandbox.content.read_path_whitelist\", ~S);~%"
                        whitelist-string)
-               (close-output-port port))
-             #t))
+               (close-output-port port))))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda _
              (use-modules (guix build cargo-utils))
@@ -1197,8 +1194,7 @@ in C/C++.")
                            "intl"
                            "servo"
                            "security/manager/ssl"
-                           "build")))
-             #t))
+                           "build")))))
          (delete 'bootstrap)
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
@@ -1258,10 +1254,15 @@ in C/C++.")
                  (("[0-9a-df-np-sv-z]{32}" hash)
                   (string-append (string-take hash 8)
                                  "<!-- Guix: not a runtime dependency -->"
-                                 (string-drop hash 8)))))
-             #t))
+                                 (string-drop hash 8)))))))
          (replace 'install
-           (lambda _ (invoke "./mach" "install")))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "./mach" "install")
+             ;; The geckodriver binary is not installed by the above, for some
+             ;; reason.  Use 'find-files' to avoid having to deal with the
+             ;; system/architecture-specific file name.
+             (install-file (first (find-files "." "geckodriver"))
+                           (string-append (assoc-ref outputs "out") "/bin"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1286,8 +1287,7 @@ in C/C++.")
                  ;; package on guix has been observed to be unstable when
                  ;; using wayland, and the bundled extensions stop working.
                  ;;   `("MOZ_ENABLE_WAYLAND" = ("1"))
-                 `("LD_LIBRARY_PATH" prefix ,ld-libs))
-               #t)))
+                 `("LD_LIBRARY_PATH" prefix ,ld-libs)))))
          (add-after 'wrap-program 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.
@@ -1300,8 +1300,7 @@ in C/C++.")
                  (("Icon=.*")          "Icon=icecat\n")
                  (("NewWindow")        "new-window")
                  (("NewPrivateWindow") "new-private-window"))
-               (install-file desktop-file applications)
-               #t)))
+               (install-file desktop-file applications))))
          (add-after 'install-desktop-entry 'install-icons
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -1315,14 +1314,15 @@ in C/C++.")
                       (copy-file file (string-append icons "/icecat.png"))))
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
-                    "mozicon128.png" "default256.png"))
-                 #t)))))))
+                    "mozicon128.png" "default256.png")))))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
      "IceCat is the GNU version of the Firefox browser.  It is entirely free
 software, which does not recommend non-free plugins and addons.  It also
-features built-in privacy-protecting features.
+features built-in privacy-protecting features.  This package also includes the
+@command{geckodriver} command, which can be useful for automated web
+testing.
 
 WARNING: IceCat 91 has not yet been released by the upstream IceCat project.
 This is a preview release, and does not currently meet the privacy-respecting
