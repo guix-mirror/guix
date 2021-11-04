@@ -48,7 +48,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
@@ -11836,7 +11836,7 @@ provided there is a DBus service present:
 (define-public parlatype
   (package
     (name "parlatype")
-    (version "2.1")
+    (version "3.0")
     (source
      (origin
        (method git-fetch)
@@ -11845,13 +11845,17 @@ provided there is a DBus service present:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1c15ja0rwz3jj8bnqdq0nmqka39iwrhy8krdv2a2x8nl4shfpmv0"))))
+        (base32 "0mvzagkg9kq2ji6mffi37mdjxmlj3wa65d4lcayij9hsmjlklnzs"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
        #:tests? #f                      ;require internet access
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "data/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'install 'wrap-parlatype
            ;; Add gstreamer plugin provided in this package to system's
            ;; plugins.
@@ -11862,8 +11866,7 @@ provided there is a DBus service present:
                                       ":"
                                       (getenv "GST_PLUGIN_SYSTEM_PATH"))))
                (wrap-program (string-append out "/bin/parlatype")
-                 `("GST_PLUGIN_SYSTEM_PATH" ":" = (,gst-plugin-path))))
-             #t)))))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" = (,gst-plugin-path)))))))))
     (native-inputs
      `(("appstream-glib" ,appstream-glib)
        ("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
@@ -11876,10 +11879,11 @@ provided there is a DBus service present:
        ("gst-plugins-good" ,gst-plugins-good)
        ("gstreamer" ,gstreamer)
        ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
        ("pocketsphinx" ,pocketsphinx)
        ("pulseaudio" ,pulseaudio)
        ("sphinxbase" ,sphinxbase)))
-    (home-page "http://gkarsay.github.io/parlatype/")
+    (home-page "https://www.parlatype.org")
     (synopsis "GNOME audio player for transcription")
     (description "Parlatype is an audio player for the GNOME desktop
 environment.  Its main purpose is the manual transcription of spoken
