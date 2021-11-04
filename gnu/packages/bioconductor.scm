@@ -10159,14 +10159,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package                              ;Source/Weave error
     (name "r-depecher")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "04vxc43p3kpsx0vksk2nwmy9p56h35z2mc8j9p2wm29zaz1y8j3p"))))
+         "1500jivij7zdycdd0i0b7mgp44w4z0hqnpzqbq8nhvzzdigic8x9"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
