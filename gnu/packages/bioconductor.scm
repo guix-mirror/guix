@@ -4340,13 +4340,13 @@ graph construction.")
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
-    (version "1.8.2")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "StructuralVariantAnnotation" version))
        (sha256
-        (base32 "04ac4mjh3pgdlws0aiacqg0vd7bhg890w44r7b90p947c3rk1mfw"))))
+        (base32 "1pw7d39944dwk5gw6q7igcn866zpqwz01ljaha2ih5dfvmhxka8n"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
