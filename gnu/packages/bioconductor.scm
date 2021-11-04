@@ -4411,14 +4411,14 @@ samples.")
 (define-public r-sva
   (package
     (name "r-sva")
-    (version "3.40.0")
+    (version "3.42.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "sva" version))
        (sha256
         (base32
-         "12jkcybdfspabh7x124d44l9fj1hwwg3gvcqxvz5wpkiflc2vkji"))))
+         "0clzid9di2qfgc5bvnqx312k3inj1lc599ckqkllvr894wxb7mdj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-edger" ,r-edger)
