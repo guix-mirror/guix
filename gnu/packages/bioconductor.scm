@@ -9258,21 +9258,20 @@ index.")
 (define-public r-quasr
   (package
     (name "r-quasr")
-    (version "1.32.0")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "QuasR" version))
        (sha256
         (base32
-         "1635ff11ahzjrh3cdcxrq5bgd100n444k7mc0maz0jx21vj8qqb1"))))
+         "0d292xgaq8d3cdpa9anabda03lis46xc29iw9c5k5i3sj7dcr4g5"))))
     (properties `((upstream-name . "QuasR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocmanager" ,r-biocmanager)
        ("r-biocparallel" ,r-biocparallel)
        ("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
