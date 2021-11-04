@@ -25733,6 +25733,24 @@ advice system without dropping support for Emacs<24.4.")
      "This package provides a SOAP client to access web services.")
     (license license:gpl3+)))
 
+(define-public emacs-fsm
+  (package
+    (name "emacs-fsm")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/fsm-" version ".el"))
+       (sha256
+        (base32 "1jyxyqdbfl8nv7c50q0sg3w5p7whp1sqgi7w921k5hfar4d11qqp"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/fsm.html")
+    (synopsis "Finite State Machine library")
+    (description
+     "This package provides Finite State Machine library to make asynchronous
+programming in Emacs Lisp easy and fun.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
         (revision "2"))
