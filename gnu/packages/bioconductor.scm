@@ -13541,14 +13541,14 @@ with your data.")
 (define-public r-gwascat
   (package
     (name "r-gwascat")
-    (version "2.24.0")
+    (version "2.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gwascat" version))
        (sha256
         (base32
-         "0109cxsviq1sk5hfwkjzd0y1kpm934287asjjd0j8jhh4b0ah2b2"))))
+         "0s67jgk3gnfiyfjwhq4r5xlfnip29blis4fg75kn4qmvjv5j2pxx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
