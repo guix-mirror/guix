@@ -10645,14 +10645,14 @@ with multiple R processes supported by the package @code{parallel}.")
 (define-public r-bigmelon
   (package
     (name "r-bigmelon")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigmelon" version))
        (sha256
         (base32
-         "061f0hc4m4nvdr6298pg3inpx1z2bpsm9nlxqs3v7n58q15xyzri"))))
+         "0ksbmybi8wsg515b4k9ij1xqqk9i90pyap2wq5w3c49qgc0pqali"))))
     (properties `((upstream-name . "bigmelon")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10660,6 +10660,7 @@ with multiple R processes supported by the package @code{parallel}.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-gdsfmt" ,r-gdsfmt)
        ("r-geoquery" ,r-geoquery)
+       ("r-illuminaio" ,r-illuminaio)
        ("r-methylumi" ,r-methylumi)
        ("r-minfi" ,r-minfi)
        ("r-watermelon" ,r-watermelon)))
