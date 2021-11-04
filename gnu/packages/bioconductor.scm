@@ -6726,18 +6726,19 @@ high-throughput analyses.")
 (define-public r-geoquery
   (package
     (name "r-geoquery")
-    (version "2.60.0")
+    (version "2.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GEOquery" version))
        (sha256
         (base32
-         "0jhkdbcd03d5n8vn3xkad6f21xjkawyxc9rdwcj8vwc8alx730am"))))
+         "0fkx4jh1s76l015vwikkryarlx6iihb1z935nzpdhah3rpqx3b3z"))))
     (properties `((upstream-name . "GEOquery")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
+       ("r-data-table" ,r-data-table)
        ("r-dplyr" ,r-dplyr)
        ("r-httr" ,r-httr)
        ("r-limma" ,r-limma)
