@@ -25677,6 +25677,26 @@ corresponding Evil keys.")
 implementation of Windows NT and LanManager compatible password encryption.")
     (license license:gpl3+)))
 
+(define-public emacs-nadvice
+  (package
+    (name "emacs-nadvice")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "nadvice-" version ".el"))
+       (sha256
+        (base32 "0gi3csnxbs8h7iy0scsl35sic3gv90swa89hhdjwb7qvpirfdcgw"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/nadvice.html")
+    (synopsis "Forward compatibility for Emacs-24.4's nadvice")
+    (description
+     "This package tries to re-implement some of nadvice.el's functionality on
+top of the old defadvice system, to help users of defadvice move to the new
+advice system without dropping support for Emacs<24.4.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
         (revision "2"))
