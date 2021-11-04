@@ -25751,6 +25751,28 @@ advice system without dropping support for Emacs<24.4.")
 programming in Emacs Lisp easy and fun.")
     (license license:gpl3+)))
 
+(define-public emacs-excorporate
+  (package
+    (name "emacs-excorporate")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "excorporate-" version ".tar"))
+       (sha256
+        (base32 "1g0wc2kp15ra323b4rxvdh58q9c4h7m20grw6a0cs53m7l9xi62f"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-fsm" ,emacs-fsm)
+       ("emacs-nadvice" ,emacs-nadvice)
+       ("emacs-soap-client" ,emacs-soap-client)
+       ("emacs-url-http-ntlm" ,emacs-url-http-ntlm)))
+    (home-page "https://elpa.gnu.org/packages/excorporate.html")
+    (synopsis "Exchange integration")
+    (description "This package provides Exchange integration for Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
         (revision "2"))
