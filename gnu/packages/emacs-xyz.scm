@@ -27247,14 +27247,14 @@ interface.")
 (define-public emacs-ivy-posframe
   (package
     (name "emacs-ivy-posframe")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "ivy-posframe-" version ".tar"))
        (sha256
-        (base32 "1x6pm0pry2j7yazhxvq1gydbymwll9yg85m8qi4sh8s0pnm0vjzk"))))
+        (base32 "0b498qzaydjrhplx4d7zcrs883dlrhfiz812sv4m3pmhfwifcchh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)
