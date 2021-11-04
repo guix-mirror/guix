@@ -5737,14 +5737,14 @@ demultiplexed, i.e. assigned to their original reference barcode.")
 (define-public r-ruvseq
   (package
     (name "r-ruvseq")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RUVSeq" version))
        (sha256
         (base32
-         "1fy0k1p0m209lzjpd5jhfnifa22lrn63qq3a3kn5g0xhbbmijzac"))))
+         "1a19klscykdgsd7izcxyr45ml7g0gpdj65gvbaw124mal2p4zi9q"))))
     (properties `((upstream-name . "RUVSeq")))
     (build-system r-build-system)
     (propagated-inputs
