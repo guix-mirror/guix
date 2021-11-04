@@ -2272,13 +2272,13 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.26.2")
+    (version "1.28.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "1y459cygq21f3igsdlxz1zlyad8qbl2qlr5h2d2dpnvblykvf48i"))))
+                "0jqgbpjppwinzw100qhc42kc95znq6xanl26bi8m9cq7yggbpra6"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
@@ -2306,7 +2306,7 @@ powerful online queries from gene annotation to database mining.")
                (("\\today") "later"))
 
              ;; Initialize the random number generator seed when building.
-             (substitute* "R/internal_rng_stream.R"
+             (substitute* "R/rng.R"
                (("\"L'Ecuyer-CMRG\"\\)" m)
                 (string-append
                  m "; if (!is.na(Sys.getenv(\"SOURCE_DATE_EPOCH\"))) {set.seed(100)}\n"))))))))
