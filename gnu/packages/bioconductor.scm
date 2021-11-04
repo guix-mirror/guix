@@ -11302,14 +11302,14 @@ the read count and GC content bias.")
 (define-public r-rsbml
   (package
     (name "r-rsbml")
-    (version "2.50.0")
+    (version "2.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "rsbml" version))
        (sha256
         (base32
-         "017xwra6ms7kx6sg3ksw1vr9zn23imc2qjgpmjikx7mgbak125xh"))))
+         "0mdyr637sgasc156cv8i2s2mpl1hdvilfwwkhvw7l95pl90gnsh2"))))
     (properties `((upstream-name . "rsbml")))
     (build-system r-build-system)
     (inputs
