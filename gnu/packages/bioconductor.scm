@@ -2459,13 +2459,13 @@ analysis.")
 (define-public r-chipseeker
   (package
     (name "r-chipseeker")
-    (version "1.28.3")
+    (version "1.30.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "ChIPseeker" version))
               (sha256
                (base32
-                "18hdgml80770c0xgd06zrl8px1ql9fa65rirfkq07z7rzpnd23rw"))))
+                "1x8px8ylc231g87rd48kmy9y36h26rldbmqjkcj4mgaldvbsj0rp"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
