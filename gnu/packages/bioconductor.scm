@@ -4146,14 +4146,14 @@ differential expression analysis, RNAseq data and related problems.")
 (define-public r-seqlogo
   (package
     (name "r-seqlogo")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "seqLogo" version))
        (sha256
         (base32
-         "1253sj1hc6bbrff0iv5xa3v9znqvisll0fy6fdjka9c778fn4mcp"))))
+         "013hwj2lp29nqa8mkvm25aliarg0k725crg4cpsbj0iiskyrs6rl"))))
     (properties `((upstream-name . "seqLogo")))
     (build-system r-build-system)
     (native-inputs
