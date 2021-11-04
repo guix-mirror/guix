@@ -5018,14 +5018,14 @@ large datasets, including support for on-disk data representation.")
 (define-public r-multtest
   (package
     (name "r-multtest")
-    (version "2.48.0")
+    (version "2.50.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "multtest" version))
        (sha256
         (base32
-         "1wi15v4llgv11hpb2j9h4a35nrnawnmvbz5d5dvgy8lhqrlq8w9a"))))
+         "03z71r7g318nwwgiz0k8qwbhghw1hhdhh1an4qnb0nc62c5x9kns"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-survival" ,r-survival)
