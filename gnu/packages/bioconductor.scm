@@ -13134,14 +13134,14 @@ the respective packages (such as e.g. @code{xcms}).")
 (define-public r-biocio
   (package
     (name "r-biocio")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (bioconductor-uri "BiocIO" version))
         (sha256
           (base32
-            "0skwnpxl6fkqihidpqrfzzh7b05x11j6jwkiinmhggmv0ggjb5ph"))))
+            "1qg6v961sbj7qwyjx4z720f6h0kq693p7gc8q99my7gqkbbcxrfr"))))
     (properties `((upstream-name . "BiocIO")))
     (build-system r-build-system)
     (propagated-inputs
