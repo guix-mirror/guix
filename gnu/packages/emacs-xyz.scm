@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019, 2020, 2021 Joseph LaFreniere <joseph@lafreniere.xyz>
+;;; Copyright © 2019 Todor Kondić <tk.code@protonmail.com>15669
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -25657,6 +25658,24 @@ verb commands which would are normally destructive (such as deletion) are
 provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
+
+(define-public emacs-ntlm
+  (package
+    (name "emacs-ntlm")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/ntlm-" version ".el"))
+       (sha256
+        (base32 "01d0bcmh8a36qf871w6bc05kjk9bmnh843m9869xw06zyvqwg9mv"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/ntlm.html")
+    (synopsis "NTLM (NT LanManager) authentication support")
+    (description
+     "This library is a direct translation of the Samba release 2.2.0
+implementation of Windows NT and LanManager compatible password encryption.")
+    (license license:gpl3+)))
 
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
