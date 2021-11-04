@@ -9007,18 +9007,22 @@ This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID
 (define-public r-rbowtie2
   (package
     (name "r-rbowtie2")
-    (version "1.14.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rbowtie2" version))
        (sha256
         (base32
-         "0r5yqjal48xlcv5cidi7p3zwygvsllmv2zzkwkc9kfq083l2i4ih"))))
+         "0xpvrx2ak9x913sym4l46ycwbnmpcdwb3bf3dfd2gsp0krv8vh1x"))))
     (properties `((upstream-name . "Rbowtie2")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-rsamtools" ,r-rsamtools)))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("samtools" ,samtools)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/Rbowtie2/")
