@@ -26626,19 +26626,18 @@ available.")
 (define-public emacs-eshell-did-you-mean
   (package
     (name "emacs-eshell-did-you-mean")
-    (version "0.1")
-    (home-page "https://github.com/xuchunyang/eshell-did-you-mean")
+    (version "0.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url home-page)
+             (url "https://github.com/xuchunyang/eshell-did-you-mean")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0v0wshck5n4hspcv1zk1g2nm6xiigcjp16lx0dc8wzkl6ymljvbg"))))
+        (base32 "158g8b4crm0gf5pilfxf89hdsb22gr1wbrjyx9gf45bmcll3i9vf"))))
     (build-system emacs-build-system)
+    (home-page "https://github.com/xuchunyang/eshell-did-you-mean")
     (synopsis "Display suggestions on 'command not found' in Eshell")
     (description "This library adds a list of 'Did you mean...' suggestions
 when the command was not found in Eshell.  The suggestions are found after the
