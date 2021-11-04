@@ -33229,6 +33229,17 @@ Enable or disable debug output.
 @item @code{enable-iptables?} (default @code{#t})
 Enable or disable the addition of iptables rules.
 
+@item @code{environment-variables} (default: @code{()})
+List of environment variables to set for @command{dockerd}.
+
+This must be a list of strings where each string has the form
+@samp{@var{key}=@var{value}} as in this example:
+
+@lisp
+(list "LANGUAGE=eo:ca:eu"
+      "TMPDIR=/tmp/dockerd")
+@end lisp
+
 @end table
 @end deftp
 
