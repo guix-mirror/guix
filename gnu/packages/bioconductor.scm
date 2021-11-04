@@ -6068,13 +6068,13 @@ sequencing data.")
 (define-public r-copynumber
   (package
     (name "r-copynumber")
-    (version "1.32.0")
+    (version "1.34.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "copynumber" version))
               (sha256
                (base32
-                "03pvjzjrcsbjfw3855s3whfzin45vaipy7cahnj6fywdysvh8hps"))))
+                "143ifvjkjz0392drm82xmpj1f8b5pc2dyyxyc9dkqmay8lf1n534"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-s4vectors" ,r-s4vectors)
