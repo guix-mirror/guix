@@ -4728,14 +4728,14 @@ saving AnnData objects to disk.")
 (define-public r-oligoclasses
   (package
     (name "r-oligoclasses")
-    (version "1.54.0")
+    (version "1.56.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "oligoClasses" version))
        (sha256
         (base32
-         "1nsfyfpj264h6y322pzz0i001b0m862j3skbq5rjwlrj1p8j2gi7"))))
+         "1ia2f19swiwb0552nfwkai4gl0av07cj75b6jwiviqa1bli09264"))))
     (properties `((upstream-name . "oligoClasses")))
     (build-system r-build-system)
     (propagated-inputs
