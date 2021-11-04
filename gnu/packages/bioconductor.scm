@@ -11842,14 +11842,14 @@ access.")
 (define-public r-grohmm
   (package
     (name "r-grohmm")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "groHMM" version))
        (sha256
         (base32
-         "1h63vg1iskw79ijg5h1b9097ams8pp3kvnlawlfci6xfli07xpkj"))))
+         "1jcj29df4prknqwbydca1jb9w6njacjhwwk9jp0r5mvb88xrm60s"))))
     (properties `((upstream-name . "groHMM")))
     (build-system r-build-system)
     (propagated-inputs
