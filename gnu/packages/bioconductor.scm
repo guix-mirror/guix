@@ -9627,14 +9627,14 @@ cluster count and membership by stability evidence in unsupervised analysis.")
 (define-public r-cytolib
   (package
     (name "r-cytolib")
-    (version "2.4.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cytolib" version))
        (sha256
         (base32
-         "0wl7zqwv0i38dfzqfsz40n3mcbxi38ffn1rbd5pm9s7hq16zr4nv"))))
+         "01r5dfjil1i526kb5gj9c8x9agi90x0bh7lzykbpn0g6s2hznbzi"))))
     (properties `((upstream-name . "cytolib")))
     (build-system r-build-system)
     (native-inputs
