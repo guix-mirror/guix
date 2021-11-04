@@ -3708,14 +3708,14 @@ previously been used in XCMS.")
 (define-public r-organismdbi
   (package
     (name "r-organismdbi")
-    (version "1.34.0")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "OrganismDbi" version))
        (sha256
         (base32
-         "0p8ccpdchdwci4kv9y07wdadzgms8nipvg6rm1rll35jcflnnkxi"))))
+         "0zp6x2iqhn9s3xp07yilnr6hn73acvkdai5xip4iiwjdlnfffj83"))))
     (properties `((upstream-name . "OrganismDbi")))
     (build-system r-build-system)
     (propagated-inputs
