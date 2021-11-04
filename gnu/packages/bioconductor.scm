@@ -14607,24 +14607,22 @@ help unravel disease regulatory trajectory.")
 (define-public r-biotmle
   (package
     (name "r-biotmle")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biotmle" version))
        (sha256
         (base32
-         "01smkmbv40yprgrgi2gjnmi8ncqyrlkfdxsh33ki20amcx32nc7f"))))
+         "0p3iavf9059qa8qvfvqzskfc5gki3z0ivkkqdwg5anvf0wv2k47g"))))
     (properties `((upstream-name . "biotmle")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biocparallel" ,r-biocparallel)
-       ("r-dofuture" ,r-dofuture)
        ("r-dplyr" ,r-dplyr)
        ("r-drtmle" ,r-drtmle)
-       ("r-future" ,r-future)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggsci" ,r-ggsci)
        ("r-limma" ,r-limma)
