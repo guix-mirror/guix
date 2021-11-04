@@ -12445,14 +12445,14 @@ data manipulation and visualization.")
 (define-public r-rgraphviz
   (package
     (name "r-rgraphviz")
-    (version "2.36.0")
+    (version "2.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rgraphviz" version))
        (sha256
         (base32
-         "0d0xq1vgr4b165cn4wg7zmfjyc1d9ir4amgs196j4cgrhpmrnl8s"))))
+         "0fyv1ybpahkwz3fawzxgxfnshi8y7c18262rgdmqwdl5662vv1p7"))))
     (properties `((upstream-name . "Rgraphviz")))
     (build-system r-build-system)
     (arguments
