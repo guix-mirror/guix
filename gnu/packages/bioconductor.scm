@@ -8024,14 +8024,14 @@ Bioconductor.")
 (define-public r-motifstack
   (package
     (name "r-motifstack")
-    (version "1.36.1")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifStack" version))
        (sha256
         (base32
-         "140xclzgn5z64v5nm4kvj0qwvqb7ix91bbmimsfc6k1p0l8lwsvv"))))
+         "1ck6bbnrab8mbf70alfdsrcv6lq0fkvcy3klhcwyxxir7r9sgbaz"))))
     (properties `((upstream-name . "motifStack")))
     (build-system r-build-system)
     (propagated-inputs
