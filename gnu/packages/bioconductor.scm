@@ -5389,14 +5389,14 @@ datasets.")
 (define-public r-riboprofiling
   (package
     (name "r-riboprofiling")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RiboProfiling" version))
        (sha256
         (base32
-         "1jmd8yrv7p7hn4gdibg3svmhqxjyrnfp7cgsqg8zv862lgd75zsl"))))
+         "1szlzvm8ggjc40k4z2fxxa2h28g6j9wj2g5aw480v9hgyvvdw5lx"))))
     (properties `((upstream-name . "RiboProfiling")))
     (build-system r-build-system)
     (propagated-inputs
