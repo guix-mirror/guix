@@ -4278,14 +4278,14 @@ and comparing the clusterings.")
 (define-public r-trajectoryutils
   (package
     (name "r-trajectoryutils")
-    (version "1.0.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "TrajectoryUtils" version))
        (sha256
         (base32
-         "1b7mg3ypp1ay98cav47h9vn692lx0n9b5b0hpansgnkr5prb823b"))))
+         "0pzm1h69bg04a2v09r8c6pb3pix6f3n5dylvbv7wsp574qfaqyd1"))))
     (properties
      `((upstream-name . "TrajectoryUtils")))
     (build-system r-build-system)
