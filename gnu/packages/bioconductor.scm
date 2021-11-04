@@ -6892,14 +6892,14 @@ methylation arrays.")
 (define-public r-methylumi
   (package
     (name "r-methylumi")
-    (version "2.38.0")
+    (version "2.40.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "methylumi" version))
        (sha256
         (base32
-         "1941rc524ssx8gwhmwk40mgfrhddfs6hgldvs7bi22r29gm4y7qj"))))
+         "1lfcsv8k9c4ndfwlbdk3vd7fq58100bfijyxklna41zf8m8kkkka"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
@@ -6909,6 +6909,7 @@ methylation arrays.")
        ("r-fdb-infiniummethylation-hg19" ,r-fdb-infiniummethylation-hg19)
        ("r-genefilter" ,r-genefilter)
        ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-ggplot2" ,r-ggplot2)
        ("r-illuminaio" ,r-illuminaio)
