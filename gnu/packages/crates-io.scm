@@ -15305,7 +15305,7 @@ Rust.")
 (define-public rust-duct-0.13
   (package
     (name "rust-duct")
-    (version "0.13.0")
+    (version "0.13.5")
     (source
      (origin
        (method url-fetch)
@@ -15314,14 +15314,14 @@ Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ir3884i1yznkfdccqqbcb9v5sdpcgxlv41hgzncrqaljv18r0wj"))))
+         "13bxiy0y1dck3xz28rqw5ylf2ykv6mk8ww6g8408x26hksjs1ihg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-os-pipe" ,rust-os-pipe-0.8)
+        ("rust-os-pipe" ,rust-os-pipe-0.9)
         ("rust-shared-child" ,rust-shared-child-0.3))
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))
