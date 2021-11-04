@@ -1522,13 +1522,13 @@ biological sequences.")
 (define-public r-deepsnv
   (package
     (name "r-deepsnv")
-    (version "1.38.0")
+    (version "1.40.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "deepSNV" version))
               (sha256
                (base32
-                "0zz56hf417m7bgg2g2wpbaik30pi6h2nam1n5bviqgdn4mv8n0bs"))))
+                "1wi6j6yb6i9fs9yszfywqz3w50mhl85dkfmr4w3phwvkf0xkn81w"))))
     (properties `((upstream-name . "deepSNV")))
     (build-system r-build-system)
     (propagated-inputs
