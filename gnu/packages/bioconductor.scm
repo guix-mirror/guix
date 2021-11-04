@@ -11482,14 +11482,14 @@ visualizing RNA-sequencing datasets and differentially expressed genes.")
 (define-public r-chemminer
   (package
     (name "r-chemminer")
-    (version "3.44.0")
+    (version "3.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChemmineR" version))
        (sha256
         (base32
-         "1z59npqk7hnqzhjdnry6lfqlyxfzwqprp7bmbdzs4rp22pzcv1v8"))))
+         "069xd7if7fs69afmamgl6wrkzpnk97ic6z5ix4vvlzkb078dm0p8"))))
     (properties `((upstream-name . "ChemmineR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11501,11 +11501,13 @@ visualizing RNA-sequencing datasets and differentially expressed genes.")
        ("r-dt" ,r-dt)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
+       ("r-jsonlite" ,r-jsonlite)
        ("r-png" ,r-png)
        ("r-rcpp" ,r-rcpp)
        ("r-rcurl" ,r-rcurl)
        ("r-rjson" ,r-rjson)
-       ("r-rsvg" ,r-rsvg)))
+       ("r-rsvg" ,r-rsvg)
+       ("r-stringi" ,r-stringi)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/girke-lab/ChemmineR")
