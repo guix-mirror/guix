@@ -13100,6 +13100,38 @@ well as misc helper functions, that are used across high-level data structure
 within the R for Mass Spectrometry packages.")
     (license license:artistic2.0)))
 
+(define-public r-msfeatures
+  (package
+    (name "r-msfeatures")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MsFeatures" version))
+       (sha256
+        (base32 "020ifrijlzdd3qk4bhd9z4knj5d87ildrkl3wcmxvwkvs9rbh8rq"))))
+    (properties `((upstream-name . "MsFeatures")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mscoreutils" ,r-mscoreutils)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/RforMassSpectrometry/MsFeatures")
+    (synopsis "Functionality for mass spectrometry features")
+    (description
+     "The MsFeature package defines functionality for Mass Spectrometry
+features.  This includes functions to group (LC-MS) features based on some of
+their properties, such as retention time (coeluting features), or correlation
+of signals across samples.  This packge hence allows to group features, and
+its results can be used as an input for the @code{QFeatures} package which
+allows to aggregate abundance levels of features within each group.  This
+package defines concepts and functions for base and common data types,
+implementations for more specific data types are expected to be implemented in
+the respective packages (such as e.g. @code{xcms}).")
+    (license license:artistic2.0)))
+
 (define-public r-biocio
   (package
     (name "r-biocio")
