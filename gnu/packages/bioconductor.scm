@@ -3770,14 +3770,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-protgenerics
   (package
     (name "r-protgenerics")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ProtGenerics" version))
        (sha256
         (base32
-         "1c79k8nc28782w5gxi7pkm8jmddq1hdw6khs9kgsp8dyk60ak6fq"))))
+         "0x53pk7h47gjza1q5pz7jb1qqhwa9z2rr5fr61qc92zl3mqk57m0"))))
     (properties `((upstream-name . "ProtGenerics")))
     (build-system r-build-system)
     (home-page "https://github.com/lgatto/ProtGenerics")
