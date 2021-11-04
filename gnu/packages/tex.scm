@@ -3513,6 +3513,23 @@ programming tools and kernel support.  Packages provided in this release are:
 @end enumerate\n")
     (license license:lppl1.3c+)))
 
+(define-public texlive-dvips-l3backend
+  (package
+    (inherit (simple-texlive-package
+              "texlive-dvips-l3backend"
+              (list
+               "/dvips/l3backend/")
+              (base32
+               "1hvj153h1pn93h6n76dv3mg9ai0mcz9q9mysfiqjfpqzijz9ikky")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/l3backend")
+    (synopsis "LaTeX3 backend drivers for dvips")
+    (description
+     "This package forms parts of expl3, and contains the code used to
+interface with backends (drivers) across the expl3 codebase.  The functions
+here are defined for the dvips engine only.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-fontspec
   (let ((template (simple-texlive-package
                    "texlive-fontspec"
