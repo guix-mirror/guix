@@ -7454,17 +7454,17 @@ data.")
 (define-public r-enrichplot
   (package
     (name "r-enrichplot")
-    (version "1.12.3")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "enrichplot" version))
        (sha256
         (base32
-         "0a4v7ymy9jn66iw093jngzszkvr2mfzzlxp0h6nnvlbnbvqqzgm3"))))
+         "0nsx96mkcg0hhg3x8jndzq3xvq9bq7m4yf1b3ry73b17ladx81ch"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-cowplot" ,r-cowplot)
+     `(("r-aplot" ,r-aplot)
        ("r-dose" ,r-dose)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggraph" ,r-ggraph)
@@ -7477,7 +7477,8 @@ data.")
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-reshape2" ,r-reshape2)
        ("r-scatterpie" ,r-scatterpie)
-       ("r-shadowtext" ,r-shadowtext)))
+       ("r-shadowtext" ,r-shadowtext)
+       ("r-yulab-utils" ,r-yulab-utils)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/GuangchuangYu/enrichplot")
