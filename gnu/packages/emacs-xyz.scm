@@ -25697,6 +25697,24 @@ top of the old defadvice system, to help users of defadvice move to the new
 advice system without dropping support for Emacs<24.4.")
     (license license:gpl3+)))
 
+(define-public emacs-url-http-ntlm
+  (package
+    (name "emacs-url-http-ntlm")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "url-http-ntlm-" version ".el"))
+       (sha256
+        (base32 "1cakq2ykraci7d1gl8rnpv4f2f5ffyaidhqb1282g7i72adwmb98"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-ntlm" ,emacs-ntlm)))
+    (home-page "https://elpa.gnu.org/packages/url-http-ntlm.html")
+    (synopsis "NTLM authentication for the url library")
+    (description "This package provides a NTLM handler for the URL package.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
         (revision "2"))
