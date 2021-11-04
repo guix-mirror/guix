@@ -3379,13 +3379,13 @@ Shiny-based display methods for Bioconductor objects.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.48.3")
+    (version "3.50.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "0385ac0hvvml99krcgcpp6q7layjhzgp9xcxkcjrpfg5mjg1z4sx"))))
+                "05ypmax1s6y1nz42bxn61wxhzzw6185q633crzpdcbbz3dz4vgvy"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
