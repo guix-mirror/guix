@@ -43,7 +43,7 @@
 (define-public genimage
   (package
     (name "genimage")
-    (version "11")
+    (version "14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -52,9 +52,9 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15jmh17lvm3jw9c92bjarly7iwhmnfl322d91mprfv10ppb9ip54"))
-              ;; will be shipped with release 14
-              (patches (search-patches "genimage-signedness.patch"))))
+                "1l45djpbaffhyw0allq3mgzwrdilk05iyj0nvp8l3s47vnp5bnbs"))
+              (patches
+               (search-patches "genimage-mke2fs-test.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules
