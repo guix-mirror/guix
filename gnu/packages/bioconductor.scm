@@ -6617,14 +6617,14 @@ several functions from the R igraph package.")
 (define-public r-noiseq
   (package
     (name "r-noiseq")
-    (version "2.36.0")
+    (version "2.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "NOISeq" version))
        (sha256
         (base32
-         "18d51dv2ygsm7kkwal341f1wrwrazyns0045j00vld367kic8jiz"))))
+         "0mmvzf8y4gm84hgjdpf86b1y37237wp5mc3x1g6sdiz9qi8l356v"))))
     (properties `((upstream-name . "NOISeq")))
     (build-system r-build-system)
     (propagated-inputs
