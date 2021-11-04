@@ -7136,13 +7136,13 @@ published results; and a routine for graphical display.")
 (define-public r-tradeseq
   (package
    (name "r-tradeseq")
-   (version "1.6.0")
+   (version "1.8.0")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "tradeSeq" version))
             (sha256
              (base32
-              "0fgmb309pvqf3chdhqgbd4lzhahcj5g71sica33nzn98qhipldx7"))))
+              "1s5anbb38gi5sfkxy19zpvkj8d0ij7m6cd0z4gmx4f5pf7pz0m3j"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
@@ -7151,10 +7151,10 @@ published results; and a routine for graphical display.")
       ("r-ggplot2" ,r-ggplot2)
       ("r-igraph" ,r-igraph)
       ("r-magrittr" ,r-magrittr)
+      ("r-mass" ,r-mass)
       ("r-matrix" ,r-matrix)
       ("r-matrixstats" ,r-matrixstats)
       ("r-mgcv" ,r-mgcv)
-      ("r-monocle" ,r-monocle)
       ("r-pbapply" ,r-pbapply)
       ("r-princurve" ,r-princurve)
       ("r-rcolorbrewer" ,r-rcolorbrewer)
@@ -7163,6 +7163,7 @@ published results; and a routine for graphical display.")
       ("r-slingshot" ,r-slingshot)
       ("r-summarizedexperiment" ,r-summarizedexperiment)
       ("r-tibble" ,r-tibble)
+      ("r-trajectoryutils" ,r-trajectoryutils)
       ("r-viridis" ,r-viridis)))
    (native-inputs
     `(("r-knitr" ,r-knitr)))
