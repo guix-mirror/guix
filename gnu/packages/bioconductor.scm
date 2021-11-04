@@ -10957,21 +10957,20 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "1pqy2g9pg8pswmkrs2fzlkwwliw2r7f33h05bci5bz41b8ribpzj"))))
+         "0f5y61dpzwmr8v7npim18zvxa8n49rbzclb9j72haba0px6ibhvw"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocparallel" ,r-biocparallel)
-       ("r-colorramps" ,r-colorramps)
        ("r-doparallel" ,r-doparallel)
        ("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
@@ -10981,9 +10980,11 @@ arrays based on fast wavelet-based functional models.")
        ("r-lme4" ,r-lme4)
        ("r-lmertest" ,r-lmertest)
        ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
        ("r-pbkrtest" ,r-pbkrtest)
        ("r-progress" ,r-progress)
        ("r-reshape2" ,r-reshape2)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
