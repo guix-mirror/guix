@@ -10851,14 +10851,14 @@ provides methods for retrieving enriched pathways.")
 (define-public r-variantfiltering
   (package
     (name "r-variantfiltering")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "VariantFiltering" version))
        (sha256
         (base32
-         "0abhrk53csd9jz9sv4q1qr74jax9mbj2icbz1iilf1123nvnjypd"))))
+         "15js8xzi9rsgkjkqcshzk3r3g85kdnxn5v2hi6l5s4yxj9lnq12p"))))
     (properties
      `((upstream-name . "VariantFiltering")))
     (build-system r-build-system)
