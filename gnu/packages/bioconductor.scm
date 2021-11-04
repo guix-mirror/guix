@@ -3518,14 +3518,14 @@ in SNV base substitution data.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.18.0")
+    (version "2.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "1z7s17j6zgb70m0khyf9icqlnbnzlivca7vw7j0vxyw417ld9lkr"))))
+         "1r5igzb7xb5qcw37ffy0c3j6vlg9zffmksrc57rs1pmfnca773z5"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
