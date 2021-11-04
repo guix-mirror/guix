@@ -11036,14 +11036,14 @@ features (e.g.  genes, microRNAs).")
 (define-public r-unifiedwmwqpcr
   (package
     (name "r-unifiedwmwqpcr")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "unifiedWMWqPCR" version))
        (sha256
         (base32
-         "1clcz610sl3s0mjf84j21xgrmjhkxcc4h292ljwq5yzbkk68g896"))))
+         "0kw26bm2yyna38q5r4zb2alpa3j4gx7v970419mnjlif4g0hmggk"))))
     (properties
      `((upstream-name . "unifiedWMWqPCR")))
     (build-system r-build-system)
