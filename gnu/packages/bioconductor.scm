@@ -14649,14 +14649,14 @@ ensemble machine learning for the estimation of nuisance functions.")
 (define-public r-bsseq
   (package
     (name "r-bsseq")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bsseq" version))
        (sha256
         (base32
-         "1xpv85hr681kkkilsnasndkszwmzbzq11y0lff4na2ilsm7sqmmi"))))
+         "1i30zf6457a0qd64s89x9l544y1h0hj9rfgf1m8l4krd487a9b9d"))))
     (properties `((upstream-name . "bsseq")))
     (build-system r-build-system)
     (propagated-inputs
