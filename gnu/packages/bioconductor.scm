@@ -3195,14 +3195,14 @@ manipulating genomic intervals and variables defined along a genome.")
 (define-public r-gostats
   (package
     (name "r-gostats")
-    (version "2.58.0")
+    (version "2.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOstats" version))
        (sha256
         (base32
-         "0jjswy6qmfgr2f6vk3y9pdvs9x91gn31h55qllgh0qb2cb26g9wa"))))
+         "1f8wqdl0swnvs59i6ljjcaglfqv314n8zxy4crpx806gbjzpn76z"))))
     (properties `((upstream-name . "GOstats")))
     (build-system r-build-system)
     (propagated-inputs
