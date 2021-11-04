@@ -283,7 +283,9 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
              ;; that is suspected to be the culprit.
              (substitute* "src/library/methods/DESCRIPTION.in"
                (("\\(2008\\)\n") "(2008) ")
-               (("  ``Software") "``Software"))))
+               (("  ``Software") "``Software")
+               (("Data Analysis:.") "Data Analysis:\n")
+               (("Programming with R") "  Programming with R"))))
          (add-before 'build 'set-locales
            (lambda _
              (setlocale LC_ALL "C")
