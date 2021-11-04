@@ -3651,14 +3651,14 @@ specific parser.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.26.1")
+    (version "2.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "0z4cz6lir9gwzy0hxwv03wv36fkkfdb97p9wv4af020k0zkp3ipr"))
+         "1azq0wjjy6n5xc721gjz6afm43ajz15b4p34vgsdjzwg9qn1vrs1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3681,7 +3681,7 @@ specific parser.")
              #t)))))
     (inputs
      `(;; Our default boost package won't work here, unfortunately, even with
-       ;; mzR version 2.26.1.
+       ;; mzR version 2.28.0.
        ("boost" ,boost-for-mysql) ; use this instead of the bundled boost sources
        ("zlib" ,zlib)))
     (propagated-inputs
