@@ -9937,14 +9937,14 @@ matches the flowJo analysis.")
 (define-public r-flowstats
   (package
     (name "r-flowstats")
-    (version "4.4.0")
+    (version "4.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowStats" version))
        (sha256
         (base32
-         "1yr5m7qmhmm52c70z3d0zy4zgf0hja7r2ig9yljv5w86bzm962x6"))))
+         "0jjfq66m4lbpkynwxaparkd05znhp3jl9ccj37gyghly294x3rm9"))))
     (properties `((upstream-name . "flowStats")))
     (build-system r-build-system)
     (propagated-inputs
