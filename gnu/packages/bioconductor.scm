@@ -1055,13 +1055,13 @@ All datasets are restricted to protein coding genes.")
 (define-public r-aneufinder
   (package
     (name "r-aneufinder")
-    (version "1.20.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AneuFinder" version))
               (sha256
                (base32
-                "0m6wphlriq7y21ih1p2kzml5jzcic79jc52kkk59dkjj8j88yllk"))))
+                "0xn8952fkchhx7m8dam6gjy86j551xp1cs67510s1qrmfgzpkjp0"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
