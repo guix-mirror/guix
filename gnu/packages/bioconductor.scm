@@ -11949,14 +11949,14 @@ tools for genome-scale analysis of cancer studies.")
 (define-public r-biocor
   (package
     (name "r-biocor")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BioCor" version))
        (sha256
         (base32
-         "135rga7mwpzy8ypvriqpbmlh9l5yf61s9s1sa9615qfab14jh06b"))))
+         "0ii4g7438lb34ykidkbxw3v3k289k662rgbgayf9gak5avpkb2cq"))))
     (properties `((upstream-name . "BioCor")))
     (build-system r-build-system)
     (propagated-inputs
