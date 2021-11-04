@@ -9782,14 +9782,14 @@ statistics to the plot.")
 (define-public r-flowviz
   (package
     (name "r-flowviz")
-    (version "1.56.0")
+    (version "1.58.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowViz" version))
        (sha256
         (base32
-         "17x04xwyw2pp5zkhgvrmxkb8cbrv9wql6xhjsfpq0n6yd9dxqc1v"))))
+         "039sh7qn25gp2b34khs8dyrdpxyapsjlprrvxlz8f7dl8gmggl04"))))
     (properties `((upstream-name . "flowViz")))
     (build-system r-build-system)
     (propagated-inputs
