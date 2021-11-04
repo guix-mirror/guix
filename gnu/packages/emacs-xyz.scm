@@ -25715,6 +25715,24 @@ advice system without dropping support for Emacs<24.4.")
     (description "This package provides a NTLM handler for the URL package.")
     (license license:gpl3+)))
 
+(define-public emacs-soap-client
+  (package
+    (name "emacs-soap-client")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "soap-client-" version ".tar"))
+       (sha256
+        (base32 "1s0bwnip22nj6kgjadd4zlj9j729hiyyjb66sr51i2mddnf9i95s"))))
+    (build-system emacs-build-system)
+    (home-page "httpa://elpa.gnu.org/packages/soap-client.html")
+    (synopsis "Access SOAP web services")
+    (description
+     "This package provides a SOAP client to access web services.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
         (revision "2"))
