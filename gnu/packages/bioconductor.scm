@@ -14695,14 +14695,14 @@ visualizing bisulfite sequencing data.")
 (define-public r-dmrseq
   (package
     (name "r-dmrseq")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "dmrseq" version))
        (sha256
         (base32
-         "1jbbjifjsnk9261wqmdwkbzj1w52g6vaanpk4w816ri0fap587m4"))))
+         "1d6y6rbvcgprmzqkdzxg5csf0yv845d9vw10pcd1pzyndrama1vd"))))
     (properties `((upstream-name . "dmrseq")))
     (build-system r-build-system)
     (propagated-inputs
