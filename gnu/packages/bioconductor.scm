@@ -2506,14 +2506,14 @@ annotation, distance to TSS, and overlap of peaks or genes.")
 (define-public r-chipseq
   (package
     (name "r-chipseq")
-    (version "1.42.0")
+    (version "1.44.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "chipseq" version))
        (sha256
         (base32
-         "078p9h0zghlhpd6cr54nww1mk7q97imx8yqfayw5m2yq4097ivbi"))))
+         "1jw209bfh1c22mqs9z44qx3pmca9m68rhxp0p9bvbmqsnqwrndi6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
