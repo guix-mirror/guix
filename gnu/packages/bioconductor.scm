@@ -3326,14 +3326,14 @@ microarray data, using nearest neighbor averaging.")
 (define-public r-interactivedisplaybase
   (package
     (name "r-interactivedisplaybase")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "interactiveDisplayBase" version))
        (sha256
         (base32
-         "00rgrrmglslgb6j7whp0m5dlyl4436r647br05rrpv8cxrmbs2iv"))))
+         "1pi887192k1jifb4k3pf2jn5hcl1xmmy6vwl22r9njsprdyb3kab"))))
     (properties
      `((upstream-name . "interactiveDisplayBase")))
     (build-system r-build-system)
