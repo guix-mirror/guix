@@ -2082,14 +2082,14 @@ used by @code{ensembldb}, @code{Organism.dplyr}, and other packages.")
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
-    (version "1.34.1")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationForge" version))
        (sha256
         (base32
-         "0g75b2adak87raw0vn20fjh5980y7svknh8ih1sn4fwryglp4ggg"))))
+         "02wvni5q560idi6677g5f4md73z4qzjl5yycxv5dbvgbl2picisz"))))
     (properties
      `((upstream-name . "AnnotationForge")))
     (build-system r-build-system)
