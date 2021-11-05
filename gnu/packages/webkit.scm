@@ -241,7 +241,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
-     '(#:tests? #f ; no tests
+     `(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
        #:configure-flags (list
                           "-DPORT=GTK"
@@ -299,6 +299,13 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CC" "clang")
              (setenv "CXX" "clang++")
+             ;; XXX Until we switch back to using GCC,
+             ;; work around <https://bugs.gnu.org/51591>.
+             ,@(if (string=? "i686-linux" (%current-system))
+                   '((substitute* "Source/WTF/wtf/CheckedArithmetic.h"
+                       (("#define USE_MUL_OVERFLOW 1")
+                        "#define USE_MUL_OVERFLOW 0")))
+                   '())
              #t))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
