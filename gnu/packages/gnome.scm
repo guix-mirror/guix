@@ -8470,6 +8470,7 @@ usage and information about running processes.")
                (base32
                 "1a9ynlwwkb3wpg293ym517vmrkk63y809mmcv9a21k5yr199x53c"))))
     (build-system meson-build-system)
+    (arguments `(#:meson ,meson-0.59))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
        ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
