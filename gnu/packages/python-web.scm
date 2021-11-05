@@ -3426,10 +3426,11 @@ Betamax that may possibly end up in the main package.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; Some of the 'integration' tests require network access or
-             ;; login credentials.
-             (invoke "nosetests" "--exclude=integration"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some of the 'integration' tests require network access or
+               ;; login credentials.
+               (invoke "nosetests" "--exclude=integration")))))))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-mock" ,python-mock)
