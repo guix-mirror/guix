@@ -1048,7 +1048,7 @@ written entirely in Python.")
 (define-public conan
   (package
     (name "conan")
-    (version "1.40.2")
+    (version "1.42.0")
     (source
      (origin
        (method git-fetch)               ;no tests in PyPI archive
@@ -1058,7 +1058,7 @@ written entirely in Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hp8qs54l4cw043f1kycjwgdr7f388lsyxqcbzfaayr6xg1d3dw0"))))
+         "153npvj81m1c33gfcv2nry7xhyikxnhjns7lvs525f1x20ck6asg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1067,7 +1067,9 @@ written entirely in Python.")
            (lambda _
              (substitute* "conans/requirements.txt"
                (("node-semver==0.6.1")
-                "node-semver>=0.6.1"))))
+                "node-semver>=0.6.1")
+               (("Jinja2>=2.9, <3")
+                "Jinja2>=2.9"))))
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((coreutils (assoc-ref inputs "coreutils")))
@@ -1172,7 +1174,7 @@ written entirely in Python.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("cmake" ,cmake)                 ;requires cmake >= 3.17
+       ("cmake" ,cmake)
        ("git" ,git-minimal)
        ("meson" ,meson)
        ("ninja",ninja)
