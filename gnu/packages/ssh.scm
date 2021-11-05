@@ -63,6 +63,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages security-token)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
@@ -199,6 +200,7 @@ a server that supports the SSH-2 protocol.")
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
    (inputs `(("libedit" ,libedit)
+             ("libfido2" ,libfido2)
              ("openssl" ,openssl)
              ,@(if (hurd-target?)
                  '()
@@ -228,6 +230,9 @@ a server that supports the SSH-2 protocol.")
                           ,,@(if (hurd-target?)
                                '()
                                '("--with-pam"))
+
+                          ;; supports creation and use of ecdsa-sk, ed25519-sk keys
+                          "--with-security-key-builtin"
 
                           ;; "make install" runs "install -s" by default,
                           ;; which doesn't work for cross-compiled binaries
