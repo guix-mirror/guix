@@ -24042,50 +24042,6 @@ memoization.")
 Notation (CSON).")
     (license license:expat)))
 
-(define-public python-asynctest
-  (package
-    (name "python-asynctest")
-    (version "0.13.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "asynctest" version))
-       (sha256
-        (base32
-         "1b3zsy7p84gag6q8ai2ylyrhx213qdk2h2zb6im3xn0m5n264y62"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke "python" "-X" "dev" "-m" "unittest" "-v" "test")))
-         (add-after 'unpack 'disable-tests
-           (lambda* _
-             ;; XXX: 7 tests fail out of 220. Disable them for now.
-             (substitute* (list "test/test_selector.py"
-                                "test/test_mock.py")
-               (("def test_events_watched_outside_test_are_ignored")
-                "@unittest.skip('disabled by guix')
-    def test_events_watched_outside_test_are_ignored")
-               (("def test_awaited_from_autospec_mock.*" line)
-                (string-append line "        return True\n"))
-               (("def test_create_autospec_on_coroutine_and_using_assert_methods.*" line)
-                (string-append line "        return True\n"))
-               (("def test_patch_coroutine_with_multiple_scopes.*" line)
-                (string-append line "        return True\n"))
-               (("def test_multiple_patches_on_coroutine.*" line)
-                (string-append line "        return True\n"))
-               (("def test_patch_coroutine_only_when_running.*" line)
-                (string-append line "        return True\n")))
-             #t)))))
-    (home-page "https://github.com/Martiusweb/asynctest")
-    (synopsis "Extension of unittest for testing asyncio libraries")
-    (description
-     "The package asynctest is built on top of the standard unittest module
-and cuts down boilerplate code when testing libraries for asyncio.")
-    (license license:asl2.0)))
-
 (define-public python-aionotify
   (package
     (name "python-aionotify")
