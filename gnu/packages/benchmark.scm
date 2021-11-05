@@ -65,15 +65,17 @@
      `(#:modules (,@%gnu-build-system-modules
                   (ice-9 textual-ports))
        #:test-target "test"
+       #:configure-flags '("--disable-native") ;don't generate code for the build CPU
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key (configure-flags ''()) outputs #:allow-other-keys)
              ;; The configure script doesn't understand some of the
-             ;; GNU options, so we can't use #:configure-flags.
+             ;; GNU options, so we can't use the stock phase.
              (let ((out (assoc-ref outputs "out")))
-               (invoke "./configure"
-                       (string-append "--prefix=" out)))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      configure-flags))))
          ;; The main `fio` executable is fairly small and self contained.
          ;; Moving the auxiliary scripts to a separate output saves ~100 MiB
          ;; on the closure.
