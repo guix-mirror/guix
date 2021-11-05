@@ -47,7 +47,6 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages storage)
   #:use-module (ice-9 match))
 
 (define-public fio
@@ -93,8 +92,7 @@
                          (find-files oldbin script?))))))))
     (outputs '("out" "utils"))
     (inputs
-     `(("ceph" ,ceph "lib")
-       ("libaio" ,libaio)
+     `(("libaio" ,libaio)
        ("python" ,python)
        ("zlib" ,zlib)))
     (home-page "https://github.com/axboe/fio")
