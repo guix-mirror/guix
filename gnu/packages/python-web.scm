@@ -501,8 +501,8 @@ emit information from within their applications to the AWS X-Ray service.")
 (define-public python-cfn-lint
   (package
     (name "python-cfn-lint")
-    (version "0.54.1")
-    (home-page "https://github.com/aws-cloudformation/cfn-python-lint")
+    (version "0.54.3")
+    (home-page "https://github.com/aws-cloudformation/cfn-lint")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -511,7 +511,7 @@ emit information from within their applications to the AWS X-Ray service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "161mzzlpbi85q43kwzrj39qb32l6wg6xhnbbd4z860yrfbymsn87"))))
+                "106qf19n2k6sdjkb4006aidibd24qqiw901c1613xgjpnyw4dyl6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
