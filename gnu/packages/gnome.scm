@@ -8112,7 +8112,8 @@ Cisco's AnyConnect SSL VPN.")
                 "1gj6lqqi613j2m49v9i82lqg1rv7kwwc8z4nxjcwpaa0ins803f7"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:configure-flags
        '("-Dappindicator=yes")))
     (native-inputs
