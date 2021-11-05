@@ -2701,48 +2701,35 @@ of PyMySQL.  @code{aiomysql} tries to preserve the same API as the
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
-    (version "0.16.21")
+    (version "0.17.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tortoise-orm" version))
        (sha256
-        (base32
-         "1dallk0q8q4v37klm0v3rppf2w8sjkqmypc1w8r9rraqxg1ylacp"))))
+        (base32 "1gzgiypln7lck3p95vk3i8rdx1bjbmmlcpb8xpba8cjdjvlj0l0z"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ; Pypi does not have tests and Git snapshot depends on
-                   ; poetry.
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'relax-version-requirements
-                    (lambda _
-                      (substitute* "setup.py"
-                        (("pypika>=0\\.44\\.0,<0\\.45\\.0") "pypika")
-                        (("aiosqlite>=0.16.0,<0.17.0") "aiosqlite")
-                        (("pytz>=2020\\.4,<2021\\.0") "pytz")
-                        ;; Not required, since ciso8601 is used.
-                        (("'iso8601>=0\\.1\\.13,<0\\.2\\.0',") ""))
-                      #t)))))
-    (native-inputs
-     `(("python-asynctest" ,python-asynctest)
-       ("python-nose2" ,python-nose2)))
+    ;; The test suite relies on asynctest, which is abandoned and doesn't
+    ;; support Python >= 3.8.
+    (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-aiosqlite" ,python-aiosqlite)
-       ("python-pypika" ,python-pypika)
-       ("python-ciso8601" ,python-ciso8601)
-       ("python-pytz" ,python-pytz)
-       ("python-typing-extensions"
-        ,python-typing-extensions)))
-    (home-page
-     "https://github.com/tortoise/tortoise-orm")
-    (synopsis
-     "Easy async ORM for python, built with relations in mind")
-    (description
-     "Tortoise ORM is an easy-to-use asyncio ORM (Object Relational Mapper)
-inspired by Django.  Tortoise ORM was build with relations in mind and
-admiration for the excellent and popular Django ORM.  It’s engraved in its
-design that you are working not with just tables, you work with relational
-data.")
+     (list python-aiomysql
+           python-aiosqlite
+           python-asyncmy
+           python-asyncpg
+           python-ciso8601
+           python-iso8601
+           python-pypika-tortoise
+           python-pytz
+           python-rapidjson
+           python-uvloop))
+    (home-page "https://github.com/tortoise/tortoise-orm")
+    (synopsis "Asynchronous Object Relational Mapper (ORM) for Python")
+    (description "Tortoise ORM is an easy-to-use asyncio ORM (Object
+Relational Mapper) inspired by Django.  Tortoise ORM was built with relations
+in mind and admiration for the excellent and popular Django ORM.  It's
+engraved in its design that you are working not with just tables, you work
+with relational data.")
     (license license:asl2.0)))
 
 (define-public sqlcipher
