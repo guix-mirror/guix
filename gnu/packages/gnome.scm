@@ -7199,7 +7199,8 @@ such as gzip tarballs.")
                (base32
                 "02z0xr6sv9ibl7awbw9j4y05hf4jk1zgvsbbmh7n27hhjvsvc8pl"))))
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
