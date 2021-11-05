@@ -25183,6 +25183,27 @@ Dash docsets.")
 through Dash docsets.")
       (license license:expat))))
 
+(define-public emacs-devdocs
+  (package
+    (name "emacs-devdocs")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/"
+             "devdocs-" version ".tar"))
+       (sha256
+        (base32 "1npc7yra7pvf86ahmz1h7hnjxrz15ar1vjcalg4ilizypycpgrwj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/astoff/devdocs.el")
+    (synopsis "Emacs viewer for DevDocs")
+    (description
+     "This package provides a documentation viewer similar to Emacs's
+built-in Info browser, but geared towards documentation obtained from
+@url{https://devdocs.io}.")
+    (license license:gpl3+)))
+
 (define-public emacs-cascading-dir-locals
   (let ((release "0.1")
         (revision "0")
