@@ -13374,20 +13374,21 @@ text.")
                (substitute* (find-files "tests" "\\.py$")
                  (("#!/bin/bash") (string-append "#!" bash-exec))))))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "-m" "not network" "-k"
-                     (string-append
-                      ;; These tests require Docker.
-                      "not test_terminate_job"
-                      " and not test_invoke_function_from_sqs_exception"
-                      " and not test_rotate_secret_lambda_invocations"
-                      ;; These tests also require the network.
-                      " and not test_put_record_batch_http_destination"
-                      " and not test_put_record_http_destination"
-                      " and not test_dependencies"
-                      " and not test_cancel_running_job"
-                      " and not test_container_overrides")))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "-m" "not network" "-k"
+                       (string-append
+                        ;; These tests require Docker.
+                        "not test_terminate_job"
+                        " and not test_invoke_function_from_sqs_exception"
+                        " and not test_rotate_secret_lambda_invocations"
+                        ;; These tests also require the network.
+                        " and not test_put_record_batch_http_destination"
+                        " and not test_put_record_http_destination"
+                        " and not test_dependencies"
+                        " and not test_cancel_running_job"
+                        " and not test_container_overrides"))))))))
     (native-inputs
      `(("python-flask" ,python-flask)
        ("python-flask-cors" ,python-flask-cors)
