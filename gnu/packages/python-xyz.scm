@@ -13353,34 +13353,41 @@ text.")
 (define-public python-moto
   (package
     (name "python-moto")
-    ;; XXX: Use a pre-release for compatibility with latest botocore & friends.
-    (version "1.3.16.dev134")
+    (version "2.2.12")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "moto" version))
               (sha256
                (base32
-                "1pix0c7zszjwzfy88n1rpih9vkdm25nqcvz93z850xvgwb4v81bd"))))
+                "0pvay0jp119lzzwf5qj5h6311271yq0w2i6344ds20grpf6g6gz8"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-hardcoded-executable-names
-                    (lambda _
-                      (substitute* "moto/batch/models.py"
-                        (("/bin/sh")
-                         (which "sh")))
-                      (substitute* (find-files "tests" "\\.py$")
-                        (("#!/bin/bash")
-                         (string-append "#!" (which "bash"))))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      (setenv "PYTHONPATH" (string-append "./build/lib:"
-                                                          (getenv "PYTHONPATH")))
-                      (invoke "pytest" "-vv" "-m" "not network"
-                              ;; These tests require Docker.
-                              "-k" "not test_terminate_job \
-and not test_invoke_function_from_sqs_exception"))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-hardcoded-executable-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash-exec (string-append
+                               (assoc-ref inputs "bash")
+                               "/bin/sh")))
+               (substitute* "moto/batch/models.py"
+                 (("/bin/sh") bash-exec))
+               (substitute* (find-files "tests" "\\.py$")
+                 (("#!/bin/bash") (string-append "#!" bash-exec))))))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-m" "not network" "-k"
+                     (string-append
+                      ;; These tests require Docker.
+                      "not test_terminate_job"
+                      " and not test_invoke_function_from_sqs_exception"
+                      " and not test_rotate_secret_lambda_invocations"
+                      ;; These tests also require the network.
+                      " and not test_put_record_batch_http_destination"
+                      " and not test_put_record_http_destination"
+                      " and not test_dependencies"
+                      " and not test_cancel_running_job"
+                      " and not test_container_overrides")))))))
     (native-inputs
      `(("python-flask" ,python-flask)
        ("python-flask-cors" ,python-flask-cors)
@@ -13388,6 +13395,8 @@ and not test_invoke_function_from_sqs_exception"))))))
        ("python-parameterized" ,python-parameterized)
        ("python-pytest" ,python-pytest)
        ("python-sure" ,python-sure)))
+    (inputs
+     `(("bash" ,bash-minimal)))
     (propagated-inputs
      `(("python-aws-xray-sdk" ,python-aws-xray-sdk)
        ("python-boto" ,python-boto)
