@@ -2658,6 +2658,25 @@ efficient, clean implementation of PostgreSQL server binary protocol for use
 with Python's asyncio framework.")
     (license license:asl2.0)))
 
+(define-public python-asyncmy
+  (package
+    (name "python-asyncmy")
+    (version "0.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "asyncmy" version))
+        (sha256
+          (base32 "19p81jd4w7m7v2x1jdrwibp67wzqx1a7rdw5n4qqmch3iffp97vn"))))
+    (build-system python-build-system)
+    (native-inputs (list python-cython))
+    (home-page "https://github.com/long2ice/asyncmy")
+    (synopsis "Fast MySQL driver for Python")
+    (description "@code{asyncmy} is a fast @code{asyncio} MySQL driver, which
+reuses most of @code{pymysql} and @code{aiomysql} but rewrites the core
+protocol with Cython for performance.")
+    (license license:asl2.0)))
+
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
