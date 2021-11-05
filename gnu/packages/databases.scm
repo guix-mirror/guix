@@ -2677,6 +2677,27 @@ reuses most of @code{pymysql} and @code{aiomysql} but rewrites the core
 protocol with Cython for performance.")
     (license license:asl2.0)))
 
+(define-public python-aiomysql
+  (package
+    (name "python-aiomysql")
+    (version "0.0.21")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aiomysql" version))
+        (sha256
+          (base32 "0b442d0jb82z3lk19ylmm64ix88ppz7gay08bxld538ivg06j5c1"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))           ;test suite requires docker
+    (propagated-inputs (list python-pymysql))
+    (home-page "https://github.com/aio-libs/aiomysql")
+    (synopsis "MySQL driver for Python")
+    (description "@code{aiomysql} is a driver for accessing a MySQL database
+from the @code{asyncio} Python framework.  It depends on and reuses most parts
+of PyMySQL.  @code{aiomysql} tries to preserve the same API as the
+@code{aiopg} library.")
+    (license license:expat)))
+
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
