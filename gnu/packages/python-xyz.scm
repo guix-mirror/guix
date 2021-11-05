@@ -13731,14 +13731,14 @@ This software is unmaintained, and new projects should use @code{boto3} instead.
   ;; are compatible.
   (package
     (name "python-botocore")
-    (version "1.19.22")
+    (version "1.22.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "botocore" version))
        (sha256
         (base32
-         "0iim86x7c6hqmvd61ygz6x6x9glnsfbnyzv2y67qjdcdx8jpkmw7"))))
+         "1z7g2scyzvfq4yj9b4w911k7802ry1v6lqfnwq12l0ak7ywmsvrh"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing.
@@ -13759,7 +13759,7 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public python-boto3
   (package
     (name "python-boto3")
-    (version "1.16.22")
+    (version "1.19.11")
     (home-page "https://github.com/boto/boto3")
     (source (origin
               (method git-fetch)
@@ -13767,19 +13767,19 @@ interface to the Amazon Web Services (AWS) API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h20hgl4yfl58g75qhb6ibrdmzn47md3srgar7hask14cjmfhfy3"))))
+                "1wv0ci2z5ywvm63dh4mp64vqyyvkm4qxc8dxv8ncrqiiphpgr9aq"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-network-tests
            ;; Deleting integration tests because they are trying to connect to AWS.
-	   (lambda _
-	     (delete-file-recursively "tests/integration")
-	     #t)))))
+           (lambda _
+             (delete-file-recursively "tests/integration"))))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)))
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-botocore" ,python-botocore)
        ("python-jmespath" ,python-jmespath)
