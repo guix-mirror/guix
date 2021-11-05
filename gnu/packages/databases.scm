@@ -2628,6 +2628,36 @@ for many database kinds that tortoise-orm doesn't need, for example.")
 coroutine-specific markup.")
     (license license:asl2.0)))
 
+(define-public python-asyncpg
+  (package
+    (name "python-asyncpg")
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asyncpg" version))
+       (sha256
+        (base32 "1in0q6iffpl8ag6ady4bvwnn40igh10cpp4xgm426j1lqdis0byx"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-typing-extensions))
+    (native-inputs
+     (list postgresql
+           python-cython
+           python-flake8
+           python-pycodestyle
+           python-pytest
+           python-sphinx
+           python-sphinx-rtd-theme
+           python-sphinxcontrib-asyncio
+           python-uvloop))
+    (home-page "https://github.com/MagicStack/asyncpg")
+    (synopsis "Fast PostgreSQL database client library for Python")
+    (description "@code{asyncpg} is a database interface library designed
+specifically for PostgreSQL and Python/asyncio.  @code{asyncpg} is an
+efficient, clean implementation of PostgreSQL server binary protocol for use
+with Python's asyncio framework.")
+    (license license:asl2.0)))
+
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
