@@ -942,8 +942,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
+  %D%/packages/patches/ceph-boost-compat.patch			\
+  %D%/packages/patches/ceph-rocksdb-compat.patch		\
   %D%/packages/patches/cheese-vala-update.patch		        \
-  %D%/packages/patches/ceph-fix-snappy-breaking-change.patch	\
   %D%/packages/patches/chez-scheme-build-util-paths-backport.patch      \
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/cl-asdf-config-directories.patch		\
