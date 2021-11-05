@@ -5690,6 +5690,7 @@ humans, and implementation simplicity.")
                           (("'wmctrl")
                            (string-append "'" wmctrl "/bin/wmctrl")))))))))
     (inputs `(("wmctrl" ,wmctrl)))
+    (propagated-inputs (list python-attrs))
     (home-page "https://github.com/antocuni/wmctrl")
     (synopsis "Tool to programmatically control Xorg windows")
     (description "This package provides a library for programmatically
