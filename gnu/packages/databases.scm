@@ -1359,7 +1359,7 @@ including field and record folding.")))
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "6.11.4")
+    (version "6.25.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1368,35 +1368,37 @@ including field and record folding.")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n19p9cd13jg0lnibrzwkxs4xlrhyj3knypkd2ic41arbds0bdnl"))
+                "14150kd7hk8jjwpm28bf3a0agrhyapbq9lgnl00l385vfb73wnzl"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; TODO: unbundle gtest.
                   (delete-file "build_tools/gnu_parallel")
                   (substitute* "Makefile"
-                    (("build_tools/gnu_parallel") "parallel"))
-                  #t))))
+                    (("build_tools/gnu_parallel") "parallel"))))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc" "V=1"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           ;; Ceph requires that RTTI is enabled.
                           "USE_RTTI=1"
-                          "date=1970-01-01" ; build reproducibly
-                          (string-append "INSTALL_PATH="
-                                         (assoc-ref %outputs "out"))
+                          ;; Don't pass '-march=native' to the compiler.
+                          "PORTABLE=1"
+                          ;; Use a deterministic date stamp.
+                          "build_date=1970-01-01"
 
                           ;; Running the full test suite takes hours and require
                           ;; a lot of disk space.  Instead we only run a subset
-                          ;; (see .travis.yml and Makefile).
-                          "ROCKSDBTESTS_END=db_tailing_iter_test")
+                          ;; that exercises platform-specific functionality.
+                          "ROCKSDBTESTS_PLATFORM_DEPENDENT=only")
        #:test-target "check_some"
        ;; Many tests fail on 32-bit platforms. There are multiple reports about
        ;; this upstream, but it's not going to be supported any time soon.
-       #:tests? (let ((system ,(or (%current-target-system)
-                                   (%current-system))))
-                  (or (string-prefix? "x86_64-linux" system)
-                      (string-prefix? "aarch64-linux" system)))
+       #:tests? ,(if (%current-target-system)
+                     #f
+                     (let ((system (%current-system)))
+                       (or (string-prefix? "x86_64-linux" system)
+                           (string-prefix? "aarch64-linux" system))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-Makefile
@@ -1404,9 +1406,8 @@ including field and record folding.")))
              (substitute* "Makefile"
                ;; Don't depend on the static library when installing.
                (("install: install-static")
-                "install: install-shared")
-               (("#!/bin/sh") (string-append "#!" (which "sh"))))
-             #t))
+                "install:")
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))))
          (delete 'configure)
          ;; The default target is only needed for tests and built on demand.
          (delete 'build)
@@ -1419,33 +1420,31 @@ including field and record folding.")))
              (let ((test-dir (string-append (getcwd) "/../test")))
                (mkdir test-dir)
                (setenv "TEST_TMPDIR" (canonicalize-path test-dir)))))
-         (add-before 'check 'disable-optimizations
-           (lambda _
-             ;; Prevent the build from passing '-march=native' to the compiler.
-             (setenv "PORTABLE" "1")
-             #t))
          (add-before 'check 'disable-failing-tests
            (lambda _
              (substitute* "Makefile"
                ;; These tests reliably fail due to "Too many open files".
                (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
-               (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
-             #t))
-         (add-after 'check 'build
+               (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))))
+         (add-after 'check 'clean
+           (lambda _
+             ;; Otherwise stale objects from the tests would interfere.
+             (invoke "make" "clean")))
+         (add-after 'clean 'build
            ;; The default build target is a debug build for tests. The
            ;; install target depends on the "shared_lib" release target
            ;; so we build it here for clarity.
            (lambda* (#:key (make-flags '()) parallel-build? #:allow-other-keys)
-               (apply invoke "make" "shared_lib"
-                      `(,@(if parallel-build?
-                              `("-j" ,(number->string (parallel-job-count)))
-                              '())
-                        ,@make-flags)))))))
+             (apply invoke "make" "shared_lib"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (native-inputs
      `(("parallel" ,parallel)
        ("perl" ,perl)
        ("procps" ,procps)
-       ("python" ,python-2)
+       ("python" ,python)
        ("which" ,which)))
     (inputs
      `(("bzip2" ,bzip2)
