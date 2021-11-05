@@ -514,23 +514,23 @@ emit information from within their applications to the AWS X-Ray service.")
                 "106qf19n2k6sdjkb4006aidibd24qqiw901c1613xgjpnyw4dyl6"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        ;; Remove test for the documentation update scripts
-                        ;; to avoid a dependency on 'git'.
-                        (delete-file
-                         "test/unit/module/maintenance/test_update_documentation.py")
-                        (delete-file
-                         "test/unit/module/maintenance/test_update_resource_specs.py")
-                        (setenv "PYTHONPATH"
-                                (string-append "./build/lib:"
-                                               (getenv "PYTHONPATH")))
-                        (setenv "PATH" (string-append out "/bin:"
-                                                      (getenv "PATH")))
-                        (invoke "python" "-m" "unittest" "discover" "-v"
-                                "-s" "test")))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (let ((out (assoc-ref outputs "out")))
+                 ;; Remove test for the documentation update scripts
+                 ;; to avoid a dependency on 'git'.
+                 (delete-file
+                  "test/unit/module/maintenance/test_update_documentation.py")
+                 (delete-file
+                  "test/unit/module/maintenance/test_update_resource_specs.py")
+                 (add-installed-pythonpath inputs outputs)
+                 (setenv "PATH" (string-append out "/bin:"
+                                               (getenv "PATH")))
+                 (invoke "python" "-m" "unittest" "discover"
+                         "-s" "test"))))))))
     (native-inputs
      `(("python-pydot" ,python-pydot)
        ("python-mock" ,python-mock)))
