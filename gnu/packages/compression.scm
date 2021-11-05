@@ -1223,11 +1223,12 @@ well as bzip2.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-third_party-subprojects
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (with-directory-excursion "third_party"
                (for-each (lambda (subproject)
                            (let* ((input (string-append subproject "-source"))
-                                  (source (assoc-ref inputs input)))
+                                  (source (assoc-ref (or native-inputs inputs)
+                                                     input)))
                              (with-directory-excursion subproject
                                ;; Take advantage of the coincidence that both
                                ;; use GIT-FETCH, which creates a directory.
