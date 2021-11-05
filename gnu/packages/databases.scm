@@ -2609,6 +2609,25 @@ streamlined for its use in the context of tortoise-orm.  It removes support
 for many database kinds that tortoise-orm doesn't need, for example.")
     (license license:asl2.0)))
 
+(define-public python-sphinxcontrib-asyncio
+  (package
+    (name "python-sphinxcontrib-asyncio")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "sphinxcontrib-asyncio" version))
+        (sha256
+          (base32 "0bkj010ygsr7m769llf2aq4bbjfhdwqrrabi98j8gpvyzvh2dzcr"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no test suite
+    (propagated-inputs (list python-sphinx))
+    (home-page "https://github.com/aio-libs/sphinxcontrib-asyncio")
+    (synopsis "Sphinx extension to support coroutines in markup")
+    (description "This package is a Sphinx extension providing additional
+coroutine-specific markup.")
+    (license license:asl2.0)))
+
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
