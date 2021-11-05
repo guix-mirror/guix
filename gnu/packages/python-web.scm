@@ -3414,32 +3414,22 @@ Betamax that may possibly end up in the main package.")
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.3.3")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "1nzp5kwmy9669334shcz9ipg89jgpdqhrmbkgdg18r7wmvi3f6lj"))))
+                "0k6sc956yrrv9b4laa0r79jhxajpyxr21jcd1ka8m1n53lz85vah"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch
-           (lambda _
-             ;; There's a small issue with one test with Python 3.8, this
-             ;; change has been suggested upstream:
-             ;; https://github.com/boto/s3transfer/pull/164
-             (substitute* "tests/unit/test_s3transfer.py"
-               (("super\\(FailedDownloadParts, self\\)\\.submit\\(function\\)")
-                "futures.Future()"))
-             #t))
          (replace 'check
            (lambda _
              ;; Some of the 'integration' tests require network access or
              ;; login credentials.
-             (invoke "nosetests" "--exclude=integration")
-             #t)))))
+             (invoke "nosetests" "--exclude=integration"))))))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-mock" ,python-mock)
