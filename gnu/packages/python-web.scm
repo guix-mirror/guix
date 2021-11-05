@@ -399,13 +399,13 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
 (define-public python-aws-sam-translator
   (package
     (name "python-aws-sam-translator")
-    (version "1.38.0")
+    (version "1.40.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "aws-sam-translator" version))
               (sha256
                (base32
-                "1djwlsjpbh13m4biglimrm9lq7hmla0k29giay7k3cjsrylxvjhf"))))
+                "1hq5ggbzcq4k3ks439hki493w4sasgaxns6j5x57xsj822acalmf"))))
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are not distributed with the PyPI archive, and would
@@ -418,13 +418,12 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
                       ;; of dependencies, when it works fine with others.
                       (substitute* "requirements/base.txt"
                         (("(.*)(~=[0-9\\.]+)" all package version)
-                         package))
-                      #t)))))
+                         package)))))))
     (propagated-inputs
      `(("python-boto3" ,python-boto3)
        ("python-jsonschema" ,python-jsonschema)
        ("python-six" ,python-six)))
-    (home-page "https://github.com/awslabs/serverless-application-model")
+    (home-page "https://github.com/aws/serverless-application-model")
     (synopsis "Transform AWS SAM templates into AWS CloudFormation templates")
     (description
      "AWS SAM Translator is a library that transform @dfn{Serverless Application
