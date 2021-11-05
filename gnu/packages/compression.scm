@@ -33,6 +33,7 @@
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Ahmad Jarara <git@ajarara.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2742,3 +2743,36 @@ resulting multimember tar.lz archive is fully backward compatible with standard
 tar tools like GNU tar, which treat it like any other tar.lz archive.  Tarlz
 can append files to the end of such compressed archives.")
     (license license:gpl2+)))
+
+(define-public libcbor
+  (package
+    (name "libcbor")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PJK/libcbor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "01dv4vxcmbvpphqy16vqiwh25wx11x630js5wfnx7cryarsh9ld7"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (lib (string-append out "/lib")))
+         (list
+          "-DCMAKE_BUILD_TYPE=Release"
+          "-DBUILD_SHARED_LIBS=ON"
+          "-DCBOR_CUSTOM_ALLOC=ON"
+          (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
+          (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))
+    (synopsis "The C library for parsing and generating CBOR")
+    (description
+     "The Concise Binary Object Representation (CBOR) is a data format whose
+design goals include the possibility of extremely small code size, fairly
+small message size, and extensibility without the need for version
+negotiation.  These design goals make it different from earlier binary
+serializations such as ASN.1 and MessagePack.")
+    (license license:expat)
+    (home-page "https://github.com/PJK/libcbor")))
