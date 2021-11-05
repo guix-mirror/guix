@@ -16298,7 +16298,7 @@ support.")
 (define-public python-pymodbus
   (package
     (name "python-pymodbus")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
        (method git-fetch)
@@ -16308,24 +16308,28 @@ support.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "009blvzi56434f0qfjdg3r8q1flb1jcx2786wi0i0xf81025z9cf"))))
+         "0kjjrx7xrlx0pf3y67hhr4xvqrly3xzmvf6ic5as61m6z19m7zd5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'disable-problematic-tests
                     (lambda _
-                      ;; The following test module rely on Python's own 'test'
-                      ;; module, which is not distributed in the Python
+                      ;; The following test modules rely on Python's own
+                      ;; 'test' module, which is not distributed in the Python
                       ;; package of Guix.
                       (delete-file "test/test_client_async_asyncio.py")
-                      (delete-file "test/test_client_sync_diag.py")))
+                      (delete-file "test/test_client_sync_diag.py")
+                      ;; The following test module requires the asynctest
+                      ;; library, abandoned without support for Python 3.9+
+                      ;; (see:
+                      ;; https://github.com/riptideio/pymodbus/issues/681).
+                      (delete-file "test/test_server_asyncio.py")))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
                         (invoke "python" "-m" "pytest")))))))
     (native-inputs
-     `(("python-asynctest" ,python-asynctest)
-       ("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-redis" ,python-redis)
        ("python-sqlalchemy" ,python-sqlalchemy)
