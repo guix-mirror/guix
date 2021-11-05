@@ -26,7 +26,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages markup)
-  #:use-module (guix licenses)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -71,7 +70,7 @@
     (description "Hoedown is a standards compliant, fast, secure markdown
 processing library written in C.")
     (home-page "https://github.com/hoedown/hoedown")
-    (license expat)))
+    (license license:expat)))
 
 (define-public markdown
   (package
@@ -115,8 +114,8 @@ processing library written in C.")
      "Markdown is a text-to-HTML conversion tool for web writers.  It allows
 you to write using an easy-to-read, easy-to-write plain text format, then
 convert it to structurally valid XHTML (or HTML).")
-    (license (non-copyleft "file://License.text"
-                           "See License.text in the distribution."))))
+    (license (license:non-copyleft "file://License.text"
+                                   "See License.text in the distribution."))))
 
 (define-public lowdown
   (package
@@ -192,7 +191,7 @@ roff documents in the ms and man formats, LaTeX, gemini, and terminal output.")
      "Discount is a markdown implementation, written in C.  It provides a
 @command{markdown} command, and a library.")
     (home-page "https://www.pell.portland.or.us/~orc/Code/discount/")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public perl-text-markdown-discount
   (package
@@ -237,7 +236,7 @@ implementation.
   use Text::Markdown::Discount;
   my $html = markdown($text)
 @end example")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public cmark
   (package
@@ -277,7 +276,7 @@ for parsing and rendering CommonMark.")
     ;; cmark is distributed with a BSD-2 license, but some components are Expat
     ;; licensed. The CommonMark specification is Creative Commons CC-BY-SA 4.0
     ;; licensed. See 'COPYING' in the source distribution for more information.
-    (license (list bsd-2 expat cc-by-sa4.0))))
+    (license (list license:bsd-2 license:expat license:cc-by-sa4.0))))
 
 (define-public smu
   (package
@@ -313,7 +312,7 @@ amount of indents it scales just great.
 Smu was started as a rewrite of Markdown but became something more
 lightweight and consistent.  The biggest difference between Markdown
 and smu is that smu doesn't support reference style links.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public md4c
   (package
@@ -335,7 +334,7 @@ and smu is that smu doesn't support reference style links.")
     (description "MD4C is a C Markdown parser with a
 SAX-like interface.  It is compliant to the CommonMark specification,
 with a few extensions.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python-mistletoe
   (package
@@ -357,4 +356,4 @@ parser that supports definitions of custom tokens.
 Parsing Markdown into an abstract syntax tree also allows @code{mistletoe} to
 swap out renderers for different output formats, without touching any of the
 core components.")
-    (license expat)))
+    (license license:expat)))
