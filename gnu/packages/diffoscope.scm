@@ -73,7 +73,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "189")
+    (version "190")
     (source
      (origin
        (method git-fetch)
@@ -82,7 +82,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dai9gwsr9xnficjy8myq6xr301y4iy82aidm936qsqjwrp8q1sm"))
+        (base32 "10q93qybwqf2nzj3iakw1pxhccq10ixm9fn7xgdr4p88qb0wchb5"))
        (patches
         (search-patches "diffoscope-fix-llvm-test.patch"))))
     (build-system python-build-system)
@@ -109,13 +109,6 @@
                          (string-append "['" (which "stat") "',"))
                         (("\\['getfacl',")
                          (string-append "['" (which "getfacl") "',")))))
-                  (add-after 'unpack 'skip-python-tests
-                    (lambda _
-                      ;; Python tests appear to assume python 3.9, remove
-                      ;; phase when python is upgraded
-                      (substitute* "tests/comparators/test_python.py"
-                        (("def test_identification")
-                         "def skip_test_identification"))))
                   (add-after 'build 'build-man-page
                     (lambda* (#:key (make-flags '()) #:allow-other-keys)
                       (apply invoke "make" "-C" "doc" make-flags)))
