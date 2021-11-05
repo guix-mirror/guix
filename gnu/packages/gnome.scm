@@ -5419,7 +5419,7 @@ permission from user.")
      ;; geocode-glib-1.0.pc refers to GIO.
      `(("glib" ,glib)))
     (inputs
-     `(("libsoup" ,libsoup)))
+     `(("libsoup" ,libsoup-minimal-2)))
     (home-page "https://github.com/GNOME/geocode-glib/")
     (synopsis "Geocoding and reverse-geocoding library")
     (description
