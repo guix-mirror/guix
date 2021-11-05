@@ -2591,6 +2591,24 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public python2-peewee
   (package-with-python2 python-peewee))
 
+(define-public python-pypika-tortoise
+  (package
+    (name "python-pypika-tortoise")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypika-tortoise" version))
+       (sha256
+        (base32 "0g4z0lz739nk04b405ynqpd3y1z5nfyxjz9hqgxcw3jydsjx0cb8"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tortoise/pypika-tortoise")
+    (synopsis "Pypika fork for tortoise-orm")
+    (description "Pypika-tortoise is a fork of pypika which has been
+streamlined for its use in the context of tortoise-orm.  It removes support
+for many database kinds that tortoise-orm doesn't need, for example.")
+    (license license:asl2.0)))
+
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
