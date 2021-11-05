@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;; Copyright © 2021 Sergey Trofimov <sarg@sarg.org.ru>
 ;;; Copyright © 2021 Dhruvin Gandhi <contact@dhruvin.dev>
+;;; Copyright © 2021 Ahmad Jarara <git@ajarara.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -783,3 +785,36 @@ used for online authentication with electronic German ID cards and residence
 titles.  To use this app, a supported RFID card reader or NFC-enabled smart
 phone is required.")
     (license license:eupl1.2)))
+
+(define-public libfido2
+  (package
+    (name "libfido2")
+    (version "1.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://github.com/Yubico/libfido2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "12zy4cnlcffcb64lsx8198y09j1dwi0bcn9rr82q6i1k950yzd3p"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("udev" ,eudev)
+       ("libcbor" ,libcbor)
+       ("openssl" ,openssl)))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; regress tests enabled only for debug builds
+         (delete 'check))))
+    (synopsis "Library functionality and command-line tools for FIDO devices")
+    (description "libfido2 provides library functionality and command-line
+tools to communicate with a FIDO device over USB, and to verify attestation
+and assertion signatures.
+
+libfido2 supports the FIDO U2F (CTAP 1) and FIDO 2.0 (CTAP 2) protocols.")
+    (license license:bsd-2)
+    (home-page "https://github.com/Yubico/libfido2")))
