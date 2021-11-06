@@ -328,7 +328,8 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
         (uri (pypi-uri "python-poppler-qt5" version))
         (sha256
          (base32
-          "0b82gm4i75q5v19kfbq0h4y0b2vcwr2213zkhxh6l0h45kdndmxd"))))
+          "0b82gm4i75q5v19kfbq0h4y0b2vcwr2213zkhxh6l0h45kdndmxd"))
+       (patches (search-patches "python-poppler-qt5-fix-build.patch"))))
     (build-system python-build-system)
     (arguments
      `(;; There are no tests.  The check phase just causes a rebuild.
