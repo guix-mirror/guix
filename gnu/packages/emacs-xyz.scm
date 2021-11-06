@@ -281,7 +281,7 @@ e.g. emacs-geiser-guile for Guile.")
 (define-public emacs-geiser-guile
   (package
     (name "emacs-geiser-guile")
-    (version "0.17")
+    (version "0.18")
     (source
      (origin
        (method git-fetch)
@@ -290,7 +290,7 @@ e.g. emacs-geiser-guile for Guile.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0iw23nlgqppf6f00ly50m8lq85n9mv244pw3whxv0hynfjxr2ic0"))))
+        (base32 "0gndf0w8dbv54bzc04svp2ck8wypa7i3b8kpixf6rkg91l79xpci"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^src/" %default-include)
@@ -305,8 +305,7 @@ e.g. emacs-geiser-guile for Guile.")
                ;; loaded, so let's defer that until it is.
                (("\\(geiser-activate-implementation .*\\)" all)
                 (string-append
-                 "(eval-after-load 'geiser-impl '" all ")")))
-             #t)))))
+                 "(eval-after-load 'geiser-impl '" all ")"))))))))
     (inputs
      `(("guile" ,guile-2.2)))
     (propagated-inputs
