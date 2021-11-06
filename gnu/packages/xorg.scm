@@ -5396,63 +5396,63 @@ by the Xorg server.")
     (name "xorg-server")
     (version "21.1.0")
     (source
-      (origin
-        (method url-fetch)
+     (origin
+       (method url-fetch)
 
-        (uri (string-append "https://xorg.freedesktop.org/archive/individual"
-                            "/xserver/xorg-server-" version ".tar.xz"))
-        (sha256
-         (base32
-          "0hpyq51sf7f5yqq87zgcdiidfmb8r93am1djvxhcnwj4izfidhsh"))
-        (patches
-         (list
-          ;; See:
-          ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
-          ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
-                  "/plain/06_use-intel-only-on-pre-gen4.diff"))
-            (sha256
-             (base32
-              "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
+       (uri (string-append "https://xorg.freedesktop.org/archive/individual"
+                           "/xserver/xorg-server-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hpyq51sf7f5yqq87zgcdiidfmb8r93am1djvxhcnwj4izfidhsh"))
+       (patches
+        (list
+         ;; See:
+         ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
+         ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
+                 "/plain/06_use-intel-only-on-pre-gen4.diff"))
+           (sha256
+            (base32
+             "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
+           (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; The following libraries are required by xorg-server.pc.
      `(("libpciaccess" ,libpciaccess)
-        ("libxcvt" ,libxcvt)
-        ("mesa" ,mesa)
-        ("pixman" ,pixman)
-        ("xorgproto" ,xorgproto)))
+       ("libxcvt" ,libxcvt)
+       ("mesa" ,mesa)
+       ("pixman" ,pixman)
+       ("xorgproto" ,xorgproto)))
     (inputs
-      `(("udev" ,eudev)
-        ("dbus" ,dbus)
-        ("libdmx" ,libdmx)
-        ("libepoxy" ,libepoxy)
-        ("libgcrypt" ,libgcrypt)
-        ("libxau" ,libxau)
-        ("libxaw" ,libxaw)
-        ("libxdmcp" ,libxdmcp)
-        ("libxfixes" ,libxfixes)
-        ("libxfont2" ,libxfont2)
-        ("libxkbfile" ,libxkbfile)
-        ("libxrender" ,libxrender)
-        ("libxres" ,libxres)
-        ("libxshmfence" ,libxshmfence)
-        ("libxt" ,libxt)
-        ("libxv" ,libxv)
-        ("xkbcomp" ,xkbcomp)
-        ("xkeyboard-config" ,xkeyboard-config)
-        ("xtrans" ,xtrans)
-        ("zlib" ,zlib)
-        ;; Inputs for Xephyr
-        ("xcb-util" ,xcb-util)
-        ("xcb-util-image" ,xcb-util-image)
-        ("xcb-util-keysyms" ,xcb-util-keysyms)
-        ("xcb-util-renderutil" ,xcb-util-renderutil)
-        ("xcb-util-wm" ,xcb-util-wm)))
+     `(("udev" ,eudev)
+       ("dbus" ,dbus)
+       ("libdmx" ,libdmx)
+       ("libepoxy" ,libepoxy)
+       ("libgcrypt" ,libgcrypt)
+       ("libxau" ,libxau)
+       ("libxaw" ,libxaw)
+       ("libxdmcp" ,libxdmcp)
+       ("libxfixes" ,libxfixes)
+       ("libxfont2" ,libxfont2)
+       ("libxkbfile" ,libxkbfile)
+       ("libxrender" ,libxrender)
+       ("libxres" ,libxres)
+       ("libxshmfence" ,libxshmfence)
+       ("libxt" ,libxt)
+       ("libxv" ,libxv)
+       ("xkbcomp" ,xkbcomp)
+       ("xkeyboard-config" ,xkeyboard-config)
+       ("xtrans" ,xtrans)
+       ("zlib" ,zlib)
+       ;; Inputs for Xephyr
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-renderutil" ,xcb-util-renderutil)
+       ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
      `(("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
@@ -5464,7 +5464,7 @@ by the Xorg server.")
                             "/share/X11/xkb")
              (string-append "--with-xkb-output="
                             "/tmp") ; FIXME: This is a bit doubtful; where should
-                                    ; the compiled keyboard maps go?
+                                        ; the compiled keyboard maps go?
              (string-append "--with-xkb-bin-directory="
                             (assoc-ref %build-inputs "xkbcomp")
                             "/bin")
@@ -5483,7 +5483,6 @@ by the Xorg server.")
              ;; For sddm.
              "--enable-kdrive"
              "--enable-xephyr")
-
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
@@ -5502,9 +5501,7 @@ by the Xorg server.")
                (("^BUILD_DATE=.*$")
                 "BUILD_DATE=19700101\n")
                (("^BUILD_TIME=.*$")
-                "BUILD_TIME=000001\n"))
-
-             #t)))))
+                "BUILD_TIME=000001\n")))))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description
