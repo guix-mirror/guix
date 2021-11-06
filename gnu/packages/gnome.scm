@@ -5542,7 +5542,7 @@ service via the system message bus.")
      `(("gtk+" ,gtk+)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("libxml2" ,libxml2)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("geocode-glib" ,geocode-glib)))
     (inputs
      `(("tzdata" ,tzdata)))
