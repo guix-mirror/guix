@@ -4324,7 +4324,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.6.1")
+    (version "7.1")
     (source
      (origin
        (method url-fetch)
@@ -4332,10 +4332,10 @@ engine.  When you start it you will be prompted to download a graphics set.")
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0jgy8xv7r72m127qn09vr3rxhnbakl2990f7lldsk0d5d8n993vd"))))
+         "0nhzlk6s73qvznm5fdwcs1b42g2plf26s5ag39fvck45zm7m48jk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "INSTALL_DIR="
                                          (assoc-ref %outputs "out")
                                          "/share/games/openttd/baseset/opengfx"))
@@ -4363,7 +4363,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                      ("grfcodec" ,grfcodec)
                      ("nml" ,nml)
                      ("which" ,which)
-                     ("python" ,python-2)))
+                     ("python" ,python)))
     (home-page "http://dev.openttdcoop.org/projects/opengfx")
     (synopsis "Base graphics set for OpenTTD")
     (description
