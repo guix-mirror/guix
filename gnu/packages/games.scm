@@ -4287,14 +4287,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.11.2")
+    (version "12.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "0v9f93lsdcv3ia28y8iihx9nj9zp6fpf5hkdrpl4ypw159d97fhg"))))
+               "1p1j5cf4ry57dcgm7qx2g2s00z1c6qgjabb4kqjp00yz00wgv85v"))))
     (build-system cmake-build-system)
     (inputs
      `(("allegro" ,allegro)
