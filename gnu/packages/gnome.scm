@@ -3246,7 +3246,8 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                         "glade-test-widget-null-icon.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:meson ,meson-0.59
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
