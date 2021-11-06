@@ -308,7 +308,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
              (setenv "CXX" "clang++")
              ;; XXX Until we switch back to using GCC,
              ;; work around <https://bugs.gnu.org/51591>.
-             ,@(if (string=? "i686-linux" (%current-system))
+             ,@(if (target-x86-32?)
                    '((substitute* "Source/WTF/wtf/CheckedArithmetic.h"
                        (("#define USE_MUL_OVERFLOW 1")
                         "#define USE_MUL_OVERFLOW 0")))
