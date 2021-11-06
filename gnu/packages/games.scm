@@ -4383,7 +4383,7 @@ OpenGFX provides you with...
 (define openttd-opensfx
   (package
     (name "openttd-opensfx")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -4392,11 +4392,11 @@ OpenGFX provides you with...
              version "/opensfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "06vycppqcxbfdqlxzna5xr303zgcmpcvj6ylw5b2ws0ssph2f1s0"))))
+         "0aym026lg0r7dp3jxxs9c0rj8lwy1fz3v9hmk3mml6sycsg3fv42"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("catcodec" ,catcodec)
-       ("python" ,python-2)
+       ("python" ,python)
        ("tar" ,tar)))
     (arguments
      `(#:make-flags
