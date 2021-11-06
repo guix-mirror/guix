@@ -4497,6 +4497,7 @@ Transport Tycoon Deluxe.")
      `(("opengfx" ,openttd-opengfx)
        ("openmsx" ,openttd-openmsx)
        ("opensfx" ,openttd-opensfx)
+       ("gcc" ,gcc-9)                   ; for #include <charconv>
        ,@(package-native-inputs openttd-engine)))))
 
 (define openrct2-title-sequences
