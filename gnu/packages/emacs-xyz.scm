@@ -17755,6 +17755,42 @@ and publications from various sources, by keywords or by DOI.  References are
 automatically fetched from well-curated sources, and formatted as BibTeX.")
     (license license:gpl3+)))
 
+(define-public emacs-citar
+  (package
+    (name "emacs-citar")
+    (version "0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bdarcus/citar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jrfcfr976c9nb2vpfrh6yhck5gm34wcjzbk0m6gq2xg3qfv2g6p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-auctex" ,emacs-auctex)
+       ("emacs-helm-bibtex" ,emacs-helm-bibtex)
+       ("emacs-org" ,emacs-org)
+       ("emacs-parsebib" ,emacs-parsebib)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/bdarcus/citar")
+    (synopsis "Emacs package to quickly find and act on bibliographic entries")
+    (description
+     "This package provides a completing-read front-end to browse and
+act on BibTeX, BibLaTeX, and CSL JSON bibliographic data, and LaTeX,
+markdown, and Org cite editing support.
+
+When used with Vertico (or Selectrum), Embark, and Marginalia, it
+provides similar functionality to helm-bibtex and ivy-bibtex: quick
+filtering and selecting of bibliographic entries from the minibuffer,
+and the option to run different commands against them.
+
+With Embark, it also makes available at-point actions in Org
+citations.")
+    (license license:gpl3+)))
+
 (define-public emacs-helm-bibtex
   (let ((commit "d4471232be26793fbf56c0ac3690b5f537c378b9")
         (revision "2"))
