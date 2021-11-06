@@ -1225,7 +1225,7 @@ OpenStreetMap data.")
 (define-public osm2pgsql
   (package
     (name "osm2pgsql")
-    (version "1.2.2")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1234,7 +1234,7 @@ OpenStreetMap data.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j35aa8qinhavliqi5pdm0viyi7lm5xyk402rliaxxs1r2hbsafn"))
+        (base32 "0i18mskcs087dn3f3h9n7j0wafn8502m0h13mrjwin38xsz0crfj"))
        (modules '((guix build utils)))
        (snippet
         '(begin
