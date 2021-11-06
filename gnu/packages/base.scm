@@ -180,6 +180,7 @@ implementation offers several extensions over the standard utility.")
   (package
    (name "tar")
    (version "1.32")
+   (replacement tar-1.34)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
@@ -233,6 +234,21 @@ creation/modification dates.  GNU tar offers many extensions over the
 standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/tar/")))
+
+(define-public tar-1.34  ; fixes CVE-2021-20193
+  (package
+    (inherit tar)
+    (version "1.34")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/tar/tar-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0a0x87anh9chbi2cgcyy7pmnm5hzk4yd1w2j8gm1wplwhwkbvgk3"))
+              (patches
+               (search-patches "tar-skip-unreliable-tests.patch"
+                               "tar-remove-wholesparse-check.patch"))))))
 
 (define-public patch
   (package
