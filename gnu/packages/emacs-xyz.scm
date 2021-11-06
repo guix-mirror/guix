@@ -666,7 +666,8 @@ some utility functions, and commands using that infrastructure.")
     (synopsis "Emacs major modes for Git configuration files")
     (description
      "This package provides Emacs major modes for editing various Git
-configuration files, such as .gitattributes, .gitignore, and .git/config.")
+configuration files, such as @file{.gitattributes}, @file{.gitignore}, and
+@file{.git/config}.")
     (license license:gpl3+)))
 
 (define-public emacs-with-editor
