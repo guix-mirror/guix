@@ -337,9 +337,10 @@ the package named PACKAGE-NAME."
 type '<elpa-package>'."
 
   (define melpa-recipe
-    (if (eq? repo 'melpa)
-        (package-name->melpa-recipe (elpa-package-name pkg))
-        #f))
+    ;; XXX: Call 'identity' to work around a Guile 3.0.[5-7] compiler bug:
+    ;; <https://bugs.gnu.org/48368>.
+    (and (eq? (identity repo) 'melpa)
+         (package-name->melpa-recipe (elpa-package-name pkg))))
 
   (define name (elpa-package-name pkg))
 
