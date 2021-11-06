@@ -4429,6 +4429,7 @@ parts of it.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
              "MAKE_NB_JOBS=0"           ;use jobserver for submakes
+             "NO_STATIC=1"              ;avoid a 67 MiB static archive
 
              ;; This is the maximum number of threads OpenBLAS will ever use (that
              ;; is, if $OPENBLAS_NUM_THREADS is greater than that, then NUM_THREADS
