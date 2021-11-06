@@ -4444,13 +4444,13 @@ parts of it.")
              ,@(let ((system (or (%current-target-system) (%current-system))))
                  (cond
                   ((or (string-prefix? "x86_64" system)
-                       (string-prefix? "i686" system))
-                   '("DYNAMIC_ARCH=1"))
-                  ;; On some of these architectures the CPU can't be detected.
-                  ((or (string-prefix? "powerpc64le" system)
+                       (string-prefix? "i686" system)
+                       (string-prefix? "powerpc64le" system)
                        (string-prefix? "aarch64" system))
-                   '("DYNAMIC_ARCH=1"
-                     "TARGET=GENERIC"))
+                   ;; Dynamic older enables a few extra CPU architectures that
+                   ;; were released before 2010.
+                   '("DYNAMIC_ARCH=1" "DYNAMIC_OLDER=1" "TARGET=GENERIC"))
+                  ;; On some of these architectures the CPU can't be detected.
                   ;; On MIPS we force the "SICORTEX" TARGET, as for the other
                   ;; two available MIPS targets special extended instructions
                   ;; for Loongson cores are used.
