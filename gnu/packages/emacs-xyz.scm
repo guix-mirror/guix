@@ -17792,12 +17792,11 @@ citations.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-bibtex
-  (let ((commit "d4471232be26793fbf56c0ac3690b5f537c378b9")
-        (revision "2"))
+  (let ((commit "aa775340ba691d2322948bfdc6a88158568a1399")
+        (revision "3"))
     (package
       (name "emacs-helm-bibtex")
-      (version (string-append "2.0.0" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "2.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17806,8 +17805,7 @@ citations.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1bkzhic6qckb267025il1r3xcpz99kisphxiafni1pxvf9jafr0j"))))
+          (base32 "1d3mc17ga09m41i06khghlvixr6gsiacifnhdbrfnp0w5592aprk"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
