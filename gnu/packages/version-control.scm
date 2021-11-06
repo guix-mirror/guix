@@ -2049,6 +2049,14 @@ projects, from individuals to large-scale enterprise operations.")
                "1if5pa4iip2p70gljm54nggfdnsfjxa4cqz8fpj07lvsijary39s"))
              (patches (search-patches "rcs-5.10.0-no-stdin.patch"))))
     (build-system gnu-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-after 'install 'install-rcsfreeze
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (chmod "src/rcsfreeze" #o755)
+                       (install-file
+                         "src/rcsfreeze"
+                         (string-append (assoc-ref outputs "out") "/bin")))))))
     (native-inputs `(("ed" ,ed)))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
