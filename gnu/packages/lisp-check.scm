@@ -298,8 +298,8 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
   (sbcl-package->ecl-package sbcl-eos))
 
 (define-public sbcl-fiasco
-  (let ((commit "d62f7558b21addc89f87e306f65d7f760632655f")
-        (revision "1"))
+  (let ((commit "bb47d2fef4eb24cc16badc1c9a73d73c3a7e18f5")
+        (revision "2"))
     (package
       (name "sbcl-fiasco")
       (version (git-version "0.0.1" revision commit))
@@ -312,7 +312,7 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
          (file-name (git-file-name "fiasco" version))
          (sha256
           (base32
-           "1zwxs3d6iswayavcmb49z2892xhym7n556d8dnmvalc32pm9bkjh"))))
+           "1k8i2kq57201bvy3zfpsxld530hd104dgbglxigqb6i408c1a7aw"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
