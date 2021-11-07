@@ -4433,7 +4433,7 @@ the original Transport Tycoon Deluxe.")
 (define openttd-openmsx
   (package
     (name "openttd-openmsx")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
@@ -4442,11 +4442,13 @@ the original Transport Tycoon Deluxe.")
              version "/openmsx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0prjljsdgdxqdhhcriqskqha004ybs575xcjq80zha3pqnmrdk0k"))))
+         "0h583d8fxy78kc3jvpp78r76a48qhxrhm4q7jbnj74aw0kwrcl8g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("grfcodec" ,grfcodec)
-       ("python" ,python-2)
+       ; Scripts are Python3 compatible, but call the interpreter as
+       ; python instead of python3.
+       ("python" ,python-wrapper)
        ("tar" ,tar)))
     (arguments
      `(#:make-flags
