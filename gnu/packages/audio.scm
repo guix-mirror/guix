@@ -3314,7 +3314,7 @@ Suil currently supports every combination of Gtk, Qt, and X11.")
 (define-public libebur128
   (package
     (name "libebur128")
-    (version "1.2.4")
+    (version "1.2.6")
     (source
      (origin
        (method git-fetch)
@@ -3323,7 +3323,7 @@ Suil currently supports every combination of Gtk, Qt, and X11.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n81rnm8dm1zmibkr2v3q79rsd609y0dbbsrbay18njcjva88p0g"))))
+        (base32 "0xkpz5rzz1j1srhprbh89669gw8z5f1njpvcnxqgf7qax69vd8sh"))))
     (build-system cmake-build-system)
     (arguments
      `(;; Tests require proprietary .wav files. See
