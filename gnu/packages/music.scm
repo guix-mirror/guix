@@ -6093,13 +6093,10 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
              "LIBZITACONVOLVER=-lzita-convolver"
              (string-append "FONTFILE="
                             (assoc-ref %build-inputs "font-dejavu")
-                            "/share/fonts/truetype/DejaVuSans-Bold.ttf"))
+                            "/share/fonts/truetype/DejaVuSans-Bold.ttf")
+             (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'set-CC-variable
-           (lambda _
-             (setenv "CC" "gcc")
-             #t))
          (delete 'configure))))
     (inputs
      `(("cairo" ,cairo)
