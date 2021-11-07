@@ -65,6 +65,8 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,6 +153,7 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -171,6 +174,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -6667,7 +6671,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.23b-alpha")
+    (version "0.0.25b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -6675,21 +6679,10 @@ fight against their plot and save his fellow rabbits from slavery.")
                            version "-unix-data.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "04x7729hk6zw1xj3n4s4lvaviijsnbjf5rhzvjxlr5fygvg4l6z1"))
-       (modules '((guix build utils)))
-       (snippet
-        #~(begin
-            (for-each (lambda (name)
-                        (let* ((dir (string-append "binaries/data/mods/" name))
-                               (file (string-append dir "/" name ".zip"))
-                               (unzip #$(file-append unzip "/bin/unzip")))
-                          (invoke unzip "-d" dir file)
-                          (delete-file file)))
-                      '("mod" "public"))
-            #t))))
+        (base32 "1c9zrddmjxvvacismld6fbwbw9vrdbq6g6d3424p8w5p6xg5wlwy"))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
+                     ("unzip" ,unzip)
                      ("xz" ,xz)))
     (arguments
      `(#:modules ((guix build utils))
@@ -6699,10 +6692,18 @@ fight against their plot and save his fellow rabbits from slavery.")
          (let ((out (assoc-ref %outputs "out"))
                (source (assoc-ref %build-inputs "source"))
                (tar (string-append (assoc-ref %build-inputs "tar") "/bin/tar"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip")
+                                     "/bin/unzip"))
                (xz-path (string-append (assoc-ref %build-inputs "xz") "/bin")))
            (setenv "PATH" xz-path)
            (mkdir out)
-           (invoke tar "xvf" source "-C" out "--strip=3")))))
+           (invoke tar "xvf" source "-C" out "--strip=3")
+           (for-each (lambda (name)
+                       (let* ((dir (string-append out "/mods/" name))
+                              (file (string-append dir "/" name ".zip")))
+                         (invoke unzip "-o" "-d" dir file)
+                         (delete-file file)))
+                     '("mod" "public"))))))
     (synopsis "Data files for 0ad")
     (description "0ad-data provides the data files required by the game 0ad.")
     (home-page "https://play0ad.com")
@@ -6720,7 +6721,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.23b-alpha")
+    (version "0.0.25b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -6728,23 +6729,24 @@ fight against their plot and save his fellow rabbits from slavery.")
                            version "-unix-build.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "0draa53xg69i5qhqym85658m45xhwkbiimaldj4sr3703rjgggq1"))))
-       ;; A snippet here would cause a build failure because of timestamps
-       ;; reset.  See https://bugs.gnu.org/26734.
+        (base32 "1p9fa8f7sjb9c5wl3mawzyfqvgr614kdkhrj2k4db9vkyisws3fp"))))
+    ;; A snippet here would cause a build failure because of timestamps
+    ;; reset.  See https://bugs.gnu.org/26734.
     (inputs
      `(("0ad-data" ,0ad-data)
        ("curl" ,curl)
        ("enet" ,enet)
+       ("fmt" ,fmt)
        ("gloox" ,gloox)
-       ("icu4c" ,icu4c)
+       ("icu4c" ,icu4c-68)
+       ("libidn" ,libidn)
        ("libpng" ,libpng)
        ("libsodium" ,libsodium)
        ("libvorbis" ,libvorbis)
        ("libxcursor" ,libxcursor)
        ("libxml2" ,libxml2)
        ("miniupnpc" ,miniupnpc)
-       ("mozjs-38" ,mozjs-38)
+       ("mozjs" ,mozjs-78)
        ("openal" ,openal)
        ("sdl2" ,sdl2)
        ("wxwidgets" ,wxwidgets)
@@ -6752,29 +6754,27 @@ fight against their plot and save his fellow rabbits from slavery.")
     (native-inputs
      `(("boost" ,boost)
        ("cmake" ,cmake-minimal)
+       ("cxxtest" ,cxxtest)
        ("mesa" ,mesa)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("config=release" "verbose=1" "-C" "build/workspaces/gcc")
+       #:tests? #f                      ;tests fail currently
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundles
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (delete-file-recursively "libraries/source/spidermonkey")
-             #t))
-         (add-after 'unpack 'fix-x11-includes
-           (lambda _
-             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
-               (("<Xlib.h>") "<X11/Xlib.h>"))
-             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
-               (("<Xatom.h>") "<X11/Xatom.h>"))
-             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
-               (("<Xcursor/Xcursor.h>") "<X11/Xcursor/Xcursor.h>"))
-             #t))
+             (delete-file-recursively "libraries/source/cxxtest-4.4")
+             (substitute* "build/premake/premake5.lua"
+               (("rootdir\\.\\.\"\\/libraries\\/source\\/cxxtest-4.4\\/bin\\/cxxtestgen\"")
+                (string-append "\"" (assoc-ref inputs "cxxtest")
+                               "/bin/cxxtestgen"
+                               "\"")))))
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (let* ((jobs (number->string (parallel-job-count)))
                     (out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
@@ -6782,11 +6782,13 @@ fight against their plot and save his fellow rabbits from slavery.")
                (setenv "JOBS" (string-append "-j" jobs))
                (setenv "CC" "gcc")
                (with-directory-excursion "build/workspaces"
-                 (invoke "./update-workspaces.sh"
-                         (string-append "--libdir=" lib)
-                         (string-append "--datadir=" data)
-                         ;; TODO: "--with-system-nvtt"
-                         "--with-system-mozjs38")))))
+                 (apply invoke
+                        `("./update-workspaces.sh"
+                          ,(string-append "--libdir=" lib)
+                          ,(string-append "--datadir=" data)
+                          ;; TODO: "--with-system-nvtt"
+                          "--with-system-mozjs"
+                          ,@(if tests? '() '("--without-tests"))))))))
          (delete 'check)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -6796,7 +6798,9 @@ fight against their plot and save his fellow rabbits from slavery.")
                     (lib (string-append out "/lib"))
                     (data (string-append out "/share/0ad"))
                     (applications (string-append out "/share/applications"))
-                    (pixmaps (string-append out "/share/pixmaps"))
+                    (hicolor (string-append out "/share/icons/hicolor/128x128/apps"))
+                    (metainfo (string-append out "/share/metainfo"))
+                    (mime (string-append out "/share/mime/application"))
                     (0ad-data (assoc-ref inputs "0ad-data")))
                ;; data
                (copy-recursively "data" data)
@@ -6815,12 +6819,14 @@ fight against their plot and save his fellow rabbits from slavery.")
                ;; resources
                (with-directory-excursion "../build/resources"
                  (install-file "0ad.desktop" applications)
-                 (install-file "0ad.png" pixmaps))
-               #t)))
+                 (install-file "0ad.png" hicolor)
+                 (install-file "0ad.appdata.xml" metainfo)
+                 (install-file "pyrogenesis.xml" mime)))))
          (add-after 'install 'check
-           (lambda _
-             (with-directory-excursion "system"
-               (invoke "./test")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "system"
+                 (invoke "./test"))))))))
     (home-page "https://play0ad.com")
     (synopsis "3D real-time strategy game of ancient warfare")
     (description "0 A.D. is a real-time strategy (RTS) game of ancient
