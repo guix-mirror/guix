@@ -26960,6 +26960,25 @@ by inspecting the system for user preference.")
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4))))))
 
+(define-public rust-log-mdc-0.1
+  (package
+    (name "rust-log-mdc")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "log-mdc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1iw1x3qhjvrac35spikn5h06a1rxd9vw216jk8h52jhz9i0j2kd9"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sfackler/rust-log-mdc")
+    (synopsis "Mapped diagnostic context (MDC) for use with the `log` crate")
+    (description "This package provides a mapped diagnostic context (MDC) for
+use with the `log` crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-logtest-2
   (package
     (name "rust-logtest")
