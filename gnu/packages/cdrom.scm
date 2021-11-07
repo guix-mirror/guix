@@ -465,7 +465,12 @@ or @command{xorrisofs} to create ISO 9660 images.")
                 (find-files "contrib" "dvdisaster[0-9]*\\.png"))
                (mkdir-p (string-append datadir "/pixmaps"))
                (copy-file "contrib/dvdisaster48.xpm"
-                          (string-append datadir "/pixmaps/dvdisaster.xpm"))))))))
+                          (string-append datadir "/pixmaps/dvdisaster.xpm")))))
+         (add-after 'install 'remove-uninstall-script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (delete-file
+                (string-append out "/bin/dvdisaster-uninstall.sh"))))))))
     (home-page "https://dvdisaster.jcea.es/")
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
