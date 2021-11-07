@@ -60655,30 +60655,46 @@ formatters with per-field documentation generated for each structure.
 configuration file and/or environment variables.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-xmltree-0.10
+  (package
+    (name "rust-xmltree")
+    (version "0.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xmltree" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jqzwhr1a5cknflsshhhjlllmd1xi04qdkjsls2bnmv5mxgagn6p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-indexmap" ,rust-indexmap-1)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (home-page "https://github.com/eminence/xmltree-rs")
+    (synopsis "Parse an XML file into a simple tree-like structure")
+    (description "This package provides a small library for parsing an XML
+file into an in-memory tree structure.")
+    (license license:expat)))
+
 (define-public rust-xmltree-0.8
   (package
+    (inherit rust-xmltree-0.10)
     (name "rust-xmltree")
     (version "0.8.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "xmltree" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "0w0y0jz7lhxg05ca6ngfj0lj8sbrjh4vaqv13q7qaqkhs7lsx3pz"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xmltree" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w0y0jz7lhxg05ca6ngfj0lj8sbrjh4vaqv13q7qaqkhs7lsx3pz"))))
     (arguments
-      `(#:cargo-inputs
-        (("rust-indexmap" ,rust-indexmap-1)
-         ("rust-xml-rs" ,rust-xml-rs-0.7))))
-    (home-page #f)
-    (synopsis
-      "Parse an XML file into a simple tree-like structure")
-    (description
-      "Parse an XML file into a simple tree-like structure")
-    (license license:expat)))
+     `(#:cargo-inputs
+       (("rust-indexmap" ,rust-indexmap-1)
+        ("rust-xml-rs" ,rust-xml-rs-0.7))))))
 
 (define-public rust-svd-parser-0.9
   (package
