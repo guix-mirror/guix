@@ -2507,14 +2507,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible-core
   (package
     (name "ansible-core")
-    (version "2.11.4")
+    (version "2.11.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible-core" version))
        (sha256
-        (base32
-         "0jgahcv2pyc5ky0wir55a1h9q9d6rgqj60rqmvlpbj76vz1agsi2"))))
+        (base32 "0fih7nxszni8imi5sywsifd976v77ydhip43pzg7dd65qy1h5mck"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build python-build-system)
