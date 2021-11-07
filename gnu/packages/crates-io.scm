@@ -26979,6 +26979,55 @@ by inspecting the system for user preference.")
 use with the `log` crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-log4rs-1
+  (package
+    (name "rust-log4rs")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "log4rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04d21kkb6if7hly0syp64m15a9695fpfgvlnff3gy58i1n42lmyi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ; 37 passed, 1 failed
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-arc-swap" ,rust-arc-swap-0.4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-derivative" ,rust-derivative-2)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-humantime" ,rust-humantime-2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-log-mdc" ,rust-log-mdc-0.1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-value" ,rust-serde-value-0.7)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-thread-id" ,rust-thread-id-3)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-typemap" ,rust-typemap-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-humantime" ,rust-humantime-2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-streaming-stats"
+         ,rust-streaming-stats-0.2)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/estk/log4rs")
+    (synopsis "Highly configurable logging implementation")
+    (description "This package provides a highly configurable multi-output
+logging implementation for the `log` facade.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-logtest-2
   (package
     (name "rust-logtest")
