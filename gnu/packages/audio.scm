@@ -4918,7 +4918,7 @@ workstations as well as consumer software such as music players.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "1.3.0")                     ;marked unmaintained as of Oct. 2021
+    (version "1.3.1")                     ;marked unmaintained as of Oct. 2021
     (source
      (origin
        (method git-fetch)
@@ -4927,7 +4927,7 @@ workstations as well as consumer software such as music players.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16j9zp5i7svq3g38rfb6h257qfgnd2brrxi7cjd2pdax9xxwj40y"))))
+        (base32 "1zb2k2a4m7z2ravqrjn8fq8lic20wbr2m8kja3p3113jsk7j9zvd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
