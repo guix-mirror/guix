@@ -27,6 +27,9 @@
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 popen)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (import-manifest
@@ -56,11 +59,32 @@ FILE-NAME with \"-\", and return the basename of it."
   (define (destination-append path)
     (string-append destination-directory "/" path))
 
+  (define (bash-alias->pair line)
+    (if (string-prefix? "alias" line)
+        (let ((matched (string-match "alias (.+)=\"?'?([^\"']+)\"?'?" line)))
+          `(,(match:substring matched 1) . ,(match:substring matched 2)))
+        '()))
+  
+  (define (parse-aliases input)
+    (let loop ((line (read-line input))
+               (result '()))
+      (if (eof-object? line)
+          (reverse result)
+          (loop (read-line input)
+                (cons (bash-alias->pair line) result)))))
+
   (let ((rc (destination-append ".bashrc"))
         (profile (destination-append ".bash_profile"))
         (logout (destination-append ".bash_logout")))
     `((service home-bash-service-type
                (home-bash-configuration
+                ,@(if (file-exists? rc)
+                      `((aliases
+                         ',(let* ((port (open-pipe* OPEN_READ "bash" "-i" "-c" "alias"))
+                               (alist (parse-aliases port)))
+                           (close-port port)
+                           (filter (negate null?) alist))))
+                      '())
                 ,@(if (file-exists? rc)
                       `((bashrc
                          (list (local-file ,rc

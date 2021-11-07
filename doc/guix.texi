@@ -36173,6 +36173,20 @@ Add sane defaults like reading @file{/etc/bashrc}, coloring output for
 @item @code{environment-variables} (default: @code{()}) (type: alist)
 Association list of environment variables to set for the Bash session.
 
+@item @code{aliases} (default: @code{()}) (type: alist)
+Association list of aliases to set for the Bash session.  The alias will
+automatically be quoted, so something line this:
+
+@lisp
+'((\"ls\" . \"ls -alF\"))
+@end lisp
+
+turns into
+
+@example
+alias ls=\"ls -alF\"
+@end example
+
 @item @code{bash-profile} (default: @code{()}) (type: text-config)
 List of file-like objects, which will be added to @file{.bash_profile}.
 Used for executing user's commands at start of login shell (In most

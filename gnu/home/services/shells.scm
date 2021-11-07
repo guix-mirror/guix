@@ -305,6 +305,18 @@ source ~/.profile
 ;;; Bash.
 ;;;
 
+(define (bash-serialize-aliases field-name val)
+  #~(string-append
+     #$@(map
+         (match-lambda
+           ((key . #f)
+            "")
+           ((key . #t)
+            #~(string-append "alias " #$key "\n"))
+           ((key . value)
+            #~(string-append "alias " #$key "=\"" #$value "\"\n")))
+         val)))
+
 (define-configuration home-bash-configuration
   (package
    (package bash)
@@ -317,6 +329,21 @@ for @code{ls} provided by guix to @file{.bashrc}.")
    (alist '())
    "Association list of environment variables to set for the Bash session."
    serialize-posix-env-vars)
+  (aliases
+   (alist '())
+   "Association list of aliases to set for the Bash session.  The alias will
+automatically be quoted, so something line this:
+
+@lisp
+'((\"ls\" . \"ls -alF\"))
+@end lisp
+
+turns into
+
+@example
+alias ls=\"ls -alF\"
+@end example"
+   bash-serialize-aliases)
   (bash-profile
    (text-config '())
    "List of file-like objects, which will be added to @file{.bash_profile}.
@@ -387,10 +414,10 @@ alias grep='grep --color=auto'\n")
       (if (or extra-content
               (not (null? ((configuration-field-getter field-obj) config))))
           `(,(object->snake-case-string file-name)
-            ,(mixed-text-file
+            ,(apply mixed-text-file
               (object->snake-case-string file-name)
-              (if extra-content extra-content "")
-              (serialize-field field)))
+              (cons (serialize-field field)
+                    (if extra-content extra-content '()))))
           '())))
 
   (filter
@@ -413,8 +440,8 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
      ,@(list (file-if-not-empty
               'bashrc
               (if (home-bash-configuration-guix-defaults? config)
-                  guix-bashrc
-                  #f))
+                  (list (serialize-field 'aliases) guix-bashrc)
+                  (list (serialize-field 'alises))))
              (file-if-not-empty 'bash-logout)))))
 
 (define (add-bash-packages config)
@@ -424,6 +451,9 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
   (environment-variables
    (alist '())
    "Association list of environment variables to set.")
+  (aliases
+   (alist '())
+   "Association list of aliases to set.")
   (bash-profile
    (text-config '())
    "List of file-like objects.")
@@ -435,24 +465,31 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
    "List of file-like objects."))
 
 (define (home-bash-extensions original-config extension-configs)
-  (home-bash-configuration
-   (inherit original-config)
-   (environment-variables
-    (append (home-bash-configuration-environment-variables original-config)
-            (append-map
-             home-bash-extension-environment-variables extension-configs)))
-   (bash-profile
-    (append (home-bash-configuration-bash-profile original-config)
-            (append-map
-             home-bash-extension-bash-profile extension-configs)))
-   (bashrc
-    (append (home-bash-configuration-bashrc original-config)
-            (append-map
-             home-bash-extension-bashrc extension-configs)))
-   (bash-logout
-    (append (home-bash-configuration-bash-logout original-config)
-            (append-map
-             home-bash-extension-bash-logout extension-configs)))))
+  (match original-config
+    (($ <home-bash-configuration> _ _ _ environment-variables aliases
+                                  bash-profile bashrc bash-logout)
+     (home-bash-configuration
+      (inherit original-config)
+      (environment-variables
+       (append environment-variables
+               (append-map
+                home-bash-extension-environment-variables extension-configs)))
+      (aliases
+       (append aliases
+               (append-map
+                home-bash-extension-aliases extension-configs)))
+      (bash-profile
+       (append bash-profile
+               (append-map
+                home-bash-extension-bash-profile extension-configs)))
+      (bashrc
+       (append bashrc
+               (append-map
+                home-bash-extension-bashrc extension-configs)))
+      (bash-logout
+       (append bash-logout
+               (append-map
+                home-bash-extension-bash-logout extension-configs)))))))
 
 (define home-bash-service-type
   (service-type (name 'home-bash)
