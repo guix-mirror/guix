@@ -9306,6 +9306,30 @@ diagnostics easy and relatively painless for everyone!")
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-unindent" ,rust-unindent-0.1))))))
 
+(define-public rust-color-backtrace-0.5
+  (package
+    (name "rust-color-backtrace")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "color-backtrace" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11fn3snykx90w3nznzrcf4r164zmhk790asx0kzryf4r7i308v6d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-termcolor" ,rust-termcolor-1))))
+    (home-page "https://github.com/athre0z/color-backtrace")
+    (synopsis "Colorful panic backtraces")
+    (description "This package provides colorful panic backtraces.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-color-quant-1
   (package
     (name "rust-color-quant")
