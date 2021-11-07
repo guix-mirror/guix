@@ -17575,6 +17575,44 @@ fit together as required by any particular game.")
 (define-public cl-trial
   (sbcl-package->cl-source-package sbcl-trial))
 
+(define-public sbcl-alloy
+  (let ((commit "e86e22c2887836ec31cd97e039f0bca5248d8f1c")
+        (revision "1"))
+    (package
+      (name "sbcl-alloy")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/alloy")
+               (commit commit)))
+         (file-name (git-file-name "alloy" version))
+         (sha256
+          (base32 "1jsqjr6sf86hcdvnjp4gd10qv0r7kfkr9hmda85irb5lha4q9n7w"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shirakumo.github.io/alloy/")
+      (synopsis
+       "Common Lisp user interface protocol and toolkit implementation")
+      (description
+       "Alloy is a user interface toolkit.  It is defined through a set of
+protocols that allow for a clear interface, as well as a standardised way to
+integrate Alloy into a target backend.")
+      (license license:zlib))))
+
+(define-public ecl-alloy
+  (sbcl-package->ecl-package sbcl-alloy))
+
+(define-public cl-alloy
+  (sbcl-package->cl-source-package sbcl-alloy))
+
 (define-public sbcl-org-sampler
   (let ((commit "ee135a417750e5b1d810bb9574eb85223cb3038a")
         (revision "1"))
