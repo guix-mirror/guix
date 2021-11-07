@@ -47844,6 +47844,29 @@ More importantly, this library also provides the ability to un-escape a given
 escaped text to recover the original string.")
     (license license:gpl3)))
 
+(define-public rust-snake-case-0.3
+  (package
+    (name "rust-snake-case")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "snake-case" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1v4f132rk9wxiw8hb3kgnixirzr8kbfhg2lgsf4b85vbg02a0jfn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:rust ,rust-1.52 ; fix for E0658
+       #:cargo-inputs (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/emilk/snake_case")
+    (synopsis "String-like type that only contains non-empty snake_case")
+    (description
+     "This package provides a String-like type that can only contain valid
+non-empty snake_case.")
+    (license license:expat)))
+
 (define-public rust-snap-1
   (package
     (name "rust-snap")
