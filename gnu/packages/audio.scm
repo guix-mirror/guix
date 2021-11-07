@@ -2612,14 +2612,14 @@ frequencies.  This data is then formatted to MIDI and written to disk.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.10")
+    (version "0.24.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1565zy0yz46cf2f25pi46msdnzkj6bbhml9gfigdpjnsdlyskfyi"))))
+               "0qchfsyrsrp2pdpd59025kllycr04ddpzd03ha1iz70ci687g8r6"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2629,15 +2629,13 @@ frequencies.  This data is then formatted to MIDI and written to disk.")
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib"))
-            #t))
+                                   (assoc-ref outputs "out") "/lib"))))
          (add-after 'unpack 'full-store-path-to-shared-library
            (lambda* (#:key outputs #:allow-other-keys)
              (with-directory-excursion "bindings/python"
                (substitute* "lilv.py"
                  (("liblilv-0.so") (string-append (assoc-ref outputs "out")
-                                                  "/lib/liblilv-0.so"))))
-             #t)))))
+                                                  "/lib/liblilv-0.so")))))))))
     ;; Required by lilv-0.pc.
     (propagated-inputs
      `(("lv2" ,lv2)
