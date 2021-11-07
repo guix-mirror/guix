@@ -274,7 +274,15 @@ argument list and OPTS is the option alist."
                            (_ (leave (G_ "wrong number of arguments~%"))))))
        (unless (file-exists? destination)
          (mkdir-p destination))
-       (import-manifest manifest destination (current-output-port))))
+       (call-with-output-file
+           (string-append destination "/home-configuration.scm")
+         (cut import-manifest manifest destination <>))
+       (info (G_ "'~a' populated with all the Home configuration files~%")
+             destination)
+       (display-hint (format #f (G_ "\
+Run @command{guix home reconfigure ~a/home-configuration.scm} to effectively
+deploy the home environment described by these files.\n")
+                             destination))))
     ((describe)
      (match (generation-number %guix-home)
        (0

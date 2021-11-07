@@ -35933,9 +35933,8 @@ The @command{guix home import} command reads some of the ``dot files''
 such as @file{~/.bashrc} found in your home directory and copies them to
 the given directory, @file{~/src/guix-config} in this case; it also
 reads the contents of your profile, @file{~/.guix-profile}, and, based
-on that, it outputs a Home configuration that resembles your current
-configuration.  You can dump that configuration to a file and you're
-ready to go!
+on that, it populates @file{~/src/guix-config/home-configuration.scm}
+with a Home configuration that resembles your current configuration.
 
 A simple setup can include Bash and a custom text configuration, like in
 the example below.  Don't be afraid to declare home environment parts,
@@ -36667,33 +36666,14 @@ $ guix home list-generations 10d
 @item import
 Generate a @dfn{home environment} from the packages in the default
 profile and configuration files found in the user's home directory.  The
-configuration files will be copied to the specified directory.  Note
-that not every home service that exists is supported (@pxref{Home
-Services}).
+configuration files will be copied to the specified directory, and a
+@file{home-configuration.scm} will be populated with the home
+environment.  Note that not every home service that exists is supported
+(@pxref{Home Services}).
 
 @example
 $ guix home import ~/guix-config
-;; This "home-environment" file can be passed to 'guix home reconfigure'
-;; to reproduce the content of your profile.  This is "symbolic": it only
-;; specifies package names.  To reproduce the exact same profile, you also
-;; need to capture the channels being used, as returned by "guix describe".
-;; See the "Replicating Guix" section in the manual.
-
-(use-modules
-  (gnu home)
-  (gnu packages)
-  (gnu home services shells))
-
-(home-environment
-  (packages
-    (map specification->package
-         (list "glibc-locales" "nss-certs" "nss")))
-  (services
-    (list (service
-            home-bash-service-type
-            (home-bash-configuration
-              (bashrc
-                (list (local-file "/home/charlie/guix-config/.bashrc"))))))))
+guix home: '/home/alice/guix-config' populated with all the Home configuration files
 @end example
 
 @end table
