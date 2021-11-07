@@ -323,16 +323,21 @@ source ~/.profile
    "The Bash package to use.")
   (guix-defaults?
    (boolean #t)
-   "Add sane defaults like reading @file{/etc/bashrc}, coloring output
-for @code{ls} provided by guix to @file{.bashrc}.")
+   "Add sane defaults like reading @file{/etc/bashrc} and coloring the output of
+@command{ls} to the end of the @file{.bashrc} file.")
   (environment-variables
    (alist '())
-   "Association list of environment variables to set for the Bash session."
+   "Association list of environment variables to set for the Bash session.  The
+rules for the @code{home-environment-variables-service-type} apply
+here (@pxref{Essential Home Services}).  The contents of this field will be
+added after the contents of the @code{bash-profile} field."
    serialize-posix-env-vars)
   (aliases
    (alist '())
-   "Association list of aliases to set for the Bash session.  The alias will
-automatically be quoted, so something line this:
+   "Association list of aliases to set for the Bash session.  The aliases will be
+defined after the contents of the @code{bashrc} field has been put in the
+@file{.bashrc} file.  The alias will automatically be quoted, so something line
+this:
 
 @lisp
 '((\"ls\" . \"ls -alF\"))
@@ -450,19 +455,25 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
 (define-configuration/no-serialization home-bash-extension
   (environment-variables
    (alist '())
-   "Association list of environment variables to set.")
+   "Additional environment variables to set.  These will be combined with the
+environment variables from other extensions and the base service to form one
+coherent block of environment variables.")
   (aliases
    (alist '())
-   "Association list of aliases to set.")
+   "Additional aliases to set.  These will be combined with the aliases from
+other extensions and the base service.")
   (bash-profile
    (text-config '())
-   "List of file-like objects.")
+   "Additional text blocks to add to @file{.bash_profile}, which will be combined
+with text blocks from other extensions and the base service.")
   (bashrc
    (text-config '())
-   "List of file-like objects.")
+   "Additional text blocks to add to @file{.bashrc}, which will be combined
+with text blocks from other extensions and the base service.")
   (bash-logout
    (text-config '())
-   "List of file-like objects."))
+   "Additional text blocks to add to @file{.bash_logout}, which will be combined
+with text blocks from other extensions and the base service."))
 
 (define (home-bash-extensions original-config extension-configs)
   (match original-config
@@ -646,10 +657,16 @@ Install and configure Fish, the friendly interactive shell.")))
    'home-shell-profile-configuration))
 
 (define (generate-home-bash-documentation)
-  (generate-documentation
-   `((home-bash-configuration
-      ,home-bash-configuration-fields))
-   'home-bash-configuration))
+  (string-append
+   (generate-documentation
+    `((home-bash-configuration
+       ,home-bash-configuration-fields))
+    'home-bash-configuration)
+   "\n\n"
+   (generate-documentation
+    `((home-bash-extension
+       ,home-bash-extension-fields))
+    'home-bash-extension)))
 
 (define (generate-home-zsh-documentation)
   (generate-documentation

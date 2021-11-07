@@ -36159,6 +36159,7 @@ Extend home-shell-profile service only if you really know what you do.
 
 @subsubheading Bash Home Service
 
+@anchor{home-bash-configuration}
 @deftp {Data Type} home-bash-configuration
 Available @code{home-bash-configuration} fields are:
 
@@ -36167,15 +36168,20 @@ Available @code{home-bash-configuration} fields are:
 The Bash package to use.
 
 @item @code{guix-defaults?} (default: @code{#t}) (type: boolean)
-Add sane defaults like reading @file{/etc/bashrc}, coloring output for
-@code{ls} provided by guix to @file{.bashrc}.
+Add sane defaults like reading @file{/etc/bashrc} and coloring the output of
+@command{ls} to the end of the @file{.bashrc} file.
 
 @item @code{environment-variables} (default: @code{()}) (type: alist)
-Association list of environment variables to set for the Bash session.
+Association list of environment variables to set for the Bash session.  The
+rules for the @code{home-environment-variables-service-type} apply
+here (@pxref{Essential Home Services}).  The contents of this field will be
+added after the contents of the @code{bash-profile} field.
 
 @item @code{aliases} (default: @code{()}) (type: alist)
-Association list of aliases to set for the Bash session.  The alias will
-automatically be quoted, so something line this:
+Association list of aliases to set for the Bash session.  The aliases
+will be defined after the contents of the @code{bashrc} field has been
+put in the @file{.bashrc} file.  The alias will automatically be quoted,
+so something line this:
 
 @lisp
 '((\"ls\" . \"ls -alF\"))
@@ -36206,7 +36212,41 @@ be read in some cases (if the shell terminates by exec'ing another
 process for example).
 
 @end table
+@end deftp
 
+You can extend the Bash service by using the @code{home-bash-extension}
+configuration record, whose fields most mirror that of
+@code{home-bash-configuration} (@pxref{home-bash-configuration}).  The
+contents of the extensions will be added to the end of the corresponding
+Bash configuration files (@pxref{Bash Startup Files,,, bash, The GNU
+Bash Reference Manual}.
+
+@deftp {Data Type} home-bash-extension
+Available @code{home-bash-extension} fields are:
+
+@table @asis
+@item @code{environment-variables} (default: @code{()}) (type: alist)
+Additional environment variables to set.  These will be combined with the
+environment variables from other extensions and the base service to form one
+coherent block of environment variables.
+
+@item @code{aliases} (default: @code{()}) (type: alist)
+Additional aliases to set.  These will be combined with the aliases from
+other extensions and the base service.
+
+@item @code{bash-profile} (default: @code{()}) (type: text-config)
+Additional text blocks to add to @file{.bash_profile}, which will be combined
+with text blocks from other extensions and the base service.
+
+@item @code{bashrc} (default: @code{()}) (type: text-config)
+Additional text blocks to add to @file{.bashrc}, which will be combined
+with text blocks from other extensions and the base service.
+
+@item @code{bash-logout} (default: @code{()}) (type: text-config)
+Additional text blocks to add to @file{.bash_logout}, which will be combined
+with text blocks from other extensions and the base service.
+
+@end table
 @end deftp
 
 @subsubheading Zsh Home Service
