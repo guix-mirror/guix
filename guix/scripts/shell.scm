@@ -387,8 +387,14 @@ echo ~a >> ~a
         (display-hint (G_ "Consider passing the @option{--check} option once
 to make sure your shell does not clobber environment variables."))) )
 
-  (let ((result (guix-environment* opts)))
-    (maybe-remove-expired-cache-entries (%profile-cache-directory)
-                                        cache-entries
-                                        #:entry-expiration entry-expiration)
-    result))
+  ;; Clean the cache in EXIT-HOOK so that (1) it happens after potential use
+  ;; of cached profiles, and (2) cleanup actually happens, even when
+  ;; 'guix-environment*' calls 'exit'.
+  (add-hook! exit-hook
+             (lambda _
+               (maybe-remove-expired-cache-entries
+                (%profile-cache-directory)
+                cache-entries
+                #:entry-expiration entry-expiration)))
+
+  (guix-environment* opts))
