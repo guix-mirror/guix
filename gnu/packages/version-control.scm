@@ -2656,7 +2656,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
