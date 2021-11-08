@@ -2643,14 +2643,16 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
 (define-public stagit
   (package
     (name "stagit")
-    (version "0.7.2")
+    (version "0.9.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.2f30.org/releases/"
-                                  name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "git://git.codemadness.org/stagit")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m3s9g1z9szbjrhm8sic91xh6f2bfpi56rskdkqd5wc4wdycpyi5"))))
+                "0hcf1rmsp9s6jjg1dypq7sa3dqmqg2q3x1kj23rb5gwrsb31vyfj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
@@ -2661,7 +2663,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
          (delete 'configure)))) ; No configure script
     (inputs
      `(("libgit2" ,libgit2)))
-    (home-page "https://2f30.org/")
+    (home-page "https://git.codemadness.org/stagit/")
     (synopsis "Static git page generator")
     (description "Stagit creates static pages for git repositories, the results can
 be served with a HTTP file server of your choice.")
