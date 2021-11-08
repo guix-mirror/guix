@@ -932,7 +932,7 @@ or server shell scripts with network connections.")
 (define-public mbuffer
   (package
     (name "mbuffer")
-    (version "20210328")
+    (version "20211018")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -940,8 +940,10 @@ or server shell scripts with network connections.")
                     version ".tgz"))
               (sha256
                (base32
-                "0pfw9xw4ph18yss07fl6w8fbqiwy1w9r1knzw5gsb4c993cbidai"))))
+                "1qxnbpyly00kml3sjan9iqg6pqacsi3yqq66x25w455cwkjc2h72"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
     (inputs `(("openssl" ,openssl)))
     (home-page "http://www.maier-komor.de/mbuffer.html")
     (synopsis
