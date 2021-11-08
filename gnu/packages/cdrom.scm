@@ -419,16 +419,14 @@ or @command{xorrisofs} to create ISO 9660 images.")
 (define-public dvdisaster
   (package
     (name "dvdisaster")
-    (version "0.79.5")
+    (version "0.79.9")
     (source
      (origin
        (method url-fetch)
-       ;; Update this (and update HOME-PAGE) when/if one reappears.
-       (uri (string-append "https://web.archive.org/web/20180428070843/"
-                           "http://dvdisaster.net/downloads/dvdisaster-"
+       (uri (string-append "https://dvdisaster.jcea.es/downloads/dvdisaster-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0f8gjnia2fxcbmhl8b3qkr5b7idl8m855dw7xw2fnmbqwvcm6k4w"))))
+        (base32 "1hz3fvqfdrwb7dn6ggqkpcgyjag37ivm1layw27ncjz9glklxjbr"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)))
@@ -447,8 +445,7 @@ or @command{xorrisofs} to create ISO 9660 images.")
              (with-directory-excursion "regtest"
                (substitute* "common.bash"
                  (("ISODIR=/var/tmp/regtest") "ISODIR=/tmp"))
-               (for-each invoke (find-files "." "rs.*\\.bash")))
-             #t))
+               (for-each invoke (find-files "." "rs.*\\.bash")))))
          (add-after 'install 'install-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((datadir (string-append (assoc-ref outputs "out") "/share")))
@@ -468,10 +465,13 @@ or @command{xorrisofs} to create ISO 9660 images.")
                 (find-files "contrib" "dvdisaster[0-9]*\\.png"))
                (mkdir-p (string-append datadir "/pixmaps"))
                (copy-file "contrib/dvdisaster48.xpm"
-                          (string-append datadir "/pixmaps/dvdisaster.xpm"))
-               #t))))))
-    (home-page (string-append "https://web.archive.org/web/20180428070843/"
-                              "http://dvdisaster.net/en/index.html"))
+                          (string-append datadir "/pixmaps/dvdisaster.xpm")))))
+         (add-after 'install 'remove-uninstall-script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (delete-file
+                (string-append out "/bin/dvdisaster-uninstall.sh"))))))))
+    (home-page "https://dvdisaster.jcea.es/")
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
 finite time (typically for many years).  After that time, data loss develops

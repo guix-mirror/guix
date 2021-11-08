@@ -191,7 +191,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "4.1.1")
+    (version "4.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -199,7 +199,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0r6kpnxjbvb7gdfg4m1z8zc6xd225vw81wrnf05ps9ajawk06pji"))))
+                "1brqmc7mmb0z94kcs4crgl6v9a6sxhm9fm3y177d81vjkxg24di0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -216,8 +216,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
              ;; This ensures that Guix can detect embedded store references;
              ;; see bug #28157 for details.
              (substitute* "src/library/base/makebasedb.R"
-               (("compress = TRUE") "compress = FALSE"))
-             #t))
+               (("compress = TRUE") "compress = FALSE"))))
          (add-before 'configure 'patch-coreutils-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((uname-bin (search-input-file inputs "/bin/uname"))
@@ -225,8 +224,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                (substitute* "src/scripts/R.sh.in"
                  (("uname") uname-bin))
                (substitute* "src/unix/sys-std.c"
-                 (("rm -Rf ") (string-append rm-bin " -Rf "))))
-             #t))
+                 (("rm -Rf ") (string-append rm-bin " -Rf "))))))
          (add-after 'unpack 'build-reproducibly
            (lambda _
              ;; The documentation contains time stamps to demonstrate
@@ -285,17 +283,17 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
              ;; that is suspected to be the culprit.
              (substitute* "src/library/methods/DESCRIPTION.in"
                (("\\(2008\\)\n") "(2008) ")
-               (("  ``Software") "``Software"))
-             #t))
+               (("  ``Software") "``Software")
+               (("Data Analysis:.") "Data Analysis:\n")
+               (("Programming with R") "  Programming with R"))))
          (add-before 'build 'set-locales
            (lambda _
              (setlocale LC_ALL "C")
-             (setenv "LC_ALL" "C")
-             #t))
+             (setenv "LC_ALL" "C")))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
-          (lambda _ (setenv "PAGER" "cat") #t))
+          (lambda _ (setenv "PAGER" "cat")))
          (add-before 'check 'set-timezone
            ;; Some tests require the timezone to be set.  However, the
            ;; timezone may not just be "UTC", or else a brittle regression
@@ -638,13 +636,13 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-37")
+   (version "1.8-38")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
-      (base32 "14gw714xcyvgrbajijmyd4v8zs84i701g7gyld6z8p7677dgc8w8"))))
+      (base32 "1fyx8b0xjyx75mp90v314gayzydkca5y90p76jnwxzfnhxbys4nd"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -1047,14 +1045,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.7.4")
+    (version "1.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "1mda4612sc573zabsvygnla3vpnf3mql58fc9j450540h6hlwfv2"))))
+         "0r959gzyqkq9683qdfy95g9plwpj3c73n9lhf0a6byybw4scq519"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1386,13 +1384,13 @@ supported via Andre Simon's highlight package.")
 (define-public r-mime
   (package
     (name "r-mime")
-    (version "0.11")
+    (version "0.12")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mime" version))
               (sha256
                (base32
-                "1h7fz0rqnp970r9q0d95qcxpxm9mb98rqhcdncx0w2qdkyj2fm11"))))
+                "0j9qbq9jfsp61h2d0xmb87pa2wi8nhb1h2wih7l5drf1sr8i0059"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/mime")
     (synopsis "R package to map filenames to MIME types")
@@ -1449,13 +1447,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.34")
+    (version "1.36")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "0p6jdicyqknrqilcjm2h4r6vza5lpzccnsdirj92jb3ljg10b0by"))))
+                "0hcf5gii0qlvv15f86y6h08qp0hd9lcrykzj0mdfjdfi52sgbkkf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -1602,13 +1600,13 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "3.0.4")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "0iqizv2gpv9fg766qv8hbkmc6c5i9xcfrmq9k5m2550p28zff2w3"))))
+                "11s98q0gm37z1cqzwvdm9pq26v0zbdq9vc5ssl1nsxhsi42v2577"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brio" ,r-brio)
@@ -1664,13 +1662,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.4.11")
+    (version "0.4.12")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "1pfm24jjkxzdb5qcbc05dcjxyk69zpfr5jv4xakqh1xh41mr43kl"))))
+                "05cr08smr8dlk10m810rw4qi1yhgnny83rwkxib0l4my71br29ia"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -1682,14 +1680,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "3.1.4")
+    (version "3.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "0zqpg2haph0qi1x5r6wr083xckab9gw21jbr9spcr8xdf43hx1vk"))))
+         "1ryv1r3cah1s8dyqdhcb0yl81r384jvgc4d1q9zwsrrsd2x8fqys"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -1870,13 +1868,13 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.14.0")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "0kgbvap5v2spnkz3dwfm4jh4qcpvbzdn9s8bzfnhzabz9qjdxw8k"))))
+                "0arx5wna0sh0vf5q8rjhh8nqdmnvg2pdpbhljl9l0x4kwm8vjhgp"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -2284,14 +2282,14 @@ module, Java Server Pages, and Python's psp module.")
 (define-public r-desc
   (package
     (name "r-desc")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "desc" version))
        (sha256
         (base32
-         "1sw4vya3l971gpccq4gnjywgbl73bgx8la18l0wy617qv94f905y"))))
+         "0jfnwn1kpiill8v4hmzdk90yz4gk2ha0prr2p0hq36s40v3y8842"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
@@ -2557,13 +2555,13 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "0cj5k3ykkhixgdsqm1gnmpc0d8z04l3fhvm2dr5xp7cpmhgsrpfr"))))
+                "05bnvcc55i0xjilfrqx3700mwiz8sgihq1wxlbvvr8nxa7bmxc4q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2650,13 +2648,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.10.6.0.0")
+    (version "0.10.7.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1bcx8fk5l5mmwb6cw36ndvld9v3amkz6vyc19059dw0xp7mxx04v"))))
+                "1x35xb5yfslsdpaz9msl5p9f7gilnbkhwvq7pbycwasvkp2fma01"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4002,13 +4000,13 @@ vignettes.")
 (define-public r-mvtnorm
   (package
     (name "r-mvtnorm")
-    (version "1.1-2")
+    (version "1.1-3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mvtnorm" version))
               (sha256
                (base32
-                "05wh7mprf2sim2kxh3d72pdcmml6vbikzxavws1dq6mxwlsy2p7j"))))
+                "0j14q2bkc14v35s5k03sw44zsssrd2qjljlwzj014qxs74hk0kpz"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -4050,13 +4048,13 @@ memory usage.")
 (define-public r-viridis
   (package
     (name "r-viridis")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "viridis" version))
               (sha256
                (base32
-                "1fyax36ycjiypcnxhrv58pq67qv03vfg4lx822d38jpjly54q128"))))
+                "048kwhbhd49g86cq11fl7vm0whwhjl5gs9xjn040lwcjv78qrdb9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -4134,14 +4132,14 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0cpbrvr759z8p7r9lpkjhj2dcdymsbnaib0rma9b4jb7i3qzmh2a"))))
+         "0h8jfsmn4r7zgfyjmg2qkjd54n0sncq07xjh4mdf2cx4k2z9h30b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cpp11" ,r-cpp11)
@@ -4219,13 +4217,13 @@ features present in other programming languages.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "4.9.4.1")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "1q711c0lg0jmzrmcc2fhjy70ms49as7cakdbgbh2ij9s149fa7iq"))))
+                "16iqj7sv49mva6siibsci7iijsbnk7pqvfns9al0k35w9mjmr6dx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -4422,13 +4420,13 @@ package instead.")
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "4.5-0")
+    (version "4.6-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
-        (base32 "11qj73zj16p113jpwn2vv06l99kqlcxcmrldbpyi5s7pwing9jnx"))))
+        (base32 "1bd1c8sichyijprfpnqj5g72nmgs9jvi0zyw8v4nsg1kn83fj71c"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
@@ -4683,13 +4681,13 @@ mechanism.")
 (define-public r-ztable
   (package
     (name "r-ztable")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ztable" version))
               (sha256
                (base32
-                "0wxcdb7yp2r6w5iznz1k49npp5sn4jiybfcj30s3198hkcnv0r8y"))))
+                "1ps7ix0hc84s0p0ra6bkjxky3cffs1rvdcagqzj78lbdq22dk5j8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-flextable" ,r-flextable)
@@ -5173,14 +5171,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-8")
+    (version "0.93-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "16fmnk3p32mi70rkx89l1v4pry3gnrpy9jicnlfnk6lg1pwz5j8w"))))
+         "0i9wf4aq8zpn2np6z2rjja21ks9n740dgkiv0qfwdzk3ah3vapyp"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -5886,18 +5884,18 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.10")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "1s653d6rnpf9bkynxmbq4fdjdcz7r9ma19aph8f5y9ck70his4hm"))))
+         "199b00cql07gf3rf4hh5ba34amnk0ai40zhx73dq1mpkn7ynxml7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-generics" ,r-generics)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-cpp11" ,r-cpp11)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/lubridate/")

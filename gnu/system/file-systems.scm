@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Google LLC
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -30,7 +30,8 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (guix records)
-  #:use-module ((guix diagnostics) #:select (&fix-hint))
+  #:use-module ((guix diagnostics)
+                #:select (source-properties->location leave &fix-hint))
   #:use-module (guix i18n)
   #:use-module (gnu system uuid)
   #:re-export (uuid                               ;backward compatibility
@@ -107,6 +108,45 @@
 ;;;
 ;;; Code:
 
+(eval-when (expand load eval)
+  (define invalid-file-system-flags
+    ;; Note: Keep in sync with 'mount-flags->bit-mask'.
+    (let ((known-flags '(read-only
+                         bind-mount no-suid no-dev no-exec
+                         no-atime strict-atime lazy-time)))
+      (lambda (flags)
+        "Return the subset of FLAGS that is invalid."
+        (remove (cut memq <> known-flags) flags))))
+
+  (define (%validate-file-system-flags flags location)
+    "Raise an error if FLAGS contains invalid mount flags; otherwise return
+FLAGS."
+    (match (invalid-file-system-flags flags)
+      (() flags)
+      (invalid
+       (leave (source-properties->location location)
+              (N_ "invalid file system mount flag:~{ ~s~}~%"
+                  "invalid file system mount flags:~{ ~s~}~%"
+                  (length invalid))
+              invalid)))))
+
+(define-syntax validate-file-system-flags
+  (lambda (s)
+    "Validate the given file system mount flags, raising an error if invalid
+flags are found."
+    (syntax-case s (quote)
+      ((_ (quote (symbols ...)))                  ;validate at expansion time
+       (begin
+         (%validate-file-system-flags (syntax->datum #'(symbols ...))
+                                      (syntax-source s))
+         #'(quote (symbols ...))))
+      ((_ flags)
+       #`(%validate-file-system-flags flags
+                                      '#,(datum->syntax s (syntax-source s))))
+      (id
+       (identifier? #'id)
+       #'%validate-file-system-flags))))
+
 ;; File system declaration.
 (define-record-type* <file-system> %file-system
   make-file-system
@@ -115,7 +155,8 @@
   (mount-point      file-system-mount-point)      ; string
   (type             file-system-type)             ; string
   (flags            file-system-flags             ; list of symbols
-                    (default '()))
+                    (default '())
+                    (sanitize validate-file-system-flags))
   (options          file-system-options           ; string or #f
                     (default #f))
   (mount?           file-system-mount?            ; Boolean

@@ -1181,7 +1181,7 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public libosmium
   (package
     (name "libosmium")
-    (version "2.15.6")
+    (version "2.17.1")
     (source
      (origin
        (method git-fetch)
@@ -1190,7 +1190,7 @@ to create databases that are optimized for rendering/tile/map-services.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rqy18bbakp41f44y5id9ixh0ar2dby46z17p4115z8k1vv9znq2"))))
+        (base32 "0xw71lrw4q4sdm51rl0zg87ywxfkxbw9h52zqim0z0xl5qh5q8xf"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("boost" ,boost)
@@ -1214,7 +1214,7 @@ OpenStreetMap data.")
 (define-public osm2pgsql
   (package
     (name "osm2pgsql")
-    (version "1.2.2")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1223,7 +1223,7 @@ OpenStreetMap data.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j35aa8qinhavliqi5pdm0viyi7lm5xyk402rliaxxs1r2hbsafn"))
+        (base32 "0i18mskcs087dn3f3h9n7j0wafn8502m0h13mrjwin38xsz0crfj"))
        (modules '((guix build utils)))
        (snippet
         '(begin

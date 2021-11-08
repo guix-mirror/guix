@@ -1734,14 +1734,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.18")
+    (version "1.8.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "19b0anfrkg4lqp4h13qi2rqgwvipp1ga0id237nwbp7b6ypn5z0l"))))
+        (base32 "0ssj8izcw1fywihlip6wljd9i41w23cy0vp69sz4v1vn26cf389l"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1772,6 +1772,8 @@ addons which can add many functionalities to the base client.")
                ;; connection, instead look up and ping debian.org.
                (substitute* (string-append bin "/msmtpq")
                  (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))))))))
+    (properties
+     '((release-monitoring-url . "https://marlam.de/msmtp/download/")))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
     (description

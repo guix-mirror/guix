@@ -15,7 +15,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
+;;; Copyright © 2018, 2021 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -616,7 +616,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "6.8")
+    (version "6.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -634,7 +634,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; const char* date = \
                     #t)))
               (sha256
                (base32
-                "16x7bkzbrk0rgywq5vrkhf2z3jj08jw1bvaq9vwlf2b4h4sd7i4s"))
+                "0vlcbd70y0an881zv87kc3akmaiz4w7whsy3yaiiqqjww35jg1mm"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -2207,14 +2207,14 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jalv
   (package
     (name "jalv")
-    (version "1.6.4")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/jalv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1wwfn7yzbs37s2rdlfjgks63svd5g14yyzd2gdl7h0z12qncwsy2"))))
+                "05lycfq0f06zjp5xqvzjz9hx9kmqx72yng1lghh76hv63dw43lcj"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2612,14 +2612,14 @@ frequencies.  This data is then formatted to MIDI and written to disk.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.10")
+    (version "0.24.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1565zy0yz46cf2f25pi46msdnzkj6bbhml9gfigdpjnsdlyskfyi"))))
+               "0qchfsyrsrp2pdpd59025kllycr04ddpzd03ha1iz70ci687g8r6"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2629,15 +2629,13 @@ frequencies.  This data is then formatted to MIDI and written to disk.")
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib"))
-            #t))
+                                   (assoc-ref outputs "out") "/lib"))))
          (add-after 'unpack 'full-store-path-to-shared-library
            (lambda* (#:key outputs #:allow-other-keys)
              (with-directory-excursion "bindings/python"
                (substitute* "lilv.py"
                  (("liblilv-0.so") (string-append (assoc-ref outputs "out")
-                                                  "/lib/liblilv-0.so"))))
-             #t)))))
+                                                  "/lib/liblilv-0.so")))))))))
     ;; Required by lilv-0.pc.
     (propagated-inputs
      `(("lv2" ,lv2)
@@ -2658,14 +2656,14 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.18.0")
+    (version "1.18.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://lv2plug.in/spec/lv2-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0gs7401xz23q9vajqr31aa2db8dvssgyh5zrvr4ipa6wig7yb8wh"))))
+               "0pp0n9x1rg8d4fw853z9cvfifjdi4bl85yjxxddqa1acfjy1z2af"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -3316,7 +3314,7 @@ Suil currently supports every combination of Gtk, Qt, and X11.")
 (define-public libebur128
   (package
     (name "libebur128")
-    (version "1.2.4")
+    (version "1.2.6")
     (source
      (origin
        (method git-fetch)
@@ -3325,7 +3323,7 @@ Suil currently supports every combination of Gtk, Qt, and X11.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n81rnm8dm1zmibkr2v3q79rsd609y0dbbsrbay18njcjva88p0g"))))
+        (base32 "0xkpz5rzz1j1srhprbh89669gw8z5f1njpvcnxqgf7qax69vd8sh"))))
     (build-system cmake-build-system)
     (arguments
      `(;; Tests require proprietary .wav files. See
@@ -4921,7 +4919,7 @@ workstations as well as consumer software such as music players.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "1.3.0")                     ;marked unmaintained as of Oct. 2021
+    (version "1.3.1")                     ;marked unmaintained as of Oct. 2021
     (source
      (origin
        (method git-fetch)
@@ -4930,7 +4928,7 @@ workstations as well as consumer software such as music players.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16j9zp5i7svq3g38rfb6h257qfgnd2brrxi7cjd2pdax9xxwj40y"))))
+        (base32 "1zb2k2a4m7z2ravqrjn8fq8lic20wbr2m8kja3p3113jsk7j9zvd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included

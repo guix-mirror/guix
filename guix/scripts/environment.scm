@@ -34,6 +34,7 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix transformations)
+  #:autoload   (ice-9 ftw) (scandir)
   #:autoload   (gnu build linux-container) (call-with-container %namespaces
                                             user-namespace-supported?
                                             unprivileged-user-namespace-supported?
@@ -401,7 +402,12 @@ regexps in WHITE-LIST."
 
   (match command
     ((program . args)
-     (apply execlp program program args))))
+     (catch 'system-error
+       (lambda ()
+         (apply execlp program program args))
+       (lambda _
+         ;; Following established convention, exit with 127 upon ENOENT.
+         (primitive-_exit 127))))))
 
 (define (child-shell-environment shell profile manifest)
   "Create a child process, load PROFILE and MANIFEST, and then run SHELL in
@@ -552,6 +558,38 @@ running in a \"container\", immune to the issue described above."))
         (info (G_ "All is good!  The shell gets correct environment \
 variables.~%")))))
 
+(define (suggest-command-name profile command)
+  "COMMAND was not found in PROFILE so display a hint suggesting the closest
+command name."
+  (define not-dot?
+    (match-lambda
+      ((or "." "..") #f)
+      (_ #t)))
+
+  (match (scandir (string-append profile "/bin") not-dot?)
+    (() #f)
+    (available
+     (match command
+       ((executable _ ...)
+        ;; Look for a suggestion with a high threshold: a suggestion is
+        ;; usually better than no suggestion.
+        (let ((closest (string-closest executable available
+                                       #:threshold 12)))
+          (unless (or (not closest) (string=? closest executable))
+            (display-hint (format #f (G_ "Did you mean '~a'?~%")
+                                  closest)))))))))
+
+(define (validate-exit-status profile command status)
+  "When STATUS, an integer as returned by 'waitpid', is 127, raise a \"command
+not found\" error.  Otherwise return STATUS."
+  ;; Most likely, exit value 127 means ENOENT.
+  (when (eqv? (status:exit-val status) 127)
+    (report-error (G_ "~a: command not found~%")
+                  (first command))
+    (suggest-command-name profile command)
+    (exit 1))
+  status)
+
 (define* (launch-environment/fork command profile manifest
                                   #:key pure? (white-list '()))
   "Run COMMAND in a new process with an environment containing PROFILE, with
@@ -563,7 +601,8 @@ regexps in WHITE-LIST."
                            #:pure? pure?
                            #:white-list white-list))
     (pid (match (waitpid pid)
-           ((_ . status) status)))))
+           ((_ . status)
+            (validate-exit-status profile command status))))))
 
 (define* (launch-environment/container #:key command bash user user-mappings
                                        profile manifest link-profile? network?
@@ -583,6 +622,9 @@ WHILE-LIST."
   (define (optional-mapping->fs mapping)
     (and (file-exists? (file-system-mapping-source mapping))
          (file-system-mapping->bind-mount mapping)))
+
+  (define (exit/status* status)
+    (exit/status (validate-exit-status profile command status)))
 
   (mlet %store-monad ((reqs (inputs->requisites
                              (list (direct-store-path bash) profile))))
@@ -640,7 +682,7 @@ WHILE-LIST."
                                       '())
                                   (map file-system-mapping->bind-mount
                                        mappings))))
-       (exit/status
+       (exit/status*
         (call-with-container file-systems
           (lambda ()
             ;; Setup global shell.

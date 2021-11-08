@@ -1,0 +1,20 @@
+From 3006390c0058f06c255d9850327163aebcdc3b40 Mon Sep 17 00:00:00 2001
+From: Petr Hodina <phodina@protonmail.com>
+Date: Mon, 11 Oct 2021 22:35:39 +0200
+Subject: [PATCH] Enable unstable features.
+
+
+diff --git a/src/main.rs b/src/main.rs
+index d9e964b..820e22e 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -1,3 +1,6 @@
++#![feature(bool_to_option)]
++#![feature(clamp)]
++
+ #[macro_use]
+ mod de;
+ #[macro_use]
+--
+2.33.0
+

@@ -2198,7 +2198,7 @@ easy, requiring concise and simple code.")
      "UnQLite is an in-process software library which implements a
 self-contained, serverless, zero-configuration, transactional NoSQL
 database engine.  UnQLite is a document store database similar to
-MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
+Redis, CouchDB, etc., as well as a standard key/value store
 similar to BerkeleyDB, LevelDB, etc.")
     (license license:bsd-2)))
 
@@ -2961,13 +2961,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.4.23")
+    (version "1.4.26")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "10vm8hm8w4yfsab076ak8r4vp5v1jqdi71cky6dhha7mh5l29zvn"))))
+       (base32 "06imr96jirwmkc8mkxrl9bi413yd3638lc5idn65xx8fv7bzkivb"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
@@ -2979,7 +2979,9 @@ Database API 2.0T.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "py.test"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "py.test")))))))
     (home-page "https://www.sqlalchemy.org")
     (synopsis "Database abstraction library")
     (description
@@ -2989,6 +2991,18 @@ provides a full suite of well known enterprise-level persistence patterns,
 designed for efficient and high-performing database access, adapted into a
 simple and Pythonic domain language.")
     (license license:x11)))
+
+(define-public python-sqlalchemy-1.3
+  (package
+    (inherit python-sqlalchemy)
+    (version "1.3.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "SQLAlchemy" version))
+       (sha256
+        (base32 "18b9am7bsqc4nj3d2h5r93i002apczxfvpfpcqbd6f0385zmrwnj"))))
+    (propagated-inputs '())))
 
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))

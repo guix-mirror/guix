@@ -65,6 +65,8 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,6 +153,7 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -171,6 +174,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -4276,14 +4280,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.11.2")
+    (version "12.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "0v9f93lsdcv3ia28y8iihx9nj9zp6fpf5hkdrpl4ypw159d97fhg"))))
+               "1p1j5cf4ry57dcgm7qx2g2s00z1c6qgjabb4kqjp00yz00wgv85v"))))
     (build-system cmake-build-system)
     (inputs
      `(("allegro" ,allegro)
@@ -4313,7 +4317,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.6.1")
+    (version "7.1")
     (source
      (origin
        (method url-fetch)
@@ -4321,10 +4325,10 @@ engine.  When you start it you will be prompted to download a graphics set.")
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0jgy8xv7r72m127qn09vr3rxhnbakl2990f7lldsk0d5d8n993vd"))))
+         "0nhzlk6s73qvznm5fdwcs1b42g2plf26s5ag39fvck45zm7m48jk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "INSTALL_DIR="
                                          (assoc-ref %outputs "out")
                                          "/share/games/openttd/baseset/opengfx"))
@@ -4352,7 +4356,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                      ("grfcodec" ,grfcodec)
                      ("nml" ,nml)
                      ("which" ,which)
-                     ("python" ,python-2)))
+                     ("python" ,python)))
     (home-page "http://dev.openttdcoop.org/projects/opengfx")
     (synopsis "Base graphics set for OpenTTD")
     (description
@@ -4372,7 +4376,7 @@ OpenGFX provides you with...
 (define openttd-opensfx
   (package
     (name "openttd-opensfx")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -4381,11 +4385,11 @@ OpenGFX provides you with...
              version "/opensfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "06vycppqcxbfdqlxzna5xr303zgcmpcvj6ylw5b2ws0ssph2f1s0"))))
+         "0aym026lg0r7dp3jxxs9c0rj8lwy1fz3v9hmk3mml6sycsg3fv42"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("catcodec" ,catcodec)
-       ("python" ,python-2)
+       ("python" ,python)
        ("tar" ,tar)))
     (arguments
      `(#:make-flags
@@ -4422,7 +4426,7 @@ the original Transport Tycoon Deluxe.")
 (define openttd-openmsx
   (package
     (name "openttd-openmsx")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
@@ -4431,11 +4435,13 @@ the original Transport Tycoon Deluxe.")
              version "/openmsx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0prjljsdgdxqdhhcriqskqha004ybs575xcjq80zha3pqnmrdk0k"))))
+         "0h583d8fxy78kc3jvpp78r76a48qhxrhm4q7jbnj74aw0kwrcl8g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("grfcodec" ,grfcodec)
-       ("python" ,python-2)
+       ; Scripts are Python3 compatible, but call the interpreter as
+       ; python instead of python3.
+       ("python" ,python-wrapper)
        ("tar" ,tar)))
     (arguments
      `(#:make-flags
@@ -4484,6 +4490,7 @@ Transport Tycoon Deluxe.")
      `(("opengfx" ,openttd-opengfx)
        ("openmsx" ,openttd-openmsx)
        ("opensfx" ,openttd-opensfx)
+       ("gcc" ,gcc-9)                   ; for #include <charconv>
        ,@(package-native-inputs openttd-engine)))))
 
 (define openrct2-title-sequences
@@ -6647,7 +6654,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.23b-alpha")
+    (version "0.0.25b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -6655,21 +6662,10 @@ fight against their plot and save his fellow rabbits from slavery.")
                            version "-unix-data.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "04x7729hk6zw1xj3n4s4lvaviijsnbjf5rhzvjxlr5fygvg4l6z1"))
-       (modules '((guix build utils)))
-       (snippet
-        #~(begin
-            (for-each (lambda (name)
-                        (let* ((dir (string-append "binaries/data/mods/" name))
-                               (file (string-append dir "/" name ".zip"))
-                               (unzip #$(file-append unzip "/bin/unzip")))
-                          (invoke unzip "-d" dir file)
-                          (delete-file file)))
-                      '("mod" "public"))
-            #t))))
+        (base32 "1c9zrddmjxvvacismld6fbwbw9vrdbq6g6d3424p8w5p6xg5wlwy"))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
+                     ("unzip" ,unzip)
                      ("xz" ,xz)))
     (arguments
      `(#:modules ((guix build utils))
@@ -6679,10 +6675,17 @@ fight against their plot and save his fellow rabbits from slavery.")
          (let ((out (assoc-ref %outputs "out"))
                (source (assoc-ref %build-inputs "source"))
                (tar (search-input-file %build-inputs "/bin/tar"))
+               (unzip (search-input-file %build-inputs "/bin/unzip"))
                (xz-path (string-append (assoc-ref %build-inputs "xz") "/bin")))
            (setenv "PATH" xz-path)
            (mkdir out)
-           (invoke tar "xvf" source "-C" out "--strip=3")))))
+           (invoke tar "xvf" source "-C" out "--strip=3")
+           (for-each (lambda (name)
+                       (let* ((dir (string-append out "/mods/" name))
+                              (file (string-append dir "/" name ".zip")))
+                         (invoke unzip "-o" "-d" dir file)
+                         (delete-file file)))
+                     '("mod" "public"))))))
     (synopsis "Data files for 0ad")
     (description "0ad-data provides the data files required by the game 0ad.")
     (home-page "https://play0ad.com")
@@ -6700,7 +6703,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.23b-alpha")
+    (version "0.0.25b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -6708,23 +6711,24 @@ fight against their plot and save his fellow rabbits from slavery.")
                            version "-unix-build.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "0draa53xg69i5qhqym85658m45xhwkbiimaldj4sr3703rjgggq1"))))
-       ;; A snippet here would cause a build failure because of timestamps
-       ;; reset.  See https://bugs.gnu.org/26734.
+        (base32 "1p9fa8f7sjb9c5wl3mawzyfqvgr614kdkhrj2k4db9vkyisws3fp"))))
+    ;; A snippet here would cause a build failure because of timestamps
+    ;; reset.  See https://bugs.gnu.org/26734.
     (inputs
      `(("0ad-data" ,0ad-data)
        ("curl" ,curl)
        ("enet" ,enet)
+       ("fmt" ,fmt)
        ("gloox" ,gloox)
-       ("icu4c" ,icu4c)
+       ("icu4c" ,icu4c-68)
+       ("libidn" ,libidn)
        ("libpng" ,libpng)
        ("libsodium" ,libsodium)
        ("libvorbis" ,libvorbis)
        ("libxcursor" ,libxcursor)
        ("libxml2" ,libxml2)
        ("miniupnpc" ,miniupnpc)
-       ("mozjs-38" ,mozjs-38)
+       ("mozjs" ,mozjs-78)
        ("openal" ,openal)
        ("sdl2" ,sdl2)
        ("wxwidgets" ,wxwidgets)
@@ -6732,29 +6736,27 @@ fight against their plot and save his fellow rabbits from slavery.")
     (native-inputs
      `(("boost" ,boost)
        ("cmake" ,cmake-minimal)
+       ("cxxtest" ,cxxtest)
        ("mesa" ,mesa)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("config=release" "verbose=1" "-C" "build/workspaces/gcc")
+       #:tests? #f                      ;tests fail currently
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundles
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (delete-file-recursively "libraries/source/spidermonkey")
-             #t))
-         (add-after 'unpack 'fix-x11-includes
-           (lambda _
-             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
-               (("<Xlib.h>") "<X11/Xlib.h>"))
-             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
-               (("<Xatom.h>") "<X11/Xatom.h>"))
-             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
-               (("<Xcursor/Xcursor.h>") "<X11/Xcursor/Xcursor.h>"))
-             #t))
+             (delete-file-recursively "libraries/source/cxxtest-4.4")
+             (substitute* "build/premake/premake5.lua"
+               (("rootdir\\.\\.\"\\/libraries\\/source\\/cxxtest-4.4\\/bin\\/cxxtestgen\"")
+                (string-append "\"" (assoc-ref inputs "cxxtest")
+                               "/bin/cxxtestgen"
+                               "\"")))))
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (let* ((jobs (number->string (parallel-job-count)))
                     (out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
@@ -6762,11 +6764,13 @@ fight against their plot and save his fellow rabbits from slavery.")
                (setenv "JOBS" (string-append "-j" jobs))
                (setenv "CC" "gcc")
                (with-directory-excursion "build/workspaces"
-                 (invoke "./update-workspaces.sh"
-                         (string-append "--libdir=" lib)
-                         (string-append "--datadir=" data)
-                         ;; TODO: "--with-system-nvtt"
-                         "--with-system-mozjs38")))))
+                 (apply invoke
+                        `("./update-workspaces.sh"
+                          ,(string-append "--libdir=" lib)
+                          ,(string-append "--datadir=" data)
+                          ;; TODO: "--with-system-nvtt"
+                          "--with-system-mozjs"
+                          ,@(if tests? '() '("--without-tests"))))))))
          (delete 'check)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -6776,7 +6780,9 @@ fight against their plot and save his fellow rabbits from slavery.")
                     (lib (string-append out "/lib"))
                     (data (string-append out "/share/0ad"))
                     (applications (string-append out "/share/applications"))
-                    (pixmaps (string-append out "/share/pixmaps"))
+                    (hicolor (string-append out "/share/icons/hicolor/128x128/apps"))
+                    (metainfo (string-append out "/share/metainfo"))
+                    (mime (string-append out "/share/mime/application"))
                     (0ad-data (assoc-ref inputs "0ad-data")))
                ;; data
                (copy-recursively "data" data)
@@ -6795,12 +6801,14 @@ fight against their plot and save his fellow rabbits from slavery.")
                ;; resources
                (with-directory-excursion "../build/resources"
                  (install-file "0ad.desktop" applications)
-                 (install-file "0ad.png" pixmaps))
-               #t)))
+                 (install-file "0ad.png" hicolor)
+                 (install-file "0ad.appdata.xml" metainfo)
+                 (install-file "pyrogenesis.xml" mime)))))
          (add-after 'install 'check
-           (lambda _
-             (with-directory-excursion "system"
-               (invoke "./test")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "system"
+                 (invoke "./test"))))))))
     (home-page "https://play0ad.com")
     (synopsis "3D real-time strategy game of ancient warfare")
     (description "0 A.D. is a real-time strategy (RTS) game of ancient
@@ -9242,7 +9250,7 @@ levels to unlock.")
 (define simgear
   (package
     (name "simgear")
-    (version "2018.3.5")
+    (version "2020.3.11")
     (source
      (origin
        (method url-fetch)
@@ -9250,22 +9258,31 @@ levels to unlock.")
                            (version-major+minor version) "/"
                            "simgear-" version ".tar.bz2"))
        (sha256
-        (base32 "1vkqm66r1205k3hdjmx5wmx5kvmsb0dgfzrs8n5gqnxj8szs42dl"))))
+        (base32 "0g2g3n3sb6kdimvcrn9kvlhyyrp5c6lx20fgzz8l609v5aygr3dv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; There are some bundled libraries.
+           (for-each delete-file-recursively
+                     '("3rdparty/expat/"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags (list "-DSYSTEM_EXPAT=ON")
+       #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; Skip tests that require internet access.
-             (invoke "ctest" "-E" "(http|dns)"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Skip tests that require internet access.
+               (invoke "ctest" "-E" "(http|dns)")))))))
     (inputs
-     `(("boost" ,boost-for-mysql)       ; fails with 1.69
+     `(("boost" ,boost)
        ("curl" ,curl)
        ("expat" ,expat)
        ("mesa" ,mesa)
        ("openal" ,openal)
-       ("openscenegraph" ,openscenegraph-3.4)
+       ("openscenegraph" ,openscenegraph)
        ("zlib" ,zlib)))
     (home-page "https://home.flightgear.org/")
     (synopsis "Libraries for 3D simulations and games")
@@ -9286,41 +9303,42 @@ and also provides the base for the FlightGear Flight Simulator.")
                            (version-major+minor version) "/"
                            "flightgear-" version ".tar.bz2"))
        (sha256
-        (base32 "0ya3vb539kwi1qrifqhsj5j3k4w6s06hrllp2vdzxf6id7cgf0hc"))
+        (base32 "15sar94x13j2y1m6adgmz2q1m1i9bzj3sxqla6y3m9vyf33hc9zy"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; There are some bundled libraries.
            (for-each delete-file-recursively
-                     '("3rdparty/sqlite3/"))
+                     '("3rdparty/sqlite3/"
+                       "3rdparty/cppunit/"))
            #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags
        (list "-DSYSTEM_SQLITE=ON"
+             "-DSYSTEM_CPPUNIT=ON"
              (string-append "-DFG_DATA_DIR="
                             (assoc-ref %outputs "out")
                             "/share/flightgear"))
-       ;; TODO: test cannot be run because the "run_test_suite" executable
-       ;; does not seem to be built.
+       ;; TODO: test suite segfaults.
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/fgfs")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtdeclarative" "qtsvg")))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/qml"))
-                         '("qtdeclarative" "qtsvg"))))
-               #t)))
+         (add-after 'unpack 'skip-some-tests
+           (lambda _
+             (substitute* "test_suite/unit_tests/Instrumentation/test_gps.hxx"
+               (("CPPUNIT_TEST\\(testLongLegWestbound\\);" all)
+                (string-append "// " all))
+               (("CPPUNIT_TEST\\(testFinalLegCourse\\);" all)
+                (string-append "// " all)))))
+         (add-after 'build 'build-test-suite
+           (lambda* args
+             ((assoc-ref %standard-phases 'build)
+              #:make-flags (list "fgfs_test_suite"))))
+         ;; Test suite needs access to FGData so run it after 'install.
+         (delete 'check)
+         (add-after 'install-data 'check
+           (assoc-ref %standard-phases 'check))
          (add-after 'install 'install-data
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out") "/share/flightgear")))
@@ -9330,7 +9348,7 @@ and also provides the base for the FlightGear Flight Simulator.")
                          "--strip-components=1")))
              #t)))))
     (inputs
-     `(("boost" ,boost-for-mysql)       ; same as simgear
+     `(("boost" ,boost)
        ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("freeglut" ,freeglut)
@@ -9338,7 +9356,7 @@ and also provides the base for the FlightGear Flight Simulator.")
        ("glew" ,glew)
        ("libpng" ,libpng)
        ("openal" ,openal)
-       ("openscenegraph" ,openscenegraph-3.4)
+       ("openscenegraph" ,openscenegraph)
        ("plib" ,plib)
        ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
@@ -9356,11 +9374,11 @@ and also provides the base for the FlightGear Flight Simulator.")
            (method url-fetch)
            (uri (string-append "mirror://sourceforge/flightgear/release-"
                                (version-major+minor version) "/"
-                               "FlightGear-" version "-data.tar.bz2"))
+                               "FlightGear-" version "-data.txz"))
            (sha256
             (base32
-             "04fv9za5zlyxlyfh6jx78y42l3jazvzl9dq2y6rzxqlcc9g5swhk"))))))
-    (home-page "https://home.flightgear.org/")
+             "0n5mw9vw1snab16c1y3i9ylkiv54az57bs2mvpq20hhg5hdiagqj"))))))
+    (home-page "https://www.flightgear.org/")
     (synopsis "Flight simulator")
     (description "The goal of the FlightGear project is to create a
 sophisticated flight simulator framework for use in research or academic
@@ -12656,7 +12674,7 @@ disassembly of the DOS version, extended with new features.")
 (define-public fheroes2
   (package
     (name "fheroes2")
-    (version "0.9.8")
+    (version "0.9.9")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -12676,7 +12694,7 @@ disassembly of the DOS version, extended with new features.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sc7rmyiciahxh5f6rarhil2hrw8q8sjdssh063grji50mlnrf6a"))))
+        (base32 "030kfaagxy3i7bjvbx2nf05jmbbh5g2r52l17y9bl6vbfj67yvxy"))))
     (home-page "https://ihhub.github.io/fheroes2/")
     (synopsis "Turn-based strategy game engine")
     (description "@code{fheroes2} is an implementation of Heroes of Might and

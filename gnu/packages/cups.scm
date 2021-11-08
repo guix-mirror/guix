@@ -502,14 +502,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.21.8")
+    (version "3.21.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "076fjzgw86q817c660h1vzwdp00cyjr49b9bfi7qkhphq6am4gpi"))
+                "0q3adcp8iygravp4bq4gw14jk20c5rhnawj1333qyw8yvlghw8yy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -524,9 +524,13 @@ should only be used as part of the Guix cups-pk-helper service.")
                   (delete-file "prnt/hpcups/ImageProcessor.h")
                   (substitute* "Makefile.in"
                     ((" -lImageProcessor ") " ")
-                    (("(\\@HPLIP_BUILD_TRUE\\@[[:blank:]]*).*libImageProcessor.*"
+                    ;; Turn shell commands inside an if…fi into harmless no-ops.
+                    (("^(\\@HPLIP_BUILD_TRUE\\@[[:blank:]]*).*libImageProcessor.*"
                       _ prefix)
-                     (string-append prefix ":; \\\n")))
+                     (string-append prefix ": ; \\\n"))
+                    ;; Remove the lines adding file targets altogether.
+                    (("^\\@FULL_BUILD_TRUE\\@.*libImageProcessor.*")
+                     ""))
 
                   ;; Install binaries under libexec/hplip instead of
                   ;; share/hplip; that'll at least ensure they get stripped.

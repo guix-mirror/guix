@@ -1294,3 +1294,32 @@ a sidebar that displays the ctags-generated tags of the current file, ordered
 by their scope.  This means that for example methods in C++ are displayed under
 the class they are defined in.")
     (license license:vim)))
+
+(define-public vim-nerdcommenter
+  (let ((commit "a65465d321f2f8a74b2ffa540b9b87563f7e12e8")
+        (revision "1"))
+    (package
+      (name "vim-nerdcommenter")
+      (version (git-version "2.5.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/preservim/nerdcommenter")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00ir65iv8jfbgzjmj7332fmydh0qhabbhx8zbvd3j6pgfxqpaafw"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan
+         '(("autoload" "share/vim/vimfiles/")
+           ("doc" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (home-page "https://github.com/preservim/nerdcommenter")
+      (synopsis "Vim plugin for easy commenting of code")
+      (description
+       "NERD commenter is a Vim plugin that provides many different commenting
+operations and styles which are invoked via key mappings and a menu.  These
+operations are available for most filetypes.")
+      (license license:cc0))))

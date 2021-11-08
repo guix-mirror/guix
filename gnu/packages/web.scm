@@ -370,18 +370,18 @@ the same, being completely separated from the Internet.")
 (define-public nginx
   (package
     (name "nginx")
+    ;; Please update the nginx-documentation package together with this one!
     ;; Track the ‘mainline’ branch.  Upstream considers it more reliable than
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
-    ;; Please update the nginx-documentation package together with this one!
-    (version "1.21.3")
+    (version "1.21.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nhps7igdqcpcy1r8677ar807rfclpylmz3y858a678m1np4lxql"))))
+                "1ziv3xargxhxycd5hp6r3r5mww54nvvydiywcpsamg3i9r3jzxyi"))))
     (build-system gnu-build-system)
     (inputs `(("libxml2" ,libxml2)
               ("libxslt" ,libxslt)
@@ -476,9 +476,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.21.3")
-        (revision 2769)
-        (changeset "16f6fa718be2"))
+  (let ((version "1.21.4")
+        (revision 2791)
+        (changeset "9385526a9b2d"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -490,7 +490,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "1rjq5xqzx843yk9nblz8lq14r4kmlrahap7m0lkvx5mky80vqp79"))))
+                 "07v5vpwg2k4y1asbygmrvsk61l1vbdb2pyllc5k4hcjykg9avfza"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite

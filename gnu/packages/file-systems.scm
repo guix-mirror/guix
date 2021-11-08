@@ -1029,8 +1029,8 @@ APFS.")
 
 (define-public xfstests
   ;; The last release (1.1.0) is from 2011.
-  (let ((revision "0")
-        (commit "1c18b9ec2fcc94bd05ecdd136aa51c97bf3fa70d"))
+  (let ((revision "1")
+        (commit "bae1d15f6421cbe99b3e2e134c39d50248e7c261"))
     (package
       (name "xfstests")
       (version (git-version "1.1.0" revision commit))
@@ -1042,7 +1042,7 @@ APFS.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0rrv0rs9nhaza0jk5k0bj27w4lcd1s4a1ls8nr679qi02bgx630x"))))
+          (base32 "01y7dx5sx1xg3dycqlp2b6azclz3xcnx7vdy2rr6zmf210501xd9"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases

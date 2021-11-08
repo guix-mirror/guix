@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6242,3 +6243,79 @@ communicate with Microsoft Azure Storage services.")
 comments, or tags from HTML snippets, extract base url from HTML snippets,
 translate entities on HTML strings, among other things.")
     (license license:bsd-3)))
+
+(define-public python-webcolors
+  (package
+    (name "python-webcolors")
+    (version "1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "webcolors" version))
+       (sha256
+        (base32 "1rkda75h2p65zx6r84c9mjavn4xpviqvqrklvdvcklapd5in1wvn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ubernostrum/webcolors")
+    (synopsis "HTML/CSS color definitions library")
+    (description "@code{python-webcolors} is a module for working with
+HTML/CSS color definitions.  Normalizing and converting between the following
+formats is supported.
+@itemize
+@item Specification-defined color names
+@item Six-digit hexadecimal
+@item Three-digit hexadecimal
+@item Integer rgb() triplet
+@item Percentage rgb() triplet
+@end itemize
+Only the RGB colorspace is supported.  Conversion to/from the HSL colorspace
+can be handled by the @code{colorsys} module in the Python standard library.")
+    (license license:bsd-3)))
+
+(define-public python-flask-combo-jsonapi
+  (package
+    (name "python-flask-combo-jsonapi")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AdCombo/flask-combo-jsonapi")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07fhcjiyif80z1vyh35za29sqx1mmqh568jrbrrs675j4a797sj1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-marshmallow" ,python-marshmallow-3.2)
+       ("python-marshmallow-jsonapi" ,python-marshmallow-jsonapi)
+       ("python-simplejson" ,python-simplejson)
+       ("python-sqlalchemy" ,python-sqlalchemy-1.3)
+       ("python-apispec" ,python-apispec)
+       ("python-simplejson" ,python-simplejson)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/AdCombo/flask-combo-jsonapi")
+    (synopsis "Flask extension to quickly create JSON:API 1.0 REST Web APIs")
+    (description
+     "Flask-COMBO-JSONAPI is a Python Flask extension for building REST Web APIs
+compliant with the @uref{https://jsonapi.org, JSON:API 1.0} specification.
+
+It tries to combine the power of Flask-Restless with the flexibility of
+Flask-RESTful to quickly build APIs that fit the complexity of existing
+real-life projects with legacy data and diverse storage providers.")
+    (license license:expat)))

@@ -19203,9 +19203,50 @@ address is valid and really exists.")
        ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/marshmallow-code/marshmallow")
     (synopsis "Convert complex datatypes to and from native
-Python datatypes.")
+Python datatypes")
     (description "@code{marshmallow} provides a library for converting
 complex datatypes to and from native Python datatypes.")
+    (license license:expat)))
+
+(define-public python-marshmallow-3.2
+  (package
+    (inherit python-marshmallow)
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "marshmallow" version))
+       (sha256
+        (base32 "1w18klwj0z9bqxj252qpj1hz8l46nl27sbc89rkajc7mln73wbws"))))))
+
+(define-public python-marshmallow-jsonapi
+  (package
+    (name "python-marshmallow-jsonapi")
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "marshmallow-jsonapi" version))
+       (sha256
+        (base32 "1d9pxcgmln4gls99vwj1h24qv0lz7fb2jqmqrsiv1pid1snc125x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-marshmallow" ,python-marshmallow-3.2)))
+    (native-inputs
+     `(("python-faker" ,python-faker)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flask" ,python-flask)
+       ("python-mock" ,python-mock)
+       ("python-pre-commit" ,python-pre-commit)
+       ("python-pytest" ,python-pytest)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/marshmallow-code/marshmallow-jsonapi")
+    (synopsis "JSON:API 1.0 formatting with Marshmallow")
+    (description
+     "The marshmallow-jsonapi package provides a simple way to produce
+@uref{https://jsonapi.org, JSON:API}-compliant data in any Python Web framework.
+It includes optional utilities to integrate with Flask.")
     (license license:expat)))
 
 (define-public python-apispec

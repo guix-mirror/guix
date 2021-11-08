@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019, 2020, 2021 Joseph LaFreniere <joseph@lafreniere.xyz>
+;;; Copyright © 2019 Todor Kondić <tk.code@protonmail.com>15669
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -280,7 +281,7 @@ e.g. emacs-geiser-guile for Guile.")
 (define-public emacs-geiser-guile
   (package
     (name "emacs-geiser-guile")
-    (version "0.17")
+    (version "0.18")
     (source
      (origin
        (method git-fetch)
@@ -289,7 +290,7 @@ e.g. emacs-geiser-guile for Guile.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0iw23nlgqppf6f00ly50m8lq85n9mv244pw3whxv0hynfjxr2ic0"))))
+        (base32 "0gndf0w8dbv54bzc04svp2ck8wypa7i3b8kpixf6rkg91l79xpci"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^src/" %default-include)
@@ -304,8 +305,7 @@ e.g. emacs-geiser-guile for Guile.")
                ;; loaded, so let's defer that until it is.
                (("\\(geiser-activate-implementation .*\\)" all)
                 (string-append
-                 "(eval-after-load 'geiser-impl '" all ")")))
-             #t)))))
+                 "(eval-after-load 'geiser-impl '" all ")"))))))))
     (inputs
      `(("guile" ,guile-3.0)))
     (propagated-inputs
@@ -650,22 +650,23 @@ some utility functions, and commands using that infrastructure.")
 (define-public git-modes
   (package
     (name "emacs-git-modes")
-    (version "1.3.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/magit/git-modes")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0m8qfjj5hzxwyyi34sbk11qz5fix6z80hiki0v0a838sq4f586b6"))))
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magit/git-modes")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0aqz65pcqc35h5z4s606f48iqn87h5v9nj3cp6n9yjxa2v7w5hfk"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
     (description
      "This package provides Emacs major modes for editing various Git
-configuration files, such as .gitattributes, .gitignore, and .git/config.")
+configuration files, such as @file{.gitattributes}, @file{.gitignore}, and
+@file{.git/config}.")
     (license license:gpl3+)))
 
 (define-public emacs-with-editor
@@ -1646,6 +1647,19 @@ boilerplate code from defining new Flymake backend functions.")
          (sha256
           (base32 "04yfb4sy41spjzk9mhm4gy0h8vnjx09p2g6nm1yzgd9a5ph9sqgl"))))
       (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'substitute-shellcheck-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (make-file-writable "flymake-shellcheck.el")
+               (emacs-substitute-sexps "flymake-shellcheck.el"
+                 ("defcustom flymake-shellcheck-path"
+                  `(or (executable-find "shellcheck")
+                       ,(string-append (assoc-ref inputs "shellcheck")
+                                       "/bin/shellcheck")))))))))
+      (inputs
+       `(("shellcheck" ,shellcheck)))
       (home-page "https://github.com/federicotdn/flymake-shellcheck")
       (synopsis "Flymake backend for Bash/Sh powered by ShellCheck")
       (description
@@ -12645,7 +12659,6 @@ editing nginx config files.")
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "stream-" version ".tar"))
-       (file-name (git-file-name name version))
        (sha256
         (base32 "00c3n4gyxzv7vczqms0d62kl8zsmjfyxa92mwxn2snyx857a9jfw"))))
     (build-system emacs-build-system)
@@ -13922,14 +13935,14 @@ methods from a given list.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "1.0.4")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".tar"))
        (sha256
-        (base32 "0i2pw90gw9zb22gj8yyvcp3b2k1bxxhbjj0idvr5iz1vd9023bc6"))))
+        (base32 "0ddm149dz71nksbpz7rwa8cax1nisf6wklv5iq4zrcbf5ghpagkg"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
@@ -17677,7 +17690,7 @@ files to be expanded upon opening them.")
 (define-public emacs-ebib
   (package
     (name "emacs-ebib")
-    (version "2.32.2")
+    (version "2.33")
     (source
      (origin
        (method git-fetch)
@@ -17686,10 +17699,11 @@ files to be expanded upon opening them.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04kw0akp35r2ibrcav4kaf34d1xs8pckjiygv7h1nqpv6dmrgfq7"))))
+        (base32 "18gvmymkpzws8s4zjcm1kijyr55dgfcq201z3w1jzhkhcs01bfsc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-biblio" ,emacs-biblio)
+       ("emacs-ivy" ,emacs-ivy)
        ("emacs-parsebib" ,emacs-parsebib)))
     (home-page "https://joostkremers.github.io/ebib/")
     (synopsis "BibTeX database manager for Emacs")
@@ -17732,13 +17746,48 @@ and publications from various sources, by keywords or by DOI.  References are
 automatically fetched from well-curated sources, and formatted as BibTeX.")
     (license license:gpl3+)))
 
+(define-public emacs-citar
+  (package
+    (name "emacs-citar")
+    (version "0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bdarcus/citar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jrfcfr976c9nb2vpfrh6yhck5gm34wcjzbk0m6gq2xg3qfv2g6p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-auctex" ,emacs-auctex)
+       ("emacs-helm-bibtex" ,emacs-helm-bibtex)
+       ("emacs-org" ,emacs-org)
+       ("emacs-parsebib" ,emacs-parsebib)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/bdarcus/citar")
+    (synopsis "Emacs package to quickly find and act on bibliographic entries")
+    (description
+     "This package provides a completing-read front-end to browse and
+act on BibTeX, BibLaTeX, and CSL JSON bibliographic data, and LaTeX,
+markdown, and Org cite editing support.
+
+When used with Vertico (or Selectrum), Embark, and Marginalia, it
+provides similar functionality to helm-bibtex and ivy-bibtex: quick
+filtering and selecting of bibliographic entries from the minibuffer,
+and the option to run different commands against them.
+
+With Embark, it also makes available at-point actions in Org
+citations.")
+    (license license:gpl3+)))
+
 (define-public emacs-helm-bibtex
-  (let ((commit "d4471232be26793fbf56c0ac3690b5f537c378b9")
-        (revision "2"))
+  (let ((commit "aa775340ba691d2322948bfdc6a88158568a1399")
+        (revision "3"))
     (package
       (name "emacs-helm-bibtex")
-      (version (string-append "2.0.0" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "2.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17747,8 +17796,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1bkzhic6qckb267025il1r3xcpz99kisphxiafni1pxvf9jafr0j"))))
+          (base32 "1d3mc17ga09m41i06khghlvixr6gsiacifnhdbrfnp0w5592aprk"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
@@ -25160,6 +25208,27 @@ Dash docsets.")
 through Dash docsets.")
       (license license:expat))))
 
+(define-public emacs-devdocs
+  (package
+    (name "emacs-devdocs")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/"
+             "devdocs-" version ".tar"))
+       (sha256
+        (base32 "1npc7yra7pvf86ahmz1h7hnjxrz15ar1vjcalg4ilizypycpgrwj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/astoff/devdocs.el")
+    (synopsis "Emacs viewer for DevDocs")
+    (description
+     "This package provides a documentation viewer similar to Emacs's
+built-in Info browser, but geared towards documentation obtained from
+@url{https://devdocs.io}.")
+    (license license:gpl3+)))
+
 (define-public emacs-cascading-dir-locals
   (let ((release "0.1")
         (revision "0")
@@ -25635,6 +25704,120 @@ verb commands which would are normally destructive (such as deletion) are
 provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
+
+(define-public emacs-ntlm
+  (package
+    (name "emacs-ntlm")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/ntlm-" version ".el"))
+       (sha256
+        (base32 "01d0bcmh8a36qf871w6bc05kjk9bmnh843m9869xw06zyvqwg9mv"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/ntlm.html")
+    (synopsis "NTLM (NT LanManager) authentication support")
+    (description
+     "This library is a direct translation of the Samba release 2.2.0
+implementation of Windows NT and LanManager compatible password encryption.")
+    (license license:gpl3+)))
+
+(define-public emacs-nadvice
+  (package
+    (name "emacs-nadvice")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "nadvice-" version ".el"))
+       (sha256
+        (base32 "0gi3csnxbs8h7iy0scsl35sic3gv90swa89hhdjwb7qvpirfdcgw"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/nadvice.html")
+    (synopsis "Forward compatibility for Emacs-24.4's nadvice")
+    (description
+     "This package tries to re-implement some of nadvice.el's functionality on
+top of the old defadvice system, to help users of defadvice move to the new
+advice system without dropping support for Emacs<24.4.")
+    (license license:gpl3+)))
+
+(define-public emacs-url-http-ntlm
+  (package
+    (name "emacs-url-http-ntlm")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "url-http-ntlm-" version ".el"))
+       (sha256
+        (base32 "1cakq2ykraci7d1gl8rnpv4f2f5ffyaidhqb1282g7i72adwmb98"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-ntlm" ,emacs-ntlm)))
+    (home-page "https://elpa.gnu.org/packages/url-http-ntlm.html")
+    (synopsis "NTLM authentication for the url library")
+    (description "This package provides a NTLM handler for the URL package.")
+    (license license:gpl3+)))
+
+(define-public emacs-soap-client
+  (package
+    (name "emacs-soap-client")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "soap-client-" version ".tar"))
+       (sha256
+        (base32 "1s0bwnip22nj6kgjadd4zlj9j729hiyyjb66sr51i2mddnf9i95s"))))
+    (build-system emacs-build-system)
+    (home-page "httpa://elpa.gnu.org/packages/soap-client.html")
+    (synopsis "Access SOAP web services")
+    (description
+     "This package provides a SOAP client to access web services.")
+    (license license:gpl3+)))
+
+(define-public emacs-fsm
+  (package
+    (name "emacs-fsm")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/fsm-" version ".el"))
+       (sha256
+        (base32 "1jyxyqdbfl8nv7c50q0sg3w5p7whp1sqgi7w921k5hfar4d11qqp"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/fsm.html")
+    (synopsis "Finite State Machine library")
+    (description
+     "This package provides Finite State Machine library to make asynchronous
+programming in Emacs Lisp easy and fun.")
+    (license license:gpl3+)))
+
+(define-public emacs-excorporate
+  (package
+    (name "emacs-excorporate")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "excorporate-" version ".tar"))
+       (sha256
+        (base32 "1g0wc2kp15ra323b4rxvdh58q9c4h7m20grw6a0cs53m7l9xi62f"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-fsm" ,emacs-fsm)
+       ("emacs-nadvice" ,emacs-nadvice)
+       ("emacs-soap-client" ,emacs-soap-client)
+       ("emacs-url-http-ntlm" ,emacs-url-http-ntlm)))
+    (home-page "https://elpa.gnu.org/packages/excorporate.html")
+    (synopsis "Exchange integration")
+    (description "This package provides Exchange integration for Emacs.")
+    (license license:gpl3+)))
 
 (define-public emacs-evil-traces
   (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
@@ -26618,19 +26801,18 @@ available.")
 (define-public emacs-eshell-did-you-mean
   (package
     (name "emacs-eshell-did-you-mean")
-    (version "0.1")
-    (home-page "https://github.com/xuchunyang/eshell-did-you-mean")
+    (version "0.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url home-page)
+             (url "https://github.com/xuchunyang/eshell-did-you-mean")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0v0wshck5n4hspcv1zk1g2nm6xiigcjp16lx0dc8wzkl6ymljvbg"))))
+        (base32 "158g8b4crm0gf5pilfxf89hdsb22gr1wbrjyx9gf45bmcll3i9vf"))))
     (build-system emacs-build-system)
+    (home-page "https://github.com/xuchunyang/eshell-did-you-mean")
     (synopsis "Display suggestions on 'command not found' in Eshell")
     (description "This library adds a list of 'Did you mean...' suggestions
 when the command was not found in Eshell.  The suggestions are found after the
@@ -27225,14 +27407,14 @@ interface.")
 (define-public emacs-ivy-posframe
   (package
     (name "emacs-ivy-posframe")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "ivy-posframe-" version ".tar"))
        (sha256
-        (base32 "1x6pm0pry2j7yazhxvq1gydbymwll9yg85m8qi4sh8s0pnm0vjzk"))))
+        (base32 "0b498qzaydjrhplx4d7zcrs883dlrhfiz812sv4m3pmhfwifcchh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)

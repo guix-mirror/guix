@@ -107,7 +107,7 @@
   "Texinfo markup in description is invalid"
   (single-lint-warning-message
    (check-description-style
-    (dummy-package "x" (description "f{oo}b@r")))))
+    (dummy-package "x" (description (identity "f{oo}b@r"))))))
 
 (test-equal "description: does not start with an upper-case letter"
   "description should start with an upper-case letter or digit"
@@ -209,7 +209,7 @@
   "Texinfo markup in synopsis is invalid"
   (single-lint-warning-message
    (check-synopsis-style
-    (dummy-package "x" (synopsis "Bad $@ texinfo")))))
+    (dummy-package "x" (synopsis (identity "Bad $@ texinfo"))))))
 
 (test-equal "synopsis: does not start with an upper-case letter"
   "synopsis should start with an upper-case letter or digit"

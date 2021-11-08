@@ -52,10 +52,10 @@
 ;;;
 ;;; The following happens under the hood:
 ;;;
-;;; * <git://code.call-cc.org/eggs-5-latest> is a Git repository that contains
-;;;   the latest version of all CHICKEN eggs.  We look clone this repository
-;;;   and retrieve the latest version number, and the PACKAGE.egg file, which
-;;;   contains a list of lists containing metadata about the egg.
+;;; * <git://code.call-cc.org/eggs-5-all> is a Git repository that contains
+;;;   all versions of all CHICKEN eggs.  We look clone this repository and, by
+;;;   default, retrieve the latest version number, and the PACKAGE.egg file,
+;;;   which contains a list of lists containing metadata about the egg.
 ;;;
 ;;; * All the eggs are stored as tarballs at
 ;;;   <https://code.call-cc.org/egg-tarballs/5>, so we grab the tarball for
@@ -97,7 +97,7 @@ NAME."
 (define (eggs-repository)
   "Update or fetch the latest version of the eggs repository and return the path
 to the repository."
-  (let* ((url "git://code.call-cc.org/eggs-5-latest")
+  (let* ((url "git://code.call-cc.org/eggs-5-all")
          (directory commit _ (update-cached-checkout url)))
     directory))
 
@@ -113,12 +113,13 @@ to the repository."
         (last directory)
         #f)))
 
-(define* (egg-metadata name #:optional file)
-  "Return the package metadata file for the egg NAME, or if FILE is specified,
-return the package metadata in FILE."
+(define* (egg-metadata name #:key (version #f) (file #f))
+  "Return the package metadata file for the egg NAME at version VERSION, or if
+FILE is specified, return the package metadata in FILE."
   (call-with-input-file (or file
                             (string-append (egg-directory name) "/"
-                                           (find-latest-version name)
+                                           (or version
+                                               (find-latest-version name))
                                            "/" name ".egg"))
     read))
 
@@ -174,10 +175,11 @@ return the package metadata in FILE."
 ;;; Egg importer.
 ;;;
 
-(define* (egg->guix-package name #:key (file #f) (source #f))
-  "Import a CHICKEN egg called NAME from either the given .egg FILE, or from
-the latest NAME metadata downloaded from the official repository if FILE is #f.
-Return a <package> record or #f on failure.
+(define* (egg->guix-package name version #:key (file #f) (source #f))
+  "Import a CHICKEN egg called NAME from either the given .egg FILE, or from the
+latest NAME metadata downloaded from the official repository if FILE is #f.
+Return a <package> record or #f on failure.  If VERSION is specified, import
+the particular version from the egg repository.
 
 SOURCE is a ``file-like'' object containing the source code corresponding to
 the egg.  If SOURCE is not specified, the latest tarball for egg NAME will be
@@ -187,8 +189,8 @@ Specifying the SOURCE argument is mainly useful for developing a CHICKEN egg
 locally.  Note that if FILE and SOURCE are specified, recursive import will
 not work."
   (define egg-content (if file
-                          (egg-metadata name file)
-                          (egg-metadata name)))
+                          (egg-metadata name #:file file)
+                          (egg-metadata name #:version version)))
   (if (not egg-content)
       (values #f '())                    ; egg doesn't exist
       (let* ((version* (or (assoc-ref egg-content 'version)
@@ -324,10 +326,11 @@ not work."
 (define egg->guix-package/m                   ;memoized variant
   (memoize egg->guix-package))
 
-(define (egg-recursive-import package-name)
+(define* (egg-recursive-import package-name #:optional version)
   (recursive-import package-name
+                    #:version version
                     #:repo->guix-package (lambda* (name #:key version repo)
-                                           (egg->guix-package/m name))
+                                           (egg->guix-package/m name version))
                     #:guix-name egg-name->guix-name))
 
 

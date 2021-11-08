@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-egg))
@@ -83,21 +84,24 @@ Import and convert the egg package for PACKAGE-NAME.\n"))
                             (_ #f))
                            (reverse opts))))
     (match args
-      ((package-name)
-       (if (assoc-ref opts 'recursive)
-           ;; Recursive import
-           (map (match-lambda
-                  ((and ('package ('name name) . rest) pkg)
-                   `(define-public ,(string->symbol name)
-                      ,pkg))
-                  (_ #f))
-                (egg-recursive-import package-name))
-           ;; Single import
-           (let ((sexp (egg->guix-package package-name)))
-             (unless sexp
-               (leave (G_ "failed to download meta-data for package '~a'~%")
-                      package-name))
-             sexp)))
+      ((spec)
+       (let ((name version (package-name->name+version spec)))
+         (if (assoc-ref opts 'recursive)
+             ;; Recursive import
+             (map (match-lambda
+                    ((and ('package ('name name) . rest) pkg)
+                     `(define-public ,(string->symbol name)
+                        ,pkg))
+                    (_ #f))
+                  (egg-recursive-import name version))
+             ;; Single import
+             (let ((sexp (egg->guix-package name version)))
+               (unless sexp
+                 (leave (G_ "failed to download meta-data for package '~a'~%")
+                        (if version
+                            (string-append name "@" version)
+                            name)))
+               sexp))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

@@ -778,7 +778,7 @@ the opam file format.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -787,7 +787,7 @@ the opam file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12l7l4pbzy71k1yc7ym5aczajszvc9bqkdnfg8xhqc8ch8j1h1lj"))))
+                "12cxpnkv8n90g66b31c7hsxl2yy537fgf19xhr6zn4n024bh6dh3"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."

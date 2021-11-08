@@ -241,7 +241,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
-     '(#:tests? #f ; no tests
+     `(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
        #:configure-flags (list
                           "-DPORT=GTK"
@@ -295,10 +295,24 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
                   (string-append wpebackend-fdo "/lib/" all)))
                #t)))
+         ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                            (%current-system)))
+               '()
+               '((add-after 'unpack 'disable-sse2
+                   (lambda _
+                     (substitute* "Source/cmake/DetectSSE2.cmake"
+                       (("CHECK_FOR_SSE2\\(\\)") ""))))))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CC" "clang")
              (setenv "CXX" "clang++")
+             ;; XXX Until we switch back to using GCC,
+             ;; work around <https://bugs.gnu.org/51591>.
+             ,@(if (target-x86-32?)
+                   '((substitute* "Source/WTF/wtf/CheckedArithmetic.h"
+                       (("#define USE_MUL_OVERFLOW 1")
+                        "#define USE_MUL_OVERFLOW 0")))
+                   '())
              #t))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)

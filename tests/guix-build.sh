@@ -77,6 +77,16 @@ module_dir="t-guix-build-$$"
 mkdir "$module_dir"
 trap "rm -rf $module_dir" EXIT
 
+# Check error reporting for '-f'.
+cat > "$module_dir/foo.scm" <<EOF
+(use-modules (guix))
+) ;extra closing paren
+EOF
+! guix build -f "$module_dir/foo.scm" 2> "$module_dir/stderr"
+grep "read error" "$module_dir/stderr"
+rm "$module_dir/stderr" "$module_dir/foo.scm"
+
+# Check 'GUIX_PACKAGE_PATH' & co.
 cat > "$module_dir/foo.scm"<<EOF
 (define-module (foo)
   #:use-module (guix tests)

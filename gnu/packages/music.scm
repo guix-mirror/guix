@@ -6079,7 +6079,7 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
 (define-public x42-plugins
   (package
     (name "x42-plugins")
-    (version "20200714")
+    (version "20211016")
     (source
      (origin
        (method url-fetch)
@@ -6087,7 +6087,7 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
         (string-append "https://gareus.org/misc/x42-plugins/x42-plugins-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1av05ykph8x67018hm9zfgh1vk0zi39mvrsxkj6bm4hkarxf0vvl"))))
+        (base32 "11bf6q42ihyk4qxwf83y0847zzyl65kwpbk3hmyz0f0ykil5fsb7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -6096,13 +6096,10 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
              "LIBZITACONVOLVER=-lzita-convolver"
              (string-append "FONTFILE="
                             (assoc-ref %build-inputs "font-dejavu")
-                            "/share/fonts/truetype/DejaVuSans-Bold.ttf"))
+                            "/share/fonts/truetype/DejaVuSans-Bold.ttf")
+             (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'set-CC-variable
-           (lambda _
-             (setenv "CC" "gcc")
-             #t))
          (delete 'configure))))
     (inputs
      `(("cairo" ,cairo)

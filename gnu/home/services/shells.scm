@@ -305,18 +305,50 @@ source ~/.profile
 ;;; Bash.
 ;;;
 
+(define (bash-serialize-aliases field-name val)
+  #~(string-append
+     #$@(map
+         (match-lambda
+           ((key . #f)
+            "")
+           ((key . #t)
+            #~(string-append "alias " #$key "\n"))
+           ((key . value)
+            #~(string-append "alias " #$key "=\"" #$value "\"\n")))
+         val)))
+
 (define-configuration home-bash-configuration
   (package
    (package bash)
    "The Bash package to use.")
   (guix-defaults?
    (boolean #t)
-   "Add sane defaults like reading @file{/etc/bashrc}, coloring output
-for @code{ls} provided by guix to @file{.bashrc}.")
+   "Add sane defaults like reading @file{/etc/bashrc} and coloring the output of
+@command{ls} to the end of the @file{.bashrc} file.")
   (environment-variables
    (alist '())
-   "Association list of environment variables to set for the Bash session."
+   "Association list of environment variables to set for the Bash session.  The
+rules for the @code{home-environment-variables-service-type} apply
+here (@pxref{Essential Home Services}).  The contents of this field will be
+added after the contents of the @code{bash-profile} field."
    serialize-posix-env-vars)
+  (aliases
+   (alist '())
+   "Association list of aliases to set for the Bash session.  The aliases will be
+defined after the contents of the @code{bashrc} field has been put in the
+@file{.bashrc} file.  The alias will automatically be quoted, so something line
+this:
+
+@lisp
+'((\"ls\" . \"ls -alF\"))
+@end lisp
+
+turns into
+
+@example
+alias ls=\"ls -alF\"
+@end example"
+   bash-serialize-aliases)
   (bash-profile
    (text-config '())
    "List of file-like objects, which will be added to @file{.bash_profile}.
@@ -387,10 +419,10 @@ alias grep='grep --color=auto'\n")
       (if (or extra-content
               (not (null? ((configuration-field-getter field-obj) config))))
           `(,(object->snake-case-string file-name)
-            ,(mixed-text-file
+            ,(apply mixed-text-file
               (object->snake-case-string file-name)
-              (if extra-content extra-content "")
-              (serialize-field field)))
+              (cons (serialize-field field)
+                    (if extra-content extra-content '()))))
           '())))
 
   (filter
@@ -413,8 +445,8 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
      ,@(list (file-if-not-empty
               'bashrc
               (if (home-bash-configuration-guix-defaults? config)
-                  guix-bashrc
-                  #f))
+                  (list (serialize-field 'aliases) guix-bashrc)
+                  (list (serialize-field 'alises))))
              (file-if-not-empty 'bash-logout)))))
 
 (define (add-bash-packages config)
@@ -423,36 +455,52 @@ if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
 (define-configuration/no-serialization home-bash-extension
   (environment-variables
    (alist '())
-   "Association list of environment variables to set.")
+   "Additional environment variables to set.  These will be combined with the
+environment variables from other extensions and the base service to form one
+coherent block of environment variables.")
+  (aliases
+   (alist '())
+   "Additional aliases to set.  These will be combined with the aliases from
+other extensions and the base service.")
   (bash-profile
    (text-config '())
-   "List of file-like objects.")
+   "Additional text blocks to add to @file{.bash_profile}, which will be combined
+with text blocks from other extensions and the base service.")
   (bashrc
    (text-config '())
-   "List of file-like objects.")
+   "Additional text blocks to add to @file{.bashrc}, which will be combined
+with text blocks from other extensions and the base service.")
   (bash-logout
    (text-config '())
-   "List of file-like objects."))
+   "Additional text blocks to add to @file{.bash_logout}, which will be combined
+with text blocks from other extensions and the base service."))
 
 (define (home-bash-extensions original-config extension-configs)
-  (home-bash-configuration
-   (inherit original-config)
-   (environment-variables
-    (append (home-bash-configuration-environment-variables original-config)
-            (append-map
-             home-bash-extension-environment-variables extension-configs)))
-   (bash-profile
-    (append (home-bash-configuration-bash-profile original-config)
-            (append-map
-             home-bash-extension-bash-profile extension-configs)))
-   (bashrc
-    (append (home-bash-configuration-bashrc original-config)
-            (append-map
-             home-bash-extension-bashrc extension-configs)))
-   (bash-logout
-    (append (home-bash-configuration-bash-logout original-config)
-            (append-map
-             home-bash-extension-bash-logout extension-configs)))))
+  (match original-config
+    (($ <home-bash-configuration> _ _ _ environment-variables aliases
+                                  bash-profile bashrc bash-logout)
+     (home-bash-configuration
+      (inherit original-config)
+      (environment-variables
+       (append environment-variables
+               (append-map
+                home-bash-extension-environment-variables extension-configs)))
+      (aliases
+       (append aliases
+               (append-map
+                home-bash-extension-aliases extension-configs)))
+      (bash-profile
+       (append bash-profile
+               (append-map
+                home-bash-extension-bash-profile extension-configs)))
+      (bashrc
+       (append bashrc
+               (append-map
+                home-bash-extension-bashrc extension-configs)))
+      (bash-logout
+       (append bash-logout
+               (append-map
+                home-bash-extension-bash-logout extension-configs)))))))
 
 (define home-bash-service-type
   (service-type (name 'home-bash)
@@ -609,10 +657,16 @@ Install and configure Fish, the friendly interactive shell.")))
    'home-shell-profile-configuration))
 
 (define (generate-home-bash-documentation)
-  (generate-documentation
-   `((home-bash-configuration
-      ,home-bash-configuration-fields))
-   'home-bash-configuration))
+  (string-append
+   (generate-documentation
+    `((home-bash-configuration
+       ,home-bash-configuration-fields))
+    'home-bash-configuration)
+   "\n\n"
+   (generate-documentation
+    `((home-bash-extension
+       ,home-bash-extension-fields))
+    'home-bash-extension)))
 
 (define (generate-home-zsh-documentation)
   (generate-documentation

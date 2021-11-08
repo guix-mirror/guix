@@ -1682,11 +1682,119 @@ the entries in MANIFEST."
                     `((type . profile-hook)
                       (hook . manual-database))))
 
+(define (manual-database/optional manifest)
+  "Return a derivation to build the manual database of MANIFEST, but only if
+MANIFEST contains the \"man-db\" package.  Otherwise, return #f."
+  ;; Building the man database (for "man -k") is expensive and rarely used.
+  ;; Build it only if the profile also contains "man-db".
+  (mlet %store-monad ((man-db (manifest-lookup-package manifest "man-db")))
+    (if man-db
+        (manual-database manifest)
+        (return #f))))
+
+(define (texlive-configuration manifest)
+  "Return a derivation that builds a TeXlive configuration for the entries in
+MANIFEST."
+  (define entry->texlive-input
+    (match-lambda
+      (($ <manifest-entry> name version output thing deps)
+       (if (string-prefix? "texlive-" name)
+           (cons (gexp-input thing output)
+                 (append-map entry->texlive-input deps))
+           '()))))
+  (define texlive-bin
+    (module-ref (resolve-interface '(gnu packages tex)) 'texlive-bin))
+  (define coreutils
+    (module-ref (resolve-interface '(gnu packages base)) 'coreutils))
+  (define sed
+    (module-ref (resolve-interface '(gnu packages base)) 'sed))
+  (define updmap.cfg
+    (module-ref (resolve-interface '(gnu packages tex))
+                'texlive-default-updmap.cfg))
+  (define build
+    (with-imported-modules '((guix build utils)
+                             (guix build union))
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build union)
+                       (ice-9 popen))
+
+          ;; Build a modifiable union of all texlive inputs.  We do this so
+          ;; that TeX live can resolve the parent and grandparent directories
+          ;; correctly.  There might be a more elegant way to accomplish this.
+          (union-build #$output
+                       '#$(append-map entry->texlive-input
+                                      (manifest-entries manifest))
+                       #:create-all-directories? #t
+                       #:log-port (%make-void-port "w"))
+          (let ((texmf.cnf (string-append
+                            #$output
+                            "/share/texmf-dist/web2c/texmf.cnf")))
+            (when (file-exists? texmf.cnf)
+              (substitute* texmf.cnf
+                (("^TEXMFROOT = .*")
+                 (string-append "TEXMFROOT = " #$output "/share\n"))
+                (("^TEXMF = .*")
+                 "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
+
+              ;; XXX: This is annoying, but it's necessary because texlive-bin
+              ;; does not provide wrapped executables.
+              (setenv "PATH"
+                      (string-append #$(file-append coreutils "/bin")
+                                     ":"
+                                     #$(file-append sed "/bin")))
+              (setenv "PERL5LIB" #$(file-append texlive-bin "/share/tlpkg"))
+              (setenv "TEXMF" (string-append #$output "/share/texmf-dist"))
+
+              ;; Remove invalid maps from config file.
+              (let* ((web2c (string-append #$output "/share/texmf-config/web2c/"))
+                     (maproot (string-append #$output "/share/texmf-dist/fonts/map/"))
+                     (updmap.cfg (string-append web2c "updmap.cfg")))
+                (mkdir-p web2c)
+
+                ;; Some profiles may already have this file, which prevents us
+                ;; from copying it.  Since we need to generate it from scratch
+                ;; anyway, we delete it here.
+                (when (file-exists? updmap.cfg)
+                  (delete-file updmap.cfg))
+                (copy-file #$updmap.cfg updmap.cfg)
+                (make-file-writable updmap.cfg)
+                (let* ((port (open-pipe* OPEN_WRITE
+                                         #$(file-append texlive-bin "/bin/updmap-sys")
+                                         "--syncwithtrees"
+                                         "--nohash"
+                                         "--force"
+                                         (string-append "--cnffile=" web2c "updmap.cfg"))))
+                  (display "Y\n" port)
+                  (when (not (zero? (status:exit-val (close-pipe port))))
+                    (error "failed to filter updmap.cfg")))
+
+                ;; Generate font maps.
+                (invoke #$(file-append texlive-bin "/bin/updmap-sys")
+                        (string-append "--cnffile=" web2c "updmap.cfg")
+                        (string-append "--dvipdfmxoutputdir="
+                                       maproot "updmap/dvipdfmx/")
+                        (string-append "--dvipsoutputdir="
+                                       maproot "updmap/dvips/")
+                        (string-append "--pdftexoutputdir="
+                                       maproot "updmap/pdftex/")))))
+          #t)))
+
+  (mlet %store-monad ((texlive-base (manifest-lookup-package manifest "texlive-base")))
+    (if texlive-base
+        (gexp->derivation "texlive-configuration" build
+                          #:substitutable? #f
+                          #:local-build? #t
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . texlive-configuration)))
+        (return #f))))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
   (list info-dir-file
-        manual-database
+        manual-database/optional
         fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
