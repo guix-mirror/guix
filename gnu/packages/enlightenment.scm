@@ -384,9 +384,6 @@ unload unused functionality, with support for touchscreen and suitable for
 embedded systems.")
     (license license:bsd-2)))
 
-(define-public enlightenment-wayland
-  (deprecated-package "enlightenment-wayland" enlightenment))
-
 (define-public python-efl
   (package
     (name "python-efl")

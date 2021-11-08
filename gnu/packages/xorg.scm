@@ -6639,9 +6639,6 @@ user set the transparency on a window.")
     (home-page "https://gitlab.freedesktop.org/xorg/app/transset")
     (license license:x11)))
 
-(define-public transset-df
-  (deprecated-package "transset-df" transset))
-
 (define-public bdfresize
   (package
     (name "bdfresize")

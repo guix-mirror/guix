@@ -313,9 +313,6 @@ interface and is based on GNU Guile.")
      `(("guile" ,guile-2.2)
        ("guile2.2-readline" ,guile2.2-readline)))))
 
-(define-public guile3.0-shepherd
-  (deprecated-package "guile3.0-shepherd" shepherd))
-
 (define-public guile2.0-shepherd
   (package
     (inherit shepherd)

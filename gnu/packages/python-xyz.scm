@@ -16828,9 +16828,6 @@ Glances uses the PsUtil library to get information from your system.  It
 monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
 
-(define-public python-glances
-  (deprecated-package "python-glances" glances))
-
 (define-public python-graphql-core
   (package
     (name "python-graphql-core")
@@ -19498,14 +19495,8 @@ many of the popular cloud service providers using a unified API.")
 window memory map manager.")
     (license license:bsd-3)))
 
-(define-public python-smmap2
-  (deprecated-package "python-smmap2" python-smmap))
-
 (define-public python2-smmap
   (package-with-python2 python-smmap))
-
-(define-public python2-smmap2
-  (deprecated-package "python2-smmap2" python2-smmap))
 
 (define-public python-regex
   (package

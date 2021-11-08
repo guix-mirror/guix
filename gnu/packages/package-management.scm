@@ -528,9 +528,6 @@ the Nix package manager.")
                (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
 
-(define-public guile3.0-guix
-  (deprecated-package "guile3.0-guix" guix))
-
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as
   ;; outlined in the README "Requirements" section.  Intended as a CI job, so
@@ -979,9 +976,6 @@ other systems as well.  Conda makes environments first-class citizens, making
 it easy to create independent environments even for C libraries.  Conda is
 written entirely in Python.")
     (license license:bsd-3)))
-
-(define-public python-conda
-  (deprecated-package "python-conda" conda))
 
 (define-public conan
   (package

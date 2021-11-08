@@ -397,9 +397,6 @@ libssh library.")
     (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
-(define-public guile3.0-ssh
-  (deprecated-package "guile3.0-ssh" guile-ssh))
-
 (define-public corkscrew
   ;; The last 2.0 release hails from 2009.  Use a fork (submitted upstream as
   ;; <https://github.com/patpadgett/corkscrew/pull/5>) that adds now-essential

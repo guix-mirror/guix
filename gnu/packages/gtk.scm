@@ -1035,9 +1035,6 @@ exceptions, macros, and a dynamic programming environment.")
        ,@(fold alist-delete (package-inputs guile-cairo)
                '("guile" "guile-lib"))))))
 
-(define-public guile3.0-cairo
-  (deprecated-package "guile3.0-cairo" guile-cairo))
-
 (define-public guile-rsvg
   ;; Use a recent snapshot that supports Guile 2.2 and beyond.
   (let ((commit "05c6a2fd67e4fea1a7c3ff776729dc931bae6678")
@@ -1122,9 +1119,6 @@ images onto Cairo surfaces.")
                '("guile" "guile-lib"))))
     (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
 
-(define-public guile3.0-rsvg
-  (deprecated-package "guile3.0-rsvg" guile-rsvg))
-
 (define-public guile-present
   (package
     (name "guile-present")
@@ -1194,9 +1188,6 @@ documents.")
      `(("guile-lib" ,guile2.2-lib)
        ("guile-cairo" ,guile2.2-cairo)
        ("guile-rsvg" ,guile2.2-rsvg)))))
-
-(define-public guile3.0-present
-  (deprecated-package "guile3.0-present" guile-present))
 
 (define-public guile-gnome
    (package

@@ -295,9 +295,6 @@ across a broad spectrum of applications.")
      `(("python" ,python-2)
        ,@(alist-delete "python" (package-native-inputs boost))))))
 
-(define-public boost-with-python3
-  (deprecated-package "boost-with-python3" boost))
-
 (define-public boost-static
   (package
     (inherit boost)

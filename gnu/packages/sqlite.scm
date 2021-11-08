@@ -143,8 +143,3 @@ is in the public domain.")
               (sha256
                (base32
                 "0rlbaq177gcgk5dswd3akbhv2nvvzljrbhgy18hklbhw7h90f5d3"))))))
-
-;; Column metadata support was added to the regular 'sqlite' package with
-;; commit fad5b1a6d8d9c36bea5785ae4fbc1beb37e644d7.
-(define-public sqlite-with-column-metadata
-  (deprecated-package "sqlite-with-column-metadata" sqlite))

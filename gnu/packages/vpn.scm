@@ -1085,9 +1085,6 @@ public keys and can roam across IP addresses.")
      (list license:lgpl2.1+    ; src/netlink.h & contrib/embeddable-wg-library
            license:gpl2))))    ; everything else
 
-(define-public wireguard
-  (deprecated-package "wireguard" wireguard-tools))
-
 (define-public xl2tpd
   (package
     (name "xl2tpd")

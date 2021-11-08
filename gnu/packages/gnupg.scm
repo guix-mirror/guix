@@ -492,9 +492,6 @@ interface (FFI) of Guile.")
      `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
 
-(define-public guile3.0-gcrypt
-  (deprecated-package "guile3.0-gcrypt" guile-gcrypt))
-
 (define-public python-gpg
   (package
     (name "python-gpg")

@@ -1225,9 +1225,6 @@ while also supporting native scrolling and @command{tmux} control mode
 (@code{tmux -CC}).")
     (license license:asl2.0)))
 
-(define-public et
-  (deprecated-package "et" eternalterminal))
-
 (define-public wterm
   (package
     (name "wterm")

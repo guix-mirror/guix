@@ -83,6 +83,3 @@ send code for review, download patches, transfer files, view status, make API
 calls, and various other things.")
       ;; Bundled libraries are expat-licensed.
       (license (list license:asl2.0 license:expat)))))
-
-(define-public libphutil
-  (deprecated-package "libphutil" arcanist))

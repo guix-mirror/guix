@@ -690,12 +690,6 @@ for power users.  Conceptually inspired by Emacs and Vim, it has familiar
 key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
     (license license:bsd-3)))
 
-(define-public next
-  (deprecated-package "next" nyxt))
-
-(define-public sbcl-next
-  (deprecated-package "sbcl-next" nyxt))
-
 (define-public lagrange
   (package
     (name "lagrange")

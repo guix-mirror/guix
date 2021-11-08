@@ -869,9 +869,6 @@ scripts.")
     (license (list license:psfl                 ; tarball includes python2.7
                    license:asl2.0))))
 
-(define-public oil-shell
-  (deprecated-package "oil-shell" oil))
-
 (define-public gash
   (package
     (name "gash")

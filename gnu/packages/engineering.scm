@@ -1018,9 +1018,6 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
 translations for KiCad.")
     (license license:gpl3+)))
 
-(define-public kicad-i18l
-  (deprecated-package "kicad-i18l" kicad-i18n))
-
 (define-public kicad-doc
   (package
     (name "kicad-doc")

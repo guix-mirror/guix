@@ -706,9 +706,6 @@ is not available for Guile 2.0.")
     (name "guile2.2-fibers")
     (inputs `(("guile" ,guile-2.2)))))
 
-(define-public guile3.0-fibers
-  (deprecated-package "guile3.0-fibers" guile-fibers))
-
 (define-public guile-filesystem
   (package
     (name "guile-filesystem")
@@ -811,9 +808,6 @@ HTML (via SXML) or any other format for rendering.")
     (name "guile2.2-syntax-highlight")
     (inputs `(("guile" ,guile-2.2)))))
 
-(define-public guile3.0-syntax-highlight
-  (deprecated-package "guile3.0-syntax-highlight" guile-syntax-highlight))
-
 (define-public guile-sjson
   (package
     (name "guile-sjson")
@@ -899,9 +893,6 @@ using Guile's foreign function interface.")
                      ,@(alist-delete "guile"
                                      (package-native-inputs guile-squee))))))
 
-(define-public guile3.0-squee
-  (deprecated-package "guile3.0-squee" guile-squee))
-
 (define-public guile-colorized
   (package
     (name "guile-colorized")
@@ -929,9 +920,6 @@ using Guile's foreign function interface.")
     (inherit guile-colorized)
     (name "guile2.2-colorized")
     (native-inputs `(("guile" ,guile-2.2)))))
-
-(define-public guile3.0-colorized
-  (deprecated-package "guile3.0-colorized" guile-colorized))
 
 (define-public guile-pfds
   (package
@@ -1094,9 +1082,6 @@ types are supported.")
                          (find-files "." "\\.sls$"))
                #t))))))))
 
-(define-public guile3.0-pfds
-  (deprecated-package "guile3.0-pfds" guile-pfds))
-
 (define-public guile-aa-tree
   (package
     (name "guile-aa-tree")
@@ -1161,9 +1146,6 @@ messaging library.")
     (inherit guile-simple-zmq)
     (name "guile2.2-simple-zmq")
     (native-inputs `(("guile" ,guile-2.2)))))
-
-(define-public guile3.0-simple-zmq
-  (deprecated-package "guile3.0-simple-zmq" guile-simple-zmq))
 
 (define-public jupyter-guile-kernel
   (let ((commit "f25fb90b95529b17a006a807bd04e6aee12ea304")
@@ -1361,9 +1343,6 @@ format.")
     (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-email))))))
 
-(define-public guile3.0-email
-  (deprecated-package "guile3.0-email" guile-email))
-
 (define-public guile-newt
   (package
     (name "guile-newt")
@@ -1402,9 +1381,6 @@ Scheme by using Guile’s foreign function interface.")
     (name "guile2.2-newt")
     (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-newt))))))
-
-(define-public guile3.0-newt
-  (deprecated-package "guile3.0-newt" guile-newt))
 
 (define-public guile-mastodon
   (let ((commit "74b75bcf547df92acee1e0466ecd7ec07f775392")
@@ -1482,9 +1458,6 @@ written in pure Scheme by using Guile's foreign function interface.")
               ,@(alist-delete "guile" (package-inputs guile-parted))))
     (propagated-inputs
      `(("guile-bytestructures" ,guile2.2-bytestructures)))))
-
-(define-public guile3.0-parted
-  (deprecated-package "guile3.0-parted" guile-parted))
 
 (define-public guile-xosd
   (package
@@ -1706,9 +1679,6 @@ above command-line parameters.")
     (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-config))))))
 
-(define-public guile3.0-config
-  (deprecated-package "guile3.0-config" guile-config))
-
 (define-public guile-hall
   (package
     (name "guile-hall")
@@ -1798,9 +1768,6 @@ provides tight coupling to Guix.")
        ,@(alist-delete "guile-config"
                        (package-propagated-inputs guile-hall))))))
 
-(define-public guile3.0-hall
-  (deprecated-package "guile3.0-hall" guile-hall))
-
 (define-public guile-ics
   (package
     (name "guile-ics")
@@ -1848,9 +1815,6 @@ The library is shipped with documentation in Info format and usage examples.")
     (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-ics))))
     (propagated-inputs `(("guile-lib" ,guile2.2-lib)))))
-
-(define-public guile3.0-ics
-  (deprecated-package "guile3.0-ics" guile-ics))
 
 (define-public guile-imanifest
   (let ((commit "ccd5a2111b008d778106f5595a3a585954d95d0")
@@ -1968,9 +1932,6 @@ users and in some situations.")
     (inherit guile-wisp)
     (name "guile2.2-wisp")
     (inputs `(("guile" ,guile-2.2)))))
-
-(define-public guile3.0-wisp
-  (deprecated-package "guile3.0-wisp" guile-wisp))
 
 (define-public guile-udev
   (package
@@ -2335,20 +2296,10 @@ library.")
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.2)))))
 
-(define-public guile3.0-ncurses
-  (deprecated-package "guile3.0-ncurses" guile-ncurses))
-
 (define-public guile-ncurses/gpm
   (package
     (inherit guile-ncurses)
     (name "guile-ncurses-with-gpm")
-    (inputs `(("ncurses" ,ncurses/gpm)
-              ("guile" ,guile-3.0)))))
-
-(define-public guile3.0-ncurses/gpm
-  (package
-    (inherit guile3.0-ncurses)
-    (name "guile3.0-ncurses-with-gpm")
     (inputs `(("ncurses" ,ncurses/gpm)
               ("guile" ,guile-3.0)))))
 
@@ -2447,9 +2398,6 @@ for Guile\".  It provides the following modules:
      (alist-replace "guile" (list guile-2.2)
                     (package-inputs guile-lib)))))
 
-(define-public guile3.0-lib
-  (deprecated-package "guile3.0-lib" guile-lib))
-
 (define-public guile-minikanren
   (package
     (name "guile-minikanren")
@@ -2491,9 +2439,6 @@ See http://minikanren.org/ for more on miniKanren generally.")
     (inherit guile-minikanren)
     (name "guile2.2-minikanren")
     (native-inputs `(("guile" ,guile-2.2)))))
-
-(define-public guile3.0-minikanren
-  (deprecated-package "guile3.0-minikanren" guile-minikanren))
 
 (define-public guile-irregex
   (package
@@ -2546,9 +2491,6 @@ inspired by the SCSH regular expression system.")
     (inherit guile-irregex)
     (name "guile2.2-irregex")
     (native-inputs `(("guile" ,guile-2.2)))))
-
-(define-public guile3.0-irregex
-  (deprecated-package "guile3.0-irregex" guile-irregex))
 
 (define-public haunt
   (package
@@ -2633,9 +2575,6 @@ interface for reading articles in any format.")
     (inherit haunt)
     (name "guile2.0-haunt")
     (inputs `(("guile" ,guile-2.0)))))
-
-(define-public guile3.0-haunt
-  (deprecated-package "guile3.0-haunt" haunt))
 
 (define-public guile-redis
   (package
@@ -2752,9 +2691,6 @@ is no support for parsing block and inline level HTML.")
     (name "guile2.0-commonmark")
     (inputs `(("guile" ,guile-2.0)))))
 
-(define-public guile3.0-commonmark
-  (deprecated-package "guile3.0-commonmark" guile-commonmark))
-
 (define-public mcron
   (package
     (name "mcron")
@@ -2805,9 +2741,6 @@ format is also supported.")
     (name "guile2.2-mcron")
     (inputs `(("guile" ,guile-2.2)))))
 
-(define-public guile3.0-mcron
-  (deprecated-package "guile3.0-mcron" mcron))
-
 (define-public guile-picture-language
   (let ((commit "a1322bf11945465241ca5b742a70893f24156d12")
         (revision "5"))
@@ -2852,10 +2785,6 @@ The picture values can directly be displayed in Geiser.")
     (propagated-inputs
      `(("guile-cairo" ,guile2.2-cairo)
        ("guile-rsvg" ,guile2.2-rsvg)))))
-
-(define-public guile3.0-picture-language
-  (deprecated-package "guile3.0-picture-language"
-                      guile-picture-language))
 
 (define-public guile-studio
   (let ((commit "dd0ad42e51feafebda7cc29afe7c8bc7a182a842")
@@ -3207,9 +3136,6 @@ pre-alpha code.")
     (inputs
      `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-gi))))))
-
-(define-public guile3.0-gi
-  (deprecated-package "guile3.0-gi" guile-gi))
 
 (define-public guile-srfi-89
   (package
@@ -3794,9 +3720,6 @@ comparing, and writing Semantic Versions.  It also includes ranges in
 the style of the Node Package Manager (NPM).")
     (license license:gpl3+)))
 
-(define-public guile3.0-semver
-  (deprecated-package "guile3.0-semver" guile-semver))
-
 (define-public guile2.2-semver
   (package
     (inherit guile-semver)
@@ -3861,9 +3784,6 @@ SHA-512).")
     (name "guile2.2-hashing")
     (native-inputs
      `(("guile" ,guile-2.2)))))
-
-(define-public guile3.0-hashing
-  (deprecated-package "guile3.0-hashing" guile-hashing))
 
 (define-public guile-packrat
   (package
@@ -4107,9 +4027,6 @@ models and also supports a rich set of boolean query operators.")
      `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-xapian))))))
 
-(define-public guile3.0-xapian
-  (deprecated-package "guile3.0-xapian" guile-xapian))
-
 (define-public guile-torrent
   (package
     (name "guile-torrent")
@@ -4203,9 +4120,6 @@ Relay Chat} (IRC).")
 WebSocket protocol as defined by RFC 6455.")
       (home-page "https://git.dthompson.us/guile-websocket.git")
       (license license:lgpl3+))))
-
-(define-public guile3.0-websocket
-  (deprecated-package "guile3.0-websocket" guile-websocket))
 
 (define-public guile-rdf
   (package

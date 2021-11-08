@@ -26653,12 +26653,6 @@ meet the needs of the numerous interfaces that are possible in the Emacs
 computing environment.")
     (license license:gpl3+)))
 
-(define-public emacs-modus-operandi-theme
-  (deprecated-package "emacs-modus-operandi-theme" emacs-modus-themes))
-
-(define-public emacs-modus-vivendi-theme
-  (deprecated-package "emacs-modus-vivendi-theme" emacs-modus-themes))
-
 (define-public emacs-punpun-theme
   (let ((commit "2f78125609277b2478abdebd8f9d5ee10a823b65")
         (revision "0"))

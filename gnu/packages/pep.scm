@@ -241,7 +241,7 @@ ENGINE_INC_PATH=~a/include
      `(("python-pytest" ,python-pytest)
        ("python-pytest-forked" ,python-pytest-forked)))
     (inputs
-     `(("boost-python" ,boost-with-python3)
+     `(("boost" ,boost)
        ("libpepadapter" ,libpepadapter)
        ("pep-engine" ,pep-engine)
        ("python-setuptools-scm" ,python-setuptools-scm/next)

@@ -663,10 +663,6 @@ provides certain advantages over the builtin Jinja2 backend in Django, for
 example, explicit calls to callables from templates and better performance.")
     (license license:bsd-3)))
 
-;; JSONField is now built-in to Django, obsoleting this package.
-(define-public python-django-jsonfield
-  (deprecated-package "python-django-jsonfield" python-django))
-
 (define-public python-dj-database-url
   (package
     (name "python-dj-database-url")

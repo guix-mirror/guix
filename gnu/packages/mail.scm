@@ -434,9 +434,6 @@ messages) using IDLE.  Implemented in Go.")
      `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs mailutils))))))
 
-(define-public guile3.0-mailutils
-  (deprecated-package "guile3.0-mailutils" mailutils))
-
 (define-public nullmailer
   (package
     (name "nullmailer")

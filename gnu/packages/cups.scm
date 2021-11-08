@@ -926,9 +926,6 @@ language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX")
     (license license:gpl2+)))
 
-(define-public escpr
-  (deprecated-package "escpr" epson-inkjet-printer-escpr))
-
 (define-public splix
   ;; Last released in 2009 <https://sourceforge.net/projects/splix/files/>.
   ;; Last SVN commit was 2013 <https://svn.code.sf.net/p/splix/code/splix/>.

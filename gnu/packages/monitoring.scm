@@ -451,9 +451,6 @@ two things: store numeric time-series data, and render graphs of this data on
 demand.")
     (license license:asl2.0)))
 
-(define-public python2-graphite-web
-  (deprecated-package "python2-graphite-web" graphite-web))
-
 (define-public python-prometheus-client
   (package
     (name "python-prometheus-client")

@@ -779,9 +779,6 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
     (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
 
-(define-public numix-theme
-  (deprecated-package "numix-theme" numix-gtk-theme))
-
 (define-public orchis-theme
   (package
     (name "orchis-theme")
