@@ -11157,16 +11157,25 @@ signature of a file or buffer.")
 (define-public python-cachelib
   (package
     (name "python-cachelib")
-    (version "0.1.1")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cachelib" version))
        (sha256
-        (base32 "0vs7nimlbhqy9kjcc90nswkhs3kgl28ag19jssx9qwlcsrkmmsa7"))))
+        (base32 "0p4chkvbvffcllsny5rpzmsq2vyr24ql3kzif4ha0fxp3fp7vqk8"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ;no tests
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-xprocess" ,python-pytest-xprocess)))
     (home-page "https://github.com/pallets/cachelib")
     (synopsis "Collection of cache libraries")
     (description "Cachelib is a library extracted from @code{werkzeug} which
