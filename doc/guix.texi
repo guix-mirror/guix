@@ -35975,6 +35975,14 @@ guix home reconfigure config.scm
 This ``builds'' your home environment and creates @file{~/.guix-home}
 pointing to it.  Voilà!
 
+@quotation Note
+Make sure the operating system has elogind, systemd, or a similar
+mechanism to create the XDG run-time directory and has the
+@env{XDG_RUNTIME_DIR} variable set.  Failing that, the
+@file{on-first-login} script will not execute anything, and processes
+like user Shepherd and its descendants will not start.
+@end quotation
+
 @node Configuring the Shell
 @section Configuring the Shell
 This section is safe to skip if your shell or shells are managed by
