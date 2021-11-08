@@ -1222,7 +1222,7 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
@@ -1230,7 +1230,7 @@ Libxml2).")
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "0x698ayv00vrjg0yfm20lakpgl7m02x1fk2n09wygwk4973gd55q"))))
+                "1n1xzvhnsjsgsqaq1rg9zilwf0b2rydsadbxzy64z3lydwv7dybw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
