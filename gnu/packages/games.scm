@@ -12642,7 +12642,7 @@ get attention, so you get found.")
                 "1yy5r1r0hv0xggk8qd8bwk2zy7abpv89nikq4flqgi53fc5q9xl7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests provided
+     `(#:tests? #f                      ; no tests provided
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -12666,6 +12666,8 @@ get attention, so you get found.")
                (chdir "..")
                (install-file "prince" bin)
                (substitute* template (("\\$ROOT") out))
+               (substitute* "src/seg009.c"
+                 (("g_argv[0]") (string-append "\"" out "\"")))
                (install-file template app)
                (rename-file (string-append app "/SDLPoP.desktop.template")
                             (string-append app "/SDLPoP.desktop"))
