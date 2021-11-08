@@ -490,14 +490,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.21.8")
+    (version "3.21.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "076fjzgw86q817c660h1vzwdp00cyjr49b9bfi7qkhphq6am4gpi"))
+                "0q3adcp8iygravp4bq4gw14jk20c5rhnawj1333qyw8yvlghw8yy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -512,9 +512,13 @@ should only be used as part of the Guix cups-pk-helper service.")
                   (delete-file "prnt/hpcups/ImageProcessor.h")
                   (substitute* "Makefile.in"
                     ((" -lImageProcessor ") " ")
-                    (("(\\@HPLIP_BUILD_TRUE\\@[[:blank:]]*).*libImageProcessor.*"
+                    ;; Turn shell commands inside an if…fi into harmless no-ops.
+                    (("^(\\@HPLIP_BUILD_TRUE\\@[[:blank:]]*).*libImageProcessor.*"
                       _ prefix)
-                     (string-append prefix ":; \\\n")))
+                     (string-append prefix ": ; \\\n"))
+                    ;; Remove the lines adding file targets altogether.
+                    (("^\\@FULL_BUILD_TRUE\\@.*libImageProcessor.*")
+                     ""))
 
                   ;; Install binaries under libexec/hplip instead of
                   ;; share/hplip; that'll at least ensure they get stripped.
@@ -523,8 +527,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                     (("^dat2drvdir =.*")
                      "dat2drvdir = $(pkglibexecdir)\n")
                     (("^locatedriverdir =.*")
-                     "locatedriverdir = $(pkglibexecdir)\n"))
-                  #t))))
+                     "locatedriverdir = $(pkglibexecdir)\n"))))))
     (build-system gnu-build-system)
     (outputs (list "out" "ppd"))
     (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
@@ -613,8 +616,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                   (string-append "rulessystemdir = " out
                                  "/lib/systemd/system"))
                  (("/etc/sane.d")
-                  (string-append out "/etc/sane.d")))
-               #t)))
+                  (string-append out "/etc/sane.d"))))))
          (add-before 'configure 'fix-build-with-python-3.8
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python (assoc-ref inputs "python")))
@@ -625,15 +627,13 @@ should only be used as part of the Guix cups-pk-helper service.")
                  (setenv "C_INCLUDE_PATH"
                          (string-append python "/include/python"
                                         (python:python-version python)
-                                        ":" (getenv "C_INCLUDE_PATH"))))
-               #t)))
+                                        ":" (getenv "C_INCLUDE_PATH")))))))
          (add-after 'install 'install-models-dat
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (models-dir (string-append out
                                                "/share/hplip/data/models")))
-               (install-file "data/models/models.dat" models-dir))
-             #t))
+               (install-file "data/models/models.dat" models-dir))))
          (add-after 'install 'wrap-binaries
            ;; Scripts in /bin are all symlinks to .py files in /share/hplip.
            ;; Symlinks are immune to the Python build system's 'WRAP phase,
@@ -664,8 +664,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                                            bin target)))
                                (chmod file #o755)))
                   (find-files "." (lambda (file stat)
-                                    (eq? 'symlink (stat:type stat)))))
-                 #t)))))))
+                                    (eq? 'symlink (stat:type stat))))))))))))
 
     ;; Note that the error messages printed by the tools in the case of
     ;; missing dependencies are often downright misleading.
