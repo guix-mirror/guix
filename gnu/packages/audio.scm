@@ -2863,7 +2863,7 @@ buffers, and audio capture.")
        ("dbus-glib" ,dbus-glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://drobilla.net/software/patchage/")
+    (home-page "https://drobilla.net/software/patchage.html")
     (synopsis "Modular patch bay for audio and MIDI systems")
     (description
      "Patchage is a modular patch bay for audio and MIDI systems based on JACK
