@@ -5399,6 +5399,17 @@ for immediate access from Perl.")
         (base32
          "1b3sr39813di3j1kwbgn1xq2z726rhjjdw809ydzgmshj26jb1gi"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((make (assoc-ref inputs "make")))
+             (substitute* "lib/Inline/C.pm"
+               (("'\"make\"'")
+                (string-append "'\"" make "/bin/make\"'"))
+               (("'\"make install\"'")
+                (string-append "'\"" make "/bin/make install\"'")))))))))
     (native-inputs
      `(("perl-file-copy-recursive" ,perl-file-copy-recursive)
        ("perl-file-sharedir-install" ,perl-file-sharedir-install)
