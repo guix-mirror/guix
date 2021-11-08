@@ -1510,14 +1510,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.4")
+    (version "4.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "02fr8mvf2agwmyb9q2bmh9p09gpz3xxmpcbbbj8iydz57hc0mc86"))))
+               "00hfwd8ld6jnd26pl9f0wcd2mag4zacxxgqgabsja2xkkagavnza"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
