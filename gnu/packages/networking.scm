@@ -4061,19 +4061,20 @@ stamps.")
 (define-public nbd
   (package
     (name "nbd")
-    (version "3.21")
+    (version "3.22")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://sourceforge/nbd/nbd/" version
                             "/nbd-" version ".tar.xz"))
         (sha256
-         (base32 "1ydylvvayi4w2d08flji9q03sl7y8hn0c26vsay3nwwikprqls77"))))
+         (base32 "1ljx6vb3lja5p0lr28vmjp27n9d6krlvq49bhqbcm2ns8vxd1vh6"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (home-page "https://nbd.sourceforge.io/")
     (synopsis "NBD client and server")
