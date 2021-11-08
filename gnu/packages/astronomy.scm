@@ -1047,13 +1047,13 @@ more.")
 (define-public python-jplephem
   (package
     (name "python-jplephem")
-    (version "2.15")
+    (version "2.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jplephem" version))
        (sha256
-        (base32 "1ca3dswsslij79qg6dcijjz4l0fj6nzmxld8z93v45ahlkhps0g0"))))
+        (base32 "1xvivnsywjaf5lxn3kyg2jhhq393gcwkjrl634m8dn52ypidrcdb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
