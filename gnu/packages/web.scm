@@ -368,18 +368,18 @@ the same, being completely separated from the Internet.")
 (define-public nginx
   (package
     (name "nginx")
+    ;; Please update the nginx-documentation package together with this one!
     ;; Track the ‘mainline’ branch.  Upstream considers it more reliable than
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
-    ;; Please update the nginx-documentation package together with this one!
-    (version "1.21.3")
+    (version "1.21.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nhps7igdqcpcy1r8677ar807rfclpylmz3y858a678m1np4lxql"))))
+                "1ziv3xargxhxycd5hp6r3r5mww54nvvydiywcpsamg3i9r3jzxyi"))))
     (build-system gnu-build-system)
     (inputs `(("libxml2" ,libxml2)
               ("libxslt" ,libxslt)
