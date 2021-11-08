@@ -1704,14 +1704,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.7")
+    (version "3.4.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1j7mdk9szrljgv4sdx69bm1pnbb3cldbdxbkr42jbdi9zn11gl7g"))))
+               "0d8nkd9c85rkjlgsq1hidmykkrksi883ygqzhhj6wh4nqflv8vs9"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:modules modules %gnu-build-system-modules)
