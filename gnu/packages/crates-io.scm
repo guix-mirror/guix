@@ -58148,17 +58148,17 @@ design abstracts away all the internals of the WebSocket protocol but still
 makes them accessible for those who wants full control over the network.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-twoway-0.1
+(define-public rust-twoway-0.2
   (package
     (name "rust-twoway")
-    (version "0.1.8")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "twoway" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1lbf64snscr3vz71jbl6i2c8zr2ndsiqbk6316z39fj1a8mipcar"))))
+        (base32 "0iqb54firzb8jinl2674vz8s6c4h30842sa3v9pcs93w1m3gnzy5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -58173,6 +58173,20 @@ makes them accessible for those who wants full control over the network.")
      "This package provides a fast substring search for strings and byte
 strings.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-twoway-0.1
+  (package
+    (inherit rust-twoway-0.2)
+    (name "rust-twoway")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "twoway" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+		"1lbf64snscr3vz71jbl6i2c8zr2ndsiqbk6316z39fj1a8mipcar"))))))
 
 (define-public rust-typeable-0.1
   (package
