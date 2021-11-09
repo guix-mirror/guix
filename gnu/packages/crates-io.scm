@@ -38891,6 +38891,26 @@ including most strategies and the testing framework itself.")
 trait of proptest.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-psl-types-2
+  (package
+    (name "rust-psl-types")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "psl-types" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kqssn9wgqpl1m26ynv7cvxanfhyjvssi2a3jc2nzpbw7q3ricv6"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/addr-rs/psl-types")
+    (synopsis "Common types for the public suffix implementation crates")
+    (description "This package provides common types for the public suffix
+implementation crates.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-psm-0.1
   (package
     (name "rust-psm")
