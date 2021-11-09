@@ -2374,6 +2374,24 @@ coverage-guided, mutation-based fuzzers.")
 @code{arg_enum}.")
     (license license:expat)))
 
+(define-public rust-argh-shared-0.1
+  (package
+    (name "rust-argh-shared")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "argh_shared" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0crzkzr4mq9gyys3m0idgsfwwrwd4dk70scp7rspvb2fmgd01piq"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/google/argh")
+    (synopsis "Derive-based argument parsing optimized for code size")
+    (description "Derive-based argument parsing optimized for code size")
+    (license license:bsd-3)))
+
 (define-public rust-argon2rs-0.2
   (package
     (name "rust-argon2rs")
