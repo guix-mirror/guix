@@ -39647,6 +39647,30 @@ generator based on timing jitter.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-xoshiro-0.6
+  (package
+    (name "rust-rand-xoshiro")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_xoshiro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ajsic84rzwz5qr0mzlay8vi17swqi684bqvwqyiim3flfrcv5vg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1))))
+    (home-page "https://rust-random.github.io/book/")
+    (synopsis "Xoshiro, xoroshiro and splitmix64 random number generators")
+    (description "This package provides the xoshiro, xoroshiro and splitmix64
+random number generators.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-xoshiro-0.4
   (package
     (name "rust-rand-xoshiro")
