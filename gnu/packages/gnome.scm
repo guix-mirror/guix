@@ -9860,12 +9860,18 @@ existing databases over the internet.")
                (("gtk-update-icon-cache") "true"))))
          (add-after 'install 'wrap
            (@@ (guix build python-build-system) wrap))
-         (add-after 'wrap 'wrap-gi-typelib
+         (add-after 'wrap 'wrap-gi-typelib-and-python
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
-               (wrap-program (string-append out "/bin/gnome-tweaks")
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
+               (let ((python-path
+                      (string-append out "/lib/python"
+                                     ,(version-major+minor
+                                       (package-version python))
+                                     "/site-packages")))
+                 (wrap-program (string-append out "/bin/gnome-tweaks")
+                   `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                   `("GUIX_PYTHONPATH" ":" prefix (,python-path))))))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
        ("intltool" ,intltool)
