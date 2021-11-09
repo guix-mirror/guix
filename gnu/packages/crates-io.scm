@@ -2392,6 +2392,32 @@ coverage-guided, mutation-based fuzzers.")
     (description "Derive-based argument parsing optimized for code size")
     (license license:bsd-3)))
 
+(define-public rust-argh-derive-0.1
+  (package
+    (name "rust-argh-derive")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "argh_derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "13qz9i9frdjl1v9aqw5b2cs7wn3h34x2xkpsi9wcl1hcpjd23ba8"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build?
+        #t
+        #:cargo-inputs
+        (("rust-argh-shared" ,rust-argh-shared-0.1)
+         ("rust-heck" ,rust-heck-0.3)
+         ("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/google/argh")
+    (synopsis "Derive-based argument parsing optimized for code size")
+    (description "Derive-based argument parsing optimized for code size")
+    (license license:bsd-3)))
+
 (define-public rust-argon2rs-0.2
   (package
     (name "rust-argon2rs")
