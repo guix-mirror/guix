@@ -14205,6 +14205,31 @@ for arbitrary structs.")
         #:cargo-development-inputs
         (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))))
 
+(define-public rust-derive-builder-0.7
+  (package
+    (inherit rust-derive-builder-0.9)
+    (name "rust-derive-builder")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "derive_builder" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1m34zpj6fw764g7s368r2wgazp154m24d4rshbgn18fdlfk3zi9s"))))
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-compiletest-rs" ,rust-compiletest-rs-0.3)
+         ("rust-darling" ,rust-darling-0.9)
+         ("rust-derive-builder-core" ,rust-derive-builder-core-0.5)
+         ("rust-env-logger" ,rust-env-logger-0.5)
+         ("rust-log" ,rust-log-0.4)
+         ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+         ("rust-quote" ,rust-quote-0.6)
+         ("rust-skeptic" ,rust-skeptic-0.13)
+         ("rust-syn" ,rust-syn-0.15))))))
+
 (define-public rust-derive-builder-0.5
   (package
     (inherit rust-derive-builder-0.9)
