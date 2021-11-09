@@ -9877,7 +9877,8 @@ existing databases over the internet.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnome-desktop" ,gnome-desktop)
+     `(("bash-minimal" ,bash-minimal) ; to execute the wrapper program
+       ("gnome-desktop" ,gnome-desktop)
        ("gtk+" ,gtk+)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
