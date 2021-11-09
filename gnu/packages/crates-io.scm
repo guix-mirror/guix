@@ -1015,6 +1015,32 @@ deadlock, like the standard Barrier).")
 Rust, using gimli.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-addr-0.14
+  (package
+    (name "rust-addr")
+    (version "0.14.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "addr" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0w6v0wwv203v0lyvwsq27rwfhvmw7dsmrqc9r3gszbx2974wlk65"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-no-std-net" ,rust-no-std-net-0.5)
+         ("rust-psl" ,rust-psl-2)
+         ("rust-psl-types" ,rust-psl-types-2)
+         ("rust-publicsuffix" ,rust-publicsuffix-2)
+         ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/addr-rs/addr")
+    (synopsis "Parsing domain names")
+    (description "This package provides a library for parsing domain names.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-addr2line-0.11
   (package
     (inherit rust-addr2line-0.14)
