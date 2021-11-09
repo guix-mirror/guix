@@ -27160,6 +27160,25 @@ known as zlib).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-lifeguard-0.6
+  (package
+    (name "rust-lifeguard")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lifeguard" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09iwwy7888i1kfvbrgwpl4xv3pwsz1fbzx54djs3gnvmszdr9gl9"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/zslayton/lifeguard")
+    (synopsis "Object pool manager in Rust")
+    (description "This package provides an object pool manager in Rust.")
+    (license license:expat)))
+
 (define-public rust-line-0.1
   (package
     (name "rust-line")
