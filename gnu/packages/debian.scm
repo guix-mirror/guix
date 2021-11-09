@@ -271,7 +271,7 @@ unpacking them into a directory which can eventually be chrooted into.")
 (define-public debianutils
   (package
     (name "debianutils")
-    (version "4.11.1")
+    (version "5.5-1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -280,15 +280,8 @@ unpacking them into a directory which can eventually be chrooted into.")
               (file-name (git-file-name "debianutils" version))
               (sha256
                (base32
-                "18ypb7fivch53wwrdf73yhf1fhkwn9kvw1kfdc1m450241d6191w"))))
+                "1sbdjcb44g2s1zxjf9kxrp9drf9mmh6b49a9z3k428gmc6zsci4r"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'bootstrap 'create-translations
-                    (lambda _
-                      (with-directory-excursion "po4a"
-                        (invoke "po4a" "--no-backups" "po4a.conf"))
-                      #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
