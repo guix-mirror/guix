@@ -2266,20 +2266,21 @@ coverage-guided, mutation-based fuzzers.")
 (define-public rust-arboard-1
   (package
     (name "rust-arboard")
-    (version "1.1.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "arboard" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0wpyv732fxkplmiwik1sbgdlnbk748w1aqpkc71gn5lm2ns9w545"))))
+        (base32 "1a5qfmpzcf5rwlwsligf9z1gzndpvj0jncc4s3k3z5g214c4l127"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-clipboard-win" ,rust-clipboard-win-4)
         ("rust-core-graphics" ,rust-core-graphics-0.21)
+        ("rust-env-logger" ,rust-env-logger-0.8)
         ("rust-image" ,rust-image-0.23)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
@@ -2287,9 +2288,11 @@ coverage-guided, mutation-based fuzzers.")
         ("rust-objc-foundation" ,rust-objc-foundation-0.1)
         ("rust-objc-id" ,rust-objc-id-0.1)
         ("rust-scopeguard" ,rust-scopeguard-1)
+        ("rust-simple-logger" ,rust-simple-logger-1)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-xcb" ,rust-xcb-0.9))))
+        ("rust-wl-clipboard-rs" ,rust-wl-clipboard-rs-0.4)
+        ("rust-x11rb" ,rust-x11rb-0.8))))
     (home-page "https://github.com/ArturKovacs/arboard")
     (synopsis "Image and text handling for the OS clipboard")
     (description
