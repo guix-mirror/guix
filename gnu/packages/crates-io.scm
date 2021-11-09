@@ -43858,6 +43858,28 @@ quickly convert floating point numbers to decimal strings.")
 computation (experimental)")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-safe-arch-0.5
+  (package
+    (name "rust-safe-arch")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "safe_arch" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01ffy9aw9v1n4bcwl525zw3gnh18jk7aq38iqcn51bwnjrnkvzy1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1))))
+    (home-page "https://github.com/Lokathor/safe_arch")
+    (synopsis "Access core::arch safely")
+    (description "This package exposes @code{core::arch} safely via
+@code{#[cfg()]}.")
+    (license (list license:zlib license:asl2.0 license:expat))))
+
 (define-public rust-safemem-0.3
   (package
     (name "rust-safemem")
