@@ -42324,17 +42324,17 @@ writers and readers for primitive values with direct mapping between binary
 MessagePack format.")
     (license license:expat)))
 
-(define-public rust-rmp-serde-0.14
+(define-public rust-rmp-serde-0.15
   (package
     (name "rust-rmp-serde")
-    (version "0.14.4")
+    (version "0.15.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rmp-serde" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1n2jn3yj5zbjhz5lah98yylpzhfc1c0h5fcksjp75r3gj86dgrsc"))))
+        (base32 "178f4qlicldm9iy74q4wdqldk5i11p1ad30wzs9avx04mpwwygkj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -46884,7 +46884,7 @@ framework.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rmp-serde" ,rust-rmp-serde-0.14)
+       (("rust-rmp-serde" ,rust-rmp-serde-0.15)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-toml" ,rust-toml-0.5)
