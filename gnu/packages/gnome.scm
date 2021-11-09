@@ -3636,11 +3636,19 @@ functionality was designed to be as reusable and portable as possible.")
        ;; ... which they then completly ignore !!
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-parallel-build
+           ;; Parallel build fails because of a failed dependency,
+           ;; https://bugzilla.gnome.org/show_bug.cgi?id=732274
+           (lambda _
+             (substitute* "src/services/name/Makefile.am"
+               (("orbit_name_server_2_DEPENDENCIES = \\$(DEPS) CosNaming.h")
+                "orbit_name_server_2_DEPENDENCIES = \
+$(DEPS) CosNaming.h libname-server-2.a"))))
          (add-before 'configure 'ignore-deprecations
            (lambda _
              (substitute* "linc2/src/Makefile.in"
-               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-             #t)))))
+               (("-DG_DISABLE_DEPRECATED")
+                "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))))))
     (inputs `(("glib" ,glib)
               ("libidl" ,libidl)))
     (native-inputs
