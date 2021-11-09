@@ -4148,6 +4148,26 @@ methods.")
      "This package provides a simple interface for querying atty.")
     (license license:expat)))
 
+(define-public rust-atty-0.2.11
+  (package
+    (inherit rust-atty-0.2)
+    (name "rust-atty")
+    (version "0.2.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "atty" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0lln6vaczj521qqjbaqnb81w5p6xk4fjfkg33r0m22cm4f3mnzcs"))))
+    (arguments
+      `(#:skip-build?
+        #t
+        #:cargo-inputs
+        (("rust-libc" ,rust-libc-0.2)
+         ("rust-termion" ,rust-termion-1)
+         ("rust-winapi" ,rust-winapi-0.3))))))
+
 (define-public rust-autocfg-1
   (package
     (name "rust-autocfg")
