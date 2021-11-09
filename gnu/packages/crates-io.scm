@@ -2035,6 +2035,30 @@ type.")
 on every platform.")
     (license license:expat)))
 
+(define-public rust-approx-0.5
+  (package
+    (name "rust-approx")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "approx" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17p9g3yl061zdlrqj10npybmng81jz71dzmcanmjgcb35qhgfb87"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-complex" ,rust-num-complex-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/brendanzab/approx")
+    (synopsis "Approximate floating point equality comparisons and assertions")
+    (description
+     "This crate provides facilities for testing the approximate equality of
+floating-point based types, using either relative difference, or units in the
+last place (ULPs) comparisons.")
+    (license license:asl2.0)))
+
 (define-public rust-approx-0.4
   (package
     (name "rust-approx")
