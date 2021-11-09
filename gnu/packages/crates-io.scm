@@ -43705,6 +43705,31 @@ sub-processes using a fork-like interface.")
         (base32
          "1n3iw9kaq70dw1rvvma0gjwydbj0f2mvvqvrva69f5cl6yv1dnd0"))))))
 
+(define-public rust-rkyv-0.6
+  (package
+    (name "rust-rkyv")
+    (version "0.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rkyv" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01wsn0i8gsw958j892w8i4fyzjdsyhrh7c5zajig049kbqz5n4yb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytecheck" ,rust-bytecheck-0.5)
+        ("rust-memoffset" ,rust-memoffset-0.6)
+        ("rust-ptr-meta" ,rust-ptr-meta-0.1)
+        ("rust-rkyv-derive" ,rust-rkyv-derive-0.6)
+        ("rust-seahash" ,rust-seahash-4))))
+    (home-page "https://github.com/rkyv/rkyv")
+    (synopsis "Zero-copy deserialization framework for Rust")
+    (description "Rkyv is a zero-copy deserialization framework for Rust.")
+    (license license:expat)))
+
 (define-public rust-rkyv-derive-0.6
   (package
     (name "rust-rkyv-derive")
