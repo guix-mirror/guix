@@ -38891,6 +38891,37 @@ including most strategies and the testing framework itself.")
 trait of proptest.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-psl-2
+  (package
+    (name "rust-psl")
+    (version "2.0.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "psl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0a2d3z6gi7bwsi4xr6m3kq44wxyr81yqr5z76afv8kfxsc8p1nxh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-psl-types" ,rust-psl-types-2))
+       #:cargo-development-inputs
+       (("rust-rspec", rust-rspec-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("1.0.0") ,(package-version rust-rspec-1))))))))
+    (home-page "https://github.com/addr-rs/psl")
+    (synopsis "Extract root domain and suffix")
+    (description "This package extracts root domain and suffix from a domain
+name.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-psl-types-2
   (package
     (name "rust-psl-types")
