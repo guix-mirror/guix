@@ -1267,13 +1267,13 @@ such as ISO-2022-JP, Shift_JIS, EUC-JP, UTF-8, UTF-16 or UTF-32.")
 (define-public python-pandocfilters
   (package
     (name "python-pandocfilters")
-    (version "1.4.3")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandocfilters" version))
        (sha256
-        (base32 "1sq675dg4barb5949xxz4d5gk2ly524hi1p1xgwb3d1l0nsznqxw"))))
+        (base32 "0f3sb8q85dbwliv46cc1yvpy4r00qp4by5x8751kn8vx6c1rarqb"))))
     (build-system python-build-system)
     (home-page "https://github.com/jgm/pandocfilters")
     (synopsis "Python module for writing Pandoc filters")
