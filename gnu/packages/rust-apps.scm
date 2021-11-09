@@ -855,6 +855,41 @@ are parsed concurrently using a thread pool to utilize all cpu cores.  A goal
 of the project is to be runnable on untrusted networks without crashing.")
     (license license:gpl3)))
 
+(define-public spotify-tui-0.25
+  (package
+    (name "spotify-tui")
+    (version "0.25.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "spotify-tui" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "08bpihkdv3rmcksnxp4cz04kawjs6spmwa3wr2k27b30x3q9cd4r"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-arboard" ,rust-arboard-1)
+         ("rust-backtrace" ,rust-backtrace-0.3)
+         ("rust-clap" ,rust-clap-2)
+         ("rust-crossterm" ,rust-crossterm-0.20)
+         ("rust-dirs" ,rust-dirs-3)
+         ("rust-rand" ,rust-rand-0.8)
+         ("rust-rspotify" ,rust-rspotify-0.10)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-serde-json" ,rust-serde-json-1)
+         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+         ("rust-tokio" ,rust-tokio-0.2)
+         ("rust-tui" ,rust-tui-0.16)
+         ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("openssl" ,openssl)))
+    (home-page "https://github.com/Rigellute/spotify-tui")
+    (synopsis "Terminal user interface for Spotify")
+    (description "This package provides a terminal user interface for Spotify")
+    (license (list license:expat license:asl2.0))))
+
 (define-public tectonic
   (package
     (name "tectonic")
