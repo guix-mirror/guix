@@ -5650,7 +5650,7 @@ spawning a @dfn{container} isolated from the rest of the system:
 guix shell --container emacs gcc-toolchain
 @end example
 
-The command above spawns an interactive shell in a container when
+The command above spawns an interactive shell in a container where
 nothing but @code{emacs}, @code{gcc-toolchain}, and their dependencies
 is available.  The container lacks network access and shares no files
 other than the current working directory with the surrounding
