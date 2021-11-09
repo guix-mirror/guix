@@ -59516,6 +59516,25 @@ hardware of various targets.  Both in terms of explicit SIMD usage and also in
 terms of allowing LLVM's auto-vectorizer to do its job.")
     (license license:zlib)))
 
+(define-public rust-wide-0.6
+  (package
+    (inherit rust-wide-0.4)
+    (name "rust-wide")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wide" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16yqf8xsvns21clg3rk8nljq4qnsfqg240smbjqa0z520k3fgfs6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-safe-arch" ,rust-safe-arch-0.5))))
+    (license (list license:zlib license:asl2.0 license:expat))))
+
 (define-public rust-widestring-0.4
   (package
     (name "rust-widestring")
