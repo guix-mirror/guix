@@ -55425,6 +55425,27 @@ recycle bin.")
      "This package provides a library for visualizing tree structured data.")
     (license license:expat)))
 
+(define-public rust-triple-accel-0.4
+  (package
+    (name "rust-triple-accel")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "triple_accel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qqyhl1pdvmfbx9fgw5jc15j42d0j1i7b6pzn42zsbzvbp4qn112"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Daniel-Liu-c0deb0t/triple_accel")
+    (synopsis "Edit distance routines accelerated using SIMD")
+    (description
+     "This package provides Rust edit distance routines accelerated using
+SIMD.  It supports fast Hamming, Levenshtein, restricted Damerau-Levenshtein,
+etc. distance calculations and string search.")
+    (license license:expat)))
+
 (define-public rust-trust-dns-https-0.20
   (package
     (name "rust-trust-dns-https")
