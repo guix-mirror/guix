@@ -46145,6 +46145,21 @@ macOS and iOS.")
     (description "This package provides CSS Selectors matching for Rust.")
     (license license:mpl2.0)))
 
+(define-public rust-selectors-0.21
+  (package
+    (inherit rust-selectors-0.22)
+    (name "rust-selectors")
+    (version "0.21.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "selectors" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11icfj8ix8fqjsnw3dqw83bmhd5qdhxzq2klb486akyypq0b31hv"))))))
+
 (define-public rust-sema-0.1
   (package
     (name "rust-sema")
