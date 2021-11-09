@@ -32087,6 +32087,29 @@ to nl80211 and receive messages.")
 prove a function can't ever panic.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-no-std-net-0.5
+  (package
+    (name "rust-no-std-net")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "no-std-net" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lkilh0wc7big3m5lsn9wqiz2xvj21kgmpbc15z92j93n51wxkhv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/dunmatt/no-std-net")
+    (synopsis "Rust's std::net... without the @code{std}")
+    (description "This package provides Rust's std::net for environment
+without the @code{std}.")
+    (license license:expat)))
+
 (define-public rust-nodrop-0.1
   (package
     (name "rust-nodrop")
