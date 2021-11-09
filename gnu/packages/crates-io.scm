@@ -45366,6 +45366,29 @@ rules are rather complex.  This crate implements the whole grammar." )
      `(#:skip-build? #t
        #:cargo-inputs (("rust-num" ,rust-num-0.2))))))
 
+(define-public rust-serde-big-array-0.3
+  (package
+    (name "rust-serde-big-array")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-big-array" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qpy3nk3dpxrrmcfmcnsijad10yi0jxy1x6gc6bbwywma9vhxchq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/est31/serde-big-array")
+    (synopsis "Big array helper for serde")
+    (description "This package provides a big array helper for serde.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-big-array-0.2
   (package
     (name "rust-serde-big-array")
