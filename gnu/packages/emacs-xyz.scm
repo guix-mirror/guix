@@ -12388,6 +12388,27 @@ complete email addresses, export contacts to a vCard file, put birthdays
 in your Org Agenda, and more.")
       (license license:gpl3+))))
 
+(define-public emacs-org-vcard
+  (package
+    (name "emacs-org-vcard")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flexibeast/org-vcard")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14l3xqahqmnfl3sskqcr33xpcsic8dm9cr9wmbv5la3xv14n10k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/flexibeast/org-vcard")
+    (synopsis "Org mode support for vCard export and import")
+    (description
+     "This package exports and imports vCard files from within GNU Emacs' Org
+mode.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-pretty-table
   ;; There is no release yet.
   (let ((commit "1331c600b83d95b28730b1bfcb48369ac1cf12ef")
