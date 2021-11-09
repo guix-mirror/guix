@@ -1353,7 +1353,11 @@ on the build output of a previous derivation."
   "Return a build handler that accumulates THINGS and returns an <unresolved>
 object, only for build requests on EXPECTED-STORE."
   (lambda (continue store things mode)
-    (if (and (eq? store expected-store)
+    ;; Note: Do not compare STORE and EXPECTED-STORE with 'eq?' because
+    ;; 'cache-object-mapping' and similar functional "setters" change the
+    ;; store's object identity.
+    (if (and (eq? (store-connection-socket store)
+                  (store-connection-socket expected-store))
              (= mode (build-mode normal)))
         (unresolved things continue)
         (continue #t))))
