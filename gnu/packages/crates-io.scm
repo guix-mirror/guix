@@ -38965,8 +38965,36 @@ implementation crates.")
 stack pointer and inspect the properties of the stack.")
     (license (list license:isc license:asl2.0))))
 
+(define-public rust-publicsuffix-2
+  (package
+    (name "rust-publicsuffix")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "publicsuffix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q9kbcqh9pa06p3kq7d3ksbnqjhs88v5wk5qg89wrgkbmpnp4a99"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-hashbrown" ,rust-hashbrown-0.11)
+        ("rust-idna" ,rust-idna-0.2)
+        ("rust-psl-types" ,rust-psl-types-2)
+        ("rust-unicase" ,rust-unicase-2))))
+    (home-page "https://github.com/rushmorem/publicsuffix")
+    (synopsis "Domain name parsing and email address validation")
+    (description "This package provides robust domain name parsing and RFC
+compliant email address validation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-publicsuffix-1
   (package
+    (inherit rust-publicsuffix-2)
     (name "rust-publicsuffix")
     (version "1.5.4")
     (source
@@ -38977,7 +39005,6 @@ stack pointer and inspect the properties of the stack.")
        (sha256
         (base32
          "0yvmjpywfyypfr17kxiwy6ssykgv8nmcdhfakas6548pfn8a9fiv"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-error-chain" ,rust-error-chain-0.12)
@@ -38987,12 +39014,7 @@ stack pointer and inspect the properties of the stack.")
         ("rust-regex" ,rust-regex-1)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-rspec" ,rust-rspec-1))))
-    (home-page "https://github.com/rushmorem/publicsuffix")
-    (synopsis "Domain name parsing and email address validation")
-    (description "This package provides robust domain name parsing and RFC
-compliant email address validation.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rspec" ,rust-rspec-1))))))
 
 (define-public rust-pulldown-cmark-0.8
   (package
