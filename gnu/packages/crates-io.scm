@@ -61737,6 +61737,27 @@ winapi.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-winapi-wsapoll-0.1
+  (package
+    (name "rust-winapi-wsapoll")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "winapi-wsapoll" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vnzlcm6yrlx0xdx4g7zr41n84aj73h0p8fwh0m60mbiyl873ha4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/psychon/winapi-wsapoll")
+    (synopsis "Safe wrapper around WSAPoll")
+    (description "This package provides safe wrapper around WSAPoll.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-winapi-x86-64-pc-windows-gnu-0.4
   (package
     (name "rust-winapi-x86-64-pc-windows-gnu")
