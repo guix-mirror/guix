@@ -50674,6 +50674,32 @@ in @code{stb_truetype.h} from C to Rust.")
 codebase.")
     (license license:expat)))
 
+(define-public rust-stderrlog-0.4
+  (package
+    (name "rust-stderrlog")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "stderrlog" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "09bzvmx2lzyycr1xfcvfwnvqsjg9kb4w22hb19bjqid5j2dyxr9j"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-atty" ,rust-atty-0.2.11)
+         ("rust-chrono" ,rust-chrono-0.4)
+         ("rust-log" ,rust-log-0.4)
+         ("rust-termcolor" ,rust-termcolor-1)
+         ("rust-thread-local" ,rust-thread-local-0.3.4))))
+    (home-page "https://github.com/cardoe/stderrlog-rs")
+    (synopsis "Logger that logs to stderr")
+    (description "This package provides logger that logs to stderr based
+on verbosity specified")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stdweb-0.4
   (package
     (name "rust-stdweb")
