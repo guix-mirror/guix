@@ -15659,6 +15659,28 @@ for graphs.")
 Rust.")
     (license license:expat)))
 
+(define-public rust-dotenv-0.13
+  (package
+    (inherit rust-dotenv-0.15)
+    (name "rust-dotenv")
+    (version "0.13.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dotenv" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "11jdifvvwbn60gf5iq2awyq9fik1d9xk7rhch332nwwnkhks3l60"))))
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-clap" ,rust-clap-2)
+         ("rust-failure" ,rust-failure-0.1)
+         ("rust-lazy-static" ,rust-lazy-static-1)
+         ("rust-regex" ,rust-regex-1))
+        #:cargo-development-inputs
+        (("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-dotenv-0.10
   (package
     (inherit rust-dotenv-0.15)
