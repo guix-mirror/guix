@@ -60976,6 +60976,37 @@ formatters with per-field documentation generated for each structure.
     (description "This package provides macros for the ptr_meta API.")
     (license license:expat)))
 
+(define-public rust-ptr-meta-0.1
+  (package
+    (name "rust-ptr-meta")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ptr_meta" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1wd4wy0wxrcays4f1gy8gwcmxg7mskmivcv40p0hidh6xbvwqf07"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ptr-meta-derive" ,rust-ptr-meta-derive-0.1))))
+    (home-page "https://github.com/djkoloski/ptr_meta")
+    (synopsis "Manipulate metadata of fat pointers")
+    (description "This package allows manipulating the metadata of fat
+pointers:
+
+@itemize
+@item Naming the metadata’s type (as an associated type)
+@item Extracting metadata from a pointer
+@item Reconstructing a pointer from a data pointer and metadata
+@item Representing vtables, the metadata for trait objects, as a type with
+  some limited API.
+@end itemize
+")
+    (license license:expat)))
+
 (define-public rust-ptree-0.3
   (package
     (name "rust-ptree")
