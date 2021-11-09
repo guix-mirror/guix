@@ -60953,6 +60953,29 @@ formatters with per-field documentation generated for each structure.
      "This package provides Rust bindings to OpenBSD's pledge(2) interface.")
     (license license:expat)))
 
+(define-public rust-ptr-meta-derive-0.1
+  (package
+    (name "rust-ptr-meta-derive")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ptr_meta_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1b69cav9wn67cixshizii0q5mlbl0lihx706vcrzm259zkdlbf0n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/djkoloski/ptr_meta")
+    (synopsis "Macros for the ptr_meta fat pointer metadata API")
+    (description "This package provides macros for the ptr_meta API.")
+    (license license:expat)))
+
 (define-public rust-ptree-0.3
   (package
     (name "rust-ptree")
