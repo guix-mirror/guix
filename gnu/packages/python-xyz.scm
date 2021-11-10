@@ -6682,29 +6682,20 @@ where key might be occurred more than once in the container.")
 (define-public python-orderedmultidict
   (package
     (name "python-orderedmultidict")
-    (version "1.0")
+    (version "1.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "orderedmultidict" version))
         (sha256
           (base32
-            "1idjbl933avgaadscrjw1np3xkvnz3phq0l8vw5qs0rqcjx9b65q"))))
+            "1bc2v0yflsxjyyjx4q9wqx0j3bvzcw9z87d5pz4iqac7bsxhn1q4"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             ;; The package uses nosetest for running the tests.
-             ;; Adding this initfile allows to run the test suite
-             ;; without requiring nosetest.
-             (with-output-to-file "tests/__init__.py" newline)
-             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (native-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     `(("python-flake8" ,python-flake8)
+       ("python-pycodestyle" ,python-pycodestyle)))
     (home-page "https://github.com/gruns/orderedmultidict")
     (synopsis "Python Ordered Multivalue Dictionary - omdict")
     (description "This package contains a library for ordered multivalue
