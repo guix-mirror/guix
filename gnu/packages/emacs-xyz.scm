@@ -13942,14 +13942,14 @@ methods from a given list.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".tar"))
        (sha256
-        (base32 "0ddm149dz71nksbpz7rwa8cax1nisf6wklv5iq4zrcbf5ghpagkg"))))
+        (base32 "13bx8vd3dw4jvwrys1vyq3a65rjjsbsvi6jxiffp647aclwwfcjs"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
