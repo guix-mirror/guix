@@ -29959,6 +29959,28 @@ which defines a default trait implementation, and @code{trait_impl} which uses
 a default trait implementation you've defined.")
     (license license:lgpl2.1+)))
 
+(define-public rust-multimap-0.8
+  (package
+    (name "rust-multimap")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "multimap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sicyz4n500vdhgcxn4g8jz97cp1ijir1rnbgph3pmx9ckz4dkp5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1))))
+    (home-page "https://github.com/havarnov/multimap")
+    (synopsis "Multimap implementation")
+    (description "This package provides a multimap implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-multipart-0.18
   (package
     (name "rust-multipart")
