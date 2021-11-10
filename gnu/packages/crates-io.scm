@@ -48795,6 +48795,25 @@ ready.  This will probably use a lot of CPU, so be careful when you use it.")
 provided by @code{lock_api}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-spirv-types-0.4
+  (package
+    (name "rust-spirv-types")
+    (version "0.4.0-alpha.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spirv-types" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sxcic2n04xzywww3c7mj9ah8iwr20vz3d6xvsgla1y7gs7lpk3i"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/EmbarkStudios/rust-gpu")
+    (synopsis "SPIR-V types shared between spirv-std and spirv-std-macros")
+    (description "This package provides SPIR-V types shared between spirv-std
+and spirv-std-macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-spmc-0.3
   (package
     (name "rust-spmc")
