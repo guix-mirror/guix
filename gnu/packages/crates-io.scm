@@ -48814,6 +48814,31 @@ provided by @code{lock_api}.")
 and spirv-std-macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-spirv-std-macros-0.4
+  (package
+    (name "rust-spirv-std-macros")
+    (version "0.4.0-alpha.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spirv-std-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19cc15vq9ybdap39qxpf4vsz5q6li21mzgv47zqbyj5vvwaqazi0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-heck" ,rust-heck-0.3)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-spirv-types" ,rust-spirv-types-0.4)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/EmbarkStudios/rust-gpu")
+    (synopsis "Macros for spirv-std")
+    (description "This package provides macros for spirv-std.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-spmc-0.3
   (package
     (name "rust-spmc")
