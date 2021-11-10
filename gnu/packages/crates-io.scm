@@ -15499,6 +15499,27 @@ programs.")
         ;("rust-wio" ,rust-wio-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-easy-cast-0.4
+  (package
+    (name "rust-easy-cast")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "easy-cast" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13ilmaplp2s4vw1vjh4pwbzk7jdxrn0kpf0rk5sli0s1ikp05lab"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-libm" ,rust-libm-0.2))))
+    (home-page "https://github.com/kas-gui/easy-cast")
+    (synopsis "Type conversions which are expected to succeed")
+    (description "This library is written to make numeric type conversions
+easy.")
+    (license license:asl2.0)))
+
 (define-public rust-easy-parallel-3
   (package
     (name "rust-easy-parallel")
