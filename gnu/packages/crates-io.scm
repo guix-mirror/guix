@@ -48172,11 +48172,11 @@ track of where each new file and line starts.")
          "0ph01n3fqkmnfr1wd13dqsi4znv06xy6p4h3hqqdzk81r0r5vd1w"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1)
-        ("rust-syn" ,rust-syn-0.15)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.14)
         ("rust-unicode-xid" ,rust-unicode-xid-0.1))))
     (home-page "https://github.com/utkarshkukreti/speculate.rs")
     (synopsis "RSpec inspired testing framework for Rust")
