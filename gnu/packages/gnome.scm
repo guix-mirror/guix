@@ -4339,15 +4339,15 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.36.2")
+    (version "41.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/" name "-"
+                           (version-major version) "/" name "-"
                            version ".tar.xz"))
        (sha256
-        (base32 "16wmxxppgcgfj8zkagcny5af1c81x32ysm9d6j9f2k7bmik21ss5"))))
+        (base32 "1x99i7kdvd8hbxcs5rfrq7nw6r9bfzaw263zaigjjj04h6gc1vp6"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -4358,7 +4358,11 @@ engineering.")
            (lambda _
              (substitute* "build-aux/meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
-             #t)))))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a writable HOME.
+             (setenv "HOME" (getcwd)))))))
     (inputs
      `(("gtk+" ,gtk+)
        ("gcr" ,gcr)
@@ -4367,7 +4371,7 @@ engineering.")
        ("openldap" ,openldap)
        ("openssh" ,openssh)
        ("avahi" ,avahi)
-       ("libhandy" ,libhandy-0.0)
+       ("libhandy" ,libhandy)
        ("libpwquality" ,libpwquality)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup-minimal-2)))
