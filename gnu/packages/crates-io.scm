@@ -6846,6 +6846,31 @@ constants from build.rs or a script.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.8))))))
 
+(define-public rust-bv-0.11
+  (package
+    (name "rust-bv")
+    (version "0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bv" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0h5kbl54fsccznfixw83xndbripw39y2qkqjwf709p75iqfvnd48"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-feature-probe" ,rust-feature-probe-0.1)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.6))))
+    (home-page "https://github.com/tov/bv-rs")
+    (synopsis "Bit-vectors and bit-slices")
+    (description "The main type exported by this library, @code{BitVec}, is a
+packed, growable bit-vector.  Its API mirrors that of @code{Vec} where
+reasonable.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-byte-pool-0.2
   (package
     (name "rust-byte-pool")
