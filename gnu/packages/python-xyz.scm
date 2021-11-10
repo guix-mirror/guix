@@ -6704,9 +6704,6 @@ multiple values for the same key.  An ordered multivalue dictionary is a
 multivalue dictionary that retains the order of insertions and deletions.")
     (license license:unlicense)))
 
-(define-public python2-orderedmultidict
-  (package-with-python2 python-orderedmultidict))
-
 (define-public python-autopep8
   (package
     (name "python-autopep8")
