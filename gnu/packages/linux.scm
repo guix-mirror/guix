@@ -8365,6 +8365,11 @@ line for tracing control, a @code{lttng-ctl} library for tracing control and a
     (arguments
      ;; There are no automated tests.
      '(#:tests? #f))
+    ;; This variant of binutils is used for the 64 bit support needed to
+    ;; assemble the `purgatory/arch/i386/compat_x86_64.S' program on i686-linux.
+    (native-inputs (list (make-ld-wrapper "ld-wrapper"
+                                          #:binutils binutils-next)
+                         binutils-next))
     (home-page "https://projects.horms.net/projects/kexec/")
     (synopsis "Tools for booting directly into different kernels")
     (description "This package provides the @code{kexec} program and ancillary
