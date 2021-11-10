@@ -15072,6 +15072,31 @@ fragment in a dedicated buffer just like editing a source block.")
 multiplexer.")
     (license license:gpl3+)))
 
+(define-public emacs-plz
+  (let ((commit "7e456638a651bab3a814e3ea81742dd917509cbb")
+        (revision "1"))
+    (package
+      (name "emacs-plz")
+      (version (git-version "0.1-pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/plz.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "05kgxrps1s20im5hhq799nrs3615bvssm4r0ysgmwm203mmzsjgj"))))
+      (build-system emacs-build-system)
+      (inputs `(("curl" ,curl)))
+      (home-page "https://github.com/alphapapa/plz.el")
+      (synopsis "HTTP library for Emacs")
+      (description
+       "This package provides HTTP library for Emacs.  It uses curl as
+a backend, which avoids some of the issues with using Emacs’s built-in url
+library.")
+      (license license:gpl3+))))
+
 (define-public emacs-rpm-spec-mode
   (package
     (name "emacs-rpm-spec-mode")
