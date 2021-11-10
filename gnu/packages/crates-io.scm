@@ -22035,7 +22035,7 @@ total runtime size of an object on the heap")
 (define-public rust-heck-0.3
   (package
     (name "rust-heck")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
@@ -22043,7 +22043,7 @@ total runtime size of an object on the heap")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "01a2v7yvkiqxakdqz4hw3w3g4sm52ivz9cs3qcsv2arxsmw4wmi0"))))
+          "1b56s2c1ymdd0qmy31bw0ndhm31hcdamnhg3npp7ssrmc1ag9jw7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
