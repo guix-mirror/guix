@@ -48550,6 +48550,29 @@ track of where each new file and line starts.")
     (description "This package provides basic sourcemap handling for Rust.")
     (license license:bsd-3)))
 
+(define-public rust-special-0.8
+  (package
+    (name "rust-special")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "special" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dknpky1bbl7xp4qwp3vjqjarfl846mk6irs2z7mvdsr843mx9i4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-assert" ,rust-assert-0.7)
+        ("rust-random" ,rust-random-0.12))))
+    (home-page "https://github.com/stainless-steel/special")
+    (synopsis "Special functions")
+    (description "The package provides so-called special functions.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-speculate-0.1
   (package
     (name "rust-speculate")
