@@ -48839,6 +48839,33 @@ and spirv-std-macros.")
     (description "This package provides macros for spirv-std.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-spirv-std-0.4
+  (package
+    (name "rust-spirv-std")
+    ;; We use a slightly older version here, because of problems building glam
+    ;; 0.13.1 with more recent versions.
+    (version "0.4.0-alpha.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spirv-std" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14npd838bqnw09iab0zq94xs4yl69m6c0cdfzxa9fal0zxqlqv3j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-spirv-std-macros" ,rust-spirv-std-macros-0.4)
+        ("rust-spirv-types" ,rust-spirv-types-0.4))))
+    (home-page "https://github.com/EmbarkStudios/rust-gpu")
+    (synopsis "Standard functions and types for SPIR-V")
+    (description "This package provides standard functions and types for
+SPIR-V.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-spmc-0.3
   (package
     (name "rust-spmc")
