@@ -17976,6 +17976,27 @@ streams.")
     (arguments
      `(#:cargo-inputs (("rust-num" ,rust-num-0.1))))))
 
+(define-public rust-float-ord-0.3
+  (package
+    (name "rust-float-ord")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "float-ord" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gbvx6dzz8xvj38bj02cajpqd9p5syxjx9jyqpj8414amr4izs4c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/notriddle/rust-float-ord")
+    (synopsis "Total ordering for floating-point numbers")
+    (description
+     "This package provides a total ordering for floating-point numbers")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-float-ord-0.2
   (package
     (name "rust-float-ord")
