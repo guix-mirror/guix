@@ -45,6 +45,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -640,14 +641,14 @@ over a different origin than that of the web application.")
 (define-public python-furl
   (package
     (name "python-furl")
-    (version "2.0.0")
+    (version "2.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "furl" version))
         (sha256
           (base32
-            "1v2lakx03d5w8954a39ki44xv5mllnq0a0avhxykv9hrzg0yvjpx"))))
+            "0knc76pm8pzigs3bpx9fccfsfxqrgblqphar46hq9i364vz8hqas"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
