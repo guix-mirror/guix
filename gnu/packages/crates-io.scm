@@ -17482,6 +17482,28 @@ it.")
 descriptors limit.")
     (license license:asl2.0)))
 
+(define-public rust-feature-probe-0.1
+  (package
+    (name "rust-feature-probe")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "feature-probe" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nhif9zpr2f17gagf0qb0v914wc3jr9sfjzvnpi7b7pcs73ksnl3"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tov/feature-probe-rs")
+    (synopsis "Probe for rustc features from build.rs")
+    (description "To support multiple versions of Rust, it's often necessary
+to conditionally compile parts of our libraries or programs.  It's possible to
+allow users to specify what features to enable, but detection is better,
+because users get all the features that their version of Rust supports.  And
+while we could check the rustc version, it's better to probe for individual
+features.  This package probes for rustc features from build.rs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-feed-rs-0.6
   (package
     (name "rust-feed-rs")
