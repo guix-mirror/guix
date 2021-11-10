@@ -140,6 +140,7 @@
   #:use-module (gnu packages inkscape)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages language)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunistring)
@@ -11742,34 +11743,46 @@ these services on the Guix System.")
 (define-public geary
   (package
     (name "geary")
-    (version "3.34.1")
+    (version "40.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitlab.gnome.org/GNOME/geary")
-                    (commit version)))
+                    (url "https://gitlab.gnome.org/GNOME/geary.git")
+                    (commit (string-append "gnome-" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01cc921kyh3zxz07biqbdzkjgmdcc36kwjyajm4y382a75cl5zg7"))
-              (patches (search-patches "geary-CVE-2020-24661.patch"))))
+                "04hvw86r8sczvjm1z3ls5y5y5h6nyfb648rjkfx05ib00mqq5v1x"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+       #:configure-flags
+       '("-Dprofile=release")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'disable-failing-tests
                     (lambda _
-                      (substitute* "test/meson.build"
-                        (("test\\('client-tests', geary_test_client_bin\\)")
-                         ""))
-                      #t))
+                      (substitute* "test/test-client.vala"
+                        (("client.add_suite\\(new Application.CertificateManagerTest\\(\\).suite\\);")
+                         ""))))
+                  (add-after 'unpack 'generate-vapis
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; It’s not possible to generate the GMime vapi, because
+                      ;; there’s custom metadata that gmime didn’t
+                      ;; install. Thus, the vapi should be built and installed
+                      ;; with gmime.
+                      (define gmime
+                        (assoc-ref inputs "gmime"))
+                      (copy-file (string-append gmime "/share/vala/vapi/gmime-3.0.vapi")
+                                 "bindings/vapi/gmime-3.0.vapi")))
                   (add-after 'unpack 'disable-postinstall-script
                     (lambda _
-                      (substitute* "meson.build"
-                        (("meson.add_install_script\\(\
-join_paths\\('build-aux', 'post_install.py'\\)\\)")
-                         ""))
-                      #t))
+                      (substitute* "build-aux/post_install.py"
+                        (("gtk-update-icon-cache")
+                         "true"))))
+                  (add-before 'check 'setup-home
+                    (lambda _
+                      ;; Tests require a writable HOME.
+                      (setenv "HOME" (getcwd))))
                   (add-before 'check 'setup-xvfb
                     (lambda _
                       (system "Xvfb :1 &")
@@ -11780,28 +11793,33 @@ join_paths\\('build-aux', 'post_install.py'\\)\\)")
        ("folks" ,folks)
        ("gcr" ,gcr)
        ("glib" ,glib)
-       ("gmime" ,gmime-2.6)
+       ("gmime" ,gmime)
        ("gnome-online-accounts:lib"
         ,gnome-online-accounts "lib")
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gspell" ,gspell)
+       ("gsound" ,gsound)
        ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
        ("json-glib" ,json-glib)
        ("libcanberra" ,libcanberra)
        ("libgee" ,libgee)
-       ("libhandy" ,libhandy-0.0)
+       ("libhandy" ,libhandy)
        ("libpeas" ,libpeas)
        ("libsecret" ,libsecret)
+       ("libstemmer" ,libstemmer)
        ("libunwind" ,libunwind)
        ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2)
        ("ytnef" ,ytnef)))
     (native-inputs
      `(("appstream-glib" ,appstream-glib)
        ("cmake-minimal" ,cmake-minimal)
        ("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
+       ("glib" ,glib)
        ("glib:bin" ,glib "bin")
+       ("gmime" ,gmime)
        ("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
        ("libarchive" ,libarchive)

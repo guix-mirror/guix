@@ -1111,7 +1111,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gdm-elogind-support.patch		\
   %D%/packages/patches/gdm-remove-hardcoded-xwayland-path.patch	\
   %D%/packages/patches/gdm-wayland-session-wrapper-from-env.patch	\
-  %D%/packages/patches/geary-CVE-2020-24661.patch		\
   %D%/packages/patches/genimage-mke2fs-test.patch		\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
