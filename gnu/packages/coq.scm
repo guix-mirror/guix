@@ -136,50 +136,65 @@ It is developed using Objective Caml and Camlp5.")
                   "00cga3n9nj2xa3ivb0fdkkdx3k11fp4879y188738631yd1x2lsa"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("which" ,which)
-         ("emacs" ,emacs-minimal)
+       `(("emacs" ,emacs-minimal)
          ("texinfo" ,texinfo)))
       (inputs
-       `(("host-emacs" ,emacs)
-         ("perl" ,perl)
-         ("coq" ,coq)))
+       `(("perl" ,perl)))
       (arguments
-       `(#:tests? #f                   ; no check target
-         #:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "DEST_PREFIX=" %output)
-                            (string-append "ELISP_START=" %output
-                                           "/share/emacs/site-lisp/ProofGeneral"))
-         #:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'disable-byte-compile-error-on-warn
-             (lambda _
-               (substitute* "Makefile"
-                 (("\\(setq byte-compile-error-on-warn t\\)")
-                  "(setq byte-compile-error-on-warn nil)"))))
-           (add-after 'unpack 'patch-hardcoded-paths
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out   (assoc-ref outputs "out"))
-                     (coq   (assoc-ref inputs "coq"))
-                     (emacs (assoc-ref inputs "host-emacs")))
+       (let ((base-directory "/share/emacs/site-lisp/ProofGeneral"))
+         `(#:tests? #f                  ; no check target
+           #:make-flags (list (string-append "PREFIX=" %output)
+                              (string-append "EMACS=" (assoc-ref %build-inputs "emacs")
+                                             "/bin/emacs")
+                              (string-append "DEST_PREFIX=" %output)
+                              (string-append "ELISP=" %output ,base-directory)
+                              (string-append "DEST_ELISP=" %output ,base-directory)
+                              (string-append "ELISP_START=" %output ,base-directory))
+           #:phases
+           (modify-phases %standard-phases
+             (delete 'configure)
+             (add-after 'unpack 'disable-byte-compile-error-on-warn
+               (lambda _
                  (substitute* "Makefile"
-                   (("/sbin/install-info") "install-info")))))
-           (add-after 'unpack 'clean
-             (lambda _
-               ;; Delete the pre-compiled elc files for Emacs 23.
-               (invoke "make" "clean")))
-           (add-after 'install 'install-doc
-             (lambda* (#:key make-flags #:allow-other-keys)
-               ;; XXX FIXME avoid building/installing pdf files,
-               ;; due to unresolved errors building them.
-               (substitute* "Makefile"
-                 ((" [^ ]*\\.pdf") ""))
-               (apply invoke "make" "install-doc" make-flags))))))
+                   (("\\(setq byte-compile-error-on-warn t\\)")
+                    "(setq byte-compile-error-on-warn nil)"))))
+             (add-after 'unpack 'patch-hardcoded-paths
+               (lambda _
+                 (substitute* "Makefile"
+                   (("/sbin/install-info") "install-info"))))
+             (add-after 'unpack 'remove-which
+               (lambda _
+                 (substitute* "Makefile"
+                   (("`which perl`") "perl")
+                   (("`which bash`") "bash"))))
+             (add-after 'unpack 'clean
+               (lambda _
+                 ;; Delete the pre-compiled elc files for Emacs 23.
+                 (invoke "make" "clean")))
+             (add-after 'install 'install-doc
+               (lambda* (#:key make-flags #:allow-other-keys)
+                 ;; XXX FIXME avoid building/installing pdf files,
+                 ;; due to unresolved errors building them.
+                 (substitute* "Makefile"
+                   ((" [^ ]*\\.pdf") ""))
+                 (apply invoke "make" "install-doc" make-flags)))
+             (add-after 'install 'allow-subfolders-autoloads
+               ;; Autoload cookies are present in sub-directories.  A friendly
+               ;; wrapper proof-general.el around generic/proof-site.el is
+               ;; provided for execution on Emacs start-up.  It serves two
+               ;; purposes:
+               ;;
+               ;; * Setting up the load path when byte-compiling pg.
+               ;; * Loading a minimal PG setup on startup (not all of Proof
+               ;; General, of course; mostly mode hooks and autoloads).
+               ;;
+               ;; The renaming to proof-general-autoloads.el is Guix
+               ;; specific.
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((out (assoc-ref outputs "out")))
+                   (copy-file "proof-general.el"
+                              (string-append out ,base-directory
+                                             "/proof-general-autoloads.el")))))))))
       (home-page "https://proofgeneral.github.io/")
       (synopsis "Generic front-end for proof assistants based on Emacs")
       (description
