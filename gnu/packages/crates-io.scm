@@ -31114,6 +31114,31 @@ feed reader.")
     ;; No copyright headers in the source code.  LICENSE indicates gpl3.
     (license license:gpl3)))
 
+(define-public rust-newtype-derive-0.1
+  (package
+    (name "rust-newtype-derive")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "newtype-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1v3170xscs65gjx5vl1zjnqp86wngbzw3n2q74ibfnqqkx6x535c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.1))
+       #:cargo-development-inputs
+       (("rust-custom-derive" ,rust-custom-derive-0.1))))
+    (home-page "https://github.com/DanielKeep/rust-custom-derive")
+    (synopsis "Macros for deriving common traits for newtype structures")
+    (description
+     "This crate provides macros for deriving common traits for newtype
+structures.")
+    (license (list license:expat
+                   license:asl2.0))))
+
 (define-public rust-nibble-vec-0.1
   (package
     (name "rust-nibble-vec")
