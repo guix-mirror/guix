@@ -39875,6 +39875,24 @@ random number generators.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
+(define-public rust-random-0.12
+  (package
+    (name "rust-random")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "random" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03s2c59vzcr5fmxbhlhxvrsnwgic488jl4br1k4q369lhls3mlcp"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/stainless-steel/random")
+    (synopsis "Sources of randomness")
+    (description "The package provides sources of randomness.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-random-fast-rng-0.1
   (package
     (name "rust-random-fast-rng")
