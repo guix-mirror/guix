@@ -15097,6 +15097,32 @@ a backend, which avoids some of the issues with using Emacs’s built-in url
 library.")
       (license license:gpl3+))))
 
+(define-public emacs-ement
+  (let ((commit "c951737dc855604aba389166bb0e7366afadc533")
+        (revision "1"))
+    (package
+      (name "emacs-ement")
+      (version (git-version "0.1-pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/ement.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00iwwz4hzg4g59wrb5df6snqz3ppvrsadhfp61w1pa8gvg2z9bvy"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:emacs ,emacs))               ;need libxml support
+      (inputs
+       `(("emacs-plz" ,emacs-plz)
+         ("emacs-ts" ,emacs-ts)))
+      (home-page "https://github.com/alphapapa/ement.el")
+      (synopsis "Matrix client for Emacs")
+      (description "Ement.el is a Matrix client for Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-rpm-spec-mode
   (package
     (name "emacs-rpm-spec-mode")
