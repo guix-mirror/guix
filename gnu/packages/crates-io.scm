@@ -4026,6 +4026,53 @@ methods.")
     (description "Pull in every source file in a directory as a module.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-average-0.13
+  (package
+    (name "rust-average")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "average" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1c97m8yagvq8r6qgd3harm5vnkdbld4mxg9byyxh6igjsf8wfgl4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-Cargo.toml
+           (lambda _
+             (substitute* '("guix-vendor/rust-average-0.13.1.tar.gz/Cargo.toml"
+                            "Cargo.toml")
+               ;; The resolver feature is not supported by this version of Cargo.
+               (("resolver = \"2\".*") "")
+               ;; Relax!
+               (("1.3") ,(package-version rust-byteorder-1))))))
+       #:cargo-inputs
+       (("rust-easy-cast" ,rust-easy-cast-0.4)
+        ("rust-float-ord" ,rust-float-ord-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-big-array" ,rust-serde-big-array-0.3)
+        ("rust-serde-derive" ,rust-serde-derive-1))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-proptest" ,rust-proptest-1)
+        ("rust-quantiles" ,rust-quantiles-0.7)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-distr" ,rust-rand-distr-0.4)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.6)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))
+    (home-page "https://github.com/vks/average")
+    (synopsis "Calculate statistics iteratively")
+    (description "This crate provides tools for calculating statistics
+iteratively in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-average-0.10
   (package
     (name "rust-average")
