@@ -28097,6 +28097,24 @@ grammars.  It provides the subset of the regex crate that only deals with
 matching, not parsing substrings.")
     (license license:expat)))
 
+(define-public rust-matrixcompare-core-0.1
+  (package
+    (name "rust-matrixcompare-core")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "matrixcompare-core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wqaj028ws2x2h16rf10arwvmpfbmk7afg8b57ahb25i1nrspgdh"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Andlon/matrixcompare")
+    (synopsis "Core traits for matrixcompare")
+    (description "This package provides core traits for matrixcompare.")
+    (license license:expat)))
+
 (define-public rust-matrixmultiply-0.3
   (package
     (name "rust-matrixmultiply")
