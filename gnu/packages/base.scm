@@ -523,8 +523,6 @@ change.  GNU make offers many powerful extensions over the standard utility.")
       (patches (search-patches "binutils-loongson-workaround.patch"
                                "binutils-2.37-file-descriptor-leak.patch"))))
    (build-system gnu-build-system)
-
-   ;; TODO: Add dependency on zlib + those for Gold.
    (arguments
     `(#:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
                           ;; on GCC when bootstrapping.
@@ -595,29 +593,21 @@ included.")
    (properties '())))
 
 (define-public binutils-gold
-  (package/inherit binutils
+  (package/inherit binutils-next
     (name "binutils-gold")
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'patch-source-shebangs 'patch-more-shebangs
-           (lambda _
-             (substitute* "gold/Makefile.in"
-               (("/bin/sh") (which "sh"))))))
-       ,@(substitute-keyword-arguments (package-arguments binutils)
-         ; Upstream is aware of unrelocatable test failures on arm*.
-         ((#:tests? _ #f)
-          (if (any (cute string-prefix? <> (or (%current-target-system)
-                                               (%current-system)))
-                   '("i686" "x86_64"))
-              '#t '#f))
-         ((#:configure-flags flags)
-          `(cons* "--enable-gold=default"
-                 (delete "LDFLAGS=-static-libgcc" ,flags))))))
-     (native-inputs
-     `(("bc" ,bc)))
-     (inputs
-     `(("gcc:lib" ,(canonical-package gcc) "lib")))))
+     (substitute-keyword-arguments (package-arguments binutils)
+       ((#:configure-flags flags)
+        `(cons* "--enable-gold=default"
+                (delete "LDFLAGS=-static-libgcc" ,flags)))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'patch-source-shebangs 'patch-more-shebangs
+             (lambda _
+               (substitute* "gold/Makefile.in"
+                 (("/bin/sh") (which "sh")))))))))
+    (native-inputs
+     `(("bc" ,bc)))))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
