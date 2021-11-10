@@ -56053,6 +56053,19 @@ SIMD.  It supports fast Hamming, Levenshtein, restricted Damerau-Levenshtein,
 etc. distance calculations and string search.")
     (license license:expat)))
 
+(define-public rust-triple-accel-0.3
+  (package
+    (inherit rust-triple-accel-0.4)
+    (name "rust-triple-accel")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "triple_accel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0v795l496crk3h6yff9zh1cjyrh5s9v23fbgccc4dpz25z70jav2"))))))
+
 (define-public rust-trust-dns-https-0.20
   (package
     (name "rust-trust-dns-https")
