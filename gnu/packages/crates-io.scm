@@ -43427,6 +43427,22 @@ rustc compiler.")
      `(#:skip-build? #t
        #:cargo-inputs (("rust-semver" ,rust-semver-0.9))))))
 
+(define-public rust-rustc-version-0.1
+  (package
+    (inherit rust-rustc-version-0.3)
+    (name "rust-rustc-version")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc_version" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1160jjsqhqr25cvhr48hmpp8v61bjvjcnxzb0cyf4373lmp3gxf5"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-semver" ,rust-semver-0.1))))))
+
 (define-public rust-rustdoc-stripper-0.1
   (package
     (name "rust-rustdoc-stripper")
