@@ -45494,6 +45494,25 @@ macOS and iOS.")
      "Semantic version parsing and comparison.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-semver-0.1
+  (package
+    (name "rust-semver")
+    (version "0.1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "semver" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1b10m0hxrr947gp41lj9vnmgl5ddwx3d41vnblsg06ppvkz11x6l"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/semver")
+    (synopsis "Parser and evaluator for Cargo's flavor of Semantic Versioning")
+    (description
+     "This package provides a parser and evaluator for Cargo's flavor of
+Semantic Versioning.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-semver-parser-0.10
   (package
     (name "rust-semver-parser")
