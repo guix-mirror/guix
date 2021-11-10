@@ -28115,6 +28115,30 @@ matching, not parsing substrings.")
     (description "This package provides core traits for matrixcompare.")
     (license license:expat)))
 
+(define-public rust-matrixcompare-0.2
+  (package
+    (name "rust-matrixcompare")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "matrixcompare" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "046x25j9v42syns6g8sp3lv4kad55cr4p2bvvs6kyj85dbcz8hiv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-matrixcompare-core" ,rust-matrixcompare-core-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-proptest" ,rust-proptest-0.10))))
+    (home-page "https://github.com/Andlon/matrixcompare")
+    (synopsis "Tools for convenient comparison of matrices")
+    (description "This package provides tools for convenient comparison of
+matrices.")
+    (license license:expat)))
+
 (define-public rust-matrixmultiply-0.3
   (package
     (name "rust-matrixmultiply")
