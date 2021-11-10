@@ -2835,6 +2835,24 @@ standard library.")
      "This library provides utilities to handle ASCII characters.")
     (license license:mpl2.0)))
 
+(define-public rust-assert-0.7
+  (package
+    (name "rust-assert")
+    (version "0.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hnph97yz3hpf71s4rdzcrgd492d1m7rj0k48ymxl1w5d2g8v450"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/stainless-steel/assert")
+    (synopsis "Assertions for testing")
+    (description "This package provides assertions for testing.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-assert-cli-0.6
   (package
     (name "rust-assert-cli")
