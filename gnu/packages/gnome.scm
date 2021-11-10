@@ -2409,7 +2409,7 @@ the font would look under various sizes.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.34.0")
+    (version "3.41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2417,8 +2417,8 @@ the font would look under various sizes.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0925snsixzkwh49xiayqmj6fcrmklqk8kyy0jkv7m64h9abm1pr9"))))
-    (build-system gnu-build-system)
+                "00fsf82ycac8qi0kkiq759p6jrn63pyz4ksn4wnq7m4ax94zq289"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2426,10 +2426,21 @@ the font would look under various sizes.")
          ;; build environment.
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "Makefile.in"
-               (("[[:blank:]]+test-system-prompt\\$\\(EXEEXT\\)")
+             (substitute* "gcr/meson.build"
+               (("[[:blank:]]+'system-prompt',")
                 ""))
              #t))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'unpack 'fix-systemd-detection
+           (lambda _
+             (substitute* "gcr/gcr-ssh-agent-service.c"
+               (("#ifdef WITH_SYSTEMD")
+                "#if (WITH_SYSTEMD)"))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Some tests expect to write to $HOME.
@@ -2438,11 +2449,17 @@ the font would look under various sizes.")
     (inputs
      `(("dbus" ,dbus)
        ("gnupg" ,gnupg)                ;called as a child process during tests
-       ("libgcrypt" ,libgcrypt)))
+       ("libgcrypt" ,libgcrypt)
+       ("libsecret" ,libsecret)))
     (native-inputs
      `(("python" ,python-wrapper)       ;for tests
+       ("openssh" ,openssh)             ;for tests
        ("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gtk-doc" ,gtk-doc)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("libxml2" ,libxml2)
