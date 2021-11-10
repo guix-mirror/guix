@@ -39613,6 +39613,33 @@ generator based on timing jitter.")
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-rand-pcg-0.3
+  (package
+    (name "rust-rand-pcg")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_pcg" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1w47awndfhgcc31zbji66pwndqmc6lsyairqi9b17f82f19riqbx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1))))
+    (home-page "https://crates.io/crates/rand_pcg")
+    (synopsis
+     "Selected PCG random number generators")
+    (description
+     "This package implements a selection of PCG random number generators.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rand-pcg-0.2
   (package
     (name "rust-rand-pcg")
