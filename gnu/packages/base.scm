@@ -558,6 +558,23 @@ included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
 
+;;; TODO: Merge into binutils on the next world rebuild.
+(define-public binutils-next
+  (package/inherit binutils
+    (name "binutils-next")
+    (version "2.37")
+    (arguments
+     (substitute-keyword-arguments (package-arguments binutils)
+       ((#:out-of-source? _ #f)         ;recommended in the README
+        #t)
+       ((#:configure-flags flags)
+        `(cons* "--enable-64-bit-bfd"
+                "--enable-compressed-debug-sections=all"
+                "--enable-lto"
+                "--enable-separate-code"
+                "--enable-threads"
+                ,flags))))))
+
 ;; FIXME: ath9k-firmware-htc-binutils.patch do not apply on 2.34 because of a
 ;; big refactoring of xtensa-modules.c (commit 567607c11fbf7105 upstream).
 ;; Keep this version around until the patch is updated.
