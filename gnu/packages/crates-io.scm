@@ -40294,8 +40294,8 @@ memory to speed up reallocation.")
         ("rust-regex-syntax" ,rust-regex-syntax-0.6))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.6))))
+        ("rust-quickcheck" ,rust-quickcheck-1)
+        ("rust-rand" ,rust-rand-0.8))))
     (home-page "https://github.com/rust-lang/regex")
     (synopsis "Regular expressions for Rust")
     (description
