@@ -1323,6 +1323,37 @@ relying on a complex dependency tree.")
 (define-public python2-fastalite
   (package-with-python2 python-fastalite))
 
+(define-public biosoup
+  (package
+    (name "biosoup")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rvaser/biosoup")
+             ;; Corresponds to version 0.10.0
+             (commit "38181f09854ff42cbd9632200a2ec9fb37a4b7b6")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "02hvyka703zagx0nvv2yx3dkc748zc8g6qbrpya7r8kfkcl7y8hw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./bin/biosoup_test")))))))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/rvaser/biosoup")
+    (synopsis "C++ support library for bioinformatics tools")
+    (description "Biosoup is a C++ collection of header-only data structures
+used for storage and logging in bioinformatics tools.")
+    (license license:expat)))
+
 (define-public ciri-long
   (package
     (name "ciri-long")
