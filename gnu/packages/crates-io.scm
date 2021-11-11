@@ -49660,6 +49660,43 @@ map.")
     (description "This package provides a simple statistics library.")
     (license license:expat)))
 
+(define-public rust-statrs-0.14
+  (package
+    (name "rust-statrs")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "statrs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bdff4rsghp9hj5i5ynl6iw3pyzprd65cbf8ihmgvyv190a1y30y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-Cargo.toml
+           (lambda _
+             (substitute* '("Cargo.toml"
+                            "guix-vendor/rust-average-0.13.1.tar.gz/Cargo.toml"
+                            "guix-vendor/rust-nalgebra-0.26.2.tar.gz/Cargo.toml")
+               ;; The resolver feature is not supported by this version of Cargo.
+               (("resolver = \"2\".*") "")))))
+       #:cargo-inputs
+       (("rust-approx" ,rust-approx-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-nalgebra" ,rust-nalgebra-0.26)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.8))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/statrs-dev/statrs")
+    (synopsis "Statistical computing library for Rust")
+    (description "This package provides a statistical computing library for
+Rust.")
+    (license license:expat)))
+
 (define-public rust-statrs-0.13
   (package
     (name "rust-statrs")
