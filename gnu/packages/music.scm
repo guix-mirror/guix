@@ -1528,6 +1528,39 @@ Guile.")
     ;; more than an hour of silence, so double the max silent time.
     (properties `((max-silent-time . 7200)))))
 
+(define-public music21
+  (package
+    (name "music21")
+    (version "7.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "music21" version))
+        (sha256
+          (base32 "17v2id8qm99xqymqsdczq173fmbdha4w109ahh8j1d9l5a7mqc86"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; See: https://github.com/cuthbertLab/music21/issues/1164
+               (invoke "python" "-m" "music21.stream.tests")))))))
+    (propagated-inputs
+      `(("python-chardet" ,python-chardet)
+        ("python-joblib" ,python-joblib)
+        ("python-more-itertools" ,python-more-itertools)
+        ("python-webcolors" ,python-webcolors)))
+    (home-page "https://web.mit.edu/music21/")
+    (synopsis "Toolkit for Computational Musicology")
+    (description
+     "Music21 is a set of tools for helping scholars and other active
+listeners answer questions about music quickly and simply.")
+    ;; Software is dual-licensed.
+    (license (list license:bsd-3 license:lgpl3+))))
+
 (define-public abjad
   (package
     (name "abjad")
