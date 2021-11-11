@@ -14372,8 +14372,7 @@ diff.")
         (base32 "0lsn5h1mfa8x7bfg9yqgr52p7drigpwgm5q8qh4r07dmfd5g43rw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52 ; fix for E0658
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-diffus-derive" ,rust-diffus-derive-0.10)
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-itertools" ,rust-itertools-0.10)
@@ -24655,8 +24654,7 @@ primitives to an @code{io::Write}.")
         (base32 "1x4z5ixlxv1wa70d3d6ad3n8qxz6z00i13zwnv219v45qcwybbnb"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52 ; fix for E0658
-       #:cargo-development-inputs
+     `(#:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-proptest" ,rust-proptest-1)
@@ -30644,8 +30642,7 @@ release (fork of debug_unreachable)")
         (base32 "0r3hz725kblxr6mhl8rkf2bffzmyya0ib3xr3jk5zm8x2jlpvlq6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52 ; some inputs fail with E0658
-       #:tests? #f ; FIXME: "error reading DNS system conf" from reqwest
+     `(#:tests? #f ; FIXME: "error reading DNS system conf" from reqwest
        #:cargo-inputs
        (("rust-article-scraper" ,rust-article-scraper-1)
         ("rust-async-trait" ,rust-async-trait-0.1)
@@ -32486,8 +32483,6 @@ giga, kibi.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0y5azgk8ds43m1sd5pc4hhakxzxkfcfscl24y8gsbvwdznxjqavv"))))
-    (arguments
-     `(#:rust ,rust-1.52)) ; fix for E0658
     (build-system cargo-build-system)
     (home-page "https://github.com/CasualX/obfstr")
     (synopsis "Compile time string constant obfuscation for Rust")
@@ -33299,8 +33294,7 @@ system for OpenSSL.")
         (base32 "0zr7f101inkz3rknl0r3q0qkklfxhqrji7yxmqixajfn3m5mbjfa"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52 ; fix for E0658
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-strong-xml" ,rust-strong-xml-0.6)
@@ -47972,8 +47966,7 @@ escaped text to recover the original string.")
         (base32 "1v4f132rk9wxiw8hb3kgnixirzr8kbfhg2lgsf4b85vbg02a0jfn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52 ; fix for E0658
-       #:cargo-inputs (("rust-serde" ,rust-serde-1))))
+     `(#:cargo-inputs (("rust-serde" ,rust-serde-1))))
     (home-page "https://github.com/emilk/snake_case")
     (synopsis "String-like type that only contains non-empty snake_case")
     (description
@@ -49148,8 +49141,7 @@ file.")
         (base32 "1gxy34j42x5a572cfkkhmxamrm764pswj5r3wcwi0bwfc4xgn68x"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52 ; fix for E0658
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-jetscii" ,rust-jetscii-0.5)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
