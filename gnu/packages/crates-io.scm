@@ -49990,6 +49990,27 @@ Rust.")
 Rust.")
     (license license:expat)))
 
+(define-public rust-statrs-0.12
+  (package
+    (name "rust-statrs")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "statrs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10hk9194ig21w08947yavf4l97g0106ph4xxlzn8ps2kwrnnzqfc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/statrs-dev/statrs")
+    (synopsis "Statistical computing library for Rust")
+    (description "This package provides a statistical computing library for
+Rust.")
+    (license license:expat)))
+
 (define-public rust-stb-truetype-0.3
   (package
     (name "rust-stb-truetype")
