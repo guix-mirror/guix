@@ -20344,6 +20344,30 @@ retrieving random data from system source.")
 getters and setters on fields.")
     (license license:expat)))
 
+(define-public rust-getset-0.0.9
+  (package
+    (name "rust-getset")
+    (version "0.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "getset" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0aaldwfs2690rjqg2ygan27l2qa614w2p6zj7k99n36pv2vzbcsv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/Hoverbear/getset")
+    (synopsis "Getters and setters for Rust")
+    (description
+     "This package provides a procedural macro for generating the most basic
+getters and setters on fields.")
+    (license license:expat)))
+
 (define-public rust-gettext-rs-0.7
   (package
     (name "rust-gettext-rs")
