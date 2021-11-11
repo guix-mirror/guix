@@ -43997,7 +43997,7 @@ require unstable language features.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-semver" ,rust-semver-0.11))))
-    (home-page "https://github.com/Kimundi/rustc-version-rs")
+    (home-page "https://github.com/djc/rustc-version-rs")
     (synopsis "Library for querying the version of an installed rustc compiler")
     (description
      "This package provides a library for querying the version of an installed
