@@ -45,6 +45,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
@@ -34613,6 +34614,39 @@ normally prevent moving a type that has been borrowed from.")
     (home-page "https://github.com/ihalila/pancurses")
     (synopsis "@code{curses} library for Rust")
     (description "@code{pancurses} is a @code{curses} library for Rust.")
+    (license license:expat)))
+
+(define-public rust-parasail-sys-0.2
+  (package
+    (name "rust-parasail-sys")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parasail-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "156fwfdbcfpzmx4k274jqdp8jzmllmdnhd1ibnh7kgd9cp7ni6ac"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-build-flags '("-vv")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell-for-configure-script
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh")))))
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://github.com/anp/parasailors")
+    (synopsis "Bindings to the parasail pairwise genetic sequence alignment library")
+    (description
+     "This packgae provides native bindings to the parasail pairwise genetic
+sequence alignment library.")
     (license license:expat)))
 
 (define-public rust-parity-tokio-ipc-0.4
