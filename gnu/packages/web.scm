@@ -4773,6 +4773,8 @@ their web site.")
         (base32
          "0x0hm9brh3j71645pydvlkrwxaaca9dnwd7xahwjyjaz882s200v"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sgmllib3k" ,python-sgmllib3k)))
     (arguments
      '(#:tests? #f))
     (home-page
