@@ -1475,9 +1475,20 @@ consensus sequences.")
          (add-before 'build 'build-libssw
            (lambda _
              (with-directory-excursion "libs/striped_smith_waterman"
-               (invoke "make" "libssw.so")))))))
+               (invoke "make" "libssw.so"))))
+         (add-before 'build 'fix-reference-to-ccs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CIRI_long/pipeline.py"
+               (("'ccs -i")
+                (string-append "'"
+                               (assoc-ref inputs "circtools") "/bin/ccs"
+                               " -i")))
+             ;; yuck!
+             (substitute* "CIRI_long/main.py"
+               (("os.chmod\\(lib_path.*") "")))))))
     (inputs
-     `(("python-biopython" ,python-biopython)
+     `(("circtools" ,circtools)
+       ("python-biopython" ,python-biopython)
        ("python-bwapy" ,python-bwapy)
        ("python-cython" ,python-cython)
        ("python-levenshtein" ,python-levenshtein)
