@@ -30599,6 +30599,42 @@ statically-sized or dynamically-sized matrices.")
        (("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-nalgebra-macros-0.1
+  (package
+    (name "rust-nalgebra-macros")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nalgebra-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "063jvvvlwmzzxfr4wyiil2cn1yqj3arvghwsr2nk4ilv2jwc1z01"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-Cargo.toml
+           (lambda _
+             (substitute* '("Cargo.toml"
+                            "guix-vendor/rust-nalgebra-macros-0.1.0.tar.gz/Cargo.toml"
+                            "guix-vendor/rust-nalgebra-0.26.2.tar.gz/Cargo.toml"
+                            "guix-vendor/rust-average-0.13.1.tar.gz/Cargo.toml")
+               ;; The resolver feature is not supported by this version of Cargo.
+               (("resolver = \"2\".*") "")))))
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-nalgebra" ,rust-nalgebra-0.26))))
+    (home-page "https://nalgebra.org")
+    (synopsis "Procedural macros for nalgebra")
+    (description "This package provides procedural macros for the nalgebra
+linear algebra library.")
+    (license license:asl2.0)))
+
 (define-public rust-named-pipe-0.4
   (package
     (name "rust-named-pipe")
