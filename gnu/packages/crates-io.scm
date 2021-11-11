@@ -28269,6 +28269,29 @@ matching, not parsing substrings.")
 matrices.")
     (license license:expat)))
 
+(define-public rust-matrixcompare-mock-0.1
+  (package
+    (name "rust-matrixcompare-mock")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "matrixcompare-mock" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1iqk7p9a3y057qzjjz4hfc1kq48vb76bf1lljqcm5r6xxmlz785y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-matrixcompare-core" ,rust-matrixcompare-core-0.1)
+        ("rust-num" ,rust-num-0.3)
+        ("rust-proptest" ,rust-proptest-0.10))))
+    (home-page "https://github.com/Andlon/matrixcompare")
+    (synopsis "Internal mock data structures for testing of matrixcompare")
+    (description "This package provides internal mock data structures for
+testing of matrixcompare.")
+    (license license:expat)))
+
 (define-public rust-matrixmultiply-0.3
   (package
     (name "rust-matrixmultiply")
