@@ -34649,6 +34649,39 @@ normally prevent moving a type that has been borrowed from.")
 sequence alignment library.")
     (license license:expat)))
 
+(define-public rust-parasailors-0.3
+  (package
+    (name "rust-parasailors")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parasailors" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qr1qwzrq289njc3aawih15n9a8yy169wyb1gzgwzga0r25dxi3g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-build-flags '("-vv")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell-for-configure-script
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh")))))
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-parasail-sys" ,rust-parasail-sys-0.2))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://github.com/anp/parasailors")
+    (synopsis "SIMD accelerated pairwise genetic sequence alignment")
+    (description "This package provides SIMD accelerated pairwise genetic
+sequence alignment tools.")
+    (license license:expat)))
+
 (define-public rust-parity-tokio-ipc-0.4
   (package
     (name "rust-parity-tokio-ipc")
