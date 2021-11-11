@@ -5365,6 +5365,61 @@ bindings to C and C++ libraries.")
 rust-bio and rust-htslib.")
     (license license:expat)))
 
+(define-public rust-bio-0.32
+  (package
+    (name "rust-bio")
+    (version "0.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1wj6s3hzpx5xhajcnvdabbgpalgghdni7gmlhjl6i9pfh1xiq5pi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-bio-types" ,rust-bio-types-0.12)
+        ("rust-bit-set" ,rust-bit-set-0.5)
+        ("rust-bv" ,rust-bv-0.11)
+        ("rust-bytecount" ,rust-bytecount-0.6)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-custom-derive" ,rust-custom-derive-0.1)
+        ("rust-enum-map" ,rust-enum-map-0.6)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-getset" ,rust-getset-0.0.9)
+        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-itertools-num" ,rust-itertools-num-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-multimap" ,rust-multimap-0.8)
+        ("rust-ndarray" ,rust-ndarray-0.13)
+        ("rust-newtype-derive" ,rust-newtype-derive-0.1)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-ordered-float" ,rust-ordered-float-1)
+        ("rust-petgraph" ,rust-petgraph-0.5)
+        ("rust-quick-error" ,rust-quick-error-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-snafu" ,rust-snafu-0.6)
+        ("rust-statrs" ,rust-statrs-0.12)
+        ("rust-strum" ,rust-strum-0.18)
+        ("rust-strum-macros" ,rust-strum-macros-0.18)
+        ("rust-triple-accel" ,rust-triple-accel-0.3)
+        ("rust-vec-map" ,rust-vec-map-0.8))
+       #:cargo-development-inputs
+       (("rust-proptest" ,rust-proptest-0.10))))
+    (home-page "https://rust-bio.github.io")
+    (synopsis "Bioinformatics library for Rust")
+    (description
+     "This package provides a bioinformatics library for Rust.  This library
+provides implementations of many algorithms and data structures that are
+useful for bioinformatics, but also in other fields.")
+    (license license:expat)))
+
 (define-public rust-bio-0.33
   (package
     (name "rust-bio")
