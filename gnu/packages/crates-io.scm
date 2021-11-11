@@ -46198,6 +46198,49 @@ also have to make sure that the wrapper is dropped from within the original
 thread.  If any of these constraints is violated, a panic occurs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-seq-io-0.3
+  (package
+    (name "rust-seq-io")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "seq_io" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r643ihyba62vbr5l085mzz3gzfy4iba33nm2l981smvwcb8rzf6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-buf-redux" ,rust-buf-redux-0.8)
+        ("rust-crossbeam" ,rust-crossbeam-0.8)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))
+       #:cargo-development-inputs
+       (("rust-bio" ,rust-bio-0.32)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-fastq" ,rust-fastq-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-isaac" ,rust-rand-isaac-0.2))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/markschl/seq_io")
+    (synopsis "Fast FASTA, FASTQ and FASTX parsing")
+    (description "This library provides readers for the the following sequence
+formats:
+
+@itemize
+@item FASTA,
+@item FASTQ (including multi-line FASTQ),
+@item FASTX: Automatic recognition of the sequence format (either FASTA or FASTQ).
+@end itemize
+")
+    (license license:expat)))
+
 (define-public rust-seq-macro-0.2
   (package
     (name "rust-seq-macro")
