@@ -49514,6 +49514,30 @@ map.")
     (description "This package provides a simple statistics library.")
     (license license:expat)))
 
+(define-public rust-statrs-0.13
+  (package
+    (name "rust-statrs")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "statrs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r00b60zlsn6srb6m6bzbw3w5cyihcy4w2rfjav64x4viy5bad0y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nalgebra" ,rust-nalgebra-0.19)
+        ("rust-rand" ,rust-rand-0.7))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/statrs-dev/statrs")
+    (synopsis "Statistical computing library for Rust")
+    (description "This package provides a statistical computing library for
+Rust.")
+    (license license:expat)))
+
 (define-public rust-stb-truetype-0.3
   (package
     (name "rust-stb-truetype")
