@@ -49206,6 +49206,32 @@ clone.")
 package provides derive macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-snafu-0.6
+  (package
+    (name "rust-snafu")
+    (version "0.6.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "snafu" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19wwqxwb85pl040qk5xylj0vlznib3xzy9hcv2q0h8qv4qy2vcga"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-snafu-derive" ,rust-snafu-derive-0.6))))
+    (home-page "https://github.com/shepmaster/snafu")
+    (synopsis "Ergonomic error handling library")
+    (description "Snafu aims to be an ergonomic error handling library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-snailquote-0.3
   (package
     (name "rust-snailquote")
