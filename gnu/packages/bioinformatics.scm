@@ -1354,6 +1354,42 @@ relying on a complex dependency tree.")
 used for storage and logging in bioinformatics tools.")
     (license license:expat)))
 
+(define-public bioparser
+  (package
+    (name "bioparser")
+    (version "3.0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rvaser/bioparser")
+             ;; Corresponds to tag 3.0.13
+             (commit "13341e6e0855c6b358ffcea6dad216e1009e1287")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c5p2dl8jb12ci9f427jzrmmm9cgvc1k4fxsn2ggkfsin6r1r82i"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./bin/bioparser_test")))))))
+    (inputs
+     `(("biosoup" ,biosoup)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/rvaser/bioparser")
+    (synopsis "C++ library for parsing several formats in bioinformatics")
+    (description "Bioparser is a C++ header only parsing library for several
+bioinformatics formats (FASTA/Q, MHAP/PAF/SAM), with support for zlib
+compressed files.")
+    (license license:expat)))
+
 (define-public ciri-long
   (package
     (name "ciri-long")
