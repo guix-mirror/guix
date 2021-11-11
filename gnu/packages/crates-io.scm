@@ -20967,6 +20967,34 @@ libcurl, which is intended to be used with the @code{git2} crate.")
     (description "Gjson is a JSON parser for Rust.")
     (license license:expat)))
 
+(define-public rust-glam-0.16
+  (package
+    (name "rust-glam")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glam" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05izbgx93hnjk200144h9yxhy51cbygp2bbaqdj8czngki3w09j1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t  ; TODO: we need a more recent criterion
+       #:cargo-inputs
+       (("rust-approx" ,rust-approx-0.4)
+        ("rust-bytemuck" ,rust-bytemuck-1.5)
+        ("rust-mint" ,rust-mint-0.5)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/bitshifter/glam-rs")
+    (synopsis "3D math library for games and graphics")
+    (description
+     "This package provides a simple and fast 3D math library for games and
+graphics.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-glam-0.15
   (package
     (name "rust-glam")
