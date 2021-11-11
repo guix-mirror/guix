@@ -30423,6 +30423,64 @@ quick compile time, and minimal dependencies.")
        #:cargo-inputs
        (("rust-rayon" ,rust-rayon-1))))))
 
+(define-public rust-nalgebra-0.26
+  (package
+    (name "rust-nalgebra")
+    (version "0.26.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "nalgebra" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "01hxksmgg17c4k2rzjx1h8kkjbw9rm81dsancg459zh2zrcisva7"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:phases
+        (modify-phases %standard-phases
+         (add-after 'configure 'patch-Cargo.toml
+           (lambda _
+             (substitute* '("Cargo.toml"
+                            "guix-vendor/rust-nalgebra-0.26.2.tar.gz/Cargo.toml"
+                            "guix-vendor/rust-average-0.13.1.tar.gz/Cargo.toml")
+               ;; The resolver feature is not supported by this version of Cargo.
+               (("resolver = \"2\".*") "")))))
+        #:cargo-inputs
+        (("rust-abomonation" ,rust-abomonation-0.7)
+         ("rust-alga" ,rust-alga-0.9)
+         ("rust-approx" ,rust-approx-0.4)
+         ("rust-bytemuck" ,rust-bytemuck-1.5)
+         ("rust-glam" ,rust-glam-0.13)
+         ("rust-matrixcompare-core" ,rust-matrixcompare-core-0.1)
+         ("rust-matrixmultiply" ,rust-matrixmultiply-0.3)
+         ("rust-mint" ,rust-mint-0.5)
+         ("rust-num-complex" ,rust-num-complex-0.3)
+         ("rust-num-rational" ,rust-num-rational-0.3)
+         ("rust-num-traits" ,rust-num-traits-0.2)
+         ("rust-pest" ,rust-pest-2)
+         ("rust-pest-derive" ,rust-pest-derive-2)
+         ("rust-proptest" ,rust-proptest-1)
+         ("rust-quickcheck" ,rust-quickcheck-1)
+         ("rust-rand" ,rust-rand-0.8)
+         ("rust-rand-distr" ,rust-rand-distr-0.4)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-simba" ,rust-simba-0.4)
+         ("rust-typenum" ,rust-typenum-1))
+        #:cargo-development-inputs
+        (("rust-criterion" ,rust-criterion-0.2)
+         ("rust-itertools" ,rust-itertools-0.10)
+         ("rust-matrixcompare" ,rust-matrixcompare-0.2)
+         ("rust-rand-isaac" ,rust-rand-isaac-0.3)
+         ("rust-rand-xorshift" ,rust-rand-xorshift-0.3)
+         ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://nalgebra.org")
+    (synopsis "Linear algebra library")
+    (description
+     "This package provides a general-purpose linear algebra library with
+transformations and statically-sized or dynamically-sized matrices.")
+    (license license:bsd-3)))
+
 (define-public rust-nalgebra-0.21
   (package
     (name "rust-nalgebra")
