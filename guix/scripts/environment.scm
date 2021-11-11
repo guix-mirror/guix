@@ -517,7 +517,7 @@ environment~%")))
     (unless warned?
       (match (vhash-assoc "PS1" actual)
         (#f #f)
-        (str
+        ((_ . str)
          (when (and (getenv "PS1") (string=? str (getenv "PS1")))
            (warning (G_ "'PS1' is the same in sub-shell~%"))
            (display-hint (G_ "Consider setting a different prompt for
