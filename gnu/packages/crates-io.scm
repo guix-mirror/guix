@@ -17545,6 +17545,43 @@ is defined in the HTML specification.")
 floats.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fastq-0.6
+  (package
+    (name "rust-fastq")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fastq" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "177jsfabnk3zl5zml6qvidzjpk53dp62rqjbdhbhr8cg7ms59p60"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-build-flags '("-vv")
+       #:phases
+       (modify-phases %standard-phases
+         ;; This is needed for the parasail-sys package.
+         (add-after 'unpack 'set-shell-for-configure-script
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh")))))
+       #:cargo-inputs
+       (("rust-flate2" ,rust-flate2-1)
+        ("rust-lz4" ,rust-lz4-1)
+        ("rust-memchr" ,rust-memchr-2))
+       #:cargo-development-inputs
+       (("rust-bio" ,rust-bio-0.33)
+        ("rust-parasailors" ,rust-parasailors-0.3))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://github.com/aseyboldt/fastq-rs")
+    (synopsis "Parser for fastq files")
+    (description "This package provides a parser for fastq files.")
+    (license license:expat)))
+
 (define-public rust-fastrand-1
   (package
     (name "rust-fastrand")
