@@ -2325,6 +2325,25 @@ coverage-guided, mutation-based fuzzers.")
 that runs on Argon2.")
     (license license:expat)))
 
+(define-public rust-array-macro-1
+  (package
+    (name "rust-array-macro")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "array-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19mdx2xlppnqwl6rhsbzylx61a0kkp2ql8q16195b7iga977ps86"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://gitlab.com/KonradBorowski/array-macro")
+    (synopsis "Array multiple elements constructor syntax")
+    (description "This package implements constructor syntax for arrays with
+multiple elements.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-array-ops-0.1
   (package
     (name "rust-array-ops")
