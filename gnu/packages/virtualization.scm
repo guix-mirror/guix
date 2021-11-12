@@ -980,7 +980,7 @@ Debian or a derivative using @command{debootstrap}.")
 (define-public libosinfo
   (package
     (name "libosinfo")
-    (version "1.7.1")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
@@ -988,7 +988,7 @@ Debian or a derivative using @command{debootstrap}.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1s97sv24bybggjx6hgqba2qdqz3ivfpd4cmkh4zm5y59sim109mv"))))
+         "0nd360c9ampw8hb6xh5g45q858df2r4jj9q88bcl6gzgaj0l3wxl"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -1003,10 +1003,9 @@ Debian or a derivative using @command{debootstrap}.")
              (substitute* "osinfo/osinfo_loader.c"
                (("path = DATA_DIR.*")
                 (string-append "path = \"" (assoc-ref inputs "osinfo-db")
-                               "/share/osinfo\";")))
-             #t)))))
+                               "/share/osinfo\";"))))))))
     (inputs
-     `(("libsoup" ,libsoup)
+     `(("libsoup" ,libsoup-minimal-2)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("osinfo-db" ,osinfo-db)))
