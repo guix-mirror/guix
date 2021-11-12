@@ -2638,7 +2638,8 @@ forgotten when the session ends.")
                 "0xrwls1bhvny8vvd7mfjy9p26zjch0pd6x6j9jn9g2ka6xwyrxqg"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:build-type "release"
        #:configure-flags
        '("-Dnautilus=false"
