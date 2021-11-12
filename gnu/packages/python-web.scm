@@ -4044,23 +4044,23 @@ authentication for Flask routes.")
 (define-public python-uritemplate
   (package
     (name "python-uritemplate")
-    (version "3.0.1")
+    (version "4.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "uritemplate" version))
        (sha256
         (base32
-         "1bkwmgr0ia9gcn4bszs2xlvml79f0bi2s4a87xg22ky9rq8avy2s"))))
+         "1w14a775d92mx9pdhb5zimifpfr2lfcn0vfdpjagcy9vbkyfsij3"))))
     (build-system python-build-system)
     (home-page "https://uritemplate.readthedocs.org")
     (synopsis "Library to deal with URI Templates")
     (description "@code{uritemplate} provides Python library to deal with URI
 Templates.")
-    (license license:bsd-2)))
-
-(define-public python2-uritemplate
-  (package-with-python2 python-uritemplate))
+    ;; The software is made available under the terms of *either* of the
+    ;; licenses found in LICENSE.APACHE or LICENSE.BSD.  Contributions
+    ;; are made under *both* licenses (excerpt from the LICENSE file).
+    (license (list license:bsd-2 license:asl2.0))))
 
 (define-public python-publicsuffix
   (package
