@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -1311,7 +1311,7 @@ Encryption to Gajim.")
        ("libgee" ,libgee)
        ("libnice" ,libnice)
        ("libsignal-protocol-c" ,libsignal-protocol-c)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ;;("libsrtp" ,libsrtp)             ;for calls support
        ("pango" ,pango)
        ("qrencode" ,qrencode)
