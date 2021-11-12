@@ -4393,9 +4393,6 @@ Google search engine.  Its module is called @code{googlesearch}.")
     (description "Python client library for Google's discovery based APIs")
     (license license:asl2.0)))
 
-(define-public python2-google-api-client
-  (package-with-python2 python-google-api-client))
-
 (define-public python-hawkauthlib
   (package
     (name "python-hawkauthlib")
