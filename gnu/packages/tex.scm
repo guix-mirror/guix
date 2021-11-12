@@ -3589,6 +3589,45 @@ LaTeX code now supports multiple dots and spaces, and this package by default
 is a stub that just loads @code{graphicx}.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-stringenc
+  (let ((template (simple-texlive-package
+                   "texlive-stringenc"
+                   (list "/doc/latex/stringenc/README.md"
+                         "/source/latex/stringenc/stringenc.dtx")
+                   (base32
+                    "19sfi5jxldxmy79pxmapmgmn3iknf8wjczasvlrrwv0gyycxdzhw"))))
+    (package
+      (inherit template)
+      (outputs '("doc" "out"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "generic/stringenc")
+         ((#:build-targets _ #t)
+          '(list "stringenc.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/stringenc/")))
+             (add-after 'copy-files 'clean-up
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (delete-file-recursively
+                  (string-append (assoc-ref outputs "out") "/share/texmf-dist/build"))
+                 (delete-file
+                  (string-append (assoc-ref outputs "out") "/share/texmf-dist/stringenc.dtx"))
+                 (install-file
+                  (string-append (assoc-ref inputs "source") "/source/latex/stringenc/stringenc.dtx")
+                  (string-append (assoc-ref outputs "out") "/share/texmf-dist/source/latex/stringenc/"))
+                 (install-file
+                  (string-append (assoc-ref inputs "source") "/doc/latex/stringenc/README.md")
+                  (string-append (assoc-ref outputs "doc") "/doc/latex/stringenc/"))))))))
+      (home-page "https://www.ctan.org/pkg/stringenc")
+      (synopsis "Converting a string between different encodings")
+      (description
+       "This package provides @code{\\StringEncodingConvert} for converting a
+string between different encodings.  Both LaTeX and plain-TeX are supported.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-l3build
   (let ((template (simple-texlive-package
                    "texlive-l3build"
