@@ -302,7 +302,7 @@ actions.")
 (define-public geeqie
   (package
     (name "geeqie")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -310,14 +310,29 @@ actions.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0nf45sh3pwsv98sppcrqj81b6mdi31n1sbc7gn88m8mhpfp1qq6k"))
+                "1i9yd8lddp6b9s9vjjjzbpqj4bvwidxc6kiba6vdrk7dda5akyky"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `( ;; Enable support for a "map" pane using GPS data.
-       #:configure-flags '("CFLAGS=-fcommon"
+     ;; Enable support for a "map" pane using GPS data.
+     `(#:configure-flags '("CFLAGS=-fcommon"
                            "--enable-map"
-                           "--enable-gtk3")))
+                           "--enable-gtk3")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'correctly-locate-aux-scripts
+                    ;; The git checkout has symlinks under the auxdir
+                    ;; directory pointing to /usr/share/automake-1.16/depcomp
+                    ;; and /usr/share/automake-1.16/install-sh, which causes
+                    ;; the configure phase to fail (see:
+                    ;; https://github.com/BestImageViewer/geeqie/issues/936).
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((automake (assoc-ref inputs "automake")))
+                        (delete-file "auxdir/depcomp")
+                        (symlink (car (find-files automake "depcomp"))
+                                 "auxdir/depcomp")
+                        (delete-file "auxdir/install-sh")
+                        (symlink (car (find-files automake "install-sh"))
+                                 "auxdir/install-sh")))))))
     (inputs
      `(("clutter" ,clutter)
        ("libchamplain" ,libchamplain)
@@ -328,7 +343,7 @@ actions.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("glib" ,glib "bin")                       ; glib-gettextize
+       ("glib" ,glib "bin")             ; glib-gettextize
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.geeqie.org/")
