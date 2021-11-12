@@ -3326,13 +3326,13 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.8.6")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
-        (base32 "0hzmk6b1hb5riqkljr5xics6p4zbvmis6knbczb7zhq7273zc8zv"))))
+        (base32 "1smvvs1ngqy0ymlp1d7f85j09j9v0z5dq14f1qky0j0qi7xajkd8"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
@@ -3346,9 +3346,6 @@ designed to be easy and intuitive to use.")
      "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API
 2.0.")
     (license license:lgpl3+)))
-
-(define-public python2-psycopg2
-  (package-with-python2 python-psycopg2))
 
 (define-public python-sadisplay
   (package
