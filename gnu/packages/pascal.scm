@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2017 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2017 Kei Kebreau <address@hidden>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,28 +36,32 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
-(define fpc-bootstrap-i386-3.0.4
-  (origin
-    (method url-fetch)
-    (uri
-     "mirror://sourceforge/freepascal/Linux/3.0.4/fpc-3.0.4.i386-linux.tar")
-    (sha256
-     (base32
-      "05xfgxa6vb0y2ryfsgn21m2kwaxhci6l2zxa3akvlnqminjsjvda"))))
+(define %fpc-version "3.2.2")
+(define %fpc-release-date "2021/05/19")
 
-(define fpc-bootstrap-x86_64-3.0.4
+;;; FIXME: Bootstrap properly; these are prebuilt binaries.
+(define fpc-bootstrap-i386
   (origin
     (method url-fetch)
-    (uri
-     "mirror://sourceforge/freepascal/Linux/3.0.4/fpc-3.0.4.x86_64-linux.tar")
+    (uri (string-append "mirror://sourceforge/freepascal/Linux/"
+                        %fpc-version "/fpc-" %fpc-version ".i386-linux.tar"))
     (sha256
      (base32
-      "0xzxh689iyjfmkqkhcqg9plrjmdx82hbyywyyc7jm0n92fpmp5ky"))))
+      "0n4r85dsr86zlk7r4hbd4nj14sda6rwgdgzxg4gj4q981fn80agn"))))
+
+(define fpc-bootstrap-x86_64
+  (origin
+    (method url-fetch)
+    (uri (string-append "mirror://sourceforge/freepascal/Linux/"
+                        %fpc-version "/fpc-" %fpc-version ".x86_64-linux.tar"))
+    (sha256
+     (base32
+      "10qywczzz4qlcmmzxb7axnvwniq76ky130vd8iv6ljskll4c7njs"))))
 
 (define-public fpc
   (package
     (name "fpc")
-    (version "3.2.2")                   ; Update release date below!
+    (version %fpc-version)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/freepascal/Source/"
@@ -76,8 +82,7 @@
                   (mkdir-p "install")
                   (rename-file "install-doc" "install/doc")
                   (rename-file "install-man" "install/man")
-                  (delete-file "fpcsrc/tests/utils/dosbox/exitcode.exe")
-                  #t))))
+                  (delete-file "fpcsrc/tests/utils/dosbox/exitcode.exe")))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs
@@ -91,11 +96,11 @@
      `(("fpc-binary"
         ,(match (or (%current-target-system)
                     (%current-system))
-          ("i686-linux" fpc-bootstrap-i386-3.0.4)
-          ;("powerpc64le-linux" fpc-bootstrap-ppc64le-3.0.4)
-          ;("powerpc-linux" fpc-bootstrap-ppc-3.0.4)
-          ("x86_64-linux" fpc-bootstrap-x86_64-3.0.4)
-          (_ fpc-bootstrap-x86_64-3.0.4)))))
+          ("i686-linux" fpc-bootstrap-i386)
+          ;("powerpc64le-linux" fpc-bootstrap-ppc64le)
+          ;("powerpc-linux" fpc-bootstrap-ppc)
+          ("x86_64-linux" fpc-bootstrap-x86_64)
+          (arch (error "fpc arch not yet supported in guix" arch))))))
     (arguments
      `(#:tests? #f ; no tests available
        #:phases
@@ -115,7 +120,7 @@
            (add-after 'unpack-bin 'install-bin
              (lambda* (#:key inputs #:allow-other-keys)
                (with-directory-excursion
-                 (string-append fpc-bootstrap-path "/fpc-3.0.4."
+                 (string-append fpc-bootstrap-path "/fpc-" ,version "."
                                 arch "-linux")
                  (let ((binary-tarball
                         (string-append "binary." arch "-linux.tar"))
@@ -131,8 +136,7 @@
            (add-after 'patch-source-shebangs 'patch-inline-shebangs
              (lambda _
                (substitute* "fpcsrc/compiler/cscript.pas"
-                 (("#!/bin/sh") (string-append "#!" (which "sh"))))
-               #t))
+                 (("#!/bin/sh") (string-append "#!" (which "sh"))))))
            (add-before 'build 'patch-release-date
              (lambda _                  ; reproducibility
                (substitute* (list "fpcdocs/prog.tex"
@@ -143,8 +147,8 @@
                                   "fpcsrc/utils/fpcm/fpcmmain.pp"
                                   "fpcsrc/utils/fpcreslipo/fpcreslipo.pp"
                                   "fpcsrc/compiler/version.pas")
-                 (("\\{\\$I(NCLUDE)? %DATE%\\}") "'2020/06/19'"))
-               #t))
+                 (("\\{\\$I(NCLUDE)? %DATE%\\}")
+                  (format #f "'~a'" ,%fpc-release-date)))))
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (substitute* "fpcsrc/compiler/systems/t_linux.pas"
@@ -165,8 +169,7 @@
                    "if (isdll) then")))
                (substitute* "fpcsrc/compiler/options.pas"
                  (("exepath\\+'../etc/'")
-                  (string-append "'" (assoc-ref outputs "out") "/etc'")))
-               #t))
+                  (string-append "'" (assoc-ref outputs "out") "/etc'")))))
            (replace 'build
              (lambda* (#:key inputs #:allow-other-keys)
                (let* ((fpc-bin (string-append fpc-bootstrap-path "/bin"))
@@ -177,7 +180,7 @@
                  (setenv "PATH"
                         (string-append (getenv "PATH") ":"
                                        fpc-bootstrap-path
-                                       "/lib/fpc/3.0.4"))
+                                       "/lib/fpc/" ,version))
                  (setenv "FPC" fpc)
                  ;; Specify target operating system using "-T" option
                  (invoke fpcmake (string-append "-T" arch "-linux"))
@@ -212,8 +215,8 @@
                       (glibc (assoc-ref inputs "glibc")))
                  (wrap-program fpc
                    `("PATH" ":" prefix (,(string-append ld "/bin")))
-                   `("LIBRARY_PATH" ":" prefix (,(string-append glibc "/lib"))))
-                 #t)))))))
+                   `("LIBRARY_PATH" ":" prefix
+                     (,(string-append glibc "/lib")))))))))))
     ;; fpc invokes gcc, so make sure LIBRARY_PATH et.al are set.
     ;(native-search-paths (package-native-search-paths gcc))
     (home-page "https://www.freepascal.org")
