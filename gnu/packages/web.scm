@@ -6147,7 +6147,7 @@ used to start services with both privileged and non-privileged port numbers.")
 (define-public tidy-html
   (package
     (name "tidy-html")
-    (version "5.7.28")
+    (version "5.8.0")
     (source
      (origin
        (method git-fetch)
@@ -6157,7 +6157,7 @@ used to start services with both privileged and non-privileged port numbers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01k5sqwgcsr26i8031v1yr2r8qcy9a5w7sj800660haszgfbjz2f"))))
+         "1vd50q6xqxvidaclinsm89p6r0494wj72j1gpk32vkkhhx15cddz"))))
     (build-system cmake-build-system)
     (outputs '("out"
                "static"))               ; 1.3MiB of .a files
