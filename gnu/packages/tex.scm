@@ -8724,6 +8724,32 @@ an arbitrary point.  Various options allow complete control over spacing,
 styles of inference rules, placement of labels, etc.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-bussproofs
+  (let ((template (simple-texlive-package
+                   "texlive-latex-bussproofs"
+                   (list "/doc/latex/bussproofs/"
+                         "/tex/latex/bussproofs/")
+                   (base32
+                    "1gb8y9g89fqw1kix4d2vb7mj440vlb8hnpsa3jqpk9yicndwcyk6"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/bussproofs")
+         ((#:build-targets _ '())
+          ''()) ; "bussproofs.sty"
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "tex/latex/bussproofs")))))))
+      (home-page "https://www.math.ucsd.edu/~sbuss/ResearchWeb/bussproofs/index.html")
+      (synopsis "Formal proofs in the style of sequent calculus")
+      (description
+       "This package provides commands to typeset proof trees in the style of
+sequent calculus and related systems.")
+      (license license:lppl1.3+))))
+
 (define-public texlive-eurosym
   (let ((template (simple-texlive-package
                    "texlive-eurosym"
