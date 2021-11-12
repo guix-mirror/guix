@@ -4098,6 +4098,29 @@ PostreSQL, SQLite, ODBC and MySQL.")
 connecting to MS SQL and Sybase servers over TCP/IP.")
     (license license:lgpl2.0+)))
 
+(define-public python-tinydb
+  (package
+    (name "python-tinydb")
+    (version "4.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "tinydb" version))
+              (sha256
+               (base32 "1x9c4s42930wwal3ds0plwb57kg5c3gj7kbpy64c29vq478b463x"))))
+    (build-system python-build-system)
+    ;; PyPi tarball does not contain tests and github repository does not
+    ;; have a setup.py file (only pyproject).
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-typing-extensions" ,python-typing-extensions)))
+    (home-page "https://github.com/msiemens/tinydb")
+    (synopsis "TinyDB is a lightweight document oriented database")
+    (description
+     "TinyDB is a small document oriented database written in pure Python
+with no external dependencies.  The targets are small apps that would
+be blown away by a SQL-DB or an external database server.")
+    (license license:expat)))
+
 (define-public sequeler
   (package
     (name "sequeler")
