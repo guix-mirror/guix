@@ -94,12 +94,12 @@
     (native-inputs
      ;; FPC is built with FPC, so we need bootstrap binaries.
      `(("fpc-binary"
-        ,(match (or (%current-target-system)
+        (match ,(or (%current-target-system)
                     (%current-system))
-          ("i686-linux" fpc-bootstrap-i386)
-          ;("powerpc64le-linux" fpc-bootstrap-ppc64le)
-          ;("powerpc-linux" fpc-bootstrap-ppc)
-          ("x86_64-linux" fpc-bootstrap-x86_64)
+          ("i686-linux" ,fpc-bootstrap-i386)
+          ;;("powerpc64le-linux" ,fpc-bootstrap-ppc64le)
+          ;;("powerpc-linux" ,fpc-bootstrap-ppc)
+          ("x86_64-linux" ,fpc-bootstrap-x86_64)
           (arch (error "fpc arch not yet supported in guix" arch))))))
     (arguments
      `(#:tests? #f ; no tests available
