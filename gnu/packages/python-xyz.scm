@@ -11845,6 +11845,7 @@ time.")
                                         texlive-latex-float
                                         texlive-fontspec
                                         texlive-latex-geometry
+                                        texlive-grffile
                                         texlive-hyperref
                                         texlive-latex-jknapltx
                                         texlive-latex-ms
@@ -11855,6 +11856,7 @@ time.")
                                         texlive-latex-ucs
                                         texlive-lm
                                         texlive-mathpazo
+                                        texlive-stringenc
                                         texlive-tcolorbox
                                         texlive-titling
                                         texlive-tools
