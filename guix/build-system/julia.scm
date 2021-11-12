@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
                       (system (%current-system))
                       (guile #f)
                       (julia-package-name #f)
+                      (julia-package-uuid #f)
                       (imported-modules %julia-build-system-modules)
                       (modules '((guix build julia-build-system)
                                  (guix build utils))))
@@ -105,7 +107,8 @@
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
                     #:inputs %build-inputs
-                    #:julia-package-name ,julia-package-name)))
+                    #:julia-package-name ,julia-package-name
+                    #:julia-package-uuid ,julia-package-uuid)))
 
   (define guile-for-build
     (match guile

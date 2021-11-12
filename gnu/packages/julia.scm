@@ -673,7 +673,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
     (native-search-paths
       (list (search-path-specification
               (variable "JULIA_LOAD_PATH")
-              (files (list "share/julia/packages/")))
+              (files (list "share/julia/loadpath/")))
             (search-path-specification
               (variable "JULIA_DEPOT_PATH")
               (files (list "share/julia/")))))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,11 @@
 (define-module (guix build julia-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 popen)
   #:export (%standard-phases
             julia-create-package-toml
             julia-build))
@@ -37,7 +40,7 @@
   (invoke "julia" "-e" code))
 
 ;; subpath where we store the package content
-(define %package-path "/share/julia/packages/")
+(define %package-path "/share/julia/loadpath/")
 
 (define (project.toml->name file)
   "Look for Julia package name in the TOML file FILE (usually named
@@ -48,6 +51,18 @@ Project.toml)."
         (if (eof-object? line)
             #f
             (let ((m (string-match "name\\s*=\\s*\"(.*)\"" line)))
+              (if m (match:substring m 1)
+                  (loop (read-line in 'concat)))))))))
+
+(define (project.toml->uuid file)
+  "Look for Julia package uuid in the TOML file FILE (usually named
+Project.toml)."
+  (call-with-input-file file
+    (lambda (in)
+      (let loop ((line (read-line in 'concat)))
+        (if (eof-object? line)
+            #f
+            (let ((m (string-match "uuid\\s*=\\s*\"(.*)\"" line)))
               (if m (match:substring m 1)
                   (loop (read-line in 'concat)))))))))
 
@@ -73,7 +88,7 @@ Project.toml)."
     (setenv "JULIA_DEPOT_PATH" builddir)
     ;; Add new package dir to the load path.
     (setenv "JULIA_LOAD_PATH"
-            (string-append builddir "packages/" ":"
+            (string-append builddir "loadpath/" ":"
                            (or (getenv "JULIA_LOAD_PATH")
                                "")))
     ;; Actual precompilation:
@@ -97,13 +112,34 @@ Project.toml)."
       (setenv "SOURCE_DATE_EPOCH" "1")
       (setenv "JULIA_DEPOT_PATH" builddir)
       (setenv "JULIA_LOAD_PATH"
-              (string-append builddir "packages/" ":"
+              (string-append builddir "loadpath/" ":"
                              (or (getenv "JULIA_LOAD_PATH")
                                  "")))
       (setenv "HOME" "/tmp")
       (invoke "julia" "--depwarn=yes"
-              (string-append builddir "packages/"
+              (string-append builddir "loadpath/"
                              package "/test/runtests.jl"))))
+  #t)
+
+(define* (link-depot #:key source inputs outputs julia-package-name julia-package-uuid
+                     #:allow-other-keys)
+  (let* ((out (assoc-ref outputs "out"))
+         (package-name (or
+                        julia-package-name
+                        (project.toml->name "Project.toml")))
+         (package-dir (string-append out %package-path package-name))
+         (uuid (or julia-package-uuid (project.toml->uuid "Project.toml")))
+         (pipe (open-pipe* OPEN_READ "julia" "-e"
+                           (format #f "using Pkg;
+println(Base.version_slug(Base.UUID(\"~a\"),
+                          Base.SHA1(Pkg.GitTools.tree_hash(\".\"))))" uuid)))
+         (slug (string-trim-right (get-string-all pipe))))
+    ;; When installing a package, julia looks first at in the JULIA_DEPOT_PATH
+    ;; for a path like packages/PACKAGE/XXXX
+    ;; Where XXXX is a slug encoding the package UUID and SHA1 of the files
+    ;; Here we create a link with the correct path to enable julia to find the package
+    (mkdir-p (string-append out "/share/julia/packages/" package-name))
+    (symlink package-dir (string-append out "/share/julia/packages/" package-name "/" slug)))
   #t)
 
 (define (julia-create-package-toml outputs source
@@ -138,6 +174,7 @@ version = \"" version "\"
     (delete 'check) ; tests must be run after installation
     (replace 'install install)
     (add-after 'install 'precompile precompile)
+    (add-after 'unpack 'link-depot link-depot)
     (add-after 'install 'check check)
     ;; TODO: In the future we could add a "system-image-generation" phase
     ;; where we use PackageCompiler.jl to speed up package loading times
@@ -146,11 +183,12 @@ version = \"" version "\"
     (delete 'patch-usr-bin-file)
     (delete 'build)))
 
-(define* (julia-build #:key inputs julia-package-name
+(define* (julia-build #:key inputs julia-package-name julia-package-uuid
                       (phases %standard-phases)
                       #:allow-other-keys #:rest args)
   "Build the given Julia package, applying all of PHASES in order."
   (apply gnu:gnu-build
          #:inputs inputs #:phases phases
          #:julia-package-name julia-package-name
+         #:julia-package-uuid julia-package-uuid
          args))
