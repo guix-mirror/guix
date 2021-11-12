@@ -1185,7 +1185,7 @@ Some codes examples can be find at:
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
-       ("libsoup" ,libsoup)))
+       ("libsoup" ,libsoup-minimal-2)))
     (arguments
      `(#:configure-flags
        (list "-Ddep11=false"
