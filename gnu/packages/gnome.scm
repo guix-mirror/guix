@@ -11621,15 +11621,16 @@ integrate seamlessly with the GNOME desktop.")
         (base32 "1wzhm8n485cqhbai4qshgrwl05ix881g8gjshilrj6vg8p1li79h"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:configure-flags (list "-Drdp=false"
                                (string-append "-Dc_link_args=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib/gnome-boxes"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")             ; for glib-compile-resources
-       ("gtk+:bin" ,gtk+ "bin")             ; for gtk-update-icon-cache
-       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+     `(("glib:bin" ,glib "bin")                   ;for glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")                   ;for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ;for update-desktop-database
        ("itstool" ,itstool)
        ("intltool" ,intltool)
        ("vala" ,vala)
@@ -11645,7 +11646,7 @@ integrate seamlessly with the GNOME desktop.")
        ("libhandy" ,libhandy)
        ("libosinfo" ,libosinfo)
        ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libusb" ,libusb)
        ("libvirt" ,libvirt)
        ("libvirt-glib" ,libvirt-glib)
@@ -11653,7 +11654,7 @@ integrate seamlessly with the GNOME desktop.")
        ("spice-gtk" ,spice-gtk)
        ("sparql-query" ,sparql-query)
        ("vte" ,vte)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2) ;for webkit2gtk-4.0
        ("tracker" ,tracker)
        ("libgudev" ,libgudev)))
     (home-page "https://wiki.gnome.org/Apps/Boxes")
