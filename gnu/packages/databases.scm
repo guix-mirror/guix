@@ -3092,9 +3092,6 @@ You might also want to install the following optional dependencies:
 ")
     (license license:bsd-3)))
 
-(define-public python2-sqlalchemy-utils
-  (package-with-python2 python-sqlalchemy-utils))
-
 (define-public python-alchemy-mock
   (package
     (name "python-alchemy-mock")
