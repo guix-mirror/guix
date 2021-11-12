@@ -11280,14 +11280,14 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python-pyasn1-modules
   (package
     (name "python-pyasn1-modules")
-    (version "0.2.2")
+    (version "0.2.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyasn1-modules" version))
         (sha256
          (base32
-          "0ivm850yi7ajjbi8j115qpsj95bgxdsx48nbjzg0zip788c3xkx0"))))
+          "0pp6dcagd8c2c9qx3lahc1rdwlnmm0y0siqr5icjq2r32b3q8pwh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)))
