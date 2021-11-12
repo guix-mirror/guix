@@ -4138,6 +4138,31 @@ but non-expandable ones.")
 (define-public texlive-latex-filemod
   (deprecated-package "texlive-latex-filemod" texlive-filemod))
 
+(define-public texlive-fira
+  (package
+    (inherit (simple-texlive-package
+              "texlive-fira"
+              (list "doc/fonts/fira/"
+                    "tex/latex/fira/"
+                    "fonts/vf/public/fira/"
+                    "fonts/type1/public/fira/"
+                    "fonts/tfm/public/fira/"
+                    "fonts/opentype/public/fira/"
+                    "fonts/map/dvips/fira/"
+                    "fonts/enc/dvips/fira/")
+              (base32 "0mxrwwf8i383vrs64lsyiwnai4cy305pkv1kgd4nrhmgi7pdc3ac")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/fonts/fira")
+    (synopsis "Fira fonts with LaTeX support")
+    (description
+     "This package provides LaTeX, pdfLaTeX, XeLaTeX and LuaLaTeX support for
+the Fira Sans family of fonts designed by Erik Spiekermann and Ralph du
+Carrois of Carrois Type Design.  Fira Sans is available in eleven weights with
+corresponding italics: light, regular, medium, bold, ...")
+    (license (list license:lppl
+                   license:silofl1.1))))
+
 (define-public texlive-latex-ifplatform
   (package
     (name "texlive-latex-ifplatform")
