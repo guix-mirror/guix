@@ -548,6 +548,14 @@ do so.")
                  (("sys\\.prefix")
                   (format #f "\"~a\"" out)))
                #t)))
+         (add-after 'unpack 'relax-dnspython-version-requirement
+           ;; The version requirement for dnspython>=2.0,<2.1 makes the
+           ;; sanity-check phase fail, but the application seems to be working
+           ;; fine with dnspython 2.1 (the version we have currently).
+           (lambda _
+             (substitute* "contrib/requirements/requirements.txt"
+               (("dnspython>=.*")
+                "dnspython"))))
          (add-after 'unpack 'use-libsecp256k1-input
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "electrum/ecc_fast.py"
