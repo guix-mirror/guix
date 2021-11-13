@@ -182,7 +182,10 @@ a continuous layout.")
              (substitute* "tests/test-xmp-broken.py"
                ;; Error message changed in recent versions of XML parser
                (("XML parsing failure")
-                "Error in XMLValidator")))))))
+                "Error in XMLValidator"))))
+         (add-before 'check 'set-home-for-tests
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
     (synopsis "PDF to DjVu converter")
     (description
      "@code{pdf2djvu} creates DjVu files from PDF files.
