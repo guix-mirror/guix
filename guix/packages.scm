@@ -520,7 +520,7 @@ Texinfo.  Otherwise, return the string."
             (sanitize validate-texinfo))          ; one-line description
   (description package-description
                (sanitize validate-texinfo))       ; one or two paragraphs
-  (license package-license)                       ; <license> instance or list
+  (license package-license)                       ; (list of) <license>
   (home-page package-home-page)
   (supported-systems package-supported-systems    ; list of strings
                      (default %supported-systems))
