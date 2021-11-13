@@ -5566,7 +5566,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "40.0.1")
+    (version "41.0")
     (source
      (origin
        (method url-fetch)
@@ -5575,11 +5575,12 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "08bv32hvsmd8izw0llvldg0c2d71srch4hi8j94jwgm5d4dsrprp"))
+         "111qcvlqjpasnswdniy5n53wyrs1y7a91qx1w4nsppnizdhn7jp6"))
        (patches (search-patches "gnome-settings-daemon-gc.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:configure-flags
        (list (string-append "-Dudev_dir="
                             (assoc-ref %outputs "out")
@@ -5601,8 +5602,7 @@ services for numerous locations.")
                         (substitute* "plugins/housekeeping/gsd-disk-space.c"
                           (("g_find_program_in_path \\(DISK_SPACE_ANALYZER\\)")
                            (string-append "g_strdup (\"" baobab
-                                          "/bin/baobab\")")))
-                        #t))))
+                                          "/bin/baobab\")")))))))
 
        ;; Color management test can't reach the colord system service.
        #:tests? #f))
