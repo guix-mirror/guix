@@ -768,6 +768,11 @@ model to base your own plug-in on, here it is.")
                  ((".*elements/msdkh264enc\\.c.*") "")
                  ((".*elements/svthevcenc\\.c.*") "")
 
+                 ;; The 'elements_shm.test_shm_live' test sometimes times out
+                 ;; (see:
+                 ;; https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/790).
+                 ((".*'elements/shm\\.c'.*") "")
+
                  ;; FIXME: Why is this failing.
                  ((".*elements/dash_mpd\\.c.*") "")
 
