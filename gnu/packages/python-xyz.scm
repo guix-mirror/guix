@@ -18612,13 +18612,13 @@ current test, while only declaring the test-specific fields")
 (define-public python-translate-toolkit
   (package
     (name "python-translate-toolkit")
-    (version "2.1.0")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "translate-toolkit" version ".tar.bz2"))
+       (uri (pypi-uri "translate-toolkit" version ".tar.gz"))
        (sha256
-        (base32 "1vlkwrg83vb17jc36pmwh2b7jphwf390lz0jw8hakcg16qhwypvq"))))
+        (base32 "020pp7pbpnavxd41z90vyzzx06ci57mx9drkgbsb89wxxx4gal9v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -18646,8 +18646,18 @@ current test, while only declaring the test-specific fields")
 several utilities, as well as an API for building localization tools.")
     (license license:gpl2+)))
 
+;; Required for virtaal, newer versions do not build with python2
 (define-public python2-translate-toolkit
-  (package-with-python2 python-translate-toolkit))
+  (package-with-python2
+    (package
+      (inherit python-translate-toolkit)
+      (version "2.1.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "translate-toolkit" version ".tar.bz2"))
+         (sha256
+          (base32 "1vlkwrg83vb17jc36pmwh2b7jphwf390lz0jw8hakcg16qhwypvq")))))))
 
 (define-public python-packaging
   (package
