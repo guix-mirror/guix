@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014-2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -827,19 +827,14 @@
                        (files -> `(("a/b/c" . ,q-scm)
                                    ("p/q"   . ,plain)))
                        (drv      (imported-files files)))
-    (define (file=? file1 file2)
-      ;; Assume deduplication is in place.
-      (= (stat:ino (stat file1))
-         (stat:ino (stat file2))))
-
     (mbegin %store-monad
       (built-derivations (list (pk 'drv drv)))
       (mlet %store-monad ((dir -> (derivation->output-path drv))
                           (plain* (text-file "foo" "bar!"))
                           (q-scm* (interned-file q-scm "c")))
         (return
-         (and (file=? (string-append dir "/a/b/c") q-scm*)
-              (file=? (string-append dir "/p/q") plain*)))))))
+         (and (file=? (string-append dir "/a/b/c") q-scm* stat)
+              (file=? (string-append dir "/p/q") plain* stat)))))))
 
 (test-equal "gexp-modules & ungexp"
   '((bar) (foo))
