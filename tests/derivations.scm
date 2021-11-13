@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,11 +170,15 @@
         #f))))
 
 (test-assert "identical files are deduplicated"
-  (let* ((build1  (add-text-to-store %store "one.sh"
-                                     "echo hello, world > \"$out\"\n"
+  ;; Note: DATA must be longer than %DEDUPLICATION-MINIMUM-SIZE.
+  (let* ((data    (make-string 9000 #\a))
+         (build1  (add-text-to-store %store "one.sh"
+                                     (string-append "echo -n " data
+                                                    " > \"$out\"\n")
                                      '()))
          (build2  (add-text-to-store %store "two.sh"
-                                     "# Hey!\necho hello, world > \"$out\"\n"
+                                     (string-append "# Hey!\necho -n "
+                                                    data " > \"$out\"\n")
                                      '()))
          (drv1    (derivation %store "foo"
                               %bash `(,build1)
@@ -187,7 +191,7 @@
                (file2 (derivation->output-path drv2)))
            (and (valid-path? %store file1) (valid-path? %store file2)
                 (string=? (call-with-input-file file1 get-string-all)
-                          "hello, world\n")
+                          data)
                 (= (stat:ino (lstat file1))
                    (stat:ino (lstat file2))))))))
 

@@ -292,4 +292,7 @@ void canonicaliseTimestampAndPermissions(const Path & path);
 
 MakeError(PathInUse, Error);
 
+/* Size below which a file is not considered for deduplication.  */
+extern const size_t deduplicationMinSize;
+
 }

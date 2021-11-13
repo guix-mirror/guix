@@ -759,7 +759,9 @@
 
 (test-assert "substitute, deduplication"
   (with-store s
-    (let* ((c   (random-text))                     ; contents of the output
+    ;; Note: C must be longer than %DEDUPLICATION-MINIMUM-SIZE.
+    (let* ((c   (string-concatenate
+                 (make-list 200 (random-text))))  ; contents of the output
            (g   (package-derivation s %bootstrap-guile))
            (d1  (build-expression->derivation s "substitute-me"
                                               `(begin ,c (exit 1))

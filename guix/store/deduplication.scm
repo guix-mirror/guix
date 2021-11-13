@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Caleb Ristvedt <caleb.ristvedt@cune.org>
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018-2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +22,13 @@
 
 (define-module (guix store deduplication)
   #:use-module (gcrypt hash)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:hide (dump-port))
   #:use-module (guix build syscalls)
   #:use-module (guix base32)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
@@ -36,6 +37,31 @@
             deduplicate
             dump-file/deduplicate
             copy-file/deduplicate))
+
+;; TODO: Remove once 'dump-port' in (guix build utils) has an optional 'len'
+;; parameter.
+(define* (dump-port in out
+                    #:optional len
+                    #:key (buffer-size 16384))
+  "Read LEN bytes from IN (or as much as possible if LEN is #f) and write it
+to OUT, using chunks of BUFFER-SIZE bytes."
+  (define buffer
+    (make-bytevector buffer-size))
+
+  (let loop ((total 0)
+             (bytes (get-bytevector-n! in buffer 0
+                                       (if len
+                                           (min len buffer-size)
+                                           buffer-size))))
+    (or (eof-object? bytes)
+        (and len (= total len))
+        (let ((total (+ total bytes)))
+          (put-bytevector out buffer 0 bytes)
+          (loop total
+                (get-bytevector-n! in buffer 0
+                                   (if len
+                                       (min (- len total) buffer-size)
+                                       buffer-size)))))))
 
 (define (nar-sha256 file)
   "Gives the sha256 hash of a file and the size of the file in nar form."
@@ -127,11 +153,27 @@ Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
           (unless (= EMLINK (system-error-errno args))
             (apply throw args)))))))
 
+(define %deduplication-minimum-size
+  ;; Size below which files are not deduplicated.  This avoids adding too many
+  ;; entries to '.links', which would slow down 'removeUnusedLinks' while
+  ;; saving little space.  Keep in sync with optimize-store.cc.
+  8192)
+
 (define* (deduplicate path hash #:key (store (%store-directory)))
   "Check if a store item with sha256 hash HASH already exists.  If so,
 replace PATH with a hardlink to the already-existing one.  If not, register
 PATH so that future duplicates can hardlink to it.  PATH is assumed to be
 under STORE."
+  ;; Lightweight promises.
+  (define-syntax-rule (delay exp)
+    (let ((value #f))
+      (lambda ()
+        (unless value
+          (set! value exp))
+        value)))
+  (define-syntax-rule (force promise)
+    (promise))
+
   (define links-directory
     (string-append store "/.links"))
 
@@ -144,13 +186,18 @@ under STORE."
                     ((file . properties)
                      (unless (member file '("." ".."))
                        (let* ((file (string-append path "/" file))
+                              (st   (delay (lstat file)))
                               (type (match (assoc-ref properties 'type)
                                       ((or 'unknown #f)
-                                       (stat:type (lstat file)))
+                                       (stat:type (force st)))
                                       (type type))))
-                         (loop file type
-                               (and (not (eq? 'directory type))
-                                    (nar-sha256 file)))))))
+                         (when (or (eq? 'directory type)
+                                   (and (eq? 'regular type)
+                                        (>= (stat:size (force st))
+                                            %deduplication-minimum-size)))
+                           (loop file type
+                                 (and (not (eq? 'directory type))
+                                      (nar-sha256 file))))))))
                   (scandir* path))
         (let ((link-file (string-append links-directory "/"
                                         (bytevector->nix-base32-string hash))))
@@ -222,9 +269,9 @@ OUTPUT as it goes."
 
 This procedure is suitable as a #:dump-file argument to 'restore-file'.  When
 used that way, it deduplicates files on the fly as they are restored, thereby
-removing the need to a deduplication pass that would re-read all the files
+removing the need for a deduplication pass that would re-read all the files
 down the road."
-  (define hash
+  (define (dump-and-compute-hash)
     (call-with-output-file file
       (lambda (output)
         (let-values (((hash-port get-hash)
@@ -236,7 +283,11 @@ down the road."
           (close-port hash-port)
           (get-hash)))))
 
-  (deduplicate file hash #:store store))
+  (if (>= size %deduplication-minimum-size)
+      (deduplicate file (dump-and-compute-hash) #:store store)
+      (call-with-output-file file
+        (lambda (output)
+          (dump-port input output size)))))
 
 (define* (copy-file/deduplicate source target
                                 #:key (store (%store-directory)))
