@@ -521,9 +521,8 @@ city, state, zip, or area code, it will check out.")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append "https://download.savannah.gnu.org/releases/renameutils/"
-                       name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/renameutils/"
+                           "renameutils-" version ".tar.gz"))
        (sha256
         (base32
          "18xlkr56jdyajjihcmfqlyyanzyiqqlzbhrm6695mkvw081g1lnb"))
@@ -537,8 +536,8 @@ city, state, zip, or area code, it will check out.")
      `(("readline" ,readline)))
     (home-page "https://www.nongnu.org/renameutils/")
     (synopsis "File renaming utilities")
-    (description "The file renaming utilities (renameutils for short) are a set
-of programs designed to make renaming of files faster and less cumbersome.  The
-file renaming utilities consists of five programs - qmv, qcp, imv, icp and
-deurlname.")
-    (license license:gpl3)))
+    (description "The file renaming utilities (renameutils for short) are a
+set of programs designed to make renaming of files faster and less cumbersome.
+The file renaming utilities consists of five programs: @command{qmv},
+@command{qcp}, @command{imv}, @command{icp}, and @command{deurlname}.")
+    (license license:gpl3+)))
