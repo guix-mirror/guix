@@ -9056,7 +9056,8 @@ shared object databases, search tools and indexing.")
                 "03gn416vvpvyy75pj3xkpxrqilbvjhqbvrdi5fdaivp50zzg47mp"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
@@ -9086,7 +9087,7 @@ shared object databases, search tools and indexing.")
        ("libportal" ,libportal)
        ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2) ; to satisfy tracker dependencies
        ("tracker" ,tracker)
        ("tracker-miners" ,tracker-miners)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
