@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2019, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018, 2020, 2021 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -112,6 +112,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -169,6 +170,43 @@
      "GNU Bazaar is a version control system that allows you to record
 changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
+    (license license:gpl2+)))
+
+(define-public breezy
+  (package
+    (name "breezy")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/brz/"
+                           (version-major+minor version) "/" version
+                           "/+download/breezy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p6q545xpmxa6fgvkjglfpqpybg33817vhw0a82az8i83bmnicp0"))))
+    (build-system python-build-system)
+    ;; TODO: Maybe regenerate C files with Cython?
+    (inputs
+     `(("gettext" ,gettext-minimal)
+       ("python-configobj" ,python-configobj)
+       ("python-dulwich" ,python-dulwich)
+       ("python-fastimport" ,python-fastimport)
+       ("python-paramiko" ,python-paramiko)
+       ("python-patiencediff" ,python-patiencediff)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-pygpgme" ,python-pygpgme)))
+    (arguments
+     `(#:tests? #f))                    ; no tests in release tarball
+    (home-page "https://www.breezy-vcs.org/")
+    (synopsis "Decentralized revision control system")
+    (description
+     "Breezy (@command{brz}) is a decentralized revision control system.  By
+default, Breezy provides support for both the
+@uref{https://www.bazaar-vcs.org, Bazaar} and @uref{https://www.git-scm.com,
+Git} file formats.  Breezy is backwards compatible with Bazaar's disk format
+and protocols.  One of the key differences with Bazaar is that Breezy runs on
+Python 3.3 and later, rather than on Python 2.")
     (license license:gpl2+)))
 
 (define git-cross-configure-flags
