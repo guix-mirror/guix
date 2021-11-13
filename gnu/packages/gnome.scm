@@ -10990,7 +10990,7 @@ generic enough to work for everyone.")
 (define-public evolution
   (package
     (name "evolution")
-    (version "3.34.2")
+    (version "3.42.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/evolution/"
@@ -10998,9 +10998,7 @@ generic enough to work for everyone.")
                                   "evolution-" version ".tar.xz"))
               (sha256
                (base32
-                "164vy8h432pjglafn8y2ms4gsvk3kbgc63h5qp0mk5dv4smsp29c"))
-              (patches (search-patches "evolution-CVE-2020-11879.patch"
-                                       "evolution-printableoptions.patch"))))
+                "0igfzapdvgfx2gnpwfkjfkn7l5j186wk88ni39vqas1sl7ijlls6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:imported-modules (,@%cmake-build-system-modules
@@ -11014,6 +11012,11 @@ generic enough to work for everyone.")
                                           ; in four years and cannot be built.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-webkitgtk-version
+           (lambda _
+             (substitute* '("CMakeLists.txt" "evolution-shell.pc.in")
+               (("webkit2gtk-4.0")
+                "webkit2gtk-4.1"))))
          ;; The build system attempts to install user interface modules to the
          ;; output directory of the "evolution-data-server" package.  This
          ;; change redirects that change.
@@ -11022,8 +11025,7 @@ generic enough to work for everyone.")
              (substitute* "src/modules/alarm-notify/CMakeLists.txt"
                (("\\$\\{edsuimoduledir\\}")
                 (string-append (assoc-ref outputs "out")
-                               "/lib/evolution-data-server/ui-modules")))
-             #t))
+                               "/lib/evolution-data-server/ui-modules")))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap

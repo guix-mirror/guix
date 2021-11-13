@@ -1043,8 +1043,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/esmtp-add-lesmtp.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
-  %D%/packages/patches/evolution-CVE-2020-11879.patch		\
-  %D%/packages/patches/evolution-printableoptions.patch		\
   %D%/packages/patches/exercism-disable-self-update.patch	\
   %D%/packages/patches/extempore-unbundle-external-dependencies.patch	\
   %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
