@@ -5392,7 +5392,7 @@ by the Xorg server.")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "21.1.0")
+    (version "21.1.1")
     (source
      (origin
        (method url-fetch)
@@ -5401,7 +5401,7 @@ by the Xorg server.")
                            "/xserver/xorg-server-" version ".tar.xz"))
        (sha256
         (base32
-         "0hpyq51sf7f5yqq87zgcdiidfmb8r93am1djvxhcnwj4izfidhsh"))
+         "0md7dqsc5qb30gym06c4zc2cjsdc5ps8nywk1bkcpix05kppybkq"))
        (patches
         (list
          ;; See:
@@ -5455,8 +5455,7 @@ by the Xorg server.")
      `(("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:parallel-tests? #f
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--with-xkb-path="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb")
