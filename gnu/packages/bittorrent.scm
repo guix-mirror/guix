@@ -12,6 +12,7 @@
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
@@ -42,6 +44,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
@@ -419,30 +422,43 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.2.8")
+    (version "1.2.14")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://github.com/arvidn/libtorrent/"
-                       "releases/download/libtorrent-" version "/"
+                       "releases/download/v" version "/"
                        "libtorrent-rasterbar-" version ".tar.gz"))
        (sha256
-        (base32 "1phn4klzvfzvidv5g566pnrrxj8l0givpy6s4r17d45wznqxc006"))))
-    (build-system gnu-build-system)
+        (base32 "0gwm4w7337ykh5lfnspapnnz6a35g7yay3wnj126s8s5kcsvy9wy"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-boost-libdir="
-                            (assoc-ref %build-inputs "boost")
-                            "/lib")
-             "--enable-python-binding"
-             "--enable-tests")
-       #:make-flags (list
-                     (string-append "LDFLAGS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))))
+     `(#:cmake ,cmake                   ;3.17 or later
+       #:configure-flags '("-Dpython-bindings=ON"
+                           "-Dbuild_tests=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
+             (let ((disabled-tests
+                    ;; test_upnp requires a non-localhost IPv4 interface.
+                    '("test_upnp")))
+               (when tests?
+                 ;; test_ssl relies on bundled TLS certificates with a fixed
+                 ;; expiry date.  To ensure succesful builds in the future,
+                 ;; fake the time to be roughly that of the release.
+                 (setenv "FAKETIME_ONLY_CMDS" "test_ssl")
+                 (invoke "faketime" "2021-06-01"
+                         "ctest"
+                         "--exclude-regex" (string-join disabled-tests "|")
+                         "-j" (if parallel-tests?
+                                  (number->string (parallel-job-count))
+                                  "1")))))))))
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
-    (native-inputs `(("python" ,python-wrapper)
+    (native-inputs `(("libfaketime" ,libfaketime)
+                     ("python" ,python-wrapper)
                      ("pkg-config" ,pkg-config)))
     (home-page "https://www.libtorrent.org/")
     (synopsis "Feature-complete BitTorrent implementation")
