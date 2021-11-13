@@ -5174,7 +5174,8 @@ once.")
          "18slsxifad5cjz4fqi818i66jc9b7kzgn01qxa0ra4y7wcqha4in"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
