@@ -88,7 +88,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.8.20")
+    (version "0.8.21")
     (source
      (origin
       (method url-fetch)
@@ -97,7 +97,7 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0d125mxknpn44xwgqzzak9y5ydigscrpjv9d63126mfc6yfngr5v"))))
+       (base32 "0ld4bhsi6iv4bvy99pblbr7vlwy9jbgfd6flyvb8qwbl8rvadzjp"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; for msgfmt
@@ -138,8 +138,7 @@
                                "/bin/dbus-launch']")))
              (substitute* '("testing/functional/__init__.py"
                             "testing/overrides/bin/lftp")
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-before 'check 'set-up-tests
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
@@ -148,8 +147,7 @@
                                     "/share/zoneinfo"))
              ;; Some things respect TMPDIR, others hard-code /tmp, and the
              ;; defaults don't match up, breaking test_restart.  Fix it.
-             (setenv "TMPDIR" "/tmp")
-             #t)))))
+             (setenv "TMPDIR" "/tmp"))))))
     (home-page "https://duplicity.gitlab.io/duplicity-web/")
     (synopsis "Encrypted backup using rsync algorithm")
     (description
