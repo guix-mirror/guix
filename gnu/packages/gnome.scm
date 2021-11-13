@@ -4370,7 +4370,7 @@ engineering.")
        ("libhandy" ,libhandy-0.0)
        ("libpwquality" ,libpwquality)
        ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)))
+       ("libsoup" ,libsoup-minimal-2)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
