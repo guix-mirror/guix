@@ -5775,7 +5775,7 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
 (define-public devhelp
   (package
     (name "devhelp")
-    (version "40.1")
+    (version "41.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5783,17 +5783,23 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fvb69l1nyxdrs95ar95rmpfs8nfkpys4x74r8ilid44hhzdk2iy"))))
+                "1lk0gycjvs6gibhy0zs3ffkrkzrkyl5nkp7n60hgpa6syjq91apc"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
            (lambda _
-             (substitute* "meson_post_install.py"
-               (("gtk-update-icon-cache") "true")))))))
+             (substitute* "build-aux/meson/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))))
+         (add-after 'unpack 'fix-devhelp-gir-inputs
+           ;; It still mentions webkitgtk 4.0
+           (lambda _
+             (substitute* "devhelp/meson.build"
+               (("'WebKit2-4.0'") "'WebKit2-4.1'")))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
