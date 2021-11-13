@@ -18,7 +18,7 @@
 ;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
-;;; Copyright © 2019 Liliana Marie Prikler <liliana.prikler@gmail.com>
+;;; Copyright © 2019, 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
@@ -54,6 +54,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)     ; for librsvg
   #:use-module (gnu packages gtk)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages mail)      ; for mailutils
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -128,7 +130,7 @@
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-program-file-names
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/callproc.c"
                             "lisp/term.el"
                             "lisp/htmlfontify.el"
@@ -136,6 +138,17 @@
                             "lisp/progmodes/sh-script.el")
                (("\"/bin/sh\"")
                 (format #f "~s" (which "sh"))))
+             (substitute* "lisp/doc-view.el"
+               (("\"(gs|dvipdf|ps2pdf)\"" all what)
+                (let ((ghostscript (assoc-ref inputs "ghostscript")))
+                  (if ghostscript
+                      (string-append "\"" ghostscript "/bin/" what "\"")
+                      all)))
+               (("\"(pdftotext)\"" all what)
+                (let ((poppler (assoc-ref inputs "poppler")))
+                  (if poppler
+                      (string-append "\"" poppler "/bin/" what "\"")
+                      all))))
              ;; match ".gvfs-fuse-daemon-real" and ".gvfsd-fuse-real"
              ;; respectively when looking for GVFS processes.
              (substitute* "lisp/net/tramp-gvfs.el"
@@ -264,6 +277,8 @@
        ("acl" ,acl)
        ("jansson" ,jansson)
        ("gmp" ,gmp)
+       ("ghostscript" ,ghostscript)
+       ("poppler" ,poppler)
 
        ;; When looking for libpng `configure' links with `-lpng -lz', so we
        ;; must also provide zlib as an input.
