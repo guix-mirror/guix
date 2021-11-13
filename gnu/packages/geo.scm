@@ -1342,7 +1342,7 @@ OpenStreetMap data files.")
        ("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
-       ("libsoup" ,libsoup)))
+       ("libsoup" ,libsoup-minimal-2)))
     (home-page "https://nzjrs.github.io/osm-gps-map/")
     (synopsis "GTK+ widget for displaying OpenStreetMap tiles")
     (description
