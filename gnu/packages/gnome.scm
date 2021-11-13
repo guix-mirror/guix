@@ -7614,21 +7614,15 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.34.2")
+    (version "3.42.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnome/sources/" name "/"
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
-       (patches
-        (search-patches "evolution-data-server-locales.patch"
-                        "evolution-data-server-libical-compat.patch"
-                        "evolution-data-server-CVE-2020-14928.patch"
-                        "evolution-data-server-CVE-2020-16117.patch"
-                        "evolution-data-server-printableoptions.patch"))
        (sha256
-        (base32 "16z85y6hhazcrp5ngw47w4x9r0j8zrj7awv5im58hhp0xs19zf1y"))))
+        (base32 "0a7my8spwcaf2i2fz8ndddi1drv6l9gxq0qblmnkxzyhfwm7zrp6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -7648,33 +7642,36 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                "-DENABLE_INTROSPECTION=ON"))  ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-webkitgtk-version
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("webkit2gtk-4.0")
+                "webkit2gtk-4.1"))))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              ;; tests/book-migration/test-migration.c:160:test_fetch_contacts:
              ;; assertion failed (g_slist_length (contacts) == 20): (0 == 20)
              (delete-file-recursively "tests/book-migration")
              (substitute* "tests/CMakeLists.txt"
-               (("add_subdirectory\\(book-migration\\)") ""))
-             #t))
+               (("add_subdirectory\\(book-migration\\)") ""))))
          (add-after 'unpack 'patch-paths
           (lambda _
             (substitute* '("tests/test-server-utils/e-test-server-utils.c"
                            "tests/libedata-book/data-test-utils.c"
                            "tests/libedata-book/test-book-cache-utils.c"
                            "tests/libedata-cal/test-cal-cache-utils.c")
-              (("/bin/rm") (which "rm")))
-            #t))
+              (("/bin/rm") (which "rm")))))
          (add-before 'configure 'dont-override-rpath
            (lambda _
              (substitute* "CMakeLists.txt"
                ;; CMakeLists.txt hard-codes runpath to just the libdir.
                ;; Remove it so the configure flag is respected.
-               (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
-             #t)))))
+               (("SET\\(CMAKE_INSTALL_RPATH .*") "")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("gperf" ,gperf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
