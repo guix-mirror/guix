@@ -9237,6 +9237,8 @@ beautifying border effects.")
      `(("dconf" ,dconf)
        ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
+    (arguments
+     `(#:meson ,meson-0.59))
     (home-page "https://gitlab.gnome.org/GNOME/dconf-editor")
     (synopsis "Graphical editor for GNOME's dconf configuration system")
     (description
