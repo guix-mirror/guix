@@ -1399,22 +1399,24 @@ configuration files.")
     (name "libxkbfile")
     (version "1.1.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/libxkbfile-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1irq9crvscd3yb8sr802dhvvfr35jdy1n2yz094xplmd42mbv3bm"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/lib/libxkbfile-"
+             version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "1irq9crvscd3yb8sr802dhvvfr35jdy1n2yz094xplmd42mbv3bm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (inputs
-      `(("libx11" ,libx11)))
+    (propagated-inputs
+     ;; Required in xkbfile.pc.
+     `(("libx11" ,libx11)
+       ("kbproto" ,kbproto)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB file handling library")
     (description "Xorg XKB file handling library.")
