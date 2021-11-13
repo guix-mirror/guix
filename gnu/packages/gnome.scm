@@ -8900,7 +8900,7 @@ easy, safe, and automatic.")
        ("libxml2" ,libxml2)
        ("icu4c" ,icu4c)                 ; libunistring gets miner-miner-fs test to fail.
        ("json-glib" ,json-glib)
-       ("libsoup" ,libsoup-minimal-2)))
+       ("libsoup" ,libsoup-minimal-2))) ; tracker-miners requires the same version.
     (synopsis "Metadata database, indexer and search tool")
     (home-page "https://wiki.gnome.org/Projects/Tracker")
     (description
@@ -9019,7 +9019,7 @@ endpoint and it understands SPARQL. ")
        ("libosinfo" ,libosinfo)
        ("libpng" ,libpng)
        ("libseccomp" ,libseccomp)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2) ; because tracker requires this version.
        ("libtiff" ,libtiff)
        ("libvorbis" ,libvorbis)
        ("libxml2" ,libxml2)
