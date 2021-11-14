@@ -18651,8 +18651,7 @@ and tty8.
 @lisp
 (use-modules (gnu services)
              (gnu services desktop)
-             (gnu services xorg)
-             (srfi srfi-1))  ;for 'remove'
+             (gnu services xorg))
 
 (operating-system
   ;; ...
