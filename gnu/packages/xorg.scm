@@ -5470,6 +5470,9 @@ by the Xorg server.")
              ;; It's not used anyway, so set it to empty.
              "--with-default-font-path="
 
+             ;; Enable the X security extensions (ssh -X).
+             "--enable-xcsecurity"
+
              ;; The default is to use "uname -srm", which captures the kernel
              ;; version and makes builds non-reproducible.
              "--with-os-name=GNU"
