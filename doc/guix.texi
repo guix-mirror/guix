@@ -11464,7 +11464,7 @@ a container similar to the one the build daemon creates:
 $ guix build -K foo
 @dots{}
 $ cd /tmp/guix-build-foo.drv-0
-$ guix shell --no-grafts -C foo strace gdb
+$ guix shell --no-grafts -C -D foo strace gdb
 [env]# source ./environment-variables
 [env]# cd foo-1.2
 @end example
