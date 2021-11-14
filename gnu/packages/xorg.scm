@@ -69,6 +69,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -87,6 +88,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -5606,21 +5608,67 @@ EGLStream families of extensions.")
     (license license:expat)))
 
 (define-public xorg-server-xwayland
-  (package/inherit xorg-server
+  (package
     (name "xorg-server-xwayland")
-    (inputs
-     `(("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
-       ,@(package-inputs xorg-server)))
+    (version "21.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://xorg.freedesktop.org/archive/individual"
+                           "/xserver/xwayland-" version ".tar.xz"))
+       (sha256
+        (base32
+         "18pqvg76grbsyxa3mm3j06i1l8cwb28nbn2gcnqpsk7x75zpbhpb"))))
+    (inputs (list font-dejavu
+                  dbus
+                  egl-wayland
+                  eudev
+                  libfontenc
+                  libdrm
+                  libepoxy
+                  libgcrypt
+                  libtirpc
+                  libxfont2
+                  libxkbfile
+                  pixman
+                  wayland
+                  wayland-protocols
+                  xkbcomp
+                  xkeyboard-config
+                  xorgproto
+                  xtrans))
+    (native-inputs (list pkg-config))
+    (build-system meson-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments xorg-server)
-       ((#:configure-flags flags)
-        `(cons* "--enable-xwayland" "--disable-xorg"
-                "--disable-docs"    "--disable-devel-docs"
-                "--disable-xvfb"    "--disable-xnest"
-                "--disable-xquartz" "--disable-xwin"
-                ,flags))))
-    (synopsis "Xorg server with wayland backend")))
+     `(#:configure-flags
+       (list "-Dxwayland_eglstream=true"
+             (string-append "-Dxkb_dir="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb")
+             (string-append "-Dxkb_bin_dir="
+                            (assoc-ref %build-inputs "xkbcomp") "/bin")
+             ;; The build system insist on providing a default font path; give
+             ;; that of dejavu, the same used for our fontconfig package.
+             (string-append "-Ddefault_font_path="
+                            (assoc-ref %build-inputs "font-dejavu")
+                            "/share/fonts")
+             "-Dxkb_output_dir=/tmp"
+             (format #f "-Dbuilder_string=\"Build ID: ~a ~a\"" ,name ,version)
+             "-Dxcsecurity=true"
+             "-Ddri3=true"
+             "-Dglamor=true"
+             ;; For the log file, etc.
+             "--localstatedir=/var")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-/bin/sh
+                    (lambda _
+                      (substitute* (find-files "." "\\.c$")
+                        (("/bin/sh") (which "sh"))))))))
+    (synopsis "Xorg server with Wayland backend")
+    (description "Xwayland is an X server for running X clients under
+Wayland.")
+    (home-page "https://www.x.org/wiki/")
+    (license license:x11)))
 
 
 ;; packages of height 4 in the propagated-inputs tree
