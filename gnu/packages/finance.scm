@@ -1239,7 +1239,7 @@ Its features are:
 (define-public grisbi
   (package
     (name "grisbi")
-    (version "1.2.2")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -1249,7 +1249,7 @@ Its features are:
              "/grisbi-" version ".tar.bz2"))
        (sha256
         (base32
-         "1piiyyxjsjbw9gcqydvknzxmmfgh8kdqal12ywrxyxih2afwnvbw"))))
+         "0gvsqw1z5wkakyi3bkq71pqb094a8lv2nbgnxw2zqkabzjmxnfmx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--without-ofx")))
