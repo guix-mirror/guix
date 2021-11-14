@@ -2,6 +2,7 @@
 ;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,9 +57,9 @@
                                  "/gpg/trustedkeys.kbx")))
 
 (define %openpgp-key-server
-  ;; The default key server.  Note that keys.gnupg.net appears to be
-  ;; unreliable.
-  (make-parameter "pool.sks-keyservers.net"))
+  ;; The default key server.  It defaults to #f, which causes GnuPG to use the
+  ;; one it is configured with.
+  (make-parameter #f))
 
 ;; Regexps for status lines.  See file `doc/DETAILS' in GnuPG.
 
@@ -182,22 +183,26 @@ missing key or its key id if the fingerprint is unavailable."
            (_ #f)))
        status))
 
-(define* (gnupg-receive-keys fingerprint/key-id server
-                             #:optional (keyring (current-keyring)))
-  "Download FINGERPRINT/KEY-ID from SERVER, a key server, and add it to
-KEYRING."
+(define* (gnupg-receive-keys fingerprint/key-id
+                             #:key server (keyring (current-keyring)))
+  "Download FINGERPRINT/KEY-ID from SERVER if specified, otherwise from
+GnuPG's default/configured one.  The key is added to KEYRING."
   (unless (file-exists? keyring)
     (mkdir-p (dirname keyring))
-    (call-with-output-file keyring (const #t)))   ;create an empty keybox
+    (call-with-output-file keyring (const #t))) ;create an empty keybox
 
-  (zero? (system* (%gpg-command) "--keyserver" server
-                  "--no-default-keyring" "--keyring" keyring
-                  "--recv-keys" fingerprint/key-id)))
+  (zero? (apply system*
+                `(,(%gpg-command)
+                  ,@(if server
+                        (list "--keyserver" server)
+                        '())
+                  "--no-default-keyring" "--keyring" ,keyring
+                  "--recv-keys" ,fingerprint/key-id))))
 
 (define* (gnupg-verify* sig file
                         #:key
                         (key-download 'interactive)
-                        (server (%openpgp-key-server))
+                        server
                         (keyring (current-keyring)))
   "Like `gnupg-verify', but try downloading the public key if it's missing.
 Return two values: 'valid-signature and a fingerprint/name pair upon success,
@@ -215,7 +220,7 @@ fingerprint/user name pair on success and #f otherwise."
        (let ((missing (gnupg-status-missing-key? status)))
          (define (download-and-try-again)
            ;; Download the missing key and try again.
-           (if (gnupg-receive-keys missing server keyring)
+           (if (gnupg-receive-keys missing #:server server #:keyring keyring)
                (match (gnupg-status-good-signature?
                        (gnupg-verify sig file keyring))
                  (#f
