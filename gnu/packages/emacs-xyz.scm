@@ -8790,9 +8790,9 @@ a source code input file.")
 
 (define-public emacs-request
   ;; We prefer a more recent commit that has support for auth-source,
-  ;; which makes authentication more convenient for users and maintainers.
-  (let ((commit "d02d1347ffdf138cffd380cbeac62ac8732036ef")
-        (revision "0"))
+  ;; and has some bug fixes for Emacs 28.
+  (let ((commit "3336eaa97de923f74b90dda3e35985e122d40805")
+        (revision "1"))
     (package
       (name "emacs-request")
       (version (git-version "0.3.2" revision commit))
@@ -8804,7 +8804,7 @@ a source code input file.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1rkpakzish2d470ca15yq3k0m1j7a2lrkvvddcyvc2rx0sncsdjs"))))
+                  "0jckwy5zhz95d6l3lz8b9b34pppcjjzy97fg1wn8mqzhf3h460ac"))))
       (build-system emacs-build-system)
       (arguments
        `(#:tests? #f))                  ; requires network access.
