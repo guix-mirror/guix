@@ -10727,11 +10727,11 @@ names, e.g., @samp{#0000ff} is displayed in white with a blue background.")
 (define-public emacs-ryo-modal
   ;; Package has no release.  Version is extracted from "Version:" keyword in
   ;; main file.
-  (let ((commit "3a54312eea7023a86ca3f8eb3c03c872554bff2f")
+  (let ((commit "a10f564474cc8fa28a74b04e3b15375315223c44")
         (revision "0"))
     (package
       (name "emacs-ryo-modal")
-      (version (git-version "0.4" revision commit))
+      (version (git-version "0.45" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -10740,7 +10740,7 @@ names, e.g., @samp{#0000ff} is displayed in white with a blue background.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
+          (base32 "0ypm1rnyry6hb4znb8sgwfi0la6q46ihm8k99kisk0mkgz7im93d"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/Kungsgeten/ryo-modal")
       (synopsis "Emacs minor mode for defining modal editing environments")
