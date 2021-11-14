@@ -862,7 +862,10 @@ is part of the GNOME accessibility project.")
     (outputs '("out" "bin" "doc" "debug"))
     (propagated-inputs
      (list atk cairo
-           (librsvg-for-system) glib pango))
+           (if (target-x86-64?)
+             librsvg-bootstrap
+             librsvg-2.40)
+           glib pango))
     (inputs
      (list cups
            libx11
@@ -958,7 +961,9 @@ application suites.")
            fribidi
            fontconfig
            freetype
-           (librsvg-for-system)
+           (if (target-x86-64?)
+             librsvg-bootstrap
+             librsvg-2.40)
            glib
            libcloudproviders-minimal
            libepoxy

@@ -288,7 +288,9 @@
        ;; must also provide zlib as an input.
        ("libpng" ,libpng)
        ("zlib" ,zlib)
-       ("librsvg" ,(librsvg-for-system))
+       ("librsvg" ,@(if (target-x86-64?)
+                         (list librsvg-bootstrap)
+                         (list librsvg-2.40)))
        ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
