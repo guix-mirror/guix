@@ -238,7 +238,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "21.2.4")
+    (version "21.2.5")
     (source
       (origin
         (method url-fetch)
@@ -250,7 +250,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "0i2vz3ppcgqm076546imzl11jr3rlch1iv62lffk60mcs61dwvpy"))
+          "1fxcdf4qs4vmyjcns7jv62w4jy3gr383ar5b7mr77nb0nxgmhjcf"))
         (patches
          (search-patches "mesa-skip-tests.patch"))))
     (build-system meson-build-system)
@@ -396,11 +396,6 @@ also known as DXTn or DXTC) for Mesa.")
                       (("disasm\\.c'") "delay.c',\n    link_args: ld_args_build_id"))))
                  (_
                   '((display "No tests to disable on this architecture.\n"))))))
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             ;; See <https://gitlab.freedesktop.org/mesa/mesa/-/issues/3181>.
-             (substitute* "src/compiler/glsl/glcpp/tests/084-unbalanced-parentheses.c.expected"
-              (("unexpected \\$end") "unexpected end of file"))))
          (add-before 'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
