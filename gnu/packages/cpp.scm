@@ -1144,6 +1144,36 @@ output randomness while retaining speed, simplicity, and conciseness.")
       (home-page "https://www.pcg-random.org")
       (license (list license:expat license:asl2.0))))) ; dual licensed
 
+(define-public libconfini
+  (package
+    (name "libconfini")
+    (version "1.16.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/madmurphy/libconfini")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01g8ai2z4fwshk06k824j6ib8nfb3cwxs5kqpqjvv4k5ayzm892h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "sh" "bootstrap" "--noconfigure"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://madmurphy.github.io/libconfini/html/index.html")
+    (synopsis "INI file parser")
+    (description "@code{libconfini} is an INI file parser library written in
+C.  It focuses on standardization and parsing exactness and is at ease with
+almost every type of file containing key/value pairs.")
+    (license license:gpl3+)))
+
 (define-public libcutl
   (package
     (name "libcutl")
