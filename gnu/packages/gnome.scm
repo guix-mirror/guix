@@ -9845,6 +9845,7 @@ existing databases over the internet.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:configure-flags '("-Dlocalstatedir=/tmp"
                            "-Dsysconfdir=/tmp")
        #:imported-modules ((guix build python-build-system)
