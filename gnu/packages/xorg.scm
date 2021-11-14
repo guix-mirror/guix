@@ -5577,7 +5577,7 @@ application-facing EGL functions.")
 (define-public egl-wayland
   (package
     (name "egl-wayland")
-    (version "1.1.7")
+    (version "1.1.9")
     (source
      (origin
        (method git-fetch)
@@ -5586,13 +5586,16 @@ application-facing EGL functions.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xcx1132zwyp4qps074m72ngjlfmysi1jc2d0lp1ml1r9bllkam6"))))
+        (base32 "1iz86cpc4v7izckrcslllnw0vvvgsxg1sr65yb8s9d0f8xa8djdd"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("libglvnd" ,libglvnd)           ;needed for headers
+       ("mesa-headers" ,mesa-headers)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("mesa" ,mesa)
-       ("wayland" ,wayland)))
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
     (propagated-inputs
      `(("eglexternalplatform" ,eglexternalplatform)))
     (synopsis "EGLStream-based Wayland external platform")
