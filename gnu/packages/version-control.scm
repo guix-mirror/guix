@@ -3036,7 +3036,7 @@ for historians.")
 (define-public diff-so-fancy
   (package
     (name "diff-so-fancy")
-    (version "1.3.0")
+    (version "1.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3045,7 +3045,7 @@ for historians.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0aavxahzha2mms4vdwysk79pa6wzswpfwgsq2hwaxnaf66maahfl"))))
+                "0q0byg2bpibl3lbn4zibwcfxzlx2x5krajxmpwgizf32qjp5lh6n"))))
     (inputs
      `(("perl" ,perl)
        ("ncurses" ,ncurses)))
