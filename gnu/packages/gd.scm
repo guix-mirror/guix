@@ -57,7 +57,7 @@
                               ;; Drop when
                               ;; https://github.com/libgd/libgd/issues/691
                               ;; is solved.
-                              "gd-Revert-fix-303-gdlib.pc-use-Requires-instead-of-Libs.patch"))))
+                              "gd-Revert-fix-303-gdlib.pc.patch"))))
     (build-system gnu-build-system)
     (arguments
       ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
