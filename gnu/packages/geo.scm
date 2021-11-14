@@ -92,6 +92,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
@@ -1466,6 +1467,42 @@ should be supported.  Clustered and non-clustered indices should be easy to be
 persisted.
 @end itemize
 ")
+    (license license:expat)))
+
+(define-public python-rtree
+  (package
+    (name "python-rtree")
+    (version "0.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Rtree" version))
+       (sha256
+        (base32 "0gna530vy6rh76035cqh7i2lx199cvxjrzjczg9rm6k96k5751xy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libspatialindex
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "SPATIALINDEX_C_LIBRARY"
+                     (string-append (assoc-ref inputs "libspatialindex")
+                                    "/lib/libspatialindex.so"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytest" ,python-pytest)
+       ("python-wheel" ,python-wheel)))
+    (inputs
+     `(("libspatialindex" ,libspatialindex)))
+    (home-page "https://github.com/Toblerity/rtree")
+    (synopsis "R-Tree spatial index for Python GIS")
+    (description
+     "RTree is a Python package with bindings for @code{libspatialindex}.")
     (license license:expat)))
 
 (define-public java-jmapviewer
