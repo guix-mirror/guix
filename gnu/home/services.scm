@@ -275,7 +275,7 @@ directory containing FILES."
 will be put in @file{~/.guix-home/files}.")))
 
 (define (compute-on-first-login-script _ gexps)
-  (gexp->script
+  (computed-file
    "on-first-login"
    #~(let* ((xdg-runtime-dir (or (getenv "XDG_RUNTIME_DIR")
                                  (format #f "/run/user/~a" (getuid))))
@@ -294,11 +294,11 @@ won't execute anything.  You can check if xdg runtime directory exists,
 XDG_RUNTIME_DIR variable is set to apropriate value and manually execute the
 script by running '$HOME/.guix-home/on-first-login'")))))
 
-(define (on-first-login-script-entry m-on-first-login)
+(define (on-first-login-script-entry on-first-login)
   "Return, as a monadic value, an entry for the on-first-login script
 in the home environment directory."
-  (mlet %store-monad ((on-first-login m-on-first-login))
-        (return `(("on-first-login" ,on-first-login)))))
+  (with-monad %store-monad
+    (return `(("on-first-login" ,on-first-login)))))
 
 (define home-run-on-first-login-service-type
   (service-type (name 'home-run-on-first-login)
