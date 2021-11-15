@@ -18830,3 +18830,32 @@ This package provides the text-based interface for Chemboy.")
 
 (define-public ecl-cl-pass
   (sbcl-package->ecl-package sbcl-cl-pass))
+
+(define-public sbcl-cl-tld
+  ;; No release.
+  (let ((commit "6529c70042cf6e82be39bc522e87ad87da08f1c9"))
+    (package
+      (name "sbcl-cl-tld")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lu4nx/cl-tld")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1l6f0sak90pqjzkrjg0cyk7gv9h8gwpfvc0964z98dw2nj3hakqb"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/lu4nx/cl-tld/")
+      (synopsis "Extract the Top Level Domain from domains, in Common Lisp")
+      (description
+       "This library extracts the TLD (Top Level Domain) from domains.  The
+information is taken from @url{https://publicsuffix.org}.")
+      (license license:public-domain))))
+
+(define-public cl-tld
+  (sbcl-package->cl-source-package sbcl-cl-tld))
+
+(define-public ecl-cl-tld
+  (sbcl-package->ecl-package sbcl-cl-tld))
