@@ -98,6 +98,7 @@ Copyright @copyright{} 2021 pukkamustard@*
 Copyright @copyright{} 2021 Alice Brenon@*
 Copyright @copyright{} 2021 Andrew Tropin@*
 Copyright @copyright{} 2021 Sarah Morgensen@*
+Copyright @copyright{} 2021 Josselin Poiret@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2493,13 +2494,24 @@ mkfs.ext4 -L my-root /dev/sda2
 If you are instead planning to encrypt the root partition, you can use
 the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
-@code{man cryptsetup}} for more information).  Assuming you want to
-store the root partition on @file{/dev/sda2}, the command sequence would
-be along these lines:
+@code{man cryptsetup}} for more information).
+
+@quotation Warning
+Note that GRUB can unlock LUKS2 devices since version 2.06, but only
+supports the PBKDF2 key derivation function, which is not the default
+for @command{cryptsetup luksFormat}.  You can check which key derivation
+function is being used by a device by running @command{cryptsetup
+luksDump @var{device}}, and looking for the PBKDF field of your
+keyslots.
+@end quotation
+
+Assuming you want to store the root partition on @file{/dev/sda2}, the
+command sequence to format it as a LUKS2 partition would be along these
+lines:
 
 @example
-cryptsetup luksFormat /dev/sda2
-cryptsetup open --type luks /dev/sda2 my-partition
+cryptsetup luksFormat --type luks2 --pbkdf pbkdf2 /dev/sda2
+cryptsetup open /dev/sda2 my-partition
 mkfs.ext4 -L my-root /dev/mapper/my-partition
 @end example
 
