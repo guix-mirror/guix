@@ -3230,7 +3230,7 @@ is a library for creating graphical user interfaces.")
 (define-public sbcl-cl-webkit
   (package
     (name "sbcl-cl-webkit")
-    (version "3.0.0")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -3240,7 +3240,7 @@ is a library for creating graphical user interfaces.")
        (file-name (git-file-name "cl-webkit" version))
        (sha256
         (base32
-         "015xry1cvbgspfzz35ifz2qscz946ljhj2z8rzjscy9v8fgnjsdk"))))
+         "1c0kas8k02167v5f1gjbhy3741b7ky91x7lkc5bh5429jmbpiapf"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("cffi" ,sbcl-cffi)
