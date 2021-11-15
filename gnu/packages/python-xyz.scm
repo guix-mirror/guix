@@ -5554,9 +5554,6 @@ color scales, and color space conversion easy.  It has support for:
 @end enumerate\n")
     (license license:expat)))
 
-(define-public python2-spectra
-  (package-with-python2 python-spectra))
-
 (define-public python-pyspnego
   (package
     (name "python-pyspnego")
