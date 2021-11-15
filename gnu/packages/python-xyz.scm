@@ -1369,6 +1369,27 @@ concepts.")
 (define-public python2-h5py
   (package-with-python2 python-h5py))
 
+(define-public python-hnswlib
+  (package
+    (name "python-hnswlib")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hnswlib" version))
+       (sha256
+        (base32 "0wf1cwmxmdzfqmfhrkqdxb5spf21ylgl2bidswhzjrqhwf35c9qf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("pybind11" ,pybind11)))
+    (home-page "https://github.com/nmslib/hnswlib")
+    (synopsis "Fast approximate nearest neighbor search")
+    (description "Hnswlib is a header-only C++ implementation of fast
+approximate nearest neighbor search with Python bindings.")
+    (license license:asl2.0)))
+
 (define-public python-pyls-black
   (package
     (name "python-pyls-black")
