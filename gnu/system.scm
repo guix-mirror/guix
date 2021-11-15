@@ -235,6 +235,8 @@
   (file-systems operating-system-file-systems)    ; list of fs
   (swap-devices operating-system-swap-devices     ; list of string | <swap-space>
                 (default '())
+                (delayed)
+                (sanitize warn-swap-devices-change))
 
   (users operating-system-users                   ; list of user accounts
          (default %base-user-accounts))
@@ -582,6 +584,20 @@ mapped-device '~a' may not be mounted by the bootloader.~%")
   "Return the list of device-mapping services for OS as a list."
   (map device-mapping-service
        (operating-system-user-mapped-devices os)))
+
+(define-syntax-rule (warn-swap-devices-change value)
+  (%warn-swap-devices-change value (current-source-location)))
+
+(define (%warn-swap-devices-change value location)
+  (map (lambda (x)
+         (unless (swap-space? x)
+           (warning
+            (source-properties->location
+             location)
+            (G_ "List elements of the field 'swap-devices' should \
+now use the <swap-space> record, as the old method is deprecated. \
+See \"(guix) operating-system Reference\" for more details.~%")))
+         x) value))
 
 (define (swap-services os)
   "Return the list of swap services for OS."
