@@ -140,14 +140,14 @@ resolution, asynchronous file system operations, and threading primitives.")
   (package
     (inherit libuv)
     (name "libuv")
-    (version "1.40.0")
+    (version "1.42.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "1551k3ab27vbg9517l9b4iqbramwxdkwgpf53knas05cbfwhvab1"))))
+                "0wpb9pz3r8nksnrf4zbixj2kk9whr7abi45ydrwyv2js2ljrc4j3"))))
     (properties '((hidden? . #t)))))
 
 (define-public perl-anyevent
