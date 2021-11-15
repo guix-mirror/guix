@@ -18895,3 +18895,37 @@ information is taken from @url{https://publicsuffix.org}.")
 
 (define-public ecl-cl-strftime
   (sbcl-package->ecl-package sbcl-cl-strftime))
+
+(define-public sbcl-exit-hooks
+  ;; No release.
+  (let ((commit "78050f4f55c138fcea86a9d720928782021b6012"))
+    (package
+      (name "sbcl-exit-hooks")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ailisp/exit-hooks/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00rk0pr2cy3hy6giblh166b7yrg06d5lanipjcqv508gkfb0vi47"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/ailisp/exit-hooks")
+      (synopsis "Call functions automatically when Common Lisp exits")
+      (description
+       "@code{exit-hooks} provides a portable way to automatically call some
+user-defined function when exiting Common Lisp (both @code{quit} from the REPL
+or a kill in a shell).  Like @code{atexit} in C and Python or Java’s
+@code{Runtime.addShutdownHook()}.  It currently supports SBCL, CCL, ECL, ABCL,
+Allegro CL, clisp and CMUCL.  Before exit-hooks, there was no portable way of
+doing so and no staightforward way to use an exit hook on ABCL.  It can be used
+for tasks like parmenantly save something when exiting Lisp.")
+      (license license:bsd-2))))
+
+(define-public cl-exit-hooks
+  (sbcl-package->cl-source-package sbcl-exit-hooks))
+
+(define-public ecl-exit-hooks
+  (sbcl-package->ecl-package sbcl-exit-hooks))
