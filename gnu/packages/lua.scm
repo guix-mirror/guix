@@ -1171,7 +1171,7 @@ enabled.")
 (define-public fennel
   (package
     (name "fennel")
-    (version "0.9.1")
+    (version "1.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1180,11 +1180,7 @@ enabled.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07qgycf5cxm9zcc4fgpgvplg95ndavh3ynpdjpvzkikzbnyj7xia"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file "fennelview.lua") #t))))
+                "0d4rpf0f2aqxlca3kxrbhjjhf1knhiz8ccwlx8xid05mc16la70y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -1193,28 +1189,14 @@ enabled.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'build 'patch-lua-calls
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((lua (string-append (assoc-ref inputs "lua") "/bin/lua")))
-               (setenv "LUA" lua)
-               (substitute* "old/launcher.lua"
-                 (("/usr/bin/env lua") lua))
-               #t)))
          (add-after 'build 'patch-fennel
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "fennel"
                (("/usr/bin/env .*lua")
-                (string-append (assoc-ref inputs "lua") "/bin/lua")))
-             #t))
+                (string-append (assoc-ref inputs "lua") "/bin/lua")))))
          (delete 'check)
          (add-after 'install 'check
-           (assoc-ref %standard-phases 'check))
-         (add-after 'install 'install-manpage
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "fennel.1"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/man/man1"))
-             #t)))))
+           (assoc-ref %standard-phases 'check)))))
     (inputs `(("lua" ,lua)))
     (home-page "https://fennel-lang.org/")
     (synopsis "Lisp that compiles to Lua")
