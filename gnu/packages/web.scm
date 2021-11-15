@@ -7668,7 +7668,7 @@ compressed JSON header blocks.
 (define-public hpcguix-web
   (package
     (name "hpcguix-web")
-    (version "0.1.0")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7677,7 +7677,7 @@ compressed JSON header blocks.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02lz5k1hhkwfz3nr3lsd69icsz6n0q82z047d3svi09qpxw6y0cj"))))
+                "1l856d1vr63ns1sp9fm6v97p71mx00769k6lwzqzppsb9clksnwp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -7701,9 +7701,10 @@ compressed JSON header blocks.
                     (git      (assoc-ref inputs "guile-git"))
                     (bs       (assoc-ref inputs "guile-bytestructures"))
                     (json     (assoc-ref inputs "guile-json"))
+                    (zlib     (assoc-ref inputs "guile-zlib"))
                     (guile-cm (assoc-ref inputs
                                          "guile-commonmark"))
-                    (deps (list guile gcrypt git bs guile-cm guix json))
+                    (deps (list guile gcrypt git bs zlib guile-cm guix json))
                     (effective
                      (read-line
                       (open-pipe* OPEN_READ
@@ -7728,15 +7729,15 @@ compressed JSON header blocks.
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("uglify-js" ,uglify-js)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
     (inputs
      `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
        ("guix" ,guix)
-       ("bash-minimal" ,bash-minimal)))           ;for 'wrap-program'
-    (propagated-inputs
-     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guile-zlib" ,guile-zlib)
        ("guile-commonmark" ,guile-commonmark)
-       ("guile-json" ,guile-json-4)))
+       ("guile-json" ,guile-json-4)
+       ("bash-minimal" ,bash-minimal)))
     (home-page "https://github.com/UMCUGenetics/hpcguix-web")
     (synopsis "Web interface for cluster deployments of Guix")
     (description "Hpcguix-web provides a web interface to the list of packages

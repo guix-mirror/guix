@@ -26552,6 +26552,12 @@ complete example}.
 
 @item @code{package} (default: @code{hpcguix-web})
 The hpcguix-web package to use.
+
+@item @code{address} (default: @code{"127.0.0.1"})
+The IP address to listen to.
+
+@item @code{port} (default: @code{5000})
+The port number to listen to.
 @end table
 @end deftp
 

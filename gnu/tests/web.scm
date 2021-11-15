@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020-2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -438,7 +438,8 @@ HTTP-PORT, along with php-fpm."
    (service dhcp-client-service-type)
    (service hpcguix-web-service-type
             (hpcguix-web-configuration
-             (specs %hpcguix-web-specs)))))
+             (specs %hpcguix-web-specs)
+             (address "0.0.0.0")))))
 
 (define %test-hpcguix-web
   (system-test

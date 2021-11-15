@@ -1110,7 +1110,9 @@ a webserver.")
   (package  hpcguix-web-package (default hpcguix-web)) ;<package>
 
   ;; Specs is gexp of hpcguix-web configuration file
-  (specs    hpcguix-web-configuration-specs))
+  (specs    hpcguix-web-configuration-specs)
+  (address  hpcguix-web-configuration-address (default "127.0.0.1"))
+  (port     hpcguix-web-configuration-port (default 5000)))
 
 (define %hpcguix-web-accounts
   (list (user-group
@@ -1163,6 +1165,12 @@ a webserver.")
        (requirement   '(networking))
        (start #~(make-forkexec-constructor
                  (list #$(file-append hpcguix-web "/bin/hpcguix-web")
+                       (string-append "--listen="
+                                      #$(hpcguix-web-configuration-address
+                                         config))
+                       "-p"
+                       #$(number->string
+                          (hpcguix-web-configuration-port config))
                        (string-append "--config="
                                       #$(scheme-file "hpcguix-web.scm" specs)))
                  #:user "hpcguix-web"
