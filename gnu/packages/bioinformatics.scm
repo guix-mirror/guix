@@ -11996,47 +11996,48 @@ implementation differs in these ways:
                                    wheel (string-append "--prefix=" out)))
                          (find-files "dist" "\\.whl$")))))
          (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; These tests require Internet access.
-             (delete-file-recursively "scanpy/tests/notebooks")
-             (delete-file "scanpy/tests/test_clustering.py")
-             (delete-file "scanpy/tests/test_datasets.py")
-             (delete-file "scanpy/tests/test_score_genes.py")
-             (delete-file "scanpy/tests/test_highly_variable_genes.py")
+           (lambda* (#:key tests? inputs #:allow-other-keys)
+             (when tests?
+               ;; These tests require Internet access.
+               (delete-file-recursively "scanpy/tests/notebooks")
+               (delete-file "scanpy/tests/test_clustering.py")
+               (delete-file "scanpy/tests/test_datasets.py")
+               (delete-file "scanpy/tests/test_score_genes.py")
+               (delete-file "scanpy/tests/test_highly_variable_genes.py")
 
-             ;; TODO: I can't get the plotting tests to work, even with Xvfb.
-             (delete-file "scanpy/tests/test_embedding_plots.py")
-             (delete-file "scanpy/tests/test_preprocessing.py")
-             (delete-file "scanpy/tests/test_read_10x.py")
+               ;; TODO: I can't get the plotting tests to work, even with Xvfb.
+               (delete-file "scanpy/tests/test_embedding_plots.py")
+               (delete-file "scanpy/tests/test_preprocessing.py")
+               (delete-file "scanpy/tests/test_read_10x.py")
 
-             ;; TODO: these fail with TypingError and "Use of unsupported
-             ;; NumPy function 'numpy.split'".
-             (delete-file "scanpy/tests/test_metrics.py")
+               ;; TODO: these fail with TypingError and "Use of unsupported
+               ;; NumPy function 'numpy.split'".
+               (delete-file "scanpy/tests/test_metrics.py")
 
-             ;; The following tests requires 'scanorama', which isn't
-             ;; packaged yet.
-             (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
+               ;; The following tests requires 'scanorama', which isn't
+               ;; packaged yet.
+               (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
 
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":"
-                                    (assoc-ref inputs "python-anndata:source") ":"
-                                    (getenv "PYTHONPATH")))
-             (invoke "pytest" "-vv"
-                     "-k"
-                     ;; Plot tests that fail.
-                     (string-append "not test_dotplot_matrixplot_stacked_violin"
-                                    " and not test_violin_without_raw"
-                                    " and not test_correlation"
-                                    " and not test_scatterplots"
-                                    " and not test_scatter_embedding_add_outline_vmin_vmax_norm"
-                                    " and not test_paga"
-                                    " and not test_paga_compare"
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) ":"
+                                      (assoc-ref inputs "python-anndata:source") ":"
+                                      (getenv "PYTHONPATH")))
+               (invoke "pytest" "-vv"
+                       "-k"
+                       ;; Plot tests that fail.
+                       (string-append "not test_dotplot_matrixplot_stacked_violin"
+                                      " and not test_violin_without_raw"
+                                      " and not test_correlation"
+                                      " and not test_scatterplots"
+                                      " and not test_scatter_embedding_add_outline_vmin_vmax_norm"
+                                      " and not test_paga"
+                                      " and not test_paga_compare"
 
-                                    ;; These try to connect to the network
-                                    " and not test_plot_rank_genes_groups_gene_symbols"
-                                    " and not test_pca_chunked"
-                                    " and not test_pca_sparse"
-                                    " and not test_pca_reproducible")))))))
+                                      ;; These try to connect to the network
+                                      " and not test_plot_rank_genes_groups_gene_symbols"
+                                      " and not test_pca_chunked"
+                                      " and not test_pca_sparse"
+                                      " and not test_pca_reproducible"))))))))
     (propagated-inputs
      `(("python-anndata" ,python-anndata)
        ("python-h5py" ,python-h5py)
