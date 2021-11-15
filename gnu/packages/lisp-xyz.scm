@@ -18679,6 +18679,33 @@ terminals.")
 (define-public ecl-clinenoise
   (sbcl-package->ecl-package sbcl-clinenoise))
 
+(define-public sbcl-periodic-table
+  (package
+    (name "sbcl-periodic-table")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/chemboy/periodic-table-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1ircvqm3q93ma4rxbxprb1i9rcax10ld6xmdzdhfnigr27sh5jvg"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/chemboy/")
+    (synopsis "Periodic table for Common Lisp")
+    (description
+     "This package defines a Common Lisp package, @code{:elements}, with an
+@code{ELEMENT} structure and a number of functions to search the periodic
+table.")
+    (license license:llgpl)))
+
+(define-public cl-periodic-table
+  (sbcl-package->cl-source-package sbcl-periodic-table))
+
+(define-public ecl-periodic-table
+  (sbcl-package->ecl-package sbcl-periodic-table))
+
 (define-public sbcl-cl-pass
   (let ((commit "e58e97c0c0588dc742c061208afb9bc31e4dbd34")
         (revision "1"))
