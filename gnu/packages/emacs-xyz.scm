@@ -13839,6 +13839,52 @@ documentation generation.  In addition, it provides menu-based navigation
 using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
     (license license:gpl3+)))
 
+(define-public emacs-vala-mode
+  ;; Upstream has no tagged release.
+  (let ((commit "d696a8177e94c81ea557ad364a3b3dcc3abbc50f")
+        (revision "0"))
+    (package
+      (name "emacs-vala-mode")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rrthomas/vala-mode")
+               (commit commit)))
+         (sha256
+          (base32 "0g5pdq757z9d8rk489n5ilhqipdc4i4sfkjwwrxyvgjlapjc04c0"))))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'disable-multiline-support
+             (lambda* (#:key inputs #:allow-other-keys)
+               (make-file-writable "vala-mode.el")
+               (emacs-batch-edit-file "vala-mode.el"
+                 '(progn
+                   (require 'thingatpt) ;; beginning-of-thing, end-of-thing
+                   (goto-char (point-min))
+                   (save-excursion
+                    (re-search-forward ";; Support multiline strings")
+                    (goto-char (match-beginning 0))
+                    (kill-sexp)
+                    (insert ";; FIXME: Support multiline strings
+(c-lang-defconst c-multiline-string-start-char vala nil)"))
+                   (save-excursion
+                    (re-search-forward "(defcustom vala-multiline-strings")
+                    (goto-char (match-beginning 0))
+                    (insert ";; FIXME: Support multiline strings\n")
+                    (comment-region (beginning-of-thing 'sexp)
+                                    (end-of-thing 'sexp)))
+                   (basic-save-buffer))))))))
+      (home-page "https://github.com/rrthomas/vala-mode")
+      (synopsis "Vala mode for Emacs")
+      (description
+       "This package provides a major mode for editing .vala and .vapi files
+in Emacs.")
+      (license license:gpl2+))))
+
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
