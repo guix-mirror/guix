@@ -693,6 +693,38 @@ to be able to read and render the Doxygen xml output.")
 translate and to apply translation to Sphinx generated document.")
     (license license:bsd-2)))
 
+(define-public python-sphinxext-opengraph
+  (package
+    (name "python-sphinxext-opengraph")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)               ; no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/wpilibsuite/sphinxext-opengraph")
+             (commit (string-append "v"  version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dka44wri7agcr1jd641hq6j7qlbycligp80ngf32l5asqz1mgzp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/wpilibsuite/sphinxext-opengraph")
+    (synopsis "Sphinx Extension to enable OpenGraph support")
+    (description
+     "This package provides a Sphinx Extension to generate OG metadata.")
+    (license license:bsd-3)))
+
 (define-public python-sphinx-autobuild
   (package
     (name "python-sphinx-autobuild")
