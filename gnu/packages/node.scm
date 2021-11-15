@@ -273,8 +273,9 @@ perfect for data-intensive real-time applications that run across distributed
 devices.")
     (home-page "https://nodejs.org/")
     (license license:expat)
-    (properties '((max-silent-time . 7200)     ;2h, needed on ARM
-                  (timeout . 21600)))))        ;6h
+    (properties '((max-silent-time . 7200)   ;2h, needed on ARM
+                  (timeout . 21600)          ;6h
+                  (cpe-name . "node.js")))))
 
 ;; This should be the latest version of node that still builds without
 ;; depending on llhttp.
