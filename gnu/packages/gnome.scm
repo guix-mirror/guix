@@ -9734,7 +9734,8 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
                 "0czasxnmbw2zm21lmxam8qixacagciq3f815s809hn0f9byh2dwy"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        ;; gnome-calendar has to be installed before the tests can be run
        ;; https://bugzilla.gnome.org/show_bug.cgi?id=788224
        #:tests? #f
