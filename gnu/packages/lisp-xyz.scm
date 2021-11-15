@@ -18973,3 +18973,40 @@ reference.")
 
 (define-public ecl-cl-base58
   (sbcl-package->ecl-package sbcl-cl-base58))
+
+(define-public sbcl-bit-smasher
+  ;; No release.
+  (let ((commit "c2dcb3b5ec0e485484be681fe17c4e81e58790d9"))
+    (package
+      (name "sbcl-bit-smasher")
+      (version (git-version "1.0.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thephoeron/bit-smasher/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0wjmwn06fjpw0rlpaksf3ab727p8fnzj58z7jajl3m0wqd4ii74w"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-base64" ,sbcl-cl-base64)
+         ("cl-base58" ,sbcl-cl-base58)))
+      ;; Load order matters for tests, both for file reading and evaluation.
+      (arguments
+       `(#:asd-systems '("bit-smasher-test" "bit-smasher")
+         #:asd-files '("bit-smasher.asd" "bit-smasher-test.asd")))
+      (home-page "https://github.com/thephoeron/bit-smasher/")
+      (synopsis "Handle bit vectors, bit vector arithmetic, and type conversions")
+      (description
+       "Utility library for handling bit vectors, bit vector arithmetic, and
+universal integer type conversions between bit-vectors, byte-vectors, octals,
+decimals, and hexadecimal notation.")
+      (license license:expat))))
+
+(define-public cl-bit-smasher
+  (sbcl-package->cl-source-package sbcl-bit-smasher))
+
+(define-public ecl-bit-smasher
+  (sbcl-package->ecl-package sbcl-bit-smasher))
