@@ -3434,7 +3434,7 @@ with sensible defaults out of the box.")
     (native-inputs
       `(("python-pytest-cov" ,python-pytest-cov)))
     (home-page "https://github.com/mapbox/cligj")
-    (synopsis "Click params for commmand line interfaces to GeoJSON")
+    (synopsis "Click params for command line interfaces to GeoJSON")
     (description
       "cligj is for Python developers who create command line interfaces
 for geospatial data.  cligj allows you to quickly build consistent,

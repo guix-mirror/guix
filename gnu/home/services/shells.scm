@@ -69,7 +69,7 @@ only be extended.
 @code{profile} is a list of file-like objects, which will go to
 @file{~/.profile}.  By default @file{~/.profile} contains the
 initialization code, which have to be evaluated by login shell to make
-home-environment's profile avaliable to the user, but other commands
+home-environment's profile available to the user, but other commands
 can be added to the file if it is really necessary.
 
 In most cases shell's configuration files are preferred places for
