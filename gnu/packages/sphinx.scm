@@ -502,6 +502,37 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python2-sphinx-repoze-autointerface
   (package-with-python2 python-sphinx-repoze-autointerface))
 
+(define-public python-sphinx-prompt
+  (package
+    (name "python-sphinx-prompt")
+    (version "1.5.0")
+    (source
+     (origin
+       (method git-fetch)               ; no source release in PyPI
+       (uri (git-reference
+             (url "https://github.com/sbrunner/sphinx-prompt")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x9wmgf04rzivbzp7jv1b7fkhkpi02lpk5w1qf4i7bcgih00ym8a"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/sbrunner/sphinx-prompt")
+    (synopsis "Sphinx directive to add unselectable prompt")
+    (description
+     "This package provides a Sphinx directive to add unselectable prompt.")
+    (license license:bsd-3)))
+
 (define-public python-sphinx-alabaster-theme
   (package
     (name "python-sphinx-alabaster-theme")
