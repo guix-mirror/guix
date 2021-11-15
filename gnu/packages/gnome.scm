@@ -5112,7 +5112,8 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
         (base32 "0sf6kdvhr4pr3hddnj6ql9larz2wy108sri31id6x9g459nbly8z"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
