@@ -23608,14 +23608,14 @@ for YAML and JSON.")
 (define-public python-dbusmock
   (package
     (name "python-dbusmock")
-    (version "0.24.0")
+    (version "0.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dbusmock" version))
        (sha256
         (base32
-         "0wn2adqzwvwc0cc7kszidlq0i4xzfyip946dn85hbvjap8fxbq0b"))))
+         "0kvjwn5sdp3rqcbclvxljkmk988l12dvppzfn3ldy3jxbyyn1mjn"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
