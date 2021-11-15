@@ -12360,7 +12360,7 @@ programming and reproducible research.")
     (synopsis "Unmaintained add-ons for Org mode")
     (description
      "This package contains add-ons to Org.  Be warned that these libraries
-receive little if no maintainance and there is no guaranty that they are
+receive little if no maintenance and there is no guaranty that they are
 compatible with the Org stable version.")
     (license license:gpl3+)))
 
