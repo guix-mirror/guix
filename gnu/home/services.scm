@@ -351,7 +351,7 @@ extended with one gexp.")))
              (unless new-home-env (setenv "GUIX_NEW_HOME" #f))
              (unless old-home-env (setenv "GUIX_OLD_HOME" #f)))
            (format #t "\
-Activation script was either called or loaded by file from this direcotry:
+Activation script was either called or loaded by file from this directory:
 ~a
 It doesn't seem that home environment is somewhere around.
 Make sure that you call ./activate by symlink from -home store item.\n"
