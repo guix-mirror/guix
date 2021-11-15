@@ -1261,7 +1261,7 @@ python-pypdf2 instead.")
 (define-public pdfarranger
   (package
     (name "pdfarranger")
-    (version "1.7.1")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -1270,19 +1270,19 @@ python-pypdf2 instead.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1c2mafnz8pv32wzkc2wx4q8y2x7xffpn6ag12dj7ga5n772fb6s3"))))
+        (base32 "0xfxcwb24rp0kni2b4wdk6fvhqnhd6fh559ag6wdr4sspzkqwdjf"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                      ;no tests
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'wrap-for-typelib
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let* ((out     (assoc-ref outputs "out"))
-                             (program (string-append out "/bin/pdfarranger")))
-                        (wrap-program program
-                          `("GI_TYPELIB_PATH" ":" prefix
-                            (,(getenv "GI_TYPELIB_PATH"))))
-                        #t))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-for-typelib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (program (string-append out "/bin/pdfarranger")))
+               (wrap-program program
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-distutils-extra" ,python-distutils-extra)))
