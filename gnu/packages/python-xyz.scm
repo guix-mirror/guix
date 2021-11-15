@@ -16105,29 +16105,7 @@ parsing UK postcodes.")
     (description
      "Faker is a Python package that generates fake data such as names,
 addresses, and phone numbers.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-faker))))))
-
-;; Faker 4.0 dropped Python 2 support, so we stick with this older version here.
-(define-public python2-faker
-  (let ((base (package-with-python2 (strip-python2-variant
-                                     python-faker))))
-    (package
-      (inherit base)
-      (version "3.0.1")
-      (source (origin
-                (method url-fetch)
-                (uri (pypi-uri "Faker" version))
-                (sha256
-                 (base32
-                  "11cr0qvspkdh6198rqy56qildk7bnp6llj8kyy1dan5sp5n4dxy7"))))
-      (native-inputs
-       `(("python-mock" ,python2-mock)
-         ,@(package-native-inputs base)))
-      (propagated-inputs
-       `(("python2-ipaddress" ,python2-ipaddress)
-         ("python2-six" ,python2-six)
-         ,@(package-propagated-inputs base))))))
+    (license license:expat)))
 
 (define-public python-pyaml
   (package
