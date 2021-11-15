@@ -3486,9 +3486,6 @@ Relationship diagrams from a SQLAlchemy model (or directly from the
 database).")
     (license license:bsd-3)))
 
-(define-public python2-sadisplay
-  (package-with-python2 python-sadisplay))
-
 (define-public yoyo-migrations
   (package
     (name "yoyo-migrations")
