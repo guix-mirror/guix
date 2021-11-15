@@ -1120,7 +1120,7 @@ examples and more information.")
     (home-page "https://github.com/andrewthad/quickcheck-classes#readme")
     (synopsis "QuickCheck common typeclasses from `base`")
     (description
-      "This libary is a minimal variant of `quickcheck-classes`
+      "This library is a minimal variant of `quickcheck-classes`
 that only provides laws for typeclasses from `base`. The main
 purpose of splitting this out is so that `primitive` can depend
 on `quickcheck-classes-base` in its test suite, avoiding the
