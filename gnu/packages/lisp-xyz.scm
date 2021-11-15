@@ -18859,3 +18859,39 @@ information is taken from @url{https://publicsuffix.org}.")
 
 (define-public ecl-cl-tld
   (sbcl-package->ecl-package sbcl-cl-tld))
+
+(define-public sbcl-cl-strftime
+  ;; No release.
+  (let ((commit "21cb57f2595faa26d687893963f24ec41822b63c"))
+    (package
+      (name "sbcl-cl-strftime")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/cl-strftime/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00c8hq7vzgb89ab3q7mrp60x743kiqmsk1g51ynhxlqhph2bnslf"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("local-time" ,sbcl-local-time)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("serapeum" ,sbcl-serapeum)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)
+         ("cffi" ,sbcl-cffi)))
+      (home-page "https://github.com/ruricolist/cl-strftime")
+      (synopsis "Common Lisp compiler for the strftime language")
+      (description
+       "CL-STRFTIME is a Common Lisp compiler for the strftime “language.”")
+      (license license:expat))))
+
+(define-public cl-strftime
+  (sbcl-package->cl-source-package sbcl-cl-strftime))
+
+(define-public ecl-cl-strftime
+  (sbcl-package->ecl-package sbcl-cl-strftime))
