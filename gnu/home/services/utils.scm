@@ -28,7 +28,7 @@
             list->human-readable-list))
 
 (define (maybe-object->string object)
-  "Like @code{object->string} but don't do anyting if OBJECT already is
+  "Like @code{object->string} but don't do anything if OBJECT already is
 a string."
   (if (string? object)
       object
