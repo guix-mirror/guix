@@ -18770,9 +18770,6 @@ easily output ODT, ODS, PNG, SVG and several other kinds of files.  Support
 for more filetypes can be easily added by creating plugins for them.")
     (license license:gpl3+)))
 
-(define-public python2-relatorio
-  (package-with-python2 python-relatorio))
-
 (define-public python-radon
   (package
     (name "python-radon")
