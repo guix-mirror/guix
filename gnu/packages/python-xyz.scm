@@ -8248,7 +8248,6 @@ cluster down and deletes the throwaway profile.")
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (properties `((python2-variant . ,(delay python2-traitlets))))
     (home-page "https://ipython.org")
     (synopsis "Configuration system for Python applications")
     (description
@@ -8259,13 +8258,6 @@ configuration, loading values from files or from command line arguments.  This
 is a distinct layer on top of traitlets, so you can use traitlets in your code
 without using the configuration machinery.")
     (license license:bsd-3)))
-
-(define-public python2-traitlets
-  (let ((traitlets (package-with-python2 (strip-python2-variant python-traitlets))))
-    (package/inherit traitlets
-      (propagated-inputs
-       `(("python2-enum34" ,python2-enum34)
-         ,@(package-propagated-inputs traitlets))))))
 
 (define-public python-jupyter-core
   (package
