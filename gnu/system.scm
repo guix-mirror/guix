@@ -233,8 +233,8 @@
   (mapped-devices operating-system-mapped-devices ; list of <mapped-device>
                   (default '()))
   (file-systems operating-system-file-systems)    ; list of fs
-  (swap-devices operating-system-swap-devices     ; list of strings
-                (default '()))
+  (swap-devices operating-system-swap-devices     ; list of string | <swap-space>
+                (default '())
 
   (users operating-system-users                   ; list of user accounts
          (default %base-user-accounts))
