@@ -473,6 +473,7 @@ output), and Binutils.")
     (inputs `(("clang" ,clang)
               ("ld-wrapper" ,(car (assoc-ref (%final-inputs) "ld-wrapper")))
               ("binutils" ,binutils)
+              ("libomp" ,libomp)            ;used when linking with '-fopenmp'
               ("libc" ,glibc)
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
