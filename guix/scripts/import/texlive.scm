@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,8 +43,6 @@
   (display (G_ "Usage: guix import texlive PACKAGE-NAME
 Import and convert the Texlive package for PACKAGE-NAME.\n"))
   (display (G_ "
-  -a, --archive=ARCHIVE  specify the archive repository"))
-  (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
   -V, --version          display version information and exit"))
@@ -60,10 +58,6 @@ Import and convert the Texlive package for PACKAGE-NAME.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix import texlive")))
-         (option '(#\a "archive") #t #f
-                 (lambda (opt name arg result)
-                   (alist-cons 'component arg
-                               (alist-delete 'component result))))
          %standard-import-options))
 
 
@@ -84,13 +78,11 @@ Import and convert the Texlive package for PACKAGE-NAME.\n"))
                             (_ #f))
                            (reverse opts))))
     (match args
-      ((package-name)
-       (let ((sexp (texlive->guix-package package-name
-                                          (or (assoc-ref opts 'component)
-                                              "latex"))))
+      ((name)
+       (let ((sexp (texlive->guix-package name)))
          (unless sexp
            (leave (G_ "failed to download description for package '~a'~%")
-                  package-name))
+                  name))
          sexp))
       (()
        (leave (G_ "too few arguments~%")))
