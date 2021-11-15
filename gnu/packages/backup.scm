@@ -1216,7 +1216,7 @@ compression parameters used by Gzip.")
     (home-page "https://torsion.org/borgmatic/")
     (synopsis "Simple, configuration-driven backup software")
     (description
-     "borgmatic is a simple, configuration-driven backup software for servers
+     "borgmatic is simple, configuration-driven backup software for servers
 and workstations.  Protect your files with client-side encryption.  Backup
 your databases too.  Monitor it all with integrated third-party services.
 borgmatic is powered by borg.")
