@@ -13123,7 +13123,7 @@ within the R for Mass Spectrometry packages.")
      "The MsFeature package defines functionality for Mass Spectrometry
 features.  This includes functions to group (LC-MS) features based on some of
 their properties, such as retention time (coeluting features), or correlation
-of signals across samples.  This packge hence allows to group features, and
+of signals across samples.  This package hence allows to group features, and
 its results can be used as an input for the @code{QFeatures} package which
 allows to aggregate abundance levels of features within each group.  This
 package defines concepts and functions for base and common data types,
