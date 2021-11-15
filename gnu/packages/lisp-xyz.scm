@@ -14135,10 +14135,10 @@ standard library.")
   (sbcl-package->cl-source-package sbcl-shlex))
 
 (define-public sbcl-cmd
-  (let ((commit "8ace7fb45f2ecf0eefae28583ee36c941d142179"))
+  (let ((commit "b0b79adf1214dbec082f3dd2274a72a0ff58efd7"))
     (package
       (name "sbcl-cmd")
-      (version (git-version "0.0.1" "4" commit))
+      (version (git-version "0.0.1" "5" commit))
       (source
        (origin
          (method git-fetch)
@@ -14147,7 +14147,7 @@ standard library.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1da8sa0fsvsdivnx2s9m6jbb7yszrnkqqcxrn1sszp7k6iwnnkgi"))))
+          (base32 "0kk29vydmi1fyhpbwy3mrsg3bhvx0478r6r7jcsfkr3ci2h8w8a1"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
