@@ -118,3 +118,25 @@ multiple clients and programs with graphical user interfaces.")
      (arguments
       `(;; XXX: Tests require name resolution (the normal variant runs no tests).
         #:tests? #f)))))
+
+(define-public c-ares-for-node
+  (hidden-package
+   (package
+     (inherit c-ares)
+     (name "c-ares")
+     (version "1.18.1")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append
+                     "https://c-ares.haxx.se/download/" name "-" version
+                     ".tar.gz"))
+               (sha256
+                (base32
+                 "1kxviskwsaa7dcgscvssxa8ps88pdq7kq4z93gxvz7sam2l54z8s"))))
+     (arguments
+      '(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'filter-live-tests
+            (lambda _
+              ;; Filter tests that require internet access.
+              (setenv "GTEST_FILTER" "-*.Live*:*.FamilyV4*")))))))))
