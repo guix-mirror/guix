@@ -18749,6 +18749,54 @@ could just install the chemical-compounds package.")
 (define-public ecl-chemical-compounds
   (sbcl-package->ecl-package sbcl-chemical-compounds))
 
+(define-public sbcl-chemboy
+  (package
+    (name "sbcl-chemboy")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/chemboy/chemboy-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0lr134l16mjcgdj3fm2yff4chlfbihn1sji7q80y7lnr176zgs7d"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("chemical-compounds" ,sbcl-chemical-compounds)
+       ("periodic-table" ,sbcl-periodic-table)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-files
+           (lambda _
+             ;; Fix incorrect version number.
+             (substitute* "chemboy.asd"
+               ((":version \"0.2\"")
+                (string-append ":version \"" ,version "\"")))
+             ;; Remove incorrect declaration of string type.
+             (substitute* "query-parsing.lisp"
+               (("\\(declare \\(simple-base-string string\\)")
+                "(declare"))
+             ;; Fix incorrect function calls.
+             (substitute* "conversions.lisp"
+               (("\\(pprint-compound element s\\)")
+                "(pprint-compound element :stream s)")
+               (("\\(pprint-compound parsed-compound s\\)")
+                "(pprint-compound parsed-compound :stream s)")))))))
+    (home-page "https://common-lisp.net/project/chemboy/")
+    (synopsis "Common Lisp program for doing basic chemistry calculations")
+    (description
+     "Chemboy is a Common Lisp program for doing basic chemistry calculations.
+This package provides the text-based interface for Chemboy.")
+    (license license:llgpl)))
+
+(define-public cl-chemboy
+  (sbcl-package->cl-source-package sbcl-chemboy))
+
+(define-public ecl-chemboy
+  (sbcl-package->ecl-package sbcl-chemboy))
+
 (define-public sbcl-cl-pass
   (let ((commit "e58e97c0c0588dc742c061208afb9bc31e4dbd34")
         (revision "1"))
