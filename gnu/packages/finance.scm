@@ -98,6 +98,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -1754,6 +1755,32 @@ Interface (UI) for the hledger accounting system.  It can be used as a
 local, single-user UI, or as a multi-user UI for viewing, adding, and
 editing on the Web.")
     (license license:gpl3)))
+
+(define-public python-ta-lib
+  (package
+    (name "python-ta-lib")
+    (version "0.4.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "TA-Lib" version))
+       (sha256
+        (base32 "17sf222mq2vx924f15qlz5czkkq5vsnsjy9ibwkrk8lalr6g5lkl"))))
+    (build-system python-build-system)
+    (inputs
+     `(("ta-lib" ,ta-lib)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-pandas" ,python-pandas)))
+    (home-page "https://github.com/mrjbq7/ta-lib")
+    (synopsis "Python wrapper for TA-Lib")
+    (description
+     "This is a Python wrapper for TA-Lib based on Cython.  TA-Lib is a library
+providing common functions for the technical analysis of financial market data.")
+    (license license:bsd-2)))
 
 (define-public ta-lib
   (package
