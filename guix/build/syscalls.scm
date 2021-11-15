@@ -71,6 +71,11 @@
             mounts
             mount-points
 
+            SWAP_FLAG_PREFER
+            SWAP_FLAG_PRIO_MASK
+            SWAP_FLAG_PRIO_SHIFT
+            SWAP_FLAG_DISCARD
+
             swapon
             swapoff
 
@@ -684,6 +689,13 @@ current process."
 (define (mount-points)
   "Return the mounts points for currently mounted file systems."
   (map mount-point (mounts)))
+
+;; Pulled from glibc's sysdeps/unix/sysv/linux/sys/swap.h
+
+(define SWAP_FLAG_PREFER     #x8000) ;; Set if swap priority is specified.
+(define SWAP_FLAG_PRIO_MASK  #x7fff)
+(define SWAP_FLAG_PRIO_SHIFT 0)
+(define SWAP_FLAG_DISCARD    #x10000) ;; Discard swap cluster after use.
 
 (define swapon
   (let ((proc (syscall->procedure int "swapon" (list '* int))))

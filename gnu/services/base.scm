@@ -58,7 +58,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
-                #:select (mount-flags->bit-mask))
+                #:select (mount-flags->bit-mask
+                          swap-space->flags-bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
@@ -2223,7 +2224,9 @@ instance."
                    (let ((device #$device-lookup))
                      (and device
                           (begin
-                            (restart-on-EINTR (swapon device))
+                            (restart-on-EINTR (swapon device
+                                                      #$(swap-space->flags-bit-mask
+                                                         swap)))
                             #t)))))
         (stop #~(lambda _
                   (let ((device #$device-lookup))

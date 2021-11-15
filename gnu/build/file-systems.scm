@@ -29,6 +29,8 @@
   #:use-module (guix build bournish)
   #:use-module ((guix build syscalls)
                 #:hide (file-system-type))
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -54,7 +56,9 @@
 
             mount-flags->bit-mask
             check-file-system
-            mount-file-system))
+            mount-file-system
+
+            swap-space->flags-bit-mask))
 
 ;;; Commentary:
 ;;;
@@ -227,6 +231,36 @@ if DEVICE does not contain an linux-swap file system."
   "Return the label of Linux-swap superblock SBLOCK as a string."
   (null-terminated-latin1->string
    (sub-bytevector sblock (+ 1024 4 4 4 16) 16)))
+
+(define (swap-space->flags-bit-mask swap)
+  "Return the number suitable for the 'flags' argument of 'mount'
+that corresponds to the swap-space SWAP."
+  (define prio-flag
+    (let ((p (swap-space-priority swap))
+          (max (ash SWAP_FLAG_PRIO_MASK (- SWAP_FLAG_PRIO_SHIFT))))
+      (if p
+          (logior SWAP_FLAG_PREFER
+                  (ash (cond
+                        ((< p 0)
+                         (begin (warning
+                                 (G_ "Given swap priority ~a is
+negative, defaulting to 0.~%") p)
+                                0))
+                        ((> p max)
+                         (begin (warning
+                                 (G_ "Limiting swap priority ~a to
+~a.~%")
+                                 p max)
+                                max))
+                        (else p))
+                       SWAP_FLAG_PRIO_SHIFT))
+          0)))
+  (define delayed-flag
+    (if (swap-space-discard? swap)
+        SWAP_FLAG_DISCARD
+        0))
+  (logior prio-flag delayed-flag))
+
 
 
 ;;;
