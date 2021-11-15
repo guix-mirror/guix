@@ -109,7 +109,7 @@
 
 (define* (wrap-qt-program program-name #:key inputs output
                           (qt-wrap-excluded-inputs %qt-wrap-excluded-inputs))
-  "Wrap the specified programm (which must reside in the OUTPUT's \"/bin\"
+  "Wrap the specified program (which must reside in the OUTPUT's \"/bin\"
 directory) with suitably set environment variables.
 
 This is like qt-build-systems's phase \"qt-wrap\", but only the named program
