@@ -18706,6 +18706,49 @@ table.")
 (define-public ecl-periodic-table
   (sbcl-package->ecl-package sbcl-periodic-table))
 
+(define-public sbcl-chemical-compounds
+  (package
+    (name "sbcl-chemical-compounds")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/chemboy/chemical-compounds-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "12fd8a6ay5qlsq4givzgh9d55mbg4ci2vvmymig6pjl2ms64v0pf"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("periodic-table" ,sbcl-periodic-table)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-files
+           (lambda _
+             ;; Fix incorrect version number.
+             (substitute* "chemical-compounds.asd"
+               ((":version \"1.0.1\"")
+                (string-append ":version \"" ,version "\"")))
+             ;; Remove incorrect declaration of string type.
+             (substitute* "parsing.lisp"
+               (("\\(declare \\(simple-base-string string\\)")
+                "(declare")))))))
+    (home-page "https://common-lisp.net/project/chemboy/")
+    (synopsis "Chemical formula parser and pretty-printer for Common Lisp")
+    (description
+     "It can sometimes be useful to be able to parse chemical compounds in a
+user-friendly syntax into easy-to-manipulate s-expressions.  You also want to
+be able to go in reverse.  You could probably write your own parser — or you
+could just install the chemical-compounds package.")
+    (license license:llgpl)))
+
+(define-public cl-chemical-compounds
+  (sbcl-package->cl-source-package sbcl-chemical-compounds))
+
+(define-public ecl-chemical-compounds
+  (sbcl-package->ecl-package sbcl-chemical-compounds))
+
 (define-public sbcl-cl-pass
   (let ((commit "e58e97c0c0588dc742c061208afb9bc31e4dbd34")
         (revision "1"))
