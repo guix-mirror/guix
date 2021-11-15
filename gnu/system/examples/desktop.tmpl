@@ -1,6 +1,6 @@
 ;; This is an operating system configuration template
 ;; for a "desktop" setup with GNOME and Xfce where the
-;; root partition is encrypted with LUKS.
+;; root partition is encrypted with LUKS, and a swap file.
 
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop xorg)
@@ -41,6 +41,11 @@
                          (mount-point "/boot/efi")
                          (type "vfat")))
                  %base-file-systems))
+
+  ;; Specify a swap file for the system, which resides on the
+  ;; root file system.
+  (swap-devices (list (swap-space
+                       (target "/swapfile"))))
 
   ;; Create user `bob' with `alice' as its initial password.
   (users (cons (user-account
