@@ -415,8 +415,7 @@ menuentry ~s {
           ;; Other type of devices aren't implemented.
           #~()))
     (let ((devices (map crypto-device->cryptomount store-crypto-devices))
-          ;; XXX: Add luks2 when grub 2.06 is packaged.
-          (modules #~(format port "insmod luks~%")))
+          (modules #~(format port "insmod luks~%insmod luks2~%")))
       (if (null? devices)
           devices
           (cons modules devices))))
