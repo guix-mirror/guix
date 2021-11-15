@@ -601,7 +601,25 @@ See \"(guix) operating-system Reference\" for more details.~%")))
 
 (define (swap-services os)
   "Return the list of swap services for OS."
-  (map swap-service (operating-system-swap-devices os)))
+  (define early-userspace-file-systems
+    (filter file-system-needed-for-boot?
+            (operating-system-file-systems os)))
+
+  (define early-userspace-mapped-devices
+    (operating-system-boot-mapped-devices os))
+
+  (define (filter-deps swap)
+    (if (swap-space? swap)
+        (swap-space
+         (inherit swap)
+         (dependencies (remove (lambda (dep)
+                                 (or (member dep early-userspace-mapped-devices)
+                                     (member dep early-userspace-file-systems)))
+                               (swap-space-dependencies swap))))
+        swap))
+
+  (map (compose swap-service filter-deps)
+       (operating-system-swap-devices os)))
 
 (define* (system-linux-image-file-name #:optional
                                        (target (or (%current-target-system)
