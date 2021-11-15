@@ -3784,9 +3784,6 @@ provides support for parsing, splitting and formatting SQL statements.")
 transforms idiomatic python function calls to well-formed SQL queries.")
     (license license:bsd-3)))
 
-(define-public python2-sql
-  (package-with-python2 python-sql))
-
 (define-public python-pypika
   (package
     (name "python-pypika")
