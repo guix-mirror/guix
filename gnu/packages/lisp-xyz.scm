@@ -18929,3 +18929,47 @@ for tasks like parmenantly save something when exiting Lisp.")
 
 (define-public ecl-exit-hooks
   (sbcl-package->ecl-package sbcl-exit-hooks))
+
+(define-public sbcl-cl-base58
+  (let ((commit "f446835b4104896e0eed6a61d2ceb4ad22f589d8")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-base58")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/cl-base58/")
+               (commit commit)))
+         (file-name (git-file-name "cl-base58" version))
+         (sha256
+          (base32 "01wiiyz1jzxx3zhxi2hpq5n8hv28g1mn0adk793vwjzh4v5bi5zz"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:asd-systems '("cl-base58-test" "cl-base58")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "cl-base58-test.asd"
+                 (("cl-test-more")
+                  "prove"))
+               #t)))))
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (home-page "https://github.com/eudoxia0/cl-base58")
+      (synopsis "Implementation of base58 for Common Lisp")
+      (description
+       "This library implements the @code{base58} encoding algorithm.  It's
+basically @code{base64} but with a smaller alphabet (58, as in the name) that
+doesn't include similar looking characters, among other things.  See
+@url{https://github.com/bitcoin/bitcoin/blob/master/src/base58.h} for a full
+reference.")
+      (license license:expat))))
+
+(define-public cl-base58
+  (sbcl-package->cl-source-package sbcl-cl-base58))
+
+(define-public ecl-cl-base58
+  (sbcl-package->ecl-package sbcl-cl-base58))
