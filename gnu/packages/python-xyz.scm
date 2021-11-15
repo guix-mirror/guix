@@ -5469,9 +5469,6 @@ objects.")
      "This is a Python library for color math and conversions.")
     (license license:bsd-3)))
 
-(define-public python2-colormath
-  (package-with-python2 python-colormath))
-
 (define-public python-sparse
   (package
     (name "python-sparse")
