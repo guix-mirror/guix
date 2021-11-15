@@ -14383,9 +14383,6 @@ algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
 useful for solving the Assignment Problem.")
     (license license:bsd-3)))
 
-(define-public python2-munkres
-  (package-with-python2 python-munkres))
-
 (define-public python-whoosh
   (package
     (name "python-whoosh")
