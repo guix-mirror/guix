@@ -19225,9 +19225,6 @@ be easy to use and not require defining a schema or form just to validate
 some input.")
     (license license:expat)))
 
-(define-public python2-validators
-  (package-with-python2 python-validators))
-
 (define-public python-validate-email
   (package
     (name "python-validate-email")
