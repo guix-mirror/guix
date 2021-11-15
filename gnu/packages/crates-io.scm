@@ -17405,7 +17405,7 @@ a result when an allocation error occurs, ala
 @url{https://github.com/rust-lang/rfcs/blob/master/text/2116-alloc-me-maybe.md,RFC
 2116}.  The API currently proposes a fallible interface for @code{Vec},
 @code{Box}, @code{Arc}, @code{Btree} and @code{Rc}, as well as a
-@code{TryClone} trait wich is implemented for primitive Rust traits and a
+@code{TryClone} trait which is implemented for primitive Rust traits and a
 fallible format macro.")
     (license (list license:expat license:asl2.0))))
 
