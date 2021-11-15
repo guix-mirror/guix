@@ -136,7 +136,7 @@ are no extensions use configuration instead."
                 (description "Configure XDG base directories.  This
 service introduces two additional variables @env{XDG_STATE_HOME},
 @env{XDG_LOG_HOME}.  They are not a part of XDG specification, at
-least yet, but are convinient to have, it improves the consistency
+least yet, but are convenient to have, it improves the consistency
 between different home services.  The services of this service-type is
 instantiated by default, to provide non-default value, extend the
 service-type (using @code{simple-service} for example).")))
