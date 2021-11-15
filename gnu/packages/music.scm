@@ -4756,9 +4756,6 @@ change user data such as profile information, collections and wantlists,
 inventory, and orders.")
     (license license:bsd-2)))
 
-(define-public python2-discogs-client
-  (package-with-python2 python-discogs-client))
-
 (define-public libsmf
   (package
     (name "libsmf")
