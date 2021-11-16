@@ -19050,3 +19050,77 @@ decimals, and hexadecimal notation.")
 
 (define-public ecl-bit-smasher
   (sbcl-package->ecl-package sbcl-bit-smasher))
+
+(define-public sbcl-overlord
+  ;; No release.
+  (let ((commit "a8f37b321a8aae1652fc50b78e74e57c771cc763"))
+    (package
+      (name "sbcl-overlord")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/overlord/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1maqm53yhlhaa3cka8xcc4sq24ifrr4y3y0s5dyyn682xsh14hb4"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("bit-smasher" ,sbcl-bit-smasher)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-strftime" ,sbcl-cl-strftime)
+         ("cmd" ,sbcl-cmd)
+         ("drakma" ,sbcl-drakma)
+         ("exit-hooks" ,sbcl-exit-hooks)
+         ("fset" ,sbcl-fset)
+         ("local-time" ,sbcl-local-time)
+         ("lparallel" ,sbcl-lparallel)
+         ("md5" ,sbcl-md5)
+         ("murmurhash" ,sbcl-cl-murmurhash)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("serapeum" ,sbcl-serapeum)
+         ("trivia" ,sbcl-trivia)
+         ("trivial-file-size" ,sbcl-trivial-file-size)))
+      (propagated-inputs
+       `(("quickproject" ,sbcl-quickproject)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-files '("overlord.asd")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'include-overlord/net
+             (lambda _
+               (substitute* "all.lisp"
+                 (("\\(:import-from :overlord/kernel :nproc\\)")
+                  (string-append
+                   "(:import-from :overlord/kernel :nproc)"
+                   "\n"
+                   "(:import-from :overlord/net)")))
+               #t)))))
+      (home-page "https://github.com/ruricolist/overlord")
+      (synopsis "Build system in Common Lisp")
+      (description
+       "Overlord is a build system in Common Lisp.  It is a real build system,
+with all the modern features: rules with multiple outputs, parallel builds,
+immunity to clock issues, and dynamic dependencies.
+
+But Overlord is more than another build system.  Overlord is a uniform
+approach to dependencies inside or outside of a Lisp image.  Overlord is to
+Make what Lisp macros are to C macros.
+
+Overlord is designed to be used from the Lisp REPL.  A command line interface
+is available in a separate repository.  See
+@url{https://github.com/ruricolist/overlord-cli}.")
+      (license license:expat))))
+
+(define-public cl-overlord
+  (sbcl-package->cl-source-package sbcl-overlord))
+
+;; FIXME: Broken on ECL? https://github.com/ruricolist/overlord/issues/25
+;; (define-public ecl-overlord
+;;   (sbcl-package->ecl-package sbcl-overlord))
