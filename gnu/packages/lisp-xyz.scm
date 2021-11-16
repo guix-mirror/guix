@@ -19124,3 +19124,37 @@ is available in a separate repository.  See
 ;; FIXME: Broken on ECL? https://github.com/ruricolist/overlord/issues/25
 ;; (define-public ecl-overlord
 ;;   (sbcl-package->ecl-package sbcl-overlord))
+
+(define-public sbcl-xpath
+  ;; No release.
+  (let ((commit "d364da693a534e23bd5eb3a85420e9c25e6c75b3"))
+    (package
+      (name "sbcl-xpath")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/xpath/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1fb03fgnzrvh22lw1jdg04pmyja5fib5n42rzwp5mhr829yvxkvp"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cxml" ,sbcl-cxml)
+         ("parse-number" ,sbcl-parse-number)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("yacc" ,sbcl-cl-yacc)))
+      (home-page "https://github.com/sharplispers/xpath/")
+      (synopsis "Implementation of the XML Path Language (XPath) Version 1.0")
+      (description
+       "This library is an implementation of the XML Path Language (XPath)
+Version 1.0.")
+      (license license:bsd-2))))
+
+;; According to
+;; https://github.com/sharplispers/xpath/blob/master/doc/index.xml ECL is not
+;; supported.
+(define-public cl-xpath
+  (sbcl-package->cl-source-package sbcl-xpath))
