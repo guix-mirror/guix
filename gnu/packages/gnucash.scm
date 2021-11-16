@@ -83,7 +83,7 @@
        ("libofx" ,libofx)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2)
        ("aqbanking" ,aqbanking)
        ("python" ,python)
        ("perl-date-manip" ,perl-date-manip)
