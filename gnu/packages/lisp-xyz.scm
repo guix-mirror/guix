@@ -19208,3 +19208,59 @@ CXML documentation for usage.")
 
 (define-public cl-fxml
   (sbcl-package->cl-source-package sbcl-fxml))
+
+(define-public sbcl-vernacular
+  ;; No release.
+  (let ((commit "79be179e9ada423b3ec41d2a1ea6f6e0266ed21f"))
+    (package
+      (name "sbcl-vernacular")
+      (version (git-version "0.8.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/vernacular/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19vzn28hw4is4sgmvzqin18ds89s0pai21vcm0ky10vmfv6wg745"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; The demo depends on cl-js, which we don't have at this point.
+             (delete-file-recursively "demo")
+             #t))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("overlord" ,sbcl-overlord)
+         ("trivial-macroexpand-all" ,sbcl-trivial-macroexpand-all)
+         ("local-time" ,sbcl-local-time)
+         ("parse-js" ,sbcl-parse-js)
+         ("trivia" ,sbcl-trivia)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("alexandria" ,sbcl-alexandria)
+         ("serapeum" ,sbcl-serapeum)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (arguments
+       ;; Circular dependency: Tests depend on core-lisp
+       ;; (http://github.com/ruricolist/core-lisp) which depends on
+       ;; Vernacular.
+       '(#:tests? #f))
+      (home-page "https://github.com/ruricolist/vernacular")
+      (synopsis "Module system for languages that compile to Common Lisp")
+      (description
+       "Vernacular is a build and module system for languages that compile to
+Common Lisp.  It allows languages to compile to Lisp while remaining part of
+the Common Lisp ecosystem.  Vernacular languages interoperate with Common Lisp
+and one another.
+
+Vernacular handles locating files, compiling files into FASLs, tracking
+dependencies and rebuilding, and export and import between your new language,
+Lisp, and any other language Vernacular supports.
+
+Vernacular builds on Overlord and is inspired by Racket.")
+      (license license:expat))))
+
+(define-public cl-vernacular
+  (sbcl-package->cl-source-package sbcl-vernacular))
