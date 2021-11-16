@@ -633,15 +633,12 @@ also provided in Coq, without associated proofs.")
      `(("coq" ,coq)))
     (arguments
      `(#:tests? #f ; Tests are executed during build phase.
+       #:make-flags (list (string-append "COQLIBINSTALL="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make"
-                     (string-append "COQLIB=" (assoc-ref outputs "out")
-                                    "/lib/coq/")
-                     "install"))))))
+         (delete 'configure))))
     (description "This project contains an extended \"Standard Library\" for
 Coq called coq-std++.  The key features are:
 @itemize
