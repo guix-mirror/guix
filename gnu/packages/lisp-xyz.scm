@@ -19158,3 +19158,53 @@ Version 1.0.")
 ;; supported.
 (define-public cl-xpath
   (sbcl-package->cl-source-package sbcl-xpath))
+
+(define-public sbcl-fxml
+  ;; No release.
+  (let ((commit "a0e73bb48ef03adea94a55986cc27f522074c8e1"))
+    (package
+      (name "sbcl-fxml")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/fxml/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1vxdb1cjjqi986f72bggnw1s4yzv12g4li7vn4y49b6lphshr8lm"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("serapeum" ,sbcl-serapeum)
+         ("quri" ,sbcl-quri)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("alexandria" ,sbcl-alexandria)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)
+         ("cxml" ,sbcl-cxml)
+         ("cxml-rng" ,sbcl-cxml-rng)
+         ("xpath" ,sbcl-xpath)))
+      (home-page "https://github.com/ruricolist/fxml")
+      (synopsis "XML parser and serializer in Common Lisp")
+      (description
+       "FXML is a secure-by-default, error-recovering XML parser and serializer.
+It is a fork of CXML.
+
+You should use FXML instead of CXML if:
+@itemize
+@item You are parsing potentially ill-formed XML.
+@item You are parsing potentially malicious XML.
+@item You need to use Klacks with namespaces.
+@end itemize
+
+FXML’s API is very close to CXML's, and for the most part you can refer to the
+CXML documentation for usage.")
+      (license license:llgpl))))
+
+(define-public cl-fxml
+  (sbcl-package->cl-source-package sbcl-fxml))
