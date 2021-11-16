@@ -19540,7 +19540,7 @@ Defaults to @samp{1048576}.
 Specifies the maximum amount of time to allow between files in a
 multiple file print job, in seconds.
 
-Defaults to @samp{300}.
+Defaults to @samp{900}.
 @end deftypevr
 
 @deftypevr {@code{cups-configuration} parameter} string page-log-format
@@ -19751,7 +19751,7 @@ Defaults to @samp{#f}.
 @deftypevr {@code{cups-configuration} parameter} non-negative-integer timeout
 Specifies the HTTP request timeout, in seconds.
 
-Defaults to @samp{300}.
+Defaults to @samp{900}.
 
 @end deftypevr
 
