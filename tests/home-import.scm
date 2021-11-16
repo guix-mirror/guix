@@ -151,6 +151,7 @@ corresponding file."
       ('list ('service
               'home-bash-service-type
               ('home-bash-configuration
+               ('aliases ('quote ()))
                ('bashrc
                 ('list ('local-file "/tmp/guix-config/.bashrc"
                                     "bashrc"))))))))))
