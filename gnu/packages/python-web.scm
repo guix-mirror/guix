@@ -46,6 +46,7 @@
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Alice Brenon <alice.brenon@ens-lyon.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6444,4 +6445,33 @@ compliant with the @uref{https://jsonapi.org, JSON:API 1.0} specification.
 It tries to combine the power of Flask-Restless with the flexibility of
 Flask-RESTful to quickly build APIs that fit the complexity of existing
 real-life projects with legacy data and diverse storage providers.")
+    (license license:expat)))
+
+(define-public python-mwparserfromhell
+  (package
+    (name "python-mwparserfromhell")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mwparserfromhell" version))
+       (sha256
+        (base32 "0zh9zaqbac18s7mivqk8am9xw97lfkgcj9hhxj0d4208pkqpkmqs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/earwig/mwparserfromhell")
+    (synopsis "Python parser for MediaWiki wikicode")
+    (description
+     "The MediaWiki Parser From Hell is a python library package that provides
+a parser for MediaWiki.
+
+It exposes parses as normal string objects with additional methods giving
+access to the special Wikicode features it contains (hyperlinks, tags,
+templates…).  The parser doesn't interpolate strings at all, it remains at a
+purely formal level.
+
+Full documentation may be found at
+@uref{https://mwparserfromhell.readthedocs.io, ReadTheDocs}")
     (license license:expat)))
