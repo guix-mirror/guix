@@ -502,16 +502,12 @@ Coq proof assistant.")
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f
+       #:make-flags (list (string-append "COQLIBINSTALL="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/coq/user-contrib"))
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
-               (invoke "make"
-                       (string-append "COQLIB=" (assoc-ref outputs "out")
-                                      "/lib/coq/")
-                       "install"))))))
+           (delete 'configure))))
       (native-inputs
        `(("coq" ,coq)))
       (home-page "https://www.ps.uni-saarland.de/autosubst/")
