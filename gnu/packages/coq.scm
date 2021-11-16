@@ -547,17 +547,14 @@ uses Ltac to synthesize the substitution operation.")
      `(("ocaml-zarith" ,ocaml-zarith)))
     (arguments
      `(#:test-target "test-suite"
+       #:make-flags (list (string-append "COQLIBINSTALL="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "sh" "./configure.sh")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make"
-                     (string-append "COQLIB=" (assoc-ref outputs "out")
-                                    "/lib/coq/")
-                     "install"))))))
+             (invoke "sh" "./configure.sh"))))))
     (home-page "https://mattam82.github.io/Coq-Equations/")
     (synopsis "Function definition plugin for Coq")
     (description "Equations provides a notation for writing programs
