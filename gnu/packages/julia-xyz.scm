@@ -3550,7 +3550,7 @@ human-readable format.")
 (define-public julia-pycall
   (package
     (name "julia-pycall")
-    (version "1.92.3")
+    (version "1.92.5")
     (source
       (origin
         (method git-fetch)
@@ -3560,7 +3560,7 @@ human-readable format.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "07r99ni6nkxpyrp3wsb5qg4jxz7i2r08dyqbiffy2zm3g0bn88jq"))))
+          "1fj5d1ihnhnm0pl4hbx6hcd2bpdyhm8jiaqah2axsbd069j70saf"))))
     (build-system julia-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
