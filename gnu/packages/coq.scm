@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Robin Green <greenrd@greenrd.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -572,6 +573,56 @@ compiles everything down to eliminators for inductive types, equality
 and accessibility, providing a definitional extension to the Coq
 kernel.")
     (license license:lgpl2.1)))
+
+(define-public coq-semantics
+  (package
+    (name "coq-semantics")
+    (version "8.13.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/coq-community/semantics")
+              (commit (string-append "v" version))))
+        (modules '((guix build utils)))
+        (snippet
+         '(substitute* "Makefile.coq.local"
+            ;; Num was part of OCaml and now external
+            (("-libs nums") "-use-ocamlfind -pkg num -libs num")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0m5si9dsv96z92gy4xaqz8mzyz8zp7j1sp542l0wzsp5xgyfpc7i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("coq" ,coq)
+       ("ocaml" ,ocaml)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-findlib" ,ocaml-findlib)))
+    (inputs
+     `(("ocaml-num" ,ocaml-num)))
+    (arguments
+     `(#:tests? #f                      ;included in Makefile
+       #:make-flags (list (string-append "COQLIBINSTALL="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/coq/user-contrib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/coq-community/semantics")
+    (synopsis "Survey of semantics styles")
+    (description
+     "This package provides a survey of programming language semantics styles,
+from natural semantics through structural operational, axiomatic, and
+denotational semantics, for a miniature example of an imperative programming
+language.  Their encoding, the proofs of equivalence of different styles,
+abstract interpretation, and the proof of soundess obtained from axiomatic
+semantics or abstract interpretation is done in Coq.  The tools can be run
+inside Coq, thus making them available for proof by reflection.  Code can also
+be extracted and connected to a yacc-based parser, thanks to the use of a
+functor parameterized by a module type of strings.  A hand-written parser is
+also provided in Coq, without associated proofs.")
+    (license license:expat)))
 
 (define-public coq-stdpp
   (package
