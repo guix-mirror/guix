@@ -219,7 +219,7 @@ browser for easy news reading.")
     (license license:gpl2+)))
 
 (define-public kdenlive
-  (let ((version "21.08.2"))
+  (let ((version "21.08.3"))
     (package
       (name "kdenlive")
       (version version)
@@ -231,7 +231,7 @@ browser for easy news reading.")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
-          (base32 "1l78xjdf1bmj3s8kysaqqgh67mb3vrc96rsdnp0i4awlyfsh89d7"))))
+          (base32 "0lpspak5djkbn2xbmmbxls258310g45n3a08sghkjl08bx6ilvc9"))))
       (build-system qt-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -272,7 +272,8 @@ browser for easy news reading.")
        ;; XXX: there is a single test that spawns other tests and
        ;; 1/3 tests failed and 1/327 assertions failed.  It seems
        ;; that individual tests can't be skipped.
-       `(#:tests? #f
+       `(#:configure-flags (list "-DBUILD_TESTING=off")
+         #:tests? #f
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-executable
