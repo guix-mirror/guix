@@ -5775,6 +5775,46 @@ offered, one SAX-like, the other similar to StAX.")
 (define-public ecl-cxml
   (sbcl-package->ecl-package sbcl-cxml))
 
+(define-public sbcl-cxml-rng
+  (let ((commit "bdcfeb92798694b2935a8321e641d8803e814b7b")
+        (revision "1"))
+    (package
+      (name "sbcl-cxml-rng")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://www.lichteblau.com/git/cxml-rng.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1rld038hmvm0whaffkszd5ks7mg44z1vfbgddal434df8sgspzql"))))
+      (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("cxml" ,sbcl-cxml)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("yacc" ,sbcl-cl-yacc)
+       ("parse-number" ,sbcl-parse-number)
+       ("cl-base64" ,sbcl-cl-base64)))
+    (synopsis "Relax NG for Closure XML (CXML)")
+    (description "An implementation of Relax NG schema validation written in
+Common Lisp, including support for compact syntax, DTD Compatibility, and the
+XSD type library.")
+    (home-page "http://www.lichteblau.com/cxml-rng/")
+    (license license:x11-style))))
+
+(define-public cl-cxml-rng
+  (sbcl-package->cl-source-package sbcl-cxml-rng))
+
+;; FIXME: Fails on ECL with
+;; In function STRUCTURE-SET, the value of the first argument is
+;;   #<empty  0x7fffeb0fd440>
+;; which is not of the expected type %TYPED-PATTERN.
+;; (define-public ecl-cxml-rng
+;;   (sbcl-package->ecl-package sbcl-cxml-rng))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
