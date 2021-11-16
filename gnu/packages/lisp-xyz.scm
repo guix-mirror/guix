@@ -19264,3 +19264,85 @@ Vernacular builds on Overlord and is inspired by Racket.")
 
 (define-public cl-vernacular
   (sbcl-package->cl-source-package sbcl-vernacular))
+
+(define-public sbcl-cl-https-everywhere
+  ;; No release.
+  (let ((commit "cbcc73b985a5b1c0ce0d4ec38bc982a0538d4bd8"))
+    (package
+      (name "sbcl-cl-https-everywhere")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/cl-https-everywhere/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1wcvx1icwym1ncd6wl1wxzkyyndrm796caalbklvjd4a2cbl3xxi"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("global-vars" ,sbcl-global-vars)
+         ("parenscript" ,sbcl-parenscript)
+         ("cl-markdown" ,sbcl-cl-markdown)
+         ("cl-tld" ,sbcl-cl-tld)
+         ("fxml" ,sbcl-fxml)
+         ("overlord" ,sbcl-overlord)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("serapeum" ,sbcl-serapeum)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("vernacular" ,sbcl-vernacular)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)
+         ("https-everywhere"
+          ,(let ((commit "78d3425aef62d79da2c63c0fcd89ae9837af9a09"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/EFForg/https-everywhere")
+                     (commit commit)))
+               (file-name (git-file-name "https-everywhere"
+                                         (git-version "2021.7.13" "1" commit)))
+               (sha256
+                (base32
+                 "1bx5895lbsddx449mcvvss4dlvi07xsh4d2qnajsdvais6fpckh8")))))))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'link-https-everywhere-repo
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((https-everywhere (assoc-ref inputs "https-everywhere")))
+                 (symlink https-everywhere "https-everywhere"))))
+           (add-after 'unpack 'fix-overlord-build
+             ;; Upstream bugs?  See
+             ;; https://github.com/ruricolist/cl-https-everywhere/issues/1.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (rulesets.xml (string-append out "/share/common-lisp/" (%lisp-type)
+                                                   "/cl-https-everywhere/rulesets.xml")))
+                 (substitute* "build.lisp"
+                   (("\\(depends-on https-everywhere-version\\)") "")
+                   ;; Don't rebuild the rulesets just because the timestamp is epoch.
+                   (("\\(vernacular:require-default :cl-https-everywhere/rulesets-file \"rulesets.xml\"\\)")
+                    (format #f "(if (uiop:file-exists-p ~s)
+      (compile-rulesets ~s)
+      (vernacular:require-default :cl-https-everywhere/rulesets-file \"rulesets.xml\"))"
+                            rulesets.xml
+                            rulesets.xml))
+                   (("\\(uiop:parse-unix-namestring \"https-everywhere/src/chrome/content/rules/\\*\\.xml\")")
+                    "\"https-everywhere/src/chrome/content/rules/*.xml\"")
+                   (("\\(out temp :external-format :utf-8\\)")
+                    "(out temp :external-format :utf-8 :if-exists :supersede)")))
+               #t)))))
+      (home-page "https://github.com/ruricolist/cl-https-everywhere/")
+      (synopsis "Use HTTPS Everywhere rules from Lisp")
+      (description
+       "CL-HTTPS-EVERYWHERE parses HTTPS Everywhere rulesets and makes them
+available for use in Lisp programs.")
+      (license (list license:expat
+                     ;; For the ruleset
+                     license:gpl2+)))))
+
+(define-public cl-https-everywhere
+  (sbcl-package->cl-source-package sbcl-cl-https-everywhere))
