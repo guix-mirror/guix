@@ -318,7 +318,7 @@ path to the repository."
                 (_ others)))
             #f
             (filter-map get-opam-repository repositories-specs))
-      (leave (G_ "package '~a' not found~%") name)))
+      (warning (G_ "opam: package '~a' not found~%") name)))
 
 (define* (opam->guix-package name #:key (repo '()) version)
   "Import OPAM package NAME from REPOSITORIES (a list of names, URLs or local
