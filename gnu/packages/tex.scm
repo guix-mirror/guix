@@ -8829,6 +8829,28 @@ are valid as arguments for the macros.  The package may be used under
 LaTeX and plain TeX.")
     (license (license:fsf-free "file:/binhex.dtx"))))
 
+(define-public texlive-translator
+  (package
+    (inherit (simple-texlive-package
+              "texlive-translator"
+              (list "doc/latex/translator/"
+                    "tex/latex/translator/")
+              (base32
+               "1pac03qghaw9q98skfrgzgk4wnz04pgizw59c4k5ydphw1vpsvcz")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/macros/latex/contrib/translator")
+    (synopsis "Easy translation of strings in LaTeX")
+    (description
+     "This LaTeX package provides a flexible mechanism for translating
+individual words into different languages.  For example, it can be used to
+translate a word like \"figure\" into, say, the German word \"Abbildung\".
+Such a translation mechanism is useful when the author of some package would
+like to localize the package such that texts are correctly translated into the
+language preferred by the user.  This package is not intended to be used to
+automatically translate more than a few words.")
+    (license (list license:lppl license:gpl1+))))
+
 (define-public bibtool
   (package
     (name "bibtool")
