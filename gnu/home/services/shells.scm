@@ -420,9 +420,9 @@ alias grep='grep --color=auto'\n")
               (not (null? ((configuration-field-getter field-obj) config))))
           `(,(object->snake-case-string file-name)
             ,(apply mixed-text-file
-              (object->snake-case-string file-name)
-              (cons (serialize-field field)
-                    (if extra-content extra-content '()))))
+                    (object->snake-case-string file-name)
+                    (append (or extra-content '())
+                        (list (serialize-field field)))))
           '())))
 
   (filter
