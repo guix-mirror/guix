@@ -41,6 +41,7 @@
 ;;; Copyright © 2021 François J. <francois-oss@avalenn.eu>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2067,6 +2068,27 @@ CVS, Subversion, and Git.  This can make it suitable for system
 administration files, for example, which are often inherently local to one
 machine.")
     (license license:gpl3+)))
+
+(define-public rcs-blame
+  (package
+    (name "rcs-blame")
+    (version "1.3.1-20210207")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://invisible-mirror.net/archives/rcs-blame/blame-"
+                   version ".tgz"))
+             (sha256
+              (base32
+               "1j0brsvdx3hlbwchddafh8r2xmxv5vg4ahpd68v4bb9xhcq6pcih"))))
+    (build-system gnu-build-system)
+    (home-page "https://invisible-island.net/rcs-blame/rcs-blame.html")
+    (synopsis "Display the last modification for each line in an RCS file")
+    (description
+     "@code{blame} outputs an annotated revision from each RCS file.  An
+annotated RCS file describes the revision and date in which each line was
+added to the file, and the author of each line.")
+    (license license:gpl2+)))
 
 (define-public cvs
   (package
