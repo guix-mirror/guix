@@ -3227,7 +3227,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "7.0.1")
+    (version "7.2.0")
     (source
      (origin
        (method git-fetch)
@@ -3236,7 +3236,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13c5miph9jjbz69dhy0zvbkk5zbb05dr3vraaci0d5fdbrlhyscf"))))
+        (base32 "17d4gs46ca3n0qg6z69hl6mmllnqj2id8ccrv8fyz8c5zm55ghqm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;requires "Kwalify"
