@@ -1634,25 +1634,26 @@ boilerplate code from defining new Flymake backend functions.")
       (license license:gpl3+))))
 
 (define-public emacs-flymake-kondor
-  (package
-    (name "emacs-flymake-kondor")
-    (version "0.0.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/turbo-cafe/flymake-kondor")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0h8dqk35r10pxx2w4swb3kij4y2vi17j9wfk978x8lf0wd3h3hsy"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-flymake-quickdef" ,emacs-flymake-quickdef)))
-    (home-page "https://github.com/turbo-cafe/flymake-kondor")
-    (synopsis "Linter with clj-kondo")
-    (description "This package adds Clojure syntax checker clj-kondo.")
-    (license license:gpl3+)))
+  ;; No tag, version grabbed from source .el file.
+  (let ((commit "389b513c7287ede7a996a3d0db2e84b00772fef5")
+        (revision "0"))
+    (package
+      (name "emacs-flymake-kondor")
+      (version (git-version "0.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/turbo-cafe/flymake-kondor")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1by6p1j091xk5bfdpbqp7fifjn4rknrbm8r3xjfvpb4xcb19nmig"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/turbo-cafe/flymake-kondor")
+      (synopsis "Linter with clj-kondo")
+      (description "This package adds Clojure syntax checker clj-kondo.")
+      (license license:gpl3+))))
 
 (define-public emacs-flymake-shellcheck
   ;; No tag, version grabbed from source .el file.
