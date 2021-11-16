@@ -8875,6 +8875,27 @@ on the page, and which specifies where it is to be placed.  The environment is
 accompanied by various configuration commands.")
     (license license:lppl)))
 
+(define-public texlive-xifthen
+  (package
+    (inherit (simple-texlive-package
+              "texlive-xifthen"
+              (list "doc/latex/xifthen/"
+                    "tex/latex/xifthen/")
+              (base32
+               "0b33mlmnxsj5mi06v2w2zgamk51mgv1lxdr1cax8nkpn9g7n9axw")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/pkg/xifthen")
+    (synopsis "Extended conditional commands")
+    (description
+     "This package extends the @code{ifthen} package by implementing new
+commands to go within the first argument of @code{\\\\ifthenelse}: to test
+whether a string is void or not, if a command is defined or equivalent to
+another.  The package also enables use of complex expressions as introduced by
+the package @code{calc}, together with the ability of defining new commands to
+handle complex tests.")
+    (license license:lppl)))
+
 (define-public bibtool
   (package
     (name "bibtool")
