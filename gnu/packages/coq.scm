@@ -326,17 +326,14 @@ assistant.")
        ("coq" ,coq)))
     (arguments
      `(#:tests? #f ; No tests.
+       #:make-flags (list (string-append "COQLIBINSTALL="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'chdir
-           (lambda _ (chdir "mathcomp") #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "-f" "Makefile.coq"
-                     (string-append "COQLIB=" (assoc-ref outputs "out")
-                                    "/lib/coq/")
-                     "install"))))))
+           (lambda _ (chdir "mathcomp") #t)))))
     (home-page "https://math-comp.github.io/")
     (synopsis "Mathematical Components for Coq")
     (description "Mathematical Components for Coq has its origins in the formal
