@@ -18487,6 +18487,40 @@ tasks in Common Lisp.  It is fork of SWANK-BACKEND.")
 (define-public ecl-conium
   (sbcl-package->ecl-package sbcl-conium))
 
+(define-public sbcl-terminal-size
+  (let ((commit "e0b3d56a9dd3366baf2a05d84381da5747a2ef4a")
+        (revision "1"))
+    (package
+      (name "sbcl-terminal-size")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/terminal-size")
+               (commit commit)))
+         (file-name (git-file-name "cl-terminal-size" version))
+         (sha256
+          (base32 "1212wbadms9jzrqgarpj3d9xh9w4dab8jhx4k2aryqgf116zs42h"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("osicat" ,sbcl-osicat)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/eudoxia0/terminal-size")
+      (synopsis "Get the size of the terminal from Common Lisp")
+      (description
+       "This package provides the @{(terminal-size:size)} function to get the
+size of the terminal from Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-terminal-size
+  (sbcl-package->cl-source-package sbcl-terminal-size))
+
+(define-public ecl-terminal-size
+  (sbcl-package->ecl-package sbcl-terminal-size))
+
 (define-public sbcl-cl-readline
   (let ((commit "8438c9ebd92ccc95ebab9cc9cbe6c72d44fccc58")
         (revision "1"))
