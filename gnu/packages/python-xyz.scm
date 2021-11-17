@@ -22098,13 +22098,53 @@ tool).")
        (uri (pypi-uri "numcodecs" version))
        (sha256
         (base32
-         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))))
+         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "c-blosc")
+           (for-each delete-file '("numcodecs/blosc.c"
+                                   "numcodecs/compat_ext.c"
+                                   "numcodecs/lz4.c"
+                                   "numcodecs/vlen.c"
+                                   "numcodecs/zstd.c"))))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #false ; TODO: unclear why numcodecs.* are not found
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-avx2
+           (lambda _
+             (setenv "DISABLE_NUMCODECS_AVX2" "1")))
+         (add-after 'unpack 'unbundle
+           (lambda _
+             (substitute* "setup.py"
+               (("sources=sources \\+ blosc_sources,")
+                "sources=sources,")
+               (("extra_compile_args=extra_compile_args")
+                "extra_compile_args=list(base_compile_args)")
+               (("'numcodecs.zstd',")
+                "'numcodecs.zstd', libraries=['zstd'], ")
+               (("'numcodecs.lz4',")
+                "'numcodecs.lz4', libraries=['lz4'], ")
+               (("'numcodecs.blosc',")
+                "'numcodecs.blosc', libraries=['blosc'], "))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
+    (inputs
+     `(("c-blosc" ,c-blosc)
+       ("lz4" ,lz4)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-msgpack" ,python-msgpack)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/zarr-developers/numcodecs")
     (synopsis "Buffer compression and transformation codecs")
