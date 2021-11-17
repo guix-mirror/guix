@@ -18103,6 +18103,34 @@ bound to whatever value was in the same place in the URL (as a string).")
 (define-public cl-hunchenissr-routes
   (sbcl-package->cl-source-package sbcl-hunchenissr-routes))
 
+(define-public sbcl-genhash
+  (let ((commit "220ae1af8361dbd2005177f2ee11072b6a33934f")
+        (revision "1"))
+    (package
+      (name "sbcl-genhash")
+      (version (git-version "1.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pnathan/genhash")
+               (commit commit)))
+         (file-name (git-file-name "cl-genhash" version))
+         (sha256
+          (base32 "1jnk1fix1zydhy0kn3cvlp6dy0241x7v8ahq001nlr6v152z1cwk"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/pnathan/genhash")
+      (synopsis "Generic hash tables for Common Lisp")
+      (description
+       "This an implementation of CDR 2: generic hash tables for Common Lisp")
+      (license license:public-domain))))
+
+(define-public cl-genhash
+  (sbcl-package->cl-source-package sbcl-genhash))
+
+(define-public ecl-genhash
+  (sbcl-package->ecl-package sbcl-genhash))
+
 (define-public sbcl-spinneret
   ;; No release since 2019, no tags.
   (let ((commit "02451b32648eda4e6e4022bbb7f91d9ea71bebbc"))
