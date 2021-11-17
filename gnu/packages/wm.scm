@@ -2569,6 +2569,37 @@ read and write, and compatible with JSON.")
 capabilities.  It is heavily inspired by the Calm Window manager(cwm).")
     (license license:bsd-2)))
 
+(define-public devour
+  (package
+    (name "devour")
+    (version "12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/salman-abedin/devour")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qq5l6d0fn8azg7sj7a4m2jsmhlpswl5793clcxs1p34vy4wb2lp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ;no configure script
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "BIN_DIR=" %output "/bin"))))
+    (home-page "https://github.com/salman-abedin/devour")
+    (synopsis "X11 window swallower")
+    (description
+     "@command{devour} hides your current window before launching an external
+program and unhides it after quitting.")
+    (license license:gpl2)))
+
 (define-public wlogout
   (package
     (name "wlogout")
