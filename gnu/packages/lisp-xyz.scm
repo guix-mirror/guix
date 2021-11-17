@@ -18192,6 +18192,39 @@ semantics in Lisp and Parenscript.
 (define-public cl-spinneret
   (sbcl-package->cl-source-package sbcl-spinneret))
 
+(define-public sbcl-path-parse
+  (let ((commit "86183f3752374435f8933394b4c5d8e75a37a113")
+        (revision "1"))
+    (package
+      (name "sbcl-path-parse")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/path-parse")
+               (commit commit)))
+         (file-name (git-file-name "cl-path-parse" version))
+         (sha256
+          (base32 "10mxm6q62cfpv3hw2w8k968ba8a1xglqdkwlkqs4l4nby3b11aaq"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("split-sequence" ,sbcl-split-sequence)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/eudoxia0/path-parse")
+      (synopsis "Parse the PATH environment variable in Common Lisp")
+      (description
+       "This package provides a function to parse the @code{PATH} environment
+variable portably in Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-path-parse
+  (sbcl-package->cl-source-package sbcl-path-parse))
+
+(define-public ecl-path-parse
+  (sbcl-package->ecl-package sbcl-path-parse))
+
 (define-public sbcl-cl-libxml2
   (let ((commit "8d03110c532c1a3fe15503fdfefe82f60669e4bd"))
     (package
