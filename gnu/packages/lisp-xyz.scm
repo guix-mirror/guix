@@ -18860,6 +18860,34 @@ higher-level lispier interface.")
 (define-public ecl-cl-charms
   (sbcl-package->ecl-package sbcl-cl-charms))
 
+(define-public sbcl-trivial-open-browser
+  (let ((commit "7ab4743dea9d592639f15c565bfa0756e828c427")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-open-browser")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/trivial-open-browser")
+               (commit commit)))
+         (file-name (git-file-name "trivial-open-browser" version))
+         (sha256
+          (base32 "0ixay1piq420i6adx642qhw45l6ik7rvgk52lyz27dvx5f8yqsdb"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/eudoxia0/trivial-open-browser")
+      (synopsis "Open a browser window from Common Lisp")
+      (description
+       "This package provides a library to open a web browser to a URL.")
+      (license license:expat))))
+
+(define-public cl-trivial-open-browser
+  (sbcl-package->cl-source-package sbcl-trivial-open-browser))
+
+(define-public ecl-trivial-open-browser
+  (sbcl-package->ecl-package sbcl-trivial-open-browser))
+
 (define-public sbcl-clinenoise
   (let ((commit "46e21f99d06a55d93eaa382cf652d55d457032ef")
         (revision "1"))
