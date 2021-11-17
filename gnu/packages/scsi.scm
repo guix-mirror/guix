@@ -36,6 +36,9 @@
                (base32
                 "1ckj2kjcs23lbjfyl5mz2rb0aylnyq13yghg0bdv1n7dbywcmc6x"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (home-page "http://sg.danny.cz/sg/sg3_utils.html")
     (synopsis "SCSI device utilities")
     (description
