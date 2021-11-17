@@ -5916,7 +5916,7 @@ logging mechanism.")
 throughout programs and projects.  Every message will be logged with
 stacktraces, timestamps and so on.  You can use built-in handlers
 immediately, or after the fact when you inspect the error stack.  It
-is highly configurable and let's you even provide your own handlers
+is highly configurable and lets you even provide your own handlers
 for dealing with messages.")
    (license (package-license perl))))
 
