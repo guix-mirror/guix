@@ -18953,6 +18953,48 @@ Lisp.")
 (define-public ecl-trivial-raw-io
   (sbcl-package->ecl-package sbcl-trivial-raw-io))
 
+(define-public sbcl-terminal-keypress
+  (let ((commit "2ef48c045aa627229764b2aa393a83d392d93d08")
+        (revision "1"))
+    (package
+      (name "sbcl-terminal-keypress")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/terminal-keypress")
+               (commit commit)))
+         (file-name (git-file-name "cl-terminal-keypress" version))
+         (sha256
+          (base32 "11c4krpq5x55qkchx6ykcnb455ssb4r3jjywx3c3irfrkj733ybp"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivial-raw-io" ,sbcl-trivial-raw-io)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/eudoxia0/terminal-keypress")
+      (synopsis "Read keyboard events in the terminal from Common Lisp")
+      (description
+       "This is a library for reading semi-raw user input from terminals.
+Semi-raw as in, we can't detect if the user pressed the @code{Control} key
+alone, and the function keys are a mystery.  What is supported, however, is:
+
+@itemize
+@item Regular characters
+@item Control+[key]
+@item Alt+[key]
+@item Control+Alt+[key]
+@end itemize")
+      (license license:expat))))
+
+(define-public cl-terminal-keypress
+  (sbcl-package->cl-source-package sbcl-terminal-keypress))
+
+(define-public ecl-terminal-keypress
+  (sbcl-package->ecl-package sbcl-terminal-keypress))
+
 (define-public sbcl-periodic-table
   (package
     (name "sbcl-periodic-table")
