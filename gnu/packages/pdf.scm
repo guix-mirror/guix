@@ -1412,7 +1412,7 @@ multiple files.")
        ("poppler" ,poppler)
        ("pango" ,pango)
        ("vala" ,vala)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://pdfpc.github.io/")
