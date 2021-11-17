@@ -1211,7 +1211,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
         ("libtiff" ,libtiff)
         ("openexr" ,openexr-2)
         ("python" ,python-wrapper)
-        ("python-numpy" ,python-numpy)
+        ;("python-numpy" ,python-numpy)
         ("zlib" ,zlib)))
      (native-inputs
       `(("doxygen" ,doxygen)
@@ -1238,6 +1238,8 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
                                "/lib/python"
                                ,(version-major+minor (package-version python))
                                "/site-packages")
+                ;; Vigranumpy isn't compatible with numpy >= 1.20.
+                "-DWITH_VIGRANUMPY=0"
                 ;; OpenEXR is not enabled by default.
                 "-DWITH_OPENEXR=1"
                 ;; Fix rounding error on 32-bit machines
