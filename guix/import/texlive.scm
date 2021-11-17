@@ -235,7 +235,11 @@
                   ,@(if (assoc-ref data 'srcfiles) '() '(#:trivial? #true))))
         ,@(or (and=> (assoc-ref data 'depend)
                      (lambda (inputs)
-                       `((propagated-inputs ,inputs))))
+                       `((propagated-inputs
+                          ,(map (lambda (tex-name)
+                                  (let ((name (guix-name tex-name)))
+                                    (list name (list 'unquote (string->symbol name)))))
+                                inputs)))))
               '())
         ,@(or (and=> (assoc-ref data 'catalogue-ctan)
                      (lambda (url)
