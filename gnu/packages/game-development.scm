@@ -375,9 +375,6 @@ you can focus on the game itself.  This makes more rapid game development
 possible, and it also makes the SGE easy to learn.")
     (license license:lgpl3+)))
 
-(define-public python-sge-pygame
-  (deprecated-package "python-sge-pygame" python-sge))
-
 (define-public python-tmx
   (package
     (name "python-tmx")
@@ -2070,9 +2067,6 @@ that parenthetically inclined game developers need to make 2D (and eventually
 @item REPL-driven development model
 @end enumerate\n")
     (license license:gpl3+)))
-
-(define-public guile3.0-chickadee
-  (deprecated-package "guile3.0-chickadee" guile-chickadee))
 
 (define-public bennu-game-development
   (package

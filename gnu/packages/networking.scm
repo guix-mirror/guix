@@ -948,7 +948,7 @@ or server shell scripts with network connections.")
 (define-public mbuffer
   (package
     (name "mbuffer")
-    (version "20210328")
+    (version "20211018")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -956,8 +956,10 @@ or server shell scripts with network connections.")
                     version ".tgz"))
               (sha256
                (base32
-                "0pfw9xw4ph18yss07fl6w8fbqiwy1w9r1knzw5gsb4c993cbidai"))))
+                "1qxnbpyly00kml3sjan9iqg6pqacsi3yqq66x25w455cwkjc2h72"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
     (inputs `(("openssl" ,openssl)))
     (home-page "http://www.maier-komor.de/mbuffer.html")
     (synopsis
@@ -4080,19 +4082,20 @@ stamps.")
 (define-public nbd
   (package
     (name "nbd")
-    (version "3.21")
+    (version "3.22")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://sourceforge/nbd/nbd/" version
                             "/nbd-" version ".tar.xz"))
         (sha256
-         (base32 "1ydylvvayi4w2d08flji9q03sl7y8hn0c26vsay3nwwikprqls77"))))
+         (base32 "1ljx6vb3lja5p0lr28vmjp27n9d6krlvq49bhqbcm2ns8vxd1vh6"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (home-page "https://nbd.sourceforge.io/")
     (synopsis "NBD client and server")

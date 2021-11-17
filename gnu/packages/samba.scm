@@ -184,14 +184,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.13.10")
+    (version "4.13.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "00q5hf2r71dyma785dckcyksv3082mqfgyy9q6k6rc6kqjwkirzh"))
+        (base32 "103zy09mszjlfrsnm2vzrw5d9ph5jckddb9cxsrhrslkzblah4b6"))
        (modules '((guix build utils)))
        (snippet
         '(begin

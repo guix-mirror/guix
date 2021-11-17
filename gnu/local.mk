@@ -872,24 +872,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
-  %D%/packages/patches/aws-c-auth-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-auth-disable-networking-tests.patch\
-  %D%/packages/patches/aws-c-cal-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-compression-cmake-prefix.patch	\
-  %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
-  %D%/packages/patches/aws-c-http-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-http-disable-networking-tests.patch\
-  %D%/packages/patches/aws-c-mqtt-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-io-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-io-disable-networking-tests.patch	\
-  %D%/packages/patches/aws-c-s3-cmake-prefix.patch		\
-  %D%/packages/patches/aws-c-s3-disable-networking-tests.patch	\
-  %D%/packages/patches/aws-checksums-cmake-prefix.patch		\
-  %D%/packages/patches/aws-crt-cpp-cmake-prefix.patch		\
-  %D%/packages/patches/aws-crt-cpp-disable-networking-tests.patch	\
-  %D%/packages/patches/aws-sdk-cpp-cmake-prefix.patch		\
-  %D%/packages/patches/aws-sdk-cpp-disable-networking-tests.patch	\
-  %D%/packages/patches/aws-sdk-cpp-disable-werror.patch		\
+  %D%/packages/patches/aws-c-auth-install-private-headers.patch	\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-reproducible-linux-pgrp-pipe.patch	\
   %D%/packages/patches/bash-completion-directories.patch	\
@@ -1129,7 +1112,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gdm-remove-hardcoded-xwayland-path.patch	\
   %D%/packages/patches/gdm-wayland-session-wrapper-from-env.patch	\
   %D%/packages/patches/geary-CVE-2020-24661.patch		\
-  %D%/packages/patches/genimage-signedness.patch		\
+  %D%/packages/patches/genimage-mke2fs-test.patch		\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
@@ -1739,6 +1722,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rocm-opencl-runtime-4.3-noopencl.patch \
   %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
   %D%/packages/patches/rustc-1.39.0-src.patch			\
+  %D%/packages/patches/rust-adblock-ignore-live-tests.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-ndarray-remove-blas-src-dep.patch	\
   %D%/packages/patches/rust-ndarray-0.13-remove-blas-src.patch	\

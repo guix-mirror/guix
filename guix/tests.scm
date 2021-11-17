@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -189,18 +189,22 @@ too expensive to build entirely in the test store."
             (loop (1+ i)))
           bv))))
 
-(define (file=? a b)
-  "Return true if files A and B have the same type and same content."
-  (and (eq? (stat:type (lstat a)) (stat:type (lstat b)))
-       (case (stat:type (lstat a))
-         ((regular)
-          (equal?
-           (call-with-input-file a get-bytevector-all)
-           (call-with-input-file b get-bytevector-all)))
-         ((symlink)
-          (string=? (readlink a) (readlink b)))
-         (else
-          (error "what?" (lstat a))))))
+(define* (file=? a b #:optional (stat lstat))
+  "Return true if files A and B have the same type and same content.  Call
+STAT to obtain file metadata."
+  (let ((sta (stat a)) (stb (stat b)))
+    (and (eq? (stat:type sta) (stat:type stb))
+         (case (stat:type sta)
+           ((regular)
+            (or (and (= (stat:ino sta) (stat:ino stb))
+                     (= (stat:dev sta) (stat:dev stb)))
+                (equal?
+                 (call-with-input-file a get-bytevector-all)
+                 (call-with-input-file b get-bytevector-all))))
+           ((symlink)
+            (string=? (readlink a) (readlink b)))
+           (else
+            (error "what?" (stat a)))))))
 
 (define (canonical-file? file)
   "Return #t if FILE is in the store, is read-only, and its mtime is 1."

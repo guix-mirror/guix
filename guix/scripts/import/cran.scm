@@ -27,8 +27,8 @@
   #:use-module (guix import utils)
   #:use-module (guix scripts import)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-cran))
@@ -98,21 +98,24 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
                            (reverse opts))))
     (parameterize ((%input-style (assoc-ref opts 'style)))
       (match args
-        ((package-name)
-         (if (assoc-ref opts 'recursive)
-             ;; Recursive import
-             (with-error-handling
-               (map package->definition
-                    (filter identity
-                            (cran-recursive-import package-name
-                                                   #:repo (or (assoc-ref opts 'repo) 'cran)))))
-             ;; Single import
-             (let ((sexp (cran->guix-package package-name
-                                             #:repo (or (assoc-ref opts 'repo) 'cran))))
-               (unless sexp
-                 (leave (G_ "failed to download description for package '~a'~%")
-                        package-name))
-               sexp)))
+        ((spec)
+         (let ((name version (package-name->name+version spec)))
+           (if (assoc-ref opts 'recursive)
+               ;; Recursive import
+               (with-error-handling
+                 (map package->definition
+                      (filter identity
+                              (cran-recursive-import name
+                                                     #:version version
+                                                     #:repo (or (assoc-ref opts 'repo) 'cran)))))
+               ;; Single import
+               (let ((sexp (cran->guix-package name
+                                               #:version version
+                                               #:repo (or (assoc-ref opts 'repo) 'cran))))
+                 (unless sexp
+                   (leave (G_ "failed to download description for package '~a'~%")
+                          name))
+                 sexp))))
         (()
          (leave (G_ "too few arguments~%")))
         ((many ...)

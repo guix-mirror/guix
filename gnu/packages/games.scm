@@ -2255,7 +2255,7 @@ Every puzzle has a complete solution, although there may be more than one.")
       (native-inputs
        `(("unzip" ,unzip)))
       (inputs
-       `(("python-sge-pygame" ,python-sge-pygame)
+       `(("python-sge" ,python-sge)
          ("python-six" ,python-six)
          ("python-xsge" ,python-xsge)))
       (home-page "https://retux-game.github.io/")
@@ -4621,10 +4621,10 @@ Transport Tycoon Deluxe.")
               ("freetype" ,freetype)
               ("icu4c" ,icu4c)
               ("jansson" ,jansson)
+              ("json-modern-cxx" ,json-modern-cxx)
               ("libpng" ,libpng)
               ("libzip" ,libzip)
               ("mesa" ,mesa)
-              ("nlohmann-json-cpp" ,nlohmann-json-cpp)
               ("openrct2-objects" ,openrct2-objects)
               ("openrct2-title-sequences" ,openrct2-title-sequences)
               ("openssl" ,openssl)
@@ -12064,10 +12064,10 @@ etc.  You can also play games on FICS or against an engine.")
     (license license:gpl2+)))
 
 (define-public stockfish
-  (let ((neural-network-revision "3475407dc199")) ; also update hash below
+  (let ((neural-network-revision "13406b1dcbe0")) ; also update hash below
     (package
       (name "stockfish")
-      (version "14")
+      (version "14.1")
       (source
        (origin
          (method git-fetch)
@@ -12076,7 +12076,7 @@ etc.  You can also play games on FICS or against an engine.")
                (commit (string-append "sf_" version))))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "046b3rq9w8lzgk07q5zazzkl93ai99ab18hr9d8n73mabjpi6zbx"))))
+          (base32 "0apqqcgpcflm3c6mcl13ln2y04f6zksnljmk4ys7naf7xk4vdgkd"))))
       (build-system gnu-build-system)
       (inputs
        `(("neural-network"
@@ -12086,7 +12086,7 @@ etc.  You can also play games on FICS or against an engine.")
                                  neural-network-revision ".nnue"))
              (sha256
               (base32
-               "11zci5kgwdw9rh8w2w4p84764g82rr666y3n8r2flwwrq5yl0x9l"))))))
+               "0vr3hcmlqqm74pn7hc54gmfs9drqvgc53nh7bvy6v8z0rcfnnh0k"))))))
       (arguments
        `(#:tests? #f
          #:make-flags (list "-C" "src"
@@ -12631,7 +12631,7 @@ get attention, so you get found.")
                 "1yy5r1r0hv0xggk8qd8bwk2zy7abpv89nikq4flqgi53fc5q9xl7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests provided
+     `(#:tests? #f                      ; no tests provided
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -12655,6 +12655,8 @@ get attention, so you get found.")
                (chdir "..")
                (install-file "prince" bin)
                (substitute* template (("\\$ROOT") out))
+               (substitute* "src/seg009.c"
+                 (("g_argv[0]") (string-append "\"" out "\"")))
                (install-file template app)
                (rename-file (string-append app "/SDLPoP.desktop.template")
                             (string-append app "/SDLPoP.desktop"))

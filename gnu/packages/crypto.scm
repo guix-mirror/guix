@@ -1538,3 +1538,86 @@ via FUSE without root permissions.  It is similar to EncFS, but provides
 additional security and privacy measures such as hiding file sizes and directory
 structure.  However CryFS is not considered stable yet by the developers.")
     (license license:lgpl3+)))
+
+(define-public rust-blake3-0.3
+  (package
+    (name "rust-blake3")
+    ;; Version 1 requires Rust >= 1.51.
+    ;; <https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.0.0>
+    (version "0.3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "blake3" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1cr5l5szgxm632px41kavl6cgils8h6yhdfkm6jsc5jgiivqai5n"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-arrayref" ,rust-arrayref-0.3)
+         ("rust-arrayvec" ,rust-arrayvec-0.5)
+         ("rust-cc" ,rust-cc-1)
+         ("rust-cfg-if" ,rust-cfg-if-0.1)
+         ("rust-constant-time-eq" ,rust-constant-time-eq-0.1)
+         ("rust-crypto-mac" ,rust-crypto-mac-0.8)
+         ("rust-digest" ,rust-digest-0.9)
+         ("rust-rayon" ,rust-rayon-1))))
+    (home-page "https://github.com/BLAKE3-team/BLAKE3")
+    (synopsis "BLAKE3 hash function Rust implementation")
+    (description "This crate provides the official Rust implementation of the
+BLAKE3 cryptographic hash function.  BLAKE3 is faster than MD5, SHA-1, SHA-2,
+SHA-3, and BLAKE2.")
+    ;; Users may choose between these two licenses when redistributing the
+    ;; program provided by this package.
+    (license (list license:cc0 license:asl2.0))))
+
+(define-public b3sum
+  (package
+    (name "b3sum")
+    ;; Version 1 requires Rust >= 1.51.
+    ;; <https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.0.0>
+    (version "0.3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "b3sum" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0h3fz16q5lk6mg7r8kjkjrq5hd4injngn5m7pswjbf2pyzjmg4b4"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(;; Install the source so that Cargo.toml is installed, because that is
+        ;; the only reference to the license information.
+        #:install-source? #t
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'patch-tests
+            (lambda _
+              (substitute* "tests/cli_tests.rs"
+                (("/bin/sh") (which "sh")))))
+          (add-after 'install 'install-doc
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (doc (string-append out "/share/doc/" ,name "-"
+                                         ,(package-version this-package))))
+                (install-file "README.md" doc)))))
+        #:cargo-inputs
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-blake3" ,rust-blake3-0.3)
+         ("rust-clap" ,rust-clap-2)
+         ("rust-hex" ,rust-hex-0.4)
+         ("rust-memmap" ,rust-memmap-0.7)
+         ("rust-rayon" ,rust-rayon-1)
+         ("rust-wild" ,rust-wild-2))
+        #:cargo-development-inputs
+        (("rust-duct" ,rust-duct-0.13)
+         ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/BLAKE3-team/BLAKE3")
+    (synopsis "Command line BLAKE3 checksum tool")
+    (description "This package provides @code{b3sum}, a command line
+checksum tool based on the BLAKE3 cryptographic hash function.")
+    ;; Users may choose between these two licenses when redistributing the
+    ;; program provided by this package.
+    (license (list license:cc0 license:asl2.0))))

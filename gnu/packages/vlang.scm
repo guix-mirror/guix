@@ -134,7 +134,3 @@
     "V is a systems programming language.  It provides memory safety and thread
 safety guarantees with minimal abstraction.")
    (license license:expat)))
-
-(define-public v
-  ;; We used to provide 'vlang' under the name 'v'.
-  (deprecated-package "v" vlang))

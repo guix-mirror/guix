@@ -321,9 +321,6 @@ interface and is based on GNU Guile.")
      `(("guile" ,guile-2.2)
        ("guile2.2-readline" ,guile2.2-readline)))))
 
-(define-public guile3.0-shepherd
-  (deprecated-package "guile3.0-shepherd" shepherd))
-
 (define-public guile2.0-shepherd
   (package
     (inherit shepherd)
@@ -3224,13 +3221,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.50")
+    (version "4.51")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/diskinfo-di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0aj9ldkvmj8fmrk685vd2gagz0q8lwsn2nfbx6r6mza94mn8pw42"))))
+        (base32 "1fv12j9b9sw6p38lcbzcw87zl5qp1aa7a4a4jn3449zz9af15ckr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -3240,8 +3237,7 @@ a new command using the matched rule, and runs it.")
          (add-before 'build 'setup-environment
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" ,(cc-for-target))
-             (setenv "prefix" (assoc-ref outputs "out"))
-             #t)))
+             (setenv "prefix" (assoc-ref outputs "out")))))
        #:make-flags (list "--environment-overrides")))
     (home-page "https://gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")

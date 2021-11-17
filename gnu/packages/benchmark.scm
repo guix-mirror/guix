@@ -172,9 +172,6 @@ Efficiency of the MPI implementation.
 @end itemize")
     (license license:cpl1.0)))
 
-(define-public imb-openmpi
-  (deprecated-package "imb-openmpi" intel-mpi-benchmarks/openmpi))
-
 (define-public multitime
   (package
     (name "multitime")

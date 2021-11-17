@@ -48,6 +48,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
@@ -77,6 +78,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cran)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages databases)
@@ -141,6 +143,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
@@ -1295,6 +1298,128 @@ relying on a complex dependency tree.")
 (define-public python2-fastalite
   (package-with-python2 python-fastalite))
 
+(define-public biosoup
+  (package
+    (name "biosoup")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rvaser/biosoup")
+             ;; Corresponds to version 0.10.0
+             (commit "38181f09854ff42cbd9632200a2ec9fb37a4b7b6")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "02hvyka703zagx0nvv2yx3dkc748zc8g6qbrpya7r8kfkcl7y8hw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./bin/biosoup_test")))))))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/rvaser/biosoup")
+    (synopsis "C++ support library for bioinformatics tools")
+    (description "Biosoup is a C++ collection of header-only data structures
+used for storage and logging in bioinformatics tools.")
+    (license license:expat)))
+
+(define-public bioparser
+  (package
+    (name "bioparser")
+    (version "3.0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rvaser/bioparser")
+             ;; Corresponds to tag 3.0.13
+             (commit "13341e6e0855c6b358ffcea6dad216e1009e1287")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c5p2dl8jb12ci9f427jzrmmm9cgvc1k4fxsn2ggkfsin6r1r82i"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "./bin/bioparser_test")))))))
+    (inputs
+     `(("biosoup" ,biosoup)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/rvaser/bioparser")
+    (synopsis "C++ library for parsing several formats in bioinformatics")
+    (description "Bioparser is a C++ header only parsing library for several
+bioinformatics formats (FASTA/Q, MHAP/PAF/SAM), with support for zlib
+compressed files.")
+    (license license:expat)))
+
+(define-public circtools
+  (package
+    (name "circtools")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kevinzjy/circtools")
+             ;; Corresponds to tag v1.0.0
+             (commit "79380de59013601021ca3b1352d6f64d2fb89646")
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0wg1s927g32k25j967kfr8l30nmr4c0p4zvy5igvy7cs6chd60lh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))))
+         (add-after 'unpack 'prepare-spoa-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "vendor/spoa/CMakeLists.txt"
+               (("find_package\\(bioparser 3.0.13 QUIET\\)")
+                "find_package(bioparser 3.0.13 CONFIG)")
+               (("find_package\\(biosoup 0.10.0 QUIET\\)")
+                "find_package(biosoup 0.10.0 CONFIG)")
+               (("GTest_FOUND") "TRUE")))))
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-bio" ,rust-bio-0.33)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-docopt" ,rust-docopt-1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-indicatif" ,rust-indicatif-0.15)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-seq-io" ,rust-seq-io-0.3))))
+    (inputs
+     `(("bioparser" ,bioparser)
+       ("biosoup" ,biosoup)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("pkg-config" ,pkg-config)
+       ("googletest" ,googletest)))
+    (home-page "https://github.com/Kevinzjy/circtools")
+    (synopsis "Accelerating functions in CIRI toolkit")
+    (description "This package provides accelerated functions for the CIRI
+toolkit.  It also provides the @code{ccs} executable to scan for circular
+consensus sequences.")
+    (license license:expat)))
+
 (define-public ciri-long
   (package
     (name "ciri-long")
@@ -1323,11 +1448,21 @@ relying on a complex dependency tree.")
          (add-before 'build 'build-libssw
            (lambda _
              (with-directory-excursion "libs/striped_smith_waterman"
-               (invoke "make" "libssw.so")))))))
+               (invoke "make" "libssw.so"))))
+         (add-before 'build 'fix-reference-to-ccs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CIRI_long/pipeline.py"
+               (("'ccs -i")
+                (string-append "'"
+                               (assoc-ref inputs "circtools") "/bin/ccs"
+                               " -i")))
+             ;; yuck!
+             (substitute* "CIRI_long/main.py"
+               (("os.chmod\\(lib_path.*") "")))))))
     (inputs
-     `(("python-biopython" ,python-biopython)
+     `(("circtools" ,circtools)
+       ("python-biopython" ,python-biopython)
        ("python-bwapy" ,python-bwapy)
-       ("python-cython" ,python-cython)
        ("python-levenshtein" ,python-levenshtein)
        ("python-mappy" ,python-mappy)
        ("python-numpy" ,python-numpy)
@@ -1337,7 +1472,8 @@ relying on a complex dependency tree.")
        ("python-scikit-learn" ,python-scikit-learn)
        ("python-scipy" ,python-scipy)))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
        ("python-setuptools" ,python-setuptools)))
     (home-page "https://ciri-cookbook.readthedocs.io/")
     (synopsis "Circular RNA identification for Nanopore sequencing")
@@ -11794,47 +11930,48 @@ implementation differs in these ways:
                                    wheel (string-append "--prefix=" out)))
                          (find-files "dist" "\\.whl$")))))
          (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; These tests require Internet access.
-             (delete-file-recursively "scanpy/tests/notebooks")
-             (delete-file "scanpy/tests/test_clustering.py")
-             (delete-file "scanpy/tests/test_datasets.py")
-             (delete-file "scanpy/tests/test_score_genes.py")
-             (delete-file "scanpy/tests/test_highly_variable_genes.py")
+           (lambda* (#:key tests? inputs #:allow-other-keys)
+             (when tests?
+               ;; These tests require Internet access.
+               (delete-file-recursively "scanpy/tests/notebooks")
+               (delete-file "scanpy/tests/test_clustering.py")
+               (delete-file "scanpy/tests/test_datasets.py")
+               (delete-file "scanpy/tests/test_score_genes.py")
+               (delete-file "scanpy/tests/test_highly_variable_genes.py")
 
-             ;; TODO: I can't get the plotting tests to work, even with Xvfb.
-             (delete-file "scanpy/tests/test_embedding_plots.py")
-             (delete-file "scanpy/tests/test_preprocessing.py")
-             (delete-file "scanpy/tests/test_read_10x.py")
+               ;; TODO: I can't get the plotting tests to work, even with Xvfb.
+               (delete-file "scanpy/tests/test_embedding_plots.py")
+               (delete-file "scanpy/tests/test_preprocessing.py")
+               (delete-file "scanpy/tests/test_read_10x.py")
 
-             ;; TODO: these fail with TypingError and "Use of unsupported
-             ;; NumPy function 'numpy.split'".
-             (delete-file "scanpy/tests/test_metrics.py")
+               ;; TODO: these fail with TypingError and "Use of unsupported
+               ;; NumPy function 'numpy.split'".
+               (delete-file "scanpy/tests/test_metrics.py")
 
-             ;; The following tests requires 'scanorama', which isn't
-             ;; packaged yet.
-             (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
+               ;; The following tests requires 'scanorama', which isn't
+               ;; packaged yet.
+               (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
 
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":"
-                                    (assoc-ref inputs "python-anndata:source") ":"
-                                    (getenv "PYTHONPATH")))
-             (invoke "pytest" "-vv"
-                     "-k"
-                     ;; Plot tests that fail.
-                     (string-append "not test_dotplot_matrixplot_stacked_violin"
-                                    " and not test_violin_without_raw"
-                                    " and not test_correlation"
-                                    " and not test_scatterplots"
-                                    " and not test_scatter_embedding_add_outline_vmin_vmax_norm"
-                                    " and not test_paga"
-                                    " and not test_paga_compare"
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) ":"
+                                      (assoc-ref inputs "python-anndata:source") ":"
+                                      (getenv "PYTHONPATH")))
+               (invoke "pytest" "-vv"
+                       "-k"
+                       ;; Plot tests that fail.
+                       (string-append "not test_dotplot_matrixplot_stacked_violin"
+                                      " and not test_violin_without_raw"
+                                      " and not test_correlation"
+                                      " and not test_scatterplots"
+                                      " and not test_scatter_embedding_add_outline_vmin_vmax_norm"
+                                      " and not test_paga"
+                                      " and not test_paga_compare"
 
-                                    ;; These try to connect to the network
-                                    " and not test_plot_rank_genes_groups_gene_symbols"
-                                    " and not test_pca_chunked"
-                                    " and not test_pca_sparse"
-                                    " and not test_pca_reproducible")))))))
+                                      ;; These try to connect to the network
+                                      " and not test_plot_rank_genes_groups_gene_symbols"
+                                      " and not test_pca_chunked"
+                                      " and not test_pca_sparse"
+                                      " and not test_pca_reproducible"))))))))
     (propagated-inputs
      `(("python-anndata" ,python-anndata)
        ("python-h5py" ,python-h5py)
@@ -13470,7 +13607,8 @@ let before_space s =
          ("ocaml-sqlite3" ,(package-with-ocaml4.07 ocaml-sqlite3))
          ("ocaml-xmlm" ,(package-with-ocaml4.07 ocaml-xmlm))
          ("ocaml-mcl" ,(package-with-ocaml4.07 ocaml-mcl))
-         ("ocaml-gsl" ,ocaml4.07-gsl-1)))
+         ("ocaml-gsl" ,ocaml4.07-gsl-1)
+         ("sqlite:static" ,sqlite "static")))
       (native-inputs
        `(("cddlib-src" ,(package-source cddlib))
          ("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))

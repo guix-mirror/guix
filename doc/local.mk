@@ -81,7 +81,8 @@ EXTRA_DIST +=					\
 OS_CONFIG_EXAMPLES_TEXI =			\
   %D%/os-config-bare-bones.texi			\
   %D%/os-config-desktop.texi			\
-  %D%/os-config-lightweight-desktop.texi
+  %D%/os-config-lightweight-desktop.texi	\
+  %D%/he-config-bare-bones.scm
 
 TRANSLATED_INFO = 						\
   $(call lang_to_texinfo,$(MANUAL_LANGUAGES),guix)		\

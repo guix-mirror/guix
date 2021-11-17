@@ -542,6 +542,82 @@ messaging environments.  It can be used with messaging software to provide
 end-to-end encryption.")
   (license license:gpl3+)))
 
+(define-public axc
+  (package
+    (name "axc")
+    (version "0.3.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gkdr/axc")
+             (commit (string-append "v" version))))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Submodules
+           (delete-file-recursively "lib")))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "05sv7l6lk0xk4wb2bspc2sdpygrb1f0szzi82a1kyfm0fjz887b3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (setenv "PREFIX" out)))))
+       #:parallel-tests? #f))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("glib" ,glib)
+              ("libgcrypt" ,libgcrypt)
+              ("libsignal-protocol-c" ,libsignal-protocol-c)
+              ("sqlite" ,sqlite)))
+    (synopsis "Client library for libsignal-protocol-c")
+    (description "This is a client library for @code{libsignal-protocol-c}.
+It implements the necessary interfaces using @code{libgcrypt} and
+@code{sqlite}.")
+    (home-page "https://github.com/gkdr/axc")
+    (license license:gpl3)))                  ;GPLv3-only, per license headers
+
+(define-public libomemo
+  (package
+    (name "libomemo")
+    (version "0.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gkdr/libomemo")
+             (commit (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1q3vyj8zk3vm0a4v6w8qya5dhk2yw04bga8799a0zl6907nf122k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (setenv "PREFIX" out)))))
+       #:parallel-tests? #f))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("glib" ,glib)
+              ("libgcrypt" ,libgcrypt)
+              ("minixml" ,minixml)
+              ("sqlite" ,sqlite)))
+    (synopsis "OMEMO C library")
+    (description "This library implements @acronym{OMEMO, OMEMO Multi-End
+Message and Object Encryption} of XMPP (XEP-0384) in C.")
+    (home-page "https://github.com/gkdr/libomemo")
+    (license license:expat)))
+
 (define-public bitlbee
   (package
     (name "bitlbee")
@@ -2048,7 +2124,7 @@ are both supported).")
 (define-public profanity
   (package
     (name "profanity")
-    (version "0.10.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
@@ -2057,7 +2133,7 @@ are both supported).")
                        version ".tar.gz"))
        (sha256
         (base32
-         "137z77514fgj2dk13d12g4jrn6gs5k85nwrk1r1kiv7rj0jy61aa"))))
+         "0idx0a5g077a57q462w01m0h8i4vyvabzlj87p8527wpqbv4s6vg"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
@@ -2608,6 +2684,58 @@ support for high performance Telegram Bot creation.")
     (description "Plugin for libpurple to allow sending SMS using ModemManager.")
     (home-page "https://source.puri.sm/Librem5/purple-mm-sms")
     (license license:gpl2+)))
+
+(define-public purple-lurch
+  (package
+    (name "purple-lurch")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url "https://github.com/gkdr/lurch")
+                       (commit (string-append "v" version))))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Submodules
+           (delete-file-recursively "lib")))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1ipd9gwh04wbqv6c10yxi02lc2yjsr02hwjycgxhl4r9x8b33psd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("^PURPLE_PLUGIN_DIR = .*")
+                           (string-append "PURPLE_PLUGIN_DIR = " out
+                                          "/lib/purple-2\n")))
+                        (setenv "CC" "gcc")))))
+       #:parallel-tests? #f))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("axc" ,axc)
+              ("glib" ,glib)
+              ("libgcrypt" ,libgcrypt)
+              ("libomemo" ,libomemo)
+              ("libsignal-protocol-c" ,libsignal-protocol-c)
+              ("libxml2" ,libxml2)
+              ("minixml" ,minixml)
+              ("pidgin" ,pidgin)
+              ("sqlite" ,sqlite)))
+    (synopsis "OMEMO Encryption for libpurple")
+    (description "Purple-lurch plugin adds end-to-end encryption support
+through the Double Ratchet (Axolotl) algorithm, to @code{libpurple}
+applications using @acronym{XMPP, Extensible Messaging and Presence Protocol},
+through its standard XEP-0384: @acronym{OMEMO, OMEMO Multi-End Message and
+Object Encryption} Encryption.  It provides confidentiality, (weak) forward
+secrecy, break-in recovery, authentication, integrity, deniability, and
+asynchronicity.")
+    (home-page "https://github.com/gkdr/lurch")
+    (license license:gpl3+)))
 
 (define-public chatty
  (package

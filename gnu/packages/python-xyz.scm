@@ -1358,6 +1358,27 @@ concepts.")
 (define-public python2-h5py
   (package-with-python2 python-h5py))
 
+(define-public python-hnswlib
+  (package
+    (name "python-hnswlib")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hnswlib" version))
+       (sha256
+        (base32 "0wf1cwmxmdzfqmfhrkqdxb5spf21ylgl2bidswhzjrqhwf35c9qf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("pybind11" ,pybind11)))
+    (home-page "https://github.com/nmslib/hnswlib")
+    (synopsis "Fast approximate nearest neighbor search")
+    (description "Hnswlib is a header-only C++ implementation of fast
+approximate nearest neighbor search with Python bindings.")
+    (license license:asl2.0)))
+
 (define-public python-pyls-black
   (package
     (name "python-pyls-black")
@@ -1541,6 +1562,35 @@ be tested for equality, containment, and equivalence.  They can be normalised
 and simplified.  It supports SPDX license expressions as well as other naming
 conventions and aliases in the same expression.")
     (license license:gpl2+)))
+
+(define-public python-wand
+  (package
+    (name "python-wand")
+    (version "0.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Wand" version))
+       (sha256
+        (base32 "1nxn7zvbnfgk4kkxajbzglcjpbgr84ilhnxm990nifjxqb61ph7b"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-magickwand
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "MAGICK_HOME" (assoc-ref inputs "imagemagick"))
+             (setenv "WAND_MAGICK_LIBRARY_SUFFIX" ".Q16"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://docs.wand-py.org/")
+    (synopsis "MagickWand API binding for Python")
+    (description
+     "Wand is a ctypes-based binding for the C API of ImageMagick's MagickWand
+library.")
+    (license license:expat)))
 
 (define-public python-lockfile
   (package
@@ -3351,7 +3401,7 @@ with sensible defaults out of the box.")
     (native-inputs
       `(("python-pytest-cov" ,python-pytest-cov)))
     (home-page "https://github.com/mapbox/cligj")
-    (synopsis "Click params for commmand line interfaces to GeoJSON")
+    (synopsis "Click params for command line interfaces to GeoJSON")
     (description
       "cligj is for Python developers who create command line interfaces
 for geospatial data.  cligj allows you to quickly build consistent,
@@ -6570,29 +6620,20 @@ where key might be occurred more than once in the container.")
 (define-public python-orderedmultidict
   (package
     (name "python-orderedmultidict")
-    (version "1.0")
+    (version "1.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "orderedmultidict" version))
         (sha256
           (base32
-            "1idjbl933avgaadscrjw1np3xkvnz3phq0l8vw5qs0rqcjx9b65q"))))
+            "1bc2v0yflsxjyyjx4q9wqx0j3bvzcw9z87d5pz4iqac7bsxhn1q4"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             ;; The package uses nosetest for running the tests.
-             ;; Adding this initfile allows to run the test suite
-             ;; without requiring nosetest.
-             (with-output-to-file "tests/__init__.py" newline)
-             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (native-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     `(("python-flake8" ,python-flake8)
+       ("python-pycodestyle" ,python-pycodestyle)))
     (home-page "https://github.com/gruns/orderedmultidict")
     (synopsis "Python Ordered Multivalue Dictionary - omdict")
     (description "This package contains a library for ordered multivalue
@@ -6600,9 +6641,6 @@ dictionaries.  A multivalue dictionary is a dictionary that can store
 multiple values for the same key.  An ordered multivalue dictionary is a
 multivalue dictionary that retains the order of insertions and deletions.")
     (license license:unlicense)))
-
-(define-public python2-orderedmultidict
-  (package-with-python2 python-orderedmultidict))
 
 (define-public python-autopep8
   (package
@@ -9623,6 +9661,56 @@ applications.")
      "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
     (license license:bsd-4)))
 
+(define-public python-immutabledict
+  (package
+    (name "python-immutabledict")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "immutabledict" version))
+       (sha256
+        (base32 "0fpc4gbk7inpfbgdypsg6c18bmdjw8gwx47bjw0hvixn3gghxnqx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests in PyPI release and no setup.py in GitHub
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/corenting/immutabledict")
+    (synopsis "Immutable wrapper around dictionaries")
+    (description
+     "@dfn{immutabledict} is an immutable wrapper around dictionaries.
+It implements the complete mapping interface and can be used as a drop-in
+replacement for dictionaries where immutability is desired.")
+    (license license:expat)))
+
+(define-public python-emoji
+  (package
+    (name "python-emoji")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "emoji" version))
+       (sha256
+        (base32 "0923mpixwq6hdpkgvi4r46alfvf608iq975rb8lnqpq29j71mmjk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/carpedm20/emoji/")
+    (synopsis "Emoji terminal output for Python")
+    (description "This package provides Emoji terminal output for Python.  The
+entire set of Emoji codes as defined by the Unicode Consortium is supported in
+addition to a bunch of aliases.")
+    (license license:bsd-3)))
+
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
   ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
@@ -10990,6 +11078,67 @@ your package is installed, via @code{pkg_resources} (part of
 @code{setuptools}).")
     (license license:gpl3+)))
 
+(define-public python-filetype
+  (package
+    (name "python-filetype")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "filetype" version))
+       (sha256
+        (base32 "05mkinkcn36v1cnb5hzay3zxmv7jmmflckxxp08rgzbkkf3i9pvp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "-k"
+                       (string-append
+                        ;; Both tests fail with FileNotFoundError.
+                        "not test_infer_zip_from_disk"
+                        " and not test_infer_tar_from_disk"))))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)))
+    (home-page "https://github.com/h2non/filetype.py")
+    (synopsis "Infer file type and MIME type of any file/buffer")
+    (description "@code{filetype} is a small and dependency free Python
+package to infer file type and MIME type checking the magic numbers
+signature of a file or buffer.")
+    (license license:expat)))
+
+(define-public python-cachelib
+  (package
+    (name "python-cachelib")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cachelib" version))
+       (sha256
+        (base32 "0p4chkvbvffcllsny5rpzmsq2vyr24ql3kzif4ha0fxp3fp7vqk8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-xprocess" ,python-pytest-xprocess)))
+    (home-page "https://github.com/pallets/cachelib")
+    (synopsis "Collection of cache libraries")
+    (description "Cachelib is a library extracted from @code{werkzeug} which
+provides a collection of cache libraries in the same API interface.")
+    (license license:bsd-3)))
+
 (define-public python-legacy-api-wrap
   (package
     (name "python-legacy-api-wrap")
@@ -11059,14 +11208,14 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python-pyasn1-modules
   (package
     (name "python-pyasn1-modules")
-    (version "0.2.2")
+    (version "0.2.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyasn1-modules" version))
         (sha256
          (base32
-          "0ivm850yi7ajjbi8j115qpsj95bgxdsx48nbjzg0zip788c3xkx0"))))
+          "0pp6dcagd8c2c9qx3lahc1rdwlnmm0y0siqr5icjq2r32b3q8pwh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)))
@@ -15539,7 +15688,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.1.5")
+    (version "1.1.11")
     ;; Poetry can only be built from source with Poetry.
     (source
      (origin
@@ -15547,7 +15696,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "1dvx08ksv5wnsj45db23921rj136akmcnxa0kmlsddf3wbh6wcka"))))
+         "17pnf2j4adlm9fhyg5jkkvs8bzcigb6nj72vr0687fxybzsj4zbx"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
@@ -16705,9 +16854,6 @@ command @command{natsort} that exposes this functionality in the command line.")
 Glances uses the PsUtil library to get information from your system.  It
 monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
-
-(define-public python-glances
-  (deprecated-package "python-glances" glances))
 
 (define-public python-graphql-core
   (package
@@ -18469,13 +18615,13 @@ current test, while only declaring the test-specific fields")
 (define-public python-translate-toolkit
   (package
     (name "python-translate-toolkit")
-    (version "2.1.0")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "translate-toolkit" version ".tar.bz2"))
+       (uri (pypi-uri "translate-toolkit" version ".tar.gz"))
        (sha256
-        (base32 "1vlkwrg83vb17jc36pmwh2b7jphwf390lz0jw8hakcg16qhwypvq"))))
+        (base32 "020pp7pbpnavxd41z90vyzzx06ci57mx9drkgbsb89wxxx4gal9v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -18503,8 +18649,18 @@ current test, while only declaring the test-specific fields")
 several utilities, as well as an API for building localization tools.")
     (license license:gpl2+)))
 
+;; Required for virtaal, newer versions do not build with python2
 (define-public python2-translate-toolkit
-  (package-with-python2 python-translate-toolkit))
+  (package-with-python2
+    (package
+      (inherit python-translate-toolkit)
+      (version "2.1.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "translate-toolkit" version ".tar.bz2"))
+         (sha256
+          (base32 "1vlkwrg83vb17jc36pmwh2b7jphwf390lz0jw8hakcg16qhwypvq")))))))
 
 (define-public python-packaging
   (package/inherit python-packaging-bootstrap
@@ -19331,14 +19487,8 @@ many of the popular cloud service providers using a unified API.")
 window memory map manager.")
     (license license:bsd-3)))
 
-(define-public python-smmap2
-  (deprecated-package "python-smmap2" python-smmap))
-
 (define-public python2-smmap
   (package-with-python2 python-smmap))
-
-(define-public python2-smmap2
-  (deprecated-package "python2-smmap2" python2-smmap))
 
 (define-public python-regex
   (package
@@ -27164,6 +27314,137 @@ objects in the combined source, and how they define or use each other.  The
 graph can be output for rendering by GraphViz or yEd.")
     (license license:gpl2)))
 
+(define-public python-multipledispatch
+  (package
+    (name "python-multipledispatch")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multipledispatch" version))
+       (sha256
+        (base32
+         "1slblghfjg9fdi9zpd7gmrkvfbv20nrdgnrymcnbky8bzm8i9ax7"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page "https://github.com/mrocklin/multipledispatch/")
+    (synopsis "Multiple dispatch for Python based on pattern matching")
+    (description "This library provides an efficient mechanism for overloading
+function implementations based on the types of the arguments.")
+    (license license:bsd-3)))
+
+(define-public python-logical-unification
+  (package
+    (name "python-logical-unification")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "logical-unification" version))
+       (sha256
+        (base32
+         "0j57953hi7kg2rl0163vzjzsvzdyjimnklhx6idf5vaqqf1d3p1j"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-multipledispatch" ,python-multipledispatch)
+       ("python-toolz" ,python-toolz)))
+    (home-page "https://github.com/pythological/unification/")
+    (synopsis "Logical unification in Python for solving symbolic expressions")
+    (description "This library provides algorithms and data types for solving
+symbolic expressions in pure Python using the technique of logical unification.")
+    (license license:bsd-3)))
+
+(define-public python-cons
+  (package
+    (name "python-cons")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cons" version))
+       (sha256
+        (base32
+         "0w9giq196wps7mbm47c4shdzs5yvwvqajqzkim2p92i51sm5qgvm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest-6)
+       ("python-toml" ,python-toml)))
+    (propagated-inputs
+     `(("python-logical-unification" ,python-logical-unification)))
+    (home-page "https://github.com/pythological/python-cons")
+    (synopsis "Cons cell data structures and related algorithms for Python")
+    (description
+     "This library implements algorithms and data structures for Lisp-style
+cons cells in Python.")
+    (license license:lgpl3+)))
+
+(define-public python-etuples
+  (package
+    (name "python-etuples")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "etuples" version))
+       (sha256
+        (base32
+         "0jhfyp177v37rl0i7wqfx7q6s5qkz027hl283d1x8d0vm3w0zqc8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cons" ,python-cons)
+       ("python-multipledispatch" ,python-multipledispatch)))
+    (home-page "https://github.com/pythological/etuples")
+    (synopsis "S-expressions in Python")
+    (description
+     "This library implements eval'able S-expression in Python using tuple-like objects.")
+    (license license:asl2.0)))
+
+(define-public python-minikanren
+  (package
+    (name "python-minikanren")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pythological/kanren")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g7wfj5hxalwz7k1301nsjqhjpzsif1bj6wjm2x2kavlm2ypv9jc"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "python" "-m" "pytest" "-v" "tests/" "kanren/"))
+                      #t)))))
+    (native-inputs
+     `(("python-coveralls" ,python-coveralls)
+       ("python-pydocstyle" ,python-pydocstyle)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pylint" ,python-pylint)
+       ("python-black" ,python-black)
+       ("python-sympy" ,python-sympy)
+       ("python-versioneer" ,python-versioneer)
+       ("python-coverage" ,python-coverage)
+       ("python-pre-commit" ,python-pre-commit)))
+    (propagated-inputs
+     `(("python-toolz" ,python-toolz)
+       ("python-cons" ,python-cons)
+       ("python-multipledispatch" ,python-multipledispatch)
+       ("python-etuples" ,python-etuples)
+       ("python-logical-unification" ,python-logical-unification)))
+    (home-page "https://github.com/pythological/kanren")
+    (synopsis "Relational logic programming in pure Python")
+    (description
+     "The minikanren library provides an algorithmic core for computer algebra
+systems in Python.")
+    (license license:bsd-3)))
+
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
@@ -27616,4 +27897,28 @@ simple mock/record and a complete capture/replay framework.")
     (description
      "Ijson is an iterative JSON parser with standard Python iterator
 interfaces.")
+    (license license:bsd-3)))
+
+(define-public python-sgmllib3k
+  (package
+    (name "python-sgmllib3k")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sgmllib3k" version))
+       (sha256
+        (base32 "1s8jm3dgqabgf8x96931scji679qkhvczlv3qld4qxpsicfgns3q"))))
+    (build-system python-build-system)
+    ;; Requires a test.html input that is not supplied
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://pypi.org/project/sgmllib3k/")
+    ;; Actual homepage seems to be down
+    ;; (home-page "https://hg.hardcoded.net/sgmllib")
+    (synopsis "Python 3 port of sgmllib")
+    (description
+     "This packages provides an unmaintained port of sgmllib to Python 3.
+It is used to parse text files formatted in @acronym{SGML,Standard Generalized
+Mark-up Language}.")
     (license license:bsd-3)))

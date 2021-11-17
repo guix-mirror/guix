@@ -137,9 +137,6 @@ using the Cairo drawing library.")
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
 
-(define-public guile3.0-charting
-  (deprecated-package "guile3.0-charting" guile-charting))
-
 (define-public ploticus
   (package
     (name "ploticus")

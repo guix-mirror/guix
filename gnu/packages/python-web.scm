@@ -45,6 +45,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -628,14 +629,14 @@ over a different origin than that of the web application.")
 (define-public python-furl
   (package
     (name "python-furl")
-    (version "2.0.0")
+    (version "2.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "furl" version))
         (sha256
           (base32
-            "1v2lakx03d5w8954a39ki44xv5mllnq0a0avhxykv9hrzg0yvjpx"))))
+            "0knc76pm8pzigs3bpx9fccfsfxqrgblqphar46hq9i364vz8hqas"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -1618,24 +1619,26 @@ choose to use, ensuring that you can communicate via WebSockets, as defined in
 RFC6455, regardless of your programming paradigm.")
     (license license:expat)))
 
-(define-public python-hypercorn
+(define-public hypercorn
   (package
-    (name "python-hypercorn")
-    (version "0.10.2")
+    (name "hypercorn")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Hypercorn" version))
        (sha256
-        (base32 "15dgy47a18w2ls3hwykra1cyf7yzxmfjqnsqml482p12cxr2xwqr"))))
+        (base32 "16kai5d12f05jr89mj611zslxqri4cd7ixcgd6yhl211qlcyg8av"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    ;; Propagate because Hypercorn also exposes functionality over a module.
     (propagated-inputs
      `(("python-h11" ,python-h11)
        ("python-h2" ,python-h2)
@@ -1659,6 +1662,9 @@ wsproto libraries and inspired by Gunicorn.  It supports HTTP/1, HTTP/2,
 WebSockets (over HTTP/1 and HTTP/2), ASGI/2, and ASGI/3 specifications.  It can
 utilise asyncio, uvloop, or trio worker types.")
     (license license:expat)))
+
+(define-public python-hypercorn
+  (deprecated-package "python-hypercorn" hypercorn))
 
 (define-public python-querystring-parser
   (package
@@ -3973,23 +3979,23 @@ authentication for Flask routes.")
 (define-public python-uritemplate
   (package
     (name "python-uritemplate")
-    (version "3.0.1")
+    (version "4.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "uritemplate" version))
        (sha256
         (base32
-         "1bkwmgr0ia9gcn4bszs2xlvml79f0bi2s4a87xg22ky9rq8avy2s"))))
+         "1w14a775d92mx9pdhb5zimifpfr2lfcn0vfdpjagcy9vbkyfsij3"))))
     (build-system python-build-system)
     (home-page "https://uritemplate.readthedocs.org")
     (synopsis "Library to deal with URI Templates")
     (description "@code{uritemplate} provides Python library to deal with URI
 Templates.")
-    (license license:bsd-2)))
-
-(define-public python2-uritemplate
-  (package-with-python2 python-uritemplate))
+    ;; The software is made available under the terms of *either* of the
+    ;; licenses found in LICENSE.APACHE or LICENSE.BSD.  Contributions
+    ;; are made under *both* licenses (excerpt from the LICENSE file).
+    (license (list license:bsd-2 license:asl2.0))))
 
 (define-public python-publicsuffix
   (package
@@ -4351,9 +4357,6 @@ Google search engine.  Its module is called @code{googlesearch}.")
     (synopsis "Core Python library for accessing Google APIs")
     (description "Python client library for Google's discovery based APIs")
     (license license:asl2.0)))
-
-(define-public python2-google-api-client
-  (package-with-python2 python-google-api-client))
 
 (define-public python-hawkauthlib
   (package
@@ -6012,6 +6015,23 @@ over IMAP:
 @item Work with emails in folders (copy, delete, flag, move, seen)
 @item Work with mailbox folders (list, set, get, create, exists, rename, delete, status)
 @end itemize")
+    (license license:asl2.0)))
+
+(define-public python-giturlparse
+  (package
+    (name "python-giturlparse")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "giturlparse" version))
+        (sha256
+         (base32 "0dxk7sqy8ibaqdl6jzxd0ac1p7shzp4p9f3lhkd7qw9h3llsp595"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/nephila/giturlparse")
+    (synopsis "Git URL parsing module")
+    (description "This package provides a git URL parsing module which supports
+parsing and rewriting of remote git URLs from various hosting providers.")
     (license license:asl2.0)))
 
 (define-public python-hstspreload

@@ -131,6 +131,8 @@
                        "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
                      '("llvm-7.0-D44650"
                        "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
+                     '("llvm7-symver-jlprefix"
+                       "00ng32x6xhm9czczirn5r1q1mc1myad44fqhi061hwh1vb46dwgm")
                      '("llvm-6.0-DISABLE_ABI_CHECKS"
                        "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
                      '("llvm9-D50010-VNCoercion-ni"
@@ -211,7 +213,8 @@
            ;; "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
            ;; "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
            "-DLLVM_ENABLE_DUMP=ON"
-           "-DLLVM_LINK_LLVM_DYLIB=ON"))))
+           "-DLLVM_LINK_LLVM_DYLIB=ON"
+           "-DLLVM_VERSION_SUFFIX:STRING=jl"))))
     (inputs
      (append
        (package-inputs llvm-11)
@@ -272,7 +275,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 (define-public julia
   (package
     (name "julia")
-    (version "1.6.2")
+    (version "1.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -280,7 +283,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "0plbj4laifzz8ppk889iv3gaxj1mdddzv7yad6ghml6bfnn24r6m"))
+                "1515x8fs25l3f9csbmd1v4nm041zvjnvigy6s5iidy4yrkwdx4r5"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
@@ -552,7 +555,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                                                               (basename file)))))
                         (find-files (string-append (assoc-ref inputs pkgname)
                                                    "/lib") pred)))))
-               (link "llvm" "libLLVM-11\\.so")
+               (link "llvm" "libLLVM-11jl\\.so")
                (link "utf8proc" "libutf8proc\\.so")
                #t)))
          (add-after 'install 'make-wrapper
@@ -672,7 +675,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
     (native-search-paths
       (list (search-path-specification
               (variable "JULIA_LOAD_PATH")
-              (files (list "share/julia/packages/")))
+              (files (list "share/julia/loadpath/")))
             (search-path-specification
               (variable "JULIA_DEPOT_PATH")
               (files (list "share/julia/")))))

@@ -410,7 +410,8 @@ structures.")
     ;; https://travis-ci.org/BioJulia/BufferedStreams.jl/jobs/491050182
     (arguments
      '(#:tests? #f
-       #:julia-package-name "BufferedStreams"))
+       #:julia-package-name "BufferedStreams"
+       #:julia-package-uuid "e1450e63-4bb3-523b-b2a4-4ffa8c0fd77d"))
     (propagated-inputs `(("julia-compat" ,julia-compat)))
     (home-page "https://github.com/BioJulia/BufferedStreams.jl")
     (synopsis "Fast composable IO streams")
@@ -778,12 +779,12 @@ way.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
+         (add-after 'link-depot 'fix-tests
            (lambda _
              (substitute* "test/runtests.jl"
                (("option.toml") "test/option.toml"))
              #t))
-         (add-after 'unpack 'dont-use-exproniconlite
+         (add-after 'link-depot 'dont-use-exproniconlite
            (lambda _
              (substitute* '("Project.toml"
                             "src/Configurations.jl"
@@ -919,7 +920,7 @@ dependency on it.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-failing-test
+         (add-after 'link-depot 'skip-failing-test
            (lambda _
              ;; Tests with non-standard colors.
              (substitute* "test/show.jl"
@@ -1022,7 +1023,7 @@ without having to take direct dependencies.")
      `(#:tests? #f      ; Tests need upgrading with newer Julia version.
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-known-failing-tests
+         (add-after 'link-depot 'skip-known-failing-tests
            (lambda _
              ;; See upstream report:
              ;; https://github.com/queryverse/DataValues.jl/issues/83
@@ -1100,7 +1101,7 @@ dictionaries in Julia, for improved productivity and performance.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-flakey-tests
+         (add-after 'link-depot 'skip-flakey-tests
            (lambda _
              ;; Some combination of these tests fail nondeterministically
              ;; each of the times this package is built.
@@ -1166,14 +1167,14 @@ valuable enough at this time.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
+         (add-after 'link-depot 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/Deps.jl"
                (("pip install")
                 (string-append (assoc-ref inputs "python")
                                "/bin/pip install")))
              #t))
-         (add-after 'unpack 'remove-javascript-downloads
+         (add-after 'link-depot 'remove-javascript-downloads
            (lambda _
              (substitute* "src/Writers/HTMLWriter.jl"
                (("cdnjs.cloudflare.com") "example.com"))
@@ -1352,7 +1353,7 @@ stressing the robustness of differentiation tools.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-test-suite
+         (add-after 'link-depot 'adjust-test-suite
            (lambda _
              (substitute* "test/runtests.jl"
                ;; Seems to not play nicely with SpecialFunctions
@@ -1386,7 +1387,7 @@ combinations of dual numbers with predefined Julia numeric types.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-test-suite
+         (add-after 'link-depot 'adjust-test-suite
            (lambda _
              (substitute* "test/runtests.jl"
                ;; Seems to not play nicely with Julia-1.6.
@@ -1438,7 +1439,7 @@ before (or after)\".")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-network-tests
+         (add-after 'link-depot 'skip-network-tests
            (lambda _
              (substitute* "test/runtests.jl"
                ;; This test tries to access the Julia package registry.
@@ -1517,7 +1518,7 @@ need the ffmpeg binaries + executables, and don't want the overhead of
      `(#:phases
        (modify-phases %standard-phases
          (delete 'reset-gzip-timestamps)
-         (add-after 'unpack 'skip-network-tests
+         (add-after 'link-depot 'skip-network-tests
            (lambda _
              ;; These tests try to download audio/video files.
              (substitute* "test/query.jl"
@@ -1677,7 +1678,7 @@ using finite difference.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-test
+         (add-after 'link-depot 'disable-failing-test
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "test/fixed.jl"
                ;; A deprecation warning is not thrown
@@ -1764,7 +1765,7 @@ differentiation (AD).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-tests
+         (add-after 'link-depot 'adjust-tests
            (lambda _
              (substitute* "test/runtests.jl"
                (("testset \\\"Abstract.*" all)
@@ -1817,7 +1818,7 @@ update step.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-failing-test
+         (add-after 'link-depot 'skip-failing-test
            (lambda _
              (substitute* "test/runtests.jl"
                ((".*RPLE.*") "")))))))
@@ -1844,7 +1845,7 @@ update step.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-test-suite
+         (add-after 'link-depot 'adjust-test-suite
            (lambda _
              (substitute* "test/runtests.jl"
                ((".*lapack.*") "")))))))
@@ -1875,7 +1876,7 @@ algebra routines written in Julia (except for optimized BLAS).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-test-suite
+         (add-after 'link-depot 'adjust-test-suite
            (lambda _
              (substitute* "test/complex.jl"
                ;; expected Array{Int32,1}, got a value of type Array{Int64,1}
@@ -1912,13 +1913,13 @@ matrices the Schur form is often more useful.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-earcut
+         (add-after 'link-depot 'remove-earcut
            (lambda _
              (substitute* '("Project.toml"
                             "src/GeometryBasics.jl")
                ((".*EarCut.*") ""))
              #t))
-         (add-after 'unpack 'skip-incompatible-test
+         (add-after 'link-depot 'skip-incompatible-test
            (lambda _
              (substitute* "test/runtests.jl"
                (("@testset.*MetaT and heterogeneous data.*" all)
@@ -2268,7 +2269,7 @@ be downscaled to fit into the size of your active terminal session.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-failing-test
+         (add-after 'link-depot 'skip-failing-test
            (lambda _
              ;; These tests try to download from the imagemagick.org
              (substitute* "test/runtests.jl"
@@ -2465,7 +2466,7 @@ indexed images, sometimes called \"colormap images\" or \"paletted images.\"")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-timezones.jl
+         (add-after 'link-depot 'remove-timezones.jl
            (lambda _
              (substitute* "test/runtests.jl"
                (("using TimeZones.*") "")
@@ -2864,7 +2865,7 @@ comes from the fact that @code{M == map(f, A)}.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-failing-test
+         (add-after 'link-depot 'skip-failing-test
            (lambda _
              ;; Tests with math functions are hard.
              (substitute* "test/test_ul.jl"
@@ -2981,7 +2982,8 @@ resolving them into absolute units.")
     (build-system julia-build-system)
     ;; Package without Project.toml
     (arguments
-     '(#:julia-package-name "Media"))
+     '(#:julia-package-name "Media"
+       #:julia-package-uuid "e89f7d12-3494-54d1-8411-f7d8b9ae1f27"))
     (propagated-inputs
      `(("julia-macrotools" ,julia-macrotools)))
     (home-page "https://github.com/JunoLab/Media.jl")
@@ -3202,7 +3204,7 @@ interface to interact with these types.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-cuda-tests
+         (add-after 'link-depot 'skip-cuda-tests
            (lambda _
              (substitute* "test/runtests.jl"
                (("using CUDA") "")
@@ -3238,7 +3240,8 @@ doesn't provide any other \"high-level\" functionality like layers or AD.")
          (base32 "10h47x5ws42pkqjccimaz0yxfvz41w0yazq6inamfk4lg5g2g3d9"))))
     (build-system julia-build-system)
     (arguments
-     `(#:julia-package-name "OptimTestProblems"))
+     `(#:julia-package-name "OptimTestProblems"
+       #:julia-package-uuid "cec144fc-5a64-5bc6-99fb-dde8f63e154c"))
     (home-page "https://github.com/JuliaNLSolvers/OptimTestProblems.jl")
     (synopsis "Collection of optimization test problems")
     (description "The purpose of this package is to provide test problems for
@@ -3528,7 +3531,7 @@ everything from run time algorithm choice to code generation at compile time.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-color-tests
+         (add-after 'link-depot 'skip-color-tests
            (lambda _
              (substitute* "test/text_backend.jl"
                ((".*colors\\.jl.*") ""))
@@ -3547,7 +3550,7 @@ human-readable format.")
 (define-public julia-pycall
   (package
     (name "julia-pycall")
-    (version "1.92.3")
+    (version "1.92.5")
     (source
       (origin
         (method git-fetch)
@@ -3557,7 +3560,7 @@ human-readable format.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "07r99ni6nkxpyrp3wsb5qg4jxz7i2r08dyqbiffy2zm3g0bn88jq"))))
+          "1fj5d1ihnhnm0pl4hbx6hcd2bpdyhm8jiaqah2axsbd069j70saf"))))
     (build-system julia-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -3567,7 +3570,7 @@ human-readable format.")
                   ((guix build python-build-system) #:prefix python:))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-conda
+         (add-after 'link-depot 'remove-conda
            (lambda _
              (substitute* "Project.toml"
                ((".*Conda.*") ""))
@@ -3577,7 +3580,7 @@ human-readable format.")
              (substitute* "deps/depsutils.jl"
                (("Conda.PYTHONDIR") "\"/\""))
              #t))
-         (add-after 'unpack 'set-python
+         (add-after 'link-depot 'set-python
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((python (assoc-ref inputs "python")))
                (setenv "PYCALL_JL_RUNTIME_PYTHON"
@@ -3690,7 +3693,7 @@ arbitrary normed vector spaces (e.g. matrix-valued integrands).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'hardcode-libmath-location
+         (add-after 'link-depot 'hardcode-libmath-location
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((gcclib (assoc-ref inputs "gcc:lib")))
                (substitute* "src/Quadmath.jl"
@@ -4082,7 +4085,8 @@ through matrix-vector multiplication.")
            (base32 "1fb1dfdmiw2ggx60hf70954xlps0r48fcb3k3dvxynlz7ylphp96"))))
       (build-system julia-build-system)
       (arguments
-       `(#:julia-package-name "SafeTestsets"))
+       `(#:julia-package-name "SafeTestsets"
+         #:julia-package-uuid "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"))
       (native-inputs
        `(("julia-staticarrays" ,julia-staticarrays)))
       (home-page "https://github.com/YingboMa/SafeTestsets.jl")
@@ -4308,7 +4312,7 @@ some performance improvements).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-doctest
+         (add-after 'link-depot 'skip-doctest
            (lambda _
              (substitute* "test/runtests.jl"
                ((".*doctest.*") ""))
@@ -4811,6 +4815,7 @@ types, modules, and dictionaries.")
     (build-system julia-build-system)
     (arguments
      '(#:julia-package-name "URIs"      ;required to run tests
+       #:julia-package-uuid "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'change-dir
@@ -4818,7 +4823,7 @@ types, modules, and dictionaries.")
            (lambda* (#:key source outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (chdir
-                (string-append out "/share/julia/packages/URIs/test")))
+                (string-append out "/share/julia/loadpath/URIs/test")))
              #t)))))
     ;; required for tests
     (inputs `(("julia-json" ,julia-json)))

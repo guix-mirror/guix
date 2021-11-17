@@ -1,0 +1,69 @@
+From b83b5b453d3f7883ef4c12f84a7045486957c709 Mon Sep 17 00:00:00 2001
+From: Petr Hodina <phodina@protonmail.com>
+Date: Tue, 9 Nov 2021 17:02:54 +0100
+Subject: [PATCH] Ignore live tests.
+
+
+diff --git a/tests/live.rs b/tests/live.rs
+index b1a19fc..6bd4685 100644
+--- a/tests/live.rs
++++ b/tests/live.rs
+@@ -140,6 +140,7 @@ fn get_blocker_engine_deserialized_ios() -> Engine {
+ }
+
+ #[test]
++#[ignore]
+ fn check_live_specific_urls() {
+     let mut engine = get_blocker_engine();
+     {
+@@ -176,6 +177,7 @@ fn check_live_specific_urls() {
+ }
+
+ #[test]
++#[ignore]
+ fn check_live_deserialized_specific_urls() {
+     let mut engine = get_blocker_engine_deserialized();
+     {
+@@ -201,6 +203,7 @@ fn check_live_deserialized_specific_urls() {
+ }
+
+ #[test]
++#[ignore]
+ fn check_live_from_filterlists() {
+     let engine = get_blocker_engine();
+     let requests = load_requests();
+@@ -214,6 +217,7 @@ fn check_live_from_filterlists() {
+ }
+
+ #[test]
++#[ignore]
+ fn check_live_deserialized_file() {
+     let engine = get_blocker_engine_deserialized();
+     let requests = load_requests();
+@@ -243,6 +247,7 @@ fn check_live_deserialized_ios() {
+
+ #[cfg(feature = "resource_assembler")]
+ #[test]
++#[ignore]
+ fn check_live_redirects() {
+     use adblock::resources::resource_assembler::assemble_web_accessible_resources;
+
+@@ -278,6 +283,7 @@ fn check_live_redirects() {
+ }
+
+ #[test]
++#[ignore]
+ /// Ensure that two different engines loaded from the same textual filter set serialize to
+ /// identical buffers.
+ fn stable_serialization() {
+@@ -291,6 +297,7 @@ fn stable_serialization() {
+ }
+
+ #[test]
++#[ignore]
+ /// Ensure that one engine's serialization result can be exactly reproduced by another engine after
+ /// deserializing from it.
+ fn stable_serialization_through_load() {
+--
+2.33.1
+

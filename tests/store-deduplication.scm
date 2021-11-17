@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020-2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,13 +30,40 @@
 
 (test-begin "store-deduplication")
 
+(test-equal "deduplicate, below %deduplication-minimum-size"
+  (list #t (make-list 5 1))
+
+  (call-with-temporary-directory
+   (lambda (store)
+     ;; Note: DATA must be longer than %DEDUPLICATION-MINIMUM-SIZE.
+     (let ((data      "Hello, world!")
+           (identical (map (lambda (n)
+                             (string-append store "/" (number->string n)
+                                            "/a/b/c"))
+                           (iota 5))))
+       (for-each (lambda (file)
+                   (mkdir-p (dirname file))
+                   (call-with-output-file file
+                     (lambda (port)
+                       (put-bytevector port (string->utf8 data)))))
+                 identical)
+
+       (deduplicate store (nar-sha256 store) #:store store)
+
+       ;; (system (string-append "ls -lRia " store))
+       (list (= (length (delete-duplicates
+                         (map (compose stat:ino stat) identical)))
+                (length identical))
+             (map (compose stat:nlink stat) identical))))))
+
 (test-equal "deduplicate"
   (cons* #t #f                                    ;inode comparisons
          2 (make-list 5 6))                       ;'nlink' values
 
   (call-with-temporary-directory
    (lambda (store)
-     (let ((data      (string->utf8 "Hello, world!"))
+     ;; Note: DATA must be longer than %DEDUPLICATION-MINIMUM-SIZE.
+     (let ((data      (string-concatenate (make-list 1000 "Hello, world!")))
            (identical (map (lambda (n)
                              (string-append store "/" (number->string n)
                                             "/a/b/c"))
@@ -46,7 +73,7 @@
                    (mkdir-p (dirname file))
                    (call-with-output-file file
                      (lambda (port)
-                       (put-bytevector port data))))
+                       (put-bytevector port (string->utf8 data)))))
                  identical)
        ;; Make the parent of IDENTICAL read-only.  This should not prevent
        ;; deduplication from inserting its hard link.
@@ -54,7 +81,7 @@
 
        (call-with-output-file unique
          (lambda (port)
-           (put-bytevector port (string->utf8 "This is unique."))))
+           (put-bytevector port (string->utf8 (string-reverse data)))))
 
        (deduplicate store (nar-sha256 store) #:store store)
 
@@ -77,8 +104,10 @@
    (lambda (store)
      (let ((true-link link)
            (links     0)
-           (data1     (string->utf8 "Hello, world!"))
-           (data2     (string->utf8 "Hi, world!"))
+           (data1     (string->utf8
+                       (string-concatenate (make-list 1000 "Hello, world!"))))
+           (data2     (string->utf8
+                       (string-concatenate (make-list 1000 "Hi, world!"))))
            (identical (map (lambda (n)
                              (string-append store "/" (number->string n)
                                             "/a/b/c"))

@@ -99,6 +99,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -194,7 +195,7 @@ line client and a client based on Qt.")
 (define-public bitcoin-core-0.20
   (package
     (inherit bitcoin-core-0.21)
-    (version "0.20.1")
+    (version "0.20.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -202,7 +203,7 @@ line client and a client based on Qt.")
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))))
+                "14smp5vmh7baabl856wlg7w7y5910jhx6c02mlkm4hkywf3yylky"))))))
 
 ;; The support lifetimes for bitcoin-core versions can be found in
 ;; <https://bitcoincore.org/en/lifecycle/#schedule>.
@@ -1257,7 +1258,7 @@ Its features are:
 (define-public grisbi
   (package
     (name "grisbi")
-    (version "1.2.2")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -1267,7 +1268,7 @@ Its features are:
              "/grisbi-" version ".tar.bz2"))
        (sha256
         (base32
-         "1piiyyxjsjbw9gcqydvknzxmmfgh8kdqal12ywrxyxih2afwnvbw"))))
+         "0gvsqw1z5wkakyi3bkq71pqb094a8lv2nbgnxw2zqkabzjmxnfmx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--without-ofx")))
@@ -1772,6 +1773,32 @@ Interface (UI) for the hledger accounting system.  It can be used as a
 local, single-user UI, or as a multi-user UI for viewing, adding, and
 editing on the Web.")
     (license license:gpl3)))
+
+(define-public python-ta-lib
+  (package
+    (name "python-ta-lib")
+    (version "0.4.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "TA-Lib" version))
+       (sha256
+        (base32 "17sf222mq2vx924f15qlz5czkkq5vsnsjy9ibwkrk8lalr6g5lkl"))))
+    (build-system python-build-system)
+    (inputs
+     `(("ta-lib" ,ta-lib)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-pandas" ,python-pandas)))
+    (home-page "https://github.com/mrjbq7/ta-lib")
+    (synopsis "Python wrapper for TA-Lib")
+    (description
+     "This is a Python wrapper for TA-Lib based on Cython.  TA-Lib is a library
+providing common functions for the technical analysis of financial market data.")
+    (license license:bsd-2)))
 
 (define-public ta-lib
   (package

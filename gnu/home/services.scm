@@ -275,7 +275,7 @@ directory containing FILES."
 will be put in @file{~/.guix-home/files}.")))
 
 (define (compute-on-first-login-script _ gexps)
-  (gexp->script
+  (program-file
    "on-first-login"
    #~(let* ((xdg-runtime-dir (or (getenv "XDG_RUNTIME_DIR")
                                  (format #f "/run/user/~a" (getuid))))
@@ -286,14 +286,19 @@ will be put in @file{~/.guix-home/files}.")))
        ;; XDG_RUNTIME_DIR dissapears on logout, that means such trick
        ;; allows to launch on-first-login script on first login only
        ;; after complete logout/reboot.
-       (when (not (file-exists? flag-file-path))
-         (begin #$@gexps (touch flag-file-path))))))
+       (if (file-exists? xdg-runtime-dir)
+           (unless (file-exists? flag-file-path)
+             (begin #$@gexps (touch flag-file-path)))
+           (display "XDG_RUNTIME_DIR doesn't exists, on-first-login script
+won't execute anything.  You can check if xdg runtime directory exists,
+XDG_RUNTIME_DIR variable is set to apropriate value and manually execute the
+script by running '$HOME/.guix-home/on-first-login'")))))
 
-(define (on-first-login-script-entry m-on-first-login)
+(define (on-first-login-script-entry on-first-login)
   "Return, as a monadic value, an entry for the on-first-login script
 in the home environment directory."
-  (mlet %store-monad ((on-first-login m-on-first-login))
-        (return `(("on-first-login" ,on-first-login)))))
+  (with-monad %store-monad
+    (return `(("on-first-login" ,on-first-login)))))
 
 (define home-run-on-first-login-service-type
   (service-type (name 'home-run-on-first-login)
@@ -346,7 +351,7 @@ extended with one gexp.")))
              (unless new-home-env (setenv "GUIX_NEW_HOME" #f))
              (unless old-home-env (setenv "GUIX_OLD_HOME" #f)))
            (format #t "\
-Activation script was either called or loaded by file from this direcotry:
+Activation script was either called or loaded by file from this directory:
 ~a
 It doesn't seem that home environment is somewhere around.
 Make sure that you call ./activate by symlink from -home store item.\n"

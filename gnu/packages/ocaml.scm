@@ -2269,6 +2269,7 @@ immutability.")
        ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)
        ("ocaml-uuidm" ,ocaml-uuidm)
        ("ocaml-uutf" ,ocaml-uutf)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-alcotest))))
     (home-page "https://github.com/mirage/alcotest")
     (synopsis "Lightweight OCaml test framework")
     (description "Alcotest exposes simple interface to perform unit tests.  It
@@ -2278,6 +2279,22 @@ Alcotest provides a quiet and colorful output where only faulty runs are fully
 displayed at the end of the run (with the full logs ready to inspect), with a
 simple (yet expressive) query language to select the tests to run.")
     (license license:isc)))
+
+(define-public ocaml4.07-alcotest
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-alcotest)
+      (version "1.0.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mirage/alcotest")
+                      (commit version)))
+                (file-name (git-file-name "ocaml-alcotest" version))
+                (sha256
+                 (base32
+                  "1frwi185z4aadmaf0vp8xk5227nyg7nmh28ijj5l7ncjr5slvhz8"))))
+      (properties '()))))
 
 (define-public ocaml-ppx-tools
   (package
@@ -2403,8 +2420,7 @@ for mapping files in memory.  This function is the same as the
     (arguments
      `(#:package "lwt"))
     (native-inputs
-     `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
-       ("ocaml-cppo" ,ocaml-cppo)
+     `(("ocaml-cppo" ,ocaml-cppo)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)))
@@ -3354,6 +3370,7 @@ standard iterator type starting from 4.07.")
      `(("ocaml-seq" ,ocaml-seq)))
     (native-inputs
      `(("ounit" ,ocaml-ounit)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-re))))
     (home-page "https://github.com/ocaml/ocaml-re/")
     (synopsis "Regular expression library for OCaml")
     (description "Pure OCaml regular expressions with:
@@ -3365,6 +3382,19 @@ standard iterator type starting from 4.07.")
 @item Compatibility layer for OCaml's built-in Str module (module Re_str)
 @end enumerate")
     (license license:expat)))
+
+(define-public ocaml4.07-re
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-re)
+      (arguments
+       `(#:test-target "."
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-dune-version
+             (lambda _
+               (delete-file "dune-project"))))))
+      (properties '()))))
 
 (define-public ocaml-ocplib-endian
   (package
@@ -6584,7 +6614,8 @@ combinators.")
     (arguments
      ;; Tests require ocamlformat which would lead to circular dependencies
      '(#:tests? #f))
-    (properties '((upstream-name . "bisect_ppx")))
+    (properties `((upstream-name . "bisect_ppx")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-bisect-ppx))))
     (home-page "https://github.com/aantron/bisect_ppx")
     (synopsis "Code coverage for OCaml")
     (description "Bisect_ppx helps you test thoroughly.  It is a small
@@ -6595,6 +6626,33 @@ nice HTML report showing which places were visited and which were missed.
 Usage is simple - add package bisect_ppx when building tests, run your tests,
 then run the Bisect_ppx report tool on the generated visitation files.")
     (license license:mpl2.0)))
+
+(define-public ocaml4.07-bisect-ppx
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-bisect-ppx)
+      (version "2.4.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aantron/bisect_ppx")
+               (commit version)))
+         (file-name (git-file-name "ocaml-bisect-ppx" version))
+         (sha256
+          (base32
+           "1njs8xc108rrpx5am5zhhcn6vjva7rsphm8034qp5lgyvnhfgh7q"))))
+      (propagated-inputs
+       `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+         ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+         ,@(package-propagated-inputs ocaml-bisect-ppx)))
+      (native-inputs
+       `(("ocaml-ounit2" ,ocaml-ounit2)))
+      (arguments
+       `(#:test-target "."
+         ;; tests require git and network
+         #:tests? #f))
+      (properties '((upstream-name . "bisect_ppx"))))))
 
 (define-public ocaml-odoc
   (package
@@ -6682,6 +6740,12 @@ language understood by ocamldoc.")
         (file-name (git-file-name name version))
         (sha256
          (base32 "0z2nisg1vb5xlk41hqw8drvj90v52wli7zvnih6a844cg6xsvvj2"))))
+    (inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-markup" ,ocaml-markup)
+       ("ocaml-sexplib" ,ocaml-sexplib)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-uutf" ,ocaml-uutf)))
      (properties '()))))
 
 (define-public ocaml4.07-fftw3

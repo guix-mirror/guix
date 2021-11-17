@@ -160,11 +160,12 @@ atlas_libs = openblas
          ;; within the source directory.
          (delete 'check)
          (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (with-directory-excursion "/tmp"
-               (invoke "python" "-c"
-                       "import scipy; scipy.test(verbose=2)")))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "/tmp"
+                 (invoke "python" "-c"
+                         "import scipy; scipy.test(verbose=2)"))))))))
     (home-page "https://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
@@ -833,7 +834,7 @@ of Pandas
 (define-public python-pingouin
   (package
     (name "python-pingouin")
-    (version "0.3.12")
+    (version "0.5.0")
     (source
      ;; The PyPI tarball does not contain the tests.
      (origin
@@ -844,7 +845,7 @@ of Pandas
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ap29x54kdr19vi8qxj9g6cz2r1q4f0z7dcf6g77zwav7hf7r61a"))))
+         "01aaq023q4bymffrc2wm56af87da32wcvy5d5156i4g7qgvh346r"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

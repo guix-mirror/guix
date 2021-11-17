@@ -690,16 +690,10 @@ for power users.  Conceptually inspired by Emacs and Vim, it has familiar
 key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
     (license license:bsd-3)))
 
-(define-public next
-  (deprecated-package "next" nyxt))
-
-(define-public sbcl-next
-  (deprecated-package "sbcl-next" nyxt))
-
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.7.2")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
@@ -707,13 +701,20 @@ key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "1fr7p0pjli9clsgr0a1fp1pr119r9zqx43dvhc1g91bj742mxhfa"))))
+        (base32 "1wb4gqn32sja2qik04chlcl743arr6c844zczy1a2aad5103cnip"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; TODO: unbundle fonts.
+           (delete-file-recursively "lib/fribidi")
+           (delete-file-recursively "lib/harfbuzz")))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false                  ;no tests
        #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("zip" ,zip)))
     (inputs
      `(("fribidi" ,fribidi)
        ("harfbuzz" ,harfbuzz)

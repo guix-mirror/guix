@@ -252,14 +252,14 @@ whose behaviour is inconsistent across *NIX flavours.")
 (define-public libhx
   (package
     (name "libhx")
-    (version "4.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://inai.de/files/libhx/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32 "1mifpzxr5kma7gawhv1vbga8j5qi8jgka0axr48v08bdpb83pya2"))))
+        (base32 "1ri3sxiw5a8br27j7f20s40kihfvq6mmxzcrx68zydiwyxjvf5jj"))))
     (build-system gnu-build-system)
     (home-page "https://inai.de/projects/libhx/")
     (synopsis "C library with common data structures and functions")
@@ -553,7 +553,8 @@ portability.")
 (define-public aws-c-common
   (package
     (name "aws-c-common")
-    (version "0.6.2")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.6.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -562,7 +563,7 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17iknzqs6dl0ixajplc47ylkyynwpi3x2dxh56wa8ylhgy53d09x"))))
+                "1v4dhygiynl75y3702lbp9j8kph88j4f2sq39s4lkhn6lmbz5f0f"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -577,6 +578,7 @@ portability.")
 (define-public aws-checksums
   (package
     (name "aws-checksums")
+    ; Update only when updating aws-crt-cpp.
     (version "0.1.12")
     (source (origin
               (method git-fetch)
@@ -586,12 +588,13 @@ portability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))
-              (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
+                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (inputs
      `(("aws-c-common" ,aws-c-common)))
     (synopsis "Amazon Web Services checksum library")
@@ -604,6 +607,7 @@ with fallback to efficient C99 software implementations.")
 (define-public aws-c-event-stream
   (package
     (name "aws-c-event-stream")
+    ; Update only when updating aws-crt-cpp.
     (version "0.2.7")
     (source (origin
               (method git-fetch)
@@ -613,12 +617,13 @@ with fallback to efficient C99 software implementations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xwwr7gdgfrphk6j7vk12rgimfim6m4qnj6hg8hgg16cplhvsfzh"))
-              (patches (search-patches "aws-c-event-stream-cmake-prefix.patch"))))
+                "0xwwr7gdgfrphk6j7vk12rgimfim6m4qnj6hg8hgg16cplhvsfzh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)
        ("aws-c-io" ,aws-c-io)
@@ -637,7 +642,8 @@ communication.")
 (define-public aws-c-io
   (package
     (name "aws-c-io")
-    (version "0.10.5")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.10.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -646,15 +652,14 @@ communication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jrnzs803jqprnvbw6rqr834qld5sd7flaqzgssp3099m189szpq"))
-              (patches
-               (search-patches
-                "aws-c-io-cmake-prefix.patch"
-                "aws-c-io-disable-networking-tests.patch"))))
+                "14rxa3k842fgk43702nz7z9y3clfhvax8j0k93i0c5vg14wj38yp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-cal" ,aws-c-cal)
        ("aws-c-common" ,aws-c-common)
@@ -668,7 +673,8 @@ event-driven, asynchronous network application protocols.")
 (define-public aws-c-cal
   (package
     (name "aws-c-cal")
-    (version "0.5.11")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.5.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -677,12 +683,13 @@ event-driven, asynchronous network application protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rqqk4n56h8sf4q070rhgjwas04j8h0vq4wl1alq5l1rqq72qqdf"))
-              (patches (search-patches "aws-c-cal-cmake-prefix.patch"))))
+                "09zqf610x4g2mcjcaf9nh88k6dkw14pi721yr8hxb5rmsx7rlfrb"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)))
     (inputs
@@ -716,7 +723,8 @@ low level functionality for coroutines.")
 (define-public aws-c-http
   (package
     (name "aws-c-http")
-    (version "0.6.4")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.6.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -725,15 +733,14 @@ low level functionality for coroutines.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18xlgz68zizkcp784bs6hkyx0gvp0f1p076i46z653bcd3qa87b4"))
-              (patches
-               (search-patches
-                "aws-c-http-cmake-prefix.patch"
-                "aws-c-http-disable-networking-tests.patch"))))
+                "1s06bz6w7355ldyhwjidcpbff7591ch4lwwjcj47a6k2kczdmiz4"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-compression" ,aws-c-compression)
        ("aws-c-io" ,aws-c-io)))
@@ -747,7 +754,8 @@ specifications.")
 (define-public aws-c-compression
   (package
     (name "aws-c-compression")
-    (version "0.2.13")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.2.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -756,12 +764,13 @@ specifications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zqfxi0fdgapfsfgvsindv63pq7vyl1s376qkpv4jgflyb1v6gp5"))
-              (patches (search-patches "aws-c-compression-cmake-prefix.patch"))))
+                "0fs3zhhzxsb9nfcjpvfbcq79hal7si2ia1c09scab9a8m264f4vd"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-common" ,aws-c-common)))
     (synopsis "Amazon Web Services compression library")
@@ -774,7 +783,8 @@ currently limited to Huffman encoding and decoding.")
 (define-public aws-c-auth
   (package
     (name "aws-c-auth")
-    (version "0.6.0")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -783,15 +793,17 @@ currently limited to Huffman encoding and decoding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yh9s6q3ahq39xgvihp2a5cn9h39qlq8wfjc32m0ayi9x739rbqg"))
+                "120p69lj279yq3d2b81f45kgfrvf32j6m7s03m8hh27w8yd4vbfp"))
               (patches
                (search-patches
-                "aws-c-auth-cmake-prefix.patch"
-                "aws-c-auth-disable-networking-tests.patch"))))
+                "aws-c-auth-install-private-headers.patch"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-cal" ,aws-c-cal)
        ("aws-c-common" ,aws-c-common)
@@ -807,7 +819,8 @@ authentication.")
 (define-public aws-c-s3
   (package
     (name "aws-c-s3")
-    (version "0.1.19")
+    ; Update only when updating aws-crt-cpp.
+    (version "0.1.26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -816,15 +829,14 @@ authentication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vkjd8dh99d8qsl7irnbkcdf9vjmcznx0jz186la0472z4h48wjj"))
-              (patches
-               (search-patches
-                "aws-c-s3-cmake-prefix.patch"
-                "aws-c-s3-disable-networking-tests.patch"))))
+                "0gaxnwwk0jbvkgjnxcgchq13xmn7jk5vjvjsps6b0vaz6bf12wv8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+             "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
      `(("aws-c-auth" ,aws-c-auth)
        ("aws-c-http" ,aws-c-http)))
@@ -838,6 +850,7 @@ Service (S3) protocol for object storage.")
 (define-public aws-c-mqtt
   (package
     (name "aws-c-mqtt")
+    ; Update only when updating aws-crt-cpp.
     (version "0.7.8")
     (source (origin
               (method git-fetch)
@@ -847,12 +860,13 @@ Service (S3) protocol for object storage.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19j6nw2v36c4yff4p0fbf0748s06fd5r9cp2yakry9ybn1ada99c"))
-              (patches (search-patches "aws-c-mqtt-cmake-prefix.patch"))))
+                "19j6nw2v36c4yff4p0fbf0748s06fd5r9cp2yakry9ybn1ada99c"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+       (list "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-c-http" ,aws-c-http)
        ("aws-c-io" ,aws-c-io)))

@@ -273,8 +273,9 @@ perfect for data-intensive real-time applications that run across distributed
 devices.")
     (home-page "https://nodejs.org/")
     (license license:expat)
-    (properties '((max-silent-time . 7200)     ;2h, needed on ARM
-                  (timeout . 21600)))))        ;6h
+    (properties '((max-silent-time . 7200)   ;2h, needed on ARM
+                  (timeout . 21600)          ;6h
+                  (cpe-name . "node.js")))))
 
 ;; This should be the latest version of node that still builds without
 ;; depending on llhttp.
@@ -572,7 +573,7 @@ parser definition into a C output.")
 (define-public llhttp-bootstrap
   (package
     (name "llhttp")
-    (version "2.1.3")
+    (version "2.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -581,7 +582,7 @@ parser definition into a C output.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pqj7kyyzr1zs4h9yzn5rdxnxspm3wqgsv00765dd42fszlmrmk8"))
+                "115mwyds9655p76lhglxg2blc1ksgrix6zhigaxnc2q6syy3pa6x"))
               (patches (search-patches "llhttp-bootstrap-CVE-2020-8287.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -642,14 +643,14 @@ source files.")
 (define-public node-lts
   (package
     (inherit node)
-    (version "14.16.0")
+    (version "14.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "19nz2mhmn6ikahxqyna1dn25pb5v3z9vsz9zb2flb6zp2yk4hxjf"))
+                "1vc9rypkgr5i5y946jnyr9jjpydxvm74p1s17rg2zayzvlddg89z"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -777,6 +778,9 @@ source files.")
                          '("test/parallel/test-dns.js"
                            "test/parallel/test-dns-lookupService-promises.js"))
 
+               ;; These tests require networking.
+               (delete-file "test/parallel/test-https-agent-unref-socket.js")
+
                ;; FIXME: This test fails randomly:
                ;; https://github.com/nodejs/node/issues/31213
                (delete-file "test/parallel/test-net-listen-after-destroying-stdin.js")
@@ -815,7 +819,7 @@ source files.")
                             "deps/llhttp/include/llhttp.h"))))))))
     (native-inputs
      `(;; Runtime dependencies for binaries used as a bootstrap.
-       ("c-ares" ,c-ares)
+       ("c-ares" ,c-ares-for-node)
        ("brotli" ,brotli)
        ("icu4c" ,icu4c-67)
        ("libuv" ,libuv-for-node)
@@ -831,7 +835,7 @@ source files.")
     (inputs
      `(("bash" ,bash)
        ("coreutils" ,coreutils)
-       ("c-ares" ,c-ares)
+       ("c-ares" ,c-ares-for-node)
        ("icu4c" ,icu4c-67)
        ("libuv" ,libuv-for-node)
        ("llhttp" ,llhttp-bootstrap)

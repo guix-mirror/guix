@@ -15,6 +15,9 @@
 
 namespace nix {
 
+/* Any file smaller than this is not considered for deduplication.
+   Keep in sync with (guix store deduplication).  */
+const size_t deduplicationMinSize = 8192;
 
 static void makeWritable(const Path & path)
 {
@@ -105,12 +108,12 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
         return;
     }
 
-    /* We can hard link regular files and maybe symlinks. */
-    if (!S_ISREG(st.st_mode)
-#if CAN_LINK_SYMLINK
-        && !S_ISLNK(st.st_mode)
-#endif
-        ) return;
+    /* We can hard link regular files (and maybe symlinks), but do that only
+       for files larger than some threshold.  This avoids adding too many
+       entries to '.links', which would slow down 'removeUnusedLinks' while
+       saving little space.  */
+    if (!S_ISREG(st.st_mode) || ((size_t) st.st_size) < deduplicationMinSize)
+	return;
 
     /* Sometimes SNAFUs can cause files in the store to be
        modified, in particular when running programs as root under

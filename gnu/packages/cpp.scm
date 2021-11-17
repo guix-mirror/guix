@@ -77,6 +77,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -457,9 +458,6 @@ as ordering relation.")
     (description "JSON for Modern C++ is a C++ JSON library that provides
 intuitive syntax and trivial integration.")
     (license license:expat)))
-
-(define-public nlohmann-json-cpp
-  (deprecated-package "nlohmann-json-cpp" json-modern-cxx))
 
 (define-public xtl
   (package
@@ -931,11 +929,14 @@ of C++14 components that complements @code{std} and Boost.")
     (license license:asl2.0)))
 
 (define-public aws-crt-cpp
-  (let* ((commit "c2d6ffa5597825111cc76ad71ffc6aef664d0f25")
+  (let* ((commit "b6d311d76b504bf8ace5134d3fca0e672c36c9c3")
          (revision "1"))
     (package
       (name "aws-crt-cpp")
-      (version (git-version "0.14.2" revision commit))
+      ; Update only when updating aws-sdk-cpp, and when updating also update
+      ; versions of library dependencies linked from from
+      ; https://github.com/awslabs/aws-crt-cpp/tree/{aws-crt-cpp commit}/crt
+      (version (git-version "0.17.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -944,16 +945,15 @@ of C++14 components that complements @code{std} and Boost.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0l7iwynk2rgzjnr1hi1raazghmk4m7pj47vdq2kf2cfz0b6v9jf5"))
-                (patches
-                 (search-patches
-                  "aws-crt-cpp-cmake-prefix.patch"
-                  "aws-crt-cpp-disable-networking-tests.patch"))))
+                  "1n0nlbz91j3ycwwrh9652f0h5qr2sj5b1l0i5sg40ajzs7wvzd32"))))
       (build-system cmake-build-system)
       (arguments
        '(#:configure-flags
-         '("-DBUILD_SHARED_LIBS=ON"
-           "-DBUILD_DEPS=OFF")))
+         (list "-DBUILD_DEPS=OFF"
+               "-DBUILD_SHARED_LIBS=ON"
+               (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common"))
+               "-DENABLE_NET_TESTS=OFF")))
       (propagated-inputs
        `(("aws-c-auth" ,aws-c-auth)
          ("aws-c-cal" ,aws-c-cal)
@@ -972,7 +972,9 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
 (define-public aws-sdk-cpp
   (package
     (name "aws-sdk-cpp")
-    (version "1.9.92")
+    ; When updating also check for a tagged update to aws-crt-cpp from
+    ; https://github.com/aws/aws-sdk-cpp/tree/main/crt
+    (version "1.9.136")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -981,24 +983,22 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nbq1qivykfg8jmrn8d0k6fcfa5dw9s90wnwddh7ia4zafmby7pd"))
-              (patches
-               (search-patches
-                "aws-sdk-cpp-cmake-prefix.patch"
-                "aws-sdk-cpp-disable-networking-tests.patch"
-                "aws-sdk-cpp-disable-werror.patch"))))
+                "0ap7g7nmbnrcajy3b788bnpqd87dwmg83dhll1q8qzli04bcg47i"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests are run during the build phase.
        #:tests? #f
        #:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON"
-         "-DBUILD_DEPS=OFF")))
+       (list "-DBUILD_DEPS=OFF"
+             "-DBUILD_SHARED_LIBS=ON"
+             (string-append "-DCMAKE_PREFIX_PATH="
+                            (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
      `(("aws-crt-cpp" ,aws-crt-cpp)))
     (inputs
      `(("curl" ,curl)
        ("openssl" ,openssl)
+       ("pulseaudio" ,pulseaudio)
        ("zlib" ,zlib)))
     (synopsis "Amazon Web Services SDK for C++")
     (description

@@ -38,6 +38,7 @@
             image-platform
             image-size
             image-operating-system
+            image-partition-table-type
             image-partitions
             image-compression?
             image-volatile-root?
@@ -86,6 +87,8 @@
                       (default 'guess))
   (operating-system   image-operating-system  ;<operating-system>
                       (default #f))
+  (partition-table-type image-partition-table-type ; 'mbr or 'gpt
+                      (default 'mbr))
   (partitions         image-partitions ;list of <partition>
                       (default '()))
   (compression?       image-compression? ;boolean

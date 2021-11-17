@@ -941,7 +941,7 @@ process, passing on the arguments as command line arguments.")
 (define-public emacs-minions
   (package
     (name "emacs-minions")
-    (version "0.3.6")
+    (version "0.3.7")
     (source
      (origin
        (method git-fetch)
@@ -950,7 +950,7 @@ process, passing on the arguments as command line arguments.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lg704kwc851spp69745np8hsk0h6rl2hvfpid0j412278ds1qi8"))))
+        (base32 "1bzxxs8mxaihpjkbxgynhsi39lbbnij28grdc3sk9sq09j9752vw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -1584,6 +1584,27 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
       (license license:gpl3+))))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-flymake-flycheck
+  (package
+    (name "emacs-flymake-flycheck")
+    (version "20210404.2128")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://melpa.org/packages/flymake-flycheck-"
+                           version ".el"))
+       (sha256
+        (base32 "1m59ahd5gjlfwf328labwdlpcxh8ywywkwgfrlsy5jyxfc9ss4nv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-flycheck" ,emacs-flycheck)))
+    (home-page "https://github.com/purcell/flymake-flycheck")
+    (synopsis "Use Flycheck checkers as Flymake backends")
+    (description
+     "This package provides support for running any Flycheck checker as a
+Flymake diagnostic backend.  The effect is that Flymake will control when the
+checker runs, and Flymake will receive its errors.")
+    (license license:gpl3+)))
+
 (define-public emacs-flymake-quickdef
   ;; This particular commit includes bug fixes on top of 1.0.0 release.
   (let ((version "1.0.0")
@@ -1610,25 +1631,26 @@ boilerplate code from defining new Flymake backend functions.")
       (license license:gpl3+))))
 
 (define-public emacs-flymake-kondor
-  (package
-    (name "emacs-flymake-kondor")
-    (version "0.0.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/turbo-cafe/flymake-kondor")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0h8dqk35r10pxx2w4swb3kij4y2vi17j9wfk978x8lf0wd3h3hsy"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-flymake-quickdef" ,emacs-flymake-quickdef)))
-    (home-page "https://github.com/turbo-cafe/flymake-kondor")
-    (synopsis "Linter with clj-kondo")
-    (description "This package adds Clojure syntax checker clj-kondo.")
-    (license license:gpl3+)))
+  ;; No tag, version grabbed from source .el file.
+  (let ((commit "389b513c7287ede7a996a3d0db2e84b00772fef5")
+        (revision "0"))
+    (package
+      (name "emacs-flymake-kondor")
+      (version (git-version "0.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/turbo-cafe/flymake-kondor")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1by6p1j091xk5bfdpbqp7fifjn4rknrbm8r3xjfvpb4xcb19nmig"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/turbo-cafe/flymake-kondor")
+      (synopsis "Linter with clj-kondo")
+      (description "This package adds Clojure syntax checker clj-kondo.")
+      (license license:gpl3+))))
 
 (define-public emacs-flymake-shellcheck
   ;; No tag, version grabbed from source .el file.
@@ -2918,7 +2940,7 @@ of bibliographic references.")
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method git-fetch)
@@ -2927,7 +2949,7 @@ of bibliographic references.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b1mv6pbcawwfsn3f3hqmy6s8p9frp2320jvlk2z4dp6aw5qyx2j"))))
+        (base32 "0y40vnd227xjzds6zh85gplkiqa387b9y0925g5l01gz7hk2z17r"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
@@ -8343,7 +8365,7 @@ style, or as multiple word prefixes.")
 (define-public emacs-consult
   (package
     (name "emacs-consult")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method git-fetch)
@@ -8351,7 +8373,7 @@ style, or as multiple word prefixes.")
              (url "https://github.com/minad/consult")
              (commit version)))
        (sha256
-        (base32 "1bzlqn7k5akhyl763q29853yh5s8rmk6y1ncmy3am940wfypxjic"))
+        (base32 "0ik5j4i4vb9hz629cjwnzhimskpv0fc8wca37z4ak0q1d898ayph"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -8389,27 +8411,30 @@ and present results either as single emails or full trees.")
     (license license:gpl3+)))
 
 (define-public emacs-marginalia
-  (package
-    (name "emacs-marginalia")
-    (version "0.9")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/minad/marginalia")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "19l3fwh6phd17rssxk30v2380bs04x7w6cb3hjy4mx7vkc7w6ymv"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/minad/marginalia")
-    (synopsis "Marginalia in the minibuffer completions")
-    (description
-     "This package provides Marginalia mode which adds marginalia to the
+  ;; Upstream did not tag latest release.  The commit below matches version
+  ;; bump.
+  (let ((commit "2dbad0b166d6dc76862697bb25b95d34c1703acc"))
+    (package
+      (name "emacs-marginalia")
+      (version "0.10")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minad/marginalia")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xb0w7fxbmwbq2mdhs7xrf8z6x6qmkq68p1fv08wb4ksvphyvz5h"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/minad/marginalia")
+      (synopsis "Marginalia in the minibuffer completions")
+      (description
+       "This package provides Marginalia mode which adds marginalia to the
 minibuffer completions.  Marginalia are marks or annotations placed at the
 margin of the page of a book or in this case helpful colorful annotations
 placed at the margin of the minibuffer for your completion candidates.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-smartparens
   (package
@@ -8765,9 +8790,9 @@ a source code input file.")
 
 (define-public emacs-request
   ;; We prefer a more recent commit that has support for auth-source,
-  ;; which makes authentication more convenient for users and maintainers.
-  (let ((commit "d02d1347ffdf138cffd380cbeac62ac8732036ef")
-        (revision "0"))
+  ;; and has some bug fixes for Emacs 28.
+  (let ((commit "3336eaa97de923f74b90dda3e35985e122d40805")
+        (revision "1"))
     (package
       (name "emacs-request")
       (version (git-version "0.3.2" revision commit))
@@ -8779,7 +8804,7 @@ a source code input file.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1rkpakzish2d470ca15yq3k0m1j7a2lrkvvddcyvc2rx0sncsdjs"))))
+                  "0jckwy5zhz95d6l3lz8b9b34pppcjjzy97fg1wn8mqzhf3h460ac"))))
       (build-system emacs-build-system)
       (arguments
        `(#:tests? #f))                  ; requires network access.
@@ -11045,7 +11070,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.8.0")
+    (version "3.8.1")
     (source
      (origin
        (method git-fetch)
@@ -11054,7 +11079,7 @@ ack, ag, helm and pt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xrpv0sqmlwn94bc31k2iav284i1hl95937541ihlkhqg6v2vwrv"))))
+        (base32 "1yfr2vz1kd21rvnxi8xzv67gs5r599fhjmw8qphsmpv5afscfl7k"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -12339,7 +12364,7 @@ programming and reproducible research.")
     (synopsis "Unmaintained add-ons for Org mode")
     (description
      "This package contains add-ons to Org.  Be warned that these libraries
-receive little if no maintainance and there is no guaranty that they are
+receive little if no maintenance and there is no guaranty that they are
 compatible with the Org stable version.")
     (license license:gpl3+)))
 
@@ -12366,6 +12391,27 @@ compatible with the Org stable version.")
 complete email addresses, export contacts to a vCard file, put birthdays
 in your Org Agenda, and more.")
       (license license:gpl3+))))
+
+(define-public emacs-org-vcard
+  (package
+    (name "emacs-org-vcard")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flexibeast/org-vcard")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14l3xqahqmnfl3sskqcr33xpcsic8dm9cr9wmbv5la3xv14n10k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/flexibeast/org-vcard")
+    (synopsis "Org mode support for vCard export and import")
+    (description
+     "This package exports and imports vCard files from within GNU Emacs' Org
+mode.")
+    (license license:gpl3+)))
 
 (define-public emacs-org-pretty-table
   ;; There is no release yet.
@@ -13941,14 +13987,14 @@ methods from a given list.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".tar"))
        (sha256
-        (base32 "0ddm149dz71nksbpz7rwa8cax1nisf6wklv5iq4zrcbf5ghpagkg"))))
+        (base32 "13bx8vd3dw4jvwrys1vyq3a65rjjsbsvi6jxiffp647aclwwfcjs"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
@@ -14096,7 +14142,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.25")
+    (version "0.26")
     (synopsis "Emacs X window manager")
     (source
      (origin
@@ -14104,7 +14150,7 @@ It should enable you to implement low-level X11 applications.")
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "exwm-" version ".tar"))
        (sha256
-        (base32 "0imd4v9ccvpsskmfnycz5fgabsvdjp1msg5v8rc7x0v26r3kr4x7"))))
+        (base32 "03pg0r8a5vb1wc5grmjgzql74p47fniv47x39gdll5s3cq0haf6q"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -15070,6 +15116,57 @@ fragment in a dedicated buffer just like editing a source block.")
      "@code{emacs-emamux} lets Emacs interact with the @code{tmux} terminal
 multiplexer.")
     (license license:gpl3+)))
+
+(define-public emacs-plz
+  (let ((commit "7e456638a651bab3a814e3ea81742dd917509cbb")
+        (revision "1"))
+    (package
+      (name "emacs-plz")
+      (version (git-version "0.1-pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/plz.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "05kgxrps1s20im5hhq799nrs3615bvssm4r0ysgmwm203mmzsjgj"))))
+      (build-system emacs-build-system)
+      (inputs `(("curl" ,curl)))
+      (home-page "https://github.com/alphapapa/plz.el")
+      (synopsis "HTTP library for Emacs")
+      (description
+       "This package provides HTTP library for Emacs.  It uses curl as
+a backend, which avoids some of the issues with using Emacs’s built-in url
+library.")
+      (license license:gpl3+))))
+
+(define-public emacs-ement
+  (let ((commit "c951737dc855604aba389166bb0e7366afadc533")
+        (revision "1"))
+    (package
+      (name "emacs-ement")
+      (version (git-version "0.1-pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/ement.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00iwwz4hzg4g59wrb5df6snqz3ppvrsadhfp61w1pa8gvg2z9bvy"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:emacs ,emacs))               ;need libxml support
+      (inputs
+       `(("emacs-plz" ,emacs-plz)
+         ("emacs-ts" ,emacs-ts)))
+      (home-page "https://github.com/alphapapa/ement.el")
+      (synopsis "Matrix client for Emacs")
+      (description "Ement.el is a Matrix client for Emacs.")
+      (license license:gpl3+))))
 
 (define-public emacs-rpm-spec-mode
   (package
@@ -21788,7 +21885,7 @@ source code.")
 (define-public emacs-rustic
   (package
     (name "emacs-rustic")
-    (version "2.0")
+    (version "2.1")
     (source
      (origin
        (method git-fetch)
@@ -21797,7 +21894,7 @@ source code.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x06lp0c656zm07n28lnkqp678y4f9zkd9n5m0lramndllrpk3x2"))))
+        (base32 "0nklqpd24s83ng34xrm4rp80sbylajikj6svz1c6j721pz9crxg9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -26652,12 +26749,6 @@ meet the needs of the numerous interfaces that are possible in the Emacs
 computing environment.")
     (license license:gpl3+)))
 
-(define-public emacs-modus-operandi-theme
-  (deprecated-package "emacs-modus-operandi-theme" emacs-modus-themes))
-
-(define-public emacs-modus-vivendi-theme
-  (deprecated-package "emacs-modus-vivendi-theme" emacs-modus-themes))
-
 (define-public emacs-punpun-theme
   (let ((commit "2f78125609277b2478abdebd8f9d5ee10a823b65")
         (revision "0"))
@@ -27087,16 +27178,16 @@ contributed packages to Telega.")))
 (define-public emacs-doom-modeline
   (package
     (name "emacs-doom-modeline")
-    (version "3.2.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/seagle0128/doom-modeline")
-                    (commit (string-append "v" version))))
-              (sha256
-               (base32
-                "1gfkaxga919a1a19dhpbby95l8dixb1278g5d7iadjf2i3j0p3l0"))
-              (file-name (git-file-name name version))))
+    (version "3.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/seagle0128/doom-modeline")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1ji15n2rdp7bjg5iq9im6c4m12k24kqp85i3n1m9npihrb4arh54"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (arguments
      `(#:test-command '("ert-runner")))
@@ -29631,7 +29722,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method git-fetch)
@@ -29640,7 +29731,7 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rddk76ih44b574lsr6d6r9wa2l7c9zlb9kcyw5xvly17ciiq16h"))))
+        (base32 "059mj7x9iisjl2cdc1ggqd3racfs42yf0qqk0va9c857qgscrn26"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases

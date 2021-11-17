@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -486,8 +486,9 @@
   ;; their mtime and permissions were not reset.  Ensure that this bug is
   ;; gone.
   (with-store store
-    (let* ((text1 (random-text))
-           (text2 (random-text))
+    ;; Note: TEXT1 and TEXT2 must be longer than %DEDUPLICATION-MINIMUM-SIZE.
+    (let* ((text1 (string-concatenate (make-list 200 (random-text))))
+           (text2 (string-concatenate (make-list 200 (random-text))))
            (tree  `("tree" directory
                     ("a" regular (data ,text1))
                     ("b" directory

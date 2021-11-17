@@ -146,8 +146,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.3.0")
-        (commit "014f1b607f1d88a8e733017afaca006545b7d99b")
-        (revision 11))
+        (commit "9bbbac6783bcdace17d967e85c8ae8d14cbf1ef9")
+        (revision 12))
     (package
       (name "guix")
 
@@ -163,7 +163,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0mmq0ypkxj6dc1r9j1mdgih87h6fc0mk05hp481cjp8shdc1w6gw"))
+                  "1p0my0gfshdhm1dpqf6j68iipnigmpb23l8p81kwpw5w50x0hfda"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -531,9 +531,6 @@ the Nix package manager.")
              (lambda* (#:key outputs #:allow-other-keys)
                (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
-
-(define-public guile3.0-guix
-  (deprecated-package "guile3.0-guix" guix))
 
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as
@@ -1042,9 +1039,6 @@ it easy to create independent environments even for C libraries.  Conda is
 written entirely in Python.")
     (license license:bsd-3)))
 
-(define-public python-conda
-  (deprecated-package "python-conda" conda))
-
 (define-public conan
   (package
     (name "conan")
@@ -1251,8 +1245,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "a4d0ec6bc564bbe98d3e6c03be41de16edbda928")
-        (revision "35"))
+  (let ((commit "200ffe795bd36052b64f7868c71a92925ee7beca")
+        (revision "37"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1263,7 +1257,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0qa7qkskp9xzhyl0fgbm98f8apy8cn2yc9gpxhw0dfc9bkbs1pb9"))
+                  "09j67zdx5h6ic2yvzn1vvhmwlsj7kb06s765yjnvpnsb228ja96s"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments

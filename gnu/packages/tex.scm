@@ -4526,6 +4526,31 @@ paragraphs.  The package also enables typesetting with hanging punctuation,
 by making punctuation characters active.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-fira
+  (package
+    (inherit (simple-texlive-package
+              "texlive-fira"
+              (list "doc/fonts/fira/"
+                    "tex/latex/fira/"
+                    "fonts/vf/public/fira/"
+                    "fonts/type1/public/fira/"
+                    "fonts/tfm/public/fira/"
+                    "fonts/opentype/public/fira/"
+                    "fonts/map/dvips/fira/"
+                    "fonts/enc/dvips/fira/")
+              (base32 "0mxrwwf8i383vrs64lsyiwnai4cy305pkv1kgd4nrhmgi7pdc3ac")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/fonts/fira")
+    (synopsis "Fira fonts with LaTeX support")
+    (description
+     "This package provides LaTeX, pdfLaTeX, XeLaTeX and LuaLaTeX support for
+the Fira Sans family of fonts designed by Erik Spiekermann and Ralph du
+Carrois of Carrois Type Design.  Fira Sans is available in eleven weights with
+corresponding italics: light, regular, medium, bold, ...")
+    (license (list license:lppl
+                   license:silofl1.1))))
+
 (define-public texlive-latex-ifplatform
   (package
     (name "texlive-latex-ifplatform")
@@ -9580,6 +9605,32 @@ an arbitrary point.  Various options allow complete control over spacing,
 styles of inference rules, placement of labels, etc.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-bussproofs
+  (let ((template (simple-texlive-package
+                   "texlive-latex-bussproofs"
+                   (list "/doc/latex/bussproofs/"
+                         "/tex/latex/bussproofs/")
+                   (base32
+                    "1gb8y9g89fqw1kix4d2vb7mj440vlb8hnpsa3jqpk9yicndwcyk6"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/bussproofs")
+         ((#:build-targets _ '())
+          ''()) ; "bussproofs.sty"
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "tex/latex/bussproofs")))))))
+      (home-page "https://www.math.ucsd.edu/~sbuss/ResearchWeb/bussproofs/index.html")
+      (synopsis "Formal proofs in the style of sequent calculus")
+      (description
+       "This package provides commands to typeset proof trees in the style of
+sequent calculus and related systems.")
+      (license license:lppl1.3+))))
+
 (define-public texlive-eurosym
   (let ((template (simple-texlive-package
                    "texlive-eurosym"
@@ -9633,6 +9684,73 @@ constructs TeX accepts as arguments to its @code{\\number} primitive
 are valid as arguments for the macros.  The package may be used under
 LaTeX and plain TeX.")
     (license (license:fsf-free "file:/binhex.dtx"))))
+
+(define-public texlive-translator
+  (package
+    (inherit (simple-texlive-package
+              "texlive-translator"
+              (list "doc/latex/translator/"
+                    "tex/latex/translator/")
+              (base32
+               "1pac03qghaw9q98skfrgzgk4wnz04pgizw59c4k5ydphw1vpsvcz")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/macros/latex/contrib/translator")
+    (synopsis "Easy translation of strings in LaTeX")
+    (description
+     "This LaTeX package provides a flexible mechanism for translating
+individual words into different languages.  For example, it can be used to
+translate a word like \"figure\" into, say, the German word \"Abbildung\".
+Such a translation mechanism is useful when the author of some package would
+like to localize the package such that texts are correctly translated into the
+language preferred by the user.  This package is not intended to be used to
+automatically translate more than a few words.")
+    (license (list license:lppl license:gpl1+))))
+
+(define-public texlive-latex-textpos
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-textpos"
+              (list "doc/latex/textpos/"
+                    "tex/latex/textpos/")
+              (base32
+               "1g208dx853xg7g72jggkh13934r49yypksvalm5pk6snh0s0k86c")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/pkg/textpos")
+    (synopsis "Absolute positioning of text on the LaTeX page")
+    (description
+     "This package facilitates placing boxes at absolute positions on the
+LaTeX page.  There are several reasons why this might be useful, but the main
+one (or at least my motivating one) is to help produce a large-format
+conference poster.
+
+This package provides a single environment, plus a starred variant, which
+contains the text (or graphics, or table, or whatever) which is to be placed
+on the page, and which specifies where it is to be placed.  The environment is
+accompanied by various configuration commands.")
+    (license license:lppl)))
+
+(define-public texlive-xifthen
+  (package
+    (inherit (simple-texlive-package
+              "texlive-xifthen"
+              (list "doc/latex/xifthen/"
+                    "tex/latex/xifthen/")
+              (base32
+               "0b33mlmnxsj5mi06v2w2zgamk51mgv1lxdr1cax8nkpn9g7n9axw")
+              #:trivial? #t))
+    (build-system texlive-build-system)
+    (home-page "https://ctan.org/pkg/xifthen")
+    (synopsis "Extended conditional commands")
+    (description
+     "This package extends the @code{ifthen} package by implementing new
+commands to go within the first argument of @code{\\\\ifthenelse}: to test
+whether a string is void or not, if a command is defined or equivalent to
+another.  The package also enables use of complex expressions as introduced by
+the package @code{calc}, together with the ability of defining new commands to
+handle complex tests.")
+    (license license:lppl)))
 
 (define-public bibtool
   (package

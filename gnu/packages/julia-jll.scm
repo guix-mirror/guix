@@ -2,6 +2,7 @@
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,7 +78,7 @@
      '(#:tests? #f                      ; No runtests.jl
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
               (lambda (wrapper)
@@ -117,7 +118,7 @@ compression program.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -163,7 +164,7 @@ compression program.")
      `(#:tests? #f                      ; no runtests.jl
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
               (lambda (wrapper)
@@ -205,7 +206,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -243,7 +244,7 @@ build tree Yggdrasil.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -292,7 +293,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -335,7 +336,7 @@ build tree Yggdrasil.")
      '(#:tests? #f                      ; No runtests.jl
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
               (lambda (wrapper)
@@ -377,7 +378,7 @@ rendering library.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -413,7 +414,7 @@ rendering library.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -454,7 +455,7 @@ rendering library.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -497,7 +498,7 @@ rendering library.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -541,7 +542,7 @@ rendering library.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -590,7 +591,7 @@ rendering library.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((gumbo (string-append (assoc-ref inputs "gumbo-parser"))))
                (for-each
@@ -630,7 +631,7 @@ rendering library.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -672,7 +673,7 @@ rendering library.")
      '(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'custom-override-path
+         (add-after 'link-depot 'custom-override-path
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Make @generate_wrapper_header take an optional argument that
              ;; guix packagers can pass to override the default "override"
@@ -718,7 +719,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -754,7 +755,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -790,7 +791,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -830,7 +831,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -866,7 +867,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -903,7 +904,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -942,7 +943,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -980,7 +981,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1018,7 +1019,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1056,7 +1057,7 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1095,7 +1096,7 @@ from util-linux.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1133,7 +1134,7 @@ from util-linux.")
        `(#:tests? #f                      ; no runtests.jl
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'override-binary-path
+           (add-after 'link-depot 'override-binary-path
              (lambda* (#:key inputs #:allow-other-keys)
                (map
                 (lambda (wrapper)
@@ -1175,7 +1176,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1214,7 +1215,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1252,7 +1253,7 @@ build tree Yggdrasil.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1290,7 +1291,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1328,7 +1329,7 @@ build tree Yggdrasil.")
      '(#:tests? #f                      ; No runtests.jl
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
               (lambda (wrapper)
@@ -1366,7 +1367,7 @@ wrappers.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1403,7 +1404,7 @@ wrappers.")
        `(#:tests? #f                      ; no runtests.jl
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'override-binary-path
+           (add-after 'link-depot 'override-binary-path
              (lambda* (#:key inputs #:allow-other-keys)
                (map
                 (lambda (wrapper)
@@ -1446,7 +1447,7 @@ build tree Yggdrasil.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1482,7 +1483,7 @@ build tree Yggdrasil.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1518,7 +1519,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1556,7 +1557,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1594,7 +1595,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1645,7 +1646,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1684,7 +1685,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1721,7 +1722,7 @@ build tree Yggdrasil.")
      `(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libx264 (assoc-ref inputs "libx264")))
               (map
@@ -1762,7 +1763,7 @@ build tree Yggdrasil.")
      '(#:tests? #f ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1798,7 +1799,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1838,7 +1839,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1878,7 +1879,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1915,7 +1916,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1953,7 +1954,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -1989,7 +1990,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2029,7 +2030,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2067,7 +2068,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2103,7 +2104,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2140,7 +2141,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2177,7 +2178,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2215,7 +2216,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2252,7 +2253,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2289,7 +2290,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2327,7 +2328,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2364,7 +2365,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2401,7 +2402,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2438,7 +2439,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2475,7 +2476,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2512,7 +2513,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2549,7 +2550,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2586,7 +2587,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2623,7 +2624,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2659,7 +2660,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2702,7 +2703,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2740,7 +2741,7 @@ build tree Yggdrasil.")
      '(#:tests? #f  ; no runtests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'override-binary-path
+         (add-after 'link-depot 'override-binary-path
            (lambda* (#:key inputs #:allow-other-keys)
              (map
                (lambda (wrapper)
@@ -2758,4 +2759,42 @@ build tree Yggdrasil.")
     (home-page "https://github.com/JuliaBinaryWrappers/Zstd_jll.jl")
     (synopsis "Zstd library wrappers")
     (description "This package provides a wrapper for the zstd library.")
+    (license license:expat)))
+
+(define-public julia-sundials-jll
+  (package
+    (name "julia-sundials-jll")
+    (version "5.2.1+0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaBinaryWrappers/Sundials_jll.jl")
+               (commit (string-append "Sundials-v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0cijb9frq8gj8bjpqf2lr5d0jxlj262y6h6xi4z3536dingrvffc"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:tests? #f  ; no runtests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'link-depot 'override-binary-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (map
+               (lambda (wrapper)
+                 (substitute* wrapper
+                   (("global artifact_dir.*")
+                    (string-append
+                     "global artifact_dir = \""
+                      (assoc-ref inputs "sundials") "\"\n"))))
+               ;; There's a Julia file for each platform, override them all
+               (find-files "src/wrappers/" "\\.jl$")))))))
+    (inputs
+     `(("sundials" ,sundials-julia)))
+    (propagated-inputs
+     `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (home-page "https://github.com/JuliaBinaryWrappers/Sundials_jll.jl")
+    (synopsis "SUndials library wrappers")
+    (description "This package provides a wrapper for the sundials library.")
     (license license:expat)))

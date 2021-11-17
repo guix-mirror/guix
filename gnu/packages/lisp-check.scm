@@ -298,8 +298,8 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
   (sbcl-package->ecl-package sbcl-eos))
 
 (define-public sbcl-fiasco
-  (let ((commit "d62f7558b21addc89f87e306f65d7f760632655f")
-        (revision "1"))
+  (let ((commit "bb47d2fef4eb24cc16badc1c9a73d73c3a7e18f5")
+        (revision "2"))
     (package
       (name "sbcl-fiasco")
       (version (git-version "0.0.1" revision commit))
@@ -312,7 +312,7 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
          (file-name (git-file-name "fiasco" version))
          (sha256
           (base32
-           "1zwxs3d6iswayavcmb49z2892xhym7n556d8dnmvalc32pm9bkjh"))))
+           "1k8i2kq57201bvy3zfpsxld530hd104dgbglxigqb6i408c1a7aw"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -395,6 +395,47 @@ with a focus on interactive development.")
 
 (define-public ecl-hu.dwim.stefil
   (sbcl-package->ecl-package sbcl-hu.dwim.stefil))
+
+(define-public sbcl-kaputt
+  (let ((commit "f26c9b0f8219fe61d86249198ef85174eecafc10")
+        (revision "1"))
+    (package
+      (name "sbcl-kaputt")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/foretspaisibles/cl-kaputt")
+               (commit commit)))
+         (file-name (git-file-name "kaputt" version))
+         (sha256
+          (base32 "10a78032vnf12kjjpfmq9ign38cad237ycyq37dwnx922nxjjaj4"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "https://github.com/foretspaisibles/cl-kaputt")
+      (synopsis "Simple interactive test framework for Common Lisp")
+      (description
+       "KAPUTT is a test framework for Common Lisp that focuses on the
+following features:
+
+@itemize
+@item KAPUTT is simple, it only defines three abstractions testcase, assertion
+and protocol and does not add any artefact on the backtrace when errors occur.
+
+@item KAPUTT is extensible, it is possible to add problem-specific assertions
+to make test code more informative.
+
+@item KAPUTT fits well interactive development.
+@end itemize\n")
+      (license license:cecill-b))))
+
+(define-public ecl-kaputt
+  (sbcl-package->ecl-package sbcl-kaputt))
+
+(define-public cl-kaputt
+  (sbcl-package->cl-source-package sbcl-kaputt))
 
 (define-public sbcl-lift
   (let ((commit "2594160d6ca3a77d8750110dfa63214256aab852")

@@ -229,26 +229,61 @@ bioconductor package NAME, or #F if the package is unknown."
                 (let ((store-directory
                        (add-to-store store (basename url) #t "sha256" dir)))
                   (values store-directory changeset)))))))
-        (else (download-to-store store url)))))))
+        (else
+         (match url
+           ((? string?)
+            (download-to-store store url))
+           ((urls ...)
+            ;; Try all the URLs.  A use case where this is useful is when one
+            ;; of the URLs is the /Archive CRAN URL.
+            (any (cut download-to-store store <>) urls)))))))))
 
-(define (fetch-description repository name)
+(define (fetch-description-from-tarball url)
+  "Fetch the tarball at URL, extra its 'DESCRIPTION' file, parse it, and
+return the resulting alist."
+  (match (download url)
+    (#f #f)
+    (tarball
+     (call-with-temporary-directory
+      (lambda (dir)
+        (parameterize ((current-error-port (%make-void-port "rw+"))
+                       (current-output-port (%make-void-port "rw+")))
+          (and (zero? (system* "tar" "--wildcards" "-x"
+                               "--strip-components=1"
+                               "-C" dir
+                               "-f" tarball "*/DESCRIPTION"))
+               (description->alist
+                (call-with-input-file (string-append dir "/DESCRIPTION")
+                  read-string)))))))))
+
+(define* (fetch-description repository name #:optional version)
   "Return an alist of the contents of the DESCRIPTION file for the R package
-NAME in the given REPOSITORY, or #f in case of failure.  NAME is
+NAME at VERSION in the given REPOSITORY, or #f in case of failure.  NAME is
 case-sensitive."
   (case repository
     ((cran)
-     (let ((url (string-append %cran-url name "/DESCRIPTION")))
-       (guard (c ((http-get-error? c)
-                  (warning (G_ "failed to retrieve package information \
+     (guard (c ((http-get-error? c)
+                (warning (G_ "failed to retrieve package information \
 from ~a: ~a (~a)~%")
-                           (uri->string (http-get-error-uri c))
-                           (http-get-error-code c)
-                           (http-get-error-reason c))
-                  #f))
-         (let* ((port   (http-fetch url))
-                (result (description->alist (read-string port))))
-           (close-port port)
-           result))))
+                         (uri->string (http-get-error-uri c))
+                         (http-get-error-code c)
+                         (http-get-error-reason c))
+                #f))
+       ;; When VERSION is true, we have to download the tarball to get at its
+       ;; 'DESCRIPTION' file; only the latest one is directly accessible over
+       ;; HTTP.
+       (if version
+           (let ((urls (list (string-append "mirror://cran/src/contrib/"
+                                            name "_" version ".tar.gz")
+                             (string-append "mirror://cran/src/contrib/Archive/"
+                                            name "/"
+                                            name "_" version ".tar.gz"))))
+             (fetch-description-from-tarball urls))
+           (let* ((url    (string-append %cran-url name "/DESCRIPTION"))
+                  (port   (http-fetch url))
+                  (result (description->alist (read-string port))))
+             (close-port port)
+             result))))
     ((bioconductor)
      ;; Currently, the bioconductor project does not offer a way to access a
      ;; package's DESCRIPTION file over HTTP, so we determine the version,
@@ -257,22 +292,13 @@ from ~a: ~a (~a)~%")
                           (and (latest-bioconductor-package-version name) #t)
                           (and (latest-bioconductor-package-version name 'annotation) 'annotation)
                           (and (latest-bioconductor-package-version name 'experiment) 'experiment)))
+                ;; TODO: Honor VERSION.
                 (version (latest-bioconductor-package-version name type))
                 (url     (car (bioconductor-uri name version type)))
-                (tarball (download url)))
-       (call-with-temporary-directory
-        (lambda (dir)
-          (parameterize ((current-error-port (%make-void-port "rw+"))
-                         (current-output-port (%make-void-port "rw+")))
-            (and (zero? (system* "tar" "--wildcards" "-x"
-                                 "--strip-components=1"
-                                 "-C" dir
-                                 "-f" tarball "*/DESCRIPTION"))
-                 (and=> (description->alist (with-input-from-file
-                                                (string-append dir "/DESCRIPTION") read-string))
-                        (lambda (meta)
-                          (if (boolean? type) meta
-                              (cons `(bioconductor-type . ,type) meta))))))))))
+                (meta    (fetch-description-from-tarball url)))
+       (if (boolean? type)
+           meta
+           (cons `(bioconductor-type . ,type) meta))))
     ((git)
      (and (string-prefix? "http" name)
           ;; Download the git repository at "NAME"
@@ -485,7 +511,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                                         ((bioconductor)
                                          (list (assoc-ref meta 'bioconductor-type)))
                                         (else '())))
-                          ((url rest ...) url)
+                          ((urls ...) urls)
                           ((? string? url) url)
                           (_ #f)))))
          (git?       (assoc-ref meta 'git))
@@ -592,7 +618,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
    (lambda* (package-name #:key (repo 'cran) version)
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
-     (let ((description (fetch-description repo package-name)))
+     (let ((description (fetch-description repo package-name version)))
        (if description
            (description->package repo description)
            (case repo
@@ -610,8 +636,9 @@ s-expression corresponding to that package, or #f on failure."
                       (&message
                        (message "couldn't find meta-data for R package")))))))))))
 
-(define* (cran-recursive-import package-name #:key (repo 'cran))
+(define* (cran-recursive-import package-name #:key (repo 'cran) version)
   (recursive-import package-name
+                    #:version version
                     #:repo repo
                     #:repo->guix-package cran->guix-package
                     #:guix-name cran-guix-name))

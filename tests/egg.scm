@@ -73,7 +73,7 @@
   (call-with-output-file egg-file
     (lambda (port)
       (write egg-test port)))
-  (matcher (egg->guix-package egg-name
+  (matcher (egg->guix-package egg-name #f
                               #:file egg-file
                               #:source (plain-file
                                         (string-append egg-name "-egg")

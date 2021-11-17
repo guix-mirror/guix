@@ -829,7 +829,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.1.3")
+    (version "3.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -838,7 +838,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08rk31d2cp9k9nj37s6a4n7klpfqfbj62anwyiggzsz7b68psjq3"))))
+                "0fmnbzpl481i7kchx4hbvb507r5pfgyrzfrlrs7jk3bicycm75qv"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1513,14 +1513,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.4")
+    (version "4.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "02fr8mvf2agwmyb9q2bmh9p09gpz3xxmpcbbbj8iydz57hc0mc86"))))
+               "00hfwd8ld6jnd26pl9f0wcd2mag4zacxxgqgabsja2xkkagavnza"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -1707,14 +1707,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.7")
+    (version "3.4.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1j7mdk9szrljgv4sdx69bm1pnbb3cldbdxbkr42jbdi9zn11gl7g"))))
+               "0d8nkd9c85rkjlgsq1hidmykkrksi883ygqzhhj6wh4nqflv8vs9"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:modules modules %gnu-build-system-modules)
@@ -1734,14 +1734,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.16")
+    (version "2.8.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "14n0xg22yz1r4apif2idm91s3avcmkz4sl8gyj5763gcy415k2bb"))))
+                "0k6dq7b8rpjvdl5ncf1135qwc36x0x9va8v83aggvbfhy5d97vwn"))))
     (arguments
      `(#:tests? #f               ; XXX: Enable them later, if required
        #:configure-flags

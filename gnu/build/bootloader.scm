@@ -94,6 +94,7 @@ load the Grub bootloader located in the 'Guix_image' root partition."
         ;; (not eliminate it).
         (format port
                 "insmod part_msdos~@
+               insmod part_gpt~@
                search --set=root --label Guix_image~@
                configfile /boot/grub/grub.cfg~%")))
     (install-efi grub-efi grub-config esp)

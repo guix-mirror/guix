@@ -13,6 +13,7 @@
 ;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2021 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -512,3 +513,31 @@ real person, and are too lazy to think of one yourself.  Also, if the Web
 site/BBS/person you are giving the information to tries to cross-check the
 city, state, zip, or area code, it will check out.")
     (license license:gpl2+)))
+
+(define-public renameutils
+  (package
+    (name "renameutils")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/renameutils/"
+                           "renameutils-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18xlkr56jdyajjihcmfqlyyanzyiqqlzbhrm6695mkvw081g1lnb"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   (substitute* "src/Makefile.in"
+                     (("\\(\\$bindir\\)") "$(bindir)"))
+                   #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("readline" ,readline)))
+    (home-page "https://www.nongnu.org/renameutils/")
+    (synopsis "File renaming utilities")
+    (description "The file renaming utilities (renameutils for short) are a
+set of programs designed to make renaming of files faster and less cumbersome.
+The file renaming utilities consists of five programs: @command{qmv},
+@command{qcp}, @command{imv}, @command{icp}, and @command{deurlname}.")
+    (license license:gpl3+)))

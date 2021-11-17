@@ -540,7 +540,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
     (build-system  gnu-build-system)
     (home-page "https://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")
-    (description "U-Boot is a bootloader used mostly for ARM boards. It
+    (description "U-Boot is a bootloader used mostly for ARM boards.  It
 also initializes the boards (RAM etc).")
     (license license:gpl2+)))
 
@@ -739,7 +739,7 @@ board-independent tools.")))
     (package
       (inherit base)
       (name "u-boot-am335x-boneblack")
-      (description "U-Boot is a bootloader used mostly for ARM boards. It
+      (description "U-Boot is a bootloader used mostly for ARM boards.  It
 also initializes the boards (RAM etc).
 
 This U-Boot is built for the BeagleBone Black, which was removed upstream,
@@ -859,7 +859,7 @@ device while it's being turned on (and a while longer).")
   (let ((base (make-u-boot-package "novena" "arm-linux-gnueabihf")))
     (package
       (inherit base)
-      (description "U-Boot is a bootloader used mostly for ARM boards. It
+      (description "U-Boot is a bootloader used mostly for ARM boards.  It
 also initializes the boards (RAM etc).
 
 This U-Boot is built for Novena.  Be advised that this version, contrary

@@ -87,7 +87,7 @@ client.")
 (define-public fcitx5
   (package
     (name "fcitx5")
-    (version "5.0.8")
+    (version "5.0.10")
     (source
      (origin
        (method url-fetch)
@@ -95,7 +95,7 @@ client.")
              "https://download.fcitx-im.org/fcitx5/fcitx5/fcitx5-"
              version "_dict.tar.xz"))
        (sha256
-        (base32 "0536sjpgjlg0bf8imz4jf9bdsp7fhm09bkssddji56cc9mgdxx82"))))
+        (base32 "0i23skr49n6b30ybm66bkv07dcr0dan5mzxch7x83znfnrpk8z3h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -198,7 +198,7 @@ editors.")
 (define-public fcitx5-gtk
   (package
     (name "fcitx5-gtk")
-    (version "5.0.7")
+    (version "5.0.9")
     (source
      (origin
        (method url-fetch)
@@ -206,7 +206,7 @@ editors.")
                            "/fcitx5-gtk/fcitx5-gtk-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0x9xwyb3hnb2xl47jkj8zs34fhyf7gshy3bv3jxd66sfkjrscr5v"))))
+        (base32 "07ip4sxf3q895pp7mivv2bdwcmqjnwrmv9pg99jk73cw9bgyq00n"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;No test
@@ -252,7 +252,7 @@ for GTK+2/GTK+3 application.")
 (define-public fcitx5-qt
   (package
     (name "fcitx5-qt")
-    (version "5.0.6")
+    (version "5.0.7")
     (source
      (origin
        (method url-fetch)
@@ -260,7 +260,7 @@ for GTK+2/GTK+3 application.")
                            "/fcitx5-qt/fcitx5-qt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0wp88cmy0gn15gkfzl5z4q4qd9j1ssdmgp1rfsbw0cp3qh5x4m69"))))
+        (base32 "1gspj3s1nz6mqbp3z6js5zf7mqicwm32isxlqh6whhwawr9w7vrk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -348,7 +348,7 @@ including input methods previous bundled inside Fcitx 4:
 (define-public fcitx5-configtool
   (package
     (name "fcitx5-configtool")
-    (version "5.0.5")
+    (version "5.0.8")
     (source
      (origin
        (method url-fetch)
@@ -356,7 +356,7 @@ including input methods previous bundled inside Fcitx 4:
              "https://download.fcitx-im.org/fcitx5"
              "/fcitx5-configtool/fcitx5-configtool-" version ".tar.xz"))
        (sha256
-        (base32 "1diwiniqvsvcdwzcx1dqxbvwsr6ajbxs67my0cpn8n22asd5mx8i"))))
+        (base32 "0rajrw914mbl0x7h08cal0sszwyvqg6v3w0vs0c9acs6m438xbw4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

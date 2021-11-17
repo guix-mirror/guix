@@ -351,9 +351,6 @@ required structures.")
               ,@(alist-delete "guile"
                               (package-inputs gnutls))))))
 
-(define-public guile3.0-gnutls
-  (deprecated-package "guile3.0-gnutls" gnutls))
-
 (define (target->openssl-target target)
   "Return the value to set CONFIGURE_TARGET_ARCH to when cross-compiling
 OpenSSL for TARGET."
@@ -662,13 +659,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.17.0")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "03ij1wp7jwvppv70qbjkgdg7w824yh6j4gfb68jj20wicx08xx1a"))))
+                "1bv2swaqmzpcx2nq1nbhrc6b825d5sxkdv0al972sjfcpcqn1q4s"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -716,7 +713,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "0wyipx6q78fmvngf1i6g50s01qpjqh07qlk1b5vyxwgl3080lhgg"))))
+                "0yr8sxfg5zspal04l9lpd9xis6gp8il20bhka54xr9bb4hc6xrgk"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -1142,39 +1139,38 @@ derived from Mozilla's collection.")
       (license license:mpl2.0))))
 
 (define-public s2n
-  (let* ((commit "7f43b102def1d52422f6c3e48d5cb3e6dd26c646")
-         (revision "1"))
-    (package
-      (name "s2n")
-      (version (git-version "1.0.10" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/aws/s2n-tls")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "06rqg0vcispi63cmcza9j7ix80l0w6wmbw81qlg4fq8l1lg9nyvl"))))
-      (build-system cmake-build-system)
-      (arguments
-       '(#:configure-flags
-         '("-DBUILD_SHARED_LIBS=ON")))
-      (propagated-inputs
-       `(("openssl" ,openssl)
-         ("openssl:static" ,openssl "static")))
-      (synopsis "SSL/TLS implementation in C99")
-      (description
-       "This library provides a C99 implementation of SSL/TLS.  It is designed
-to be familiar to users of the widely-used POSIX I/O APIs.  It supports
-blocking, non-blocking, and full-duplex I/O.  There are no locks or mutexes.
+  (package
+    (name "s2n")
+    ; Update only when updating aws-crt-cpp.
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aws/s2n-tls")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14dhdddlph36nshdkh0v33718hxjx5vxqxmkw7707393q0qrgipw"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("openssl" ,openssl)
+       ("openssl:static" ,openssl "static")))
+    (synopsis "SSL/TLS implementation in C99")
+    (description
+     "This library provides a C99 implementation of SSL/TLS.  It is designed to
+be familiar to users of the widely-used POSIX I/O APIs.  It supports blocking,
+non-blocking, and full-duplex I/O.  There are no locks or mutexes.
 
 As it can be difficult to keep track of which encryption algorithms and
 protocols are best to use, s2n-tls features a simple API to use the latest
 default set of preferences.  Remaining on a specific version for backwards
 compatibility is also supported.")
     (home-page "https://github.com/aws/s2n-tls")
-    (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public wolfssl
   (package

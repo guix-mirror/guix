@@ -2200,7 +2200,11 @@ This package can be used to create @code{favicon.ico} files for web sites.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
-                           "-DAVIF_CODEC_RAV1E=ON"
+                           ,@(if (string-prefix? "x86_64"
+                                                 (or (%current-target-system)
+                                                     (%current-system)))
+                                 '("-DAVIF_CODEC_RAV1E=ON")
+                                 '())
                            "-DAVIF_BUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
@@ -2211,12 +2215,16 @@ This package can be used to create @code{favicon.ico} files for web sites.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/libavif-" ,version)))
-               (install-file "../source/README.md" doc)
-               #t))))))
+               (install-file "../source/README.md" doc)))))))
     (inputs
      `(("dav1d" ,dav1d)
        ("libaom" ,libaom)
-       ("rav1e" ,rav1e)))
+       ;; XXX: rav1e depends on rust, which currently only works on x86_64.
+       ;; See also the related configure flag when changing this.
+       ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                          (%current-system)))
+             `(("rav1e" ,rav1e))
+             '())))
     (synopsis "Encode and decode AVIF files")
     (description "Libavif is a C implementation of @acronym{AVIF, the AV1 Image
 File Format}.  It can encode and decode all YUV formats and bit depths supported

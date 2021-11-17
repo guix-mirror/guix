@@ -331,9 +331,6 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
     (properties '((upstream-name . "freefont")
                   (ftp-directory . "/gnu/freefont")))))
 
-(define-public font-gnu-freefont-ttf
-  (deprecated-package "font-gnu-freefont-ttf" font-gnu-freefont))
-
 (define-public font-liberation
   (package
     (name "font-liberation")
@@ -1592,9 +1589,6 @@ line of text.  The unique shapes of each letter can help prevent flipping and
 swapping.  The italic style for OpenDyslexic has been crafted to be used for
 emphasis while still being readable.")
     (license license:silofl1.1)))
-
-(define-public font-open-dyslexic
-  (deprecated-package "font-open-dyslexic" font-opendyslexic))
 
 (define-public font-openmoji
   (package

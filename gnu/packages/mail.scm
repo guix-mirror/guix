@@ -43,6 +43,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Benoit Joly <benoit@benoitj.ca>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -434,9 +435,6 @@ messages) using IDLE.  Implemented in Go.")
     (inputs
      `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs mailutils))))))
-
-(define-public guile3.0-mailutils
-  (deprecated-package "guile3.0-mailutils" mailutils))
 
 (define-public nullmailer
   (package
@@ -1169,15 +1167,15 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.6.9")
+    (version "1.6.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/" version "-signed/"
+                                  "download/" version "/"
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0n5gvdz6vn6y69f5gx0gndjdl328qjbvi2q048qynhk99w5476cd"))))
+                "1dh0x4lqnjflb0k8fybr5clqjxv35scf055g1590pr5znam29hhb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1272,6 +1270,10 @@ attachments, create new maildirs, and so on.")
           (substitute* "tests/commands/test_global.py"
             (("def test_no_spawn_no_stdin_attached")
              "def _test_no_spawn_no_stdin_attached"))
+          ;; FIXME: Investigate why this test hangs.
+          (substitute* "tests/db/test_manager.py"
+            (("def test_save_named_query")
+             "def _test_save_named_query"))
           #t)))))
     (native-inputs
      `(("procps" ,procps)
@@ -4486,6 +4488,41 @@ which can convert the contacts to @code{.ldif} format for import into LDAP
 databases, and other tools to process Outlook email archives.")
     (license license:gpl2+)))
 
+(define-public neatmail
+  (package
+    (name "neatmail")
+    (version "02")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/aligrudi/neatmail")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00d453d57d3v6ja2gpmjd8vch804c72g38pc1nr5shmz3hkgd52d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags `((string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (replace 'install              ;no install target in the Makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin")))
+               (rename-file "mail" "neatmail")
+               (install-file "neatmail" bin)))))))
+    (home-page "https://litcave.rudi.ir/")
+    (synopsis "Text-mode mail client")
+    (description
+     "@command{neatmail} is a noninteractive mail client.  It generates
+a listing of the messages in a mailbox in mbox format and executes a list of
+ex-like commands on it.")
+    (license license:isc)))
+
 (define-public crm114
   (package
     (name "crm114")
@@ -4563,3 +4600,41 @@ regexes, approximate regexes, a Hidden Markov Model, Orthogonal Sparse
 Bigrams, WINNOW, Correlation, KNN/Hyperspace, or Bit Entropy (or by other
 means--it's all programmable).")
     (license license:gpl3)))
+
+(define-public rss2email
+  (package
+    (name "rss2email")
+    (version "3.13.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rss2email/rss2email")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0g1yr3v3ibdh2jqil64fbdbplx5m2yzxr893fqfkwcc5c7fbwl4d"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "test"
+                 ;; Skip networking tests
+                 (substitute* "test.py"
+                   (("( *)class (:?TestSend|TestFetch).*" match indent)
+                    (string-append indent "@unittest.skip(\"Networking stuff skipped\")\n"
+                                   indent match)))
+                 (invoke "python" "-m" "unittest"))))))))
+    (inputs
+     `(("python-feedparser" ,python-feedparser)
+       ("python-html2text" ,python-html2text)))
+    (home-page "https://github.com/rss2email/rss2email")
+    (synopsis "Converts RSS/Atom newsfeeds to email")
+    (description "The RSS2email program (@command{r2e}) fetches RSS/Atom news
+feeds, converts them into emails, and sends them.")
+    ;; GPL version 2 or 3.  NOT 2+.
+    (license (list license:gpl2
+                   license:gpl3))))

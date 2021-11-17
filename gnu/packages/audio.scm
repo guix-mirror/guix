@@ -2840,7 +2840,7 @@ buffers, and audio capture.")
 (define-public patchage
   (package
     (name "patchage")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/patchage-"
@@ -2848,11 +2848,10 @@ buffers, and audio capture.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0dk3fiac10m83mwss3026yz7ygc47c2iw924cwwnh2fyydc9bsy6"))))
+                "0gbakiw3mikgbvy3pssrmqmn7z5c7kp4vyaxj5rs4jnkscxgw9vw"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f                      ; no check target
-       #:python ,python-2))
+     `(#:tests? #f))                    ; no check target
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
@@ -2863,7 +2862,7 @@ buffers, and audio capture.")
        ("dbus-glib" ,dbus-glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://drobilla.net/software/patchage/")
+    (home-page "https://drobilla.net/software/patchage.html")
     (synopsis "Modular patch bay for audio and MIDI systems")
     (description
      "Patchage is a modular patch bay for audio and MIDI systems based on JACK
@@ -2906,14 +2905,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.9.4")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "186rg3j67rac9ds1r7gnrib2d0smgv15cmr5gwb7v83mywcp1gzy"))))
+                "1g61xwsxsndwlnh4547vl7jfcf4kqlbb4394jq2m8qbbzk51b6rv"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target

@@ -240,7 +240,7 @@ package contains the library and drivers.")))
        ("zlib" ,zlib)))
     (home-page "https://scanbd.sourceforge.io")
     (synopsis "Configurable scanner button monitor")
-    (description "Scanbd stands for scanner button daemon.  It regulary polls
+    (description "Scanbd stands for scanner button daemon.  It regularly polls
 scanners for pressed buttons, function knob changes, or other events such
 as (un)plugging the scanner or inserting and removing paper.  Then it performs
 the desired action(s) such as saving, copying, or e-mailing the image.

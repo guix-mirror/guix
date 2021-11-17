@@ -5654,7 +5654,7 @@ spawning a @dfn{container} isolated from the rest of the system:
 guix shell --container emacs gcc-toolchain
 @end example
 
-The command above spawns an interactive shell in a container when
+The command above spawns an interactive shell in a container where
 nothing but @code{emacs}, @code{gcc-toolchain}, and their dependencies
 is available.  The container lacks network access and shares no files
 other than the current working directory with the surrounding
@@ -11571,7 +11571,7 @@ a container similar to the one the build daemon creates:
 $ guix build -K foo
 @dots{}
 $ cd /tmp/guix-build-foo.drv-0
-$ guix shell --no-grafts -C foo strace gdb
+$ guix shell --no-grafts -C -D foo strace gdb
 [env]# source ./environment-variables
 [env]# cd foo-1.2
 @end example
@@ -11830,11 +11830,17 @@ information, including package dependencies.  For maximum efficiency, it
 is recommended to install the @command{unzip} utility, so that the
 importer can unzip Python wheels and gather data from them.
 
-The command below imports metadata for the @code{itsdangerous} Python
-package:
+The command below imports metadata for the latest version of the
+@code{itsdangerous} Python package:
 
 @example
 guix import pypi itsdangerous
+@end example
+
+You can also ask for a specific version:
+
+@example
+guix import pypi itsdangerous@@1.1.0
 @end example
 
 @table @code
@@ -11932,6 +11938,12 @@ The command command below imports metadata for the Cairo R package:
 
 @example
 guix import cran Cairo
+@end example
+
+You can also ask for a specific version:
+
+@example
+guix import cran rasterVis@@0.50.3
 @end example
 
 When @option{--recursive} is added, the importer will traverse the
@@ -18859,8 +18871,7 @@ and tty8.
 @lisp
 (use-modules (gnu services)
              (gnu services desktop)
-             (gnu services xorg)
-             (srfi srfi-1))  ;for 'remove'
+             (gnu services xorg))
 
 (operating-system
   ;; ...
@@ -19755,7 +19766,7 @@ Defaults to @samp{1048576}.
 Specifies the maximum amount of time to allow between files in a
 multiple file print job, in seconds.
 
-Defaults to @samp{300}.
+Defaults to @samp{900}.
 @end deftypevr
 
 @deftypevr {@code{cups-configuration} parameter} string page-log-format
@@ -19966,7 +19977,7 @@ Defaults to @samp{#f}.
 @deftypevr {@code{cups-configuration} parameter} non-negative-integer timeout
 Specifies the HTTP request timeout, in seconds.
 
-Defaults to @samp{300}.
+Defaults to @samp{900}.
 
 @end deftypevr
 
@@ -26767,6 +26778,12 @@ complete example}.
 
 @item @code{package} (default: @code{hpcguix-web})
 The hpcguix-web package to use.
+
+@item @code{address} (default: @code{"127.0.0.1"})
+The IP address to listen to.
+
+@item @code{port} (default: @code{5000})
+The port number to listen to.
 @end table
 @end deftp
 
@@ -30273,6 +30290,53 @@ Return true if @var{obj} is a platform object.
 @deffn {Scheme Procedure} qemu-platform-name @var{platform}
 Return the name of @var{platform}---a string such as @code{"arm"}.
 @end deffn
+
+
+@subsubheading QEMU Guest Agent
+
+@cindex emulation
+
+The QEMU guest agent provides control over the emulated system to the
+host.  The @code{qemu-guest-agent} service runs the agent on Guix
+guests.  To control the agent from the host, open a socket by invoking
+QEMU with the following arguments:
+
+@example
+qemu-system-x86_64 \
+	-chardev socket,path=/tmp/qga.sock,server=on,wait=off,id=qga0 \
+	-device virtio-serial \
+	-device virtserialport,chardev=qga0,name=org.qemu.guest_agent.0 \
+	...
+@end example
+
+This creates a socket at @file{/tmp/qga.sock} on the host.  Once the
+guest agent is running, you can issue commands with @code{socat}:
+
+@example
+$ guix shell socat -- socat unix-connect:/tmp/qga.sock stdio
+@{"execute": "guest-get-host-name"@}
+@{"return": @{"host-name": "guix"@}@}
+@end example
+
+See @url{https://wiki.qemu.org/Features/GuestAgent,QEMU guest agent
+documentation} for more options and commands.
+
+@defvr {Scheme Variable} qemu-guest-agent-service-type
+Service type for the QEMU guest agent service.
+@end defvr
+
+@deftp {Data Type} qemu-guest-agent-configuration
+Configuration for the @code{qemu-guest-agent} service.
+
+@table @asis
+@item @code{qemu} (default: @code{qemu-minimal})
+The QEMU package to use.
+
+@item @code{device} (default: @code{""})
+File name of the device or socket the agent uses to communicate with the
+host.  If empty, QEMU uses a default file name.
+@end table
+@end deftp
 
 
 @subsubheading The Hurd in a Virtual Machine
@@ -36141,6 +36205,14 @@ guix home reconfigure config.scm
 
 This ``builds'' your home environment and creates @file{~/.guix-home}
 pointing to it.  Voilà!
+
+@quotation Note
+Make sure the operating system has elogind, systemd, or a similar
+mechanism to create the XDG run-time directory and has the
+@env{XDG_RUNTIME_DIR} variable set.  Failing that, the
+@file{on-first-login} script will not execute anything, and processes
+like user Shepherd and its descendants will not start.
+@end quotation
 
 @node Configuring the Shell
 @section Configuring the Shell

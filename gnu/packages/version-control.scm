@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2019, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018, 2020, 2021 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -113,6 +113,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -172,6 +173,43 @@ changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
     (license license:gpl2+)))
 
+(define-public breezy
+  (package
+    (name "breezy")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/brz/"
+                           (version-major+minor version) "/" version
+                           "/+download/breezy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p6q545xpmxa6fgvkjglfpqpybg33817vhw0a82az8i83bmnicp0"))))
+    (build-system python-build-system)
+    ;; TODO: Maybe regenerate C files with Cython?
+    (inputs
+     `(("gettext" ,gettext-minimal)
+       ("python-configobj" ,python-configobj)
+       ("python-dulwich" ,python-dulwich)
+       ("python-fastimport" ,python-fastimport)
+       ("python-paramiko" ,python-paramiko)
+       ("python-patiencediff" ,python-patiencediff)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-pygpgme" ,python-pygpgme)))
+    (arguments
+     `(#:tests? #f))                    ; no tests in release tarball
+    (home-page "https://www.breezy-vcs.org/")
+    (synopsis "Decentralized revision control system")
+    (description
+     "Breezy (@command{brz}) is a decentralized revision control system.  By
+default, Breezy provides support for both the
+@uref{https://www.bazaar-vcs.org, Bazaar} and @uref{https://www.git-scm.com,
+Git} file formats.  Breezy is backwards compatible with Bazaar's disk format
+and protocols.  One of the key differences with Bazaar is that Breezy runs on
+Python 3.3 and later, rather than on Python 2.")
+    (license license:gpl2+)))
+
 (define git-cross-configure-flags
   '("ac_cv_fread_reads_directories=yes"
     "ac_cv_snprintf_returns_bogus=no"
@@ -180,14 +218,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.33.1")
+   (version "2.34.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0bqz401dyp8wnjj3k5ahrniwk4dalndysqazzwdvv25hqbkacm70"))))
+              "07s1c9lzlm4kpbb5lmxy0869phg7037pv4faz5hlqyb5csrbjv7x"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -207,7 +245,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "11xb0n1ckkm2g7r3sxsknkhsak739xg925zbz3aalv7mr7qijln7"))))
+            "0wic95h0i1bm66hxnc38pfj31n74lvk2xb8lx6kcfpzg2wszmsj7"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -2635,25 +2673,27 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
 (define-public stagit
   (package
     (name "stagit")
-    (version "0.7.2")
+    (version "0.9.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.2f30.org/releases/"
-                                  name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "git://git.codemadness.org/stagit")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m3s9g1z9szbjrhm8sic91xh6f2bfpi56rskdkqd5wc4wdycpyi5"))))
+                "0hcf1rmsp9s6jjg1dypq7sa3dqmqg2q3x1kj23rb5gwrsb31vyfj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script
     (inputs
      `(("libgit2" ,libgit2)))
-    (home-page "https://2f30.org/")
+    (home-page "https://git.codemadness.org/stagit/")
     (synopsis "Static git page generator")
     (description "Stagit creates static pages for git repositories, the results can
 be served with a HTTP file server of your choice.")
@@ -2986,7 +3026,7 @@ for historians.")
 (define-public diff-so-fancy
   (package
     (name "diff-so-fancy")
-    (version "1.3.0")
+    (version "1.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2995,7 +3035,7 @@ for historians.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0aavxahzha2mms4vdwysk79pa6wzswpfwgsq2hwaxnaf66maahfl"))))
+                "0q0byg2bpibl3lbn4zibwcfxzlx2x5krajxmpwgizf32qjp5lh6n"))))
     (inputs
      `(("perl" ,perl)
        ("ncurses" ,ncurses)))
