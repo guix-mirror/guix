@@ -197,12 +197,11 @@
                      (loop all current #false))))))))))))
 
 (define (files->directories files)
-  (pk 'f->d
-   (map (cut string-join <> "/" 'suffix)
-        (delete-duplicates (map (lambda (file)
-                                  (drop-right (string-split file #\/) 1))
-                                files)
-                           equal?))))
+  (map (cut string-join <> "/" 'suffix)
+       (delete-duplicates (map (lambda (file)
+                                 (drop-right (string-split file #\/) 1))
+                               files)
+                          equal?)))
 
 (define (tlpdb->package name)
   (and-let* ((data (assoc-ref (tlpdb) name))
