@@ -1380,6 +1380,13 @@ concepts.")
        (sha256
         (base32 "0wf1cwmxmdzfqmfhrkqdxb5spf21ylgl2bidswhzjrqhwf35c9qf"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-native-optimization
+           (lambda _
+             (substitute* "setup.py"
+               ((", '-march=native'") "")))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
     (native-inputs
