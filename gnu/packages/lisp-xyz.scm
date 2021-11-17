@@ -18381,6 +18381,51 @@ formats within this framework.")
 (define-public cl-feeder
   (sbcl-package->cl-source-package sbcl-feeder))
 
+(define-public sbcl-routes
+  (let ((commit "1b79e85aa653e1ec87e21ca745abe51547866fa9")
+        (revision "1"))
+    (package
+      (name "sbcl-routes")
+      (version (git-version "0.2.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/cl-routes")
+               (commit commit)))
+         (file-name (git-file-name "cl-routes" version))
+         (sha256
+          (base32 "1zpk3cp2v8hm50ppjl10yxr437vv4552r8hylvizglzrq2ibsbr1"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Fix: :FORCE and :FORCE-NOT arguments not allowed in
+               ;; a nested call to ASDF/OPERATE:OPERATE unless
+               ;; identically to toplevel
+               (substitute* "routes.asd"
+                 ((" :force t") "")))))))
+      (inputs
+       `(("iterate" ,sbcl-iterate)
+         ("puri" ,sbcl-puri)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (home-page "https://github.com/archimag/cl-routes")
+      (synopsis "Rails routes system for Common Lisp")
+      (description
+       "This is a a Common Lisp re-implementation of the Rails routes system
+for mapping URLs.")
+      (license license:llgpl))))
+
+(define-public cl-routes
+  (sbcl-package->cl-source-package sbcl-routes))
+
+(define-public ecl-routes
+  (sbcl-package->ecl-package sbcl-routes))
+
 (define-public sbcl-terminfo
   (let ((commit "b8b2e3ed786bfcf9f1aa4a264cee2e93135080f5")
         (revision "1"))
