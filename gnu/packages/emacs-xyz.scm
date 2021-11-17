@@ -17631,16 +17631,16 @@ according to a parsing expression grammar.")
 (define-public emacs-eldev
   (package
     (name "emacs-eldev")
-    (version "0.9.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/doublep/eldev")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1jfj4f5w20qd12k6ygv0jazn2x9pxjrmqmlmibppc4ybrhhgmg0s"))))
+    (version "0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/doublep/eldev")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y1gc37vn8k1yhp6b069sg8hdh1bn22icdqn4b28c2k5iiw9g7gi"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -17650,14 +17650,13 @@ according to a parsing expression grammar.")
          (add-after 'unpack 'prepare-for-tests
            (lambda _
              (setenv "ELDEV_LOCAL" (getcwd))
-             (make-file-writable
-              "test/project-i/project-i-autoloads.el")
-             #t))
+             (make-file-writable "test/project-i/project-i-autoloads.el")))
          (add-after 'unpack 'skip-failing-tests
            ;; FIXME: 10 tests are failing.  Skip them for now.
            (lambda _
-             (substitute* '("test/init.el" "test/targets.el")
-               (("(targets-project-e-[34]|init-[1-8]).*" line)
+             (delete-file "test/upgrade-self.el")
+             (substitute* "test/init.el"
+               (("init-[1-8].*" line)
                 (string-append line "(skip-unless nil)\n")))))
          (add-after 'install 'install-eldev-executable
            ;; This constructs the eldev executable from templates and
@@ -17674,8 +17673,7 @@ according to a parsing expression grammar.")
                  ;; eldev doesn't try to bootstrap itself from MELPA when
                  ;; invoked.
                  (("export ELDEV_EMACS.*" all)
-                  (string-append "export ELDEV_LOCAL=" site-lisp "\n" all)))
-               #t))))))
+                  (string-append "export ELDEV_LOCAL=" site-lisp "\n" all)))))))))
     (native-inputs
      `(("texinfo" ,texinfo)))           ;for tests
     (home-page "https://github.com/doublep/eldev/")
