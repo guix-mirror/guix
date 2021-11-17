@@ -18873,10 +18873,10 @@ This package provides the text-based interface for Chemboy.")
 
 (define-public sbcl-cl-tld
   ;; No release.
-  (let ((commit "6529c70042cf6e82be39bc522e87ad87da08f1c9"))
+  (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
     (package
       (name "sbcl-cl-tld")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -18885,7 +18885,7 @@ This package provides the text-based interface for Chemboy.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1l6f0sak90pqjzkrjg0cyk7gv9h8gwpfvc0964z98dw2nj3hakqb"))))
+          (base32 "0sxnn35gzdby1ixil6zbjg72vli9fcspwzsqimqk455310syx9iv"))))
       (build-system asdf-build-system/sbcl)
       (home-page "https://github.com/lu4nx/cl-tld/")
       (synopsis "Extract the Top Level Domain from domains, in Common Lisp")
