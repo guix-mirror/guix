@@ -18311,6 +18311,40 @@ child nodes enumeration, etc.
 (define-public cl-libxml2
   (sbcl-package->cl-source-package sbcl-cl-libxml2))
 
+(define-public sbcl-pileup
+  (let ((commit "f269473a570a8e55881082545ee63cfe5c7d3e72")
+        (revision "1"))
+    (package
+      (name "sbcl-pileup")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nikodemus/pileup")
+               (commit commit)))
+         (file-name (git-file-name "cl-pileup" version))
+         (sha256
+          (base32 "01gvshpxil0ggjgfmgcymbgmpsfaxy6aggm0bywkn40rck3038vb"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (native-inputs
+       `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (home-page "https://github.com/nikodemus/pileup")
+      (synopsis "Simple thread-safe binary heap implementation for Common Lisp")
+      (description
+       "@code{Pileup} is a portable, performant, and thread-safe binary heap
+for Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-pileup
+  (sbcl-package->cl-source-package sbcl-pileup))
+
+(define-public ecl-pileup
+  (sbcl-package->ecl-package sbcl-pileup))
+
 (define-public sbcl-feeder
   ;; No release.
   (let ((commit "b05f517d7729564575cc809e086c262646a94d34")
